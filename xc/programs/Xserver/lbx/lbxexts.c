@@ -66,18 +66,20 @@ LbxAddExtension(char       *name,
     int         i;
     LbxExtensionEntry *ext,
 	**newexts;
+    size_t buflen;
 
     ext = (LbxExtensionEntry *) xalloc(sizeof(LbxExtensionEntry));
     if (!ext)
 	return FALSE;
-    ext->name = (char *) xalloc(strlen(name) + 1);
+    buflen = strlen(name) + 1;
+    ext->name = (char *) xalloc(buflen);
     ext->num_aliases = 0;
     ext->aliases = (char **) NULL;
     if (!ext->name) {
 	xfree(ext);
 	return FALSE;
     }
-    strcpy(ext->name, name);
+    strlcpy(ext->name, name, buflen);
     i = num_exts;
     newexts = (LbxExtensionEntry **) xrealloc(lbx_extensions,
 				      (i + 1) * sizeof(LbxExtensionEntry *));
@@ -111,16 +113,18 @@ LbxAddExtensionAlias(int         idx,
     char       *name;
     char      **aliases;
     LbxExtensionEntry *ext = lbx_extensions[idx];
+    size_t	buflen;
 
     aliases = (char **) xrealloc(ext->aliases,
 				 (ext->num_aliases + 1) * sizeof(char *));
     if (!aliases)
 	return FALSE;
     ext->aliases = aliases;
-    name = (char *) xalloc(strlen(alias) + 1);
+    buflen = strlen(alias) + 1;
+    name = (char *) xalloc(buflen);
     if (!name)
 	return FALSE;
-    strcpy(name, alias);
+    strlcpy(name, alias, buflen);
     ext->aliases[ext->num_aliases] = name;
     ext->num_aliases++;
     return TRUE;
