@@ -94,6 +94,8 @@ Section "Device"
 # 	These options are required for use on the ibook.
 #	Option      "PanelWidth"  "1024"
 #	Option      "PanelHeight" "768"
+#	This option may help if your ibook has screen distortion problems
+#	Option      "iBookHacks" "on"
 
 EndSection
 
@@ -182,4 +184,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.14 2004/03/14 20:10:52 matthieu Exp $
+$OpenBSD: README.macppc,v 1.15 2004/08/17 06:39:43 otto Exp $
