@@ -76,6 +76,7 @@
 ./usr/X11R6/bin/xieperf
 ./usr/X11R6/bin/xinit
 ./usr/X11R6/bin/xkbbell
+./usr/X11R6/bin/xkbcomp
 ./usr/X11R6/bin/xkbevd
 ./usr/X11R6/bin/xkbprint
 ./usr/X11R6/bin/xkbvleds
