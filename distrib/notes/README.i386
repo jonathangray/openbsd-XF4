@@ -40,12 +40,12 @@ Conventions used in this document:
    See http://www.xfree86.org/XFree4/Status.html for specific details on
    which server to use.  If in doubt, try XFree86 XFree4 first.
 
-   What kind of mouse do you have and which port is it connected to? The 2
-   most common cases are a serial mouse, connected to /dev/tty00 (MS
-   Windows COM1: port) or /dev/tty01 (COM2: port) and a PS/2 style
-   mouse, for which OpenBSD uses the wsmouse(4) protocol with the
-   /dev/wsmouse device.
-
+   What kind of mouse do you have and which port is it connected to?
+   The 2 most common cases are a PS/2 style or USB mouse, for which
+   OpenBSD uses the wsmouse(4) protocol with the /dev/wsmouse device.
+   If you have a serial mouse, connected to /dev/tty00 (MS Windows
+   COM1: port) or /dev/tty01 (COM2: port) you probably want to try the
+   'auto' protocol first.
 
 3. Create the XF86Config(5) file for your server.
 
@@ -96,4 +96,4 @@ Conventions used in this document:
 problem_blurb  For XFree86 3 documentation,
 visit http://www.xfree86.org/3.3.6/.
 
-$OpenBSD: README.i386,v 1.20 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.i386,v 1.21 2004/02/28 19:04:43 matthieu Exp $

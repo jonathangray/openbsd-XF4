@@ -1,10 +1,10 @@
 
-		Notes on building XFree86 for OpenBSD X hackers 
+		Notes on building XFree86 for OpenBSD X hackers
 
 
 This document presents some techniques that can be useful for people
 wanting to hack the XF4 tree. It assumes some basic knowledge of the
-OpenBSD build system, as described in the release(8) manual page. 
+OpenBSD build system, as described in the release(8) manual page.
 
 o Source tree
   -----------
@@ -25,7 +25,7 @@ o Shadow trees
   ------------
 
 Always use a shadow tree to build X, especially on multiple
-architectures. 
+architectures.
 
 Let's assume XF4 is in /source/XF4, and you want to setup the build
 shadow tree in /obj/XF4 do:
@@ -35,51 +35,51 @@ shadow tree in /obj/XF4 do:
        lndir /source/XF4
 
 Don't forget to update the shadow tree each time something gets added
-in /source/XF4. 
+in /source/XF4.
 
 There is a script to remove dead links from the shadow tree when stuff
 gets removed from /source/XF4: xc/config/util/cleanlinks.sh (to be
-run from the top of the shadow tree). 
+run from the top of the shadow tree).
 
-o Makefile targets 
+o Makefile targets
   ----------------
 
 There are two ways to build X in OpenBSD either from XF4 or from
-XF4/xc. 
+XF4/xc.
 
 The Makefile in XF4 is added by OpenBSD to provide a set of high-level
-targets compatibles with the rest of the OpenBSD build environment. 
+targets compatibles with the rest of the OpenBSD build environment.
 
-all, compile: cleans the tree and restart a full compilation. Can be run 
-	as a non root user. 
+all, compile: cleans the tree and restart a full compilation. Can be run
+	as a non root user.
 install: installs programs and manual pages to ${DESTDIR}. DESTDIR
-         defaults to /. Needs to be run as root. 
-build:	 execute 'make compile and make install in sequence'. This 
-	 target knows about the SUDO variable in /etc/mk.conf. So it 
-	 can be run as a non root user if SUDO is set. 
+         defaults to /. Needs to be run as root.
+build:	 execute 'make compile and make install in sequence'. This
+	 target knows about the SUDO variable in /etc/mk.conf. So it
+	 can be run as a non root user if SUDO is set.
 release: installs programs and manual pages to ${DESTDIR} and builds a
          set of distribution tar balls in ${RELEASEDIR}. Both DESTDIR
          and RELEASEDIR should be set. Any existing X files will be
-         removed from DESTDIR first. 
-clean:   removes produced object files, but not Makefiles 
-distclean: removes every produced file. 
+         removed from DESTDIR first.
+clean:   removes produced object files, but not Makefiles
+distclean: removes every produced file.
 
 
 If you start from the xc directory, you'll need to use the make
 targets, as defined by X:
 
 World: cleans the tree and starts a full build. This is the only safe
-       way to start if the tree was not built before. 
+       way to start if the tree was not built before.
 Everything: regenerates all Makefiles and rebuild without cleaning
             (dependencies are supposed to be good enough, which is not
             always true; so if something goes wrong after a make
-            Everything, try a make World) 
+            Everything, try a make World)
 clean: removes produces files, but not Makefiles. Note the after a
        make clean, 'make includes ; make depend' are needed before a
-       'make'. 
+       'make'.
 distclean: removes every produced file. a 'make World' from the xc
            directory is the only safe way to restart a build after
-           that. 
+           that.
 Makefile:  rebuild the Makefile in the current directory
 Makefiles: rebuild Makefiles in all sub-directories. (recursive)
 includes:  rebuild files and links needed for the build (recursive)
@@ -93,13 +93,13 @@ just relink the specified X server. For instance to relink the 'XFree86'
 server, use 'make loadXFree86', to relink the Xnest server use 'make
 loadXnest' and so on...
 
-o How to build something with debug information? 
+o How to build something with debug information?
   ----------------------------------------------
 
 The /usr/X11R6/bin/makeg command calls make with proper arguments to
-build object files and executables with -g. 
+build object files and executables with -g.
 It's not reasonable to use it on the whole tree because it will take
-gigabytes of disk space and memory. 
+gigabytes of disk space and memory.
 
 Use it in selected directories after a regular build by doing:
 
@@ -108,14 +108,14 @@ Use it in selected directories after a regular build by doing:
     make depend
     makeg
 
-in the directory(ies) in which you need debugging information. 
+in the directory(ies) in which you need debugging information.
 
 If you did that in a subdirectory of the Xserver, finish by relinking
-the X server: 
+the X server:
 
-    make loadXFree86 
+    make loadXFree86
 
-in xc/programs/Xserver. 
+in xc/programs/Xserver.
 
 o Where to set variables?
   -----------------------
@@ -130,27 +130,27 @@ xc/config/cf/OpenBSD.cf or other files under xc/config/cf.
 
 Once you're happy with a change, you can reflect it in the file where
 the default value is set, or in OpenBSD.cf if the change is specific
-to OpenBSD. 
+to OpenBSD.
 
 xc/config/cf/README has an almost complete list of configuration
-variables and rules for imake. 
+variables and rules for imake.
 
 o Building a X server only
   ------------------------
 
-One of the most common configuration hacking is to build only a 
-statically linked XFree86 server without spending time in all the rest. 
+One of the most common configuration hacking is to build only a
+statically linked XFree86 server without spending time in all the rest.
 
-Use the following host.def file: 
+Use the following host.def file:
 
 ---Cut here---
 #define InstallEmptyHostDef
 
 #define BuildServersOnly	YES
 
-/* 
- * you may also restrict the drivers that are built by editing and 
- * uncommenting the line below 
+/*
+ * you may also restrict the drivers that are built by editing and
+ * uncommenting the line below
  */
 /* #define XF86CardDrivers		neomagic */
 
@@ -176,7 +176,7 @@ Use the following host.def file:
 ---Cut here---
 
 The host.def file is supposed to be in xc/config/cf during
-build. There are several ways to achieve that: 
+build. There are several ways to achieve that:
 
 - if you're using the Makefile in XF4 copy it to
   xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-xxxx, where xxx
@@ -184,7 +184,7 @@ build. There are several ways to achieve that:
   place in the first stages of 'make compile'
 - if you're using the xc Makefile, you should put it directly into
   xc/config/cf in the shadow tree. This allows you to have several
-  shadow trees with different host.def. 
+  shadow trees with different host.def.
 
 o Partial builds
   --------------
@@ -192,14 +192,14 @@ o Partial builds
 Apart of the ServersOnly build described above, it's pretty hard to
 build only parts of the tree, without having first built everything,
 since many parts depend on each other, and recursive make cannot
-handle this at all. 
+handle this at all.
 
 Please be patient and (re)build X from the top of the tree as much as
 possible. Trying to be smarter will considerably augment the risk of
 things getting out of sync and make you lose time.
 
 Whenever you want to rebuild something in a particular directory
-without touching the rest, use the following sequence: 
+without touching the rest, use the following sequence:
 
 make clean
 make Makefile
@@ -213,35 +213,39 @@ particular X server can be re-linked by running:
 
 make load<Server>
 
-in xc/programs/Xserver. 
+in xc/programs/Xserver.
+
+If you decide to rebuild an X server with DoLoadableServer NO, you
+need to make clean/Makefile/etc. in lib/font before going to
+programs/Xserver.
 
 o About OpenBSD.cf
   ----------------
 
 xc/config/cf/OpenBSD.cf holds most of the OpenBSD specific imake
-configuration for OpenBSD. It has basically 2 parts: 
+configuration for OpenBSD. It has basically 2 parts:
 
 - a general section defining stuff for all OpenBSD architectures
 - several architecture-dependent sections, ended by some defaults
-  for all architectures. 
+  for all architectures.
 
 The general section defines things about the libc and kernel features,
-as well as about the build environment. 
+as well as about the build environment.
 
 The architecture specific sections can be used to customize the X
 server build and some of the above features that need special
-treatments. 
+treatments.
 
 Since host.def is read once before OpenBSD.cf, settings that can be
 overridden in host.def are encapsulated in
 
   #ifndef HasFeature
   #  define HasFeature   YES or NO
-  #endif 
+  #endif
 
 constructions. If you need to override a setting that doesn't have this
 protection, you will need to change OpenBSD.cf (Well, this is not
-really required, but let's say it so for now). 
+really required, but let's say it so for now).
 
 Note that all imake defines should have a value (YES/NO or something
 else). Putting just
@@ -252,7 +256,7 @@ is equivalent to:
 
 #define HasFeature NO
 
-which is generally not what you want. 
+which is generally not what you want.
 
 o Other tricks about OpenBSD.cf
   ------------------------------
@@ -260,15 +264,15 @@ o Other tricks about OpenBSD.cf
 - Most of the server build configuration is controlled by xfree86.cf,
   which is included last in most architecture dependent
   sections. Before including this file, variables are set to OpenBSD
-  specific values to control its actions. 
+  specific values to control its actions.
   Some old servers still use xf86.rules or even no external file to
   configure their X server. I'd recommend that they switch to the use of
-  xfree86.cf. 
+  xfree86.cf.
 
 - Building the libraries is handled on OpenBSD 2.9 and later by
   OpenBSDLib.rules. This file has a set of rules that apply to both
   a.out and ELF libraries and don't suffer from common mistakes made
-  on ELF architectures by other systems. 
+  on ELF architectures by other systems.
 
 o What to do when make detects an error in a generated Makefile?
   --------------------------------------------------------------
@@ -281,13 +285,13 @@ Makefile with:
 
     make -f Makefile.bak Makefile
 
-But this will not always work, especially if Makefile.bak is bad too. 
+But this will not always work, especially if Makefile.bak is bad too.
 
 *Don't* use just 'xmkmf' to generate the Makefiles in the X
 tree. xmkmf uses the installed X from /usr/X11R6 instead of the
 in-tree files. You should pass 2 arguments to xmkmf: the relative path
 from the current dir to the top of the source (i.e. the xc directory)
-and the relative path from the top to the current directory. 
+and the relative path from the top to the current directory.
 
 For instance, to rebuild the Makefile in xc/programs/Xserver if you've
 lost both Makefile and Makefile.bak, use
@@ -299,13 +303,13 @@ o A small explanation on how imake works
   --------------------------------------
 
 Most of this is taken more or less verbatim from the imake(1) manual
-page. Please read it for more details. 
+page. Please read it for more details.
 
 Imake takes an Imakefile as input and produces a Makefile, with the
 help of configuration files.  It is really just a wrapper to call the
 C preprocessor on the Imakefile with the correct option. But imake
 itself is generally not called directly either. It's called by the way
-of the 'xmkmf' script or from the rules in a (I)makefile. 
+of the 'xmkmf' script or from the rules in a (I)makefile.
 
 imake starts by generating a file containing three lines:
 
@@ -313,17 +317,17 @@ imake starts by generating a file containing three lines:
     #define INCLUDE_IMAKEFILE <Imakefile>
     #include IMAKE_TEMPLATE
 
-and calls cpp on it, passing all -D and -I options from imake to cpp. 
+and calls cpp on it, passing all -D and -I options from imake to cpp.
 Imake.tmpl is the template Makefile and it will include all other
-needed configuration files. 
+needed configuration files.
 
 In imake configuration files, you'll find two kinds of things:
 definition of cpp macros and actual make variable definitions or
-rules. 
+rules.
 
-This is the actual tree of included files, in order for OpenBSD: 
+This is the actual tree of included files, in order for OpenBSD:
 
-Imake.tmpl 
+Imake.tmpl
   Imake.cf
   site.def
     host.def
@@ -339,7 +343,7 @@ Imake.tmpl
   X11.tmpl
     bsdLib.tmpl
   Imakefile
-    Threads.tmpl  
+    Threads.tmpl
     Libray.tmpl
     Server.tmpl
       xf86.tmpl
@@ -347,7 +351,7 @@ Imake.tmpl
 
 Note that host.def is included twice, before and after OpenBSD.cf. The
 first time 'BeforeVendorCf' is YES and the second time 'AfterVendorCf'
-is YES. 
+is YES.
 
 The Imakefile can include other configuration files. Imakefiles
 building a library will include Library.tmpl. Imakefiles building
@@ -361,10 +365,10 @@ o Writing Imakefiles
 Imakefiles are very close in philosophy to BSD make Makefiles. You
 only need to specify source and object files in the Imakefile and
 the rest of the Makefile will be added from the configuration files by
-imake. 
+imake.
 
 It's better to use one directory per program or library to build. It
-will make Imakefiles simpler to write. 
+will make Imakefiles simpler to write.
 
 If the application has only one source file, the Imakefile can be real
 simple. The SimpleProgramTarget() macro takes care of everything. You
@@ -385,42 +389,42 @@ the name of the executable and manual page to install. See
 xc/programs/xlogo/Imakefile for an example.
 
 The following make variables alter the behavior of the compilation
-rules: 
+rules:
 
-DEFINES holds extra -D and -U options to pass to CPP 
+DEFINES holds extra -D and -U options to pass to CPP
 INCLUDES holds extra -I options to pass to CPP
 
 DEPLIBS holds the list of library dependencies (ie libraries on which
-the executable depends, in a form suitable for a dependencies line). 
+the executable depends, in a form suitable for a dependencies line).
 LOCAL_LIBRARIES holds the list of libraries to link into the
 executable. Under OpenBSD *don't* rely on implicit intra-library
-dependencies to omit libraries that are required by others. 
+dependencies to omit libraries that are required by others.
 
 The following macros or make variables are useful to describe the most
 commonly used X libraries:
 
-$(DEPXONLYLIB), $(XONLYLIB): libX11 alone 
+$(DEPXONLYLIB), $(XONLYLIB): libX11 alone
 $(DEPXLIB), $(XLIB):	     libX11 and X extension lib
 $(DEPXTOOLLIB), $(XTOOLLIB): libXt and its dependencies (libSM,
-			     libICE) but without libX11. 
+			     libICE) but without libX11.
 $(DEPXPMLIB), $(XPMLIB):     libXpm alone.
 
 XawClientDepLibs, XawClientLibs:    libXaw and all its dependencies (libXmu,
 				    libXt, libSM, libICE, libXpm, libX11,
-				    libXext) 
+				    libXext)
 XmuuClientDepLibs, XmuuClientLib:   libXmuu and all its dependencies
 				    (libX11 and libXext)
 
 
 To build a library, define the SRCS and OBJS make variables and
 include <Library.tmpl>. The following macros control the produced
-library: 
+library:
 
 LibName	:	the name of the library
 DoSharedLib:	build a shared lib?
 SoRev:		shared lib version
 LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
-IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
+IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.12 2003/08/30 17:20:05 matthieu Exp $
+$Id: README,v 1.13 2004/02/28 19:04:43 matthieu Exp $
