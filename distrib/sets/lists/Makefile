@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.5 2001/04/13 05:39:31 todd Exp $
+# $OpenBSD: Makefile,v 1.6 2001/04/13 13:59:25 todd Exp $
 
 # Various list maintenance functions
 
@@ -31,7 +31,8 @@ mdtomi:
 			i1=$$dir/$$a; \
 		} || { \
 			cat $$i1 $$dir/$$a | sort | uniq -d >> $$dir/mi.tmp; \
-			echo "===> $$i1 vs $$dir/$$a"; \
+ 			echo "===> ($$(echo $$(cat $$dir/mi.tmp|wc -c)))\c"; \
+			echo " $$i1 vs $$dir/$$a"; \
 			mv $$dir/mi.tmp $$dir/mi; \
 			i1=$$dir/mi; \
 		}; \
