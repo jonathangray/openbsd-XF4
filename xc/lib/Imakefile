@@ -28,10 +28,6 @@ XKBLIBDIR = xkbfile
 XKBUILIBDIR = xkbui
 #endif
 
-#if BuildThreadStubLibrary && BuildLibraries
-THRSTUBLIBDIR = XThrStub
-#endif
-
 #if BuildXIElib
 XIELIBDIR = XIE
 #endif

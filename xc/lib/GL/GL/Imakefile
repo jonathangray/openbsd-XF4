@@ -219,9 +219,7 @@ REQUIREDLIBS = $(BASEREQUIREDLIBS) $(OTHERREQUIREDLIBS)
        POBJS = $(GLXPOBJS) $(DRIPOBJS) $(DRVPOBJS)
 
 #if LocalThreads
-#if NeedUIThrStubs
-  THREADOBJS = $(LDPRELIB) $(XTHRSTUBLIB)
-#else
+#if !NeedUIThrStubs 
   THREADOBJS = $(THREADS_LIBS)
 #endif
 #endif
