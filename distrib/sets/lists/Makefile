@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.8 2001/10/24 14:21:25 todd Exp $
+# $OpenBSD: Makefile,v 1.9 2002/09/29 16:55:17 todd Exp $
 
 # Various list maintenance functions
 
@@ -15,7 +15,7 @@ sort:
 	@for f in */m*; do echo "===> sorting $$f"; \
 		sort $$f | uniq > $$f.tmp; \
 		diff -u $$f $$f.tmp || true; \
-		mv $$f.tmp $$f; \
+		cat $$f.tmp > $$f && rm $$f.tmp; \
 	done;
 
 archs  = alpha amiga hp300 i386 mac68k macppc mvme68k sparc sparc64 vax

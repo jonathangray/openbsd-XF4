@@ -302,10 +302,6 @@
 ./usr/X11R6/include/X11/Xft
 ./usr/X11R6/include/X11/Xft/Xft.h
 ./usr/X11R6/include/X11/Xft/XftFreetype.h
-./usr/X11R6/include/X11/extensions/xf86misc.h
-./usr/X11R6/include/X11/extensions/xf86mscstr.h
-./usr/X11R6/include/X11/extensions/xf86vmode.h
-./usr/X11R6/include/X11/extensions/xf86vmstr.h
 ./usr/X11R6/include/freetype2
 ./usr/X11R6/include/freetype2/freetype
 ./usr/X11R6/include/freetype2/freetype/cache
@@ -395,8 +391,6 @@
 ./usr/X11R6/lib/libXrender.so.1.1
 ./usr/X11R6/lib/libXt.so.6.0
 ./usr/X11R6/lib/libXtst.so.6.1
-./usr/X11R6/lib/libXxf86misc.a
-./usr/X11R6/lib/libXxf86vm.a
 ./usr/X11R6/lib/libdps.so.1.0
 ./usr/X11R6/lib/libdpstk.so.1.0
 ./usr/X11R6/lib/libfreetype.a

@@ -1,4 +1,5 @@
 ./etc/X11/XftConfig
+./etc/X11/app-defaults/Xvidtune
 ./usr/X11R6/bin/bdftruncate.pl
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/freetype-config
@@ -7,6 +8,7 @@
 ./usr/X11R6/bin/showrgb
 ./usr/X11R6/bin/ucs2any.pl
 ./usr/X11R6/bin/xftcache
+./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xrandr
 ./usr/X11R6/bin/xsetmode
 ./usr/X11R6/bin/xsetpointer
@@ -17,6 +19,7 @@
 ./usr/X11R6/bin/xtrapproto
 ./usr/X11R6/bin/xtrapreset
 ./usr/X11R6/bin/xtrapstats
+./usr/X11R6/bin/xvidtune
 ./usr/X11R6/include/GL
 ./usr/X11R6/include/GL/GLwDrawA.h
 ./usr/X11R6/include/GL/GLwDrawAP.h
@@ -411,8 +414,10 @@
 ./usr/X11R6/man/cat1/glxinfo.0
 ./usr/X11R6/man/cat1/showrgb.0
 ./usr/X11R6/man/cat1/xftcache.0
+./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xsetmode.0
 ./usr/X11R6/man/cat1/xsetpointer.0
+./usr/X11R6/man/cat1/xvidtune.0
 ./usr/X11R6/man/cat3/GLwCreateMDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
