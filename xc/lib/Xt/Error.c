@@ -209,11 +209,6 @@ DefaultMsg (String name, String type, String class, String defaultp,
     void (*fn)(_Xconst _XtString))
 {
 #define BIGBUF 1024
-#ifdef notyet /* older versions don't, might want to wait until more do */
-#if defined(__linux__)  || defined(CSRG_BASED) /* everyone else needs to get with the program */
-#define USE_SNPRINTF
-#endif
-#endif
     char buffer[BIGBUF];
     char* message;
     XtGetErrorDatabaseText(name,type,class,defaultp, buffer, BIGBUF);
