@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.61 2001/10/24 13:54:11 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.62 2001/10/24 15:03:28 todd Exp $
 
 
 
@@ -511,6 +511,8 @@ install:: fonts.alias							@@\
 # define CompressAllFonts	NO
 # define InstallFontAliases	InstallFontAliasesNoComment
 # define UseRgbTxt		NO
+# define UseRgb			YES
+# define XdmServersType		ws
 
 # define ServerExtraDefines	-DXFree86Server
 
