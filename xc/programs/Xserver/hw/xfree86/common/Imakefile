@@ -17,7 +17,8 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.125 2000/12/
         KBD = xf86KbdMach
 #endif /* GNUMachArchitecture */
 #else
-# if defined(i386BsdArchitecture) || defined(AlphaBsdArchitecture)
+# if defined(i386BsdArchitecture) || defined(AlphaBsdArchitecture) \
+	|| defined(OpenBSDArchitecture) && defined(PpcArchitecture)
         KBD = xf86KbdBSD
 # else
 #  ifdef LinuxArchitecture
