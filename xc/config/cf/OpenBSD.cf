@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.133 2004/02/28 13:56:40 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.134 2004/04/06 18:26:35 miod Exp $
 
 
 
@@ -765,7 +765,6 @@ install:: fonts.alias							@@\
 # endif
 
 # define ServerExtraDefines	-DXFree86Server
-# define OptimizedCDebugFlags	-O1
 
 # include <xfree86.cf>
 
