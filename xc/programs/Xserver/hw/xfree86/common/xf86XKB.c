@@ -54,7 +54,7 @@ void
 XkbDDXUpdateIndicators(DeviceIntPtr pXDev,CARD32 new)
 {
     CARD32 old;
-#if defined (__sparc__)
+#if defined (__sparc__) && defined(Linux)
     static int kbdSun = -1;
     
     if (kbdSun == -1) {
