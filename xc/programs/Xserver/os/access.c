@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/access.c,v 3.39 2002/01/07 20:38:29 dawes Exp $ */
+/* $XFree86: access.c,v 3.39 2002/01/07 20:38:29 dawes Exp $ */
 
 #ifdef WIN32
 #include <X11/Xwinsock.h>
@@ -1005,6 +1005,37 @@ Bool LocalClient(ClientPtr client)
 	xfree ((char *) from);
     }
     return FALSE;
+}
+
+/*
+ * Return the uid and gid of a connected local client
+ * or the uid/gid for nobody those ids cannot be determinded
+ * 
+ * Used by XShm to test access rights to shared memory segments
+ */
+int
+LocalClientCred(ClientPtr client, int *pUid, int *pGid)
+{
+    int fd;
+    XtransConnInfo ci;
+    uid_t uid;
+    gid_t gid;
+
+    if (client == NULL)
+	return -1;
+    ci = ((OsCommPtr)client->osPrivate)->trans_conn;
+    /* We can only determine peer credentials for Unix domain sockets */
+    if (!_XSERVTransIsLocal(ci)) {
+	return -1;
+    }
+    fd = _XSERVTransGetConnectionNumber(ci);
+    if (getpeereid(fd, &uid, &gid) == -1) 
+	    return -1;
+    if (pUid != NULL)
+	    *pUid = uid;
+    if (pGid != NULL)
+	    *pGid = gid;
+    return 0;
 }
 
 static Bool
