@@ -1,8 +1,8 @@
-XCOMM $OpenBSD: Imakefile,v 1.1 2002/06/05 18:02:09 todd Exp $
+XCOMM $OpenBSD: Imakefile,v 1.2 2002/06/05 18:09:04 todd Exp $
 
 #define PixmapInstall InstallNonExecFileNoClobber
 
-#define PixmapDir	Concat(IncRoot,/pixmaps)
+#define PixmapDir	Concat(IncRoot,/X11/pixmaps)
 
 PixmapInstall(deny-always.xpm,PixmapDir)
 PixmapInstall(deny.xpm,PixmapDir)
