@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.108 2002/09/07 12:58:56 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.109 2002/09/10 21:46:59 todd Exp $
 
 
 
@@ -446,7 +446,7 @@ install:: fonts.alias							@@\
 /* 
  * agpgart support (OpenBSD 3.2 and up) 
  */ 
-# if OSMajorVersion > 3 || (OSMajorVersion == 3 && OSMinorVersion > 0) 
+# if OSMajorVersion > 3 || (OSMajorVersion == 3 && OSMinorVersion > 1)
 #  ifndef HasAgpGart 
 #   define HasAgpGart   YES 
 #  endif 
