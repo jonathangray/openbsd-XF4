@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.4 2002/07/04 18:29:54 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.5 2002/07/04 18:42:52 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -86,7 +86,7 @@ freadline(char *line, size_t size, int fd)
 			return NULL;
 
 		if ((n = read(fd, p, 1)) <= 0) {
-			dprintf("got null line n=%zd state %d\n", n, state);
+			dprintf("got null line n=%ld state %d\n", n, state);
 			XtRemoveInput(inputId);
 			return NULL;
 		}
