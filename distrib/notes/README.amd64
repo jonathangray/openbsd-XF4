@@ -1,8 +1,45 @@
 Post-installation instructions for XFree86 on OpenBSD/amd64
 -----------------------------------------------------------
 
-For now, there is no X server for amd64.  Only userland X.
+1. Make sure your system has support for X enabled:
+
+   You must have 'option APERTURE' in your kernel configuration and
+   uncomment the line that says:  
+
+      machdep.allowaperture=2
+
+   in /etc/sysctl.conf.  See xf86(4) for more details about security
+   issues related to this.  After changing this variable in sysctl.conf,
+   you will need to reboot for the change to take effect.
+
+2. Find out about your hardware:
+
+   Find out what chipset is used by your video board.  Write this
+   information down. The dmesg(8) command output is useful.
+
+   What kind of mouse do you have and which port is it connected to?
+   The 2 most common cases are a PS/2 style mouse or a USB mouse , for
+   which OpenBSD uses the wsmouse(4) protocol with the /dev/wsmouse
+   device.
+
+3. Create the XF86Config(5) file for your server.
+
+   Run XFree86 -configure as root and move the resulting
+   XF86Config.new file to /etc/X11/XF86Config. 
+   If needed edit it to adust the keyboard and mouse settings. 
+
+4. Start either xdm(1) or startx(1).
+
+   a. Start xdm(1), the X display manager by activating the xdm_flags option
+      in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You do not need to disable
+      the console getty.
+
+   b. Start startx(1) from a console shell.  It is the X script that starts
+      the X server and a few X applications, including a window manager.
+ 
+5. With XFree86 XFree4, you can use antialiased fonts in some applications. 
+   visit http://www.openbsd.org/faq/truetype.html for more information. 
 
 problem_blurb
 
-$OpenBSD: README.amd64,v 1.1 2004/02/22 23:38:31 matthieu Exp $
+$OpenBSD: README.amd64,v 1.2 2004/02/28 13:57:36 matthieu Exp $
