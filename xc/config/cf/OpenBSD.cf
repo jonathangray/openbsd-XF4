@@ -86,6 +86,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # endif
 #endif
 
+/* OpenBSD >= 2.8 has setusercontext() */
+#if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion > 7)
+#define HasSetUserContext	YES
+#endif
+
 /*
  * Compiler Features
  */
