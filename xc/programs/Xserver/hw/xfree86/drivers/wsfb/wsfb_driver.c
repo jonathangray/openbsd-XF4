@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.5 2002/04/20 17:00:25 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.6 2002/04/29 22:47:56 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -416,9 +416,9 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	}
 
 	/* Handle depth */
-	default_depth = fPtr->info.depth;
+	default_depth = fPtr->info.depth <= 24 ? fPtr->info.depth : 24;
 	if (!xf86SetDepthBpp(pScrn, default_depth, default_depth, 
-			     default_depth, Support24bppFb | Support32bppFb))
+			     fPtr->info.depth, Support24bppFb | Support32bppFb))
 		return FALSE;
 	xf86PrintDepthBpp(pScrn);
 	
@@ -789,7 +789,7 @@ WsfbLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 	cmap.red   = red;
 	cmap.green = green;
 	cmap.blue  = blue;
-	ErrorF("load palette %d\n", numColors);
+
 	if (numColors == 1) {
 		/* Optimisation */
 		cmap.index = indices[0];
