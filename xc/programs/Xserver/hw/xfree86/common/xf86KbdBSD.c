@@ -1185,7 +1185,7 @@ static CARD8 wsSunMap[] = {
 	/* 0x79 */ KEY_Space,
 	/* 0x7a */ KEY_RMeta,
 	/* 0x7b */ KEY_PgDown,
-	/* 0x7c */ KEY_NOTUSED,
+	/* 0x7c */ KEY_Less,		/* < > on some keyboards */
 	/* 0x7d */ KEY_KP_Plus,
 	/* 0x7e */ KEY_NOTUSED,
 	/* 0x7f */ KEY_NOTUSED
@@ -1216,6 +1216,7 @@ WSKbdToKeycode(int keycode)
 		else 
 			return wsAdbMap[keycode];
 	case WSKBD_TYPE_SUN:
+	case WSKBD_TYPE_SUN5:
 		if (keycode < 0 || keycode >= WS_SUN_MAP_SIZE)
 			return KEY_UNKNOWN;
 		else
