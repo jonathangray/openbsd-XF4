@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.113 2002/10/24 20:01:59 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.114 2002/11/11 19:04:20 matthieu Exp $
 
 
 
@@ -379,7 +379,7 @@ install:: fonts.alias							@@\
 
 #ifdef AlphaArchitecture
 
-# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
 #  define HasWeakSymbols		YES
 # endif
 
@@ -414,6 +414,7 @@ install:: fonts.alias							@@\
 #   ifndef XFree86ConsoleDefines
 #     define XFree86ConsoleDefines -DWSCONS_SUPPORT -DPCVT_SUPPORT
 #   endif
+#   define UseMatroxHal		NO	/* Matrox HAL is i386 only */
 
 # endif /* XF86Server */
 
@@ -720,7 +721,7 @@ install:: fonts.alias							@@\
 #   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
 # endif
 
-# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
 #  define HasWeakSymbols	YES
 # endif
 # ifndef GccWarningOptions
@@ -834,7 +835,7 @@ install:: fonts.alias							@@\
 
 #ifdef Sparc64Architecture
 
-# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
 #  define HasWeakSymbols	YES
 # endif
 
