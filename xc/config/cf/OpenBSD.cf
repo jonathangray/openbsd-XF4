@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.143 2005/01/26 18:42:00 miod Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.144 2005/01/29 15:54:46 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -857,18 +857,17 @@ install:: fonts.alias							@@\
 #   endif
 #   define XF86OSCardDrivers	wsfb
 #   ifndef XF86CardDrivers
-#    define XF86CardDrivers	ati mga glint s3virge sis savage\
+#    ifdef ZaurusArchitecture
+#     define XF86CardDrivers	XF86OSCardDrivers
+#    else
+#     define XF86CardDrivers	ati mga glint s3virge sis savage\
 				trident chips tdfx \
 				DevelDrivers vga \
 				XF86OSCardDrivers XF86ExtraCardDrivers
+#    endif
 #   endif
 #   ifndef DevelDrivers
 #    define DevelDrivers nv
-#   endif
-
-    /* Support for USB Mices */
-#   ifndef UsbMouseSupport
-#     define UsbMouseSupport		YES
 #   endif
 
 # endif /* XorgServer */
