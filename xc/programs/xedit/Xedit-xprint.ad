@@ -246,7 +246,7 @@ c<Key>R:	no-op(r)\n\
 m<Key>I:	no-op(r)\n\
 c<Key>G:	cancel-find-file()\n\
 <Key>Return:	load-file()\n\
-<Key>P:	        print-file()\n\
+c<Key>P:	print-file()\n\
 <Key>Tab:	file-completion(h)\n\
 <Key>Escape:	cancel-find-file()\n\
 <Enter>:	no-op()\n\
