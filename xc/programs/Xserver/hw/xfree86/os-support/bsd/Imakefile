@@ -78,6 +78,9 @@ SUBDIRS = libusb
 #if defined(NetBSDArchitecture) && defined(i386Architecture)
 APMSRC = bsd_apm.c
 APMOBJ = bsd_apm.o
+#elif defined(OpenBSDArchitecture) && defined(i386Architecture)
+APMSRC = bsd_kqueue_apm.c
+APMOBJ = bsd_kqueue_apm.o
 #else
 APMSRC = pm_noop.c
 APMOBJ = pm_noop.o
