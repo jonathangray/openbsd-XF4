@@ -1,9 +1,9 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.68 2002/01/19 10:44:22 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.69 2002/01/19 15:45:31 matthieu Exp $
 
 
 
 
-XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.54 2001/04/22 16:28:18 herrb Exp $
+XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.66 2002/01/03 16:33:49 tsi Exp $
 XCOMM
 
 #ifndef OSName
@@ -58,6 +58,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasShm          	YES
 #define HasWChar32		YES
 #define HasMkstemp		YES
+#define HasSetProcTitle		YES
 #define HasZlib			YES
 #ifndef HasKrbIV
 #define HasKrbIV		YES
@@ -93,15 +94,29 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasSetUserContext	YES
 #endif
 
-/* OpenBSD after 2.9 has BSD authentication -- kludged for now */
-#define HasBSDAuth		YES
+/* OpenBSD after 2.9 has BSD authentication */
+#if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 9)
+# define HasBSDAuth		YES
+#endif
 
-/* OpenBSD 3.0 has libusb */
-#define HasLibUsb		YES
-/* OpenBSD > 3.0 has libusbhid */
-#ifndef HasLibUsbHid
-# define HasLibUsbHid		YES
-# define UsbHidLib		-lusbhid
+/* OpenBSD 3.0 has APM with kqueue interface */
+#if OSMajorVersion >= 3
+# define HasApmKqueue		YES
+#endif
+
+/* OpenBSD 3.0 has libusb, next versions have libusbhid */
+#if OSMajorVersion >= 3 
+# define HasLibUsb		YES
+# ifndef HasLibUsbHid
+#  /* if OSMajorVersion == 3 && OsMinorVersion > 0 || OSMajorVersion > 3 */
+#  if 1
+#   define HasLibUsbHid		YES
+#   define UsbHidLib 		-lusbhid
+#  else
+#   define HasLibUsbHid		NO
+#   define UsbHidLib		-lusb
+#  endif
+# endif
 #endif
 
 /*
@@ -133,7 +148,8 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define DefaultCCOptions 	/**/
 #else
 #  ifdef  PpcArchitecture
-#    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm GccWarningOptions
+#    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm \
+				GccWarningOptions
 #  else
 #    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
 #  endif
@@ -157,6 +173,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define	AdmDir			/var/log
 
 #define HasFlex			YES
+
+/* OpenBSD doesn't have gperf in the base install */
+#define DontRebuildGperfOutput	YES
 
 /*
  * Make & install Features
@@ -340,6 +359,7 @@ install:: fonts.alias							@@\
 # define HasWeakSymbols		NO
 # define UseElfFormat		YES
 
+/* XXX Why ?? */
 # ifdef XnestServer
 #  undef XnestServer
 # endif
@@ -348,6 +368,13 @@ install:: fonts.alias							@@\
 #  undef XVirtualFramebufferServer
 # endif
 # define XVirtualFramebufferServer	NO
+
+# if (OSMajorVersion >= 3)
+#  define UseElfFormat		YES
+# else
+#  define HasSharedLibraries	NO
+#  define SharedLibXThrStub	NO
+# endif
 
 # ifndef XF86Server
 #  define XF86Server		NO
@@ -900,11 +927,17 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef HasDlopen
-#  define HasDlopen		YES
+# define HasDlopen		YES
 #endif
 
 #ifndef DlLibrary
-#  define DlLibrary		/**/
+/* # if (OSMajorVersion < 3 || OSMajorVersion == 3 && OsMinorVersion == 0)\
+    && UseElfFormat */
+# if 0
+#  define DlLibrary -ldl
+# else
+#  define DlLibrary /**/
+# endif
 #endif
 
 #  if !defined(GccWarningOptions)
