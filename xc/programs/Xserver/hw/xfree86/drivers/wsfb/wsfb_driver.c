@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.18 2003/04/02 16:42:13 jason Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.19 2003/04/27 16:42:32 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -70,6 +70,8 @@
 #ifndef XFree86LOADER
 #include <sys/mman.h>
 #endif
+
+extern int priv_open_device(const char *);
 
 #define WSFB_DEFAULT_DEV "/dev/ttyC0"
 
@@ -233,9 +235,11 @@ typedef struct {
 	unsigned char		saved_green[256];
 	unsigned char		saved_blue[256];
 
+#ifdef XFreeXDGA
 	/* DGA info */
 	DGAModePtr		pDGAMode;
 	int			nDGAMode;
+#endif
 	OptionInfoPtr		Options;
 } WsfbRec, *WsfbPtr;
 
@@ -791,8 +795,13 @@ WsfbCloseScreen(int scrnIndex, ScreenPtr pScreen)
 	}
 	if (fPtr->shadowmem)
 		xfree(fPtr->shadowmem);
-	if (fPtr->pDGAMode)
+#ifdef XFreeXDGA
+	if (fPtr->pDGAMode) {
 		xfree(fPtr->pDGAMode);
+		fPtr->pDGAMode = NULL;
+		fPtr->nDGAMode = 0;
+	}
+#endif
 	pScrn->vtSema = FALSE;
 
 	/* unwrap CloseScreen */
@@ -983,6 +992,7 @@ WsfbRestore(ScrnInfoPtr pScrn)
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 			   "error setting text mode %s\n", strerror(errno));
 	}
+	TRACE_EXIT("WsfbRestore");
 }
 
 #ifdef XFreeXDGA
