@@ -93,25 +93,25 @@ array set FilePermsXKB {
 }
 
 array set FilePermsReadMe {
-	lib/X11/doc/README.DECtga		444
-	lib/X11/doc/README.MGA			444
-	lib/X11/doc/README.Mach32		444
-	lib/X11/doc/README.Mach64		444
-	lib/X11/doc/README.NVIDIA		444
-	lib/X11/doc/README.Oak			444
-	lib/X11/doc/README.P9000		444
-	lib/X11/doc/README.S3			444
-	lib/X11/doc/README.S3V			444
-	lib/X11/doc/README.SiS			444
-	lib/X11/doc/README.Video7		444
-	lib/X11/doc/README.W32			444
-	lib/X11/doc/README.WstDig		444
-	lib/X11/doc/README.agx			444
-	lib/X11/doc/README.ark			444
-	lib/X11/doc/README.ati			444
-	lib/X11/doc/README.chips		444
-	lib/X11/doc/README.cirrus		444
-	lib/X11/doc/README.trident		444
-	lib/X11/doc/README.tseng		444
+	lib/X11/doc/XFree86-3.3.x/README.DECtga		444
+	lib/X11/doc/XFree86-3.3.x/README.MGA			444
+	lib/X11/doc/XFree86-3.3.x/README.Mach32		444
+	lib/X11/doc/XFree86-3.3.x/README.Mach64		444
+	lib/X11/doc/XFree86-3.3.x/README.NVIDIA		444
+	lib/X11/doc/XFree86-3.3.x/README.Oak			444
+	lib/X11/doc/XFree86-3.3.x/README.P9000		444
+	lib/X11/doc/XFree86-3.3.x/README.S3			444
+	lib/X11/doc/XFree86-3.3.x/README.S3V			444
+	lib/X11/doc/XFree86-3.3.x/README.SiS			444
+	lib/X11/doc/XFree86-3.3.x/README.Video7		444
+	lib/X11/doc/XFree86-3.3.x/README.W32			444
+	lib/X11/doc/XFree86-3.3.x/README.WstDig		444
+	lib/X11/doc/XFree86-3.3.x/README.agx			444
+	lib/X11/doc/XFree86-3.3.x/README.ark			444
+	lib/X11/doc/XFree86-3.3.x/README.ati			444
+	lib/X11/doc/XFree86-3.3.x/README.chips		444
+	lib/X11/doc/XFree86-3.3.x/README.cirrus		444
+	lib/X11/doc/XFree86-3.3.x/README.trident		444
+	lib/X11/doc/XFree86-3.3.x/README.tseng		444
 }
 
