@@ -40,6 +40,9 @@ from The Open Group.
 #include <X11/Xfuncs.h>
 #include <stdio.h>
 #include <signal.h>
+#ifdef X_NOT_POSIX
+#include <setjmp.h>
+#endif
 #include <ctype.h>
 #include <X11/Xauth.h>
 #include <X11/Xmu/Error.h>
@@ -539,6 +542,9 @@ change_host(Display *dpy, char *name, Bool add)
  * be found.
  */
 
+#ifdef X_NOT_POSIX
+jmp_buf env;
+#endif
 
 static char *
 get_hostname(XHostAddress *ha)
@@ -559,7 +565,9 @@ get_hostname(XHostAddress *ha)
     char *kname;
     static char kname_out[255];
 #endif
+#ifndef X_NOT_POSIX
     struct sigaction sa;
+#endif
 
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(AMTCPCONN)
     if (ha->family == FamilyInternet) {
@@ -575,12 +583,22 @@ get_hostname(XHostAddress *ha)
 	   gethostbyaddr will continue after a signal, so we have to
 	   jump out of it. 
 	   */
+#ifndef X_NOT_POSIX
 	memset(&sa, 0, sizeof sa);
 	sa.sa_handler = nameserver_lost;
 	sa.sa_flags = 0;	/* don't restart syscalls */
 	sigaction(SIGALRM, &sa, NULL);
+#else
+	signal(SIGALRM, nameserver_lost);
+#endif
 	alarm(4);
-	hp = gethostbyaddr (ha->address, ha->length, AF_INET);
+#ifdef X_NOT_POSIX
+	if (setjmp(env) == 0) {
+#endif
+	    hp = gethostbyaddr (ha->address, ha->length, AF_INET);
+#ifdef X_NOT_POSIX
+	}
+#endif
 	alarm(0);
 	if (hp)
 	    return (hp->h_name);
@@ -654,10 +672,11 @@ static signal_t
 nameserver_lost(int sig)
 {
     nameserver_timedout = 1;
-    /* not needed anymore - stuck syscalls will not be restarted 
-       after signal delivery 
-       longjmp(env, -1);
-    */
+#ifdef X_NOT_POSIX
+    /* not needed with POSIX signals - stuck syscalls will not 
+       be restarted after signal delivery */
+    longjmp(env, -1);
+#endif
 }
 
 /*
