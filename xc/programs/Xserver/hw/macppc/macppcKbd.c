@@ -1,4 +1,4 @@
-/* $OpenBSD: macppcKbd.c,v 1.3 2001/09/09 14:04:30 matthieu Exp $ */
+/* $OpenBSD: macppcKbd.c,v 1.4 2001/09/29 14:24:20 matthieu Exp $ */
 
 
 
@@ -50,17 +50,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "keysym.h"
 #include "mi.h"
 #include <stdio.h>
-#if 0 /* XXX */
-#include "Sunkeysym.h"
-
-#define SUN_LED_MASK	0x0f
-#endif /* 0 XXX */
 #define MIN_KEYCODE	8	/* necessary to avoid the mouse buttons */ /* XXX */
 #define MAX_KEYCODE	255	/* limited by the protocol */ /* XXX */
-#if 0 /* XXX */
-#ifndef KB_SUN4
-#define KB_SUN4		4
-#endif
 
 #define AUTOREPEAT_INITIATE	200
 #define AUTOREPEAT_DELAY	50
@@ -124,28 +115,6 @@ sunKbdWait(void)
 static void 
 SetLights (KeybdCtrl *ctrl, int fd)
 {
-#ifdef KIOCSLED
-    static unsigned char led_tab[16] = {
-	0,
-	LED_NUM_LOCK,
-	LED_SCROLL_LOCK,
-	LED_SCROLL_LOCK | LED_NUM_LOCK,
-	LED_COMPOSE,
-	LED_COMPOSE | LED_NUM_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK | LED_NUM_LOCK,
-	LED_CAPS_LOCK,
-	LED_CAPS_LOCK | LED_NUM_LOCK,
-	LED_CAPS_LOCK | LED_SCROLL_LOCK,
-	LED_CAPS_LOCK | LED_SCROLL_LOCK | LED_NUM_LOCK,
-	LED_CAPS_LOCK | LED_COMPOSE,
-	LED_CAPS_LOCK | LED_COMPOSE | LED_NUM_LOCK,
-	LED_CAPS_LOCK | LED_COMPOSE | LED_SCROLL_LOCK,
-	LED_CAPS_LOCK | LED_COMPOSE | LED_SCROLL_LOCK | LED_NUM_LOCK
-    };
-    if (ioctl (fd, KIOCSLED, (caddr_t)&led_tab[ctrl->leds & 0x0f]) == -1)
-	Error("Failed to set keyboard lights");
-#endif
 }
 
 
