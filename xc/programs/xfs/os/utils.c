@@ -519,7 +519,6 @@ SetUserId(void)
     }
 }
 
-
 void
 SetDaemonState(void)
 {
