@@ -15,9 +15,7 @@ XCOMM Define these now or down further below, see below for explaination.
 XCOMM  #define CPPCompiler
 #define XpmLibrary	
 XCOMM  #define XmLibrary
-#ifdef HasPosixThreads
 #define GLLibrary
-#endif
 XCOMM  #define TtfLibrary
 XCOMM  #define GlttLibrary
 XCOMM  #define DtSaverLibrary
@@ -138,7 +136,6 @@ XCOMM remove the 'XCOMM  ' from the next line.
 XCOMM  #define GLLibrary
 
 #ifdef GLLibrary
-#include <Threads.tmpl>
 GLDEF = -DUSE_GL
 
 XCOMM If you get an error "Cannot find GL/gl.h" while compiling, set
