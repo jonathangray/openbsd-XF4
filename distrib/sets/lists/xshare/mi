@@ -483,6 +483,7 @@
 ./usr/X11R6/include/X11/Xdmcp.h
 ./usr/X11R6/include/X11/Xft
 ./usr/X11R6/include/X11/Xft/Xft.h
+./usr/X11R6/include/X11/Xft/XftFreetype.h
 ./usr/X11R6/include/X11/Xfuncproto.h
 ./usr/X11R6/include/X11/Xfuncs.h
 ./usr/X11R6/include/X11/Xlib.h
@@ -2131,6 +2132,7 @@
 ./usr/X11R6/lib/X11/doc/html/xwd.1.html
 ./usr/X11R6/lib/X11/doc/html/xwininfo.1.html
 ./usr/X11R6/lib/X11/doc/html/xwud.1.html
+./usr/X11R6/lib/X11/doc/Versions
 ./usr/X11R6/lib/X11/locale
 ./usr/X11R6/lib/X11/locale/C
 ./usr/X11R6/lib/X11/locale/C/XLC_LOCALE
