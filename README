@@ -18,7 +18,7 @@ shadow tree in /obj/XF4 do:
 Don't forget to update the shadow tree each time something gets added
 in /source/XF4. 
 
-There a script to remove dead links from the shadow tree when stuff
+There is a script to remove dead links from the shadow tree when stuff
 gets removed from /source/XF4: xc/config/utils/cleanlinks.sh (to be
 run from the top of the shadow tree). 
 
@@ -77,7 +77,7 @@ o How to build something with debug information?
 
 The /usr/X11R6/bin/makeg command calls make with proper arguments to
 build object files and executables with -g. 
-It's not reasonable to use it on the whole tree. It will take
+It's not reasonable to use it on the whole tree because it will take
 gigabytes of disk space and memory. 
 
 Use it in selected directories after a regular build by doing:
@@ -101,7 +101,7 @@ o Where to set variables?
 
 Most imake configuration files set variables only if they were not
 previously set in host.def.  So, when hacking on X, you can modify the
-waste majority of imake's configuration variables in
+vaste majority of imake's configuration variables in
 xc/config/cf/host.def.
 
 Only some of them require direct modification in xc/config/cf/OpenBSD.cf or
@@ -155,7 +155,7 @@ Use the following host.def file:
 ---Cut here---
 
 The host.def file is supposed to be in xc/config/cf during
-build. There are  several ways to achieve that: 
+build. There are several ways to achieve that: 
 
 - if you're using the Makefile in XF4 copy it to
   xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-xxxx, where xxx
@@ -233,7 +233,7 @@ is equivalent to:
 
 which is generally not what you want. 
 
-o Other tricks abouts OpenBSD.cf
+o Other tricks about OpenBSD.cf
   ------------------------------
 
 - Most of the server build configuration is controlled by xfree86.cf,
@@ -296,7 +296,7 @@ and calls cpp on it, passing all -D and -I options from imake to cpp.
 Imake.tmpl is the template Makefile and it will include all other
 needed configuration files. 
 
-In imake configuration files, you'll find two kind of things:
+In imake configuration files, you'll find two kinds of things:
 definition of cpp macros and actual make variable definitions or
 rules. 
 
@@ -362,7 +362,7 @@ and object files, and use the ComplexProgramTarget() macro to specify
 the name of the executable and manual page to install. See
 xc/programs/xlogo/Imakefile for an example.
 
-The following make variables alter the behaviuour of the compilation
+The following make variables alter the behavior of the compilation
 rules: 
 
 DEFINES holds extra -D and -U options to pass to CPP 
@@ -401,4 +401,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.1 2001/10/25 18:59:37 matthieu Exp $
+$Id: README,v 1.2 2001/11/28 07:29:48 matthieu Exp $
