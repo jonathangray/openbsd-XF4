@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.4 2001/04/12 21:26:42 todd Exp $
+# $OpenBSD: Makefile,v 1.5 2001/04/13 05:39:31 todd Exp $
 
 # Various list maintenance functions
 
@@ -18,8 +18,8 @@ sort:
 		mv $$f.tmp $$f; \
 	done;
 
-archs  = powerpc sparc alpha i386 mac68k
-#archs+= sun3 mac68k mvme68k hp300
+archs  = powerpc sparc alpha i386 mac68k mvme68k
+#archs+= sun3 mac68k hp300
 		
 mdtomi:
 	@echo "Checking for common md file lines for migration to mi files:"
@@ -50,7 +50,7 @@ mdtomi:
 	done; rm -rf $$dir
 
 dupes:
-	@for arch in powerpc sparc alpha i386; do \
+	@for arch in ${archs}; do \
 		echo "===> $$arch"; \
 		cat */md.$$arch */mi | sort | uniq -d; \
 	done
