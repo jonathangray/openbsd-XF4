@@ -1,0 +1,11 @@
+/*
+ * Host.def for building OpenBSD bindists
+ * $OpenBSD: host.def,v 1.1 2001/10/24 14:01:22 todd Exp $
+ * $XFree86$
+ */
+
+#define InstallEmptyHostDef
+
+#define ForceNormalLib		YES
+#define BuildFonts		NO
+
