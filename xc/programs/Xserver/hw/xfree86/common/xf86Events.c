@@ -403,8 +403,8 @@ xf86PostKbdEvent(unsigned key)
     case 0x36:
 	return;
     default:
-      xf86MsgVerb(X_INFO, 4, "Unreported Prefix0 scancode: 0x%02x\n",
-		  scanCode);
+	    /* xf86MsgVerb(X_INFO, 4, "Unreported Prefix0 scancode: 0x%02x\n",
+	       scanCode); */
       /*
        * "Internet" keyboards are generating lots of new codes.  Let them
        * pass.  There is little consistency between them, so don't bother
