@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.41 2004/02/09 19:26:21 marc Exp $
+#	$OpenBSD: Makefile,v 1.42 2004/03/30 00:21:45 millert Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -119,6 +119,11 @@ release-install:
 	@${INSTALL} ${INSTALL_STRIP} -m 755 -o ${DIROWN} -g ${DIRGRP} \
 		${XHP} ${DESTDIR}/usr/X11R6/bin
 	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
+	@${INSTALL} -d -o ${DIROWN} -g ${DIRGRP} -m ${DIRMODE} \
+		${DESTDIR}/usr/X11R6/man/man1
+	@${INSTALL} -o ${DIROWN} -g ${DIRGRP} -m 644 \
+		${.CURDIR}/xc-mit/server/Xserver.man \
+		${DESTDIR}/usr/X11R6/man/man1/Xserver.1
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 .if ${MACHINE} == macppc || ${MACHINE} == alpha || ${MACHINE} == sparc
