@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.59 2001/10/06 23:01:26 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.60 2001/10/07 09:33:49 matthieu Exp $
 
 
 
@@ -347,10 +347,6 @@ install:: fonts.alias							@@\
 # endif
 # define XVirtualFramebufferServer	NO
 
-# ifndef XF86TGAServer
-#  define XF86TGAServer		YES
-# endif
-
 # ifndef XF86Server
 #  define XF86Server		NO
 # endif
@@ -367,20 +363,6 @@ install:: fonts.alias							@@\
 #   endif
 
 # endif /* XF86Server */
-
-/* Definitions for building the Xtga server */
-# if XF86TGAServer
-#  define BuildDPMSLibrary      NO
-#  define BuildDPMSExt          NO
-#  define BuildXF86DGALibrary   NO
-#  define BuildXF86DGA          NO
-#  define BuildXF86VidModeExt   NO
-#  define BuildXF86DGA          NO
-#  define BuildXInputExt                NO
-#  define OptimizedCDebugFlags   -O2
-#  define ServerOSDefines        -DDDXOSINIT
-#  define ServerExtraDefines     GccGasOption -D_XSERVER64 -DXFree86Server
-# endif
 
 /* FreeType2 don't work on 64bit machines */
 # define BuildFreetype2Library  NO
