@@ -4,7 +4,7 @@ XCOMM platform:  $TOG: linux.cf /main/47 1998/04/17 11:32:51 mgreess
 
 
 
-XCOMM platform:  $XFree86: xc/config/cf/linux.cf,v 3.157 2000/12/14 17:00:46 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/linux.cf,v 3.157.2.1 2001/01/22 19:49:19 dawes Exp $
 
 #ifndef LinuxElfDefault
 # define LinuxElfDefault	YES
@@ -215,6 +215,10 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 # ifndef HasLibCrypt
 #  define HasLibCrypt		NO
 # endif
+#endif
+
+#ifndef InstallXloadSetGID
+#define InstallXloadSetGID	NO
 #endif
 
 /* <linux/input.h> support mainly for USB support */

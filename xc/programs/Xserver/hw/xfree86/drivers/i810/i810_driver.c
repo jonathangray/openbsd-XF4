@@ -25,7 +25,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c,v 1.39 2000/12/02 15:30:42 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c,v 1.39.2.1 2001/02/08 19:31:09 dawes Exp $ */
 
 /*
  * Authors:
@@ -92,7 +92,7 @@ static void I810DisplayPowerManagementSet(ScrnInfoPtr pScrn,
 
 DriverRec I810 = {
    I810_VERSION,
-   "Accelerated driver for Intel i810 cards",
+   I810_DRIVER_NAME,
    I810Identify,
    I810Probe,
    I810AvailableOptions,

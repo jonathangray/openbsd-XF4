@@ -19,7 +19,7 @@
 *   or  in  FAR 52.227-19, as applicable.                       *
 *                                                               *
 *****************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.4 2000/01/22 01:59:03 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.4.2.1 2001/03/09 02:26:52 keithp Exp $ */
 
 /* THIS IS NOT AN X PROJECT TEAM SPECIFICATION */
 
@@ -56,6 +56,11 @@ typedef struct {
 	struct {
 	    Bool shared;
 	} pix;
+#ifdef RENDER
+	struct {
+	    Bool root;
+	} pict;
+#endif
 	char raw_data[4];
     } u;
 } PanoramiXRes;

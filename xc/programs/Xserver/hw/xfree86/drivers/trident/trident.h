@@ -21,7 +21,7 @@
  *
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident.h,v 1.33 2000/12/08 09:05:16 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident.h,v 1.33.2.1 2001/02/10 11:22:10 alanh Exp $ */
 
 #ifndef _TRIDENT_H_
 #define _TRIDENT_H_
@@ -266,8 +266,7 @@ typedef enum {
 #define HAS_DST_TRANS	((pTrident->Chipset == PROVIDIA9682) || \
 			 (pTrident->Chipset == PROVIDIA9685))
 
-#define Is3Dchip	((pTrident->Chipset == CYBER9388) || \
-			 (pTrident->Chipset == CYBER9397) || \
+#define Is3Dchip	((pTrident->Chipset == CYBER9397) || \
 			 (pTrident->Chipset == CYBER9397DVD) || \
 			 (pTrident->Chipset == CYBER9520) || \
 			 (pTrident->Chipset == CYBER9525DVD) || \

@@ -21,7 +21,7 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
-/* $XFree86: xc/lib/Xaw/TextSrc.c,v 1.25 2000/09/26 15:56:55 tsi Exp $ */
+/* $XFree86: xc/lib/Xaw/TextSrc.c,v 1.25.2.1 2001/02/09 20:45:10 paulo Exp $ */
 
 /*
  * Author:  Chris Peterson, MIT X Consortium.
@@ -1022,9 +1022,9 @@ XawTextSourceReplace(Widget w, XawTextPosition left,
 		    XtFree((XtPointer)entity);
 		    if (entity == anchor->entities) {
 			if ((anchor->entities = enext) == NULL) {
+			    eprev = NULL;
 			    anchor = XawTextSourceRemoveAnchor(w, anchor);
 			    entity = anchor ? anchor->entities : NULL;
-			    eprev = NULL;
 			}
 			else
 			    eprev = entity = enext;
@@ -1053,6 +1053,7 @@ XawTextSourceReplace(Widget w, XawTextPosition left,
 		    XtFree((XtPointer)entity);
 		    anchor->cache = NULL;
 		    if (entity == anchor->entities) {
+			eprev = NULL;
 			if ((anchor->entities = enext) == NULL) {
 			    if (i == 0)
 				++i;
@@ -1069,7 +1070,6 @@ XawTextSourceReplace(Widget w, XawTextPosition left,
 				break;
 			    }
 			    anchor = src->textSrc.anchors[i];
-			    eprev = NULL;
 			    entity = anchor->entities;
 			    continue;
 			}

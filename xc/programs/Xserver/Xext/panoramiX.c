@@ -19,7 +19,7 @@
 *   or  in  FAR 52.227-19, as applicable.                       *
 *                                                               *
 *****************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/panoramiX.c,v 3.23 2000/09/26 15:57:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/panoramiX.c,v 3.23.2.1 2001/03/09 02:26:52 keithp Exp $ */
 
 #define NEED_REPLIES
 #include <stdio.h>
@@ -610,6 +610,10 @@ void PanoramiXExtensionInit(int argc, char *argv[])
     ProcVector[X_FreeColors] = PanoramiXFreeColors;
     ProcVector[X_StoreColors] = PanoramiXStoreColors;    
     ProcVector[X_StoreNamedColor] = PanoramiXStoreNamedColor;    
+
+#ifdef RENDER
+    PanoramiXRenderInit ();
+#endif
 
     return;
 }

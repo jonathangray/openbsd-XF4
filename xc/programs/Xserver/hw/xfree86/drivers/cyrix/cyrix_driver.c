@@ -26,7 +26,7 @@
  *          Dirk H. Hohndel (hohndel@suse.de),
  *          Portions: the GGI project & confidential CYRIX databooks.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.14 2000/12/02 15:30:37 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.14.2.1 2001/02/08 19:31:07 dawes Exp $ */
 
 #include "fb.h"
 #include "mibank.h"
@@ -112,7 +112,7 @@ enum GenericTypes {
 
 DriverRec CYRIX = {
     VERSION,
-    "accelerated driver for Cyrix integrated processors",
+    CYRIX_DRIVER_NAME,
     CYRIXIdentify,
     CYRIXProbe,
     CYRIXAvailableOptions,

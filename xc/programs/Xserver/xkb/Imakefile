@@ -1,5 +1,5 @@
 XCOMM $TOG: Imakefile /main/12 1997/07/16 14:51:50 kaleb $
-XCOMM $XFree86: xc/programs/Xserver/xkb/Imakefile,v 3.14 2000/10/20 14:59:09 alanh Exp $
+XCOMM $XFree86: xc/programs/Xserver/xkb/Imakefile,v 3.14.2.1 2001/01/22 19:49:33 dawes Exp $
 #define SGIHyperOpt
 #include <Server.tmpl>
 
@@ -67,6 +67,8 @@ LinkSourceFile(XKBMAlloc.c,$(XLIBSRC))
 LinkSourceFile(XKBAlloc.c,$(XLIBSRC))
 LinkSourceFile(XKBGAlloc.c,$(XLIBSRC))
 
+#if UseConfDirForXkb
 LinkConfDirectory(xkb,.,xkb,.)
+#endif
 
 DependTarget()

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/twm/events.c,v 1.7 2000/10/24 22:45:14 dawes Exp $ */
+/* $XFree86: xc/programs/twm/events.c,v 1.7.2.1 2001/02/28 20:06:22 dawes Exp $ */
 /*****************************************************************************/
 /*
 
@@ -1775,6 +1775,10 @@ HandleButtonPress()
 {
     unsigned int modifier;
     Cursor cur;
+
+    /* too much code relies on this assumption */
+    if (Event.xbutton.button > MAX_BUTTONS)
+	return;
 
     /* pop down the menu, if any */
     if (ActiveMenu != NULL)

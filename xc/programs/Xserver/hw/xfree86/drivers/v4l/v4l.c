@@ -2,7 +2,7 @@
  *  video4linux Xv Driver 
  *  based on Michael Schimek's permedia 2 driver.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/v4l/v4l.c,v 1.19 2000/06/13 02:28:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/v4l/v4l.c,v 1.19.2.1 2001/02/08 19:31:10 dawes Exp $ */
 
 #include "videodev.h"
 #include "xf86.h"
@@ -37,7 +37,7 @@ static OptionInfoPtr V4LAvailableOptions(int chipid, int busid);
 
 DriverRec V4L = {
         40000,
-        "Xv driver for video4linux",
+        "v4l",
         V4LIdentify, /* Identify*/
         V4LProbe, /* Probe */
 	V4LAvailableOptions,

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.42 2000/11/14 18:20:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.42.2.1 2001/02/13 21:06:19 dawes Exp $ */
 
 /*
  *
@@ -1117,7 +1117,7 @@ vgaHWSaveColormap(ScrnInfoPtr scrninfp, vgaRegPtr save)
     } else {
 	/* save the colourmap */
 	hwp->writeDacReadAddr(hwp, 0x02);
-	for (i = 3; i < 768; i++) {
+	for (i = 6; i < 768; i++) {
 	    save->DAC[i] = hwp->readDacData(hwp);
 	    DACDelay(hwp);
 #ifdef DEBUG

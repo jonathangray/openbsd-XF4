@@ -22,7 +22,7 @@ RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
 CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **********************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_2200.c,v 1.12 2000/10/17 21:36:15 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_2200.c,v 1.12.2.1 2001/01/22 19:59:11 dawes Exp $ */
 /*
  * The original Precision Insight driver for
  * XFree86 v.3.3 has been sponsored by Red Hat.
@@ -337,8 +337,8 @@ Neo2200SubsequentScreenToScreenCopyBroken(ScrnInfoPtr pScrn,
     NEOACLPtr nAcl = NEOACLPTR(pScrn);
 
     if ((dstY < srcY) || ((dstY == srcY) && (dstX < srcX))) {
-	if (((dstX < 64) && ((srcX + w) == pScrn->displayWidth)) ||
-	    ((dstX == 0) && (w > (pScrn->displayWidth - 64)))) {
+	if ((((dstX < 64) && ((srcX + w) == pScrn->displayWidth)) ||
+	    ((dstX == 0) && (w > (pScrn->displayWidth - 64)))) && (w > 64)) {
 	    
 	    int srcX1 = srcX + 64;
 	    int dstX1 = dstX + 64;
@@ -368,9 +368,9 @@ Neo2200SubsequentScreenToScreenCopyBroken(ScrnInfoPtr pScrn,
 	    OUTREG(NEOREG_XYEXT, (h<<16) | (w & 0xffff));
 	}
     } else {
-	if ((((dstX + w) > (pScrn->displayWidth - 64)) && (srcX == 0))
+	if (((((dstX + w) > (pScrn->displayWidth - 64)) && (srcX == 0))
 	    || (((dstX + w) == pScrn->displayWidth)
-		&& (w > (pScrn->displayWidth - 64)))) {
+		&& (w > (pScrn->displayWidth - 64)))) && (w > 64)) {
 	    int srcX1, dstX1;
 	    
 	    w -= 64;

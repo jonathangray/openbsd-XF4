@@ -21,7 +21,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
-/* $XFree86: xc/include/Xosdefs.h,v 3.14 1998/12/20 11:56:46 dawes Exp $ */
+/* $XFree86: xc/include/Xosdefs.h,v 3.14.6.1 2001/03/07 16:04:15 dawes Exp $ */
 
 #ifndef _XOSDEFS_H_
 #define _XOSDEFS_H_
@@ -118,8 +118,12 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #ifdef __GNU__
+#ifndef PATH_MAX
 #define PATH_MAX 4096
+#endif
+#ifndef MAXPATHLEN
 #define MAXPATHLEN 4096
+#endif
 #endif
 #endif /* _XOSDEFS_H_ */
 

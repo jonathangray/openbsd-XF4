@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/glyphstr.h,v 1.3 2000/11/20 07:13:13 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/glyphstr.h,v 1.3.2.1 2001/03/09 02:26:51 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -27,6 +27,8 @@
 #define _GLYPHSTR_H_
 
 #include "renderproto.h"
+#include "picture.h"
+#include "screenint.h"
 
 #define GlyphFormat1	0
 #define GlyphFormat4	1

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c,v 1.56 2000/12/06 15:35:07 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c,v 1.56.2.1 2001/02/10 10:23:53 alanh Exp $ */
 /*
  * Copyright (c) 1997-1999 by The XFree86 Project, Inc.
  */
@@ -443,7 +443,8 @@ xf86GetEntityInfo(int entityIndex)
     pEnt->chipset = xf86Entities[entityIndex]->chipset;
     pEnt->resources = xf86Entities[entityIndex]->resources;
     pEnt->driver = xf86Entities[entityIndex]->driver;
-    if (xf86Entities[entityIndex]->devices[0]) {
+    if ( (xf86Entities[entityIndex]->devices) &&
+         (xf86Entities[entityIndex]->devices[0]) ) {
 	for (i = 0; i < xf86Entities[entityIndex]->numInstances; i++)
 	    if (xf86Entities[entityIndex]->devices[i]->screen == 0)
 	        break;
@@ -469,7 +470,8 @@ xf86GetDevFromEntity(int entityIndex, int instance)
     int i;
   
     /* We might not use AddDevtoEntity */
-    if (!xf86Entities[entityIndex]->devices[0])
+    if ( (!xf86Entities[entityIndex]->devices) ||
+         (!xf86Entities[entityIndex]->devices[0]) ) 
 	return NULL;
 
     if (entityIndex >= xf86NumEntities ||

@@ -4,7 +4,7 @@
    Written by Mark Vojkovich (mvojkovi@ucsd.edu)
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.2 1999/03/21 07:35:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.2.4.1 2001/03/09 18:03:53 eich Exp $ */
 
 #include "X.h"
 #include "scrnintstr.h"
@@ -30,8 +30,12 @@ cfb8_16CreateWindow(WindowPtr pWin)
 {
     cfbPrivWin *pPrivWin = cfbGetWindowPrivate(pWin);
 
+    pPrivWin->pRotatedBorder = NullPixmap;
+    pPrivWin->pRotatedBackground = NullPixmap;
     pPrivWin->fastBackground = FALSE;
     pPrivWin->fastBorder = FALSE;
+    pPrivWin->oldRotate.x = 0;
+    pPrivWin->oldRotate.y = 0;
 
     return TRUE;
 }
@@ -126,9 +130,11 @@ cfb8_16ChangeWindowAttributes(
     WindowPtr pWin,
     unsigned long mask
 ){
-    return TRUE;
+    if (pWin->drawable.bitsPerPixel == 16)
+        return cfb16ChangeWindowAttributes(pWin,mask);
+    else
+        return cfbChangeWindowAttributes(pWin,mask);
 }
-
 
 void
 cfb8_16WindowExposures(

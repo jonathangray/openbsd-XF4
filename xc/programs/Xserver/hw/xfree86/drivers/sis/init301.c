@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/init301.c,v 1.3 2000/12/02 01:16:16 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/init301.c,v 1.3.2.1 2001/02/14 19:14:22 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86PciInfo.h"
@@ -1355,7 +1355,7 @@ VOID SetCRT2FIFO(USHORT  Part1Port,ULONG ROMAddr,USHORT ModeNo,ScrnInfoPtr pScrn
   USHORT oldREFIndex,CRT1ModeNo,oldModeIDOffset;
   long int longtemp;
 
-  USHORT LatencyFactor[48]={ 88, 80, 78, 72, 70, 00,        /* 64  bit    BQ=2 */
+  static USHORT LatencyFactor[48]={ 88, 80, 78, 72, 70, 00,        /* 64  bit    BQ=2 */
                            00, 79, 77, 71, 69, 49,          /* 64  bit    BQ=1 */
                            88, 80, 78, 72, 70, 00,          /* 128 bit    BQ=2 */
                            00, 72, 70, 64, 62, 44,          /* 128 bit    BQ=1 */

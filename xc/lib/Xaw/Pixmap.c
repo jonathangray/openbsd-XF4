@@ -25,7 +25,7 @@
  * XFree86 Project.
  */
 
-/* $XFree86: xc/lib/Xaw/Pixmap.c,v 3.15 2000/09/26 15:56:54 tsi Exp $ */
+/* $XFree86: xc/lib/Xaw/Pixmap.c,v 3.15.2.1 2001/02/09 20:45:09 paulo Exp $ */
 
 #include <string.h>
 #include <stdio.h>
@@ -437,7 +437,7 @@ _XawFindCache(XawCache *xaw,
   cache = (XawCache **)bsearch(screen, xaw->elems,
 			       xaw->num_elems, sizeof(XtPointer),
 			       bcmp_long);
-  if (!cache)
+  if (!cache || !(*cache)->num_elems)
     return (NULL);
   if (flags == FIND_SCREEN)
     return (*cache);
@@ -446,7 +446,7 @@ _XawFindCache(XawCache *xaw,
   cache = (XawCache **)bsearch((void *)colormap, (*cache)->elems,
 			       (*cache)->num_elems, sizeof(XtPointer),
 			       bcmp_long);
-  if (!cache)
+  if (!cache || !(*cache)->num_elems)
     return (NULL);
   if (flags == FIND_COLORMAP)
     return (*cache);
@@ -456,7 +456,7 @@ _XawFindCache(XawCache *xaw,
 			       (*cache)->num_elems, sizeof(XtPointer),
 			       bcmp_long);
 
-  if (!cache)
+  if (!cache || !(*cache)->num_elems)
     return (NULL);
   return (*cache);
 }

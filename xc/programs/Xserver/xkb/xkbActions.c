@@ -24,7 +24,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbActions.c,v 3.3 2000/04/04 19:25:23 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbActions.c,v 3.3.2.1 2001/02/09 20:45:15 paulo Exp $ */
 
 #include <stdio.h>
 #include <math.h>
@@ -1318,6 +1318,9 @@ Bool		xiEvent;
 	}
 	else CoreProcessPointerEvent(xE,dev,count);
     }
+    else if (keyEvent)
+	FixKeyState(xE,dev);
+
     xkbi->prev_state= oldState;
     XkbComputeDerivedState(xkbi);
     keyc->prev_state= keyc->state;

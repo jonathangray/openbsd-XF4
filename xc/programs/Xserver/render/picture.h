@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/picture.h,v 1.5 2000/11/21 04:11:42 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/picture.h,v 1.5.2.1 2001/03/09 02:26:51 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *

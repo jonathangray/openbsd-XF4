@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/mipict.h,v 1.4 2000/12/05 03:13:32 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/mipict.h,v 1.4.2.1 2001/03/09 02:26:51 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -25,6 +25,8 @@
 
 #ifndef _MIPICT_H_
 #define _MIPICT_H_
+
+#include "picturestr.h"
 
 int
 miCreatePicture (PicturePtr pPicture);

@@ -16,7 +16,7 @@ static char rcsid[] = "Header: /home/cs/phelps/spine/rman/RCS/rman.c,v 1.144 199
      source interpretation added September 24, 1996
 	renamed PolyglotMan due to lawsuit by Rosetta, Inc. August 8, 1997
 */
-/* $XFree86: xc/extras/rman/rman.c,v 1.12 2000/12/01 18:48:08 dawes Exp $ */
+/* $XFree86: xc/extras/rman/rman.c,v 1.12.2.1 2000/12/21 19:01:07 dawes Exp $ */
 
 
 /* TO DO ****
@@ -474,12 +474,14 @@ manrefextract(char *p)
 {
   char *p0;
   static char *nonhref = "\">'";
+  static char *punct = ".,:;)]}?!";
 
   while (*p==' ') p++;
   if (strincmp(p,"http",4)==0) {
 	href="%s"; manrefname = p;
 	p+=4;
 	while (*p && !isspace(*p) && !strchr(nonhref,*p)) p++;
+	while (strchr(punct, *(p - 1))) p--;
   } else {
 	href = manRef;
 

@@ -5,7 +5,7 @@ XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.86 2000/12/12 17:05:30 dawes Exp $
+XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.86.2.1 2001/01/27 20:08:17 herrb Exp $
 
 /*
  *		   MACHINE-INDEPENDENT RULES; DO NOT MODIFY
@@ -1217,7 +1217,7 @@ InstallManPageLong(file,destdir,file)
 InstallHtmlManPageAliases(file,aliases,$(MANSUFFIX))			@@\
 									@@\
 install.man::								@@\
-	@(TMP=/tmp/tmp.$$$$; \						@@\
+	@(TMP=#tmp.$$$$; \						@@\
 	RemoveFile($${TMP}); \						@@\
 	echo .so `basename destdir`/file.$(MANSUFFIX) > $${TMP}; \	@@\
 	for i in aliases; do (set -x; \					@@\
@@ -1258,7 +1258,7 @@ InstallGenManPageLong(file,destdir,file,suffix)
 InstallHtmlManPageAliases(file,aliases,suffix)				@@\
 									@@\
 install.man::								@@\
-	@(TMP=/tmp/tmp.$$$$; \						@@\
+	@(TMP=#tmp.$$$$; \						@@\
 	RemoveFile($${TMP}); \						@@\
 	echo .so `basename destdir`/file.suffix > $${TMP}; \		@@\
 	for i in aliases; do (set -x; \					@@\

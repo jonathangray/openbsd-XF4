@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/pswfile.c,v 1.4 2000/06/07 21:58:25 tsi Exp $ */
+/* $XFree86: xc/config/pswrap/pswfile.c,v 1.4.2.1 2001/03/01 01:06:17 dawes Exp $ */
 
 #include <stdio.h>
 #include "pswversion.h"
@@ -81,12 +81,11 @@ void InitOFile(void)
 #endif /* __MACH__ */
     printf("#include %s\n", FRIENDSFILE);
     printf("#include <string.h>\n");
-    if (special_h == 0) {
-	printf("#include \"%spsops.h\"\n\n", dpsops ? "d" : "");
-    } else {
+    outlineno += 3;  /* UPDATE this if you add more prolog */
+    if (special_h) {
 	printf("#include \"%s\"\n\n", special_h);
+        outlineno ++;
     }
-    outlineno += 4;  /* UPDATE this if you add more prolog */
     printf("#line 1 \"%s\"\n",ifile);
     outlineno++;
 }

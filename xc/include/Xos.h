@@ -23,7 +23,7 @@ in this Software without prior written authorization from The Open Group.
  * The X Window System is a Trademark of The Open Group.
  *
  */
-/* $XFree86: xc/include/Xos.h,v 3.30 2000/08/10 17:40:27 dawes Exp $ */
+/* $XFree86: xc/include/Xos.h,v 3.30.2.1 2001/02/28 15:59:11 dawes Exp $ */
 
 /* This is a collection of things to try and minimize system dependencies
  * in a "signficant" number of source files.
@@ -149,10 +149,10 @@ extern int sys_nerr;
 #endif /* CSRG_BASED */
 
 /*
- * Get struct timeval
+ * Get struct timeval and struct tm
  */
 
-#ifdef SYSV
+#if defined(SYSV) && !defined(_SEQUENT_)
 
 #ifndef USL
 #include <sys/time.h>
@@ -209,8 +209,7 @@ struct timeval {
 #include <sys/time.h>
 #elif defined(MINIX) || defined(_SEQUENT_) || defined(Lynx)
 #include <time.h>
-#else
-#ifdef __QNX__
+#elif defined (__QNX__)
 typedef unsigned long fd_mask;
 /* Make sure we get 256 bit select masks */
 #define FD_SETSIZE 256
@@ -219,7 +218,7 @@ typedef unsigned long fd_mask;
 #include <time.h>
 #else
 #include <sys/time.h>
-#endif /* QNX */
+#include <time.h>
 #endif /* defined(_POSIX_SOURCE) && defined(SVR4) */
 
 #endif /* SYSV */

@@ -1,6 +1,6 @@
 /*
  *	$XConsortium: util.c /main/33 1996/12/01 23:47:10 swick $
- *	$XFree86: xc/programs/xterm/util.c,v 3.61 2000/12/01 03:27:58 keithp Exp $
+ *	$XFree86: xc/programs/xterm/util.c,v 3.61.2.1 2001/02/28 22:24:54 dawes Exp $
  */
 
 /*
@@ -1721,14 +1721,10 @@ drawXtermText(
 		} else
 #endif
 		{
-		XDrawImageString(screen->display, VWindow(screen), gc,
-			x, y,  (char *)text, len);
-		draw_len = len;
-#if !OPT_WIDE_CHARS
-		/* FIXME: This is rather broken with wide chars. It should
-		 * use XDrawString16 where appropriate.
-		 */
-		if ((flags & (BOLD|BLINK)) && screen->enbolden) {
+		    XDrawImageString(screen->display, VWindow(screen), gc,
+				     x, y,  (char *)text, len);
+		    draw_len = len;
+		    if ((flags & (BOLD|BLINK)) && screen->enbolden) {
 #if OPT_CLIP_BOLD
 			/*
 			 * This special case is a couple of percent slower, but
@@ -1753,8 +1749,7 @@ drawXtermText(
 #if OPT_CLIP_BOLD
 			XSetClipMask(screen->display, gc, None);
 #endif
-		}
-#endif /* !OPT_WIDE_CHARS */
+		    }
 		}
 
 		if ((flags & UNDERLINE) && screen->underline) {

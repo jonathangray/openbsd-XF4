@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/xqueue.c,v 3.19 2000/02/10 22:33:45 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/xqueue.c,v 3.19.2.1 2001/03/06 18:31:48 dawes Exp $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993-1999 by The XFree86 Project, Inc.
@@ -508,6 +508,7 @@ XqueueMousePreInit(InputInfoPtr pInfo, const char *protocol, int flags)
     MouseDevPtr pMse;
     XqInfoPtr pXq;
 
+    pMse = pInfo->private;
     pMse->protocol = protocol;
     xf86Msg(X_CONFIG, "%s: Protocol: %s\n", pInfo->name, protocol);
     pXq = pMse->mousePriv = xnfcalloc(sizeof(XqInfoRec), 1);

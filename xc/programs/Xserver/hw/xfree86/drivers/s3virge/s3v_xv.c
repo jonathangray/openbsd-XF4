@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_xv.c,v 1.2 2000/11/28 20:59:18 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_xv.c,v 1.2.2.1 2001/02/09 03:29:31 dawes Exp $ */
 /*
 Copyright (C) 2000 The XFree86 Project, Inc.  All Rights Reserved.
 
@@ -106,9 +106,9 @@ void S3VInitVideo(ScreenPtr pScreen)
 	(pScrn->bitsPerPixel == 16)
 	) 
        &&
-       ((ps3v->Chipset == S3_ViRGE_DXGX) ||
+       ((ps3v->Chipset == S3_ViRGE_DXGX) /* || */
 	/* S3_ViRGE_GX2_SERIES(ps3v->Chipset) || */
-	(ps3v->Chipset == S3_ViRGE)
+	/* (ps3v->Chipset == S3_ViRGE) */
 	)
        && !ps3v->NoAccel
        )

@@ -1,6 +1,6 @@
 /*
 Copyright (c) 1997 by Mark Leisher
-Copyright (c) 1998-2000 by Juliusz Chroboczek
+Copyright (c) 1998-2001 by Juliusz Chroboczek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.16 2000/11/14 16:54:42 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.16.2.1 2001/02/28 20:15:43 dawes Exp $ */
 
 #ifndef FONT_MODULE
 #include <string.h>
@@ -1004,8 +1004,9 @@ FreeTypeFontGetGlyph(unsigned code, CharInfoPtr *g, TTFFont *font)
   /* Only pass the default glyph if there is no first index */
   if(idx==0 &&
      (code != 0 ||
-      (font->mapping.encoding->first != 0 || 
-       font->mapping.encoding->first_col != 0))) {
+      (font->mapping.encoding &&
+       (font->mapping.encoding->first != 0 || 
+        font->mapping.encoding->first_col != 0)))) {
     *g=0;
     return Successful;
   } else {
@@ -1039,7 +1040,11 @@ FreeTypeFontGetGlyphMetrics(unsigned code, xCharInfo **metrics, TTFFont *font)
 
   idx=ttf_remap(code, &font->mapping);
 
-  if(idx==0 && code!=0) {
+  if(idx==0 && 
+     (code!=0 ||
+      (font->mapping.encoding &&
+       (font->mapping.encoding->first != 0 || 
+        font->mapping.encoding->first_col != 0)))) {
     *metrics=0;
     return Successful;
   } else {
