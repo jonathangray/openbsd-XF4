@@ -130,11 +130,14 @@ DEFINES        = -DXF86CONFIG=\"$(XF86CONFIGFILE)\" $(MODULEDEFINES) \
 #if HasDlopen
 DLLIB = DlLibrary
 #endif
+#ifdef ServerExtraSysLibs
+   EXTRASYSLIBS = ServerExtraSysLibs
+#endif
 
 LOCAL_LIBRARIES = $(XKBUILIB) $(XKBFILELIB) -lxf86config $(XXF86MISCLIB) \
 		  $(XXF86VMLIB) $(XAWLIB) $(XMULIB) $(XTOOLLIB) \
 		  $(XPMLIB) $(EXTRAXAWCLIENTLIBS) $(LOADERLIB) $(DLLIB) \
-		  $(XLIB) $(CURSESLIB) RegexLibrary -lm
+		  $(XLIB) $(CURSESLIB) RegexLibrary $(EXTRASYSLIBS) -lm
 
 NormalProgramTarget($(PROG),$(OBJS),,$(LOCAL_LIBRARIES),)
 InstallProgramWithFlags($(PROG),$(BINDIR),NullParameter)
