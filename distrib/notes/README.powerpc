@@ -1,26 +1,131 @@
 Post-installation instructions for XFree86 on OpenBSD/powerpc
 -------------------------------------------------------------
 
-The Xmacppc server is an unaccelerated, 8 bit color (only) server,
-based on the Xsun code.  It doesn't require any special configuration
-file.
+The XFree86 server is currently known to work on the G4 Macs with ATI
+Rage 128 cards. Other machines are more or less untested.
 
-To select the mode it will be using, you have to use MacOS or the
-OpenFirmware.
+Use xf86config to build a /etc/X11/XF86Config file before starting 
+the server for the first time. Or you can use the sample configuration
+file appended below as a starting point. 
 
-SUPPORTED HARDWARE
+For the Titanium Powerbook G4, you can try the following mode line in
+/etc/X11/XF86Config to match the flat panel resolution:
 
-This server has been tested on iMac, and G4 hardware, with resolutions
-of 1024x768 and 1280x1024.
+Modeline "1152x768" 78.741 1152 1173 1269 1440  768 769 772 800 +HSync +VSync
 
-All 8 bit capable PCI VGA display adapters supported by OpenFirmware
-should work.
+but for now the server crashes the machine. 
 
-Only US keyboards are supported by default.  To use other keymaps, define
-them using xmodmap(1).
+If you're tracking -current and the XFree86 4 server don't work for
+you, you should for now copy the Xmacppc from a former snapshot, as it
+isn't build in parallel with the new one. 
 
-FUTURE WORK
+Future plans:
+-------------
 
-There is ongoing work to get XFree86 4 working on OpenBSD/powerpc on
-PCI VGA boards.  This should allow for higher color depths, acceleration
-and more.
+Test this and solve as much as possible of the problems on various
+powerpc machines.
+
+Build and install the Xmacppc server for machines that don't work
+right now. 
+
+-- Cut Here for a sample /etc/X11/XF86Config ---
+Section "ServerLayout"
+	Identifier     "Sample Config"
+	Screen      0  "Screen0" 0 0
+	InputDevice    "Mouse0" "CorePointer"
+	InputDevice    "Keyboard0" "CoreKeyboard"
+EndSection
+
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/CID/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+EndSection
+
+Section "Module"
+    Load        "dbe"
+    Load        "type1"
+    Load        "freetype"
+    Load        "glx"
+    Load        "extmod"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "keyboard"
+	Option	    "Protocol" "wskbd"
+	Option	    "Device" "/dev/wskbd0"
+	Option	    "XkbRules" "xfree86"
+	Option	    "XkbKeycodes" "wscons(ppc)"
+	Option	    "XkbModel" "macintosh"
+	Option	    "XkbLayout" "us"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Mouse0"
+	Driver      "mouse"
+	Option      "Protocol" "wsmouse"
+	Option      "Device" "/dev/wsmouse0"
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor"
+	VendorName   "Generic"
+	ModelName    "TwentyOneInches"
+# Adujst those to your monitor or it will be destroyed !!
+	HorizSync    31.5-90
+	VertRefresh  50-100
+# 	This mode line can be used on the Ti PBG4
+#	Modeline "1152x768" 78.41 1152 1173 1269 1440 768 769 772 800 +HSync +VSync
+EndSection
+
+Section "Device"
+	### Available Driver options are:-
+        ### Values: <i>: integer, <f>: float, <bool>: "True"/"False",
+        ### <string>: "String", <freq>: "<f> Hz/kHz/MHz"
+        ### [arg]: arg optional
+        #Option     "NoAccel"            	# [<bool>]
+        #Option     "SWcursor"           	# [<bool>]
+        #Option     "Dac6Bit"            	# [<bool>]
+        #Option     "Dac8Bit"            	# [<bool>]
+        #Option     "Display"            	# <str>
+        #Option     "PanelWidth"         	# <i>
+        #Option     "PanelHeight"        	# <i>
+        #Option     "ProgramFPRegs"      	# [<bool>]
+        #Option     "UseFBDev"           	# [<bool>]
+        #Option     "VideoKey"           	# <i>
+        #Option     "ShowCache"          	# [<bool>]
+	Identifier  "Card0"
+	Driver      "ati"
+	VendorName  "ATI"
+	BoardName   "Rage 128 Pro PF"
+	BusID       "PCI:0:16:0"
+EndSection
+
+Section "Screen"
+	Identifier "Screen0"
+	Device     "Card0"
+	Monitor    "Monitor"
+	DefaultDepth 24
+	SubSection "Display"
+		Depth     1
+	EndSubSection
+	SubSection "Display"
+		Depth     4
+	EndSubSection
+	SubSection "Display"
+		Depth     8
+	EndSubSection
+	SubSection "Display"
+		Depth     15
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+	EndSubSection
+EndSection
+--- Cut Here ---
