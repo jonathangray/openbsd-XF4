@@ -152,6 +152,10 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 #   undef __x86_64__
 #   undef amd64
 # endif
+# if defined(__arm__)
+#   define Arm32Architecture
+#   undef __arm__
+# endif
 # if defined(__mc68020__) || defined(mc68020)
 #  define Mc68020Architecture
 #  if defined(amiga)

@@ -189,6 +189,34 @@ extern long __umodsi3(long, long);
 #if defined(__arm__) && defined(__linux__)
 #include <sys/io.h>
 #endif
+#if defined(__arm__) && defined(__OpenBSD__) && defined(__VFP_FP__)
+void __adddf3();
+void __addsf3();
+void __eqdf2();
+void __eqsf2();
+void __extendsfdf2();
+void __fixdfsi();
+void __fixsfsi();
+void __fixunsdfsi();
+void __fixunssfsi();
+void __floatsidf();
+void __floatsisf();
+void __gedf2();
+void __gesf2();
+void __gtdf2();
+void __gtsf2();
+void __ledf2();
+void __lesf2();
+void __ltdf2();
+void __ltsf2();
+void __nedf2();
+void __negdf2();
+void __negsf2();
+void __nesf2();
+void __subdf3();
+void __subsf3();
+void __truncdfsf2();
+#endif
 
 #if defined(__powerpc__) && (defined(Lynx) || defined(linux))
 void _restf14();
@@ -1089,6 +1117,34 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(inb)
     SYMFUNC(inw)
     SYMFUNC(inl)
+#if defined(__OpenBSD__) && defined(__VFP_FP__)
+    SYMFUNC(__adddf3)
+    SYMFUNC(__addsf3)
+    SYMFUNC(__eqdf2)
+    SYMFUNC(__eqsf2)
+    SYMFUNC(__extendsfdf2)
+    SYMFUNC(__fixdfsi)
+    SYMFUNC(__fixsfsi)
+    SYMFUNC(__fixunsdfsi)
+    SYMFUNC(__fixunssfsi)
+    SYMFUNC(__floatsidf)
+    SYMFUNC(__floatsisf)
+    SYMFUNC(__gedf2)
+    SYMFUNC(__gesf2)
+    SYMFUNC(__gtdf2)
+    SYMFUNC(__gtsf2)
+    SYMFUNC(__ledf2)
+    SYMFUNC(__lesf2)
+    SYMFUNC(__ltdf2)
+    SYMFUNC(__ltsf2)
+    SYMFUNC(__nedf2)
+    SYMFUNC(__negdf2)
+    SYMFUNC(__negsf2)
+    SYMFUNC(__nesf2)
+    SYMFUNC(__subdf3)
+    SYMFUNC(__subsf3)
+    SYMFUNC(__truncdfsf2)
+#endif
 #endif
 
 #ifdef __FreeBSD__

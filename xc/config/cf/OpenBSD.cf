@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.135 2004/06/07 20:40:30 mickey Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.136 2004/06/16 16:03:55 todd Exp $
 
 
 
@@ -187,7 +187,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
    /* conform to OpenBSD's habits */
 #  define DefaultCCOptions	$(COPTS)
 #else
-#  ifdef  PpcArchitecture
+#  if defined(PpcArchitecture) || defined(Arm32Architecture)
 #    define DefaultCCOptions	-fsigned-char GccWarningOptions
 #  else
 #    define DefaultCCOptions 	GccWarningOptions
@@ -217,6 +217,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 
 #define XawI18nDefines	-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
+
+#ifdef Arm32Architecture
+#undef StandardDefines
+#define StandardDefines	-DCSRG_BASED -D__arm32__
+#endif /* */
 
 
 #define	AdmDir			/var/log
@@ -825,6 +830,62 @@ install:: fonts.alias							@@\
 
 #endif /* PmaxArchitecture */
 
+/*
+ * Definitions for the ARM architecture 
+ */
+#ifdef Arm32Architecture
+
+# define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+# ifndef XFree86ConsoleDefines
+#   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
+# endif
+
+# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
+#  define HasWeakSymbols	YES
+# endif
+# ifndef GccWarningOptions
+#  if defined(XFree86Devel) && XFree86Devel
+#   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
+			  -Wmissing-prototypes -Wmissing-declarations \
+			  -Wnested-externs
+#  else
+#   define GccWarningOptions -Wall -Wpointer-arith
+#  endif
+# endif
+
+# ifndef XF86Server
+#   define XF86Server		YES
+# endif
+
+/* Definitions for building the X server */
+# if XF86Server
+#   define ServerOSDefines	XFree86ServerOSDefines \
+				-DDDXTIME -DDDXOSINIT
+#   define ServerExtraDefines	GccGasOption XFree86ServerDefines
+#   ifndef DoLoadableServer
+#     define DoLoadableServer	YES
+#   endif
+#   define XF86OSCardDrivers	wsfb
+#   ifndef XF86CardDrivers
+#    define XF86CardDrivers	ati mga glint s3virge sis savage\
+				trident chips tdfx \
+				DevelDrivers vga \
+				XF86OSCardDrivers XF86ExtraCardDrivers
+#   endif
+#   ifndef DevelDrivers 
+#    define DevelDrivers nv
+#   endif
+
+    /* Support for USB Mices */
+#   ifndef UsbMouseSupport
+#     define UsbMouseSupport		YES
+#   endif
+
+# endif /* XF86Server */
+
+# include <xfree86.cf>
+
+#endif /* Arm32Architecture */
 /*
  * Definitions for the PowerPC architecture 
  */

@@ -49,7 +49,8 @@ PCIDRVRSRC = linuxPci.c
 PCIDRVROBJ = linuxPci.o
 
 #elif defined(OpenBSDArchitecture) && \
-	(defined(PpcArchitecture) || \
+	(defined(Arm32Architecture) || \
+	defined(PpcArchitecture) || \
 	defined(AlphaArchitecture) || \
 	defined(HPArchitecture) || \
 	defined(SparcArchitecture) || \
