@@ -100,7 +100,7 @@ XdmAuthenticationAddAuth (name_len, name, data_len, data)
     char    *name, *data;
 {
     Bool    ret;
-    XdmcpUnwrap (data, &privateKey, data, data_len);
+    XdmcpUnwrap (data, (unsigned char *)&privateKey, data, data_len);
     authFromXDMCP = TRUE;
     ret = AddAuthorization (name_len, name, data_len, data);
     authFromXDMCP = FALSE;
@@ -157,7 +157,7 @@ XdmAuthenticationInit (cookie, cookie_len)
     }
     XdmcpGenerateKey (&rho);
     XdmcpRegisterAuthentication (XdmAuthenticationName, XdmAuthenticationNameLen,
-				 &rho,
+				 (unsigned char *)&rho,
 				 sizeof (rho),
 				 XdmAuthenticationValidator,
 				 XdmAuthenticationGenerator,
@@ -406,8 +406,8 @@ XdmCheckCookie (cookie_length, cookie, xclient, reason)
     if (!plain)
 	return (XID) -1;
     for (auth = xdmAuth; auth; auth=auth->next) {
-	XdmcpUnwrap (cookie, &auth->key, plain, cookie_length);
-	if (client = XdmAuthorizationValidate (plain, cookie_length, &auth->rho, xclient, reason))
+	XdmcpUnwrap (cookie, (unsigned char *)&auth->key, plain, cookie_length);
+	if ((client = XdmAuthorizationValidate (plain, cookie_length, &auth->rho, xclient, reason)) != NULL)
 	{
 	    client->next = xdmClients;
 	    xdmClients = client;
@@ -453,8 +453,8 @@ char	*cookie;
     if (!plain)
 	return (XID) -1;
     for (auth = xdmAuth; auth; auth=auth->next) {
-	XdmcpUnwrap (cookie, &auth->key, plain, cookie_length);
-	if (client = XdmAuthorizationValidate (plain, cookie_length, &auth->rho, NULL, NULL))
+	XdmcpUnwrap (cookie, (unsigned char *)&auth->key, plain, cookie_length);
+	if ((client = XdmAuthorizationValidate (plain, cookie_length, &auth->rho, NULL, NULL)) != NULL)
 	{
 	    xfree (client);
 	    xfree (cookie);
