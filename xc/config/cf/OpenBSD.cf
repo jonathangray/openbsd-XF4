@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.129 2004/02/13 22:40:46 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.130 2004/02/14 17:03:55 matthieu Exp $
 
 
 
@@ -188,9 +188,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  define DefaultCCOptions	$(COPTS)
 #else
 #  ifdef  PpcArchitecture
-#    define DefaultCCOptions	-ansi -fsigned-char GccWarningOptions
+#    define DefaultCCOptions	-fsigned-char GccWarningOptions
 #  else
-#    define DefaultCCOptions 	-ansi GccWarningOptions
+#    define DefaultCCOptions 	GccWarningOptions
 #  endif
 #endif
 #endif
@@ -459,14 +459,27 @@ install:: fonts.alias							@@\
  */
 #ifdef HPArchitecture
 
-# ifndef BuildServer
-#  define BuildServer		NO
-# endif
-# define InstallFontAliases	InstallFontAliasesNoComment
+# define XF86Server		YES
+# define HasWeakSymbols		YES
 # define HasSharedLibraries     NO
 # define HasDlopen              NO
 # define BuildGlxExt            NO
 # define BuildGLXLibrary        NO
+
+# define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+
+# if XF86Server
+#   ifndef DoLoadableServer
+#     define DoLoadableServer	NO
+#   endif
+#   define XF86OSCardDrivers	wsfb
+#   define XFree86ConsoleDefines -DWSCONS_SUPPORT
+
+    /* Support for USB Mices */
+#   ifndef UsbMouseSupport
+#     define UsbMouseSupport	YES
+#   endif
+# endif
 
 #include <xfree86.cf>
 
@@ -981,7 +994,7 @@ install:: fonts.alias							@@\
 #if HasWeakSymbols == YES && (OSMajorVersion == 2 && OSMinorVersion >= 6 || OSMajorVersion >= 3)
 #  define HasPosixThreads		YES
 #  define ThreadedX			YES
-#  define SystemMTDefines		/**/
+#  define SystemMTDefines		-D_REENTRANT
 #  define BuildThreadStubLibrary	YES
 #  define NeedUIThrStubs		YES
 #  define ThreadsCompileFlag		-pthread
@@ -1021,6 +1034,18 @@ install:: fonts.alias							@@\
 
 #ifndef BuildScreenSaverLibrary
 # define BuildScreenSaverLibrary	YES
+#endif
+
+#ifndef BuildXInputLib
+# define BuildXInputLib			YES
+#endif
+
+#ifndef BuildXFree86ConfigTools
+# define BuildXFree86ConfigTools	NO
+#endif
+
+#ifndef ForceNormalLib
+# define ForceNormalLib			YES
 #endif
 
 #ifndef CompressAllFonts
