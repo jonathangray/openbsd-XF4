@@ -9,7 +9,6 @@
 ./etc/X11/xdm/xdm-config
 ./usr
 ./usr/X11R6
-./usr/X11R6/.XFree86_Version
 ./usr/X11R6/README
 ./usr/X11R6/bin
 ./usr/X11R6/bin/appres
@@ -110,8 +109,6 @@
 ./usr/X11R6/bin/xrdb
 ./usr/X11R6/bin/xrefresh
 ./usr/X11R6/bin/xset
-./usr/X11R6/bin/xsetmode
-./usr/X11R6/bin/xsetpointer
 ./usr/X11R6/bin/xsetroot
 ./usr/X11R6/bin/xsm
 ./usr/X11R6/bin/xstdcmap
@@ -175,7 +172,6 @@
 ./usr/X11R6/lib/libGLU.a
 ./usr/X11R6/lib/libGLw.a
 ./usr/X11R6/lib/libICE.a
-./usr/X11R6/lib/libPEX5.a
 ./usr/X11R6/lib/libSM.a
 ./usr/X11R6/lib/libX11.a
 ./usr/X11R6/lib/libXIE.a
@@ -186,9 +182,9 @@
 ./usr/X11R6/lib/libXfont.a
 ./usr/X11R6/lib/libXfontcache.a
 ./usr/X11R6/lib/libXft.a
-./usr/X11R6/lib/libXi.a
 ./usr/X11R6/lib/libXinerama.a
 ./usr/X11R6/lib/libXmu.a
+./usr/X11R6/lib/libXmuu.a
 ./usr/X11R6/lib/libXp.a
 ./usr/X11R6/lib/libXpm.a
 ./usr/X11R6/lib/libXrender.a
@@ -205,4 +201,5 @@
 ./usr/X11R6/lib/liboldX.a
 ./usr/X11R6/lib/libpsres.a
 ./usr/X11R6/lib/libxkbfile.a
+./usr/X11R6/lib/libxkbui.a
 ./usr/X11R6/man/whatis.db

@@ -150,12 +150,6 @@
 ./usr/X11R6/include/X11/IntrinsicP.h
 ./usr/X11R6/include/X11/Object.h
 ./usr/X11R6/include/X11/ObjectP.h
-./usr/X11R6/include/X11/PEX5
-./usr/X11R6/include/X11/PEX5/PEX.h
-./usr/X11R6/include/X11/PEX5/PEXlib.h
-./usr/X11R6/include/X11/PEX5/PEXlibint.h
-./usr/X11R6/include/X11/PEX5/PEXproto.h
-./usr/X11R6/include/X11/PEX5/PEXprotost.h
 ./usr/X11R6/include/X11/PM
 ./usr/X11R6/include/X11/PM/PM.h
 ./usr/X11R6/include/X11/PM/PMproto.h
@@ -411,6 +405,7 @@
 ./usr/X11R6/include/X11/extensions/XKBrules.h
 ./usr/X11R6/include/X11/extensions/XKBsrv.h
 ./usr/X11R6/include/X11/extensions/XKBstr.h
+./usr/X11R6/include/X11/extensions/XKBui.h
 ./usr/X11R6/include/X11/extensions/XKM.h
 ./usr/X11R6/include/X11/extensions/XKMformat.h
 ./usr/X11R6/include/X11/extensions/XShm.h
@@ -759,6 +754,9 @@
 ./usr/X11R6/lib/X11/config/xf86.tmpl
 ./usr/X11R6/lib/X11/config/xf86site.def
 ./usr/X11R6/lib/X11/config/xfree86.cf
+./usr/X11R6/lib/X11/etc
+./usr/X11R6/lib/X11/etc/xterm.termcap
+./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/locale
 ./usr/X11R6/lib/X11/locale/C
 ./usr/X11R6/lib/X11/locale/C/XLC_LOCALE
@@ -1012,8 +1010,6 @@
 ./usr/X11R6/man/cat1/xrdb.0
 ./usr/X11R6/man/cat1/xrefresh.0
 ./usr/X11R6/man/cat1/xset.0
-./usr/X11R6/man/cat1/xsetmode.0
-./usr/X11R6/man/cat1/xsetpointer.0
 ./usr/X11R6/man/cat1/xsetroot.0
 ./usr/X11R6/man/cat1/xsm.0
 ./usr/X11R6/man/cat1/xstdcmap.0

@@ -238,6 +238,7 @@
 ./etc/X11/xkb/types/nocancel
 ./etc/X11/xkb/types/pc
 ./etc/X11/xkb/xkbcomp
+./usr/X11R6/.XFree86_Version
 ./usr/X11R6/bin/SuperProbe
 ./usr/X11R6/bin/XF86Setup
 ./usr/X11R6/bin/dga
@@ -250,7 +251,15 @@
 ./usr/X11R6/bin/xf86config3
 ./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xmseconfig
+./usr/X11R6/bin/xsetmode
+./usr/X11R6/bin/xsetpointer
 ./usr/X11R6/bin/xvidtune
+./usr/X11R6/include/X11/PEX5
+./usr/X11R6/include/X11/PEX5/PEX.h
+./usr/X11R6/include/X11/PEX5/PEXlib.h
+./usr/X11R6/include/X11/PEX5/PEXlibint.h
+./usr/X11R6/include/X11/PEX5/PEXproto.h
+./usr/X11R6/include/X11/PEX5/PEXprotost.h
 ./usr/X11R6/include/X11/bitmaps/card.xbm
 ./usr/X11R6/include/X11/bitmaps/down.xbm
 ./usr/X11R6/include/X11/bitmaps/keyboard.xbm
@@ -263,7 +272,6 @@
 ./usr/X11R6/include/X11/bitmaps/taller.xbm
 ./usr/X11R6/include/X11/bitmaps/up.xbm
 ./usr/X11R6/include/X11/bitmaps/wider.xbm
-./usr/X11R6/include/X11/extensions/XKBui.h
 ./usr/X11R6/include/X11/extensions/xf86dga.h
 ./usr/X11R6/include/X11/extensions/xf86dga1.h
 ./usr/X11R6/include/X11/extensions/xf86dga1str.h
@@ -443,6 +451,7 @@
 ./usr/X11R6/lib/libGL.so.1.2
 ./usr/X11R6/lib/libGLU.so.1.3
 ./usr/X11R6/lib/libICE.so.6.3
+./usr/X11R6/lib/libPEX5.a
 ./usr/X11R6/lib/libPEX5.so.6.0
 ./usr/X11R6/lib/libSM.so.6.0
 ./usr/X11R6/lib/libX11.so.6.2
@@ -453,10 +462,10 @@
 ./usr/X11R6/lib/libXext.so.6.4
 ./usr/X11R6/lib/libXfont.so.1.3
 ./usr/X11R6/lib/libXft.so.1.1
+./usr/X11R6/lib/libXi.a
 ./usr/X11R6/lib/libXi.so.6.0
 ./usr/X11R6/lib/libXinerama.so.1.0
 ./usr/X11R6/lib/libXmu.so.6.2
-./usr/X11R6/lib/libXmuu.a
 ./usr/X11R6/lib/libXmuu.so.1.0
 ./usr/X11R6/lib/libXp.so.6.2
 ./usr/X11R6/lib/libXpm.so.4.11
@@ -470,7 +479,6 @@
 ./usr/X11R6/lib/liboldX.so.6.0
 ./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/lib/libxf86config.a
-./usr/X11R6/lib/libxkbui.a
 ./usr/X11R6/man/cat1/SuperProbe.0
 ./usr/X11R6/man/cat1/XF86Setup.0
 ./usr/X11R6/man/cat1/XFree86.0
@@ -484,6 +492,8 @@
 ./usr/X11R6/man/cat1/xf86config3.0
 ./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xmseconfig.0
+./usr/X11R6/man/cat1/xsetmode.0
+./usr/X11R6/man/cat1/xsetpointer.0
 ./usr/X11R6/man/cat1/xvidtune.0
 ./usr/X11R6/man/cat3/XF86DGA.0
 ./usr/X11R6/man/cat3/XF86DGADirectVideo.0
