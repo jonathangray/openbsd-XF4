@@ -1,5 +1,5 @@
 /* $NetBSD: alphaTGA.c,v 1.4 2000/12/19 01:34:05 perseant Exp $ */
-/* $OpenBSD: alphaTGA.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
+/* $OpenBSD: alphaTGA.c,v 1.3 2002/04/06 16:49:31 matthieu Exp $ */
 
 /* $XConsortium: sunCfb.c,v 1.15.1.2 95/01/12 18:54:42 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.2 1995/02/12 02:36:22 dawes Exp $ */
@@ -108,7 +108,6 @@ CGUpdateColormap(ScreenPtr pScreen, int dex, int count,
     alphaCmap.blue = &bmap[dex];
 
 #ifdef USE_WSCONS
-    ErrorF("UpdateColormap(%d %d)\n", dex, count);
     if (ioctl(alphaFbs[pScreen->myNum].fd, 
 	      WSDISPLAYIO_PUTCMAP, &alphaCmap) < 0) {
 	Error("CGUpdateColormap");
