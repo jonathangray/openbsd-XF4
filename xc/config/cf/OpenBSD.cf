@@ -14,6 +14,7 @@ XCOMM
 #define OSTeenyVersion		DefaultOSTeenyVersion
 #endif
 
+
 #ifndef OSVendor
 #define	OSVendor	/**/
 #endif
@@ -55,11 +56,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasKrbIV		YES
 #endif
 #define HasDlopen		YES
-#ifndef PpcArchitecture
-#  define DlLibrary		/**/
-#else 
-#  define DlLibrary		-ldl
-#endif
 #define HasUsableFileMmap	YES
 
 #define HasNCurses		YES
@@ -817,6 +813,12 @@ install:: fonts.alias							@@\
 # else
 #  define OSBinaryType			/**/
 # endif
+#endif
+
+#if !UseElfFormat
+#  define DlLibrary		/**/
+#else 
+#  define DlLibrary		-ldl
 #endif
 
 #  if !defined(GccWarningOptions)
