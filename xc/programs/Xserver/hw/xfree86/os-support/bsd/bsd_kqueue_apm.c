@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kqueue_apm.c,v 1.3 2001/09/30 16:31:49 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kqueue_apm.c,v 1.5 2002/07/30 23:24:32 herrb Exp $ */
 /*
  * Copyright (C) 2001 The XFree86 Project, Inc.  All Rights Reserved.
  * 
@@ -26,7 +26,7 @@
  * or other dealings in this Software without prior written authorization
  * from the XFree86 Project.
  */
-/* $OpenBSD: bsd_kqueue_apm.c,v 1.5 2002/07/30 23:07:42 matthieu Exp $ */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.6 2003/04/01 22:36:52 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"

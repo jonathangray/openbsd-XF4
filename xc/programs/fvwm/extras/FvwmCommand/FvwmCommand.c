@@ -1,4 +1,4 @@
-/* $Id: FvwmCommand.c,v 1.3 2001/06/28 22:32:14 matthieu Exp $
+/* $Id: FvwmCommand.c,v 1.4 2003/04/01 22:36:58 matthieu Exp $
  * $Source: /tmp/OpenBSD-XF4-repo/xc/programs/fvwm/extras/FvwmCommand/FvwmCommand.c,v $
  *
  * Fvwm2 command input interface.

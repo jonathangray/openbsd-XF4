@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.18 2001/11/08 22:33:50 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.19 2002/05/05 18:54:02 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -36,7 +36,6 @@
 #include <sys/utsname.h>
 #include <pwd.h>
 #include <stdlib.h>
-#include <util.h>
 
 static Bool KeepTty = FALSE;
 static int devConsoleFd = -1;
@@ -154,19 +153,18 @@ xf86OpenConsole()
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
     vtmode_t vtmode;
 #endif
-    
+
     if (xf86Info.consoleFd != -1) {
 	    return;
-    }
+    }    
     if (serverGeneration == 1)
     {
-#ifndef __OpenBSD__
 	/* check if we are run with euid==0 */
 	if (geteuid() != 0)
 	{
-	    FatalError("xf86OpenConsole: Server must be suid root.");
+	    FatalError("xf86OpenConsole: Server must be suid root");
 	}
-#endif
+
 	if (!KeepTty)
 	{
 	    /*
@@ -577,11 +575,13 @@ xf86OpenPcvt()
 	    xf86Info.consType = PCVT;
 #ifdef WSCONS_SUPPORT
 	    xf86Msg(X_PROBED,
-			"Using wscons driver in pcvt compatibility mode (version %d.%d)\n",
+		    "Using wscons driver in pcvt compatibility mode "
+		    "(version %d.%d)\n",
+		    pcvt_version.rmajor, pcvt_version.rminor);
 #else
 	    xf86Msg(X_PROBED, "Using pcvt driver (version %d.%d)\n",
+		    pcvt_version.rmajor, pcvt_version.rminor);
 #endif
-		       pcvt_version.rmajor, pcvt_version.rminor);
 	}
 	else
 	{
@@ -735,7 +735,6 @@ xf86UseMsg()
  * if it exists.
  * Otherwise use the real uid.
  */
-
 void
 xf86DropPriv(char *disp)
 {
@@ -757,4 +756,4 @@ xf86DropPriv(char *disp)
 			FatalError("priv_init");
 		}
 	}
-}
+ }

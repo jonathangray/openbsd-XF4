@@ -1,17 +1,17 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_axp.c,v 1.1 2001/02/15 19:34:18 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_axp.c,v 1.2 2002/10/29 23:19:13 herrb Exp $ */
 
 
 
-/* $OpenBSD: bsd_axp.c,v 1.4 2001/06/27 01:48:56 matthieu Exp $ */
+/* $OpenBSD: bsd_axp.c,v 1.5 2003/04/01 22:36:52 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86Axp.h"
+#include <sys/param.h>
 #include "xf86_OSlib.h"
 #include <stdio.h>
-#include <sys/param.h>
 #include <sys/sysctl.h>
 
 axpDevice bsdGetAXP(void);
@@ -46,6 +46,7 @@ bsdGetAXP(void)
 	int i;
 	char sysname[64];
 	size_t len = sizeof(sysname);
+	
 #ifdef __OpenBSD__
 	int mib[3];
 	int error;

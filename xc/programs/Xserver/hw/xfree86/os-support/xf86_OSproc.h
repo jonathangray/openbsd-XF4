@@ -64,7 +64,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSproc.h,v 3.54 2001/11/08 21:49:43 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSproc.h,v 3.55 2002/01/25 21:56:17 tsi Exp $ */
 
 #ifndef _XF86_OSPROC_H
 #define _XF86_OSPROC_H
@@ -96,8 +96,6 @@
 #define VIDMEM_READONLY		0x20	/* read-only mapping
 					 * used when reading BIOS images
 					 * through xf86MapVidMem() */
-#define VIDMEM_TAGINFO		0x40	/* pass PCI Tag information to 
-					   os layer */
 
 /*
  * OS-independent modem state flags for xf86SetSerialModemState() and
@@ -126,7 +124,8 @@ extern void xf86WrapperInit(void);
 
 #define xf86FatalError(a, b) \
 	if (dispatchException & DE_TERMINATE) { \
-		ErrorF(a##"\n", b); \
+		ErrorF(a, b); \
+		ErrorF("\n"); \
 		return; \
 	} else FatalError(a, b)
 
@@ -142,7 +141,7 @@ _XFUNCPROTOBEGIN
 /* public functions */
 extern Bool xf86LinearVidMem(void);
 extern Bool xf86CheckMTRR(int); 
-extern pointer xf86MapVidMem(int, int, unsigned long, unsigned long, ...);
+extern pointer xf86MapVidMem(int, int, unsigned long, unsigned long);
 extern void xf86UnMapVidMem(int, pointer, unsigned long);
 extern void xf86MapReadSideEffects(int, int, pointer, unsigned long);
 extern int xf86ReadBIOS(unsigned long, unsigned long, unsigned char *, int);
@@ -250,7 +249,9 @@ resPtr xf86StdAccResFromOS(resPtr ret);
 /* available to the common layer */
 resPtr xf86BusAccWindowsFromOS(void);
 resPtr xf86PciBusAccWindowsFromOS(void);
+#ifdef INCLUDE_UNUSED
 resPtr xf86IsaBusAccWindowsFromOS(void);
+#endif
 resPtr xf86AccResFromOS(resPtr ret);
 #endif /* NEED_OS_RAC_PROTOS */
 

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.c,v 1.13 2002/03/19 17:58:57 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.c,v 1.20 2003/02/24 20:43:54 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -98,6 +98,9 @@ xf86InitCursor(
     ScreenPriv->EnterVT = pScrn->EnterVT;
     ScreenPriv->LeaveVT = pScrn->LeaveVT;
     ScreenPriv->SetDGAMode = pScrn->SetDGAMode;
+    
+    ScreenPriv->ForceHWCursorCount = 0;
+    ScreenPriv->HWCursorForced = FALSE;
 
     if (pScrn->SwitchMode)
 	pScrn->SwitchMode = xf86CursorSwitchMode;
@@ -119,6 +122,9 @@ xf86CursorCloseScreen(int i, ScreenPtr pScreen)
     xf86CursorScreenPtr ScreenPriv =
 	pScreen->devPrivates[xf86CursorScreenIndex].ptr;
 
+    if (ScreenPriv->isUp && pScrn->vtSema)
+	xf86SetCursor(pScreen, NullCursor, ScreenPriv->x, ScreenPriv->y);
+
     pScreen->CloseScreen = ScreenPriv->CloseScreen;
     pScreen->QueryBestSize = ScreenPriv->QueryBestSize;
     pScreen->RecolorCursor = ScreenPriv->RecolorCursor;
@@ -133,6 +139,7 @@ xf86CursorCloseScreen(int i, ScreenPtr pScreen)
     pScrn->LeaveVT = ScreenPriv->LeaveVT;
     pScrn->SetDGAMode = ScreenPriv->SetDGAMode;
 
+    xfree(ScreenPriv->transparentData);
     xfree(ScreenPriv);
 
     return (*pScreen->CloseScreen)(i, pScreen);
@@ -328,10 +335,16 @@ xf86CursorSetCursor(ScreenPtr pScreen, CursorPtr pCurs, int x, int y)
 
     PointPriv = pScreen->devPrivates[miPointerScreenIndex].ptr;
 
-    if (infoPtr->pScrn->vtSema &&
+    if (infoPtr->pScrn->vtSema && (ScreenPriv->ForceHWCursorCount || ((
+#ifdef ARGB_CURSOR
+	pCurs->bits->argb && infoPtr->UseHWCursorARGB &&
+	 (*infoPtr->UseHWCursorARGB) (pScreen, pCurs) ) || (
+	pCurs->bits->argb == 0 &&
+#endif
 	(pCurs->bits->height <= infoPtr->MaxHeight) &&
 	(pCurs->bits->width <= infoPtr->MaxWidth) &&
-	(!infoPtr->UseHWCursor || (*infoPtr->UseHWCursor)(pScreen, pCurs))) {
+	(!infoPtr->UseHWCursor || (*infoPtr->UseHWCursor)(pScreen, pCurs))))))
+    {
 
 	if (ScreenPriv->SWCursor)	/* remove the SW cursor */
 	      (*ScreenPriv->spriteFuncs->SetCursor)(pScreen, NullCursor, x, y);
@@ -345,9 +358,14 @@ xf86CursorSetCursor(ScreenPtr pScreen, CursorPtr pCurs, int x, int y)
 
     PointPriv->waitForUpdate = TRUE;
 
-    if (ScreenPriv->isUp) {		/* remove the HW cursor */
-	xf86SetCursor(pScreen, NullCursor, x, y);
-	ScreenPriv->isUp = FALSE;
+    if (ScreenPriv->isUp) {
+	/* Remove the HW cursor, or make it transparent */
+	if (infoPtr->Flags & HARDWARE_CURSOR_SHOW_TRANSPARENT) {
+	    xf86SetTransparentCursor(pScreen);
+	} else {
+	    xf86SetCursor(pScreen, NullCursor, x, y);
+	    ScreenPriv->isUp = FALSE;
+	}
     }
 
     ScreenPriv->SWCursor = TRUE;
@@ -373,6 +391,37 @@ xf86CursorMoveCursor(ScreenPtr pScreen, int x, int y)
 	(*ScreenPriv->spriteFuncs->MoveCursor)(pScreen, x, y);
     else if (ScreenPriv->isUp)
 	xf86MoveCursor(pScreen, x, y);
+}
+
+void
+xf86ForceHWCursor (ScreenPtr pScreen, Bool on)
+{
+    xf86CursorScreenPtr ScreenPriv =
+	pScreen->devPrivates[xf86CursorScreenIndex].ptr;
+
+    if (on)
+    {
+	if (ScreenPriv->ForceHWCursorCount++ == 0)
+	{
+	    if (ScreenPriv->SWCursor && ScreenPriv->CurrentCursor)
+	    {
+		ScreenPriv->HWCursorForced = TRUE;
+		xf86CursorSetCursor (pScreen, ScreenPriv->CurrentCursor,
+				     ScreenPriv->x, ScreenPriv->y);
+	    }
+	    else
+		ScreenPriv->HWCursorForced = FALSE;
+	}
+    }
+    else
+    {
+	if (--ScreenPriv->ForceHWCursorCount == 0)
+	{
+	    if (ScreenPriv->HWCursorForced && ScreenPriv->CurrentCursor)
+		xf86CursorSetCursor (pScreen, ScreenPriv->CurrentCursor,
+				     ScreenPriv->x, ScreenPriv->y);
+	}
+    }
 }
 
 xf86CursorInfoPtr

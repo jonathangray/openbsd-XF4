@@ -1,10 +1,10 @@
 ! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: Xres.cpp,v 1.10 2003/03/05 23:31:54 todd Exp $
+! $OpenBSD: Xres.cpp,v 1.11 2003/04/01 22:37:03 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.4 2001/01/22 22:32:34 dawes Exp $
+! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.6 2003/01/04 03:11:31 dawes Exp $
 !
 #define BS \ /* cpp can be trickier than m4 */
 #define NLBS \n\ /* don't remove these comments */
@@ -14,7 +14,7 @@ xlogin*login.translations: #override BS
 	<Key>Left: move-backward-character()NLBS
 	<Key>Right: move-forward-character()NLBS
 	<Key>Home: move-to-begining()NLBS
-	<Key>End: move-to-end()NLBS\
+	<Key>End: move-to-end()NLBS
 	Ctrl<Key>KP_Enter: set-session-argument(failsafe) finish-field()NLBS
 	<Key>KP_Enter: set-session-argument() finish-field()NLBS
 	Ctrl<Key>Return: set-session-argument(failsafe) finish-field()NLBS
@@ -30,13 +30,13 @@ xlogin*fail: Login incorrect
 #ifdef XPM
 /**/#if WIDTH > 800
 xlogin*greetFont: -adobe-helvetica-bold-o-normal--24-240-75-75-p-138-iso8859-1
-xlogin*font: -adobe-helvetica-medium-r-normal--18-180-75-75-p-103-iso8859-1
+xlogin*font: -adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1
 xlogin*promptFont: -adobe-helvetica-bold-r-normal--18-180-75-75-p-103-iso8859-1
 xlogin*failFont: -adobe-helvetica-bold-r-normal--18-180-75-75-p-103-iso8859-1
 /**/#else
 xlogin*greetFont: -adobe-helvetica-bold-o-normal--17-120-100-100-p-92-iso8859-1
-xlogin*font: -adobe-helvetica-medium-r-normal--12-120-75-75-p-69-iso8859-1
-xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-69-iso8859-1
+xlogin*font: -adobe-helvetica-medium-r-normal--12-120-75-75-p-67-iso8859-1
+xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
 xlogin*failFont: -adobe-helvetica-bold-o-normal--14-140-75-75-p-82-iso8859-1
 /**/#endif
 #endif /* XPM */
@@ -85,7 +85,7 @@ xlogin*greetColor: #000000
 /**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
 ! flood fill
 !xlogin*background: #2559a5
-xlogin*background: #5272b6
+xlogin*background: #5171b5
 /**/#endif
 xlogin*failColor: red
 
@@ -117,22 +117,9 @@ xlogin*Background: white
 /**/#ifdef bpp1
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_1bpp.xpm
 /**/#endif
-#if ! defined(SparcArchitecture)
-/**/#if defined(bpp4) || defined(bpp8)
-xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
-/**/#endif
-#else /* sparc */
 /**/#ifdef bpp4
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
 /**/#endif
-/**/#ifdef bpp8
-xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
-/**/#endif
-#endif
-/**/#ifdef bpp15
-xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
-/**/#endif
-#if ! defined(Hp300Architecture)
 xlogin*useShape: true
 xlogin*logoPadding: 10
 #endif /* Hp300Architecture */

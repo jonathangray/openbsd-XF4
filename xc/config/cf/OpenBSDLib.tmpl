@@ -1,7 +1,7 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.2 2002/12/04 03:49:30 todd Exp $
-XCOMM platform: $XFree86$
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.3 2003/04/01 22:36:03 matthieu Exp $
+XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.1 2002/12/16 22:48:27 herrb Exp $
 XCOMM
-/* Shared Library Revisions. Crank major on API Changes, e.g. a.out -> elf */
+/* Shared Library Revisions. Crank major on API Changes */
 
 #if OverrideShlibRevs
 
@@ -137,6 +137,9 @@ XCOMM
 # endif
 # ifndef SharedXftRev
 #  define SharedXftRev 2.0
+# endif
+# ifndef SharedXft1Rev
+#  define SharedXft1Rev 1.2
 # endif
 # ifndef SharedXTrapRev
 #  define SharedXTrapRev 7.0

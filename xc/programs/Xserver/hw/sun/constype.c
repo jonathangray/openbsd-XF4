@@ -151,7 +151,7 @@ int wu_fbid(devname, fbname, fbtype)
 	    return 2;
 	}
 	/* FBIOGATTR fails for early frame buffer types */
-	if ((ioctl_ret = ioctl(fd,FBIOGATTR,&fbattr))<0)/*success=>0(false)*/
+	if ((ioctl_ret = ioctl(fd,FBIOGATTR,&fbattr))<0) /*success=>0(false)*/
 	    ioctl_ret = ioctl(fd, FBIOGTYPE, &fbattr.fbtype);
 	close(fd);
 	if ( ioctl_ret == -1 ) {

@@ -1,4 +1,4 @@
-/* $Id: mmx.h,v 1.1.1.2 2003/04/01 18:45:31 matthieu Exp $ */
+/* $Id: mmx.h,v 1.2 2003/04/01 22:36:09 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library

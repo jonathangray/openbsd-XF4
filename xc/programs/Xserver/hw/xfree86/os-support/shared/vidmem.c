@@ -159,38 +159,21 @@ xf86InitVidMem(void)
 }
 
 pointer
-xf86MapVidMem(int ScreenNum, int Flags, 
-	      unsigned long Base, unsigned long Size, ...)
+xf86MapVidMem(int ScreenNum, int Flags, unsigned long Base, unsigned long Size)
 {
 	pointer vbase = NULL;
 	VidMapPtr vp;
 	MappingPtr mp;
-	va_list ap;
-	PCITAG tag;
 
-	va_start(ap, Size);
 	if (((Flags & VIDMEM_FRAMEBUFFER) &&
 	     (Flags & (VIDMEM_MMIO | VIDMEM_MMIO_32BIT))))
-	    FatalError("Mapping memory with more than one type");
+	    FatalError("Mapping memory with more than one type\n");
 	    
 	xf86InitVidMem();
 	if (!vidMemInfo.initialised || !vidMemInfo.mapMem)
 		return NULL;
 
-	if (Flags & VIDMEM_TAGINFO) {
-		tag = va_arg(ap, PCITAG);
-		if (vidMemInfo.mapMemTag != NULL) {
-			vbase = vidMemInfo.mapMemTag(ScreenNum, Base, Size, 
-						     Flags, tag);
-		} else {
-			vbase = vidMemInfo.mapMem(ScreenNum, Base, 
-						  Size, Flags);
-		}
-			
-	} else {
-		vbase = vidMemInfo.mapMem(ScreenNum, Base, Size, Flags);
-	}
-	va_end(ap);
+	vbase = vidMemInfo.mapMem(ScreenNum, Base, Size, Flags);
 
 	if (!vbase || vbase == (pointer)-1)
 		return NULL;

@@ -35,7 +35,7 @@
 /*
  * mystdlib.h
  *
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdlib.h,v 1.1.1.1 2001/04/05 22:05:05 matthieu Exp $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdlib.h,v 1.2 2003/04/01 22:36:15 matthieu Exp $
  */
 
 #ifndef __glumystdlib_h_

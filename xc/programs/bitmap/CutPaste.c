@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/bitmap/CutPaste.c,v 1.4 2001/12/14 20:00:40 dawes Exp $ */
+/* $XFree86: xc/programs/bitmap/CutPaste.c,v 1.5 2002/02/18 21:43:17 herrb Exp $ */
 
 /*
  * Author:  Davor Matic, MIT X Consortium
@@ -41,6 +41,8 @@ from The Open Group.
 #include <math.h>
 
 #define min(x, y)                     (((x) < (y)) ? (x) : (y))
+#define max(x, y)                     (((x) > (y)) ? (x) : (y))
+
 
 extern Boolean DEBUG;
 

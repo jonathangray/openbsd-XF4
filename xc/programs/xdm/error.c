@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/error.c,v 1.5 2001/12/14 20:01:21 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/error.c,v 1.7 2002/10/09 16:38:20 tsi Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -50,7 +50,7 @@ void LogInfo(char * fmt, ...)
 {
     char buf[1024];
 
-    snprintf(buf, sizeof buf, "xdm info (pid %d): ", getpid());
+    snprintf(buf, sizeof buf, "xdm info (pid %ld): ", (long)getpid());
     WRITES(STDERR_FILENO, buf);
     {
 	va_list args;
@@ -65,7 +65,7 @@ void LogError (char * fmt, ...)
 {
     char buf[1024];
 
-    snprintf (buf, sizeof buf, "xdm error (pid %d): ", getpid());
+    snprintf (buf, sizeof buf, "xdm error (pid %ld): ", (long)getpid());
     WRITES(STDERR_FILENO, buf);
     {
 	va_list args;
@@ -80,7 +80,7 @@ void LogPanic (char * fmt, ...)
 {
     char buf[1024];
 
-    snprintf (buf, sizeof buf, "xdm panic (pid %d): ", getpid());
+    snprintf (buf, sizeof buf, "xdm panic (pid %ld): ", (long)getpid());
     WRITES(STDERR_FILENO, buf);
     {
 	va_list args;

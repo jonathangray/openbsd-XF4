@@ -1,4 +1,4 @@
-/* $XFree86: shm.c,v 3.35 2002/02/26 23:37:37 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/shm.c,v 3.36 2002/04/03 19:51:11 herrb Exp $ */
 /************************************************************
 
 Copyright 1989, 1998  The Open Group

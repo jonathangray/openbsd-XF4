@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # $Xorg: Xsession,v 1.4 2000/08/17 19:54:17 cpqbld Exp $
+# $OpenBSD: Xsession,v 1.7 2003/04/01 22:37:03 matthieu Exp $
 #
 #
 #
@@ -62,7 +63,6 @@ if [ -s "$startup" ]; then
 	else
 		/bin/sh "$startup"
 	fi
-	do_exit
 else
 	if [ -f "$resources" ]; then
 		xrdb -load "$resources"

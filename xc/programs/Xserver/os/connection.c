@@ -1,5 +1,5 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $OpenBSD: connection.c,v 1.5 2003/02/17 23:04:20 matthieu Exp $ */
+/* $OpenBSD: connection.c,v 1.6 2003/04/01 22:36:57 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.55 2001/12/14 20:00:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.56 2002/05/31 18:46:05 dawes Exp $ */
 /*****************************************************************
  *  Stuff to create connections --- OS dependent
  *
@@ -102,7 +102,7 @@ SOFTWARE.
 #include <sys/ioctl.h>
 #endif
 
-#ifdef __EMX__
+#ifdef __UNIXOS2__
 #define select(n,r,w,x,t) os2PseudoSelect(n,r,w,x,t)
 extern __const__ int _nfiles;
 #endif
@@ -119,7 +119,7 @@ extern __const__ int _nfiles;
 #   ifdef CSRG_BASED
 #    include <sys/param.h>
 #   endif
-#    ifndef __EMX__
+#    ifndef __UNIXOS2__
 #     include <netinet/tcp.h>
 #    endif
 #  endif
@@ -132,7 +132,7 @@ extern __const__ int _nfiles;
 #include <server/ip/gen/inet.h>
 #endif
 
-#if !defined(__EMX__)
+#if !defined(__UNIXOS2__)
 #ifndef Lynx
 #include <sys/uio.h>
 #else
@@ -258,7 +258,7 @@ InitConnectionLimits()
 
 #ifndef __CYGWIN__
 
-#ifndef __EMX__
+#ifndef __UNIXOS2__
 
 #if !defined(XNO_SYSCONF) && defined(_SC_OPEN_MAX)
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
@@ -274,7 +274,7 @@ InitConnectionLimits()
 	lastfdesc = _NFILE - 1;
 #endif
 
-#else /* __EMX__ */
+#else /* __UNIXOS2__ */
     lastfdesc = _nfiles - 1;
 #endif
 

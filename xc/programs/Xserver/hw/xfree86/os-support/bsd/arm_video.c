@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/arm_video.c,v 1.1 2002/08/06 13:08:38 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -62,10 +62,10 @@
 #include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
-
 #include "xf86_OSlib.h"
 #include "xf86OSpriv.h"
 
+#ifdef __arm32__
 #include "machine/devmap.h"
 struct memAccess
 {
@@ -88,6 +88,7 @@ struct memAccess linearMemInfo = { CONSOLE_GET_LINEAR_INFO, NULL, NULL,
 				       FALSE, FALSE };
 struct memAccess ioMemInfo = { CONSOLE_GET_IO_INFO, NULL, NULL,
 				   FALSE, FALSE };
+#endif /* __arm32__ */
 
 #if defined(__NetBSD__) && !defined(MAP_FILE)
 #define MAP_FLAGS MAP_SHARED
@@ -99,15 +100,10 @@ struct memAccess ioMemInfo = { CONSOLE_GET_IO_INFO, NULL, NULL,
 #define MAP_FAILED ((caddr_t)-1)
 #endif
 
-#ifdef __OpenBSD__
-#define SYSCTL_MSG "\tCheck that you have set 'machdep.allowaperture=1'\n"\
-		   "\tin /etc/sysctl.conf and reboot your machine\n" \
-		   "\trefer to xf86(4) for details\n"
-#define SYSCTL_MSG2 \
-		"Check that you have set 'machdep.allowaperture=2'\n" \
-		"\tin /etc/sysctl.conf and reboot your machine\n" \
-		"\trefer to xf86(4) for details\n"
-#endif
+
+#define BUS_BASE	0L
+#define BUS_BASE_BWX	0L
+
 
 /***************************************************************************/
 /* Video Memory Mapping section                                            */
@@ -116,9 +112,6 @@ struct memAccess ioMemInfo = { CONSOLE_GET_IO_INFO, NULL, NULL,
 static Bool useDevMem = FALSE;
 static int  devMemFd = -1;
 
-#ifdef HAS_APERTURE_DRV
-#define DEV_APERTURE "/dev/xf86"
-#endif
 #define DEV_MEM "/dev/mem"
 
 static pointer mapVidMem(int, unsigned long, unsigned long, int);
@@ -162,71 +155,117 @@ checkDevMem(Bool warn)
 		return;
 	    }
 	}
-#ifndef HAS_APERTURE_DRV
 	if (warn)
 	{ 
 	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s (%s)\n",
 		    DEV_MEM, strerror(errno));
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
 	} 
 	useDevMem = FALSE;
 	return;
-#else
-	/* Failed to open /dev/mem, try the aperture driver */
-	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0)
-	{
-	    /* Try to map a page at the VGA address */
-	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
-			     MAP_FLAGS, fd, (off_t)0xA0000);
-	
-	    if (base != MAP_FAILED)
-	    {
-		munmap((caddr_t)base, 4096);
-		devMemFd = fd;
-		useDevMem = TRUE;
-		xf86Msg(X_INFO, "checkDevMem: using aperture driver %s\n",
-		        DEV_APERTURE);
-		return;
-	    } else {
-
-		if (warn)
-		{
-		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
-			    DEV_APERTURE, strerror(errno));
-		}
-	    }
-	} else {
-	    if (warn)
-	    {
-#ifndef __OpenBSD__
-		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-			"\t(%s)\n", DEV_MEM, DEV_APERTURE, strerror(errno));
-#else /* __OpenBSD__ */
-		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-			"\t(%s)\n%s", DEV_MEM, DEV_APERTURE, strerror(errno),
-			SYSCTL_MSG);
-#endif /* __OpenBSD__ */
-	    }
-	}
-	
-	if (warn)
-	{
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
-	}
-	useDevMem = FALSE;
-	return;
-
-#endif
 }
 
 void
 xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 {
+
 	checkDevMem(TRUE);
 	pVidMem->linearSupported = useDevMem;
 	pVidMem->mapMem = armMapVidMem;
 	pVidMem->unmapVidMem = armUnmapVidMem;
+
 	pVidMem->initialised = TRUE;
+}
+
+static pointer
+mapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
+{
+	pointer base;
+
+	checkDevMem(FALSE);
+
+	if (useDevMem)
+	{
+	    if (devMemFd < 0) 
+	    {
+		FatalError("xf86MapVidMem: failed to open %s (%s)\n",
+			   DEV_MEM, strerror(errno));
+	    }
+	    base = mmap((caddr_t)0, Size, PROT_READ|PROT_WRITE,
+				 MAP_FLAGS, devMemFd, (off_t)Base + BUS_BASE_BWX);
+	    if (base == MAP_FAILED)
+	    {
+		FatalError("%s: could not mmap %s [s=%x,a=%x] (%s)\n",
+			   "xf86MapVidMem", DEV_MEM, Size, Base, 
+			   strerror(errno));
+	    }
+	    return(base);
+	}
+		
+	/* else, mmap /dev/vga */
+	if ((unsigned long)Base < 0xA0000 || (unsigned long)Base >= 0xC0000)
+	{
+		FatalError("%s: Address 0x%x outside allowable range\n",
+			   "xf86MapVidMem", Base);
+	}
+	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_FLAGS,
+			     xf86Info.screenFd,
+			     (unsigned long)Base - 0xA0000);
+	if (base == MAP_FAILED)
+	{
+	    FatalError("xf86MapVidMem: Could not mmap /dev/vga (%s)\n",
+		       strerror(errno));
+	}
+	return(base);
+}
+
+static void
+unmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
+{
+	munmap((caddr_t)Base, Size);
+}
+
+/*
+ * Read BIOS via mmap()ing DEV_MEM
+ */
+
+int
+xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
+	     int Len)
+{
+	unsigned char *ptr;
+	int psize;
+	int mlen;
+
+	checkDevMem(TRUE);
+	if (devMemFd == -1) {
+	    return(-1);
+	}
+
+	psize = xf86getpagesize();
+	Offset += Base & (psize - 1);
+	Base &= ~(psize - 1);
+	mlen = (Offset + Len + psize - 1) & ~(psize - 1);
+	ptr = (unsigned char *)mmap((caddr_t)0, mlen, PROT_READ,
+					MAP_SHARED, devMemFd, (off_t)Base+BUS_BASE);
+	if ((long)ptr == -1)
+	{
+		xf86Msg(X_WARNING, 
+			"xf86ReadBIOS: %s mmap[s=%x,a=%x,o=%x] failed (%s)\n",
+			DEV_MEM, Len, Base, Offset, strerror(errno));
+		return(-1);
+	}
+#ifdef DEBUG
+	ErrorF("xf86ReadBIOS: BIOS at 0x%08x has signature 0x%04x\n",
+		Base, ptr[0] | (ptr[1] << 8));
+#endif
+	(void)memcpy(Buf, (void *)(ptr + Offset), Len);
+	(void)munmap((caddr_t)ptr, mlen);
+#ifdef DEBUG
+	xf86MsgVerb(X_INFO, 3, "xf86ReadBIOS(%x, %x, Buf, %x)"
+		"-> %02x %02x %02x %02x...\n",
+		Base, Offset, Len, Buf[0], Buf[1], Buf[2], Buf[3]);
+#endif
+	return(Len);
 }
 
 
@@ -403,7 +442,37 @@ armUnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
 	unmapVidMem(ScreenNum, Base, Size);
 }
 
-#if defined(USE_ARC_MMAP) 
+#ifdef USE_DEV_IO
+static int IoFd = -1;
+
+void
+xf86EnableIO()
+{
+	if (IoFd >= 0)
+		return;
+
+	if ((IoFd = open("/dev/io", O_RDWR)) == -1)
+	{
+		FatalError("xf86EnableIO: "
+				"Failed to open /dev/io for extended I/O\n");
+	}
+	return;
+}
+
+void
+xf86DisableIO()
+{
+	if (IoFd < 0)
+		return;
+
+	close(IoFd);
+	IoFd = -1;
+	return;
+}
+
+#endif
+
+#if defined(USE_ARC_MMAP) || defined(__arm32__)
 
 void
 xf86EnableIO()
@@ -464,61 +533,6 @@ xf86EnableInterrupts()
 	return;
 }
 
-
-#ifdef __NetBSD__
-/***************************************************************************/
-/* Set TV output mode                                                      */
-/***************************************************************************/
-void
-xf86SetTVOut(int mode)
-{    
-    switch (xf86Info.consType)
-    {
-#ifdef PCCONS_SUPPORT
-	case PCCONS:{
-
-	    if (ioctl (xf86Info.consoleFd, CONSOLE_X_TV_ON, &mode) < 0)
-	    {
-		xf86Msg(X_WARNING,
-		    "xf86SetTVOut: Could not set console to TV output, %s\n",
-		    strerror(errno));
-	    }
-	}
-	break;
-#endif /* PCCONS_SUPPORT */
-
-	default:
-	    FatalError("Xf86SetTVOut: Unsupported console\n");
-	    break; 
-    }
-    return;
-}
-
-void
-xf86SetRGBOut()
-{    
-    switch (xf86Info.consType)
-    {
-#ifdef PCCONS_SUPPORT
-	case PCCONS:{
-	    
-	    if (ioctl (xf86Info.consoleFd, CONSOLE_X_TV_OFF, 0) < 0)
-	    {
-		xf86Msg(X_WARNING,
-		    "xf86SetTVOut: Could not set console to RGB output, %s\n",
-		    strerror(errno));
-	    }
-	}
-	break;
-#endif /* PCCONS_SUPPORT */
-
-	default:
-	    FatalError("Xf86SetTVOut: Unsupported console\n");
-	    break; 
-    }
-    return;
-}
-#endif
 
 
 #if 0
@@ -659,3 +673,5 @@ int ScreenNum;
 
 #endif /* USE_ARC_MMAP || USE_ARM32_MMAP */
 #endif
+
+

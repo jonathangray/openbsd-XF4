@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.8 2002/09/28 15:50:02 matthieu Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.1 2002/08/06 13:08:39 herrb Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.9 2003/04/01 22:36:52 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -55,8 +55,6 @@ static char *devPrefix[] = {
 /***************************************************************************/
 
 static pointer sparc64MapVidMem(int, unsigned long, unsigned long, int);
-static pointer sparc64MapVidMemTag(int, unsigned long, unsigned long, int, 
-	PCITAG);
 static void sparc64UnmapVidMem(int, pointer, unsigned long);
 
 void
@@ -64,7 +62,6 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 {
 	pVidMem->linearSupported = TRUE;
 	pVidMem->mapMem = sparc64MapVidMem;
-	pVidMem->mapMemTag = NULL; /* sparc64MapVidMemTag */
 	pVidMem->unmapMem = sparc64UnmapVidMem;
 	pVidMem->initialised = TRUE;
 }
@@ -87,66 +84,6 @@ sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size,
 	return base;
 }
 
-#ifdef notyet
-/**
- ** XXX 
- ** This code has problems on machines with more than 1 pci host bridge.
- ** The PCI_BUS_FROM_TAG value is not unique in this case. 
- **/
-static pointer
-sparc64MapVidMemTag(int ScreenNum, unsigned long Base, 
-		    unsigned long Size, int Flags, PCITAG tag)
-{
-	int fd = -1;
-	pointer base;
-	char devName[20];
-	int i, j;
-	struct pcisel sel;
-
-	xf86DrvMsg(ScreenNum, X_INFO, 
-		   "sparc64MapVidMem %lx, %lx, tag=%x:%x:%x\n", 
-		   Base, Size, PCI_BUS_FROM_TAG(tag), PCI_DEV_FROM_TAG(tag),
-		   PCI_FUNC_FROM_TAG(tag));
-
-	/* Look  for the /dev entry that matches the PCI tag for this device */
-	for (i = 0; i < N_DEV_PREFIX; i++) {
-		for (j = 0; j < MAX_DEV_PER_PREFIX; j++) {
-			snprintf(devName, sizeof(devName),
-				 "%s%d", devPrefix[i], j);
-			fd = open(devName, O_RDWR);
-			if (fd >= 0) {
-				if (ioctl(fd, WSDISPLAYIO_GPCIID, &sel) == 0 &&
-					sel.pc_bus == PCI_BUS_FROM_TAG(tag) &&
-				    	sel.pc_dev == PCI_DEV_FROM_TAG(tag) && 
-				    	sel.pc_func == PCI_FUNC_FROM_TAG(tag)) {
-					break;
-				} else {
-					close(fd);
-				}
-			}
-		} /* for */
-		if (fd != -1) {
-			break;
-		}
-	} /* for */
-	if (fd == -1) {
-		FatalError("sparc64MapVideMem can't find /dev " 
-			   "entry for PCI tag %x:%x:%x",
-			   PCI_BUS_FROM_TAG(tag),
-			   PCI_DEV_FROM_TAG(tag),
-			   PCI_FUNC_FROM_TAG(tag));
-	}
-	xf86DrvMsg(ScreenNum, X_INFO, "sparc64MapVidMem using %s fd=%d\n", 
-		   devName, fd);
-
-	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
-	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
-			   "xf86MapVidMem", Size, Base, strerror(errno));
-	close(fd);
-	return base;
-}
-#endif /* notyet */
 
 static void
 sparc64UnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)

@@ -1,4 +1,4 @@
-.\" $Id: rxterm.man,v 1.1 2001/02/17 17:49:06 matthieu Exp $
+.\" $Id: rxterm.man,v 1.2 2003/04/01 22:37:00 matthieu Exp $
 .\"
 .Dd September 27, 1996
 .Dt RXTERM 1

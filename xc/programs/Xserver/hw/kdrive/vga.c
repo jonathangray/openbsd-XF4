@@ -47,7 +47,7 @@
 #ifdef __i386__
 #include <sys/types.h>
 #include <machine/pio.h>
-#endif
+ #endif
 
 #define _VgaInb(r)	inb(r)
 #define _VgaOutb(v,r)	outb(r,v)

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.18 2001/10/21 12:30:38 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.20 2002/05/22 21:38:27 herrb Exp $ */
 /*
  * Derived from xf86Kbd.c by S_ren Schmidt (sos@login.dkuug.dk)
  * which is Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
@@ -1057,14 +1057,13 @@ static CARD8 wsAdbMap[] = {
 	/* 223 */ KEY_NOTUSED,
 };
 
-
 #define WS_ADB_MAP_SIZE (sizeof(wsAdbMap)/sizeof(unsigned char))
 
 static CARD8 wsSunMap[] = {
 	/* 0x00 */ KEY_NOTUSED,
-	/* 0x01 */ KEY_Stop,		/* stop */
+	/* 0x01 */ KEY_NOTUSED,		/* stop */
 	/* 0x02 */ KEY_NOTUSED,		/* BrightnessDown / S-VolumeDown */
-	/* 0x03 */ KEY_Again,		/* again */
+	/* 0x03 */ KEY_NOTUSED,		/* again */
 	/* 0x04 */ KEY_NOTUSED,		/* BridgtnessUp / S-VolumeUp */
 	/* 0x05 */ KEY_F1,
 	/* 0x06 */ KEY_F2,
@@ -1084,10 +1083,10 @@ static CARD8 wsSunMap[] = {
 	/* 0x14 */ KEY_Up,
 	/* 0x15 */ KEY_Pause,
 	/* 0x16 */ KEY_Print,
-	/* 0x17 */ KEY_ScrollLock,
+	/* 0x17 */ KEY_NOTUSED,		/* props */
 	/* 0x18 */ KEY_Left,
-	/* 0x19 */ KEY_Props,		/* props */
-	/* 0x1a */ KEY_Undo,		/* undo */
+	/* 0x19 */ KEY_ScrollLock,
+	/* 0x1a */ KEY_NOTUSED,		/* undo */
 	/* 0x1b */ KEY_Down,
 	/* 0x1c */ KEY_Right,
 	/* 0x1d */ KEY_Escape,
@@ -1110,9 +1109,9 @@ static CARD8 wsSunMap[] = {
 	/* 0x2e */ KEY_KP_Divide,
 	/* 0x2f */ KEY_KP_Multiply,
 	/* 0x30 */ KEY_NOTUSED,
-	/* 0x31 */ KEY_Front,		/* front */
+	/* 0x31 */ KEY_NOTUSED,		/* front */
 	/* 0x32 */ KEY_KP_Decimal,
-	/* 0x33 */ KEY_Copy,		/* copy */
+	/* 0x33 */ KEY_NOTUSED,		/* copy */
 	/* 0x34 */ KEY_Home,
 	/* 0x35 */ KEY_Tab,
 	/* 0x36 */ KEY_Q,
@@ -1133,8 +1132,8 @@ static CARD8 wsSunMap[] = {
 	/* 0x45 */ KEY_KP_8,
 	/* 0x46 */ KEY_KP_9,
 	/* 0x47 */ KEY_KP_Minus,
-	/* 0x48 */ KEY_Open,		/* open */
-	/* 0x49 */ KEY_Paste,		/* paste */
+	/* 0x48 */ KEY_NOTUSED,		/* open */
+	/* 0x49 */ KEY_NOTUSED,		/* paste */
 	/* 0x4a */ KEY_End,
 	/* 0x4b */ KEY_NOTUSED,
 	/* 0x4c */ KEY_LCtrl,
@@ -1156,9 +1155,9 @@ static CARD8 wsSunMap[] = {
 	/* 0x5c */ KEY_KP_5,
 	/* 0x5d */ KEY_KP_6,
 	/* 0x5e */ KEY_KP_0,
-	/* 0x5f */ KEY_Find,		/* find */
+	/* 0x5f */ KEY_NOTUSED,		/* find */
 	/* 0x60 */ KEY_PgUp,
-	/* 0x61 */ KEY_Cut,		/* cut */
+	/* 0x61 */ KEY_NOTUSED,		/* cut */
 	/* 0x62 */ KEY_NumLock,
 	/* 0x63 */ KEY_ShiftL,
 	/* 0x64 */ KEY_Z,
@@ -1185,13 +1184,14 @@ static CARD8 wsSunMap[] = {
 	/* 0x79 */ KEY_Space,
 	/* 0x7a */ KEY_RMeta,
 	/* 0x7b */ KEY_PgDown,
-	/* 0x7c */ KEY_Less,		/* < > on some keyboards */
+	/* 0x7c */ KEY_NOTUSED,
 	/* 0x7d */ KEY_KP_Plus,
 	/* 0x7e */ KEY_NOTUSED,
 	/* 0x7f */ KEY_NOTUSED
 };
 
 #define WS_SUN_MAP_SIZE (sizeof(wsSunMap)/sizeof(unsigned char))
+
 
 /*
  * Translate raw wskbd keyboard event values to XFree86 standard keycodes
@@ -1210,17 +1210,23 @@ WSKbdToKeycode(int keycode)
 			return KEY_UNKNOWN;
 		else 
 			return wsUsbMap[keycode];
+#ifdef WSKBD_TYPE_ADB			
 	case WSKBD_TYPE_ADB:
 		if (keycode < 0 || keycode >= WS_ADB_MAP_SIZE) 
 			return KEY_UNKNOWN;
 		else 
 			return wsAdbMap[keycode];
+#endif
+#ifdef WSKBD_TYPE_SUN
 	case WSKBD_TYPE_SUN:
+#ifdef WSKBD_TYPE_SUN5
 	case WSKBD_TYPE_SUN5:
+#endif
 		if (keycode < 0 || keycode >= WS_SUN_MAP_SIZE)
 			return KEY_UNKNOWN;
 		else
 			return wsSunMap[keycode];
+#endif
 	default:
 		ErrorF("Unknown wskbd type %d\n", xf86Info.wsKbdType);
 		return KEY_UNKNOWN;

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #!/citi/gtfd/mach/bin/perl -w
 ###############
-# $Id: hman.pl,v 1.1.1.1 2001/02/15 07:59:12 matthieu Exp $
+# $Id: hman.pl,v 1.2 2003/04/01 22:36:17 matthieu Exp $
 # $Source: /tmp/OpenBSD-XF4-repo/xc/extras/rman/contrib/hman.pl,v $
 ############################################
 # TODO:

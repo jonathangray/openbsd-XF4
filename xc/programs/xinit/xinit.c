@@ -25,13 +25,12 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xinit/xinit.c,v 3.31 2001/12/14 20:01:56 dawes Exp $ */
+/* $XFree86: xc/programs/xinit/xinit.c,v 3.32 2002/05/31 18:46:13 dawes Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 #include <stdio.h>
 #include <ctype.h>
-
 #include <sys/param.h>
 
 #ifdef X_POSIX_C_SOURCE
@@ -58,7 +57,7 @@ in this Software without prior written authorization from The Open Group.
 #if !defined(SIGCHLD) && defined(SIGCLD)
 #define SIGCHLD SIGCLD
 #endif
-#ifdef __EMX__
+#ifdef __UNIXOS2__
 #define INCL_DOSMODULEMGR
 #include <os2.h>
 #define setpgid(a,b)
@@ -67,7 +66,7 @@ in this Software without prior written authorization from The Open Group.
 #define SHELL "cmd.exe"
 #define XINITRC "xinitrc.cmd"
 #define XSERVERRC "xservrc.cmd"
-char **envsave;	/* to circumvent an EMX problem */
+char **envsave;	/* to circumvent an UNIXOS2 problem */
 #define environ envsave
 #endif
 
@@ -93,7 +92,7 @@ char **newenviron = NULL;
 #define setpgrp setpgid
 #endif
 
-#ifdef __EMX__
+#ifdef __UNIXOS2__
 #define HAS_EXECVPE
 #endif
 
@@ -153,11 +152,7 @@ char real_server[MAXPATHLEN];
 char test_path[MAXPATHLEN];
 char *default_server = "X";
 char *default_display = ":0";		/* choose most efficient */
-#ifndef __EMX__
 char *default_client[] = {"xterm", "-geometry", "+1+1", "-n", "login", NULL};
-#else
-char *default_client[] = {"/XFree86/bin/xterm.exe", "-geometry", "+1+1", "-n", "login", NULL};
-#endif
 char *serverargv[100];
 char *clientargv[100];
 char **server = serverargv + 2;		/* make sure room for sh .xserverrc args */
@@ -166,7 +161,7 @@ char *displayNum;
 char *program;
 Display *xd;			/* server connection */
 #ifndef SYSV
-#if defined(__CYGWIN__) || defined(SVR4) || defined(_POSIX_SOURCE) || defined(CSRG_BASED) || defined(__EMX__) || defined(Lynx)
+#if defined(__CYGWIN__) || defined(SVR4) || defined(_POSIX_SOURCE) || defined(CSRG_BASED) || defined(__UNIXOS2__) || defined(Lynx)
 int status;
 #else
 union wait	status;
@@ -229,7 +224,7 @@ sigCatch(int sig)
 static SIGVAL 
 sigAlarm(int sig)
 {
-#if defined(SYSV) || defined(SVR4) || defined(linux) || defined(__EMX__)
+#if defined(SYSV) || defined(SVR4) || defined(linux) || defined(__UNIXOS2__)
 	signal (sig, sigAlarm);
 #endif
 }
@@ -237,7 +232,7 @@ sigAlarm(int sig)
 static SIGVAL
 sigUsr1(int sig)
 {
-#if defined(SYSV) || defined(SVR4) || defined(linux) || defined(__EMX__)
+#if defined(SYSV) || defined(SVR4) || defined(linux) || defined(__UNIXOS2__)
 	signal (sig, sigUsr1);
 #endif
 }
@@ -247,7 +242,7 @@ Execute(char **vec,		/* has room from up above */
 	char **envp)
 {
     Execvpe (vec[0], vec, envp);
-#ifndef __EMX__
+#ifndef __UNIXOS2__
     if (access (vec[0], R_OK) == 0) {
 	vec--;				/* back it up to stuff shell in */
 	vec[0] = SHELL;
@@ -257,7 +252,7 @@ Execute(char **vec,		/* has room from up above */
     return;
 }
 
-#ifndef __EMX__
+#ifndef __UNIXOS2__
 int
 main(int argc, char *argv[])
 #else
@@ -277,7 +272,7 @@ main(int argc, char *argv[], char *envp[])
 	struct sigaction sa;
 #endif
 
-#ifdef __EMX__
+#ifdef __UNIXOS2__
 	envsave = envp;	/* circumvent an EMX problem */
 
 	/* Check whether the system will run at all */
@@ -304,7 +299,7 @@ main(int argc, char *argv[], char *envp[])
 	 * copy the client args.
 	 */
 	if (argc == 0 ||
-#ifndef __EMX__
+#ifndef __UNIXOS2__
 	    (**argv != '/' && **argv != '.')) {
 #else
 	    (**argv != '/' && **argv != '\\' && **argv != '.' &&
@@ -340,7 +335,7 @@ main(int argc, char *argv[], char *envp[])
 	 * Copy the server args.
 	 */
 	if (argc == 0 ||
-#ifndef __EMX__
+#ifndef __UNIXOS2__
 	    (**argv != '/' && **argv != '.')) {
 	    /* hack for the Xfree86 3.3.6 servers: if the X link 
 	       points to XF86_*, start Xwrapper instead of X */
@@ -549,7 +544,7 @@ processTimeout(int timeout, char *string)
 	static char	*laststring;
 
 	for (;;) {
-#if defined(SYSV) || defined(__EMX__)
+#if defined(SYSV) || defined(__UNIXOS2__)
 		alarm(1);
 		if ((pidfound = wait(NULL)) == serverpid)
 			break;
@@ -626,7 +621,7 @@ startServer(char *server[])
 		 * prevent server from getting sighup from vhangup()
 		 * if client is xterm -L
 		 */
-#ifndef __EMX__
+#ifndef __UNIXOS2__
 		setpgrp(0,getpid());
 #endif
 		Execute (server, environ);
@@ -703,7 +698,7 @@ startClient(char *client[])
 		setuid(getuid());
 		setpgrp(0, getpid());
 		environ = newenviron;
-#ifdef __EMX__
+#ifdef __UNIXOS2__
 #undef environ
 		environ = newenviron;
 		client[0] = (char*)__XOS2RedirRoot(client[0]);
@@ -720,7 +715,7 @@ startClient(char *client[])
 	return (clientpid);
 }
 
-#if !defined(X_NOT_POSIX) || defined(SYSV) || defined(__EMX__)
+#if !defined(X_NOT_POSIX) || defined(SYSV) || defined(__UNIXOS2__)
 #define killpg(pgrp, sig) kill(-(pgrp), sig)
 #endif
 

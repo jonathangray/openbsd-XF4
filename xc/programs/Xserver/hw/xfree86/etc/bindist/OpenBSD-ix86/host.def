@@ -1,8 +1,7 @@
 /*
- * Host.def for building OpenBSD bindists
+ * Host.def for building OpenBSD/ix86 bindists
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-ix86/host.def,v 1.4 2001/05/31 18:47:10 dawes Exp $
- * $OpenBSD: host.def,v 1.6 2002/01/19 14:54:39 matthieu Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-ix86/host.def,v 1.7 2002/12/30 16:35:10 herrb Exp $
  */
 
 #define InstallEmptyHostDef
@@ -10,17 +9,15 @@
 
 #define ForceNormalLib		YES
 
-
-#define JoystickSupport		NO /* XXX this used to be YES */
-
-/* Enable this to build the docs in xc/programs/Xserver/hw/xfree86/doc/sgml */
-#define BuildOpenBSDDocs		NO
-#if BuildOpenBSDDocs
-#define HasLinuxDoc			YES
-#define HasSgmlFmt			YES
-#define HasLatex			YES
-#define HasDvips			YES
-#define BuildLinuxDocHtml		YES
-#define BuildAllDocs			YES
-#define InstallJapaneseDocs       	YES
+#if 0
+/*
+ *  These defines assume libpng is installed from the ports tree
+ */
+#define HasLibpng               YES
+#define LibpngDir               /usr/local
+#define LibpngDirStandard       NO
+#define LibpngIncDir            /usr/local/include/libpng
+#define LibpngIncDirStandard    NO
+#define LibpngLibDir            /usr/local/lib
+#define LibpngLibDirStandard    NO
 #endif

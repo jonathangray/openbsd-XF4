@@ -35,8 +35,8 @@
 /*
  * glimports.h
  *
- * $Date: 2001/04/05 22:05:01 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/glimports.h,v 1.1.1.1 2001/04/05 22:05:01 matthieu Exp $
+ * $Date: 2003/04/01 22:36:15 $ $Revision: 1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/glimports.h,v 1.2 2003/04/01 22:36:15 matthieu Exp $
  */
 
 #ifndef __gluimports_h_

@@ -1,4 +1,4 @@
-/* $Id: varray.h,v 1.1.1.3 2003/04/01 18:45:30 matthieu Exp $ */
+/* $Id: varray.h,v 1.2 2003/04/01 22:36:08 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library

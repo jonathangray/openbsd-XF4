@@ -35,8 +35,8 @@
 /*
  * cachingeval.h
  *
- * $Date: 2001/04/05 22:04:37 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/cachingeval.h,v 1.1.1.1 2001/04/05 22:04:37 matthieu Exp $
+ * $Date: 2003/04/01 22:36:14 $ $Revision: 1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/cachingeval.h,v 1.2 2003/04/01 22:36:14 matthieu Exp $
  */
 
 #ifndef __glucachingval_h_

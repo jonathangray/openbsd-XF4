@@ -3,7 +3,7 @@
 #
 # By: YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>
 #
-# $Id: gettext.tcl,v 1.2 2001/06/27 23:15:50 matthieu Exp $
+# $Id: gettext.tcl,v 1.3 2003/04/01 22:37:06 matthieu Exp $
 
 #
 # How to use

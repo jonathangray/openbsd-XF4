@@ -1,4 +1,4 @@
-.\" $OpenBSD: wsfb.man,v 1.7 2003/03/09 15:06:34 miod Exp $
+.\" $OpenBSD: wsfb.man,v 1.8 2003/04/01 22:36:49 matthieu Exp $
 .\"
 .\" Copyright (c) 2001,2002 Matthieu Herrb
 .\" All rights reserved.
@@ -54,7 +54,7 @@ Multi-head configurations are supported.
 .SH SUPPORTED HARDWARE
 The
 .B wsfb
-driver supports all hardware where a wsdisplay framebuffer driver
+driver supports all hardware where a the wsdisplay framebuffer driver
 is available on OpenBSD.
 Currently this includes OpenBSD/macppc, OpenBSD/sparc, OpenBSD/sparc64
 and OpenBSD/alpha on TGA graphics cards.
@@ -65,12 +65,12 @@ This section only covers configuration details specific to this driver.
 .PP
 For this driver it is not required to specify modes in the 
 .B Screen
-section of the configuration file.
+section of the config file.
 The
 .B wsfb
 driver picks up the currently used video mode from the framebuffer
 driver and uses it.
-Video modes specifications in the configuration file are ignored.
+Video modes specifications in the config file are ignored.
 .PP
 The following driver options are supported in the 
 .B Device

@@ -4,7 +4,7 @@ XCOMM $XConsortium: Imakefile /main/34 1996/10/27 11:05:08 kaleb $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.138 2001/10/09 19:31:05 herrb Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.148 2003/02/17 17:06:41 dawes Exp $
 
 
 
@@ -49,6 +49,12 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.138 2001/10/
  XF86_XINPUT_OBJ = xf86Xinput.o xisb.o
 #endif
 
+#if BuildRandR
+ RANDRINCS = -I../../../randr
+  RANDRSRC = xf86RandR.c
+  RANDROBJ = xf86RandR.o
+#endif
+
 #if BuildXF86DGA
   XF86_DGA_SRC = xf86DGA.c
   XF86_DGA_OBJ = xf86DGA.o
@@ -59,6 +65,10 @@ LOGDEFINES = -DDEFAULT_LOGPREFIX=\"$(LOGDIRECTORY)/XLogFile.\"
 
 #if DoLoadableServer
 EXT_MODULES_DEFINES = $(GLX_DEFINES)
+#endif
+
+#if UseMemLeak
+MDEBUGDEFS = -DMEMDEBUG
 #endif
 
 #ifndef XF86ExpireServer
@@ -88,6 +98,7 @@ SRCS =	\
 	xf86isaBus.c \
 	xf86pciBus.c \
 	xf86fbBus.c \
+	xf86noBus.c \
 	xf86IniExt.c \
 	xf86Config.c \
 	xf86Cursor.c \
@@ -117,7 +128,8 @@ SRCS =	\
 	$(XINPUT_DEV_SRCS) \
 	$(XKBDDXSRC) \
 	$(BETASRC) \
-	$(SERVERSRCS)
+	$(SERVERSRCS) \
+        $(RANDRSRC)
 
 OBJS = \
 	xf86Configure.o \
@@ -125,6 +137,7 @@ OBJS = \
 	xf86isaBus.o \
 	xf86pciBus.o \
 	xf86fbBus.o \
+	xf86noBus.o \
 	xf86Config.o \
 	xf86Cursor.o \
 	$(XF86_DGA_OBJ) \
@@ -150,8 +163,8 @@ OBJS = \
 	$(XF86_XINPUT_OBJ) \
 	$(XKBDDXOBJ) \
 	$(BETAOBJ) \
-	$(KBD).o
-
+	$(KBD).o \
+        $(RANDROBJ)
 
 OFILES = \
 	xf86Init.o \
@@ -165,8 +178,8 @@ OFILES = \
 		-I$(FONTLIBSRC)/include -I$(FONTINCSRC) \
 		-I$(XF86SRC) -I$(XF86PARSERSRC) \
 		-I$(XF86SRC)/loader $(VGAINCLUDES) -I$(XF86SRC)/rac \
-	        -I$(XF86SRC)/scanpci -I$(XF86OSSRC)/vbe -I$(XF86SRC)/int10 \
-		-I$(XF86SRC)/ddc
+	        -I$(XF86SRC)/scanpci -I$(XF86SRC)/vbe -I$(XF86SRC)/int10 \
+		-I$(XF86SRC)/ddc -I$(SERVERSRC)/render $(RANDRINCS)
 
      OSNAME = OSName
    OSVENDOR = OSVendor
@@ -179,6 +192,12 @@ CUSTOMVERSION = XFree86CustomVersion
   BUILDERSTRING = BuilderString
   BUILDERMSG = -DBUILDERSTRING='$(BUILDERSTRING)'
 #endif
+#if defined(BuildDate)
+    BUILD_DATE = BuildDate
+#endif
+       XORGREL = XOrgReleaseString
+   XORGREL_DEF = -DXORG_RELEASE='"$(XORGREL)"'
+
 CONSDEFINES = XFree86ConsoleDefines
 EXP_DEFINES = -DEXPIRY_TIME=XF86ServerExpiry $(EXP_FORCE_DEFINES)
     DRIVERS = XF86CardDrivers
@@ -194,8 +213,8 @@ XCONFIGUREDEFINES = -DXF86CONFIGFILE='"$(XF86CONFIGFILE)"'
 AllTarget($(OFILES))
 
 SpecialCObjectRule(xf86Bus,NullParameter,$(BUGMSG) $(VGAINCLUDES))
-SpecialCObjectRule(xf86Init,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) $(BUGMSG) $(CUSTOMVERDEF) $(EXT_DEFINES) $(BETADEFS))
-SpecialCObjectRule(xf86Events,$(ICONFIGFILES),$(EXT_DEFINES))
+SpecialCObjectRule(xf86Init,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) $(BUGMSG) $(CUSTOMVERDEF) $(XORGREL_DEF) $(EXT_DEFINES) $(BETADEFS) $(MDEBUGDEFS))
+SpecialCObjectRule(xf86Events,$(ICONFIGFILES),$(EXT_DEFINES) $(MDEBUGDEFS))
 SpecialCObjectRule(xf86Globals,$(ICONFIGFILES),$(EXT_DEFINES) $(MODPATHDEFINES) $(LOGDEFINES))
 SpecialCObjectRule(xf86Config,$(ICONFIGFILES),$(XCONFIGDEFINES))
 SpecialCObjectRule(xf86Configure,$(ICONFIGFILES),$(XCONFIGUREDEFINES))
@@ -238,9 +257,34 @@ clean::
 LinkFile(xf86DefModeSet.c,xf86DefModes.c)
 #endif
 
-#ifndef OS2Architecture
-DependTarget()
+includes:: xf86Build.h
+
+clean::
+	RemoveFile(xf86Build.h)
+
+#if defined(BuildDate)
+xf86Build.h: FRC
+	echo "#define BUILD_DATE $(BUILD_DATE)" > xf86Build.h.new
+	@if test -f xf86Build.h ; then  \
+		if cmp -s xf86Build.h.new xf86Build.h ; then  \
+			rm -f xf86Build.h.new ; \
+		else  \
+			mv xf86Build.h.new xf86Build.h ; \
+			echo "xf86Build.h changed" ; \
+		fi  \
+	else  \
+		mv xf86Build.h.new xf86Build.h ; \
+		echo "xf86Build.h created" ; \
+	fi
+
+FRC:
+#else
+xf86Build.h:
+	RemoveFile($@)
+	echo "" > $@
 #endif
+
+DependTarget()
 
 InstallDriverSDKNonExecFile(compiler.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(fourcc.h,$(DRIVERSDKINCLUDEDIR))

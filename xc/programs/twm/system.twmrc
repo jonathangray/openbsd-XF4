@@ -132,6 +132,6 @@ menu "Restart"
 menu "Quit"
 {
 "Don't quit"	f.nop
-""		f.nop
+ ""		f.nop
 "Really Quit"	f.quit
 }

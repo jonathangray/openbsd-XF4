@@ -32,8 +32,8 @@
 # published by SGI, but has not been independently verified as being
 # compliant with the OpenGL(R) version 1.2.1 Specification.
 #
-# $Date: 2001/06/04 09:48:13 $ $Revision: 1.1.1.1 $
-# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/doc/man/manglu/ftn/GNUmakefile,v 1.1.1.1 2001/06/04 09:48:13 matthieu Exp $
+# $Date: 2003/04/01 22:36:12 $ $Revision: 1.2 $
+# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/doc/man/manglu/ftn/GNUmakefile,v 1.2 2003/04/01 22:36:12 matthieu Exp $
 
 # NOTES:
 # - The file "lor-c.mn" contains the source for the List of Routines section

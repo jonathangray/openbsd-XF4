@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_io.c,v 3.19 2001/11/08 21:49:44 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_io.c,v 3.23 2002/10/21 20:38:04 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
@@ -161,7 +161,9 @@ xf86KbdInit()
 #endif
 #if defined WSCONS_SUPPORT
 	case WSCONS:
-	        if (xf86Info.kbdFd == -1) 
+		if (xf86Info.kbdFd != -1) 
+			xf86FlushInput(xf86Info.kbdFd);
+		else
 			tcgetattr(xf86Info.consoleFd, &kbdtty);
 		break;
 #endif
@@ -171,9 +173,7 @@ xf86KbdInit()
 int
 xf86KbdOn()
 {
-#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
 	struct termios nTty;
-#endif
 #ifdef WSCONS_SUPPORT
 	int option;
 #endif

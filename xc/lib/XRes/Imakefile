@@ -4,6 +4,7 @@ XCOMM $XFree86: xc/lib/XRes/Imakefile,v 1.2 2002/10/16 00:37:26 dawes Exp $
 #define DoSharedLib SharedLibXRes
 #define DoDebugLib DebugLibXRes
 #define DoProfileLib ProfileLibXRes
+#define DoPicLib HasSharedLibraries && !SharedLibXRes
 #define LibName XRes
 #define SoRev SOXRESREV
 #define LibHeaders NO

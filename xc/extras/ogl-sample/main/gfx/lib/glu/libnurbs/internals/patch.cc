@@ -36,8 +36,8 @@
 /*
  * patch.c++
  *
- * $Date: 2001/06/04 09:48:22 $ $Revision: 1.1.1.2 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/patch.cc,v 1.1.1.2 2001/06/04 09:48:22 matthieu Exp $
+ * $Date: 2003/04/01 22:36:15 $ $Revision: 1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/patch.cc,v 1.2 2003/04/01 22:36:15 matthieu Exp $
  */
 
 #include <stdio.h>

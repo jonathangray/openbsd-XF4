@@ -15,17 +15,45 @@
  */
 
 XCOMM $Xorg: Library.tmpl,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
+XCOMM $OpenBSD: Library.tmpl,v 1.3 2003/04/01 22:36:03 matthieu Exp $
 
 
 
 
-XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.15 2001/08/27 17:40:55 dawes Exp $
+XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.21 2003/01/04 02:48:24 dawes Exp $
 
-/*
- * Some libraries may not define DoPicLib
- */
+#ifndef DoNormalLib
+#define DoNormalLib NO
+#endif
+#ifndef DoSharedLib
+#define DoSharedLib NO
+#endif
+#ifndef DoDebugLib
+#define DoDebugLib NO
+#endif
+#ifndef DoProfileLib
+#define DoProfileLib NO
+#endif
 #ifndef DoPicLib
-#  define DoPicLib	NO
+#define DoPicLib NO
+#endif
+#ifndef DoExtraLib
+#define DoExtraLib NO
+#endif
+
+#ifndef HasSharedData
+#define HasSharedData NO
+#endif
+#ifndef HugeLibrary
+#define HugeLibrary NO
+#endif
+
+#ifndef ShlibBindGlobals
+#define ShlibBindGlobals NO
+#endif
+
+#if ShlibBindGlobals && defined(ShlibGlobalsFlags)
+SHLIBGLOBALSFLAGS = ShlibGlobalsFlags
 #endif
 
 #ifndef LibraryCplusplusOptions
@@ -53,6 +81,12 @@ XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.15 2001/08/27 17:40:55 dawes Exp $
 # define SeparateSharedCompile YES
 #endif
 
+#ifdef CrossCompileDir
+# ifndef StripPath
+#  define StripPath(x) `echo x|sed "s%.*/%%"`
+# endif
+#endif 
+
 #ifndef CplusplusSource
 # ifndef LibraryCcCmd
 #  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCcCmd)
@@ -69,7 +103,17 @@ XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.15 2001/08/27 17:40:55 dawes Exp $
 #  endif
 # endif
 
+#ifdef CrossCompileDir
+# ifndef CrossLibraryCcCmd
+#  define CrossLibraryCcCmd Concat3(CrossCompileDir,/,StripPath(LibraryCcCmd))
+# endif
+#endif
+
+#ifdef CrossCompileDir
+         CC = CrossLibraryCcCmd
+#else
          CC = LibraryCcCmd
+#endif
   CCOPTIONS = LibraryCCOptions
 STD_DEFINES = LibraryDefines $(PROJECT_DEFINES)
 CDEBUGFLAGS = LibraryCDebugFlags
@@ -79,13 +123,24 @@ CLIBDEBUGFLAGS = LibraryDebugOpt
    PICFLAGS = LargePositionIndependentCFlags
 # endif
 #else
-# ifndef LibraryCplusplusCmd
-#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusCmd)
-#   define LibraryCplusplusCmd SharedLibraryCplusplusCmd
-#  else
-#   define LibraryCplusplusCmd CplusplusCmd
+# ifndef CrossCompileDir
+#  ifndef LibraryCplusplusCmd
+#   if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusCmd)
+#    define LibraryCplusplusCmd SharedLibraryCplusplusCmd
+#   else
+#    define LibraryCplusplusCmd CplusplusCmd
+#   endif
+#  endif
+# else 
+#  ifndef CrossLibraryCplusplusCmd
+#   if (DoSharedLib || DocPicLib) && defined(SharedLibraryCplusplusCmd)
+#    define CrossLibraryCplusplusCmd Concat3(CrossCompileDir,/,StripPath(SharedLibraryCplusplusCmd))
+#   else
+#    define CrossLibraryCplusplusCmd Concat3(CrossCompileDir,/,StripPath(CplusplusCmd))
+#   endif
 #  endif
 # endif
+
 # ifndef LibraryCplusplusOptions
 #  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusOptions)
 #   define LibraryCplusplusOptions SharedLibraryCplusplusOptions
@@ -94,7 +149,11 @@ CLIBDEBUGFLAGS = LibraryDebugOpt
 #  endif
 # endif
 
+#ifdef CrossCompileDir
+          CXX = CrossLibraryCplusplusCmd
+#else
           CXX = LibraryCplusplusCmd
+#endif
    CXXOPTIONS = LibraryCplusplusOptions
   STD_DEFINES = LibraryDefines $(PROJECT_DEFINES)
 CXXDEBUGFLAGS = LibraryCplusplusDebugFlags
@@ -154,7 +213,11 @@ LIB_MT_DEFINES = LibraryMTDefines
 #  define _NormalCleanDir() LibCleanDir(unshared)
 # else
 #  define _NormalLibMkdir() $(_NULLCMD_)
-#  define _NormalObjCompile(options) NormalLibObjCompile(options)
+#  if !DoSharedLib &&  defined(IncludeSharedObjectInNormalLib)
+#   define _NormalObjCompile(options) NormalRelocLibObjCompile(options)
+#  else
+#   define _NormalObjCompile(options) NormalLibObjCompile(options)
+#  endif
 #  define _NormalObjCplusplusCompile(options) NormalLibObjCplusplusCompile(options)
 #  define _NormalCleanDir() $(_NULLCMD_)
 # endif
@@ -171,10 +234,6 @@ LIB_MT_DEFINES = LibraryMTDefines
 # define _SharedObjCompile(options) NormalLibObjCompile(options)
 # define _SharedObjCplusplusCompile(options) NormalLibObjCplusplusCompile(options)
 #endif
-#endif
-
-#ifndef DoExtraLib
-#define DoExtraLib NO
 #endif
 
 #ifndef LibInstallBuild
@@ -209,6 +268,19 @@ target									@@\
 	_NormalObjCompile(options)					@@\
 	_ExtraObjCompile(options)					@@\
 	_SharedObjCompile(options)
+
+#ifndef SeparateSharedCompile
+# define _CompileObjSeparateOpts(target,staticopts,sharedopts) \
+	_CompileObj(target,sharedopts)
+#else
+# define _CompileObjSeparateOpts(target,staticopts,sharedopts)		@@\
+target									@@\
+	_DebuggedObjCompile(staticopts)					@@\
+	_ProfiledObjCompile(staticopts)					@@\
+	_NormalObjCompile(staticopts)					@@\
+	_ExtraObjCompile(staticopts)					@@\
+	_SharedObjCompile(sharedopts)	
+#endif
 
 #ifdef CplusplusSource
 # define _CompileObjCplusplus(target, options)				@@\
@@ -261,6 +333,16 @@ basename.i: basename.SRCsuf depends					@@\
 									@@\
 CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
 #endif /* SpecialCLibObjectRule */
+
+#ifndef SpecialCLibObjectRuleSeparateOpts
+# define SpecialCLibObjectRuleSeparateOpts(basename,depends,staticopts,shopts) @@\
+_CompileObjSeparateOpts(basename.Osuf: basename.SRCsuf depends,staticopts,shopts)	@@\
+									@@\
+basename.i: basename.SRCsuf depends					@@\
+	CPPOnlyCompile(basename.SRCsuf,sharedopts)			@@\
+									@@\
+CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
+#endif /* SpecialCLibObjectRuleSepareateOpts */
 
 #ifndef SpecialCplusplusLibObjectRule
 # define SpecialCplusplusLibObjectRule(basename,depends,options)	@@\
@@ -379,9 +461,9 @@ LibraryObjectRule()
 # if !defined(LibCreate) || LibCreate
 #  if DoSharedLib
 #   if HugeLibrary && defined(SharedLibraryTarget3)
-SharedLibraryTarget3($(LIBNAME),$(SoRev),$(OBJS1),$(OBJS2),$(OBJS3),.,.)
+SharedLibraryTarget3($(LIBNAME),$(SoRev),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRASHAREDOBJS),.,.)
 #   else
-SharedLibraryTarget($(LIBNAME),$(SoRev),$(OBJS),.,.)
+SharedLibraryTarget($(LIBNAME),$(SoRev),$(OBJS) $(EXTRASHAREDOBJS),.,.)
 #   endif
 #   if !defined(LibInstall) || LibInstall
 InstallSharedLibrary($(LIBNAME),$(SoRev),$(SHLIBDIR))
@@ -396,15 +478,15 @@ InstallSharedLibraryData($(LIBNAME),$(SoRev),$(SHLIBDIR))
 #  if DoNormalLib
 #   if HugeLibrary
 #    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
-UnsharedLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3),unshared,..)
+UnsharedLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRAUNSHAREDOBJS),unshared,..)
 #    else
-NormalLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3))
+NormalLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRAUNSHAREDOBJS))
 #    endif
 #   else
 #    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
-UnsharedLibraryTarget($(LIBNAME),$(OBJS),unshared,..)
+UnsharedLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS),unshared,..)
 #    else
-NormalLibraryTarget($(LIBNAME),$(OBJS))
+NormalLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS))
 #    endif
 #   endif
 #   if !defined(LibInstall) || LibInstall
@@ -412,13 +494,13 @@ InstallLibrary($(LIBNAME),$(USRLIBDIR))
 #   endif
 #  endif
 #  if DoProfileLib
-ProfiledLibraryTarget($(LIBNAME),$(OBJS))
+ProfiledLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS))
 #   if !defined(LibInstall) || LibInstall
 InstallLibrary($(LIBNAME)_p,$(USRLIBDIR))
 #   endif
 #  endif
 #  if DoDebugLib
-DebuggedLibraryTarget($(LIBNAME),$(OBJS))
+DebuggedLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS))
 #   if !defined(LibInstall) || LibInstall
 InstallLibrary($(LIBNAME)_d,$(USRLIBDIR))
 #   endif
@@ -430,7 +512,7 @@ InstallLibrary($(LIBNAME)_pic,$(USRLIBDIR))
 #   endif
 #  endif
 #  if DoExtraLib && defined(ExtraLibRules)
-ExtraLibraryTarget($(LIBNAME),$(SoRev),$(OBJS))
+ExtraLibraryTarget($(LIBNAME),$(SoRev),$(OBJS) $(EXTRAUNSHAREDOBJS))
 #   if !defined(LibInstall) || LibInstall
 ExtraInstallLibrary($(LIBNAME),$(SoRev))
 #   endif
@@ -448,6 +530,12 @@ AllTarget($(OBJS2))
 AllTarget($(OBJS3))
 #   else
 AllTarget($(OBJS))
+#   endif
+#   if DoSharedLib
+AllTarget($(EXTRASHAREDOBJS))
+#   endif
+#   if DoNormalLib
+AllTarget($(EXTRAUNSHAREDOBJS))
 #   endif
 #  endif /* LibBuild */
 # endif /* LibCreate */

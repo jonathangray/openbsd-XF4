@@ -26,7 +26,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/font/Type1/arith.c,v 1.5 2001/01/17 19:43:21 dawes Exp $ */
+/* $XFree86: xc/lib/font/Type1/arith.c,v 1.6 2002/02/18 20:51:57 herrb Exp $ */
 
  /* ARITH    CWEB         V0006 ********                             */
 /*

@@ -35,8 +35,8 @@
 /*
  * gridline.h
  *
- * $Date: 2001/04/05 22:04:52 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/gridline.h,v 1.1.1.1 2001/04/05 22:04:52 matthieu Exp $
+ * $Date: 2003/04/01 22:36:14 $ $Revision: 1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/gridline.h,v 1.2 2003/04/01 22:36:14 matthieu Exp $
  */
 
 #ifndef __glugridline_h_

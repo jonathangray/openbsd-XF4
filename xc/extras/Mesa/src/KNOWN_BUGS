@@ -1,4 +1,4 @@
-$Id: KNOWN_BUGS,v 1.1.1.1 2003/04/01 18:45:28 matthieu Exp $
+$Id: KNOWN_BUGS,v 1.2 2003/04/01 22:36:06 matthieu Exp $
 
 
 Performance issues with EXT_point_parameters & quake2

@@ -318,7 +318,7 @@ XrmOptionDescRec options[100];
 #define FABSF(n) ((float)fabs((double)(n)))
 #endif
 
-#ifdef  VMS
+#ifdef VMS
 #include <unixlib.h>
 #endif
 #if 0

@@ -1,5 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: alpha_video.c,v 1.9 2002/09/28 15:50:02 matthieu Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/alpha_video.c,v 1.2 2002/10/29 23:19:13 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -32,9 +31,10 @@
 #include "xf86Priv.h"
 
 #include <sys/param.h>
-#include <sys/sysctl.h>
-#ifdef __OpenBSD__
-#include <machine/cpu.h>
+#ifndef __NetBSD__
+#  include <sys/sysctl.h>
+# else
+#  include <machine/sysarch.h>
 #endif
 #include "xf86Axp.h"
 
@@ -51,13 +51,13 @@
 #define MAP_FAILED ((caddr_t)-1)
 #endif
 
-
+#ifndef __NetBSD__
 extern unsigned long dense_base(void);
-extern axpDevice bsdGetAXP(void);
 
 static int axpSystem = -1;
 static unsigned long hae_thresh;
 static unsigned long hae_mask;
+static unsigned long bus_base;
 static unsigned long sparse_size;
 
 static unsigned long
@@ -69,13 +69,13 @@ memory_base(void)
 	size_t len = sizeof(base);
 	int error;
 #ifdef __OpenBSD__
-	int mib[3];
+       int mib[3];
 
-	mib[0] = CTL_MACHDEP;
-	mib[1] = CPU_CHIPSET;
-	mib[2] = CPU_CHIPSET_MEM;
+       mib[0] = CTL_MACHDEP;
+       mib[1] = CPU_CHIPSET;
+       mib[2] = CPU_CHIPSET_MEM;
 
-	if ((error = sysctl(mib, 3, &base, &len, NULL, 0)) < 0)
+       if ((error = sysctl(mib, 3, &base, &len, NULL, 0)) < 0)
 #else
 	if ((error = sysctlbyname("hw.chipset.memory", &base, &len,
 				  0, 0)) < 0)
@@ -100,15 +100,69 @@ has_bwx(void)
     mib[2] = CPU_CHIPSET_BWX;
 
     if ((error = sysctl(mib, 3, &bwx, &len, NULL, 0)) < 0)
-#else
-    if ((error = sysctlbyname("hw.chipset.bwx", &bwx, &len, 0, 0)) < 0)
-#endif
 	return FALSE;
     else
 	return bwx;
+#else
+    if ((error = sysctlbyname("hw.chipset.bwx", &bwx, &len, 0, 0)) < 0)
+	return FALSE;
+    else
+	return bwx;
+#endif
+}
+#else /* __NetBSD__ */
+static struct alpha_bus_window *abw;
+static int abw_count = -1;
+
+static void
+init_abw()
+{
+	if (abw_count < 0) {
+		abw_count = alpha_bus_getwindows(ALPHA_BUS_TYPE_PCI_MEM, &abw);
+		if (abw_count <= 0)
+			FatalError("init_abw: alpha_bus_getwindows failed\n");
+	}
 }
 
+static int
+has_bwx(void)
+{
+	if (abw_count < 0)
+		init_abw();
 
+	xf86Msg(X_INFO, "has_bwx = %d\n", 
+		abw[0].abw_abst.abst_flags & ABST_BWX ? 1 : 0);	/* XXXX */
+	return abw[0].abw_abst.abst_flags & ABST_BWX;
+}
+
+static unsigned long
+dense_base()
+{
+	if (abw_count < 0)
+		init_abw();
+
+	/* XXX check abst_flags for ABST_DENSE just to be safe? */
+	xf86Msg(X_INFO, "dense base = %#lx\n", 
+		abw[0].abw_abst.abst_sys_start); /* XXXX */
+	return abw[0].abw_abst.abst_sys_start;
+}
+
+static unsigned long
+memory_base()
+{
+	if (abw_count < 0)
+		init_abw();
+	
+	if (abw_count > 0) {
+		xf86Msg(X_INFO, "memory base = %#lx\n", 
+			abw[1].abw_abst.abst_sys_start); /* XXXX */
+		return abw[1].abw_abst.abst_sys_start;
+	} else {
+		xf86Msg(X_INFO, "no memory base\n"); /* XXXX */
+		return 0;
+	}
+}
+#endif /* __NetBSD__ */
 
 #define BUS_BASE	dense_base()
 #define BUS_BASE_BWX	memory_base()
@@ -119,8 +173,8 @@ has_bwx(void)
 
 #ifdef __OpenBSD__
 #define SYSCTL_MSG "\tCheck that you have set 'machdep.allowaperture=1'\n"\
-		   "\tin /etc/sysctl.conf and reboot your machine\n" \
-		   "\trefer to xf86(4) for details"
+                  "\tin /etc/sysctl.conf and reboot your machine\n" \
+                  "\trefer to xf86(4) for details"
 #endif
 
 static Bool useDevMem = FALSE;
@@ -152,28 +206,28 @@ checkDevMem(Bool warn)
 	devMemChecked = TRUE;
 
 #ifdef HAS_APERTURE_DRV
-	/* Try the aperture driver first */
-	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0) {
-	    /* Try to map a page at the VGA address */
-	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
-			     MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
-	
-	    if (base != MAP_FAILED) {
-		munmap((caddr_t)base, 4096);
-		devMemFd = fd;
-		useDevMem = TRUE;
-		xf86Msg(X_INFO, "checkDevMem: using aperture driver %s\n",
-		        DEV_APERTURE);
-		return;
-	    } else {
-		if (warn) {
-		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
-			    DEV_APERTURE, strerror(errno));
-		}
-	    }
-	} 
+       /* Try the aperture driver first */
+       if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0) {
+           /* Try to map a page at the VGA address */
+           base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
+                            MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
+       
+           if (base != MAP_FAILED) {
+               munmap((caddr_t)base, 4096);
+               devMemFd = fd;
+               useDevMem = TRUE;
+               xf86Msg(X_INFO, "checkDevMem: using aperture driver %s\n",
+                       DEV_APERTURE);
+               return;
+           } else {
+               if (warn) {
+                   xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
+                           DEV_APERTURE, strerror(errno));
+               }
+           }
+       } 
 #endif
-	if ((fd = open(DEV_MEM, O_RDWR)) >= 0) {
+       if ((fd = open(DEV_MEM, O_RDWR)) >= 0) {
 	    /* Try to map a page at the VGA address */
 	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
 				 MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
@@ -189,23 +243,23 @@ checkDevMem(Bool warn)
 			    DEV_MEM, strerror(errno));
 		}
 	    }
-	} 
+	}
 	if (warn) { 
 #ifndef HAS_APERTURE_DRV
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open/mmap %s (%s)\n",
-		    DEV_MEM, strerror(errno));
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
+           xf86Msg(X_WARNING, "checkDevMem: failed to open/mmap %s (%s)\n",
+                   DEV_MEM, strerror(errno));
+           xf86ErrorF("\tlinear framebuffer access unavailable\n");
 #else
 #ifndef __OpenBSD__
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-		"\t(%s)\n", DEV_APERTURE, DEV_MEM, strerror(errno));
+           xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+               "\t(%s)\n", DEV_APERTURE, DEV_MEM, strerror(errno));
 #else /* __OpenBSD__ */
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-		    "\t(%s)\n%s", DEV_APERTURE, DEV_MEM, strerror(errno),
-		    SYSCTL_MSG);
+           xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+                   "\t(%s)\n%s", DEV_APERTURE, DEV_MEM, strerror(errno),
+                   SYSCTL_MSG);
 #endif /* __OpenBSD__ */
-
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
+	   
+           xf86ErrorF("\tlinear framebuffer access unavailable\n");
 	}
 	useDevMem = FALSE;
 	return;
@@ -241,11 +295,6 @@ mapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 	pointer base;
 
 	checkDevMem(FALSE);
-
-#ifdef DEBUG
-	xf86MsgVerb(X_INFO, 3, "mapVidMem  Base %lx Size %ld\n", Base, Size);
-#endif
-
 	Base = Base & ((1L<<32) - 1);
 
 	if (useDevMem)
@@ -333,6 +382,7 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	return(Len);
 }
 
+
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 
 extern int ioperm(unsigned long from, unsigned long num, int on);
@@ -350,8 +400,23 @@ xf86DisableIO()
 	return;
 }
 
-#endif /* __FreeBSD__  */
+#endif /* __FreeBSD__ || __OpenBSD__ */
 
+#ifdef USE_ALPHA_PIO
+
+void
+xf86EnableIO()
+{
+	alpha_pci_io_enable(1);
+}
+
+void
+xf86DisableIO()
+{
+	alpha_pci_io_enable(0);
+}
+
+#endif /* USE_ALPHA_PIO */
 
 /***************************************************************************/
 /* Interrupt Handling section                                              */
@@ -367,10 +432,8 @@ xf86DisableInterrupts()
 void
 xf86EnableInterrupts()
 {
-
 	return;
 }
-
 
 
 #define vuip    volatile unsigned int *
@@ -411,10 +474,9 @@ writeSparse16(int Value, pointer Base, register unsigned long Offset);
 static void
 writeSparse32(int Value, pointer Base, register unsigned long Offset);
 
-#ifndef __OpenBSD__
-#include <machine/sysarch.h>
-
+#ifdef __FreeBSD__
 extern int sysarch(int, char *);
+#endif
 
 struct parms {
 	u_int64_t hae;
@@ -423,20 +485,15 @@ struct parms {
 static int
 sethae(u_int64_t hae)
 {
+#ifdef __FreeBSD__
 	struct parms p;
 	p.hae = hae;
 	return (sysarch(ALPHA_SETHAE, (char *)&p));
-}
-#else
-
-static int
-sethae(u_int64_t hae)
-{
-	/* TBD */
-	return -1;
-}
-
 #endif
+#ifdef __OpenBSD__
+	return -1;
+#endif
+}
 
 static pointer
 mapVidMemSparse(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
@@ -461,11 +518,11 @@ mapVidMemSparse(int ScreenNum, unsigned long Base, unsigned long Size, int flags
       memBase = mmap((caddr_t)0, 0x100000000,
 		     PROT_READ | PROT_WRITE,
 		     MAP_SHARED, devMemFd,
-		     (off_t) dense_base());
+		     (off_t) BUS_BASE);
       memSBase = mmap((caddr_t)0, 0x100000000,
 		      PROT_READ | PROT_WRITE,
 		      MAP_SHARED, devMemFd,
-		      (off_t) memory_base());
+		      (off_t) BUS_BASE_BWX);
       
       if (memSBase == MAP_FAILED || memBase == MAP_FAILED)	{
 	FatalError("xf86MapVidMem: Could not mmap framebuffer (%s)\n",

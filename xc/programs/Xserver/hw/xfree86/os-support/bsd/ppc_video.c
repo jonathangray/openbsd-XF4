@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.7 2002/09/29 19:20:42 todd Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/ppc_video.c,v 1.3 2002/11/09 17:28:08 herrb Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.8 2003/04/01 22:36:52 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -46,7 +46,6 @@
 /***************************************************************************/
 
 static pointer ppcMapVidMem(int, unsigned long, unsigned long, int);
-static pointer ppcMapVidMemTag(int, unsigned long, unsigned long, int, PCITAG);
 static void ppcUnmapVidMem(int, pointer, unsigned long);
 
 
@@ -55,7 +54,6 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 {
 	pVidMem->linearSupported = TRUE;
 	pVidMem->mapMem = ppcMapVidMem;
-	pVidMem->mapMemTag = ppcMapVidMemTag;
 	pVidMem->unmapMem = ppcUnmapVidMem;
 	pVidMem->initialised = TRUE;
 }
@@ -81,26 +79,6 @@ ppcMapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 	return base;
 }
 
-static pointer
-ppcMapVidMemTag(int ScreenNum, unsigned long Base, 
-		unsigned long Size, int flags, PCITAG tag)
-{
-	int fd = xf86Info.screenFd;
-	pointer base;
-
-#ifdef DEBUG
-	ErrorF("mapVidMemTag %x:%x:%x %lx, %lx, fd = %d\n", 
-	       PCI_BUS_FROM_TAG(tag), PCI_DEV_FROM_TAG(tag),
-	       PCI_FUNC_FROM_TAG(tag), Base, Size, fd);
-#endif
-
-	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
-	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
-			   "xf86MapVidMem", Size, Base, strerror(errno));
-
-	return base;
-}
 
 static void
 ppcUnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)

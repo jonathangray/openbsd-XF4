@@ -5,7 +5,7 @@ See the file COPYING for copying permission.
 
 #if 0
 static char RCSId[]
-  = "$Header: /tmp/OpenBSD-XF4-repo/xc/extras/expat/lib/xmlrole.c,v 1.1.1.1 2003/04/01 18:45:33 matthieu Exp $";
+  = "$Header: /tmp/OpenBSD-XF4-repo/xc/extras/expat/lib/xmlrole.c,v 1.2 2003/04/01 22:36:11 matthieu Exp $";
 #endif
 
 /* $XFree86: xc/extras/expat/lib/xmlrole.c,v 1.2 2002/04/07 04:03:19 tsi Exp $ */

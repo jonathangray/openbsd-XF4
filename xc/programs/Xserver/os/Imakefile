@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:40 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.34 2001/10/28 03:34:16 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.38 2002/11/14 21:01:21 tsi Exp $
 
 #include <Server.tmpl>
 
@@ -69,10 +69,7 @@ KRB5SRCS = k5auth.c k5encode.c
    LBX_OBJS =
 #endif
 
-#if DDXOsColor
-COLOR_SRCS=
-COLOR_OBJS=
-#else
+#if !defined(DDXOsColor)
 COLOR_SRCS=oscolor.c
 COLOR_OBJS=oscolor.o
 #endif
@@ -80,6 +77,10 @@ COLOR_OBJS=oscolor.o
 #if UseInternalMalloc
 MALLOC_SRCS=xalloc.c
 MALLOC_OBJS=xalloc.o
+#endif
+
+#if HasGetpeereid
+GETPEEREID_DEFINES = -DHAS_GETPEEREID
 #endif
 
 #ifdef OpenBSDArchitecture
@@ -120,9 +121,9 @@ BOOTSTRAPCFLAGS =
 #endif
         DEFINES = -DXSERV_t -DTRANS_SERVER $(CONNECTION_FLAGS) $(MEM_DEFINES) \
 		  $(XDMAUTHDEFS) $(RPCDEFS) $(SIGNAL_DEFINES) $(OS_DEFINES) \
-		  $(KRB5_DEFINES) $(RGB_DEFINES)
+		  $(KRB5_DEFINES) $(RGB_DEFINES) $(GETPEEREID_DEFINES)
        INCLUDES = -I. -I../include -I$(XINCLUDESRC) -I$(EXTINCSRC) \
-		  -I$(SERVERSRC)/Xext -I$(FONTINCSRC) \
+		  -I$(SERVERSRC)/Xext -I$(FONTINCSRC) -I$(SERVERSRC)/render \
 		  -I$(TOP)/lib/Xau -I../lbx Krb5Includes
  DEPEND_DEFINES = $(DBM_DEFINES) $(XDMCP_DEFINES) $(EXT_DEFINES) \
 		  $(TRANS_INCLUDES) $(CONNECTION_FLAGS) DependDefines

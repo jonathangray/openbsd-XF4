@@ -31,7 +31,7 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
-** $Date: 2001/04/05 22:05:05 $ $Revision: 1.1.1.1 $
+** $Date: 2003/04/01 22:36:15 $ $Revision: 1.2 $
 */
 /*
  *monoPolyPart.C
