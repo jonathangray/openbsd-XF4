@@ -160,7 +160,7 @@ ProcXResQueryClientResources (ClientPtr client)
 
             if(!ResourceNames[i + 1]) {
                 char buf[40];
-                snprintf(buf, "Unregistered resource %i", i + 1);
+                snprintf(buf, sizeof(buf), "Unregistered resource %i", i + 1);
                 RegisterResourceName(i + 1, buf);
             }
 
