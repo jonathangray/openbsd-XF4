@@ -231,7 +231,7 @@ LinkSourceFile(xf86Axp.c,../shared)
 
 DependTarget()
 
-#if UsbMouseSupport && !HasLibUsb
+#if UsbMouseSupport && !HasLibUsbHid
 MakeSubdirs($(SUBDIRS))
 
 DependSubdirs($(SUBDIRS))
