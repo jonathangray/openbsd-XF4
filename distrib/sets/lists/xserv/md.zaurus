@@ -929,6 +929,7 @@
 ./usr/X11R6/lib/modules/input/tek4957_drv.o
 ./usr/X11R6/lib/modules/input/void_drv.o
 ./usr/X11R6/lib/modules/input/wacom_drv.o
+./usr/X11R6/lib/modules/input/ws_drv.o
 ./usr/X11R6/lib/modules/libcfb.a
 ./usr/X11R6/lib/modules/libcfb16.a
 ./usr/X11R6/lib/modules/libcfb24.a
@@ -995,6 +996,7 @@
 ./usr/X11R6/man/cat4/v4l.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
+./usr/X11R6/man/cat4/ws.0
 ./usr/X11R6/man/cat4/wsfb.0
 ./usr/X11R6/man/cat5/getconfig.0
 ./usr/X11R6/man/cat5/xorg.conf.0
