@@ -360,7 +360,8 @@ install:: fonts.alias							@@\
 # endif
 
 /* FreeType2 don't work on 64bit machines */
-# define BuildFreetype2Library        NO
+# define BuildFreetype2Library  NO
+# define BuildXftLibrary	NO
 
 # include <xfree86.cf>
 
