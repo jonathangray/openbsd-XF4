@@ -7,7 +7,7 @@ XCOMM $XFree86: xc/programs/Imakefile,v 3.56 2003/06/20 15:49:50 eich Exp $
 #define IHaveSubdirs
 #define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 
-#if BuildServer || UseRgbTxt
+#if BuildServer || UseRgbTxt || defined(Hp300Architecture)
        RGBSRCDIR = rgb
 #endif
 #if BuildServer
