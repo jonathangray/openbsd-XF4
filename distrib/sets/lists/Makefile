@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.7 2001/10/05 20:13:29 todd Exp $
+# $OpenBSD: Makefile,v 1.8 2001/10/24 14:21:25 todd Exp $
 
 # Various list maintenance functions
 
@@ -18,7 +18,7 @@ sort:
 		mv $$f.tmp $$f; \
 	done;
 
-archs  = alpha i386 mac68k macppc mvme68k sparc sparc64
+archs  = alpha amiga hp300 i386 mac68k macppc mvme68k sparc sparc64 vax
 		
 mdtomi:
 	@echo "Checking for common md file lines for migration to mi files:"
