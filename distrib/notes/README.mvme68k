@@ -1,0 +1,4 @@
+Post-installation instructions for XFree86 on OpenBSD/mvme68k
+-------------------------------------------------------------
+
+There is no X server for mvme68k.  Only userland X.
