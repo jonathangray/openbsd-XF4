@@ -1,7 +1,10 @@
 Post-installation instructions for XFree86 on OpenBSD/alpha
 -----------------------------------------------------------
 
-OpenBSD 3.2 and later uses the XFree86 X server on alpha
+OpenBSD 3.2 and later uses the XFree86 X server on alpha. 
+
+Currently, TGA video hardware as well as a few VGA cards are
+supported.
 
 A special driver reproduces the functionnality of Xtga in previous
 releases:  wsfb. It uses the TGA as a dumb framebuffer at 8 or 24 bits
@@ -9,9 +12,6 @@ per pixels, depending on the card model.
 A default /etc/X11/XF86Config is installed that uses this driver. So
 you can just use 'startx' or xdm to start X without further
 configuration. 
-
-Currently, TGA video hardware is supported as well as a few VGA cards
-are supported. 
 
 VGA cards support is available only on BWX based machines.
 The following cards have been successfully tested for now:
@@ -21,8 +21,16 @@ The following cards have been successfully tested for now:
 * Cirrus Logic CL5430 (works with 'Option "NoAccel"')
 * Cirrus Logic GD5446 (8, 16 and 24 bits depth)
 
-The kernel needs to be running at securelevel 0 for VGA support. Set 
-securelevel=-1 in /etc/rc.securelevel. 
+Make sure your system has support for X enabled:
+
+You must have 'option APERTURE' in your kernel configuration and
+uncomment the line that says:  
+
+	machdep.allowaperture=1
+
+in /etc/sysctl.conf.  See xf86(4) for more details about security
+issues related to this.  After changing this variable in sysctl.conf,
+you will need to reboot for the change to take effect. 
 
 See the tga(4) manual page for instructions on setting
 the resolution of a TGA card.
@@ -36,4 +44,4 @@ Start either xdm(1) or startx(1).
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
 
-$OpenBSD: README.alpha,v 1.7 2002/08/05 19:17:57 matthieu Exp $
+$OpenBSD: README.alpha,v 1.8 2002/08/24 17:39:46 matthieu Exp $
