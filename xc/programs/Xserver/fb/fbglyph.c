@@ -34,9 +34,19 @@ fbGlyphIn (RegionPtr	pRegion,
 	   int		height)
 {
     BoxRec  box;
+    BoxPtr pExtents = REGION_EXTENTS(0, pRegion);
 
-    if (x + width < 0) return FALSE;
-    if (y + height < 0) return FALSE;
+    /* 
+     * Check extents by hand to avoid 16bit overflows 
+     */
+    if (x < (int)pExtents->x1)
+       return FALSE;
+    if ((int)pExtents->x2 < x + width)
+       return FALSE;
+    if (y < (int)pExtents->y1)
+       return FALSE;
+    if ((int)pExtents->y2 < y + height)
+       return FALSE;
     box.x1 = x;
     box.x2 = x + width;
     box.y1 = y;
@@ -261,9 +271,9 @@ fbPolyGlyphBlt (DrawablePtr	pDrawable,
 			      FbBits,
 			      int,
 			      int);
-    FbBits	    *dst;
-    FbStride	    dstStride;
-    int		    dstBpp;
+    FbBits	    *dst = NULL;
+    FbStride	    dstStride = 0;
+    int		    dstBpp = 0;
     
     glyph = 0;
     if (pGC->fillStyle == FillSolid && pPriv->and == 0)
@@ -351,9 +361,9 @@ fbImageGlyphBlt (DrawablePtr	pDrawable,
 			      FbBits,
 			      int,
 			      int);
-    FbBits	    *dst;
-    FbStride	    dstStride;
-    int		    dstBpp;
+    FbBits	    *dst = NULL;
+    FbStride	    dstStride = 0;
+    int		    dstBpp = 0;
     
     glyph = 0;
     if (pPriv->and == 0)
