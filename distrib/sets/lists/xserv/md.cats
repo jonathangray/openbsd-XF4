@@ -3,6 +3,19 @@
 ./usr/X11R6/bin/Xnest
 ./usr/X11R6/bin/Xprt
 ./usr/X11R6/bin/Xvfb
+./usr/X11R6/bin/getconfig
+./usr/X11R6/bin/getconfig.pl
+./usr/X11R6/bin/kbd_mode
+./usr/X11R6/bin/mmapr
+./usr/X11R6/bin/mmapw
+./usr/X11R6/bin/pcitweak
+./usr/X11R6/bin/xf86cfg
+./usr/X11R6/bin/xf86config
+./usr/X11R6/lib/X11/XF86Config.98
+./usr/X11R6/lib/X11/XF86Config.eg
+./usr/X11R6/lib/X11/getconfig
+./usr/X11R6/lib/X11/getconfig/cfg.sample
+./usr/X11R6/lib/X11/getconfig/xfree86.cfg
 ./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/codeconv
@@ -119,6 +132,11 @@
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0
+./usr/X11R6/man/cat1/getconfig.0
+./usr/X11R6/man/cat1/kbd_mode.0
+./usr/X11R6/man/cat1/pcitweak.0
+./usr/X11R6/man/cat1/xf86cfg.0
+./usr/X11R6/man/cat1/xf86config.0
 ./usr/X11R6/man/cat4/chips.0
 ./usr/X11R6/man/cat4/citron.0
 ./usr/X11R6/man/cat4/dmc.0
@@ -149,3 +167,5 @@
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
 ./usr/X11R6/man/cat4/wsfb.0
+./usr/X11R6/man/cat5/XF86Config.0
+./usr/X11R6/man/cat5/getconfig.0

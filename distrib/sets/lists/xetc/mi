@@ -19,6 +19,7 @@
 ./etc/X11/app-defaults/XLock
 ./etc/X11/app-defaults/XLogo
 ./etc/X11/app-defaults/XLogo-color
+./etc/X11/app-defaults/XMore
 ./etc/X11/app-defaults/XSm
 ./etc/X11/app-defaults/XTerm
 ./etc/X11/app-defaults/XTerm-color
@@ -38,6 +39,7 @@
 ./etc/X11/fs/config
 ./etc/X11/lbxproxy/AtomControl
 ./etc/X11/proxymngr/pmconfig
+./etc/X11/rc.xprint
 ./etc/X11/rstart/commands/@List
 ./etc/X11/rstart/commands/ListContexts
 ./etc/X11/rstart/commands/ListGenericCommands
@@ -70,4 +72,3 @@
 ./etc/X11/xsm/system.xsm
 ./etc/fonts/fonts.conf
 ./etc/fonts/fonts.dtd
-./etc/fonts/local.conf

@@ -1,5 +1,4 @@
-./etc/X11/XF86Config
-./etc/X11/app-defaults/XF86Cfg
+./etc/X11/app-defaults/XOrgCfg
 ./etc/X11/xkb/README
 ./etc/X11/xkb/README.config
 ./etc/X11/xkb/README.enhancing
@@ -119,9 +118,11 @@
 ./etc/X11/xkb/rules/sun
 ./etc/X11/xkb/rules/sun.lst
 ./etc/X11/xkb/rules/xfree86
-./etc/X11/xkb/rules/xfree86-it.lst
 ./etc/X11/xkb/rules/xfree86.lst
-./etc/X11/xkb/rules/xfree86.xml
+./etc/X11/xkb/rules/xorg
+./etc/X11/xkb/rules/xorg-it.lst
+./etc/X11/xkb/rules/xorg.lst
+./etc/X11/xkb/rules/xorg.xml
 ./etc/X11/xkb/semantics/basic
 ./etc/X11/xkb/semantics/complete
 ./etc/X11/xkb/semantics/default
@@ -355,4 +356,5 @@
 ./etc/X11/xkb/types/numpad
 ./etc/X11/xkb/types/pc
 ./etc/X11/xkb/xkbcomp
+./etc/X11/xorg.conf
 ./etc/X11/xserver/SecurityPolicy

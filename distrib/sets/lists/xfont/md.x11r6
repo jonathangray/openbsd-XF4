@@ -3799,18 +3799,6 @@
 ./usr/X11R6/lib/X11/fonts/CID
 ./usr/X11R6/lib/X11/fonts/CID/fonts.dir
 ./usr/X11R6/lib/X11/fonts/CID/fonts.scale
-./usr/X11R6/lib/X11/fonts/Speedo
-./usr/X11R6/lib/X11/fonts/Speedo/encodings.dir
-./usr/X11R6/lib/X11/fonts/Speedo/font0419.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0582.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0583.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0611.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0648.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0649.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0709.spd
-./usr/X11R6/lib/X11/fonts/Speedo/font0710.spd
-./usr/X11R6/lib/X11/fonts/Speedo/fonts.dir
-./usr/X11R6/lib/X11/fonts/Speedo/fonts.scale
 ./usr/X11R6/lib/X11/fonts/TTF
 ./usr/X11R6/lib/X11/fonts/TTF/Vera.ttf
 ./usr/X11R6/lib/X11/fonts/TTF/VeraBI.ttf
@@ -4007,6 +3995,9 @@
 ./usr/X11R6/lib/X11/fonts/encodings/large
 ./usr/X11R6/lib/X11/fonts/encodings/large/big5.eten-0.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/big5hkscs-0.enc.gz
+./usr/X11R6/lib/X11/fonts/encodings/large/cns11643-1.enc.gz
+./usr/X11R6/lib/X11/fonts/encodings/large/cns11643-2.enc.gz
+./usr/X11R6/lib/X11/fonts/encodings/large/cns11643-3.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/encodings.dir
 ./usr/X11R6/lib/X11/fonts/encodings/large/gb18030.2000-0.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/gb18030.2000-1.enc.gz
@@ -4032,6 +4023,7 @@
 ./usr/X11R6/lib/X11/fonts/encodings/mulearabic-1.enc
 ./usr/X11R6/lib/X11/fonts/encodings/mulearabic-2.enc
 ./usr/X11R6/lib/X11/fonts/encodings/mulelao-1.enc
+./usr/X11R6/lib/X11/fonts/encodings/suneu-greek.enc
 ./usr/X11R6/lib/X11/fonts/encodings/tcvn-0.enc
 ./usr/X11R6/lib/X11/fonts/encodings/tis620-2.enc
 ./usr/X11R6/lib/X11/fonts/encodings/viscii1.1-1.enc.gz
