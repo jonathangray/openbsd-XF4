@@ -955,6 +955,7 @@
 ./usr/X11R6/man/cat1/xsm.0
 ./usr/X11R6/man/cat1/xstdcmap.0
 ./usr/X11R6/man/cat1/xterm.0
+./usr/X11R6/man/cat1/xvctl.0
 ./usr/X11R6/man/cat1/xvinfo.0
 ./usr/X11R6/man/cat1/xwd.0
 ./usr/X11R6/man/cat1/xwininfo.0

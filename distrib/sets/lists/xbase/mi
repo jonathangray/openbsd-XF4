@@ -110,6 +110,7 @@
 ./usr/X11R6/bin/xsm
 ./usr/X11R6/bin/xstdcmap
 ./usr/X11R6/bin/xterm
+./usr/X11R6/bin/xvctl
 ./usr/X11R6/bin/xvidtune
 ./usr/X11R6/bin/xvinfo
 ./usr/X11R6/bin/xwd
