@@ -371,7 +371,7 @@ CloneMyself(void)
 		   "-ls", old_listen_arg,
 		   "-cf", configfilename,
 		   "-port", portnum,
-		   NULL);
+		   (void *)NULL);
 
 	InitErrors();		/* reopen errors, since we don't want to lose
 				 * this */

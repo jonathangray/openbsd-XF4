@@ -1705,7 +1705,7 @@ xf86RunVtInit(void)
               dup(xf86Info.consoleFd);
             }
           }
-          execl("/bin/sh", "sh", "-c", xf86Info.vtinit, NULL);
+          execl("/bin/sh", "sh", "-c", xf86Info.vtinit, (void *)NULL);
           xf86Msg(X_WARNING, "exec of /bin/sh failed for VTInit (%s)\n",
                  strerror(errno));
           exit(255);

@@ -1347,7 +1347,7 @@ IspellStartProcess(void)
 	    close(ispell.ofd[1]);
 	    close(ispell.ifd[0]);
 	    close(ispell.ifd[1]);
-	    execl("/bin/sh", "sh", "-c", command, NULL);
+	    execl("/bin/sh", "sh", "-c", command, (char *)NULL);
 	    exit(-127);
 	}
 	else if (ispell.pid < 0) {

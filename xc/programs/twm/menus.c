@@ -2315,7 +2315,7 @@ ExecuteFunction(func, action, w, tmp_win, eventp, context, pulldown)
         }
 	break;
    case F_STARTWM:
-	execlp("/bin/sh", "sh", "-c", action, NULL);
+	execlp("/bin/sh", "sh", "-c", action, (void *)NULL);
 	fprintf (stderr, "%s:  unable to start:  %s\n", ProgramName, *Argv);
 	break;
 

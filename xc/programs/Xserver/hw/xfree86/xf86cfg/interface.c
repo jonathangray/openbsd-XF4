@@ -501,7 +501,7 @@ main(int argc, char *argv[])
 		char path[PATH_MAX];
 
 		XmuSnprintf(path, sizeof(path), "%s/bin/twm", XFree86Dir);
-		execl(path, "twm", NULL);
+		execl(path, "twm", (void *)NULL);
 		exit(-127);
 	    }	break;
 	    case -1:

@@ -111,7 +111,7 @@ startx(void)
 	        XmuSnprintf(path, sizeof(path), "%s/bin/XFree86", XFree86Dir);
 	    execl(path, "X", ":8", /*"+xinerama",*/ "+accessx",
 		  "-allowMouseOpenFail", "-keepPriv", "-nolisten", "tcp",
-		  "-xf86config", XF86Config_path, NULL);
+		  "-xf86config", XF86Config_path, (void *)NULL);
 	    exit(-127);
 	}   break;
 	case -1:
