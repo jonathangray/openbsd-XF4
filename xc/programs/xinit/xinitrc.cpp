@@ -1,6 +1,6 @@
 XCOMM!/bin/sh
 XCOMM $XConsortium: xinitrc.cpp,v 1.4 91/08/22 11:41:34 rws Exp $
-XCOMM $OpenBSD: xinitrc.cpp,v 1.4 2001/04/10 14:46:02 todd Exp $
+XCOMM $OpenBSD: xinitrc.cpp,v 1.5 2001/04/18 23:10:48 todd Exp $
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -29,7 +29,7 @@ XCOMM if we have private ssh key(s), start ssh-agent and add the key(s)
 id1=$HOME/.ssh/identity
 id2=$HOME/.ssh/id_dsa
 id3=$HOME/.ssh/id_rsa
-if [ -e /usr/bin/ssh-agent ] && [ -f $id1 -o -f $id2 -o -f $id3 -o ];
+if [ -e /usr/bin/ssh-agent ] && [ -f $id1 -o -f $id2 -o -f $id3 ];
 then
 	eval `ssh-agent -s`
 	ssh-add $id1 $id2 $id3 < /dev/null
