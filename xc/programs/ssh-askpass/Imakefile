@@ -1,155 +1,37 @@
-NAME		= x11-ssh-askpass
-CLASS		= SshAskpass
+XCOMM $OpenBSD: Imakefile,v 1.2 2001/02/17 18:06:09 matthieu Exp $
 
-BINDIR		= /usr/local/libexec/openssh
+           SRCS = drawing.c dynlist.c resources.c x11-ssh-askpass.c
+           OBJS = drawing.o dynlist.o resources.o x11-ssh-askpass.o
+        DEPLIBS = $(DEPXTOOLLIB) $(DEPXLIB)
+LOCAL_LIBRARIES = $(XTOOLLIB) $(XLIB)
 
-#ifndef CpCmd
-# define CpCmd cp
-#endif
+           NAME = ssh-askpass
+          CLASS = SshAskpass
+        VERSION = 1.2.0
+           DATE = February 14, 2001
+   APP_DEFAULTS = $(CLASS)-default.ad
 
-#ifndef GzipCmd
-# define GzipCmd gzip
-#endif
-
-#ifndef LnCmd
-# if HasSymLinks
-#  define LnCmd ln -s
-# else
-#  define LnCmd ln
-# endif
-#endif
-
-#ifndef MvCmd
-# define MvCmd mv -f
-#endif
-
-#ifndef RmCmd
-# define RmCmd rm -f
-#endif
-
-CAT		= cat
-CHMOD		= chmod
-CP		= CpCmd
-GREP		= grep
-GZIP		= GzipCmd
-LN		= LnCmd
-MKDIR		= MkdirHierCmd
-MV		= MvCmd
-RM		= RmCmd
-SED		= sed
-TAR		= tar
-
-MAKE_CHANGELOG	= cvs2cl
-
-VERSION		= 1.2.0
-DATE		= February 14, 2001
-PROJECT		= $(NAME)-$(VERSION)
-TARBALL_DIR	= $(PROJECT)
-TARBALL		= $(PROJECT).tar.gz
-
-HDRS = \@@\
- drawing.h \@@\
- dynlist.h \@@\
- resources.h \@@\
- x11-ssh-askpass.h
-
-SRCS = \@@\
- drawing.c \@@\
- dynlist.c \@@\
- resources.c \@@\
- x11-ssh-askpass.c
-
-OBJS = \@@\
- drawing.o \@@\
- dynlist.o \@@\
- resources.o \@@\
- x11-ssh-askpass.o
-
-EXTRAS = \@@\
- ChangeLog \@@\
- Imakefile \@@\
- README \@@\
- TODO \@@\
- $(CLASS)-1337.ad \@@\
- $(CLASS)-NeXTish.ad \@@\
- $(CLASS)-green.ad \@@\
- $(CLASS)-motif.ad \@@\
- $(CLASS)-default.ad \@@\
- $(NAME).man.in
- 
-APP_DEFAULTS	= $(CLASS)-default.ad
-
-LOCAL_LIBRARIES	= -lXt -lX11 -lSM -lICE
-
-#ifndef InstallAppDefaults
-#define InstallAppDefaults(x) InstallNamedNonExec(x.ad,x,$(XAPPLOADDIR))
-#endif
-
-ComplexProgramTarget($(NAME))
-InstallAppDefaults($(CLASS))
-
-install::
-	@set -x; \
-	if [ -f $(DESTDIR)$(BINDIR)/ssh-askpass ]; then \@@\
-	  $(MV) $(DESTDIR)$(BINDIR)/ssh-askpass \@@\
-	    $(DESTDIR)$(BINDIR)/ssh-askpass.old; \@@\
-	fi
-	$(LN) $(NAME) $(DESTDIR)$(BINDIR)/ssh-askpass
-
-install.man::
-	@set -x; \@@\
-	if [ -f $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX) ]; then \@@\
-	  $(MV) $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX) \@@\
-	    $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX).old; \@@\
-	fi
-	$(LN) $(NAME).$(MANSUFFIX) $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX)
-
-.PHONY: depends changelog realclean distclean spotless tar dist
-
-all:: $(NAME).man
-
-$(NAME).man: $(NAME).man.in Imakefile
-	$(SED) \@@\
-	  -e 's#@NAME@#$(NAME)#g' \@@\
-	  -e 's#@VERSION@#$(VERSION)#g' \@@\
-	  -e 's#@DATE@#$(DATE)#g' \@@\
-	  <$(NAME).man.in >$@.tmp
-	$(MV) $@.tmp $@
-
-depends: depend
-
-includes:: $(CLASS)_ad.h
+$(CLASS)_ad.h: $(CLASS).ad
+	cat $(CLASS).ad | grep -v '^[ 	]*$$' |\
+	  awk '/^[ 	]*!/ { sub("^[ 	]*![ ]?","", $$0); printf("/* %s */\n", $$0); next } ! /^[ 	]*!/ { printf("\"%s\",\n", $$0) }' \
+	  >$@
 
 $(CLASS).ad:
 	$(LN) $(APP_DEFAULTS) $(CLASS).ad
 
-$(CLASS)_ad.h: $(CLASS).ad
-	$(SED) -n '/^[^!]/s/.*/"&",/p' <$(CLASS).ad >$@.tmp
+$(NAME).man: x11-ssh-askpass.man.in Imakefile
+	sed \@@\
+	  -e 's#@NAME@#$(NAME)#g' \@@\
+	  -e 's#@VERSION@#$(VERSION)#g' \@@\
+	  -e 's#@DATE@#$(DATE)#g' \@@\
+	  <x11-ssh-askpass.man.in >$@.tmp
 	$(MV) $@.tmp $@
 
-changelog:
-	$(MAKE_CHANGELOG)
+includes:: $(CLASS)_ad.h $(NAME).man
 
 clean::
-	-$(RM) $(CLASS)_ad.h $(NAME).man
+	$(RM) -f $(CLASS)_ad.h $(CLASS).ad
+	$(RM) -f $(NAME).man
 
-realclean: clean
-	-$(RM) $(CLASS).ad
-
-distclean: realclean
-	-$(RM) Makefile Makefile.bak ChangeLog
-
-spotless: distclean
-	-$(RM) $(TARBALL)
-
-tar: dist
-dist: changelog
-	-$(RM) -r $(TARBALL_DIR)
-	$(MKDIR) $(TARBALL_DIR)
-	$(CP) $(EXTRAS) $(SRCS) $(HDRS) $(TARBALL_DIR)/
-	$(CHMOD) -R u+rwX,go+rX,go-w $(TARBALL_DIR)
-	-$(RM) $(TARBALL).bak
-	-$(MV) $(TARBALL) $(TARBALL).bak
-	$(TAR) -cvvf - $(TARBALL_DIR) |$(GZIP) -9 -c >$(TARBALL)
-	-$(RM) -r $(TARBALL_DIR)
-
+ComplexProgramTarget($(NAME))
+InstallAppDefaults($(CLASS))
