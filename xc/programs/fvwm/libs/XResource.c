@@ -21,7 +21,7 @@
  *
  *** EXAMPLE ***************************************************************/
 #if 0
-    #include <fvwmlib.h>
+#include <fvwmlib.h>
 
     void main(int argc, char **argv)
     {
