@@ -5,14 +5,8 @@
 
 #include <stdio.h>
 
-extern Bool macppcFBInit(
-#if NeedFunctionPrototypes
-    int /* screen */,
-    ScreenPtr /* pScreen */,
-    int /* argc */,
-    char** /* argv */
-#endif
-);
+extern Bool macppcFBInit(int /* screen */, ScreenPtr /* pScreen */,
+			 int /* argc */, char** /* argv */);
 #define FBI macppcFBInit
 
 #if 0 /* XXX */
@@ -93,9 +87,9 @@ static PixmapFormatRec	formats[] = {
  * Results:
  *	The fd of the framebuffer.
  */
-static int OpenFrameBuffer(device, screen)
-    char		*device;	/* e.g. "/dev/ttyC0" */
-    int			screen;    	/* what screen am I going to be */
+static int 
+OpenFrameBuffer(char *device,	/* e.g. "/dev/ttyC0" */
+		int screen)	/* what screen am I going to be */
 {
     int			ret = TRUE;
 
@@ -151,8 +145,8 @@ static int OpenFrameBuffer(device, screen)
  *-----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static void SigIOHandler(sig)
-    int		sig;
+static void 
+SigIOHandler(int sig)
 {
     int olderrno = errno;
 
@@ -160,9 +154,8 @@ static void SigIOHandler(sig)
     errno = olderrno;
 }
 
-static char** GetDeviceList (argc, argv)
-    int		argc;
-    char	**argv;
+static char** 
+GetDeviceList (int argc, char **argv)
 {
     int		i;
     char	*envList = NULL;
@@ -204,11 +197,8 @@ static char** GetDeviceList (argc, argv)
     return deviceList;
 }
 
-void OsVendorInit(
-#if NeedFunctionPrototypes
-    void
-#endif
-)
+void 
+OsVendorInit(void)
 {
 	struct rlimit rl;
 	int maxfds, kbdtype;
@@ -278,10 +268,8 @@ void OsVendorInit(
  *-----------------------------------------------------------------------
  */
 
-void InitOutput(pScreenInfo, argc, argv)
-    ScreenInfo 	  *pScreenInfo;
-    int     	  argc;
-    char    	  **argv;
+void 
+InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     int     	i, scr;
     int		nonBlockConsole = 0;
@@ -345,9 +333,7 @@ void InitOutput(pScreenInfo, argc, argv)
  *
  *-----------------------------------------------------------------------
  */
-void InitInput(argc, argv)
-    int     	  argc;
-    char    	  **argv;
+void InitInput(int argc, char **argv)
 {
     DeviceIntPtr	p, k;
     extern Bool mieqInit();
