@@ -1328,7 +1328,7 @@ ATIPreInit
             Message += snprintf(Message, Buffer + SizeOf(Buffer) - Message,
                 ";  %s I/O base is 0x%04lX",
                 (pATI->CPIODecoding == SPARSE_IO) ? "sparse" : "block",
-                (unsigned int)pATI->CPIOBase);
+                pATI->CPIOBase);
         }
 
 #endif /* AVOID_CPIO */
