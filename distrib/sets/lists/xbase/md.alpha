@@ -363,8 +363,8 @@
 ./etc/X11/xkb/symbols/us_group2
 ./etc/X11/xkb/symbols/us_group3
 ./etc/X11/xkb/symbols/us_intl
-./etc/X11/xkb/symbols/vn
 ./etc/X11/xkb/symbols/uz
+./etc/X11/xkb/symbols/vn
 ./etc/X11/xkb/symbols/xfree68
 ./etc/X11/xkb/symbols/xfree68/amiga
 ./etc/X11/xkb/symbols/xfree68/ataritt
