@@ -4,8 +4,6 @@
 ./usr/X11R6/bin/X
 ./usr/X11R6/bin/XFree86
 ./usr/X11R6/bin/Xnest
-./usr/X11R6/bin/Xtga
-./usr/X11R6/bin/Xwrapper
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/codeconv
 ./usr/X11R6/lib/modules/codeconv/libARABIC.a

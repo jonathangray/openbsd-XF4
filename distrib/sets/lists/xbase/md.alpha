@@ -481,6 +481,3 @@
 ./usr/X11R6/man/cat4
 ./usr/X11R6/man/cat5
 ./usr/X11R6/man/cat5/XF86Config.0
-./var/X11
-./var/X11/xserver
-./var/X11/xserver/SecurityPolicy
