@@ -1,5 +1,5 @@
 ! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: Xres.cpp,v 1.9 2002/09/19 20:06:51 matthieu Exp $
+! $OpenBSD: Xres.cpp,v 1.10 2003/03/05 23:31:54 todd Exp $
 !
 !
 !
@@ -85,7 +85,7 @@ xlogin*greetColor: #000000
 /**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
 ! flood fill
 !xlogin*background: #2559a5
-xlogin*background: #5171b5
+xlogin*background: #5272b6
 /**/#endif
 xlogin*failColor: red
 
@@ -117,12 +117,18 @@ xlogin*Background: white
 /**/#ifdef bpp1
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_1bpp.xpm
 /**/#endif
+#if ! defined(SparcArchitecture)
+/**/#if defined(bpp4) || defined(bpp8)
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
+/**/#endif
+#else /* sparc */
 /**/#ifdef bpp4
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
 /**/#endif
 /**/#ifdef bpp8
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
 /**/#endif
+#endif
 /**/#ifdef bpp15
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
 /**/#endif
