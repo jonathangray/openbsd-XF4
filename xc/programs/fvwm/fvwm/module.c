@@ -712,7 +712,6 @@ void FlushQueue(int module)
   char *dptr;
   struct queue_buff_struct *d;
   int a;
-  extern int errno;
 
   if((pipeOn[module] <= 0)||(pipeQueue[module] == NULL))
     return;
