@@ -1,9 +1,13 @@
-/* $Xorg: dm.c,v 1.4 2000/08/17 19:54:14 cpqbld Exp $ */
+/* $Xorg: dm.c,v 1.5 2001/02/09 02:05:40 xorgcvs Exp $ */
 /*
 
 Copyright 1988, 1998  The Open Group
 
-All Rights Reserved.
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
 
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
@@ -22,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/dm.c,v 3.11 2001/01/17 23:45:20 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/dm.c,v 3.19 2001/12/14 20:01:21 dawes Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -66,10 +70,6 @@ from The Open Group.
 #ifndef X_NOT_POSIX
 # include	<unistd.h>
 #endif
-#endif
-
-#ifdef X_NOT_STDC_ENV
-extern int errno;
 #endif
 
 
@@ -153,11 +153,7 @@ main (int argc, char **argv)
 
     if (nofork_session == 0) {
 	/* Clean up any old Authorization files */
-#ifndef MINIX
 	sprintf(cmdbuf, "/bin/rm -f %s/authdir/authfiles/A*", authDir);
-#else
-	sprintf(cmdbuf, "/usr/bin/rm -f %s/authdir/authfiles/A*", authDir);
-#endif
 	system(cmdbuf);
     }
 
@@ -519,74 +515,11 @@ WaitForChild (void)
 		    Debug("Server crash frequency too high:"
 			  " removing display %s\n",d->name);
 		    LogError("Server crash rate too high:"
-			     " removing display %s %d %d\n",d->name,
-			d->lastCrash, Time);
+			     " removing display %s\n",d->name);
 		    RemoveDisplay (d);
 		  } else 
 		    d->lastCrash = Time;
 		}
-		break;
-	    case waitCompose (SIGTERM,0,0):
-		d->startTries = 0;
-		Debug ("Display exited on SIGTERM\n");
-		if (d->displayType.origin == FromXDMCP || d->status == zombie)
-		    StopDisplay(d);
-		else
-		    RestartDisplay (d, TRUE);
-		break;
-	    case REMANAGE_DISPLAY:
-		d->startTries = 0;
-		Debug ("Display exited with REMANAGE_DISPLAY\n");
-		/*
- 		 * XDMCP will restart the session if the display
-		 * requests it
-		 */
-		if (d->displayType.origin == FromXDMCP || d->status == zombie)
-		    StopDisplay(d);
-		else
-		    RestartDisplay (d, FALSE);
-		break;
-	    }
-	}
-	/* SUPPRESS 560 */
-	else if ((d = FindDisplayByServerPid (pid)))
-	{
-	    d->serverPid = -1;
-	    switch (d->status)
-	    {
-	    case zombie:
-		Debug ("Zombie server reaped, removing display %s\n", d->name);
-		RemoveDisplay (d);
-		break;
-	    case phoenix:
-		Debug ("Phoenix server arises, restarting display %s\n", d->name);
-		d->status = notRunning;
-		break;
-	    case running:
-		Debug ("Server for display %s terminated unexpectedly, status %d %d\n", d->name, waitVal (status), status);
-		LogError ("Server for display %s terminated unexpectedly: %d\n", d->name, waitVal (status));
-		if (d->pid != -1)
-		{
-		    Debug ("Terminating session pid %d\n", d->pid);
-		    TerminateProcess (d->pid, SIGTERM);
-		}
-#if 0
-		{
-		  Time_t Time;
-		  time(&Time);
-		  Debug("time %i %i\n",Time,d->lastCrash);
-		  if (d->lastCrash && 
-		      ((Time - d->lastCrash) < XDM_BROKEN_INTERVAL)) {
-		    Debug("Server crash frequency too high:"
-			  " removing display %s\n",d->name);
-		    LogError("Server crash rate too high:"
-			     " removing display %s %d %d\n",d->name,
-			d->lastCrash, Time);
-		    RemoveDisplay (d);
-		  } else 
-		    d->lastCrash = Time;
-		}
-#endif
 		break;
 	    case notRunning:
 		Debug ("Server exited for notRunning session on display %s\n", d->name);
@@ -773,16 +706,10 @@ CloseOnFork (void)
     for (fd = 0; fd <= max; fd++)
 	if (FD_ISSET (fd, &CloseMask))
 	{
-#ifdef MINIX
-	    nbio_unregister(fd);
-#endif
 	    close (fd);
         }
     FD_ZERO (&CloseMask);
     max = 0;
-#ifdef MINIX
-    { extern int chooserFd; nbio_unregister(chooserFd); }
-#endif
 }
 
 static int  pidFd;
@@ -843,7 +770,7 @@ StorePid (void)
 #endif
 #endif
 	}
-	fprintf (pidFilePtr, "%5d\n", getpid ());
+	fprintf (pidFilePtr, "%5ld\n", (long)getpid ());
 	(void) fflush (pidFilePtr);
 	RegisterCloseOnFork (pidFd);
     }

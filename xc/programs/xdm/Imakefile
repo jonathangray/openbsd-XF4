@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:14 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/xdm/Imakefile,v 3.43 2001/03/06 17:31:39 dawes Exp $
+XCOMM $XFree86: xc/programs/xdm/Imakefile,v 3.45 2001/08/29 17:11:56 alanh Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
@@ -150,6 +150,10 @@ USER_CONTEXT_DEFINES = -DHAS_SETUSERCONTEXT
 SYS_LIBRARIES1 = -lutil
 #endif
 
+#if HasSetProcTitle
+PROCTITLE_DEFINES = -DHAS_SETPROCTITLE
+#endif
+
   SYS_LIBRARIES = $(SYS_LIBRARIES1) $(SYS_LIBRARIES2) $(SYS_LIBRARIES3)
 
    XDMCONFIGDIR = XdmConfigurationSubdirectory
@@ -180,8 +184,8 @@ LOCAL_LIBRARIES = $(XPMLIB) $(XMULIB) $(XTOOLLIB) $(XLIB) $(XAUTHLIB) \
           SRCS3 = chooser.c
           OBJS3 = chooser.o
        DEPLIBS3 = XawClientDepLibs XkbClientDepLibs $(DEPXDMCPLIB) \
-		  $(DEPXINERAMALIB)
-          LIBS3 = XawClientLibs XkbClientLibs $(XDMCPLIB) $(XINERAMALIB)
+		  $(XINDEPLIBS)
+          LIBS3 = XawClientLibs XkbClientLibs $(XDMCPLIB) $(XINLIBS)
 #endif
 
           SRCS4 = sessreg.c

@@ -1,17 +1,17 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.6 2001/11/24 22:03:50 matthieu Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.7 2002/01/19 15:32:43 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.7 2001/01/17 23:45:24 dawes Exp $
+! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.9 2001/11/25 12:49:19 herrb Exp $
 !
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm-errors
 DisplayManager.pidFile:		XDMPIDDIR/xdm.pid
 DisplayManager.keyFile:		XDMDIR/xdm-keys
 DisplayManager.servers:		XDMDIR/Xservers
 DisplayManager.accessFile:	XDMDIR/Xaccess
-DisplayManager.willing:		su -m nobody -c XDMDIR/Xwilling
+DisplayManager.willing:		SU nobody -c XDMDIR/Xwilling
 ! All displays should use authorization, but we cannot be sure
 ! X terminals will be configured that way, so by default
 ! use authorization only for local displays :0, :1, etc.
