@@ -1390,7 +1390,7 @@ it:
                        break;
                    }
                    default:
-                       abort("xiFill: unknown format");
+                       Abort("xiFill: unknown format");
                }
        }
  

@@ -38,13 +38,13 @@
 #include <stdio.h>
 #include "os.h"
 #endif
-#include "objects.h"	/* get #define for abort() */
+#include "objects.h"	/* get #define for Abort() */
 
 static void 
 xiStub(void)
 {
        printf("xiStub called\n");
-       abort("xiStub called");
+       Abort("xiStub called");
 }
  
 void 

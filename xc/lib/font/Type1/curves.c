@@ -216,7 +216,7 @@ StepBezier(struct region *R, /* Region under construction or NULL            */
  
        if ( TOOBIG(xB) || TOOBIG(yB) || TOOBIG(xC) || TOOBIG(yC)
             || TOOBIG(xD) || TOOBIG(yD) )
-               abort("Beziers this big not yet supported");
+               Abort("Beziers this big not yet supported");
  
        return(StepBezierRecurse(&Info,
                                 (fractpel) 0, (fractpel) 0, xB, yB, xC, yC, xD, yD));
