@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.3 2002/06/09 01:12:00 matthieu Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.4 2002/06/10 21:36:43 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -42,7 +42,7 @@
 /* Video Memory Mapping section                                            */
 /***************************************************************************/
 
-static pointer sparc64MapVidMem(int, unsigned long, unsigned long);
+static pointer sparc64MapVidMem(int, unsigned long, unsigned long, int);
 static void sparc64UnmapVidMem(int, pointer, unsigned long);
 
 void
@@ -58,7 +58,8 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 volatile unsigned char *ioBase = MAP_FAILED;
 
 static pointer
-sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size)
+sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, 
+		 int Flags)
 {
 	int fd = xf86Info.screenFd;
 	pointer base;
