@@ -78,7 +78,7 @@ static char *envvars[] = {
 #ifdef KERBEROS
 #include <sys/param.h>
 #include <kerberosIV/krb.h>
-#include <kerberosIV/kafs.h>
+#include <kerberosV/kafs.h>
 static char krbtkfile[MAXPATHLEN];
 #endif
 
