@@ -27,8 +27,6 @@
 ./usr/X11R6/bin/iceauth
 ./usr/X11R6/bin/ico
 ./usr/X11R6/bin/imake
-./usr/X11R6/bin/kx
-./usr/X11R6/bin/kxd
 ./usr/X11R6/bin/lbxproxy
 ./usr/X11R6/bin/listres
 ./usr/X11R6/bin/luit

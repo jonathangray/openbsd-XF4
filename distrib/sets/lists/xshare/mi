@@ -87,10 +87,7 @@
 ./usr/X11R6/bin/mkdirhier
 ./usr/X11R6/bin/rstart
 ./usr/X11R6/bin/rstartd
-./usr/X11R6/bin/rxtelnet
-./usr/X11R6/bin/rxterm
 ./usr/X11R6/bin/startx
-./usr/X11R6/bin/tenletxr
 ./usr/X11R6/bin/x11perfcomp
 ./usr/X11R6/bin/xmkmf
 ./usr/X11R6/bin/xon
@@ -905,8 +902,6 @@
 ./usr/X11R6/man/cat1/iceauth.0
 ./usr/X11R6/man/cat1/ico.0
 ./usr/X11R6/man/cat1/imake.0
-./usr/X11R6/man/cat1/kx.0
-./usr/X11R6/man/cat1/kxd.0
 ./usr/X11R6/man/cat1/lbxproxy.0
 ./usr/X11R6/man/cat1/listres.0
 ./usr/X11R6/man/cat1/luit.0
@@ -927,8 +922,6 @@
 ./usr/X11R6/man/cat1/revpath.0
 ./usr/X11R6/man/cat1/rstart.0
 ./usr/X11R6/man/cat1/rstartd.0
-./usr/X11R6/man/cat1/rxtelnet.0
-./usr/X11R6/man/cat1/rxterm.0
 ./usr/X11R6/man/cat1/sessreg.0
 ./usr/X11R6/man/cat1/setxkbmap.0
 ./usr/X11R6/man/cat1/showfont.0
@@ -936,7 +929,6 @@
 ./usr/X11R6/man/cat1/ssh-askpass.0
 ./usr/X11R6/man/cat1/startx.0
 ./usr/X11R6/man/cat1/sxpm.0
-./usr/X11R6/man/cat1/tenletxr.0
 ./usr/X11R6/man/cat1/texteroids.0
 ./usr/X11R6/man/cat1/twm.0
 ./usr/X11R6/man/cat1/ucs2any.0
