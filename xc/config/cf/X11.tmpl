@@ -1204,12 +1204,13 @@ XCOMM X Window System make variables; these need to be coordinated with rules
      INSTAPPFLAGS = $(INSTDATFLAGS)	/* XXX - this should go away - XXX */
 
 #if UseInstalledX11
-              RGB = $(BINDIR)/rgb
-            FONTC = $(BINDIR)/bdftopcf
-        MKFONTDIR = $(BINDIR)/mkfontdir
-      MKHTMLINDEX = $(BINDIR)/mkhtmlindex
-          UCS2ANY = $(BINDIR)/ucs2any.pl
-      BDFTRUNCATE = $(BINDIR)/bdftruncate.pl
+          XBINDIR = Concat(ProjectRoot,/bin)
+              RGB = $(XBINDIR)/rgb
+            FONTC = $(XBINDIR)/bdftopcf
+        MKFONTDIR = $(XBINDIR)/mkfontdir
+      MKHTMLINDEX = $(XBINDIR)/mkhtmlindex
+          UCS2ANY = $(XBINDIR)/ucs2any.pl
+      BDFTRUNCATE = $(XBINDIR)/bdftruncate.pl
      UCSMAPPREFIX = $(FONTDIR)/util/map-
 #else
               RGB = $(CLIENTENVSETUP) $(XBUILDBINDIR)/rgb
