@@ -224,60 +224,60 @@ The following are excepts from a .fvwmrc file which describe
 FvwmIconBox initialization commands:
 .nf
 .sp
-############################################################
-# Note that icons are shown in the module
-#    only if NoIcon attribute is applied.
+XCOMM###########################################################
+XCOMM Note that icons are shown in the module
+XCOMM    only if NoIcon attribute is applied.
 Style 	"*"	NoIcon
 
-############################################################
+XCOMM###########################################################
 *FvwmIconBoxIconBack    #cfcfcf
 *FvwmIconBoxIconHiFore  black
 *FvwmIconBoxIconHiBack  LightSkyBlue
 *FvwmIconBoxBack        #5f9ea0
-#*FvwmIconBoxFore       blue
+XCOMM*FvwmIconBoxFore       blue
 *FvwmIconBoxGeometry    5x1+0+0
 *FvwmIconBoxMaxIconSize 64x38
 *FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 *FvwmIconBoxSortIcons	IconName
-#*FvwmIconBoxSortIcons	ResClass
+XCOMM*FvwmIconBoxSortIcons	ResClass
 *FvwmIconBoxPadding     4
 *FvwmIconBoxFrameWidth  9 7
 *FvwmIconBoxLines       10
 *FvwmIconBoxSBWidth     11
 *FvwmIconBoxPlacement   Left Top
 *FvwmIconBoxPixmap      fvwm.xpm
-#*FvwmIconBoxHideSC	Horizontal
+XCOMM*FvwmIconBoxHideSC	Horizontal
 *FvwmIconBoxSetWMIconSize
 *FvwmIconBoxHilightFocusWin
-#*FvwmIconBoxResolution		Desk
-#
-# mouse bindings
-#
+XCOMM*FvwmIconBoxResolution		Desk
+XCOMM
+XCOMM mouse bindings
+XCOMM
 *FvwmIconBoxMouse       1       Click           RaiseLower
 *FvwmIconBoxMouse       1       DoubleClick     Iconify
 *FvwmIconBoxMouse       2       Click           Iconify -1, Focus
 *FvwmIconBoxMouse       3       Click           Module FvwmIdent
-#
-# Key bindings
-#
+XCOMM
+XCOMM Key bindings
+XCOMM
 *FvwmIconBoxKey         r       RaiseLower
 *FvwmIconBoxKey         space   Iconify
 *FvwmIconBoxKey         d       Close
-#
-# FvwmIconBox built-in functions
-#
+XCOMM
+XCOMM FvwmIconBox built-in functions
+XCOMM
 *FvwmIconBoxKey         n       Next
 *FvwmIconBoxKey         p       Prev
 *FvwmIconBoxKey         h       Left
 *FvwmIconBoxKey         j       Down
 *FvwmIconBoxKey         k       Up
 *FvwmIconBoxKey         l       Right
-#
-# Icon file specifications 
-#
-# Mostly, you don't have to specify icon files, as FvwmIconBox now 
-# reads icon files specified in Style commands. 
-#
+XCOMM
+XCOMM Icon file specifications 
+XCOMM
+XCOMM Mostly, you don't have to specify icon files, as FvwmIconBox now 
+XCOMM reads icon files specified in Style commands. 
+XCOMM
 *FvwmIconBox            "Fvwm*"         -
 .sp
 .fi

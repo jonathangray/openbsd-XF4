@@ -418,24 +418,24 @@ initialization commands:
 
 .nf
 .sp
-##########################################################
-# Load any modules which should be started during fvwm
-# initialization
+XCOMM#########################################################
+XCOMM Load any modules which should be started during fvwm
+XCOMM initialization
 
 ModulePath /usr/lib/X11/fvwm:/usr/bin/X11
 
-# Make sure FvwmButtons is always there.
+XCOMM Make sure FvwmButtons is always there.
 AddToFunc InitFunction     "I" Module FvwmButtons
 AddToFunc RestartFunction  "I" Module FvwmButtons
 
-# Make it titlebar-less, sticky, and give it an icon
+XCOMM Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
-# Make the menu/panel look like CDE
+XCOMM Make the menu/panel look like CDE
 Style "FvwmButtonsPanel" Title, NoHandles, BorderWidth 0
 Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
 
-##########################################################
+XCOMM#########################################################
 
 *FvwmButtonsFore Black
 *FvwmButtonsBack rgb:90/80/90
@@ -489,7 +489,7 @@ The other panels are specified after the root panel:
 
 .nf
 .sp
-########## PANEL
+XCOMM######### PANEL
 *FvwmButtonsPanel WinOps
 *FvwmButtonsBack bisque2
 *FvwmButtonsGeometry -3-3
@@ -500,7 +500,7 @@ The other panels are specified after the root panel:
 *FvwmButtons(Title Lower ,Icon Down       ,Action Lower )
 *FvwmButtons(Title Raise ,Icon Up         ,Action Raise )
 
-########## PANEL
+XCOMM######### PANEL
 *FvwmButtonsPanel Tools
 *FvwmButtonsBack bisque2
 *FvwmButtonsGeometry -1-1
@@ -522,38 +522,38 @@ windows with gaps. Here is another example. You can not accomplish
 this without geometry specs for the buttons:
 .nf
 .sp
-##########################################################
+XCOMM#########################################################
 
-# Make it titlebar-less, sticky, and give it an icon
+XCOMM Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
 *FvwmButtonsFont        5x7
 *FvwmButtonsBack rgb:90/80/90
 *FvwmButtonsFore        black
 *FvwmButtonsFrame       1
-# 9x11 pixels per button, 4x4 pixels for the frame
+XCOMM 9x11 pixels per button, 4x4 pixels for the frame
 *FvwmButtonsGeometry    580x59+0-0
 *FvwmButtonsRows        5
 *FvwmButtonsColumns     64
 *FvwmButtonsBoxSize     fixed
 *FvwmButtonsPadding     1 1
 
-# Menu Popups
+XCOMM Menu Popups
 *FvwmButtons(9x1+3+0, Padding 0, Title "Modules",     \\
   Action `Menu Modulepopup mouse c -8p Nop`)
-# first row of buttons from left to right:
+XCOMM first row of buttons from left to right:
 *FvwmButtons(3x2+0+1, Icon my_lock.xpm, Action `Exec xlock`)
 *FvwmButtons(3x2+3+1, Icon my_recapture.xpm, Action Recapture)
 *FvwmButtons(3x2+6+1, Icon my_resize.xpm, Action Resize)
 *FvwmButtons(3x2+9+1, Icon my_move.xpm, Action Move)
 *FvwmButtons(3x2+12+1, Icon my_fvwmconsole.xpm,       \\
   Action 'Module FvwmConsole')
-# second row of buttons from left to right:
+XCOMM second row of buttons from left to right:
 *FvwmButtons(3x2+0+3, Icon my_exit.xpm, Action QuitSave)
 *FvwmButtons(3x2+3+3, Icon my_restart.xpm, Action Restart)
 *FvwmButtons(3x2+6+3, Icon my_kill.xpm, Action Destroy)
 *FvwmButtons(3x2+9+3, Icon my_shell.xpm, Action 'Exec rxvt')
-# big items
+XCOMM big items
 *FvwmButtons(10x5, Swallow (NoKill, NoCLose)          \\
   "FvwmPager" 'FvwmPager * * -geometry 40x40-1024-1024')
 *FvwmButtons(6x5, Swallow "FvwmXclock" `Exec xclock   \\
