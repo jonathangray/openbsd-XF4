@@ -1113,7 +1113,8 @@ ResetHosts (char *display)
 		strlen(display) + 1;
     if (fnamelen > sizeof(fname))
 	FatalError("Display name `%s' is too long\n", display);
-    sprintf(fname, ETC_HOST_PREFIX "%s" ETC_HOST_SUFFIX, display);
+    snprintf(fname, sizeof(fname), ETC_HOST_PREFIX "%s" ETC_HOST_SUFFIX, 
+	     display);
 #ifdef __UNIXOS2__
     strcpy(fname, (char*)__XOS2RedirRoot(fname));
 #endif /* __UNIXOS2__ */
@@ -1598,7 +1599,7 @@ CheckAddr (
 
     switch (family)
     {
-#if defined(TCPCONN) || defined(STREAMSCONN) || defined(AMTCPCONN) || defined(MNX_TCPCONN)
+#if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
       case FamilyInternet:
 	if (length == sizeof (struct in_addr))
 	    len = length;

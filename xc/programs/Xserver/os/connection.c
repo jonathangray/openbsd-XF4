@@ -1,5 +1,5 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $OpenBSD: connection.c,v 1.7 2004/02/13 22:41:22 matthieu Exp $ */
+/* $OpenBSD: connection.c,v 1.8 2004/05/06 21:08:24 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -126,12 +126,6 @@ extern __const__ int _nfiles;
 #  endif
 # endif
 # include <arpa/inet.h>
-#endif
-
-#ifdef AMTCPCONN
-#include <server/ip/types.h>
-#include <server/ip/gen/in.h>
-#include <server/ip/gen/inet.h>
 #endif
 
 #if !defined(__UNIXOS2__)
@@ -324,7 +318,7 @@ CreateWellKnownSockets(void)
 
     FD_ZERO (&WellKnownConnections);
 
-    sprintf (port, "%d", atoi (display));
+    snprintf (port, sizeof(port), "%d", atoi (display));
 
     if ((_XSERVTransMakeAllCOTSServerListeners (port, &partial,
 	&ListenTransCount, &ListenTransConns) >= 0) &&
@@ -485,13 +479,15 @@ AuthAudit (ClientPtr client, Bool letin,
 {
     char addr[128];
     char *out = addr;
+    size_t outlen = 0;
 
     if (!((OsCommPtr)client->osPrivate)->trans_conn) {
-	strcpy(addr, "LBX proxy at ");
-	out += strlen(addr);
+	strlcpy(addr, "LBX proxy at ", sizeof(addr));
+	outlen = strlen(addr);
+	out += outlen;
     }
     if (!len)
-        strcpy(out, "local host");
+        strlcpy(out, "local host", sizeof(addr)-outlen);
     else
 	switch (saddr->sa_family)
 	{
@@ -499,11 +495,11 @@ AuthAudit (ClientPtr client, Bool letin,
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
 	case AF_UNIX:
 #endif
-	    strcpy(out, "local host");
-	    break;
+	  strlcpy(out, "local host", sizeof(addr)-outlen);
+	  break;
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
 	case AF_INET:
-	    sprintf(out, "IP %s",
+	  snprintf(out, sizeof(addr) - outlen, "IP %s",
 		inet_ntoa(((struct sockaddr_in *) saddr)->sin_addr));
 	    break;
 #if defined(IPv6) && defined(AF_INET6)
@@ -511,25 +507,15 @@ AuthAudit (ClientPtr client, Bool letin,
 	    char ipaddr[INET6_ADDRSTRLEN];
 	    inet_ntop(AF_INET6, &((struct sockaddr_in6 *) saddr)->sin6_addr,
 	      ipaddr, sizeof(ipaddr));
-	    sprintf(out, "IP %s", ipaddr);
+	    snprintf(out, sizeof(addr) - outlen, "IP %s", ipaddr);
 	}
 	    break;
 #endif
 #endif
 #ifdef DNETCONN
 	case AF_DECnet:
-	    sprintf(out, "DN %s",
+	  snprintf(out, sizeof(addr) - outlen, "DN %s",
 		    dnet_ntoa(&((struct sockaddr_dn *) saddr)->sdn_add));
-	    break;
-#endif
-#ifdef AMRPCCONN
-	case FamilyAmoeba:
-	    sprintf(addr, "AM %s", saddr);
-	    break;
-#endif
-#if defined(AMTCPCONN) && !(defined(TCPCONN) || defined(STREAMSCONN))
-	case AF_INET:
-	    sprintf(addr, "AMIP %s", inet_ntoa(*((ipaddr_t *) saddr)));
 	    break;
 #endif
 	default:
@@ -655,13 +641,6 @@ ClientAuthorized(ClientPtr client,
 	    _XSERVTransGetPeerAddr (trans_conn,
 	        &family, &fromlen, &from) != -1)
 	{
-#ifdef AMRPCCONN
-	    /* Amoeba RPC connections are already checked by the capability. */
-	    if (family == FamilyAmoeba) {
-		auth_id = (XID) 0;
-	    }
-	    else
-#endif
 	    if (
 #ifdef LBX
 		!trans_conn ||
