@@ -454,8 +454,13 @@ PASSWDDEF = -DHAVE_SHADOW -DSVR4
 #endif
 #endif
 
+#if defined(OpenBSDArchitecture)
+BITMAPTYPE = blowfish
+PIXMAPTYPE = blowfish
+#else
 BITMAPTYPE = x11
 PIXMAPTYPE = x11
+#endif
 
 XLOCKINC = -I$(top_srcdir) -I. -I$(UTILSDIR)
 
