@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.24 2002/04/23 20:33:23 todd Exp $
+#	$OpenBSD: Makefile,v 1.25 2002/04/26 20:34:44 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -114,7 +114,7 @@ release-install:
 	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
-.if ${MACHINE} == macppc
+.if ${MACHINE} == macppc || ${MACHINE} == alpha
 	@if [ -f $(DESTDIR)/etc/X11/XF86Config ]; then \
 	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/XF86Config; \
 	else set -x; \
