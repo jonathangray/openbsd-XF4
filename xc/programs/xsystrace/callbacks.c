@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.1 2002/06/04 21:23:41 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.2 2002/06/06 17:34:27 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -314,7 +314,7 @@ TextAppend(Widget w, char *s, int len)
 void
 on_reviewbutton_clicked(Widget w, XtPointer closure, XtPointer clientData)
 {
-	Widget shell, form, b, text;
+	Widget shell, form, b;
 
 	printf("review\n");
 	
