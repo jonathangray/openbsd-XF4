@@ -47,9 +47,19 @@ BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
 #define HasGccMergeConstants	NO
 #endif
 
-#if HasGccMergeConstants && DoLoadableServer && !MakeDllModules
-MODULE_GCC_FLAGS = -fno-merge-constants
+#ifndef HasGccPropolice
+#define HasGccPropolice		NO
 #endif
+
+#if HasGccPropolice
+MODULE_GCC_FLAGS1 = -fno-stack-protector
+#endif 
+
+#if HasGccMergeConstants && DoLoadableServer && !MakeDllModules
+MODULE_GCC_FLAGS2 = -fno-merge-constants
+#endif
+
+MODULE_GCC_FLAGS = $(MODULE_GCC_FLAGS1) $(MODULE_GCC_FLAGS2)
 
 #if defined(IHaveModules) && MakeDllModules
 MODULE_PIC_FLAGS = $(PICFLAGS)
