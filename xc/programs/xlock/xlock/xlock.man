@@ -2158,7 +2158,7 @@ the SETUP menus, under 'Network Parameters', and turn off TCP/IP access
 control.
 .br
 .SH "SEE ALSO"
-X(1), Xlib Documentation.
+xautolock(1), X(1), Xlib Documentation.
 .sp
 .SH AUTHOR
 Maintained by:
