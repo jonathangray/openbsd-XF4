@@ -1,0 +1,23 @@
+Post-installation instructions for XFree86 on OpenBSD/sparc
+-----------------------------------------------------------
+
+1. Sun setup is easy:
+
+Typical XFree86 use on Sun sparc-based machines requires no special
+configuration.  There are no configuration files for Sun sparc-based
+machines.  However, multi-headed configurations may require new
+device nodes in /dev.
+
+If XFree86 does not see a particular video card (ie. cgthree3), then
+do the following:
+
+	cd /dev
+	./MAKEDEV cgthree3
+
+And try starting again.
+
+2. Start xdm, the X display manager by activating the xdm_flags option
+   in /etc/rc.conf.  You should disable the console getty in /etc/ttys.
+
+If you encounter a problem, you can browse the entire documentation at
+http://www.xfree86.org/XFree86/3.3.6/
