@@ -1,4 +1,4 @@
-/* $OpenBSD: privsep.c,v 1.1 2003/02/22 18:54:26 matthieu Exp $ */
+/* $OpenBSD: privsep.c,v 1.2 2004/08/13 13:46:42 matthieu Exp $ */
 /*
  * Copyright 2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -173,6 +173,10 @@ receive_fd(int socket)
 		    __func__, (long)n);
 	if (result == 0) {
 		cmsg = CMSG_FIRSTHDR(&msg);
+		if (cmsg == NULL) {
+			warnx("%s: no message header", __func__);
+			return -1;
+		}
 		if (cmsg->cmsg_type != SCM_RIGHTS)
 			warnx("%s: expected type %d got %d", __func__,
 			    SCM_RIGHTS, cmsg->cmsg_type);
