@@ -1,6 +1,12 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.9 2003/10/11 09:30:42 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.10 2004/01/06 22:27:54 matthieu Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.1 2002/12/16 22:48:27 herrb Exp $
 XCOMM
+
+/* Shared libraries dependencies */
+#if HasGcc && GccMajorVersion >= 3
+# define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB) -lsupc++
+#endif 
+
 /* Shared Library Revisions. Crank major on API Changes */
 
 #if OverrideShlibRevs
@@ -49,7 +55,12 @@ XCOMM
 #  define SharedPSResRev 2.0
 # endif
 # ifndef SharedGluRev
-#  define SharedGluRev 2.0
+#  if HasGcc && GccMajorVersion >= 3
+    /* Gcc 3 changes the name mangling scheme on OpenBSD */
+#   define SharedGluRev	3.0
+#  else
+#   define SharedGluRev 2.0
+#  endif
 # endif
 # ifndef SharedGlxRev
 #  define SharedGlxRev 2.0

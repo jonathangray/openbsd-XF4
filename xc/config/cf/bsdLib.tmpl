@@ -69,7 +69,9 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXvReqs	$(LDPRELIB) $(XLIB)
 #define SharedSMReqs	$(LDPRELIBS) $(ICELIB)
 #define SharedGLReqs	$(LDPRELIBS) $(XLIB) -lc
+#ifndef SharedGLUReqs
 #define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB)
+#endif
 #define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
 
 #define SharedDPSReqs	$(LDPRELIB) $(SMLIB) $(ICELIB) $(XTOOLLIB) $(XLIB)
