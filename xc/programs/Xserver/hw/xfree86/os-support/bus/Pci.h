@@ -144,7 +144,7 @@
 #if (defined(__powerpc__) || defined(__mips__) || defined(__sh__) || defined(__mc68000__) || defined(__arm__) || defined(__s390__) || defined(__hppa__)) && defined(linux)
 # define ARCH_PCI_INIT linuxPciInit
 # define INCLUDE_XF86_MAP_PCI_MEM
-#elif (defined(__powerpc__) || defined(__alpha__) || defined(__sparc64__)) && defined(__OpenBSD__)
+#elif (defined(__powerpc__) || defined(__alpha__) || defined(__sparc__) || defined(__sparc64__)) && defined(__OpenBSD__)
 # define  ARCH_PCI_INIT freebsdPciInit
 # define INCLUDE_XF86_MAP_PCI_MEM
 #elif defined(__powerpc__)

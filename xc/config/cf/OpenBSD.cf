@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.102 2002/08/09 11:53:10 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.103 2002/08/12 14:34:51 todd Exp $
 
 
 
@@ -749,33 +749,51 @@ install:: fonts.alias							@@\
  */
 #ifdef SparcArchitecture
 
-#define HasWeakSymbols		YES
-# define ServerOSDefines 	-DDDXOSINIT
-# define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
+# define HasWeakSymbols		YES
+
+/* Set to YES to build XFree86 with wsfb server */
+# define	XF86Server	YES
+
+# if !XF86Server
+
+#  ifndef Xsun24Server
+#   define Xsun24Server		YES
+#  endif
+#  ifndef XsunServer
+#   define XsunServer		YES
+#  endif
+#  ifndef XsunMonoServer
+#   define XsunMonoServer	YES
+#  endif
+
+#  define ServerOSDefines 	-DDDXOSINIT
+#  define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
 				ServerSnprintfDefines DebugDefines \
 				-DX_BYTE_ORDER=ByteOrder -DINCLUDE_CG2_HEADER
+#  ifndef InstallXserverSetUID
+#   define InstallXserverSetUID NO
+#  endif
+
+# else /* XF86Server */
+
+#  define XF86CardDrivers	wsfb
+#  define XFree86ConsoleDefines -DWSCONS_SUPPORT
+#  define BuildXInputExt	YES
+#  define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
+#  define ServerExtraDefines	GccGasOption XFree86ServerDefines
+
+# endif /* 
+
 # define BuildXF86MiscExt	NO
 # define BuildMITMiscExt	NO
-
-# ifndef Xsun24Server
-#  define Xsun24Server		YES
-# endif
-# ifndef XsunServer
-#  define XsunServer		YES
-# endif
-# ifndef XsunMonoServer
-#  define XsunMonoServer	YES
-# endif
-
-# ifndef InstallXserverSetUID
-#  define InstallXserverSetUID NO
-# endif
 
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 
 # define BuildXF86VidModeExt	NO
 # define BuildXF86DGA		NO
+# ifndef BuildXInputExt
 # define BuildXInputExt		NO
+# endif
 # include <xfree86.cf>
 
 #endif /* SparcArchitecture */

@@ -43,6 +43,7 @@ PCIDRVROBJ = linuxPci.o
 #elif defined(OpenBSDArchitecture) && \
 	(defined(PpcArchitecture) || \
 	defined(AlphaArchitecture) || \
+	defined(SparcArchitecture) || \
 	defined(Sparc64Architecture))
 
 XCOMM OpenBSD/powerpc and OpenBSD/alpha and OpenBSD/sparc64

@@ -32,7 +32,7 @@
 #elif defined(SVR4)
 #include <sys/fbio.h>
 #include <sys/openpromio.h>
-#elif defined(__OpenBSD__) && defined(__sparc64__)
+#elif defined(__OpenBSD__) && (defined(__sparc64__) || defined(__sparc__))
 /* XXX */
 #elif defined(CSRG_BASED)
 #include <machine/fbio.h>

@@ -15,7 +15,7 @@ XCOMM $XConsortium: Imakefile /main/9 1996/10/25 15:38:46 kaleb $
 	(defined(FreeBSDArchitecture) && defined(AlphaArchitecture)) || \
 	(defined(OpenBSDArchitecture) && \
 		(defined(PpcArchitecture) || defined(AlphaArchitecture) || \
-		defined(Sparc64Architecture))) || \
+		defined(Sparc64Architecture) || defined(SparcArchitecture))) || \
 	(defined(LynxOSArchitecture) && defined(PpcArchitecture)) || \
 	defined(LinuxArchitecture)
 BUS_SUBDIR = bus

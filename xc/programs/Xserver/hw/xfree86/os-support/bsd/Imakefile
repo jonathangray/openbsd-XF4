@@ -30,7 +30,7 @@ SHARED_CFLAGS = PositionIndependentCFlags
 # elif defined(Arm32Architecture)
  IOPERMDEFINES = -DUSE_ARM32_MMAP
 # elif (defined(PpcArchitecture) || \
-	defined(AlphaArchitecture) || \
+	defined(AlphaArchitecture) || defined(SparcArchitecture) || \
 	defined(Sparc64Architecture)) && defined(OpenBSDArchitecture)
   IOPERM_SRC = ioperm_noop.c
   IOPERM_OBJ = ioperm_noop.o
@@ -134,6 +134,9 @@ VIDEO_OBJ = ppc_video.o
 VIDEO_SRC = arm_video.c
 VIDEO_OBJ = arm_video.o
 #elif defined(Sparc64Architecture)
+VIDEO_SRC = sparc64_video.c
+VIDEO_OBJ = sparc64_video.o
+#elif defined(SparcArchitecture)
 VIDEO_SRC = sparc64_video.c
 VIDEO_OBJ = sparc64_video.o
 #else
