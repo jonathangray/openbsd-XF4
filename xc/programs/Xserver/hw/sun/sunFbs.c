@@ -104,7 +104,7 @@ pointer sunMemoryMap (len, off, fd)
     mapsize = ((int) len + pagemask) & ~pagemask;
     addr = 0;
 
-#if !defined(__bsdi__) && !defined(_MAP_NEW)
+#if !defined(__bsdi__) && !defined(_MAP_NEW) && !defined(__NetBSD__) && !defined(__OpenBSD__)
     if ((addr = (caddr_t) valloc (mapsize)) == NULL) {
 	Error ("Couldn't allocate frame buffer memory");
 	(void) close (fd);
@@ -112,6 +112,7 @@ pointer sunMemoryMap (len, off, fd)
     }
 #endif
 
+#if !defined(__NetBSD__) && !defined(__OpenBSD__)
     /* 
      * try and make it private first, that way once we get it, an
      * interloper, e.g. another server, can't get this frame buffer,
@@ -121,6 +122,7 @@ pointer sunMemoryMap (len, off, fd)
 		mapsize,
 		PROT_READ | PROT_WRITE, MAP_PRIVATE,
 		fd, off)) == -1)
+#endif
 	mapaddr = (pointer) mmap (addr,
 		    mapsize,
 		    PROT_READ | PROT_WRITE, MAP_SHARED,
