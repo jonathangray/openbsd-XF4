@@ -2,12 +2,12 @@
 /* grav --- planets spinning around a pulsar */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)grav.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)grav.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
 /*-
- * Copyright (c) 1993 by Greg Boewring <greg@smug.student.adelaide.edu.au>
+ * Copyright (c) 1993 by Greg Boewring <gb@pobox.com>
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)grav.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 11-Jul-94: color version
- * 06-Oct-93: Written by Greg Bowering <greg@smug.student.adelaide.edu.au>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 11-Jul-1994: color version
+ * 06-Oct-1993: Written by Greg Bowering <gb@pobox.com>
  */
 
 #ifdef STANDALONE
@@ -52,20 +53,20 @@ static Bool trail;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-decay", ".grav.decay", XrmoptionNoArg, (caddr_t) "on"},
-	{"+decay", ".grav.decay", XrmoptionNoArg, (caddr_t) "off"},
-	{"-trail", ".grav.trail", XrmoptionNoArg, (caddr_t) "on"},
-	{"+trail", ".grav.trail", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-decay", (char *) ".grav.decay", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+decay", (char *) ".grav.decay", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-trail", (char *) ".grav.trail", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+trail", (char *) ".grav.trail", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & decay, "decay", "Decay", DEF_DECAY, t_Bool},
-	{(caddr_t *) & trail, "trail", "Trail", DEF_TRAIL, t_Bool}
+	{(caddr_t *) & decay, (char *) "decay", (char *) "Decay", (char *) DEF_DECAY, t_Bool},
+	{(caddr_t *) & trail, (char *) "trail", (char *) "Trail", (char *) DEF_TRAIL, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+decay", "turn on/off decaying orbits"},
-	{"-/+trail", "turn on/off trail dots"}
+	{(char *) "-/+decay", (char *) "turn on/off decaying orbits"},
+	{(char *) "-/+trail", (char *) "turn on/off trail dots"}
 };
 
 ModeSpecOpt grav_opts =
@@ -236,8 +237,8 @@ init_grav(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	gravstruct *gp;
 	unsigned char ball;
+	gravstruct *gp;
 
 	if (gravs == NULL) {
 		if ((gravs = (gravstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -259,8 +260,11 @@ init_grav(ModeInfo * mi)
 		}
 		gp->nplanets = NRAND(-gp->nplanets) + 1;	/* Add 1 so its not too boring */
 	}
-	if (!gp->planets)
-		gp->planets = (planetstruct *) calloc(gp->nplanets, sizeof (planetstruct));
+	if (gp->planets == NULL) {
+		if ((gp->planets = (planetstruct *) calloc(gp->nplanets,
+				sizeof (planetstruct))) == NULL)
+			return;
+	}
 
 	MI_CLEARWINDOW(mi);
 
@@ -283,11 +287,16 @@ draw_grav(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	gravstruct *gp = &gravs[MI_SCREEN(mi)];
 	register unsigned char ball;
+	gravstruct *gp;
+
+	if (gravs == NULL)
+			return;
+	gp = &gravs[MI_SCREEN(mi)];
+	if (gp->planets == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	/* Mask centrepoint */
 	XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 	XDrawArc(display, window, gc,

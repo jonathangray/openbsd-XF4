@@ -2,7 +2,7 @@
 /* lightning --- fractal lightning bolds */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)lightning.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)lightning.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)lightning.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 14-Jul-96: Cleaned up code.
- * 27-Jun-96: Written and submitted by Keith Romberg <kromberg@saxe.com>.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 14-Jul-1996: Cleaned up code.
+ * 27-Jun-1996: Written and submitted by Keith Romberg <kromberg@saxe.com>.
  */
 
 #ifdef STANDALONE
@@ -42,7 +43,7 @@ static const char sccsid[] = "@(#)lightning.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_lightning
 
 ModeSpecOpt lightning_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   lightning_description =
@@ -414,7 +415,7 @@ level1_strike(Lightning bolt, ModeInfo * mi)
 static int
 distance(XPoint a, XPoint b)
 {
-	return ((int) sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
+	return ((int) sqrt((double) (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
 }
 
 /*------------------------------------------------------------------------*/
@@ -537,11 +538,13 @@ init_lightning(ModeInfo * mi)
 void
 draw_lightning(ModeInfo * mi)
 {
-	Storm      *st = &Helga[MI_SCREEN(mi)];
 	int         i;
+	Storm      *st;
 
+	if (Helga == NULL)
+		return;
+	st = &Helga[MI_SCREEN(mi)];
 	MI_IS_DRAWN(mi) = True;
-
 	switch (st->stage) {
 		case 0:
 			MI_IS_DRAWN(mi) = False;

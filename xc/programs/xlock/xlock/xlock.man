@@ -1,7 +1,7 @@
-.\" @(#)xlock.man	4.16 2000/01/17
+.\" @(#)xlock.man	5.01 2001/05/18
 .\" Copyright (c) 1991 - Patrick J. Naughton
 .\" xlockmore updates from David A. Bagley
-.TH XLOCK 1 "17 Jan 2000" "X11R6 Contrib"
+.TH XLOCK 1 "18 May 2001" "X11R6 Contrib"
 .SH NAME
 xlock \- Locks the local X display until a password is entered.
 .sp
@@ -172,6 +172,15 @@ xlock \- Locks the local X display until a password is entered.
 ]
 [
 .BI -/+wireframe
+]
+[
+.BI -/+showfps
+]
+[
+.BI \-fpsfont " fontname"
+]
+[
+.BI -/+fpstop
 ]
 [
 .BI -/+use3d
@@ -367,10 +376,6 @@ it was configured.
 .B bug
 Shows Palmiter's bug evolution and a garden of Eden.
 .TP 8
-.B cartoon
-Shows bouncing cartoons.  May not be available depending on how it was
-configured.
-.TP 8
 .B clock
 Shows Packard's oclock.
 .TP 8
@@ -398,6 +403,9 @@ Shows Lloyd's Prisoner's Dilemma simulation.
 .B discrete
 Shows various discrete maps.
 .TP 8
+.B dragon
+Shows Deventer's Hexagonal Dragons Maze.
+.TP 8
 .B drift
 Shows cosmic drifting flame fractals.
 .TP 8
@@ -405,11 +413,18 @@ Shows cosmic drifting flame fractals.
 Shows the Impossible Cage, an Escher-like GL scene.  May not be available
 depending on how it was configured.
 .TP 8
+.B euler2d
+Shows a simulation of 2D incompressible inviscid fluid.
+.TP 8
 .B eyes
 Shows eyes following a bouncing grelb.
 .TP 8
 .B fadeplot
 Shows a fading plot of sine squared.
+.TP 8
+.B fire
+Shows a 3D fire-like image.  May not be available depending on how it was
+configured.
 .TP 8
 .B flag
 Shows a waving flag image.  This may be text or a graphic image.
@@ -429,6 +444,9 @@ Shows crashing spiral galaxies.
 .TP 8
 .B gears
 Shows GL's gears.  May not be available depending on how it was configured.
+.TP 8
+.B glplanet
+Animates texture mapped sphere (planet)
 .TP 8
 .B goop
 Shows goop from a lava lamp.
@@ -506,6 +524,9 @@ Shows a random maze and a depth first search solution.
 Shows the Moebius Strip II, an Escher-like GL scene with ants.  May not be
 available depending on how it was configured.
 .TP 8
+.B molecule
+Draws molecules, based on coordinates from PDB (Protein Data Base) files.
+.TP 8
 .B morph3d
 Shows GL morphing polyhedra.  May not be available depending on how it
 was configured.
@@ -522,15 +543,18 @@ Shows a man with a big nose runs around spewing out text.
 .B pacman
 Shows Pacman(tm).
 .TP 8
-.B pipes
-Shows a self-building pipe system.  May not be available depending on how it
-was configured.
-.TP 8
 .B penrose
 Shows Penrose's quasiperiodic tilings.
 .TP 8
 .B petal
 Shows various GCD Flowers.
+.TP 8
+.B pipes
+Shows a self-building pipe system.  May not be available depending on how it
+was configured.
+.TP 8
+.B polyominoes
+Shows attempts to place polyominoes into a rectangle.
 .TP 8
 .B puzzle
 Shows a puzzle being scrambled and then solved.
@@ -551,17 +575,30 @@ Shows Tom's Roto-Rooter.
 Shows an auto-solving Rubik's Cube.  May not be available depending on how it
 was configured.
 .TP 8
+.B sballs
+Shows balls spinning like crazy in GL.  May not be available depending on how
+it was configured.
+.TP 8
+.B scooter
+Shows a journey through space tunnel and stars.
+.TP 8
 .B shape
 Shows stippled rectangles, ellipses, and triangles.
 .TP 8
 .B sierpinski
 Shows a Sierpinski's triangle.
 .TP 8
+.B sierpinski3d
+Shows a Sierpinski's gasket.
+.TP 8
 .B slip
 Shows slipping blits.
 .TP 8
 .B solitare
 Shows Klondike's game of solitare.
+.TP 8
+.B space
+Shows a journey into deep space.
 .TP 8
 .B sphere
 Shows a bunch of shaded spheres.
@@ -644,6 +681,9 @@ Shows wiggly worms.
 .B xjack
 Shows Jack having one of those days.
 .TP 8
+.B xcl
+Shows a Control Line combat model race
+.TP 8
 .B blank
 Shows nothing but a black screen.  Does not show up in random mode.
 .TP 8
@@ -698,8 +738,6 @@ In bug mode it is the number of bugs, could be less because of conflicts.
 
 In cage mode it is means nothing.
 
-In cartoon mode it means nothing.
-
 In clock mode it is the percentage of the screen, but less than 100%.
 
 In coral mode it is the number of seeds.
@@ -720,9 +758,15 @@ In discrete mode it is the number of points.
 
 In drift mode it is the number of levels to recurse (larger = more complex).
 
+In dragon mode it means nothing.
+
+In euler2d mode it is the number of segments.
+
 In eyes mode it is the number of eyes.
 
 In fadeplot mode it is the number of steps.
+
+In fire mode it is the number of fire particles (set it to 0 to have rain).
 
 In flag mode it means nothing.
 
@@ -735,6 +779,8 @@ In forest mode it is the number trees that make a forest.
 In galaxy mode it means the number of galaxies.
 
 In gears mode it is the number of degrees to rotate the set of gears by.
+
+In glplanet mode it is the number of hundredth degrees to roll the planet by.
 
 In goop mode it is the number of blobs per plane.
 
@@ -752,13 +798,16 @@ In ifs mode it means nothing.
 
 In image mode it means it is the number of logos on screen at once.
 
-In juggle mode it is speed.
+In juggle mode it is speed in milliseconds betewwen a throw and the next
+catch.
 
 In julia mode it is the depth of recursion.
 
 In kaleid mode it is the number of pens.
 
 In kumppa mode it means nothing.
+
+In lament mode it means nothing.
 
 In laser mode it is the number lasers.
 
@@ -772,7 +821,7 @@ In lisa mode it is the number of loops.
 
 In lissie mode it is the number of worms.
 
-In loop mode it means nothing.
+In loop mode it is the number of flaws.
 
 In mandelbrot mode it is the order.
 
@@ -783,6 +832,8 @@ In matrix mode it means nothing.
 In maze mode it means nothing.
 
 In moebius mode it is means nothing.
+
+In molecule mode it means nothing.
 
 In morph3d mode it is the ith platonic solid.
 
@@ -803,6 +854,8 @@ In petal mode it the greatest random number of petals.
 In pipes mode it shows different joints, 0 random, 1 spherical, 2 bolted
 elbow, 3 elbow, and 4 alternating.
 
+In polyominoes mode it means nothing.
+
 In puzzle mode it the number of moves.
 
 In pyro mode it is the maximum number flying rockets at one time.
@@ -813,6 +866,10 @@ In rotor mode it is the number of rotor thingys which whirr...
 
 In rubik mode it is the number of moves.
 
+In sballs mode it is the number of spheres.
+
+In scooter mode it is the number of doors.
+
 In shape mode it means nothing.
 
 In sierpinski mode it is the number of points.
@@ -820,6 +877,8 @@ In sierpinski mode it is the number of points.
 In slip mode it means nothing.
 
 In solitare mode it means nothing.
+
+In space mode it is the number of stars.
 
 In sphere mode it means nothing.
 
@@ -871,6 +930,10 @@ In world mode it is the number of worlds.
 
 In worm mode it is the number of worms.
 
+In xcl mode it represents the number of planes.
+
+In xjack mode it means nothing.
+
 In blank mode it means nothing.
 
 In bomb mode it means the number of minutes to autologout.
@@ -896,12 +959,12 @@ option is depreciated but should still work as
 The
 .I cycles
 option sets the number of cycles until time out for ant, blot, braid,
-bug, clock, crystal, daisy, deco, demon, dilemma, discrete, eyes,
-flag, flow, forest, galaxy, helix, hop, hyper, ico,
+bug, clock, crystal, daisy, deco, demon, dilemma, discrete, dragon,
+eyes, flag, flow, forest, galaxy, helix, hop, hyper, ico,
 laser, life, life1d, life3d, lisa, lissie, loop, mandelbrot, mountain,
 petal, sierpinski, shape, spline +erase, t3d, thornbird, triangle, tube,
-voters, wator, and wire.  For worm it is the length of the lines,
-for atlantis it is the shark speed,
+voters, wator, and wire.  For euler2d and worm it is the length
+of the lines, for atlantis it is the shark speed,
 for fadeplot, julia and spiral it is the length of the trail of dots,
 munch it is the minimum size of the squares,
 for kaleid it is the % of black,
@@ -909,8 +972,12 @@ for qix it is the number of lines,
 for spline -erase it means the number of
 splines * 64 (for compatibility with +erase),
 for gears it is the number of degrees to increment the spin of each gear by,
+for glplanet it is the number of hundredth degrees to rotate the planet by,
+for molecule it is the time in seconds until timeout,
 for pipes it is the number of systems to draw before clearing the screen,
 for rubik it is the number of steps to complete a 90 move,
+for sballs it is the sphere speed value,
+for scooter it is the speed,
 for superquadrics it is the number of frames it takes to morph from one
 shape to another.
 for text3d it is the number of times drawing a word before the next one,
@@ -927,13 +994,16 @@ tik_tak, size of polyhedron in ico, size of lissie in lissie, size of dots
 of flag, for kaleid it is the symmetry,
 width of maze hallway, size of side of penrose tile, radius of loop in lisa,
 radius of ball in roll, number of corners in sierpinski,
-size of tube in tube, width of worm in worm, line width in rotor,
-size of cells in ant, bug, dilemma, life, life1d, pacman, tetris, voters,
-wator, and wire.  In pipes it is the maximum length of a system.
+number of stars in scooter, size of tube in tube, width of worm in worm,
+line width in rotor, size of cells in ant, bug, dilemma, dragon, life,
+life1d, pacman, tetris, voters, wator, and wire.
+In pipes it is the maximum length of a system.
 In atlantis it is the shark size.
-In sproingies it is the size of the screen.  A negative number
-allows for randomness, similar to
+A negative number allows for randomness, similar to
 .I count.
+In fire, gears, sballs and sproingies it is the size of the screen,
+this is because on many slow systems it runs too slow when the picture
+covers the full screen.
 .TP 5
 .BI \-ncolors \ num
 The
@@ -1254,8 +1324,20 @@ option sets
 the size of the screen for gl modes.  Not normally available or needed.
 .TP 5
 .B -/+wireframe
-Turn on/off wireframe, available on atlantis, daisy, gears, life3d, mountain,
-sproingies, superquadrics, and triangle.
+Turn on/off wireframe, available on atlantis, daisy, fire, gears,
+lament, life3d, mountain, sballs, sproingies, superquadrics, and triangle.
+.TP 5
+.B -/+showfps
+Turn on/off frame per sec display, available on atlantis, bubble3d, cage, fire,
+gears, invert, lament, moebius, morph3d, rubik, sballs, stairs, and superquadrics.
+.TP 5
+.B -/+fpstop
+Turn on/off frame per sec display on top of screen, used if showfps is on.
+.TP 5
+.BI \-fpsfont \ fontname
+The
+.I fpsfont
+option sets the font to be used in the frame per sec display, used if showfps is on.
 .TP 5
 .B -/+use3d
 Turn on/off 3d view, available on bouboule, pyro, star, and worm.
@@ -1461,7 +1543,9 @@ option sets the number of neighbors of a cell to 3, 4, 6, 9 (may not have
 real mathematical meaning), or 12 for several automata modes
 .I (ant, bug, demon, dilemma, life, loop, voters, wator,
 and
-.I wire) (bug and loop
+.I wire) (bug
+and
+.I loop
 do not span this full range).  Setting it to 0 typically randomizes this,
 except where bitmaps are used
 .I (dilemma, life, voters,
@@ -1482,9 +1566,26 @@ and
 .TP 5
 .BI -/+trackmouse
 Turn on and off mouse interaction in
-.I eyes, julia,
+.I eyes, fire, julia, solitare, sballs, swarm,
 and
-.I swarm.
+.I tetris.
+For
+.I solitare
+and
+.I tetris
+this may not be available depending on how 
+.B xlock
+was configured.
+.TP 5
+.BI -/+texture
+Turn on and off texturing in
+.I fire,
+.I lament 
+and
+.I sballs.
+This may not be available depending on how
+.B xlock
+was configured.
 .TP 5
 .BI \-rule \ S<neighborhood>/B<neighborhood>
 Allows one to set the rule for
@@ -1596,13 +1697,24 @@ Turn on and off growing fractals (else they are animated) for
 Turn on and off using lissajous figures to get points for
 .I drift.
 .TP 5
-.BI -/+noants
-Turn off and on ants in
-.I moebius.
+.BI -/+framerate
+Turn on and off displaying of the frame rate for
+.I fire
+and
+.I sballs
 .TP 5
-.BI -/+solidmoebius
-Turn on and off solid Mobius strip in
-.I moebius.
+.BI -/+fog
+Turn on and off fog for
+.I fire.
+.TP 5
+.BI -/+shadows
+Turn on and off shadows for
+.I fire.
+.TP 5
+.BI -trees \ num
+Validate the displaying of trees for
+.I fire
+if greater than zero.
 .TP 5
 .BI -/+invert
 Turn on and off inverting of the
@@ -1611,6 +1723,35 @@ Turn on and off inverting of the
 .BI -/+tracks
 Turn on and off star tracks in
 .I galaxy.
+.TP 5
+.BI -/+light
+Turn on and off lighting of the planet for
+.I glplanet.
+.TP 5
+.BI -/+bounce
+Turn on and off bouncing movement of the planet for
+.I glplanet.
+.TP 5
+.BI \-pimage \ filename
+Use the named xbm or xpm file for texturing the planet for
+.I glplanet.
+Use BUILTIN as filename for the builtin image taken from Xearth.
+.TP 5
+.BI -/+roll
+Turn on and off rolling of the planet for
+.I glplanet.
+.TP 5
+.BI -/+rotate
+Turn on and off rotation of the planet for
+.I glplanet.
+.TP 5
+.BI -/+texture
+Turn on and off texturing of the planet for
+.I glplanet.
+.TP 5
+.BI -/+stars
+Turn on and off showing stars in the background for
+.I glplanet.
 .TP 5
 .BI -/+decay
 Turn on and off decaying orbits for
@@ -1646,6 +1787,27 @@ Turn on and off Jong's
 .BI -/+sine
 Turn on and off Barry Martin's sine
 .I hop.
+.TP 5
+.BI \-pattern \ <pattern>
+Allows one to set the pattern for
+.I juggle.
+.TP 5
+.BI \-patterntrace \ num
+Allows one to see the trails for
+.I juggle.
+.TP 5
+.BI -/+solid
+Turn off and on solid color (else its a 4 panel look (half white)) for 
+.I juggle.
+.TP 5
+.BI -/+planetary
+Turn on and off planetary gears in
+.I gears.
+.TP 5
+.BI \-planetsize \ num
+Sets the size of the screen for planetary option in
+.I gears.
+This is for machines with slower CPU. (Set to 0 for full screen).
 .TP 5
 .BI -/+disconnected
 Turn on and off disconnected pen movement in
@@ -1688,6 +1850,51 @@ rules may not be symmetric and are more general.
 .BI -/+additive
 Turn on and off additive functions mode in
 .I lisa.
+.TP 5
+.BI -/+noants
+Turn off and on ants in
+.I moebius.
+.TP 5
+.BI -/+solidmoebius
+Turn on and off solid Mobius strip in
+.I moebius.
+.TP 5
+.BI -/+atoms
+Turn on and off the drawing of spheres for the atoms in
+.I molecule.
+.TP 5
+.BI -/+bbox
+Turn on and off showing the molecules in a blue box in
+.I molecule.
+.TP 5
+.BI -/+bonds
+Turn on and off the drawing of the atomic bonds in
+.I molecule.
+.TP 5
+.BI \-molecule \ filename
+Read a molecule structure from a pdb file in
+.I molecule.
+.TP 5
+.BI -/+labels
+Turn on and off the labeling of the atoms in
+.I molecule.
+.TP 5
+.BI \-spin {x|y|z}
+Set the axis for molecule rotation in
+.I molecule.
+The default is "XYZ".
+.TP 5
+.BI \+spin
+Turn off the molecule rotation in
+.I molecule.
+.TP 5
+.BI -/+titles
+Turn on and off the molecule description in
+.I molecule.
+.TP 5
+.BI -/+wander
+Turn on and off the moving of the molecule on a sinoid curve in
+.I molecule.
 .TP 5
 .BI -/+ammann
 Turn on and off lines for
@@ -1747,6 +1954,18 @@ Turn on or off shadowing in
 Turn on or off stippling in
 .I shape.
 .TP 5
+.BI \-intensity \ value
+Set the brightness (default 2185) of the sierpinski structure for
+.I sierpinski3d.
+.TP 5
+.BI \-maxdepth \ value
+Set the maximum depth (up to 10) of the sierpinski structure for
+.I sierpinski3d.
+.TP 5
+.BI \-speed \ value
+Determines after how much steps the depth changes for
+.I sierpinski3d.
+.TP 5
 .BI \-trek \ num
 If its a high number you will see the space ship all the time in
 .I star.
@@ -1768,6 +1987,28 @@ Set speed of cycling in
 .BI \-rotation \ num
 Set rotation velocity in
 .I starfish.
+.TP 5
+.BI \-thickness \ num
+Set thickness in
+.I starfish.
+.TP 5
+.BI -/+rock
+Turn on and off blob for
+.I starfish.
+.TP 5
+.BI \-spinspeed \ num
+Set speed of rotation, in degrees per frame for
+.I superquadrics.
+.TP 5
+.BI -/+bonus
+Turn on in
+.I tetris
+to see 5 square bonus pieces.
+.TP 5
+.BI -/+well
+Turn on in
+.I tetris
+to see welltris.
 .TP 5
 .BI \-ttfont \ filename
 Sets the True Type font file (or font directory) used for
@@ -1795,17 +2036,46 @@ Sets the animation function used for
 Currently one of : \
 Random \ FullRandom \ Default \ Default2 \ None \ Crazy \ UpDown \ Extrude \ RotateXY \ RotateYZ \ Frequency \ Amplitude
 .TP 5
-.BI \-thickness \ num
-Set thickness in
-.I starfish.
+.B \-speed \fIkm/h\fP
+The speed for all planes in km/h for
+.I xcl.
 .TP 5
-.BI -/+rock
-Turn on and off blob for
-.I starfish.
+.B \-frametime \fImicroseconds\fP
+The time for one frame on the screen. This time is used to calculate
+the delay time and depends on the speed of the X server for
+.I xcl.
 .TP 5
-.BI \-spinspeed \ num
-Set speed of rotation, in degrees per frame for
-.I superquadrics.
+.B \-line_length \fImm\fP
+The distance between the pilot and the plane for
+.I xcl.
+.TP 5
+.B \-spectator \fImm\fP
+The distance between spectator and pilot. It should be grater than the
+line_length and the half wing width of the plane to be not dangerous
+for the spectator for
+.I xcl.
+.TP 5
+.B \-viewmodel
+Shows an animated view of one model for
+.I xcl.
+.TP 5
+.B -/+oldcolor
+Sets the colors for the first two planes fixed to red and yellow in
+.I xcl.
+.TP 5
+.B \-xcldebug
+Shows some additional timing information to make sure that the calibrate
+procedure goes right in
+.I xcl.
+.TP 8
+.B \-automatic
+The auto scale for automatic fit into the window is \fIDe\fPactivated
+with this option for
+.I xcl.
+.TP 5
+.B \-randomstart
+Use a random start point for models at startup for
+.I xcl.
 .TP 5
 .BI \-duration \ seconds
 Allows one to set a duration for a mode in
@@ -1921,7 +2191,7 @@ with many additional contributors.
 .SH COPYRIGHT
 Copyright (c) 1988-1991 by Patrick J. Naughton
 .br
-Copyright (c) 1993-2000 by David A. Bagley
+Copyright (c) 1993-2001 by David A. Bagley
 .sp
 Permission to use, copy, modify, and distribute this software and its
 documentation for any purpose and without fee is hereby granted,

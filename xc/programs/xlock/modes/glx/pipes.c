@@ -2,7 +2,7 @@
 /* pipes --- 3D selfbuiding pipe system */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)pipes.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)pipes.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -31,7 +31,7 @@ static const char sccsid[] = "@(#)pipes.c	4.07 97/11/24 xlockmore";
  * OpenGL at home.
  *
  * Since I'm not a native English speaker, my apologies for any grammatical
- * mistake.
+ * mistakes.
  *
  * My e-mail addresses is
  * m-vianna@usa.net
@@ -86,27 +86,27 @@ static Bool fisheye, tightturns, rotatepipes;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-factory", ".pipes.factory", XrmoptionSepArg, (caddr_t) NULL},
-	{"-fisheye", ".pipes.fisheye", XrmoptionNoArg, (caddr_t) "on"},
-	{"+fisheye", ".pipes.fisheye", XrmoptionNoArg, (caddr_t) "off"},
-	{"-tightturns", ".pipes.tightturns", XrmoptionNoArg, (caddr_t) "on"},
-	{"+tightturns", ".pipes.tightturns", XrmoptionNoArg, (caddr_t) "off"},
-      {"-rotatepipes", ".pipes.rotatepipes", XrmoptionNoArg, (caddr_t) "on"},
-      {"+rotatepipes", ".pipes.rotatepipes", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-factory", (char *) ".pipes.factory", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-fisheye", (char *) ".pipes.fisheye", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+fisheye", (char *) ".pipes.fisheye", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-tightturns", (char *) ".pipes.tightturns", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+tightturns", (char *) ".pipes.tightturns", XrmoptionNoArg, (caddr_t) "off"},
+      {(char *) "-rotatepipes", (char *) ".pipes.rotatepipes", XrmoptionNoArg, (caddr_t) "on"},
+      {(char *) "+rotatepipes", (char *) ".pipes.rotatepipes", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & factory, "factory", "Factory", DEF_FACTORY, t_Int},
-	{(caddr_t *) & fisheye, "fisheye", "Fisheye", DEF_FISHEYE, t_Bool},
-	{(caddr_t *) & tightturns, "tightturns", "Tightturns", DEF_TIGHTTURNS, t_Bool},
-	{(caddr_t *) & rotatepipes, "rotatepipes", "Rotatepipes", DEF_ROTATEPIPES, t_Bool}
+	{(caddr_t *) & factory, (char *) "factory", (char *) "Factory", (char *) DEF_FACTORY, t_Int},
+	{(caddr_t *) & fisheye, (char *) "fisheye", (char *) "Fisheye", (char *) DEF_FISHEYE, t_Bool},
+	{(caddr_t *) & tightturns, (char *) "tightturns", (char *) "Tightturns", (char *) DEF_TIGHTTURNS, t_Bool},
+	{(caddr_t *) & rotatepipes, (char *) "rotatepipes", (char *) "Rotatepipes", (char *) DEF_ROTATEPIPES, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-factory num", "how much extra equipment in pipes (0 for none)"},
-	{"-/+fisheye", "turn on/off zoomed-in view of pipes"},
-	{"-/+tightturns", "turn on/off tight turns"},
-	{"-/+rotatepipes", "turn on/off pipe system rotation per screenful"}
+	{(char *) "-factory num", (char *) "how much extra equipment in pipes (0 for none)"},
+	{(char *) "-/+fisheye", (char *) "turn on/off zoomed-in view of pipes"},
+	{(char *) "-/+tightturns", (char *) "turn on/off tight turns"},
+	{(char *) "-/+rotatepipes", (char *) "turn on/off pipe system rotation per screenful"}
 };
 
 ModeSpecOpt pipes_opts =
@@ -163,6 +163,7 @@ typedef struct {
 	int         system_type;
 	int         system_length;
 	int         turncounter;
+	int         factory;
 	Window      window;
 	float      *system_color;
 	GLfloat     initial_rotation;
@@ -213,7 +214,7 @@ static float MaterialWhite[] =
 static float MaterialGray[] =
 {0.2, 0.2, 0.2, 1.0};
 
-static pipesstruct *pipes = NULL;
+static pipesstruct *pipes = (pipesstruct *) NULL;
 
 
 static void
@@ -242,15 +243,17 @@ MakeTube(int direction)
 	glEnd();
 }
 
-static void
+static Bool
 mySphere(float radius)
 {
 	GLUquadricObj *quadObj;
 
-	quadObj = gluNewQuadric();
+	if ((quadObj = gluNewQuadric()) == 0)
+		return False;
 	gluQuadricDrawStyle(quadObj, (GLenum) GLU_FILL);
 	gluSphere(quadObj, radius, 16, 16);
 	gluDeleteQuadric(quadObj);
+	return True;
 }
 
 static void
@@ -322,7 +325,7 @@ myElbow(ModeInfo * mi, int bolted)
 		}
 	}
 
-	if (factory > 0 && bolted) {
+	if (pp->factory > 0 && bolted) {
 		/* Bolt the elbow onto the pipe system */
 		glFrontFace(GL_CW);
 		glPushMatrix();
@@ -622,10 +625,68 @@ pinit(ModeInfo * mi, int zera)
 	pp->nowdir = SelectNeighbor(mi);
 }
 
+static void
+free_factory(Display *display, pipesstruct *pp)
+{
+	if (pp->glx_context) {
+		/* Display lists MUST be freed while their glXContext is current. */
+		glXMakeCurrent(display, pp->window, *(pp->glx_context));
+		if (pp->valve != 0) {
+			glDeleteLists(pp->valve, 1);
+			pp->valve = 0;
+		}
+		if (pp->bolts != 0) {
+			glDeleteLists(pp->bolts, 1);
+			pp->bolts = 0;
+		}
+		if (pp->betweenbolts != 0) {
+			glDeleteLists(pp->betweenbolts, 1);
+			pp->betweenbolts = 0;
+		}
+		if (pp->elbowbolts != 0) {
+			glDeleteLists(pp->elbowbolts, 1);
+			pp->elbowbolts = 0;
+		}
+		if (pp->elbowcoins != 0) {
+			glDeleteLists(pp->elbowcoins, 1);
+			pp->elbowcoins = 0;
+		}
+		if (pp->guagehead != 0) {
+			glDeleteLists(pp->guagehead, 1);
+			pp->guagehead = 0;
+		}
+		if (pp->guageface != 0) {
+			glDeleteLists(pp->guageface, 1);
+			pp->guageface = 0;
+		}
+		if (pp->guagedial != 0) {
+			glDeleteLists(pp->guagedial, 1);
+			pp->guagedial = 0;
+		}
+		if (pp->guageconnector != 0) {
+			glDeleteLists(pp->guageconnector, 1);
+			pp->guageconnector = 0;
+		}
+	}
+}
+
+void
+release_pipes(ModeInfo * mi)
+{
+	if (pipes != NULL) {
+		int         screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_factory(MI_DISPLAY(mi), &pipes[screen]);
+		(void) free((void *) pipes);
+		pipes = (pipesstruct *) NULL;
+	}
+	FreeAllGL(mi);
+}
+
 void
 init_pipes(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	pipesstruct *pp;
 
 	if (pipes == NULL) {
@@ -633,27 +694,38 @@ init_pipes(ModeInfo * mi)
 					      sizeof (pipesstruct))) == NULL)
 			return;
 	}
-	pp = &pipes[screen];
+	pp = &pipes[MI_SCREEN(mi)];
 
 	pp->window = MI_WINDOW(mi);
+	pp->factory = factory;
 	if ((pp->glx_context = init_GL(mi)) != NULL) {
 
 		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		pp->initial_rotation = -10.0;
 		pinit(mi, 1);
 
-		if (factory > 0) {
-			pp->valve = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_BigValve);
-			pp->bolts = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_Bolts3D);
-			pp->betweenbolts = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_PipeBetweenBolts);
-
-			pp->elbowbolts = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_ElbowBolts);
-			pp->elbowcoins = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_ElbowCoins);
-
-			pp->guagehead = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_GuageHead);
-			pp->guageface = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_GuageFace);
-			pp->guagedial = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_GuageDial);
-			pp->guageconnector = BuildLWO(MI_IS_WIREFRAME(mi), &LWO_GuageConnector);
+		if (pp->factory > 0) {
+			if (((pp->valve = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_BigValve)) == 0) ||
+			    ((pp->bolts = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_Bolts3D)) == 0) ||
+			    ((pp->betweenbolts = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_PipeBetweenBolts)) == 0) ||
+			    ((pp->elbowbolts = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_ElbowBolts)) == 0) ||
+			    ((pp->elbowcoins = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_ElbowCoins)) == 0) ||
+			    ((pp->guagehead = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_GuageHead)) == 0) ||
+			    ((pp->guageface = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_GuageFace)) == 0) ||
+			    ((pp->guagedial = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_GuageDial)) == 0) ||
+			    ((pp->guageconnector = BuildLWO(MI_IS_WIREFRAME(mi),
+				&LWO_GuageConnector)) == 0)) {
+				free_factory(MI_DISPLAY(mi), pp);
+				pp->factory = 0;
+			}
 		}
 		/* else they are all 0, thanks to calloc(). */
 
@@ -684,16 +756,17 @@ init_pipes(ModeInfo * mi)
 void
 draw_pipes(ModeInfo * mi)
 {
-	pipesstruct *pp = &pipes[MI_SCREEN(mi)];
-
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-
 	int         newdir;
 	int         OPX, OPY, OPZ;
+	pipesstruct *pp;
+
+	if (pipes == NULL)
+		return;
+	pp = &pipes[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!pp->glx_context)
 		return;
 
@@ -725,7 +798,10 @@ draw_pipes(ModeInfo * mi)
 	if (pp->olddir == dirNone) {
 		glPushMatrix();
 		glTranslatef((pp->PX - 16) / 3.0 * 4.0, (pp->PY - 12) / 3.0 * 4.0, (pp->PZ - 16) / 3.0 * 4.0);
-		mySphere(0.6);
+		if (!mySphere(0.6)) {
+			release_pipes(mi);
+			return;
+		}
 		glPopMatrix();
 	}
 	/* Check for stop conditions */
@@ -733,7 +809,10 @@ draw_pipes(ModeInfo * mi)
 		glPushMatrix();
 		glTranslatef((pp->PX - 16) / 3.0 * 4.0, (pp->PY - 12) / 3.0 * 4.0, (pp->PZ - 16) / 3.0 * 4.0);
 		/* Finish the system with another sphere */
-		mySphere(0.6);
+		if (!mySphere(0.6)) {
+			release_pipes(mi);
+			return;
+		}
 #if defined( MESA ) && defined( SLOW )
 		glXSwapBuffers(display, window);
 #endif
@@ -779,7 +858,7 @@ draw_pipes(ModeInfo * mi)
 		glPushMatrix();
 		glTranslatef((pp->PX - 16) / 3.0 * 4.0, (pp->PY - 12) / 3.0 * 4.0, (pp->PZ - 16) / 3.0 * 4.0);
 		/* Chance of factory shape here, if enabled. */
-		if ((pp->counter > 1) && (NRAND(100) < factory)) {
+		if ((pp->counter > 1) && (NRAND(100) < pp->factory)) {
 			MakeShape(mi, newdir);
 		} else {
 			MakeTube(newdir);
@@ -797,7 +876,10 @@ draw_pipes(ModeInfo * mi)
 		switch (sysT) {
 			case 1:
 				glTranslatef((pp->PX - 16) / 3.0 * 4.0, (pp->PY - 12) / 3.0 * 4.0, (pp->PZ - 16) / 3.0 * 4.0);
-				mySphere(elbowradius);
+				if (!mySphere(elbowradius)) {
+					release_pipes(mi);
+					return;
+				}
 				break;
 			case 2:
 			case 3:
@@ -982,56 +1064,17 @@ draw_pipes(ModeInfo * mi)
 void
 change_pipes(ModeInfo * mi)
 {
-	pipesstruct *pp = &pipes[MI_SCREEN(mi)];
+	pipesstruct *pp;
+
+	if (pipes == NULL)
+		return;
+	pp = &pipes[MI_SCREEN(mi)];
 
 	if (!pp->glx_context)
 		return;
 
 	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(pp->glx_context));
 	pinit(mi, 1);
-}
-
-void
-release_pipes(ModeInfo * mi)
-{
-	if (pipes != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			pipesstruct *pp = &pipes[screen];
-
-			if (pp->glx_context) {
-
-				/* Display lists MUST be freed while their glXContext is current. */
-				glXMakeCurrent(MI_DISPLAY(mi), pp->window, *(pp->glx_context));
-
-				if (pp->valve)
-					glDeleteLists(pp->valve, 1);
-				if (pp->bolts)
-					glDeleteLists(pp->bolts, 1);
-				if (pp->betweenbolts)
-					glDeleteLists(pp->betweenbolts, 1);
-
-				if (pp->elbowbolts)
-					glDeleteLists(pp->elbowbolts, 1);
-				if (pp->elbowcoins)
-					glDeleteLists(pp->elbowcoins, 1);
-
-				if (pp->guagehead)
-					glDeleteLists(pp->guagehead, 1);
-				if (pp->guageface)
-					glDeleteLists(pp->guageface, 1);
-				if (pp->guagedial)
-					glDeleteLists(pp->guagedial, 1);
-				if (pp->guageconnector)
-					glDeleteLists(pp->guageconnector, 1);
-			}
-		}
-
-		(void) free((void *) pipes);
-		pipes = NULL;
-	}
-	FreeAllGL(mi);
 }
 
 #endif

@@ -2,7 +2,7 @@
 /* dilemma --- Lloyd's Prisoner's Dilemma Simulation */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)dilemma.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)dilemma.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)dilemma.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 20-Oct-97: Computing Bouts of the Prisoner's Dilemma by Alun L. Lloyd
- *            Scientific American Magazine June 1995
- *            Used voters.c as a guide.
+ * 01-Nov-2000: Allocation checks
+ * 20-Oct-1997: Computing Bouts of the Prisoner's Dilemma by Alun L. Lloyd
+ *              Scientific American Magazine June 1995
+ *              Used voters.c as a guide.
  */
 
 /*-
@@ -96,22 +97,22 @@ static Bool conscious;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".dilemma.neighbors", XrmoptionSepArg, (caddr_t) NULL},
-	{"-bonus", ".dilemma.bonus", XrmoptionSepArg, (caddr_t) NULL},
-	{"-conscious", ".dilemma.conscious", XrmoptionNoArg, (caddr_t) "on"},
-	{"+conscious", ".dilemma.conscious", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-neighbors", (char *) ".dilemma.neighbors", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-bonus", (char *) ".dilemma.bonus", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-conscious", (char *) ".dilemma.conscious", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+conscious", (char *) ".dilemma.conscious", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int},
-	{(caddr_t *) & bonus, "bonus", "Bonus", DEF_BONUS, t_Float},
-   {(caddr_t *) & conscious, "conscious", "Conscious", DEF_CONSCIOUS, t_Bool}
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int},
+	{(caddr_t *) & bonus, (char *) "bonus", (char *) "Bonus", (char *) DEF_BONUS, t_Float},
+   {(caddr_t *) & conscious, (char *) "conscious", (char *) "Conscious", (char *) DEF_CONSCIOUS, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"},
-	{"-bonus value", "bonus for cheating... between 1.0 and 4.0"},
-	{"-/+conscious", "turn on/off self-awareness"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"},
+	{(char *) "-bonus value", (char *) "bonus for cheating... between 1.0 and 4.0"},
+	{(char *) "-/+conscious", (char *) "turn on/off self-awareness"}
 };
 
 ModeSpecOpt dilemma_opts =
@@ -348,7 +349,7 @@ free_list(dilemmastruct * dp)
 }
 
 static void
-free_struct(dilemmastruct * dp)
+free_dilemma(dilemmastruct *dp)
 {
 	free_list(dp);
 	if (dp->sn != NULL) {
@@ -358,6 +359,28 @@ free_struct(dilemmastruct * dp)
 	if (dp->s != NULL) {
 		(void) free((void *) dp->s);
 		dp->s = NULL;
+	}
+	if (dp->payoff != NULL) {
+		(void) free((void *) dp->payoff);
+		dp->payoff = NULL;
+	}
+}
+
+static void
+alloc_dilemma(dilemmastruct *dp)
+{
+	if ((dp->s = (char *) calloc(dp->npositions, sizeof (char))) == NULL) {
+		free_dilemma(dp);
+		return;
+	}
+	if ((dp->sn = (char *) calloc(dp->npositions, sizeof (char))) == NULL) {
+		free_dilemma(dp);
+		return;
+	}
+	if ((dp->payoff = (float *) calloc(dp->npositions,
+			sizeof (float))) == NULL) {
+		free_dilemma(dp);
+		return;
 	}
 }
 
@@ -613,8 +636,8 @@ void
 init_dilemma(ModeInfo * mi)
 {
 	int         size = MI_SIZE(mi);
-	dilemmastruct *dp;
 	int         i, col, row, colrow, mrow;
+	dilemmastruct *dp;
 
 	if (dilemmas == NULL) {
 		if ((dilemmas = (dilemmastruct *) calloc(MI_NUM_SCREENS(mi),
@@ -626,7 +649,7 @@ init_dilemma(ModeInfo * mi)
 	dp->generation = 0;
 	dp->redrawing = 0;
 	dp->state = 0;
-	free_struct(dp);
+	free_dilemma(dp);
 
 	if (!dp->initialized) {	/* Genesis */
 		icon_width = cooperat_width;
@@ -682,7 +705,7 @@ init_dilemma(ModeInfo * mi)
 		dp->ncols = nccols / 2;
 		dp->nrows = 2 * (ncrows / 4);
 		dp->xb = (dp->width - dp->xs * nccols) / 2 + dp->xs / 2;
-		dp->yb = (dp->height - dp->ys * (ncrows / 2) * 2) / 2 + dp->ys;
+		dp->yb = (dp->height - dp->ys * (ncrows / 2) * 2) / 2 + dp->ys - 2;
 		for (sides = 0; sides < 6; sides++) {
 			dp->shape.hexagon[sides].x = (dp->xs - 1) * hexagonUnit[sides].x;
 			dp->shape.hexagon[sides].y =
@@ -776,18 +799,9 @@ init_dilemma(ModeInfo * mi)
 		dp->colors[1][0] = MI_WHITE_PIXEL(mi);
 		dp->colors[1][1] = MI_WHITE_PIXEL(mi);
 	}
-	if (dp->s != NULL)
-		(void) free((void *) dp->s);
-	dp->s = (char *) calloc(dp->npositions, sizeof (char));
-
-	if (dp->sn != NULL)
-		(void) free((void *) dp->sn);
-	dp->sn = (char *) calloc(dp->npositions, sizeof (char));
-
-	if (dp->payoff != NULL)
-		(void) free((void *) dp->payoff);
-	dp->payoff = (float *) calloc(dp->npositions, sizeof (float));
-
+	alloc_dilemma(dp);
+	if (dp->s == NULL)
+		return;
 	MI_CLEARWINDOW(mi);
 
 	dp->defectors = MI_COUNT(mi);
@@ -830,8 +844,14 @@ init_dilemma(ModeInfo * mi)
 void
 draw_dilemma(ModeInfo * mi)
 {
-	dilemmastruct *dp = &dilemmas[MI_SCREEN(mi)];
 	int         col, row, mrow, colrow, n, i;
+	dilemmastruct *dp;
+
+	if (dilemmas == NULL)
+		return;
+	dp = &dilemmas[MI_SCREEN(mi)];
+	if (dp->s == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -911,17 +931,8 @@ release_dilemma(ModeInfo * mi)
 	if (dilemmas != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			dilemmastruct *dp = &dilemmas[screen];
-
-			free_struct(dp);
-			if (dp->s != NULL)
-				(void) free((void *) dp->s);
-			if (dp->sn != NULL)
-				(void) free((void *) dp->sn);
-			if (dp->payoff != NULL)
-				(void) free((void *) dp->payoff);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_dilemma(&dilemmas[screen]);
 		(void) free((void *) dilemmas);
 		dilemmas = NULL;
 	}

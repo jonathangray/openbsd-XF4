@@ -2,7 +2,7 @@
 /* blot --- Rorschach's ink blot test */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)blot.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)blot.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -21,12 +21,13 @@ static const char sccsid[] = "@(#)blot.c	4.07 97/11/24 xlockmore";
  * event will the author be liable for any lost revenue or profits or
  * other special, indirect and consequential damages.
  *
- * 10-May-97: Compatible with xscreensaver
- * 05-Jan-95: patch for Dual-Headed machines from Greg Onufer
- *            <Greg.Onufer@Eng.Sun.COM>
- * 07-Dec-94: now randomly has xsym, ysym, or both.
- * 02-Sep-93: xlock version David Bagley <bagleyd@tux.org>
- * 1992:      xscreensaver version Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 05-Jan-1995: patch for Dual-Headed machines from Greg Onufer
+ *              <Greg.Onufer@Eng.Sun.COM>
+ * 07-Dec-1994: now randomly has xsym, ysym, or both.
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
+ * 1992:        xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
 /*-
@@ -87,8 +88,8 @@ static blotstruct *blots = NULL;
 void
 init_blot(ModeInfo * mi)
 {
-	blotstruct *bp;
 	Display    *display = MI_DISPLAY(mi);
+	blotstruct *bp;
 
 	if (blots == NULL) {
 		if ((blots = (blotstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -120,7 +121,10 @@ init_blot(ModeInfo * mi)
 		if (bp->pointBuffer != NULL)
 			(void) free((void *) bp->pointBuffer);
 		bp->pointBufferSize = bp->size * sizeof (XPoint);
-		bp->pointBuffer = (XPoint *) malloc(bp->pointBufferSize);
+		if ((bp->pointBuffer = (XPoint *) malloc(bp->pointBufferSize)) ==
+				NULL) {
+			return;
+		}
 	}
 	MI_CLEARWINDOW(mi);
 	XSetForeground(display, MI_GC(mi), MI_WHITE_PIXEL(mi));
@@ -130,12 +134,18 @@ init_blot(ModeInfo * mi)
 void
 draw_blot(ModeInfo * mi)
 {
-	blotstruct *bp = &blots[MI_SCREEN(mi)];
-	XPoint     *xp = bp->pointBuffer;
+	blotstruct *bp;
+	XPoint     *xp;
 	int         x, y, k;
 
-	MI_IS_DRAWN(mi) = True;
+	if (blots == NULL)
+		return;
+	bp = &blots[MI_SCREEN(mi)];
+	xp = bp->pointBuffer;
+	if (xp == NULL)
+		init_blot(mi);
 
+	MI_IS_DRAWN(mi) = True;
 	if (MI_NPIXELS(mi) > 2) {
 		XSetForeground(MI_DISPLAY(mi), MI_GC(mi), MI_PIXEL(mi, bp->pix));
 		if (++bp->pix >= MI_NPIXELS(mi))
@@ -184,8 +194,11 @@ release_blot(ModeInfo * mi)
 		int         screen;
 
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			if (blots[screen].pointBuffer != NULL) {
-				(void) free((void *) blots[screen].pointBuffer);
+			blotstruct *bp = &blots[screen];
+
+			if (bp->pointBuffer != NULL) {
+				(void) free((void *) bp->pointBuffer);
+				/* bp->pointBuffer == NULL; */
 			}
 		}
 		(void) free((void *) blots);

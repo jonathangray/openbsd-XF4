@@ -2,7 +2,7 @@
 /* worm --- draw wiggly worms */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)worm.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)worm.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,13 +22,14 @@ static const char sccsid[] = "@(#)worm.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 03-Sep-96: fixed bug in allocation of space for worms, added 3d support
- *            Henrik Theiling <theiling@coli.uni-sb.de>
- * 27-Sep-95: put back malloc
- * 23-Sep-93: got rid of "rint". (David Bagley)
- * 27-Sep-91: got rid of all malloc calls since there were no calls to free().
- * 25-Sep-91: Integrated into X11R5 contrib xlock.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 03-Sep-1996: fixed bug in allocation of space for worms, added 3d support
+ *              Henrik Theiling <theiling@coli.uni-sb.de>
+ * 27-Sep-1995: put back malloc
+ * 23-Sep-1993: got rid of "rint". (David Bagley)
+ * 27-Sep-1991: got rid of all malloc calls since there were no calls to free().
+ * 25-Sep-1991: Integrated into X11R5 contrib xlock.
  *
  * Adapted from a concept in the Dec 87 issue of Scientific American p. 142.
  *
@@ -62,7 +63,7 @@ static const char sccsid[] = "@(#)worm.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_worm
 
 ModeSpecOpt worm_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   worm_description =
@@ -253,7 +254,7 @@ worm_doit(ModeInfo * mi, int which, unsigned long color)
 }
 
 static void
-free_worms(wormstruct * wp)
+free_worm(wormstruct * wp)
 {
 	int         wn;
 
@@ -295,23 +296,33 @@ init_worm(ModeInfo * mi)
 	else
 		wp->nc = MI_NPIXELS(mi);
 
-	free_worms(wp);
+	free_worm(wp);
 	wp->nw = MI_COUNT(mi);
 	if (wp->nw < -MINWORMS)
 		wp->nw = NRAND(-wp->nw - MINWORMS + 1) + MINWORMS;
 	else if (wp->nw < MINWORMS)
 		wp->nw = MINWORMS;
 	if (!wp->worm)
-		wp->worm = (wormstuff *) malloc(wp->nw * sizeof (wormstuff));
+		if ((wp->worm = (wormstuff *) malloc(wp->nw *
+				sizeof (wormstuff))) == NULL) {
+			free_worm(wp);
+			return;
+		}
 
 	if (!wp->size)
-		wp->size = (int *) malloc(MI_NPIXELS(mi) * sizeof (int));
+		if ((wp->size = (int *) malloc(MI_NPIXELS(mi) *
+				sizeof (int))) == NULL) {
+			free_worm(wp);
+			return;
+		}
 
 	wp->maxsize = (REDRAWSTEP + 1) * wp->nw;	/*  / wp->nc + 1; */
 	if (!wp->rects)
-		wp->rects =
-			(XRectangle *) malloc(wp->maxsize * MI_NPIXELS(mi) * sizeof (XRectangle));
-
+		if ((wp->rects = (XRectangle *) malloc(wp->maxsize * MI_NPIXELS(mi) *
+				sizeof (XRectangle))) == NULL) {
+			free_worm(wp);
+			return;
+		}
 
 	if (!init_table) {
 		init_table = 1;
@@ -342,11 +353,16 @@ init_worm(ModeInfo * mi)
 	}
 	(void) memset((char *) wp->size, 0, wp->nc * sizeof (int));
 
-	wp->wormlength = (int) sqrt(wp->xsize + wp->ysize) *
+	wp->wormlength = (int) sqrt((double) wp->xsize + wp->ysize) *
 		MI_CYCLES(mi) / 8;	/* Fudge this to something reasonable */
 	for (i = 0; i < wp->nw; i++) {
-		wp->worm[i].circ = (XPoint *) malloc(wp->wormlength * sizeof (XPoint));
-		wp->worm[i].diffcirc = (int *) malloc(wp->wormlength * sizeof (int));
+		if (((wp->worm[i].circ = (XPoint *) malloc(wp->wormlength *
+				sizeof (XPoint))) == NULL) ||
+		    ((wp->worm[i].diffcirc = (int *) malloc(wp->wormlength *
+				sizeof (int))) == NULL)) {
+			free_worm(wp);
+			return;
+		}
 
 		for (j = 0; j < wp->wormlength; j++) {
 			wp->worm[i].circ[j].x = wp->xsize / 2;
@@ -425,7 +441,7 @@ release_worm(ModeInfo * mi)
 		int         screen;
 
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_worms(&worms[screen]);
+			free_worm(&worms[screen]);
 		(void) free((void *) worms);
 		worms = NULL;
 	}

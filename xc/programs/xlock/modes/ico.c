@@ -2,7 +2,7 @@
 /* ico --- bouncing polyhedra */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)ico.c	4.16 2000/03/27 xlockmore";
+static const char sccsid[] = "@(#)ico.c	5.00 2000/11/01 xlockmore";
 
 #endif
 /*-
@@ -21,12 +21,13 @@ static const char sccsid[] = "@(#)ico.c	4.16 2000/03/27 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 27-Mar-2000: Added double buffering for faces
+ * 01-Nov-2000: Allocation checks
+ * 27-Mar-2000: Added double buffering for drawings
  * 10-May-1997: Compatible with xscreensaver
- * 25-Mar-1997:  David Bagley <bagleyd@tux.org>
- *             Took ico from the X11R6 distribution.  Stripped out
- *             anything complicated... to be added back in later.
- *             added dodecahedron, tetrahedron, and star octahedron.
+ * 25-Mar-1997: David Bagley <bagleyd@tux.org>
+ *              Took ico from the X11R6 distribution.  Stripped out
+ *              anything complicated... to be added back in later.
+ *              added dodecahedron, tetrahedron, and star octahedron.
  * $XConsortium: ico.c,v 1.47 94/04/17 20:45:15 gildea Exp $
  */
 
@@ -102,33 +103,39 @@ SOFTWARE.
 #include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 #include "xlock.h"		/* in xlockmore distribution */
-
 #endif /* STANDALONE */
+#include "automata.h"
 
 #ifdef MODE_ico
 
-#define DEF_FACES "False"
-#define DEF_EDGES "True"	/* Wire frame edges, set true if faces false. */
+#define DEF_FACES "True"
+#define DEF_EDGES "True"
+#define DEF_OPAQUE "True"
 
 static Bool faces;
 static Bool edges;
+static Bool opaque;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-faces", ".ico.faces", XrmoptionNoArg, (caddr_t) "on"},
-	{"+faces", ".ico.faces", XrmoptionNoArg, (caddr_t) "off"},
-	{"-edges", ".ico.edges", XrmoptionNoArg, (caddr_t) "on"},
-	{"+edges", ".ico.edges", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-faces", (char *) ".ico.faces", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+faces", (char *) ".ico.faces", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-edges", (char *) ".ico.edges", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+edges", (char *) ".ico.edges", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-opaque", (char *) ".ico.opaque", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+opaque", (char *) ".ico.opaque", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & faces, "faces", "Faces", DEF_FACES, t_Bool},
-	{(caddr_t *) & edges, "edges", "Edges", DEF_EDGES, t_Bool}
+	{(caddr_t *) & faces, (char *) "faces", (char *) "Faces", (char *) DEF_FACES, t_Bool},
+	{(caddr_t *) & edges, (char *) "edges", (char *) "Edges", (char *) DEF_EDGES, t_Bool},
+	{(caddr_t *) & opaque, (char *) "opaque", (char *) "Opaque", (char *) DEF_OPAQUE, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+faces", "turn on/off drawing of faces"},
-	{"-/+edges", "turn on/off drawing of wireframe"}
+	{(char *) "-/+faces", (char *) "turn on/off drawing of faces"},
+	{(char *) "-/+edges", (char *) "turn on/off drawing of wireframe"},
+	{(char *) "-/+opaque", (char *) "turn on/off drawing of bottom (unless faces true)"}
 };
 
 ModeSpecOpt ico_opts =
@@ -138,7 +145,7 @@ ModeSpecOpt ico_opts =
 ModStruct   ico_description =
 {"ico", "init_ico", "draw_ico", "release_ico",
  "refresh_ico", "change_ico", NULL, &ico_opts,
- 100000, 0, 400, 0, 64, 1.0, "",
+ 200000, 0, 400, 0, 64, 1.0, "",
  "Shows a bouncing polyhedron", 0, NULL};
 
 #endif
@@ -423,21 +430,20 @@ static Polyinfo polygons[] =
 #undef T
 		},
 		{		/* faces (numfaces + indexes into vertices) */
-		/*  faces must be specified clockwise from the outside */
+			/*  faces must be specified clockwise from the outside */
 			3, 0, 4, 2,
-		/* 3,   0, 2, 5, */
-		/* 3,   0, 5, 3, */
+			/* 3, 0, 2, 5, */
+			/* 3, 0, 5, 3, */
 			3, 0, 3, 4,
 			3, 1, 2, 4,
-		/* 3,   1, 5, 2, */
-		/* 3,   1, 3, 5, */
+			/* 3, 1, 5, 2, */
+			/* 3, 1, 3, 5, */
 			3, 1, 4, 3,
 			4, 0, 2, 1, 3,
 		}
 	},
 
-#if 0
-  /* ico does not draw non-convex polyhedra well. */
+/* ico does not draw non-convex polyhedra well. */
 /* objstar - structure values for octahedron star (stellated octahedron?) */
 	{
 #ifdef DEFUNCT
@@ -471,12 +477,16 @@ static Polyinfo polygons[] =
 		}
 	},
   /* Needed 4 other 3-D stars */
-#endif
 
 };
 
 static int  polysize = sizeof (polygons) / sizeof (polygons[0]);
+#define POLYSIZE 5  /* Only the 5 Platonic solids work, why is that? */
 
+#define POLYBITS(n,w,h)\
+  if ((ip->pixmaps[ip->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_ico(display,ip);return;} else {ip->init_bits++;}
 
 typedef double Transform3D[4][4];
 
@@ -486,15 +496,17 @@ typedef struct {
 	int         loopcount;
 	int         object;
 	int         width, height;
-	int         color;
+	int         linewidth;
+	long        color;
 	Polyinfo   *poly;
 	int         polyW, polyH;
 	int         currX, currY;
 	int         prevX, prevY;
 	int         polyDeltaX, polyDeltaY;
-	int         polydeltax2, polydeltay2;
-	Bool        faces, edges;
-	char        drawn[MAXNV][MAXNV];
+	int         deltaWidth, deltaHeight;
+	Bool        faces, edges, opaque;
+	char        drawnEdges[MAXNV][MAXNV];
+	char        drawnPoints[MAXNV];
 	int         xv_buffer;
 	Transform3D xform;
 	Point3D     xv[2][MAXNV];
@@ -502,6 +514,9 @@ typedef struct {
 	Pixmap      dbuf;
 	GC          dbuf_gc;
 	int         color_offset;
+	int         init_bits;
+	GC          stippledGC;
+	Pixmap      pixmaps[NUMSTIPPLES - 1];
 } icostruct;
 
 static icostruct *icos = NULL;
@@ -624,7 +639,7 @@ ConcatMat(register Transform3D l, register Transform3D r,
 /* Set up points, transforms, etc.  */
 
 static void
-initPoly(ModeInfo * mi, Polyinfo * poly, int polyW, int polyH)
+initPoly(ModeInfo * mi, Polyinfo * poly, int polyW, int polyH, Bool init)
 {
 	icostruct  *ip = &icos[MI_SCREEN(mi)];
 	Point3D    *vertices = poly->v;
@@ -632,14 +647,26 @@ initPoly(ModeInfo * mi, Polyinfo * poly, int polyW, int polyH)
 	Transform3D r1;
 	Transform3D r2;
 
-	FormatRotateMat('x', 5 * M_PI / 180.0, r1);
-	FormatRotateMat('y', 5 * M_PI / 180.0, r2);
+#define ROLL_DEGREES 5
+	if ((ip->polyDeltaX < 0 && ip->polyDeltaY < 0) ||
+	    (ip->polyDeltaX > 0 && ip->polyDeltaY > 0)) {
+		FormatRotateMat('x', ((ip->polyDeltaX > 0) ?
+		  -ROLL_DEGREES : ROLL_DEGREES) * M_PI / 180.0, r1);
+		FormatRotateMat('y', ((ip->polyDeltaY < 0) ?
+		  -ROLL_DEGREES : ROLL_DEGREES) * M_PI / 180.0, r2);
+	} else {
+		FormatRotateMat('x', ((ip->polyDeltaX < 0) ?
+		  -ROLL_DEGREES : ROLL_DEGREES) * M_PI / 180.0, r1);
+		FormatRotateMat('y', ((ip->polyDeltaY > 0) ?
+		  -ROLL_DEGREES : ROLL_DEGREES) * M_PI / 180.0, r2);
+	}
 	ConcatMat(r1, r2, ip->xform);
-
-	(void) memcpy((char *) ip->xv[0], (char *) vertices, NV * sizeof (Point3D));
-	ip->xv_buffer = 0;
-	ip->wo2 = polyW / 2.0;
-	ip->ho2 = polyH / 2.0;
+    if (init) {
+		(void) memcpy((char *) ip->xv[0], (char *) vertices, NV * sizeof (Point3D));
+		ip->xv_buffer = 0;
+		ip->wo2 = polyW / 2.0;
+		ip->ho2 = polyH / 2.0;
+	}
 }
 
 /******************************************************************************
@@ -699,17 +726,21 @@ drawPoly(ModeInfo * mi, Polyinfo * poly, GC gc,
 	register int p1;
 	register XPoint *pv2;
 	XSegment   *pe;
+	XPoint   *pp;
 	register Point3D *pxv;
 	XPoint      v2[MAXNV];
+	XPoint      pts[MAXNV];
 	XSegment    edge_segs[MAXEDGES];
 	register int i;
 	int         j, k;
 	register int *pf;
 	int         facecolor;
 
-	int         pcount;
+	int         pcount = 0;
 	double      pxvz;
 	XPoint      ppts[MAXEDGESPERPOLY];
+	Window      lwindow;
+	GC          lgc;
 
 	/* Switch double-buffer and rotate vertices */
 
@@ -736,12 +767,21 @@ drawPoly(ModeInfo * mi, Polyinfo * poly, GC gc,
 	pv2 = v2;
 	pf = f;
 	pe = edge_segs;
-	(void) memset(ip->drawn, 0, sizeof (ip->drawn));
+	pp = pts;
+	(void) memset(ip->drawnEdges, 0, sizeof (ip->drawnEdges));
+	(void) memset(ip->drawnPoints, 0, sizeof (ip->drawnPoints));
 
-	if (ip->dbuf && ip->faces) {
+	if (ip->dbuf) {
 		XSetForeground(display, ip->dbuf_gc, MI_BLACK_PIXEL(mi));
 		XFillRectangle(display, ip->dbuf, ip->dbuf_gc, 0, 0,
-			polyW, polyH);
+			polyW + ip->deltaWidth + ip->linewidth,
+			polyH + ip->deltaHeight + ip->linewidth);
+		lwindow = ip->dbuf;
+		lgc = ip->dbuf_gc;
+	} else {
+		lwindow = window;
+		lgc = gc;
+		icoClearArea(mi, prevX, prevY, polyW + 1, polyH + 1);
 	}
 	for (i = NF - 1; i >= 0; --i, pf += pcount) {
 
@@ -753,7 +793,7 @@ drawPoly(ModeInfo * mi, Polyinfo * poly, GC gc,
 		}
 
 		/* If facet faces away from viewer, don't consider it: */
-		if (pxvz < 0.0)
+		if (pxvz < 0.0 && (ip->faces || ip->opaque))
 			continue;
 
 		if (ip->faces) {
@@ -762,29 +802,26 @@ drawPoly(ModeInfo * mi, Polyinfo * poly, GC gc,
 				ppts[j].x = pv2[p0].x;
 				ppts[j].y = pv2[p0].y;
 				if (ip->dbuf) {
-					ppts[j].x -= currX;
-					ppts[j].y -= currY;
+					ppts[j].x -= (currX - ip->deltaWidth / 2 - ip->linewidth / 2);
+					ppts[j].y -= (currY - ip->deltaHeight / 2 - ip->linewidth / 2);
 				}
 			}
-			if (ip->dbuf) {
-				if (MI_NPIXELS(mi) > 2) {
-					facecolor = (i * MI_NPIXELS(mi) / NF + ip->color_offset) % MI_NPIXELS(mi);
-					XSetForeground(display, ip->dbuf_gc, MI_PIXEL(mi, facecolor));
-				} else {
-					XSetForeground(display, ip->dbuf_gc, MI_WHITE_PIXEL(mi));
-				}
-				XFillPolygon(display, ip->dbuf, ip->dbuf_gc,
-					ppts, pcount, Convex, CoordModeOrigin);
+			if (MI_NPIXELS(mi) > 2) {
+				facecolor = (i * MI_NPIXELS(mi) / NF + ip->color_offset) % MI_NPIXELS(mi);
+				XSetForeground(display, lgc, MI_PIXEL(mi, facecolor));
 			} else {
-				if (MI_NPIXELS(mi) > 2) {
-					facecolor = (i * MI_NPIXELS(mi) / NF + ip->color_offset) % MI_NPIXELS(mi);
-					XSetForeground(display, gc, MI_PIXEL(mi, facecolor));
-				} else {
-					XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
-				}
-				XFillPolygon(display, window, gc, ppts, pcount,
-				     Convex, CoordModeOrigin);
+				XGCValues   gcv;
+				facecolor = (i * (NUMSTIPPLES - 1) / NF + ip->color_offset) % (NUMSTIPPLES - 1);
+				gcv.stipple = ip->pixmaps[facecolor];
+				gcv.foreground = MI_WHITE_PIXEL(mi);
+				gcv.background = MI_BLACK_PIXEL(mi);
+				XChangeGC(MI_DISPLAY(mi), ip->stippledGC,
+                          GCStipple | GCForeground | GCBackground, &gcv);
+				lgc = ip->stippledGC;
+				/* XSetForeground(display, lgc, MI_WHITE_PIXEL(mi)); */
 			}
+			XFillPolygon(display, lwindow, lgc,
+				ppts, pcount, Convex, CoordModeOrigin);
 		}
 		if (ip->edges) {
 			for (j = 0; j < pcount; j++) {
@@ -794,47 +831,118 @@ drawPoly(ModeInfo * mi, Polyinfo * poly, GC gc,
 					k = 0;
 				p0 = pf[j];
 				p1 = pf[k];
-				if (!ip->drawn[p0][p1]) {
-					ip->drawn[p0][p1] = 1;
-					ip->drawn[p1][p0] = 1;
+				if (!ip->drawnEdges[p0][p1]) {
+					ip->drawnEdges[p0][p1] = 1;
+					ip->drawnEdges[p1][p0] = 1;
 					pe->x1 = pv2[p0].x;
 					pe->y1 = pv2[p0].y;
 					pe->x2 = pv2[p1].x;
 					pe->y2 = pv2[p1].y;
+					if (ip->dbuf) {
+						pe->x1 -= (currX - ip->deltaWidth / 2 - ip->linewidth / 2);
+						pe->y1 -= (currY - ip->deltaHeight / 2 - ip->linewidth / 2);
+						pe->x2 -= (currX - ip->deltaWidth / 2 - ip->linewidth / 2);
+						pe->y2 -= (currY - ip->deltaHeight / 2 - ip->linewidth / 2);
+					}
 					++pe;
 				}
 			}
+		} else {
+			for (j = 0; j < pcount; j++) {
+				p0 = pf[j];
+				if (!ip->drawnPoints[p0]) {
+					ip->drawnPoints[p0] = 1;
+					pp->x = pv2[p0].x;
+					pp->y = pv2[p0].y;
+					if (ip->dbuf) {
+						pp->x -= (currX - ip->deltaWidth / 2 - ip->linewidth / 2);
+						pp->y -= (currY - ip->deltaHeight / 2 - ip->linewidth / 2);
+					}
+					++pp;
+				}
+			}
 		}
-	}
-	icoClearArea(mi, prevX, prevY, polyW + 1, polyH + 1);
-	if (ip->dbuf && ip->faces) {
-		XCopyArea(display, ip->dbuf, window, gc, 0, 0,
-			polyW + 1, polyH + 1, currX, currY);
 	}
 	/* Erase previous, draw current icosahedrons; sync for smoothness. */
 
 	if (ip->edges) {
 		if (MI_NPIXELS(mi) <= 2)
 			if (ip->faces) {
-				XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
+				XSetForeground(display, lgc, ip->color);
 			} else {
-				XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
+				XSetForeground(display, lgc, MI_WHITE_PIXEL(mi));
 			}
 		else {
 			ip->color = (ip->color + 1) % MI_NPIXELS(mi);
-			XSetForeground(display, gc, MI_PIXEL(mi, ip->color));
+			XSetForeground(display, lgc, MI_PIXEL(mi, ip->color));
 		}
-		XDrawSegments(display, window, gc, edge_segs, pe - edge_segs);
+		XSetLineAttributes(display, lgc, ip->linewidth,
+                           LineSolid, CapRound, JoinRound);
+		XDrawSegments(display, lwindow, lgc, edge_segs, pe - edge_segs);
+		XSetLineAttributes(display, lgc, 1,
+                           LineSolid, CapNotLast, JoinRound);
+	} else if (!ip->faces) {
+		if (MI_NPIXELS(mi) <= 2)
+			XSetForeground(display, lgc, MI_WHITE_PIXEL(mi));
+		else {
+			ip->color = (ip->color + 1) % MI_NPIXELS(mi);
+			XSetForeground(display, lgc, MI_PIXEL(mi, ip->color));
+		}
+#if 0
+		/* just does not look that good */
+		if (ip->linewidth <= 1)
+			XDrawPoints(display, lwindow, lgc, pts, pp - pts, CoordModeOrigin);
+		else
+#endif
+		{
+			for (j = 0; j < pp-pts; j++)
+			XFillArc(display, lwindow, lgc,
+                         pts[j].x - ip->linewidth / 2, pts[j].y - ip->linewidth / 2, ip->linewidth, ip->linewidth, 0, 23040);
+
+		}
+	}
+	if (ip->dbuf) {
+		XCopyArea(display, ip->dbuf, window, gc, 0, 0,
+			polyW + 1 + ip->deltaWidth + ip->linewidth,
+			polyH + 1 + ip->deltaHeight + ip->linewidth,
+			currX - ip->deltaWidth / 2 - ip->linewidth / 2,
+			currY - ip->deltaHeight / 2 - ip->linewidth / 2);
 	}
 	XFlush(display);
+}
+
+static void
+free_ico(Display *display, icostruct *ip)
+{
+	int shade;
+
+	if (ip->stippledGC != None) {
+		XFreeGC(display, ip->stippledGC);
+		ip->stippledGC = None;
+	}
+	for (shade = 0; shade < ip->init_bits; shade++) {
+		if (ip->pixmaps[shade] != None) {
+			XFreePixmap(display, ip->pixmaps[shade]);
+			ip->pixmaps[shade] = None;
+		}
+	}
+	if (ip->dbuf != None) {
+		XFreePixmap(display, ip->dbuf);
+		ip->dbuf = None;
+	}
+	if (ip->dbuf_gc != None) {
+		XFreeGC(display, ip->dbuf_gc);
+		ip->dbuf_gc = None;
+	}
 }
 
 void
 init_ico(ModeInfo * mi)
 {
 	Display * display = MI_DISPLAY(mi);
-	icostruct  *ip;
+	Window window = MI_WINDOW(mi);
 	int         size = MI_SIZE(mi);
+	icostruct  *ip;
 
 	if (icos == NULL) {
 		if ((icos = (icostruct *) calloc(MI_NUM_SCREENS(mi),
@@ -845,11 +953,37 @@ init_ico(ModeInfo * mi)
 
 	ip->width = MI_WIDTH(mi);
 	ip->height = MI_HEIGHT(mi);
+	ip->linewidth = NRAND((ip->width + ip->height) / 200 + 1) + 2;
 
-	ip->edges = edges;
-	ip->faces = faces;
-	/*ip->linewidth
-	   if (!ip->faces && !ip->edges) icoFatal("nothing to draw"); */
+	if (MI_NPIXELS(mi) <= 2) {
+		if (ip->stippledGC == None) {
+			XGCValues   gcv;
+
+			gcv.fill_style = FillOpaqueStippled;
+			if ((ip->stippledGC = XCreateGC(display, window, GCFillStyle,
+					 &gcv)) == NULL) {
+				free_ico(display, ip);
+				return;
+			}
+		}
+		if (ip->init_bits == 0) {
+			int i;
+
+			for (i = 1; i < NUMSTIPPLES; i++) {
+				POLYBITS(stipples[i], STIPPLESIZE, STIPPLESIZE);
+			}
+		}
+	}
+
+	if (MI_IS_FULLRANDOM(mi)) {
+		ip->faces = (Bool) (LRAND() & 1);
+		ip->edges = (Bool) (LRAND() & 1);
+		ip->opaque = (!(NRAND(4) == 0));
+	} else {
+		ip->edges = edges;
+		ip->faces = faces;
+		ip->opaque = opaque;
+	}
 
 	if (size < -MINSIZE)
 		ip->polyW = NRAND(MIN(-size, MAX(MINSIZE,
@@ -871,31 +1005,36 @@ init_ico(ModeInfo * mi)
 
 	/* Bounce the box in the window */
 
-	ip->polydeltax2 = ip->polyDeltaX * 2;
-	ip->polydeltay2 = ip->polyDeltaY * 2;
+	ip->deltaWidth = ip->polyDeltaX * 2;
+	ip->deltaHeight = ip->polyDeltaY * 2;
+	ip->polyDeltaX *= ((LRAND() & 1) ? 1 : -1);
+	ip->polyDeltaY *= ((LRAND() & 1) ? 1 : -1);
 
 	ip->loopcount = 0;
 
 	ip->object = MI_COUNT(mi) - 1;
 	if (ip->object < 0 || ip->object >= polysize) {
-		/* avoid pyramid (drawing errors) count = 7
-		   also  avoid plane (boring) count = 6 
+		/* avoid pyramid and star (drawing errors) count = 7 & 8
+		   also  avoid plane (boring) count = 6
 		   but allow direct access */
-		ip->object = NRAND(polysize - 2);
+		ip->object = NRAND(POLYSIZE);
 	}
 	ip->poly = polygons + ip->object;
 	if (MI_NPIXELS(mi) > 2)
 		ip->color = NRAND(MI_NPIXELS(mi));
+	else if (ip->faces && ip->edges)
+		ip->color = (LRAND() & 1) ? MI_WHITE_PIXEL(mi) : MI_BLACK_PIXEL(mi);
 
-	if (ip->dbuf)
+	ip->color_offset = NRAND(MI_NPIXELS(mi));
+#ifndef NO_DBUF
+	if (ip->dbuf != None)
 		XFreePixmap(display, ip->dbuf);
-	if (ip->faces) {
-		ip->dbuf = XCreatePixmap(display, MI_WINDOW(mi),
-			ip->polyW, ip->polyH, MI_DEPTH(mi));
-		ip->color_offset = NRAND(MI_NPIXELS(mi));
-	}
-
-	if (ip->dbuf) {
+	ip->dbuf = XCreatePixmap(display, window,
+		ip->polyW + ip->deltaWidth + ip->linewidth,
+		ip->polyH + ip->deltaHeight + ip->linewidth,
+	 	MI_DEPTH(mi));
+	/* Allocation checked */
+	if (ip->dbuf != None) {
 		XGCValues   gcv;
 
 		gcv.foreground = 0;
@@ -903,16 +1042,22 @@ init_ico(ModeInfo * mi)
 		gcv.graphics_exposures = False;
 		gcv.function = GXcopy;
 
-		if (ip->dbuf_gc)
+		if (ip->dbuf_gc != None)
 			XFreeGC(display, ip->dbuf_gc);
-		ip->dbuf_gc = XCreateGC(display, ip->dbuf,
-			GCForeground | GCBackground | GCGraphicsExposures | GCFunction,
-			&gcv);
-		XFillRectangle(display, ip->dbuf, ip->dbuf_gc,
-			0, 0, ip->polyW, ip->polyH);
-		XSetBackground(display, MI_GC(mi), MI_BLACK_PIXEL(mi));
-		XSetFunction(display, MI_GC(mi), GXcopy);
+		if ((ip->dbuf_gc = XCreateGC(display, ip->dbuf,
+				GCForeground | GCBackground | GCGraphicsExposures | GCFunction,
+				&gcv)) == None) {
+			XFreePixmap(display, ip->dbuf);
+			ip->dbuf = None;
+		} else {
+			XFillRectangle(display, ip->dbuf, ip->dbuf_gc,
+				0, 0, ip->polyW + ip->deltaWidth + ip->linewidth,
+				ip->polyH + ip->deltaHeight + ip->linewidth);
+			XSetBackground(display, MI_GC(mi), MI_BLACK_PIXEL(mi));
+			XSetFunction(display, MI_GC(mi), GXcopy);
+		}
 	}
+#endif
 
 	MI_CLEARWINDOW(mi);
 
@@ -920,16 +1065,21 @@ init_ico(ModeInfo * mi)
 	XSetGraphicsExposures(display, MI_GC(mi), False);
 
 
-	initPoly(mi, ip->poly, ip->polyW, ip->polyH);
+	initPoly(mi, ip->poly, ip->polyW, ip->polyH, True);
 }
 
 void
 draw_ico(ModeInfo * mi)
 {
-	icostruct  *ip = &icos[MI_SCREEN(mi)];
+	icostruct  *ip;
+
+	if (icos == NULL)
+		return;
+	ip = &icos[MI_SCREEN(mi)];
+	if ((MI_NPIXELS(mi) <= 2) && (ip->stippledGC == None))
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (++ip->loopcount > MI_CYCLES(mi))
 		init_ico(mi);
 
@@ -939,15 +1089,17 @@ draw_ico(ModeInfo * mi)
 	ip->currX += ip->polyDeltaX;
 	if (ip->currX < 0 || ip->currX + ip->polyW > ip->width) {
 
-		ip->currX -= ip->polydeltax2;
+		ip->currX -= 2 * ip->polyDeltaX;
 		ip->polyDeltaX = -ip->polyDeltaX;
-		ip->polydeltax2 = ip->polyDeltaX * 2;
+		/* spin should change after hitting wall */
+		initPoly(mi, ip->poly, ip->polyW, ip->polyH, False);
 	}
 	ip->currY += ip->polyDeltaY;
 	if (ip->currY < 0 || ip->currY + ip->polyH > ip->height) {
-		ip->currY -= ip->polydeltay2;
+		ip->currY -= 2 * ip->polyDeltaY;
 		ip->polyDeltaY = -ip->polyDeltaY;
-		ip->polydeltay2 = ip->polyDeltaY * 2;
+		/* spin should change after hitting wall */
+		initPoly(mi, ip->poly, ip->polyW, ip->polyH, False);
 	}
 	drawPoly(mi, ip->poly, MI_GC(mi),
 	   ip->currX, ip->currY, ip->polyW, ip->polyH, ip->prevX, ip->prevY);
@@ -963,14 +1115,9 @@ release_ico(ModeInfo * mi)
 {
 	if (icos != NULL) {
 		int screen;
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			icostruct  *ip = &icos[screen];
 
-			if (ip->dbuf)
-				XFreePixmap(MI_DISPLAY(mi), ip->dbuf);
-			if (ip->dbuf_gc)
-				XFreeGC(MI_DISPLAY(mi), ip->dbuf_gc);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_ico(MI_DISPLAY(mi), &icos[screen]);
 		(void) free((void *) icos);
 		icos = NULL;
 	}
@@ -979,15 +1126,23 @@ release_ico(ModeInfo * mi)
 void
 change_ico(ModeInfo * mi)
 {
-	icostruct  *ip = &icos[MI_SCREEN(mi)];
+	icostruct  *ip;
 
-	ip->object = (ip->object + 1) % polysize;
-	ip->poly = polygons + ip->object;
+	if (icos == NULL)
+		return;
+	ip = &icos[MI_SCREEN(mi)];
+	if (MI_NPIXELS(mi) <= 2 && ip->stippledGC == None)
+		return;
+
+	if (MI_COUNT(mi) <= 0 || MI_COUNT(mi) > POLYSIZE) {
+		ip->object = (ip->object + 1) % (POLYSIZE);
+		ip->poly = polygons + ip->object;
+	}
 	ip->loopcount = 0;
 
-	MI_CLEARWINDOW(mi);
+	MI_CLEARWINDOWCOLORMAPFAST(mi, MI_GC(mi), MI_BLACK_PIXEL(mi));
 
-	initPoly(mi, ip->poly, ip->polyW, ip->polyH);
+	initPoly(mi, ip->poly, ip->polyW, ip->polyH, True);
 }
 
 #endif /* MODE_ico */

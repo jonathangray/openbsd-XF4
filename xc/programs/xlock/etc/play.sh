@@ -1,2 +1,3 @@
 #!/bin/sh
-cat $1 > /dev/audio
+
+[ -c /dev/audio ] && cat $1 > /dev/audio

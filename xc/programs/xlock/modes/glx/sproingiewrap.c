@@ -2,7 +2,7 @@
 /* sproingiewrap.c - sproingies wrapper */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)sproingiewrap.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)sproingiewrap.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -26,14 +26,15 @@ static const char sccsid[] = "@(#)sproingiewrap.c	4.07 97/11/24 xlockmore";
  *       (using MetaNURBS in NewTek's Lightwave 3D v5).
  *
  * Revision History:
- * 26-Apr-97: Added glPointSize() calls around explosions, plus other fixes.
- * 28-Mar-97: Added size support.
- * 22-Mar-97: Updated to use glX interface instead of xmesa one.
+ * 01-Nov-2000: Allocation checks
+ * 26-Apr-1997: Added glPointSize() calls around explosions, plus other fixes.
+ * 28-Mar-1997: Added size support.
+ * 22-Mar-1997: Updated to use glX interface instead of xmesa one.
  *              Also, support for multiscreens added.
- * 20-Mar-97: Updated for xlockmore v4.02alpha7 and higher, using
+ * 20-Mar-1997: Updated for xlockmore v4.02alpha7 and higher, using
  *              xlockmore's built-in Mesa/OpenGL support instead of
  *              my own.  Submitted for inclusion in xlockmore.
- * 09-Dec-96: Written.
+ * 09-Dec-1996: Written.
  */
 
 /*-
@@ -72,13 +73,13 @@ static const char sccsid[] = "@(#)sproingiewrap.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_sproingies
 
 ModeSpecOpt sproingies_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   sproingies_description =
 {"sproingies", "init_sproingies", "draw_sproingies", "release_sproingies",
  "refresh_sproingies", "init_sproingies", NULL, &sproingies_opts,
- 1000, 5, 0, 400, 4, 1.0, "",
+ 1000, 5, 0, 400, 64, 1.0, "",
  "Shows Sproingies!  Nontoxic.  Safe for pets and small children", 0, NULL};
 
 #endif
@@ -97,7 +98,7 @@ void        ReshapeSproingies(int w, int h);
 
 #endif
 void        CleanupSproingies(int screen);
-void        InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens, int mono);
+Bool        InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens, int mono);
 
 typedef struct {
 	GLfloat     view_rotx, view_roty, view_rotz;
@@ -108,9 +109,10 @@ typedef struct {
 	GLXContext *glx_context;
 	int         mono;
 	Window      window;
+	int         init;
 } sproingiesstruct;
 
-static sproingiesstruct *sproingies = NULL;
+static sproingiesstruct *sproingies = (sproingiesstruct *) NULL;
 
 static Display *swap_display;
 static Window swap_window;
@@ -128,21 +130,19 @@ init_sproingies(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	int         screen = MI_SCREEN(mi);
 
 	int         cycles = MI_CYCLES(mi);
 	int         count = MI_COUNT(mi);
 	int         size = MI_SIZE(mi);
-
-	sproingiesstruct *sp;
 	int         wfmode = 0, grnd, mspr, w, h;
+	sproingiesstruct *sp;
 
 	if (sproingies == NULL) {
 		if ((sproingies = (sproingiesstruct *) calloc(MI_NUM_SCREENS(mi),
 					 sizeof (sproingiesstruct))) == NULL)
 			return;
 	}
-	sp = &sproingies[screen];
+	sp = &sproingies[MI_SCREEN(mi)];
 
 	sp->mono = (MI_IS_MONO(mi) ? 1 : 0);
 	sp->window = window;
@@ -159,10 +159,13 @@ init_sproingies(ModeInfo * mi)
 			mspr = 100;
 
 		/* wireframe, ground, maxsproingies */
-		InitSproingies(wfmode, grnd, mspr, MI_SCREEN(mi), MI_NUM_SCREENS(mi), sp->mono);
-
+		if (!InitSproingies(wfmode, grnd, mspr, MI_SCREEN(mi),
+				 MI_NUM_SCREENS(mi), sp->mono)) {
+			return;
+		}
+		sp->init = True;
 		/* Viewport is specified size if size >= MINSIZE && size < screensize */
-		if (size == 0) {
+		if (size <= 1) {
 			w = MI_WIDTH(mi);
 			h = MI_HEIGHT(mi);
 		} else if (size < MINSIZE) {
@@ -192,12 +195,17 @@ init_sproingies(ModeInfo * mi)
 void
 draw_sproingies(ModeInfo * mi)
 {
-	sproingiesstruct *sp = &sproingies[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	sproingiesstruct *sp;
+
+	if (sproingies == NULL)
+		return;
+	sp = &sproingies[MI_SCREEN(mi)];
+	if (!sp->init)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!sp->glx_context)
 		return;
 
@@ -232,12 +240,12 @@ release_sproingies(ModeInfo * mi)
 			if (sp->glx_context) {
 
 				glXMakeCurrent(MI_DISPLAY(mi), sp->window, *(sp->glx_context));
-				CleanupSproingies(MI_SCREEN(mi));
+				CleanupSproingies(screen);
 			}
 		}
 
 		(void) free((void *) sproingies);
-		sproingies = NULL;
+		sproingies = (sproingiesstruct *) NULL;
 	}
 	FreeAllGL(mi);
 }

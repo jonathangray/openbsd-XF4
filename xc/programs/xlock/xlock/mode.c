@@ -35,666 +35,732 @@ static const char sccsid[] = "@(#)mode.c	4.07 97/11/24 xlockmore";
 LockStruct  LockProcs[] =
 {
 #ifdef MODE_ant
-	{"ant", init_ant, draw_ant, release_ant,
+	{(char *) "ant", init_ant, draw_ant, release_ant,
 	 refresh_ant, init_ant, NULL, &ant_opts,
-	 1000, -3, 40000, -12, 64, 1.0, "",
-	 "Shows Langton's and Turk's generalized ants", 0, NULL},
+	 1000, -3, 40000, -12, 64, 1.0, (char *) "",
+	 (char *) "Shows Langton's and Turk's generalized ants", 0, NULL},
 #endif
 #ifdef MODE_atlantis
-	{"atlantis", init_atlantis, draw_atlantis, release_atlantis,
+	{(char *) "atlantis", init_atlantis, draw_atlantis, release_atlantis,
 	 refresh_atlantis, change_atlantis, NULL, &atlantis_opts,
-	 1000, 4, 100, 6000, 64, 1.0, "",
-	 "Shows moving sharks/whales/dolphin", 0, NULL},
+	 18000, 4, 100, 6000, 64, 1.0, (char *) "",
+	 (char *) "Shows moving sharks/whales/dolphin", 0, NULL},
 #endif
 #ifdef MODE_ball
-	{"ball", init_ball, draw_ball, release_ball,
+	{(char *) "ball", init_ball, draw_ball, release_ball,
 	 refresh_ball, init_ball, NULL, &ball_opts,
-	 10000, 10, 20, -100, 64, 1.0, "",
-	 "Shows bouncing balls", 0, NULL},
+	 10000, 10, 20, -100, 64, 1.0, (char *) "",
+	 (char *) "Shows bouncing balls", 0, NULL},
 #endif
 #ifdef MODE_bat
-	{"bat", init_bat, draw_bat, release_bat,
+	{(char *) "bat", init_bat, draw_bat, release_bat,
 	 refresh_bat, init_bat, NULL, &bat_opts,
-	 100000, -8, 1, 0, 64, 1.0, "",
-	 "Shows bouncing flying bats", 0, NULL},
+	 100000, -8, 1, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows bouncing flying bats", 0, NULL},
 #endif
 #ifdef MODE_billiards
-	{"billiards", init_billiards, draw_billiards, release_billiards,
+	{(char *) "billiards", init_billiards, draw_billiards, release_billiards,
 	 refresh_billiards, init_billiards, NULL, &billiards_opts,
-	 200000, 6, 30, 1, 64, 0.3, "",
-	 "Shows billiards", 0, NULL},
+	 200000, 6, 30, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows billiards", 0, NULL},
 #endif
 #ifdef MODE_blot
-	{"blot", init_blot, draw_blot, release_blot,
+	{(char *) "blot", init_blot, draw_blot, release_blot,
 	 refresh_blot, init_blot, NULL, &blot_opts,
-	 200000, 6, 30, 1, 64, 0.3, "",
-	 "Shows Rorschach's ink blot test", 0, NULL},
+	 200000, 6, 30, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows Rorschach's ink blot test", 0, NULL},
 #endif
 #ifdef MODE_bouboule
-	{"bouboule", init_bouboule, draw_bouboule, release_bouboule,
+	{(char *) "bouboule", init_bouboule, draw_bouboule, release_bouboule,
 	 refresh_bouboule, init_bouboule, NULL, &bouboule_opts,
-	 10000, 100, 1, 15, 64, 1.0, "",
-	 "Shows Mimi's bouboule of moving stars", 0, NULL},
+	 10000, 100, 1, 15, 64, 1.0, (char *) "",
+	 (char *) "Shows Mimi's bouboule of moving stars", 0, NULL},
 #endif
 #ifdef MODE_bounce
-	{"bounce", init_bounce, draw_bounce, release_bounce,
+	{(char *) "bounce", init_bounce, draw_bounce, release_bounce,
 	 refresh_bounce, init_bounce, NULL, &bounce_opts,
-	 5000, -10, 1, 0, 64, 1.0, "",
-	 "Shows bouncing footballs", 0, NULL},
+	 5000, -10, 1, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows bouncing footballs", 0, NULL},
 #endif
 #ifdef MODE_braid
-	{"braid", init_braid, draw_braid, release_braid,
+	{(char *) "braid", init_braid, draw_braid, release_braid,
 	 refresh_braid, init_braid, NULL, &braid_opts,
-	 1000, 15, 100, -7, 64, 1.0, "",
-	 "Shows random braids and knots", 0, NULL},
+	 1000, 15, 100, -7, 64, 1.0, (char *) "",
+	 (char *) "Shows random braids and knots", 0, NULL},
 #endif
 #ifdef MODE_bubble
-	{"bubble", init_bubble, draw_bubble, release_bubble,
+	{(char *) "bubble", init_bubble, draw_bubble, release_bubble,
 	 refresh_bubble, init_bubble, NULL, &bubble_opts,
-	 100000, 25, 1, 100, 64, 0.6, "",
-	 "Shows popping bubbles", 0, NULL},
+	 100000, 25, 1, 100, 64, 0.6, (char *) "",
+	 (char *) "Shows popping bubbles", 0, NULL},
 #endif
 #ifdef MODE_bubble3d
-	{"bubble3d", init_bubble3d, draw_bubble3d, release_bubble3d,
+	{(char *) "bubble3d", init_bubble3d, draw_bubble3d, release_bubble3d,
 	 draw_bubble3d, change_bubble3d, NULL, &bubble3d_opts,
-	 1000, 1, 2, 1, 64, 1.0, "",
-	 "Richard Jones's GL bubbles", 0, NULL},
+	 1000, 1, 2, 1, 64, 1.0, (char *) "",
+	 (char *) "Richard Jones's GL bubbles", 0, NULL},
 #endif
 #ifdef MODE_bug
-	{"bug", init_bug, draw_bug, release_bug,
+	{(char *) "bug", init_bug, draw_bug, release_bug,
 	 refresh_bug, init_bug, NULL, &bug_opts,
-	 75000, 10, 32767, -4, 64, 1.0, "",
-	 "Shows Palmiter's bug evolution and garden of Eden", 0, NULL},
+	 75000, 10, 32767, -4, 64, 1.0, (char *) "",
+	 (char *) "Shows Palmiter's bug evolution and garden of Eden", 0, NULL},
 #endif
 #ifdef MODE_cage
-	{"cage", init_cage, draw_cage, release_cage,
+	{(char *) "cage", init_cage, draw_cage, release_cage,
 	 draw_cage, change_cage, NULL, &cage_opts,
-	 1000, 1, 1, 1, 64, 1.0, "",
-	 "Shows the Impossible Cage, an Escher-like GL scene", 0, NULL},
-#endif
-#ifdef MODE_cartoon
-	{"cartoon", init_cartoon, draw_cartoon, release_cartoon,
-	 NULL, init_cartoon, NULL, &cartoon_opts,
-	 10000, 1, 1, 1, 64, 1.0, "",
-	 "Shows bouncing cartoons", 0, NULL},
+	 25000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows the Impossible Cage, an Escher-like GL scene", 0, NULL},
 #endif
 #ifdef MODE_clock
-	{"clock", init_clock, draw_clock, release_clock,
+	{(char *) "clock", init_clock, draw_clock, release_clock,
 	 refresh_clock, init_clock, NULL, &clock_opts,
-	 100000, -16, 200, -200, 64, 1.0, "",
-	 "Shows Packard's clock", 0, NULL},
+	 100000, -16, 200, -200, 64, 1.0, (char *) "",
+	 (char *) "Shows Packard's clock", 0, NULL},
 #endif
 #ifdef MODE_coral
-	{"coral", init_coral, draw_coral, release_coral,
+	{(char *) "coral", init_coral, draw_coral, release_coral,
 	 init_coral, init_coral, NULL, &coral_opts,
-	 60000, -3, 1, 35, 64, 0.6, "",
-	 "Shows a coral reef", 0, NULL},
+	 60000, -3, 1, 35, 64, 0.6, (char *) "",
+	 (char *) "Shows a coral reef", 0, NULL},
 #endif
 #ifdef MODE_crystal
-	{"crystal", init_crystal, draw_crystal, release_crystal,
+	{(char *) "crystal", init_crystal, draw_crystal, release_crystal,
 	 refresh_crystal, init_crystal, NULL, &crystal_opts,
-	 60000, -500, 200, -15, 64, 1.0, "",
-	 "Shows polygons in 2D plane groups", 0, NULL},
+	 60000, -500, 200, -15, 64, 1.0, (char *) "",
+	 (char *) "Shows polygons in 2D plane groups", 0, NULL},
 #endif
 #ifdef MODE_daisy
-	{"daisy", init_daisy, draw_daisy, release_daisy,
+	{(char *) "daisy", init_daisy, draw_daisy, release_daisy,
 	 refresh_daisy, init_daisy, NULL, &daisy_opts,
-	 100000, 300, 350, 1, 64, 1.0, "",
-	 "Shows a meadow of daisies", 0, NULL},
+	 100000, 300, 350, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a meadow of daisies", 0, NULL},
 #endif
 #ifdef MODE_dclock
-	{"dclock", init_dclock, draw_dclock, release_dclock,
+	{(char *) "dclock", init_dclock, draw_dclock, release_dclock,
 	 refresh_dclock, init_dclock, NULL, &dclock_opts,
-	 10000, 1, 10000, 1, 64, 0.3, "",
-	 "Shows a floating digital clock or message", 0, NULL},
+	 10000, 1, 10000, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows a floating digital clock or message", 0, NULL},
 #endif
 #ifdef MODE_decay
-	{"decay", init_decay, draw_decay, release_decay,
+	{(char *) "decay", init_decay, draw_decay, release_decay,
 	 refresh_decay, init_decay, NULL, &decay_opts,
-	 200000, 6, 30, 1, 64, 0.3, "",
-	 "Shows a decaying screen", 0, NULL},
+	 200000, 6, 30, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows a decaying screen", 0, NULL},
 #endif
 #ifdef MODE_deco
-	{"deco", init_deco, draw_deco, release_deco,
+	{(char *) "deco", init_deco, draw_deco, release_deco,
 	 init_deco, init_deco, NULL, &deco_opts,
-	 1000000, -30, 2, -10, 64, 0.6, "",
-	 "Shows art as ugly as sin", 0, NULL},
+	 1000000, -30, 2, -10, 64, 0.6, (char *) "",
+	 (char *) "Shows art as ugly as sin", 0, NULL},
 #endif
 #ifdef MODE_demon
-	{"demon", init_demon, draw_demon, release_demon,
+	{(char *) "demon", init_demon, draw_demon, release_demon,
 	 refresh_demon, init_demon, NULL, &demon_opts,
-	 50000, 0, 1000, -7, 64, 1.0, "",
-	 "Shows Griffeath's cellular automata", 0, NULL},
+	 50000, 0, 1000, -7, 64, 1.0, (char *) "",
+	 (char *) "Shows Griffeath's cellular automata", 0, NULL},
 #endif
 #ifdef MODE_dilemma
-	{"dilemma", init_dilemma, draw_dilemma, release_dilemma,
+	{(char *) "dilemma", init_dilemma, draw_dilemma, release_dilemma,
 	 refresh_dilemma, init_dilemma, NULL, &dilemma_opts,
-	 200000, -2, 1000, 0, 64, 1.0, "",
-	 "Shows Lloyd's Prisoner's Dilemma simulation", 0, NULL},
+	 200000, -2, 1000, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Lloyd's Prisoner's Dilemma simulation", 0, NULL},
 #endif
 #ifdef MODE_discrete
-	{"discrete", init_discrete, draw_discrete, release_discrete,
+	{(char *) "discrete", init_discrete, draw_discrete, release_discrete,
 	 refresh_discrete, init_discrete, NULL, &discrete_opts,
-	 1000, 4096, 2500, 1, 64, 1.0, "",
-	 "Shows various discrete maps", 0, NULL},
+	 1000, 4096, 2500, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows various discrete maps", 0, NULL},
+#endif
+#ifdef MODE_dragon
+	{(char *) "dragon", init_dragon, draw_dragon, release_dragon,
+	 refresh_dragon, init_dragon, NULL, &dragon_opts,
+	 2000000, 1, 16, -24, 64, 1.0, (char *) "",
+	 (char *) "Shows Deventer's Hexagonal Dragons Maze", 0, NULL},
 #endif
 #ifdef MODE_drift
-	{"drift", init_drift, draw_drift, release_drift,
+	{(char *) "drift", init_drift, draw_drift, release_drift,
 	 refresh_drift, init_drift, NULL, &drift_opts,
-	 10000, 30, 1, 1, 64, 1.0, "",
-	 "Shows cosmic drifting flame fractals", 0, NULL},
+	 10000, 30, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows cosmic drifting flame fractals", 0, NULL},
+#endif
+#ifdef MODE_euler2d
+	{(char *) "euler2d", init_euler2d, draw_euler2d, release_euler2d,
+	 refresh_euler2d, init_euler2d, NULL, &euler2d_opts,
+	 1000, 1024, 3000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a simulation of 2D incompressible inviscid fluid", 0, NULL},
 #endif
 #ifdef MODE_eyes
-	{"eyes", init_eyes, draw_eyes, release_eyes,
+	{(char *) "eyes", init_eyes, draw_eyes, release_eyes,
 	 refresh_eyes, init_eyes, NULL, &eyes_opts,
-	 20000, -8, 5, 1, 64, 1.0, "",
-	 "Shows eyes following a bouncing grelb", 0, NULL},
+	 20000, -8, 5, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows eyes following a bouncing grelb", 0, NULL},
 #endif
 #ifdef MODE_fadeplot
-	{"fadeplot", init_fadeplot, draw_fadeplot, release_fadeplot,
+	{(char *) "fadeplot", init_fadeplot, draw_fadeplot, release_fadeplot,
 	 refresh_fadeplot, init_fadeplot, NULL, &fadeplot_opts,
-	 30000, 10, 1500, 1, 64, 0.6, "",
-	 "Shows a fading plot of sine squared", 0, NULL},
+	 30000, 10, 1500, 1, 64, 0.6, (char *) "",
+	 (char *) "Shows a fading plot of sine squared", 0, NULL},
+#endif
+#ifdef MODE_fire
+	{(char *) "fire", init_fire, draw_fire, release_fire,
+	 draw_fire, change_fire, NULL, &fire_opts,
+	 10000, 800, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a 3D fire-like image", 0, NULL},
 #endif
 #ifdef MODE_flag
-	{"flag", init_flag, draw_flag, release_flag,
+	{(char *) "flag", init_flag, draw_flag, release_flag,
 	 refresh_flag, init_flag, NULL, &flag_opts,
-	 50000, 1, 1000, -7, 64, 1.0, "",
-	 "Shows a waving flag image", 0, NULL},
+	 50000, 1, 1000, -7, 64, 1.0, (char *) "",
+	 (char *) "Shows a waving flag image", 0, NULL},
 #endif
 #ifdef MODE_flame
-	{"flame", init_flame, draw_flame, release_flame,
+	{(char *) "flame", init_flame, draw_flame, release_flame,
 	 refresh_flame, init_flame, NULL, &flame_opts,
-	 750000, 20, 10000, 1, 64, 1.0, "",
-	 "Shows cosmic flame fractals", 0, NULL},
+	 750000, 20, 10000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows cosmic flame fractals", 0, NULL},
 #endif
 #ifdef MODE_flow
-	{"flow", init_flow, draw_flow, release_flow,
+	{(char *) "flow", init_flow, draw_flow, release_flow,
 	 refresh_flow, init_flow, NULL, &flow_opts,
-	 1000, 1024, 3000, 1, 64, 1.0, "",
-	 "Shows dynamic strange attractors", 0, NULL},
+	 1000, 1024, 3000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows dynamic strange attractors", 0, NULL},
 #endif
 #ifdef MODE_forest
-	{"forest", init_forest, draw_forest, release_forest,
+	{(char *) "forest", init_forest, draw_forest, release_forest,
 	 refresh_forest, init_forest, NULL, &forest_opts,
-	 400000, 100, 200, 1, 64, 1.0, "",
-	 "Shows binary trees of a fractal forest", 0, NULL},
+	 400000, 100, 200, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows binary trees of a fractal forest", 0, NULL},
 #endif
 #ifdef MODE_galaxy
-	{"galaxy", init_galaxy, draw_galaxy, release_galaxy,
+	{(char *) "galaxy", init_galaxy, draw_galaxy, release_galaxy,
 	 refresh_galaxy, init_galaxy, NULL, &galaxy_opts,
-	 100, -5, 250, -3, 64, 1.0, "",
-	 "Shows crashing spiral galaxies", 0, NULL},
+	 100, -5, 250, -3, 64, 1.0, (char *) "",
+	 (char *) "Shows crashing spiral galaxies", 0, NULL},
 #endif
 #ifdef MODE_gears
-	{"gears", init_gears, draw_gears, release_gears,
+	{(char *) "gears", init_gears, draw_gears, release_gears,
 	 draw_gears, init_gears, NULL, &gears_opts,
-	 1000, 1, 2, 1, 64, 1.0, "",
-	 "Shows GL's gears", 0, NULL},
+	 1000, 1, 2, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows GL's gears", 0, NULL},
+#endif
+#ifdef MODE_glplanet
+        {(char *) "glplanet", init_glplanet, draw_glplanet, release_glplanet,
+         draw_glplanet, init_glplanet, NULL, &glplanet_opts,
+         1000, 1, 2, 1, 64, 1.0, (char *) "",
+         (char *) "Animates texture mapped sphere (planet)", 0, NULL},
 #endif
 #ifdef MODE_goop
-	{"goop", init_goop, draw_goop, release_goop,
+	{(char *) "goop", init_goop, draw_goop, release_goop,
 	 init_goop, init_goop, NULL, &goop_opts,
-	 10000, -12, 1, 1, 64, 1.0, "",
-	 "Shows goop from a lava lamp", 0, NULL},
+	 10000, -12, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows goop from a lava lamp", 0, NULL},
 #endif
 #ifdef MODE_grav
-	{"grav", init_grav, draw_grav, release_grav,
+	{(char *) "grav", init_grav, draw_grav, release_grav,
 	 refresh_grav, init_grav, NULL, &grav_opts,
-	 10000, -12, 1, 1, 64, 1.0, "",
-	 "Shows orbiting planets", 0, NULL},
+	 10000, -12, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows orbiting planets", 0, NULL},
 #endif
 #ifdef MODE_helix
-	{"helix", init_helix, draw_helix, release_helix,
+	{(char *) "helix", init_helix, draw_helix, release_helix,
 	 refresh_helix, init_helix, NULL, &helix_opts,
-	 25000, 1, 100, 1, 64, 1.0, "",
-	 "Shows string art", 0, NULL},
+	 25000, 1, 100, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows string art", 0, NULL},
 #endif
 #ifdef MODE_hop
-	{"hop", init_hop, draw_hop, release_hop,
+	{(char *) "hop", init_hop, draw_hop, release_hop,
 	 refresh_hop, init_hop, NULL, &hop_opts,
-	 10000, 1000, 2500, 1, 64, 1.0, "",
-	 "Shows real plane iterated fractals", 0, NULL},
+	 10000, 1000, 2500, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows real plane iterated fractals", 0, NULL},
 #endif
 #ifdef MODE_hyper
-	{"hyper", init_hyper, draw_hyper, release_hyper,
+	{(char *) "hyper", init_hyper, draw_hyper, release_hyper,
 	 refresh_hyper, change_hyper, NULL, &hyper_opts,
-	 100000, -6, 300, 1, 64, 1.0, "",
-	 "Shows spinning n-dimensional hypercubes", 0, NULL},
+	 100000, -6, 300, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows spinning n-dimensional hypercubes", 0, NULL},
 #endif
 #ifdef MODE_ico
-	{"ico", init_ico, draw_ico, release_ico,
+	{(char *) "ico", init_ico, draw_ico, release_ico,
 	 refresh_ico, change_ico, NULL, &ico_opts,
-	 100000, 0, 400, 0, 64, 1.0, "",
-	 "Shows a bouncing polyhedron", 0, NULL},
+	 200000, 0, 400, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows a bouncing polyhedron", 0, NULL},
 #endif
 #ifdef MODE_ifs
-	{"ifs", init_ifs, draw_ifs, release_ifs,
+	{(char *) "ifs", init_ifs, draw_ifs, release_ifs,
 	 init_ifs, init_ifs, NULL, &ifs_opts,
-	 1000, 1, 1, 1, 64, 1.0, "",
-	 "Shows a modified iterated function system", 0, NULL},
+	 1000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a modified iterated function system", 0, NULL},
 #endif
 #ifdef MODE_image
-	{"image", init_image, draw_image, release_image,
+	{(char *) "image", init_image, draw_image, release_image,
 	 refresh_image, init_image, NULL, &image_opts,
-	 3000000, -20, 1, 1, 64, 1.0, "",
-	 "Shows randomly appearing logos", 0, NULL},
+	 3000000, -20, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows randomly appearing logos", 0, NULL},
 #endif
 #ifdef MODE_invert
-	{"invert", init_invert, draw_invert, release_invert,
+	{(char *) "invert", init_invert, draw_invert, release_invert,
 	 draw_invert, init_invert, NULL, &invert_opts,
-	 100, 1, 1, 1, 64, 1.0, "",
-	 "Shows a sphere inverted without wrinkles", 0, NULL},
+	 100, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a sphere inverted without wrinkles", 0, NULL},
 #endif
 #ifdef MODE_juggle
-	{"juggle", init_juggle, draw_juggle, release_juggle,
+	{(char *) "juggle", init_juggle, draw_juggle, release_juggle,
 	 draw_juggle, init_juggle, NULL, &juggle_opts,
-	 2000, 30, 30, 1, 64, 1.0, "",
-	 "Shows a Juggler, juggling", 0, NULL},
+	 10000, 150, 30, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a Juggler, juggling", 0, NULL},
 #endif
 #ifdef MODE_julia
-	{"julia", init_julia, draw_julia, release_julia,
+	{(char *) "julia", init_julia, draw_julia, release_julia,
 	 refresh_julia, init_julia, NULL, &julia_opts,
-	 10000, 1000, 20, 1, 64, 1.0, "",
-	 "Shows the Julia set", 0, NULL},
+	 10000, 1000, 20, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows the Julia set", 0, NULL},
 #endif
 #ifdef MODE_kaleid
-	{"kaleid", init_kaleid, draw_kaleid, release_kaleid,
+	{(char *) "kaleid", init_kaleid, draw_kaleid, release_kaleid,
 	 refresh_kaleid, init_kaleid, NULL, &kaleid_opts,
-	 80000, 4, 40, -9, 64, 0.6, "",
-	 "Shows a kaleidoscope", 0, NULL},
+	 80000, 4, 40, -9, 64, 0.6, (char *) "",
+	 (char *) "Shows a kaleidoscope", 0, NULL},
 #endif
 #ifdef MODE_kumppa
-	{"kumppa", init_kumppa, draw_kumppa, release_kumppa,
-	 refresh_kumppa, init_kumppa, NULL, &kumppa_opts,
-	 10000, 1, 1000, 1, 64, 1.0, "",
-	 "Shows kumppa", 0, NULL},
+	{(char *) "kumppa", init_kumppa, draw_kumppa, release_kumppa,
+	 init_kumppa, init_kumppa, NULL, &kumppa_opts,
+	 10000, 1, 1000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows kumppa", 0, NULL},
 #endif
 #ifdef MODE_lament
-	{"lament", init_lament, draw_lament, release_lament,
+	{(char *) "lament", init_lament, draw_lament, release_lament,
 	 draw_lament, change_lament, NULL, &lament_opts,
-	 10000, 1, 1, 1, 64, 1.0, "",
-	 "Shows Lemarchand's Box", 0, NULL},
+	 10000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Lemarchand's Box", 0, NULL},
 #endif
 #ifdef MODE_laser
-	{"laser", init_laser, draw_laser, release_laser,
+	{(char *) "laser", init_laser, draw_laser, release_laser,
 	 refresh_laser, init_laser, NULL, &laser_opts,
-	 20000, -10, 200, 1, 64, 1.0, "",
-	 "Shows spinning lasers", 0, NULL},
+	 20000, -10, 200, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows spinning lasers", 0, NULL},
 #endif
 #ifdef MODE_life
-	{"life", init_life, draw_life, release_life,
+	{(char *) "life", init_life, draw_life, release_life,
 	 refresh_life, change_life, NULL, &life_opts,
-	 750000, 40, 140, 0, 64, 1.0, "",
-	 "Shows Conway's game of Life", 0, NULL},
+	 750000, 40, 140, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Conway's game of Life", 0, NULL},
 #endif
 #ifdef MODE_life1d
-	{"life1d", init_life1d, draw_life1d, release_life1d,
+	{(char *) "life1d", init_life1d, draw_life1d, release_life1d,
 	 refresh_life1d, init_life1d, NULL, &life1d_opts,
-	 10000, 1, 10, 0, 64, 1.0, "",
-	 "Shows Wolfram's game of 1D Life", 0, NULL},
+	 10000, 1, 10, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Wolfram's game of 1D Life", 0, NULL},
 #endif
 #ifdef MODE_life3d
-	{"life3d", init_life3d, draw_life3d, release_life3d,
+	{(char *) "life3d", init_life3d, draw_life3d, release_life3d,
 	 refresh_life3d, change_life3d, NULL, &life3d_opts,
-	 1000000, 35, 85, 1, 64, 1.0, "",
-	 "Shows Bays' game of 3D Life", 0, NULL},
+	 1000000, 35, 85, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Bays' game of 3D Life", 0, NULL},
 #endif
 #ifdef MODE_lightning
-	{"lightning", init_lightning, draw_lightning, release_lightning,
+	{(char *) "lightning", init_lightning, draw_lightning, release_lightning,
 	 refresh_lightning, init_lightning, NULL, &lightning_opts,
-	 10000, 1, 1, 1, 64, 0.6, "",
-	 "Shows Keith's fractal lightning bolts", 0, NULL},
+	 10000, 1, 1, 1, 64, 0.6, (char *) "",
+	 (char *) "Shows Keith's fractal lightning bolts", 0, NULL},
 #endif
 #ifdef MODE_lisa
-	{"lisa", init_lisa, draw_lisa, release_lisa,
+	{(char *) "lisa", init_lisa, draw_lisa, release_lisa,
 	 refresh_lisa, change_lisa, NULL, &lisa_opts,
-	 25000, 1, 256, -1, 64, 1.0, "",
-	 "Shows animated lisajous loops", 0, NULL},
+	 25000, 1, 256, -1, 64, 1.0, (char *) "",
+	 (char *) "Shows animated lisajous loops", 0, NULL},
 #endif
 #ifdef MODE_lissie
-	{"lissie", init_lissie, draw_lissie, release_lissie,
+	{(char *) "lissie", init_lissie, draw_lissie, release_lissie,
 	 refresh_lissie, init_lissie, NULL, &lissie_opts,
-	 10000, 1, 2000, -200, 64, 0.6, "",
-	 "Shows lissajous worms", 0, NULL},
+	 10000, 1, 2000, -200, 64, 0.6, (char *) "",
+	 (char *) "Shows lissajous worms", 0, NULL},
 #endif
 #ifdef MODE_loop
-	{"loop", init_loop, draw_loop, release_loop,
+	{(char *) "loop", init_loop, draw_loop, release_loop,
 	 refresh_loop, init_loop, NULL, &loop_opts,
-	 100000, 1, 1600, -12, 64, 1.0, "",
-	 "Shows Langton's self-producing loops", 0, NULL},
+	 100000, -5, 1600, -12, 64, 1.0, (char *) "",
+	 (char *) "Shows Langton's self-producing loops", 0, NULL},
 #endif
 #ifdef MODE_lyapunov
-	{"lyapunov", init_lyapunov, draw_lyapunov, release_lyapunov,
+	{(char *) "lyapunov", init_lyapunov, draw_lyapunov, release_lyapunov,
 	 NULL, init_lyapunov, NULL, &lyapunov_opts,
-	 25000, 600, 1, 1, 64, 1.0, "",
-	 "Shows lyapunov space", 0, NULL},
+	 25000, 600, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows lyapunov space", 0, NULL},
 #endif
 #ifdef MODE_mandelbrot
-	{"mandelbrot", init_mandelbrot, draw_mandelbrot, release_mandelbrot,
+	{(char *) "mandelbrot", init_mandelbrot, draw_mandelbrot, release_mandelbrot,
 	 NULL, init_mandelbrot, NULL, &mandelbrot_opts,
-	 25000, -8, 20000, 1, 64, 1.0, "",
-	 "Shows mandelbrot sets", 0, NULL},
+	 25000, -8, 20000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows mandelbrot sets", 0, NULL},
 #endif
 #ifdef MODE_marquee
-	{"marquee", init_marquee, draw_marquee, release_marquee,
+	{(char *) "marquee", init_marquee, draw_marquee, release_marquee,
 	 init_marquee, init_marquee, NULL, &marquee_opts,
-	 100000, 1, 1, 1, 64, 1.0, "",
-	 "Shows messages", 0, NULL},
+	 100000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows messages", 0, NULL},
 #endif
 #ifdef MODE_matrix
-	{"matrix", init_matrix, draw_matrix, release_matrix,
+	{(char *) "matrix", init_matrix, draw_matrix, release_matrix,
 	 refresh_matrix, change_matrix, NULL, &matrix_opts,
-	 1000, 1, 1, 1, 64, 1.0, "",
-	 "Shows the Matrix", 0, NULL},
+	 1000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows the Matrix", 0, NULL},
 #endif
 #ifdef MODE_maze
-	{"maze", init_maze, draw_maze, release_maze,
+	{(char *) "maze", init_maze, draw_maze, release_maze,
 	 refresh_maze, init_maze, NULL, &maze_opts,
-	 1000, 1, 3000, -40, 64, 1.0, "",
-	 "Shows a random maze and a depth first search solution", 0, NULL},
+	 1000, 1, 3000, -40, 64, 1.0, (char *) "",
+	 (char *) "Shows a random maze and a depth first search solution", 0, NULL},
 #endif
 #ifdef MODE_moebius
-	{"moebius", init_moebius, draw_moebius, release_moebius,
+	{(char *) "moebius", init_moebius, draw_moebius, release_moebius,
 	 draw_moebius, change_moebius, NULL, &moebius_opts,
-	 1000, 1, 1, 1, 64, 1.0, "",
-       "Shows Moebius Strip II, an Escher-like GL scene with ants", 0, NULL},
+	 1000, 1, 1, 1, 64, 1.0, (char *) "",
+    (char *) "Shows Moebius Strip II, an Escher-like GL scene with ants", 0, NULL},
+#endif
+#ifdef MODE_molecule
+       {(char *) "molecule", init_molecule, draw_molecule, release_molecule,
+       draw_molecule, init_molecule, NULL, &molecule_opts,
+       50000, 1, 20, 1, 64, 1.0, (char *) "",
+       (char *) "Draws molecules", 0, NULL},
 #endif
 #ifdef MODE_morph3d
-	{"morph3d", init_morph3d, draw_morph3d, release_morph3d,
+	{(char *) "morph3d", init_morph3d, draw_morph3d, release_morph3d,
 	 draw_morph3d, change_morph3d, NULL, &morph3d_opts,
-	 1000, 0, 1, 1, 64, 1.0, "",
-	 "Shows GL morphing polyhedra", 0, NULL},
+	 1000, 0, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows GL morphing polyhedra", 0, NULL},
 #endif
 #ifdef MODE_mountain
-	{"mountain", init_mountain, draw_mountain, release_mountain,
+	{(char *) "mountain", init_mountain, draw_mountain, release_mountain,
 	 refresh_mountain, init_mountain, NULL, &mountain_opts,
-	 1000, 30, 4000, 1, 64, 1.0, "",
-	 "Shows Papo's mountain range", 0, NULL},
+	 1000, 30, 4000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Papo's mountain range", 0, NULL},
 #endif
 #ifdef MODE_munch
-	{"munch", init_munch, draw_munch, release_munch,
+	{(char *) "munch", init_munch, draw_munch, release_munch,
 	 init_munch, init_munch, NULL, &munch_opts,
-	 5000, 1, 7, 1, 64, 1.0, "",
-	 "Shows munching squares", 0, NULL},
+	 5000, 1, 7, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows munching squares", 0, NULL},
 #endif
 #ifdef MODE_nose
-	{"nose", init_nose, draw_nose, release_nose,
+	{(char *) "nose", init_nose, draw_nose, release_nose,
 	 refresh_nose, init_nose, NULL, &nose_opts,
-	 100000, 1, 1, 1, 64, 1.0, "",
-    "Shows a man with a big nose runs around spewing out messages", 0, NULL},
+	 100000, 1, 1, 1, 64, 1.0, (char *) "",
+    (char *) "Shows a man with a big nose runs around spewing out messages", 0, NULL},
 #endif
 #ifdef MODE_pacman
-	{"pacman", init_pacman, draw_pacman, release_pacman,
+	{(char *) "pacman", init_pacman, draw_pacman, release_pacman,
 	 refresh_pacman, init_pacman, NULL, &pacman_opts,
-	 100000, 10, 1, 0, 64, 1.0, "",
-	 "Shows Pacman(tm)", 0, NULL},
+	 100000, 10, 1, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Pacman(tm)", 0, NULL},
 #endif
 #ifdef MODE_penrose
-	{"penrose", init_penrose, draw_penrose, release_penrose,
+	{(char *) "penrose", init_penrose, draw_penrose, release_penrose,
 	 init_penrose, init_penrose, NULL, &penrose_opts,
-	 10000, 1, 1, -40, 64, 1.0, "",
-	 "Shows Penrose's quasiperiodic tilings", 0, NULL},
+	 10000, 1, 1, -40, 64, 1.0, (char *) "",
+	 (char *) "Shows Penrose's quasiperiodic tilings", 0, NULL},
 #endif
 #ifdef MODE_petal
-	{"petal", init_petal, draw_petal, release_petal,
+	{(char *) "petal", init_petal, draw_petal, release_petal,
 	 refresh_petal, init_petal, NULL, &petal_opts,
-	 10000, -500, 400, 1, 64, 1.0, "",
-	 "Shows various GCD Flowers", 0, NULL},
+	 10000, -500, 400, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows various GCD Flowers", 0, NULL},
 #endif
 #ifdef MODE_pipes
-	{"pipes", init_pipes, draw_pipes, release_pipes,
+	{(char *) "pipes", init_pipes, draw_pipes, release_pipes,
 #if defined( MESA ) && defined( SLOW )
 	 draw_pipes,
 #else
 	 change_pipes,
 #endif
 	 change_pipes, NULL, &pipes_opts,
-	 1000, 2, 5, 500, 64, 1.0, "",
-	 "Shows a selfbuilding pipe system", 0, NULL},
+	 1000, 2, 5, 500, 64, 1.0, (char *) "",
+	 (char *) "Shows a selfbuilding pipe system", 0, NULL},
+#endif
+#ifdef MODE_polyominoes
+	{(char *) "polyominoes", init_polyominoes, draw_polyominoes, release_polyominoes,
+        refresh_polyominoes, init_polyominoes, NULL, &polyominoes_opts,
+        6000, 1, 8192, 1, 64, 1.0, (char *) "",
+        (char *) "Shows attempts to place polyominoes into a rectangle", 0, NULL},
 #endif
 #ifdef MODE_puzzle
-	{"puzzle", init_puzzle, draw_puzzle, release_puzzle,
+	{(char *) "puzzle", init_puzzle, draw_puzzle, release_puzzle,
 	 init_puzzle, init_puzzle, NULL, &puzzle_opts,
-	 10000, 250, 1, 1, 64, 1.0, "",
-	 "Shows a puzzle being scrambled and then solved", 0, NULL},
+	 10000, 250, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a puzzle being scrambled and then solved", 0, NULL},
 #endif
 #ifdef MODE_pyro
-	{"pyro", init_pyro, draw_pyro, release_pyro,
+	{(char *) "pyro", init_pyro, draw_pyro, release_pyro,
 	 refresh_pyro, init_pyro, NULL, &pyro_opts,
-	 15000, 100, 1, -3, 64, 1.0, "",
-	 "Shows fireworks", 0, NULL},
+	 15000, 100, 1, -3, 64, 1.0, (char *) "",
+	 (char *) "Shows fireworks", 0, NULL},
 #endif
 #ifdef MODE_qix
-	{"qix", init_qix, draw_qix, release_qix,
+	{(char *) "qix", init_qix, draw_qix, release_qix,
 	 refresh_qix, init_qix, NULL, &qix_opts,
-	 30000, -5, 32, 1, 64, 1.0, "",
-	 "Shows spinning lines a la Qix(tm)", 0, NULL},
+	 30000, -5, 32, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows spinning lines a la Qix(tm)", 0, NULL},
 #endif
 #ifdef MODE_roll
-	{"roll", init_roll, draw_roll, release_roll,
+	{(char *) "roll", init_roll, draw_roll, release_roll,
 	 refresh_roll, init_roll, NULL, &roll_opts,
-	 100000, 25, 1, -64, 64, 0.6, "",
-	 "Shows a rolling ball", 0, NULL},
+	 100000, 25, 1, -64, 64, 0.6, (char *) "",
+	 (char *) "Shows a rolling ball", 0, NULL},
 #endif
 #ifdef MODE_rotor
-	{"rotor", init_rotor, draw_rotor, release_rotor,
+	{(char *) "rotor", init_rotor, draw_rotor, release_rotor,
 	 refresh_rotor, init_rotor, NULL, &rotor_opts,
-	 500, 4, 100, -6, 64, 0.3, "",
-	 "Shows Tom's Roto-Rooter", 0, NULL},
+	 100, 4, 100, -6, 64, 0.3, (char *) "",
+	 (char *) "Shows Tom's Roto-Rooter", 0, NULL},
 #endif
 #ifdef MODE_rubik
-	{"rubik", init_rubik, draw_rubik, release_rubik,
+	{(char *) "rubik", init_rubik, draw_rubik, release_rubik,
 	 draw_rubik, change_rubik, NULL, &rubik_opts,
-	 10000, -30, 5, -6, 64, 1.0, "",
-	 "Shows an auto-solving Rubik's Cube", 0, NULL},
+	 10000, -30, 5, -6, 64, 1.0, (char *) "",
+	 (char *) "Shows an auto-solving Rubik's Cube", 0, NULL},
+#endif
+#ifdef MODE_sballs
+	{(char *) "sballs", init_sballs, draw_sballs, release_sballs,
+	 draw_sballs, change_sballs, NULL, &sballs_opts,
+	 10000, 0, 10, 400, 64, 1.0, (char *) "",
+	 (char *) "Shows balls spinning like crazy in GL", 0, NULL},
+#endif
+#ifdef MODE_scooter
+	{(char *) "scooter", init_scooter, draw_scooter, release_scooter,
+	 refresh_scooter, change_scooter, NULL, &scooter_opts,
+	 20000, 24, 3, 100, 64, 1.0, (char *) "",
+	 (char *) "Shows a journey through space tunnel and stars", 0, NULL},
 #endif
 #ifdef MODE_shape
-	{"shape", init_shape, draw_shape, release_shape,
+	{(char *) "shape", init_shape, draw_shape, release_shape,
 	 refresh_shape, init_shape, NULL, &shape_opts,
-	 10000, 100, 256, 1, 64, 1.0, "",
-	 "Shows stippled rectangles, ellipses, and triangles", 0, NULL},
+	 10000, 100, 256, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows stippled rectangles, ellipses, and triangles", 0, NULL},
 #endif
 #ifdef MODE_sierpinski
-	{"sierpinski", init_sierpinski, draw_sierpinski, release_sierpinski,
+	{(char *) "sierpinski", init_sierpinski, draw_sierpinski, release_sierpinski,
 	 refresh_sierpinski, init_sierpinski, NULL, &sierpinski_opts,
-	 400000, 2000, 100, 1, 64, 1.0, "",
-	 "Shows Sierpinski's triangle", 0, NULL},
+	 400000, 2000, 100, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Sierpinski's triangle", 0, NULL},
+#endif
+#ifdef MODE_sierpinski3d
+        {(char *) "sierpinski3d", init_gasket, draw_gasket, release_gasket,
+         draw_gasket, init_gasket, NULL, &gasket_opts,
+         1000, 1, 2, 1, 64, 1.0, (char *) "",
+         (char *) "Shows GL's Sierpinski gasket", 0, NULL},
+#endif
+#ifdef MODE_skewb
+	{(char *) "skewb", init_skewb, draw_skewb, release_skewb,
+	 draw_skewb, change_skewb, NULL, &skewb_opts,
+	 10000, -30, 5, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows an auto-solving Skewb", 0, NULL},
 #endif
 #ifdef MODE_slip
-	{"slip", init_slip, draw_slip, release_slip,
+	{(char *) "slip", init_slip, draw_slip, release_slip,
 	 init_slip, init_slip, NULL, &slip_opts,
-	 50000, 35, 50, 1, 64, 1.0, "",
-	 "Shows slipping blits", 0, NULL},
+	 50000, 35, 50, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows slipping blits", 0, NULL},
 #endif
 #ifdef MODE_solitare
-	{"solitare", init_solitare, draw_solitare, release_solitare,
+	{(char *) "solitare", init_solitare, draw_solitare, release_solitare,
 	 refresh_solitare, init_solitare, NULL, &solitare_opts,
-	 2000000, 1, 1, 1, 64, 1.0, "",
-	 "Shows Klondike's game of solitare", 0, NULL},
+	 2000000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Klondike's game of solitare", 0, NULL},
 #endif
 #ifdef MODE_space
-	{"space", init_space, draw_space, release_space,
+	{(char *) "space", init_space, draw_space, release_space,
 	 refresh_space, init_space, NULL, &space_opts,
-	 10000, 100, 1, 15, 64, 1.0, "",
-	 "Shows a journey into deep space", 0, NULL},
+	 10000, 100, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a journey into deep space", 0, NULL},
 #endif
 #ifdef MODE_sphere
-	{"sphere", init_sphere, draw_sphere, release_sphere,
+	{(char *) "sphere", init_sphere, draw_sphere, release_sphere,
 	 refresh_sphere, init_sphere, NULL, &sphere_opts,
-	 5000, 1, 20, 0, 64, 1.0, "",
-	 "Shows a bunch of shaded spheres", 0, NULL},
+	 5000, 1, 20, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows a bunch of shaded spheres", 0, NULL},
 #endif
 #ifdef MODE_spiral
-	{"spiral", init_spiral, draw_spiral, release_spiral,
+	{(char *) "spiral", init_spiral, draw_spiral, release_spiral,
 	 refresh_spiral, init_spiral, NULL, &spiral_opts,
-	 5000, -40, 350, 1, 64, 1.0, "",
-	 "Shows a helical locus of points", 0, NULL},
+	 5000, -40, 350, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a helical locus of points", 0, NULL},
 #endif
 #ifdef MODE_spline
-	{"spline", init_spline, draw_spline, release_spline,
+	{(char *) "spline", init_spline, draw_spline, release_spline,
 	 refresh_spline, init_spline, NULL, &spline_opts,
-	 30000, -6, 2048, 1, 64, 0.3, "",
-	 "Shows colorful moving splines", 0, NULL},
+	 30000, -6, 2048, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows colorful moving splines", 0, NULL},
 #endif
 #ifdef MODE_sproingies
-	{"sproingies", init_sproingies, draw_sproingies, release_sproingies,
+	{(char *) "sproingies", init_sproingies, draw_sproingies, release_sproingies,
 	 refresh_sproingies, init_sproingies, NULL, &sproingies_opts,
-	 1000, 5, 0, 400, 64, 1.0, "",
-  "Shows Sproingies!  Nontoxic.  Safe for pets and small children", 0, NULL},
+	 1000, 5, 0, 400, 64, 1.0, (char *) "",
+  (char *) "Shows Sproingies!  Nontoxic.  Safe for pets and small children", 0, NULL},
 #endif
 #ifdef MODE_stairs
-	{"stairs", init_stairs, draw_stairs, release_stairs,
+	{(char *) "stairs", init_stairs, draw_stairs, release_stairs,
 	 draw_stairs, change_stairs, NULL, &stairs_opts,
-	 200000, 0, 1, 1, 64, 1.0, "",
-	 "Shows some Infinite Stairs, an Escher-like scene", 0, NULL},
+	 200000, 0, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows some Infinite Stairs, an Escher-like scene", 0, NULL},
 #endif
 #ifdef MODE_star
-	{"star", init_star, draw_star, release_star,
+	{(char *) "star", init_star, draw_star, release_star,
 	 refresh_star, init_star, NULL, &star_opts,
-	 75000, 100, 1, 100, 64, 0.3, "",
-	 "Shows a star field with a twist", 0, NULL},
+	 75000, 100, 1, 100, 64, 0.3, (char *) "",
+	 (char *) "Shows a star field with a twist", 0, NULL},
 #endif
 #ifdef MODE_starfish
-	{"starfish", init_starfish, draw_starfish, release_starfish,
-	 refresh_starfish, init_starfish, NULL, &starfish_opts,
-	 2000, 1, 1000, 1, 64, 1.0, "",
-	 "Shows starfish", 0, NULL},
+	{(char *) "starfish", init_starfish, draw_starfish, release_starfish,
+	 init_starfish, init_starfish, NULL, &starfish_opts,
+	 2000, 1, 1000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows starfish", 0, NULL},
 #endif
 #ifdef MODE_strange
-	{"strange", init_strange, draw_strange, release_strange,
+	{(char *) "strange", init_strange, draw_strange, release_strange,
 	 init_strange, init_strange, NULL, &strange_opts,
-	 1000, 1, 1, 1, 64, 1.0, "",
-	 "Shows strange attractors", 0, NULL},
+	 1000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows strange attractors", 0, NULL},
 #endif
 #ifdef MODE_superquadrics
-	{"superquadrics", init_superquadrics, draw_superquadrics, release_superquadrics,
+	{(char *) "superquadrics", init_superquadrics, draw_superquadrics, release_superquadrics,
 	 refresh_superquadrics, init_superquadrics, NULL, &superquadrics_opts,
-	 1000, 25, 40, 1, 64, 1.0, "",
-	 "Shows 3D mathematical shapes", 0, NULL},
+	 1000, 25, 40, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows 3D mathematical shapes", 0, NULL},
 #endif
 #ifdef MODE_swarm
-	{"swarm", init_swarm, draw_swarm, release_swarm,
+	{(char *) "swarm", init_swarm, draw_swarm, release_swarm,
 	 refresh_swarm, init_swarm, NULL, &swarm_opts,
-	 15000, 100, 1, 1, 64, 1.0, "",
-	 "Shows a swarm of bees following a wasp", 0, NULL},
+	 15000, -100, 1, -100, 64, 1.0, (char *) "",
+	 (char *) "Shows a swarm of bees following a wasp", 0, NULL},
 #endif
 #ifdef MODE_swirl
-	{"swirl", init_swirl, draw_swirl, release_swirl,
+	{(char *) "swirl", init_swirl, draw_swirl, release_swirl,
 	 refresh_swirl, init_swirl, NULL, &swirl_opts,
-	 5000, 5, 1, 1, 64, 1.0, "",
-	 "Shows animated swirling patterns", 0, NULL},
+	 5000, 5, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows animated swirling patterns", 0, NULL},
 #endif
 #ifdef MODE_t3d
-	{"t3d", init_t3d, draw_t3d, release_t3d,
+	{(char *) "t3d", init_t3d, draw_t3d, release_t3d,
 	 refresh_t3d, init_t3d, NULL, &t3d_opts,
-	 250000, 1, 60000, 1, 64, 1.0, "",
-	 "Shows a Flying Balls Clock Demo", 0, NULL},
+	 250000, 1, 60000, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a Flying Balls Clock Demo", 0, NULL},
 #endif
 #ifdef MODE_tetris
-	{"tetris", init_tetris, draw_tetris, release_tetris,
-	 refresh_tetris, init_tetris, NULL, &tetris_opts,
-	 50000, 1, 1, 0, 64, 1.0, "",
-	 "Shows an autoplaying tetris game", 0, NULL},
+	{(char *) "tetris", init_tetris, draw_tetris, release_tetris,
+	 refresh_tetris, change_tetris, NULL, &tetris_opts,
+	 50000, 1, 1, -100, 64, 1.0, (char *) "",
+	 (char *) "Shows an autoplaying tetris game", 0, NULL},
 #endif
 #ifdef MODE_text3d
-	{"text3d", init_text3d, draw_text3d, release_text3d,
+	{(char *) "text3d", init_text3d, draw_text3d, release_text3d,
 	 refresh_text3d, change_text3d, NULL, &text3d_opts,
-	 100000, 1, 1, 1, 64, 1.0, "",
-	 "Shows 3D text", 0, NULL},
+	 100000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows 3D text", 0, NULL},
 #endif
 #ifdef MODE_thornbird
-	{"thornbird", init_thornbird, draw_thornbird, release_thornbird,
+	{(char *) "thornbird", init_thornbird, draw_thornbird, release_thornbird,
 	 refresh_thornbird, init_thornbird, NULL, &thornbird_opts,
-	 1000, 800, 16, 1, 64, 1.0, "",
-	 "Shows an animated bird in a thorn bush fractal map", 0, NULL},
+	 1000, 800, 16, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows an animated bird in a thorn bush fractal map", 0, NULL},
 #endif
 #ifdef MODE_tik_tak
-  {"tik_tak", init_tik_tak, draw_tik_tak, release_tik_tak,
-   refresh_tik_tak, init_tik_tak, NULL, &tik_tak_opts,
-   60000, -20, 200, -1000, 64, 1.0, "",
-   "Shows rotating polygons", 0, NULL},
+	{(char *) "tik_tak", init_tik_tak, draw_tik_tak, release_tik_tak,
+	 refresh_tik_tak, init_tik_tak, NULL, &tik_tak_opts,
+	 60000, -20, 200, -1000, 64, 1.0, (char *) "",
+	 (char *) "Shows rotating polygons", 0, NULL},
 #endif
 #ifdef MODE_triangle
-	{"triangle", init_triangle, draw_triangle, release_triangle,
+	{(char *) "triangle", init_triangle, draw_triangle, release_triangle,
 	 refresh_triangle, init_triangle, NULL, &triangle_opts,
-	 10000, 1, 1, 1, 64, 1.0, "",
-	 "Shows a triangle mountain range", 0, NULL},
+	 10000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a triangle mountain range", 0, NULL},
 #endif
 #ifdef MODE_tube
-	{"tube", init_tube, draw_tube, release_tube,
+	{(char *) "tube", init_tube, draw_tube, release_tube,
 	 NULL, init_tube, NULL, &tube_opts,
-	 25000, -9, 20000, -200, 64, 1.0, "",
-	 "Shows an animated tube", 0, NULL},
+	 25000, -9, 20000, -200, 64, 1.0, (char *) "",
+	 (char *) "Shows an animated tube", 0, NULL},
 #endif
 #ifdef MODE_turtle
-	{"turtle", init_turtle, draw_turtle, release_turtle,
+	{(char *) "turtle", init_turtle, draw_turtle, release_turtle,
 	 init_turtle, init_turtle, NULL, &turtle_opts,
-	 1000000, 1, 20, 1, 64, 1.0, "",
-	 "Shows turtle fractals", 0, NULL},
+	 1000000, 1, 20, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows turtle fractals", 0, NULL},
 #endif
 #ifdef MODE_vines
-	{"vines", init_vines, draw_vines, release_vines,
+	{(char *) "vines", init_vines, draw_vines, release_vines,
 	 refresh_vines, init_vines, NULL, &vines_opts,
-	 200000, 0, 1, 1, 64, 1.0, "",
-	 "Shows fractals", 0, NULL},
+	 200000, 0, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows fractals", 0, NULL},
 #endif
 #ifdef MODE_voters
-	{"voters", init_voters, draw_voters, release_voters,
+	{(char *) "voters", init_voters, draw_voters, release_voters,
 	 refresh_voters, init_voters, NULL, &voters_opts,
-	 1000, 0, 327670, 0, 64, 1.0, "",
-	 "Shows Dewdney's Voters", 0, NULL},
+	 1000, 0, 327670, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Dewdney's Voters", 0, NULL},
 #endif
 #ifdef MODE_wator
-	{"wator", init_wator, draw_wator, release_wator,
+	{(char *) "wator", init_wator, draw_wator, release_wator,
 	 refresh_wator, init_wator, NULL, &wator_opts,
-	 750000, 1, 32767, 0, 64, 1.0, "",
-	 "Shows Dewdney's Water-Torus planet of fish and sharks", 0, NULL},
+	 750000, 1, 32767, 0, 64, 1.0, (char *) "",
+	 (char *) "Shows Dewdney's Water-Torus planet of fish and sharks", 0, NULL},
 #endif
 #ifdef MODE_wire
-	{"wire", init_wire, draw_wire, release_wire,
+	{(char *) "wire", init_wire, draw_wire, release_wire,
 	 refresh_wire, init_wire, NULL, &wire_opts,
-	 500000, 1000, 150, -8, 64, 1.0, "",
-	 "Shows a random circuit with 2 electrons", 0, NULL},
+	 500000, 1000, 150, -8, 64, 1.0, (char *) "",
+	 (char *) "Shows a random circuit with 2 electrons", 0, NULL},
 #endif
 #ifdef MODE_world
-	{"world", init_world, draw_world, release_world,
+	{(char *) "world", init_world, draw_world, release_world,
 	 refresh_world, init_world, NULL, &world_opts,
-	 100000, -16, 1, 1, 64, 0.3, "",
-	 "Shows spinning Earths", 0, NULL},
+	 100000, -16, 1, 1, 64, 0.3, (char *) "",
+	 (char *) "Shows spinning Earths", 0, NULL},
 #endif
 #ifdef MODE_worm
-	{"worm", init_worm, draw_worm, release_worm,
+	{(char *) "worm", init_worm, draw_worm, release_worm,
 	 refresh_worm, init_worm, NULL, &worm_opts,
-	 17000, -20, 10, -3, 64, 1.0, "",
-	 "Shows wiggly worms", 0, NULL},
+	 17000, -20, 10, -3, 64, 1.0, (char *) "",
+	 (char *) "Shows wiggly worms", 0, NULL},
+#endif
+#ifdef MODE_xcl
+	{(char *) "xcl", init_xcl, draw_xcl, release_xcl,
+	 draw_xcl, init_xcl, NULL, &xcl_opts,
+	 20000, -3, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a control line combat model race", 0, NULL},
 #endif
 #ifdef MODE_xjack
-	{"xjack", init_xjack, draw_xjack, release_xjack,
+	{(char *) "xjack", init_xjack, draw_xjack, release_xjack,
 	 init_xjack, init_xjack, NULL, &xjack_opts,
-	 50000, 1, 1, 1, 64, 1.0, "",
-	 "Shows Jack having one of those days", 0, NULL},
+	 50000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows Jack having one of those days", 0, NULL},
 #endif
 
 /* SPECIAL MODES */
-	{"blank", init_blank, draw_blank, release_blank,
+	{(char *) "blank", init_blank, draw_blank, release_blank,
 	 refresh_blank, init_blank, NULL, &blank_opts,
-	 3000000, 1, 1, 1, 64, 1.0, "",
-	 "Shows nothing but a black screen", 0, NULL},
+	 3000000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows nothing but a black screen", 0, NULL},
+#ifdef MODE_run
+	{(char *) "run", init_run, draw_run, release_run,
+	 refresh_run, init_run, NULL, &run_opts,
+	 3000000, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows another xprogram", 0, NULL},
+#endif
 #ifdef MODE_bomb
-	{"bomb", init_bomb, draw_bomb, release_bomb,
+	{(char *) "bomb", init_bomb, draw_bomb, release_bomb,
 	 refresh_bomb, change_bomb, NULL, &bomb_opts,
-	 100000, 10, 20, 1, 64, 1.0, "",
-	 "Shows a bomb and will autologout after a time", 0, NULL},
-	{"random", init_random, draw_random, release_random,
+	 100000, 10, 20, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a bomb and will autologout after a time", 0, NULL},
+	{(char *) "random", init_random, draw_random, release_random,
 	 refresh_random, change_random, NULL, &random_opts,
-	 1, 1, 1, 1, 64, 1.0, "",
-	 "Shows a random mode (except blank and bomb)", 0, NULL},
+	 1, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a random mode (except blank and bomb)", 0, NULL},
 #else
-	{"random", init_random, draw_random, release_random,
+	{(char *) "random", init_random, draw_random, release_random,
 	 refresh_random, change_random, NULL, &random_opts,
-	 1, 1, 1, 1, 64, 1.0, "",
-	 "Shows a random mode (except blank)", 0, NULL},
+	 1, 1, 1, 1, 64, 1.0, (char *) "",
+	 (char *) "Shows a random mode (except blank)", 0, NULL},
 #endif
 };
 
@@ -1039,17 +1105,18 @@ static void
 set_window_title(ModeInfo * mi)
 {
 	XTextProperty prop;
-	char        buf[512];
-	char       *ptr = buf;
+	char       *buf;
 	unsigned int status;
 	extern Bool description;
 
+	buf = (char *) malloc(strlen(MI_NAME(mi)) + strlen(MI_DESC(mi)) + 3);
 	(void) sprintf(buf, "%s: %s", MI_NAME(mi), MI_DESC(mi));
-	status = XStringListToTextProperty(&ptr, 1, &prop);
+	status = XStringListToTextProperty(&buf, 1, &prop);
 	if (status != 0) {
 		XSetWMName(MI_DISPLAY(mi), MI_WINDOW(mi), &prop);
 		XFree((caddr_t) prop.value);
 	}
+	(void) free((void *) buf);
 	if (MI_IS_ICONIC(mi) && description) {
 		modeDescription(mi);
 	}

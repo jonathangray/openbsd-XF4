@@ -2,7 +2,7 @@
 /* coral --- a coral reef */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)coral.c 4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)coral.c	5.00 2000/11/01 xlockmore";
 
 #endif
 /*
@@ -21,8 +21,10 @@ static const char sccsid[] = "@(#)coral.c 4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 29-Oct-97: xlock version (David Bagley <bagleyd@tux.org>)
- * 15-Jul-97: xscreensaver version Frederick G.M. Roeber <roeber@netscape.com>
+ * 01-Nov-2000: Allocation checks
+ * 29-Oct-1997: xlock version (David Bagley <bagleyd@tux.org>)
+ * 15-Jul-1997: xscreensaver version Frederick G.M. Roeber
+ *              <roeber@netscape.com>
  */
 
 /*-
@@ -55,7 +57,7 @@ static const char sccsid[] = "@(#)coral.c 4.07 97/11/24 xlockmore";
 #ifdef MODE_coral
 
 ModeSpecOpt coral_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   coral_description =
@@ -117,6 +119,23 @@ rand_2(void)
 	}
 }
 
+static void
+free_coral(coralstruct *cp)
+{
+
+	if (cp->reef != NULL) {
+		(void) free((void *) cp->reef);
+		cp->reef = NULL;
+	}
+	if (cp->walkers != NULL) {
+		(void) free((void *) cp->walkers);
+		cp->walkers = NULL;
+	}
+	if (cp->pointbuf != NULL) {
+		(void) free((void *) cp->pointbuf);
+		cp->pointbuf = NULL;
+	}
+}
 
 void
 init_coral(ModeInfo * mi)
@@ -142,15 +161,13 @@ init_coral(ModeInfo * mi)
 
 	cp->widthb = ((cp->width + 31) >> 5);
 
-	if (cp->reef) {
+	if (cp->reef != NULL)
 		(void) free((void *) cp->reef);
-		cp->reef = NULL;
-	}
-	cp->reef = (unsigned int *) calloc((cp->widthb + 1) * cp->height,
-					   sizeof (unsigned int));
-
-	if (!cp->reef)
+	if ((cp->reef = (unsigned int *) calloc((cp->widthb + 1) * cp->height,
+			sizeof (unsigned int))) == NULL) {
+		free_coral(cp);
 		return;
+	}
 
 	if (size < -MINSIZE)
 		cp->density = NRAND(MIN(MAXSIZE, -size) - MINSIZE + 1) + MINSIZE;
@@ -160,13 +177,13 @@ init_coral(ModeInfo * mi)
 		cp->density = MIN(MAXSIZE, size);
 
 	cp->nwalkers = (cp->width * cp->height * cp->density) / 100;
-	if (cp->walkers) {
+	if (cp->walkers != NULL)
 		(void) free((void *) cp->walkers);
-		cp->walkers = NULL;
-	}
-	cp->walkers = (XPoint *) calloc(cp->nwalkers, sizeof (XPoint));
-	if (!cp->walkers)
+	if ((cp->walkers = (XPoint *) calloc(cp->nwalkers,
+			sizeof (XPoint))) == NULL) {
+		free_coral(cp);
 		return;
+	}
 
 	cp->seeds = MI_COUNT(mi);
 	if (cp->seeds < -MINSEEDS)
@@ -208,11 +225,12 @@ init_coral(ModeInfo * mi)
 	}
 	if (cp->pointbuf) {
 		(void) free((void *) cp->pointbuf);
-		cp->pointbuf = NULL;
 	}
-	cp->pointbuf = (XPoint *) calloc((MAXPOINTS + 2), sizeof (XPoint));
-	if (!cp->pointbuf)
+	if ((cp->pointbuf = (XPoint *) calloc((MAXPOINTS + 2),
+			sizeof (XPoint))) == NULL) {
+		free_coral(cp);
 		return;
+	}
 }
 
 
@@ -222,15 +240,17 @@ draw_coral(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	coralstruct *cp = &reefs[MI_SCREEN(mi)];
-
 	int         npoints = 0;
-
-
 	int         i;
+	coralstruct *cp;
 
+	if (reefs == NULL)
+		return;
+	cp = &reefs[MI_SCREEN(mi)];
+	if (cp->reef == NULL)
+		return;
+	
 	MI_IS_DRAWN(mi) = True;
-
 	for (i = 0; i < cp->nwalkers; i++) {
 		int         x = cp->walkers[i].x;
 		int         y = cp->walkers[i].y;
@@ -304,7 +324,6 @@ draw_coral(ModeInfo * mi)
 	if (npoints > 0) {
 		XDrawPoints(display, window, gc, cp->pointbuf, npoints,
 			    CoordModeOrigin);
-		npoints = 0;
 	}
 }
 
@@ -314,16 +333,8 @@ release_coral(ModeInfo * mi)
 	if (reefs != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			coralstruct *cp = &reefs[screen];
-
-			if (cp->reef != NULL)
-				(void) free((void *) cp->reef);
-			if (cp->pointbuf != NULL)
-				(void) free((void *) cp->pointbuf);
-			if (cp->walkers != NULL)
-				(void) free((void *) cp->walkers);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_coral(&reefs[screen]);
 		(void) free((void *) reefs);
 		reefs = NULL;
 	}

@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-/* #ident	"@(#)atlantis.h	4.14 2000/01/28 xlockmore" */
+/* #ident       "@(#)atlantis.h 5.01 2001/04/17 xlockmore" */
 
 #endif
 
@@ -22,9 +22,9 @@
  *
  * The original code for this mode was written by Mark J. Kilgard
  * as a demo for openGL programming.
- *
- * Porting it to xlock  was possible by comparing the original Mesa's morph3d
- * demo with it's ported version to xlock, so thanks for Marcelo F. Vianna
+ * 
+ * Porting it to xlock  was possible by comparing the original Mesa's morph3d 
+ * demo with it's ported version to xlock, so thanks for Marcelo F. Vianna 
  * (look at morph3d.c) for his indirect help.
  *
  * Thanks goes also to Brian Paul for making it possible and inexpensive
@@ -32,7 +32,6 @@
  *
  * My e-mail address is lassauge@mail.dotcom.fr
  *
- * Revision History:
  * Eric Lassauge  (May-13-1998)
  *
  */
@@ -104,6 +103,8 @@ typedef struct {
 	fishRec     momWhale;
 	fishRec     babyWhale;
 	fishRec     dolph;
+
+        XImage     *texture;	   /* water distortion overlay bits */
 } atlantisstruct;
 
 extern void FishTransform(fishRec *);

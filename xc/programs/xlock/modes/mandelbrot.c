@@ -2,7 +2,7 @@
 /* mandelbrot --- animated mandelbrot sets */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)mandelbrot.c 4.13 98/12/21 xlockmore";
+static const char sccsid[] = "@(#)mandelbrot.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -34,17 +34,19 @@ static const char sccsid[] = "@(#)mandelbrot.c 4.13 98/12/21 xlockmore";
  * Pickover.  These would make nice additions to add.
  *
  * Revision History:
- * 24-Mar-99: DEM and Binary decomp options added by Tim.Auckland@Sun.COM
- *            Ideas from Peitgen & Saupe's "The Science of Fractal Images"
- * 20-Oct-97: Written by Dan Stromberg <strombrg@nis.acs.uci.edu>
- * 17-Nov-98: Many Changes by Stromberg, including selection of
- *            interesting subregions, more extreme color ranges,
- *            reduction of possible powers to smaller/more interesting
- *            range, elimination of some unused code, slower color cycling,
- *            longer period of color cycling after the drawing is complete.
- *            Hopefully the longer color cycling period will make the mode
- *            reasonable even after CPUs are so fast that the drawing
- *            interval goes by quickly
+ * 01-Nov-2000: Allocation checks
+ * 24-Mar-1999: DEM and Binary decomp options added by Tim Auckland
+ *              <Tim.Auckland@Procket.com>.  Ideas from Peitgen & Saupe's
+ *              "The Science of Fractal Images"
+ * 17-Nov-1998: Many Changes by Stromberg, including selection of
+ *              interesting subregions, more extreme color ranges,
+ *              reduction of possible powers to smaller/more interesting
+ *              range, elimination of some unused code, slower color cycling,
+ *              longer period of color cycling after the drawing is complete.
+ *              Hopefully the longer color cycling period will make the mode
+ *              reasonable even after CPUs are so fast that the drawing
+ *              interval goes by quickly
+ * 20-Oct-1997: Written by Dan Stromberg <strombrg@nis.acs.uci.edu>
  */
 
 
@@ -89,24 +91,24 @@ static Bool  dem;
 
 static XrmOptionDescRec opts[] =
 {
-     {"-increment", ".mandelbrot.increment", XrmoptionSepArg, (caddr_t) NULL},
-     {"-binary", ".mandelbrot.binary", XrmoptionNoArg, (caddr_t) "on"},
-     {"+binary", ".mandelbrot.binary", XrmoptionNoArg, (caddr_t) "off"},
-     {"-dem", ".mandelbrot.dem", XrmoptionNoArg, (caddr_t) "on"},
-     {"+dem", ".mandelbrot.dem", XrmoptionNoArg, (caddr_t) "off"}
+     {(char *) "-increment", (char *) ".mandelbrot.increment", XrmoptionSepArg, (caddr_t) NULL},
+     {(char *) "-binary", (char *) ".mandelbrot.binary", XrmoptionNoArg, (caddr_t) "on"},
+     {(char *) "+binary", (char *) ".mandelbrot.binary", XrmoptionNoArg, (caddr_t) "off"},
+     {(char *) "-dem", (char *) ".mandelbrot.dem", XrmoptionNoArg, (caddr_t) "on"},
+     {(char *) "+dem", (char *) ".mandelbrot.dem", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
- {(caddr_t *) & increment, "increment", "Increment", DEF_INCREMENT, t_Float},
- {(caddr_t *) & binary, "binary", "Binary", DEF_BINARY, t_Bool},
- {(caddr_t *) & dem, "dem", "Dem", DEF_DEM, t_Bool},
+ {(caddr_t *) & increment, (char *) "increment", (char *) "Increment", (char *) DEF_INCREMENT, t_Float},
+ {(caddr_t *) & binary, (char *) "binary", (char *) "Binary", (char *) DEF_BINARY, t_Bool},
+ {(caddr_t *) & dem, (char *) "dem", (char *) "Dem", (char *) DEF_DEM, t_Bool},
 };
 static OptionStruct desc[] =
 {
-	{"-increment value", "increasing orders"},
-	{"-/+binary", "turn on/off Binary Decomposition colour modulation"},
-	{"-/+dem", "turn on/off Distance Estimator Method (instead of escape time)"}
+	{(char *) "-increment value", (char *) "increasing orders"},
+	{(char *) "-/+binary", (char *) "turn on/off Binary Decomposition colour modulation"},
+	{(char *) "-/+dem", (char *) "turn on/off Distance Estimator Method (instead of escape time)"}
 };
 
 ModeSpecOpt mandelbrot_opts =
@@ -186,6 +188,7 @@ typedef struct {
 	int         counter;
 	double      power;
 	int         column;
+	Bool        backwards, reverse;
 	XColor      fgcol, bgcol;	/* foreground and background colour specs */
 	Bool        fixed_colormap;
 	int         ncolors;
@@ -195,15 +198,15 @@ typedef struct {
 	Colormap    cmap;
 	int         usable_colors;
 	unsigned int cur_color;
-	complex		extreme_ul;
-	complex		extreme_lr;
-	complex		ul;
-	complex		lr;
+	complex     extreme_ul;
+	complex	    extreme_lr;
+	complex	    ul;
+	complex     lr;
 	int         screen_width;
-	int			screen_height;
-	int			reptop;
-	Bool		dem;
-	Bool		binary;
+	int         screen_height;
+	int         reptop;
+	Bool        dem;
+	Bool        binary;
 } mandelstruct;
 
 static mandelstruct *mandels = NULL;
@@ -268,14 +271,12 @@ reps(complex c, double p, int r, Bool binary, double demrange)
 }
 
 static void
-Select(
-	/* input variables first */
-	complex *extreme_ul,complex *extreme_lr,
-	int width,int height,
-	int power,int top,
-	/* output variables follow */
-	complex *selected_ul,complex *selected_lr)
-	{
+Select(/* input variables first */
+  complex *extreme_ul, complex *extreme_lr,
+  int width, int height, int power, int top,
+  /* output variables follow */
+  complex *selected_ul,complex *selected_lr)
+{
 	double precision;
 	double s2;
 	int inside;
@@ -283,13 +284,11 @@ Select(
 	int found;
 	int tries;
 	found = 0;
-	while (!found)
-		{
+	while (!found) {
 		/* select a precision - be careful with this */
 		precision = pow(2.0,FLOATRAND(-9.0,-18.0));
 		/* (void) printf("precision is %f\n",precision); */
-		for (tries=0;tries<10000&&!found;tries++)
-			{
+		for (tries=0;tries<10000&&!found;tries++) {
 			/* it eventually turned out that this inner loop doesn't always
 			** terminate - so we just try 10000 times, and if we don't get
 			** anything interesting, we pick a new precision
@@ -310,10 +309,8 @@ Select(
 			/* sample the results we'd get from this choice, accept or reject
 			** accordingly
 			*/
-			for (row=0; row<sample_step; row++)
-				{
-				for (column=0; column<sample_step; column++)
-					{
+			for (row=0; row<sample_step; row++) {
+				for (column=0; column<sample_step; column++) {
 					int r;
 					temp.imag = selected_ul->imag +
 						(selected_ul->imag - selected_lr->imag) *
@@ -321,45 +318,56 @@ Select(
 					temp.real = selected_ul->real +
 						(selected_ul->real - selected_lr->real) *
 						(((double)column)/sample_step);
-					r = reps(temp,power,top,0,0);
+					r = reps(temp,(double) power,top,0,0.0);
 					/* Here, we just want to see if the point is in the set,
 					** not if we can make something pretty
 					*/
-					if (r == top)
-						{
+					if (r == top) {
 						inside++;
-						}
-					if (r < 2)
-						{
+					}
+					if (r < 2) {
 						uninteresting++;
-						}
 					}
 				}
+			}
 			s2 = sample_step*sample_step;
 			/* more than 10 percent, but less than 60 percent inside the set */
 			if (inside >= ceil(s2/10.0) && inside <= s2*6.0/10.0 &&
-				uninteresting <= s2/10.0)
-				{
+				uninteresting <= s2/10.0) {
 				/* this one looks interesting */
 				found = 1;
-				}
+			}
 			/* else
 			*** this does not look like a real good combination, so back
 			*** up to the top of the loop to try another possibility
 			 */
-			}
 		}
 	}
+}
+
+
+static void
+free_mandelbrot(Display *display, mandelstruct *mp)
+{
+	if (mp->cmap != None) {
+		XFreeColormap(display, mp->cmap);
+		mp->cmap = None;
+	}
+	if (mp->colors != NULL) {
+		XFree((caddr_t) mp->colors);
+		mp->colors = NULL;
+	}
+}
 
 void
 init_mandelbrot(ModeInfo * mi)
 {
-	mandelstruct *mp;
 	int         preserve;
 	Bool        truecolor;
 	unsigned long redmask, greenmask, bluemask;
 	Window      window = MI_WINDOW(mi);
 	Display    *display = MI_DISPLAY(mi);
+	mandelstruct *mp;
 
 	if (mandels == NULL) {
 		if ((mandels = (mandelstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -368,16 +376,18 @@ init_mandelbrot(ModeInfo * mi)
 	}
 	mp = &mandels[MI_SCREEN(mi)];
 
-
+	mp->screen_width = MI_WIDTH(mi);
+	mp->screen_height = MI_HEIGHT(mi);
+	mp->reverse = (Bool) (LRAND() & 1);
+	mp->backwards = (Bool) (LRAND() & 1);
+	if (mp->backwards)
+		mp->column = mp->screen_width - 1;
+	else
+		mp->column = 0;
 	mp->power = NRAND(3) + MINPOWER;
-
-	mp->column = 0;
 	mp->counter = 0;
 
 	MI_CLEARWINDOW(mi);
-
-	mp->screen_width = MI_WIDTH(mi);
-	mp->screen_height = MI_HEIGHT(mi);
 
 	if (MI_IS_FULLRANDOM(mi)) {
 	  switch(NRAND(3)){
@@ -425,10 +435,17 @@ init_mandelbrot(ModeInfo * mi)
 
 		/* allocate colormap, if needed */
 		if (mp->colors == NULL)
-			mp->colors = (XColor *) malloc(sizeof (XColor) * mp->ncolors);
+			if ((mp->colors = (XColor *) malloc(sizeof (XColor) *
+					mp->ncolors)) == NULL) {
+				free_mandelbrot(display, mp);
+				return;
+			}
 		if (mp->cmap == None)
-			mp->cmap = XCreateColormap(display, window,
-						   MI_VISUAL(mi), AllocAll);
+			if ((mp->cmap = XCreateColormap(display, window,
+					   MI_VISUAL(mi), AllocAll)) == None) {
+				free_mandelbrot(display, mp);
+				return;
+			}
 		mp->usable_colors = mp->ncolors - preserve;
 	}
 	Select(&mp->extreme_ul,&mp->extreme_lr,
@@ -463,23 +480,26 @@ draw_mandelbrot(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	mandelstruct *mp = &mandels[MI_SCREEN(mi)];
 	int         h;
 	complex     c;
 #if defined(USE_LOG)
 	double      log_top;
 #endif
-
 	double      demrange;
 	unsigned int i;
-	int         j, k;
+	int         j;
+	mandelstruct *mp;
 
+	if (mandels == NULL)
+		return;
+	mp = &mandels[MI_SCREEN(mi)];
+	if (!mp->fixed_colormap && mp->colors == NULL)
+		return;
+
+	MI_IS_DRAWN(mi) = True;
 #if defined(USE_LOG)
 	log_top = log((float) mp->reptop);
 #endif
-
-	MI_IS_DRAWN(mi) = True;
-
 #ifndef STANDALONE
 	if (mp->counter % 15 == 0) {
 		/* advance "drawing" color */
@@ -494,7 +514,7 @@ draw_mandelbrot(ModeInfo * mi)
 		}
 		/* advance colormap */
 		if (!mp->fixed_colormap && mp->usable_colors > 2) {
-			for (i = 0, j = mp->cur_color, k = 0;
+			for (i = 0, j = mp->cur_color;
 			     i < (unsigned int) mp->ncolors; i++) {
 				if (i == MI_WHITE_PIXEL(mi)) {
 					mp->colors[i].pixel = i;
@@ -532,8 +552,10 @@ draw_mandelbrot(ModeInfo * mi)
 					mp->colors[i].blue = (short unsigned int) (range * j +
 							    mp->bottom.blue);
 					mp->colors[i].flags = DoRed | DoGreen | DoBlue;
-					j = (j + 1) % mp->ncolors;
-					k++;
+					if (mp->reverse)
+						j = (j + 1) % mp->ncolors;
+					else
+						j = (j - 1 + mp->ncolors) % mp->ncolors;
 #else
 					mp->colors[i].pixel = i;
 					mp->colors[i].red = pick_rgb(mp->bottom.red,mp->top.red,
@@ -543,8 +565,10 @@ draw_mandelbrot(ModeInfo * mi)
 					mp->colors[i].blue = pick_rgb(mp->bottom.blue,mp->top.blue,
 						j,mp->ncolors);
 					mp->colors[i].flags = DoRed | DoGreen | DoBlue;
-					j = (j + 1) % mp->ncolors;
-					k++;
+					if (mp->reverse)
+						j = (j + 1) % mp->ncolors;
+					else
+						j = (j - 1 + mp->ncolors) % mp->ncolors;
 #endif
 				}
 			}
@@ -557,18 +581,26 @@ draw_mandelbrot(ModeInfo * mi)
 	/* so we iterate columns beyond the width of the physical screen, so that
 	** we just wait around and show what we've done
 	*/
-	if (mp->column >= 3 * mp->screen_width) {
+	if ((!mp->backwards && (mp->column >= 3 * mp->screen_width)) ||
+	    (mp->backwards && (mp->column < -2 * mp->screen_width))) {
 		/* reset to left edge of screen, bump power */
-		mp->column = 0;
+		mp->backwards = (Bool) (LRAND() & 1);
+		if (mp->backwards)
+			mp->column = mp->screen_width - 1;
+		else
+			mp->column = 0;
 		mp->power = NRAND(3) + MINPOWER;
 		/* select a new region! */
 		Select(&mp->extreme_ul,&mp->extreme_lr,
 			mp->screen_width,mp->screen_height,
 			(int) mp->power,mp->reptop,
 			&mp->ul,&mp->lr);
-	} else if (mp->column >= mp->screen_width) {
+	} else if (mp->column >= mp->screen_width || mp->column < 0) {
 		/* delay a while */
-		mp->column++;
+		if (mp->backwards)
+			mp->column--;
+		else
+			mp->column++;
 		mp->counter++;
 		return;
 	}
@@ -611,7 +643,11 @@ draw_mandelbrot(ModeInfo * mi)
 		*/
 		XDrawPoint(display, window, gc, mp->column, h);
 	}
-	mp->column++;
+	if (mp->backwards)
+		mp->column--;
+	else
+		mp->column++;
+
 	mp->counter++;
 	if (mp->counter > MI_CYCLES(mi)) {
 		init_mandelbrot(mi);
@@ -624,14 +660,8 @@ release_mandelbrot(ModeInfo * mi)
 	if (mandels != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			mandelstruct *mp = &mandels[screen];
-
-			if (mp->cmap != None)
-				XFreeColormap(MI_DISPLAY(mi), mp->cmap);
-			if (mp->colors != NULL)
-				XFree((caddr_t) mp->colors);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_mandelbrot(MI_DISPLAY(mi), &mandels[screen]);
 		(void) free((void *) mandels);
 		mandels = NULL;
 	}

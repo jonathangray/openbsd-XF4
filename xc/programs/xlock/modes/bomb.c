@@ -2,7 +2,7 @@
 /* bomb --- temporary screen */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)bomb.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)bomb.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,14 +22,15 @@ static const char sccsid[] = "@(#)bomb.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Made more compatible with xscreensaver :)
- * 09-Jan-95: Assorted defines to control various aspects of bomb mode.
- *            Uncomment, or otherwise define the appropriate line
- *            to obtain the relevant behaviour, thanks to Dave Shield
- *            <D.T.Shield@csc.liv.ac.uk>.
- * 20-Dec-94: Time patch for multiprocessor machines (ie. Sun10) thanks to
- *            Nicolas Pioch <pioch@Email.ENST.Fr>.
- * 1994:      Written.  Dave Shield  Liverpool Computer Science
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Made more compatible with xscreensaver :)
+ * 09-Jan-1995: Assorted defines to control various aspects of bomb mode.
+ *              Uncomment, or otherwise define the appropriate line
+ *              to obtain the relevant behaviour, thanks to Dave Shield
+ *              <D.T.Shield@csc.liv.ac.uk>.
+ * 20-Dec-1994: Time patch for multiprocessor machines (ie. Sun10) thanks to
+ *              Nicolas Pioch <pioch@Email.ENST.Fr>.
+ * 1994:        Written.  Dave Shield  Liverpool Computer Science
  */
 
 /*-
@@ -61,7 +62,7 @@ static const char sccsid[] = "@(#)bomb.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_bomb
 
 ModeSpecOpt bomb_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   bomb_description =
@@ -81,8 +82,13 @@ ModStruct   bomb_description =
 #define COLOUR_CHANGE		/* Display cycles through the colour wheel */
 			      /*  rather than staying red throughout.    */
 
+#ifdef USE_MB
+#define FULL_COUNT_FONT         "-adobe-courier-bold-r-*-*-34-*-*-*-*-*-iso8859-1"
+#define ICON_COUNT_FONT         "-misc-fixed-medium-r-normal-*-8-*-*-*-*-*-iso8859-1"
+#else
 #define FULL_COUNT_FONT         "-*-*-*-*-*-*-34-*-*-*-*-*-*-*"
 #define ICON_COUNT_FONT         "-*-*-*-*-*-*-8-*-*-*-*-*-*-*"
+#endif
 #define COUNTDOWN       600	/* No. seconds to lock for */
 #define NDIGITS         4	/* Number of digits in count */
 
@@ -90,6 +96,14 @@ ModStruct   bomb_description =
 #define NAP_TIME        5	/* Sleep between shutdown attempts */
 #define DELTA           10	/* Border around the digits */
 #define RIVET_RADIUS    6	/* Size of detonator 'rivets' */
+
+#ifdef USE_MB
+#define free_font(d) if (mode_font!=None){XFreeFontSet(d,mode_font); \
+mode_font = None;}
+#else
+#define free_font(d) if (mode_font!=None){XFreeFont(d,mode_font); \
+mode_font = None;}
+#endif
 
 extern XFontStruct *getFont(Display * display);
 
@@ -110,7 +124,11 @@ typedef struct {
 
 static bombstruct *bombs = NULL;
 
+#ifdef USE_MB
+static XFontSet mode_font = None;
+#else
 static XFontStruct *mode_font = None;
+#endif
 
 static void
 rivet(ModeInfo * mi, int x, int y)
@@ -181,12 +199,27 @@ detonator(ModeInfo * mi, int draw)
 }
 
 void
+release_bomb(ModeInfo * mi)
+{
+	if (bombs != NULL) {
+		(void) free((void *) bombs);
+		bombs = NULL;
+	}
+	free_font(MI_DISPLAY(mi));
+}
+
+void
 init_bomb(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
 	bombstruct *bp;
 	char        number[NDIGITS + 2];
+#ifdef USE_MB
+	char **miss, *def;
+	int n_miss;
+	XRectangle ink, log;
+#endif
 
 	if (bombs == NULL) {
 		if ((bombs = (bombstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -199,33 +232,64 @@ init_bomb(ModeInfo * mi)
 	bp->height = MI_HEIGHT(mi);
 
 	if (mode_font != None) {
-		XFreeFont(MI_DISPLAY(mi), mode_font);
+#ifdef USE_MB
+		XFreeFontSet(display, mode_font);
+#else
+		XFreeFont(display, mode_font);
+#endif
 		mode_font = None;
 	}
 	/* Set up text font */
 	if (bp->width > 256 && bp->height > 256) {	/* Full screen */
+#ifdef USE_MB
+		mode_font = XCreateFontSet(display, FULL_COUNT_FONT, &miss, &n_miss, &def);
+#else
 		mode_font = XLoadQueryFont(display, FULL_COUNT_FONT);
+#endif
 		bp->delta = DELTA;
 	} else {		/* icon window */
+#ifdef USE_MB
+		mode_font = XCreateFontSet(display, ICON_COUNT_FONT, &miss, &n_miss, &def);
+#else
 		mode_font = XLoadQueryFont(display, ICON_COUNT_FONT);
+#endif
 		bp->delta = 2;
 	}
-	if (mode_font == None)
+	if (mode_font == None) {
+#ifdef USE_MB
+		mode_font = XCreateFontSet(display, "-*-medium-r-normal--14-*", &miss, &n_miss, &def);
+#else
 		mode_font = getFont(display);
-	if (mode_font != None)
-		XSetFont(display, gc, mode_font->fid);
+#endif
+	}
+	if (mode_font == None) {
+		release_bomb(mi);
+		return;
+	}
+#ifndef USE_MB
+	XSetFont(display, gc, mode_font->fid);
+#endif
 
 #ifdef SIMPLE_COUNTDOWN
 	(void) sprintf(number, "%0*d", NDIGITS, 0);
 #else
+#ifdef USE_MB
+	(void) sprintf(number, "%.*s:00", NDIGITS - 2, "0000000");
+#else
 	(void) sprintf(number, "%.*s:**", NDIGITS - 2, "*******");
 #endif
-	if (mode_font != None)
-		bp->text_width = XTextWidth(mode_font, number, NDIGITS + 1);
-	else
-		bp->text_width = 8;
+#endif
+	/* if (mode_font == None) bp->text_width = 8; */
+#ifdef USE_MB
+	XmbTextExtents(mode_font, number, strlen(number), &ink, &log);
+	bp->text_width = ink.width;
+	bp->text_ascent = ink.height;
+	bp->text_descent = 0;
+#else
+	bp->text_width = XTextWidth(mode_font, number, NDIGITS + 1);
 	bp->text_ascent = mode_font->max_bounds.ascent;
 	bp->text_descent = mode_font->max_bounds.descent;
+#endif
 
 #ifndef STANDALONE
 	if (MI_DELAY(mi) > MAX_DELAY)
@@ -289,10 +353,18 @@ explode(ModeInfo * mi)
 	 *      Improve the graphics - some sort of explosion?
 	 *      (Will need to involve the main X event loop)
 	 */
+#ifdef USE_MB
+#ifdef SIMPLE_COUNTDOWN
+	(void) sprintf(buff, "%.*s", NDIGITS, "000000000");
+#else
+	(void) sprintf(buff, "%.*s:00", NDIGITS - 2, "0000000");
+#endif
+#else
 #ifdef SIMPLE_COUNTDOWN
 	(void) sprintf(buff, "%.*s", NDIGITS, "*********");
 #else
 	(void) sprintf(buff, "%.*s:**", NDIGITS - 2, "*******");
+#endif
 #endif
 	XSetForeground(MI_DISPLAY(mi), MI_GC(mi), MI_PIXEL(mi, 1));
 	(void) XDrawString(MI_DISPLAY(mi), MI_WINDOW(mi), MI_GC(mi),
@@ -318,10 +390,16 @@ draw_bomb(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	bombstruct *bp = &bombs[MI_SCREEN(mi)];
 	char        number[NDIGITS + 2];
 	unsigned long crayon;
 	int         countleft;
+	bombstruct *bp;
+
+	if (bombs == NULL)
+		return;
+	bp = &bombs[MI_SCREEN(mi)];
+	if (mode_font == None)
+		return;
 
 	countleft = (int) (bp->countdown - time((time_t *) NULL));
 	if (countleft <= 0)
@@ -368,28 +446,26 @@ draw_bomb(ModeInfo * mi)
 			bp->moveok = 1;
 		}
 		XSetForeground(display, gc, crayon);
+#ifndef USE_MB
 		(void) XDrawString(display, MI_WINDOW(mi), gc, bp->x, bp->y,
 				   number, strlen(number));
-	}
-}
-
-void
-release_bomb(ModeInfo * mi)
-{
-	if (bombs != NULL) {
-		(void) free((void *) bombs);
-		bombs = NULL;
-	}
-	if (mode_font != None) {
-		XFreeFont(MI_DISPLAY(mi), mode_font);
-		mode_font = None;
+#else
+		(void) XmbDrawString(display, MI_WINDOW(mi), mode_font, gc, bp->x, bp->y,
+							 number, strlen(number));
+#endif
 	}
 }
 
 void
 refresh_bomb(ModeInfo * mi)
 {
-	bombstruct *bp = &bombs[MI_SCREEN(mi)];
+	bombstruct *bp;
+
+	if (bombs == NULL)
+		return;
+	bp = &bombs[MI_SCREEN(mi)];
+	if (mode_font == None)
+		return;
 
 	if (bp->painted) {
 		MI_CLEARWINDOW(mi);
@@ -400,7 +476,13 @@ refresh_bomb(ModeInfo * mi)
 void
 change_bomb(ModeInfo * mi)
 {
-	bombstruct *bp = &bombs[MI_SCREEN(mi)];
+	bombstruct *bp;
+
+	if (bombs == NULL)
+		return;
+	bp = &bombs[MI_SCREEN(mi)];
+	if (mode_font == None)
+		return;
 
 	detonator(mi, 0);
 	bp->painted = False;

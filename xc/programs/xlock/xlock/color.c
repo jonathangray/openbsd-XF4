@@ -143,16 +143,16 @@ monoColormap(Screen * scr, ScreenInfo * si, char *foreground, char *background)
 }
 
 void
-fixColormap(Display * display, Window window,
-	    int screen, int ncolors, float saturation,
+fixColormap(ModeInfo * mi, int ncolors, float saturation,
 	    Bool mono, Bool install, Bool inroot, Bool inwindow, Bool verbose)
 {
-	Screen     *scr = ScreenOfDisplay(display, screen);
-	extern ScreenInfo *Scr;
-	Colormap    cmap = Scr[screen].colormap;
+	Display    *display = MI_DISPLAY(mi);
+	Window     window = MI_WINDOW(mi);
+	Screen     *scr = MI_SCREENPTR(mi);
+	Colormap    cmap = MI_COLORMAP(mi);
 	Colormap    dcmap = DefaultColormapOfScreen(scr);
 	XColor      xcolor;
-	unsigned char *red, *green, *blue;
+	unsigned char *red = NULL, *green = NULL, *blue = NULL;
 	int         colorcount, i, fixed, visualclass;
 	extern char *foreground;
 	extern char *background;
@@ -167,20 +167,32 @@ fixColormap(Display * display, Window window,
 #endif
 
 	if (mono || CellsOfScreen(scr) <= 2) {
-		if (Scr[screen].pixels)
+		if (MI_PIXELS(mi))
 			return;
-		Scr[screen].pixels =
-			(unsigned long *) calloc(2, sizeof (unsigned long));
+		if ((MI_PIXELS(mi) = (unsigned long *) calloc(2,
+				sizeof (unsigned long))) == NULL) {
+			(void) fprintf(stderr, "could not get the 2 colors for mono\n");
+		}
 
-		monoColormap(scr, &(Scr[screen]), foreground, background);
+		monoColormap(scr, MI_SCREENINFO(mi), foreground, background);
 		return;
 	}
 	colorcount = ncolors;
-	red = (unsigned char *) calloc(ncolors, sizeof (unsigned char));
-	green = (unsigned char *) calloc(ncolors, sizeof (unsigned char));
-	blue = (unsigned char *) calloc(ncolors, sizeof (unsigned char));
+	if (((  red = (unsigned char *) calloc(ncolors,
+			sizeof (unsigned char))) == NULL) ||
+	    ((green = (unsigned char *) calloc(ncolors,
+			sizeof (unsigned char))) == NULL) ||
+	    (( blue = (unsigned char *) calloc(ncolors,
+			sizeof (unsigned char))) == NULL)) {
+		(void) fprintf(stderr, "could not get the %d colors\n", ncolors);
+		if (red != NULL)
+			(void) free((void *) red);
+		if (green != NULL)
+			(void) free((void *) green);
+		return;
+	}
 
-	visualclass = Scr[screen].visual->CLASS;
+	visualclass = MI_VISUALCLASS(mi);
 	fixed = (visualclass == StaticGray) || (visualclass == StaticColor) ||
 		(visualclass == TrueColor);
 	if (
@@ -191,42 +203,37 @@ fixColormap(Display * display, Window window,
 		   inroot || (!install && !fixed) || cmap == None) {
 		cmap = dcmap;
 	}
-	if (cmap != dcmap && Scr[screen].pixels) {
-		XFreeColors(display, cmap, Scr[screen].pixels, Scr[screen].npixels, 0);
+	if (cmap != dcmap && MI_PIXELS(mi)) {
+		XFreeColors(display, cmap, MI_PIXELS(mi), MI_NPIXELS(mi), 0);
 #ifndef COMPLIANT_COLORMAP
-		XFreeColors(display, cmap, &(Scr[screen].black_pixel), 1, 0);
-		XFreeColors(display, cmap, &(Scr[screen].white_pixel), 1, 0);
+		XFreeColors(display, cmap, &(MI_BLACK_PIXEL(mi)), 1, 0);
+		XFreeColors(display, cmap, &(MI_WHITE_PIXEL(mi)), 1, 0);
 #endif
-		XFreeColors(display, cmap, &(Scr[screen].bg_pixel), 1, 0);
-		XFreeColors(display, cmap, &(Scr[screen].fg_pixel), 1, 0);
-		(void) free((void *) Scr[screen].pixels);
-		Scr[screen].pixels =
-			(unsigned long *) calloc(ncolors, sizeof (unsigned long));
-	} else {
-		if (Scr[screen].pixels) {
-			(void) free((void *) Scr[screen].pixels);
-			/* (void) printf("pixels: this case is possible?\n"); */
-		}
-		/* if (cmap) { (void) printf("cmap: this case is possible?\n");  } */
-		Scr[screen].pixels =
-			(unsigned long *) calloc(ncolors, sizeof (unsigned long));
-
-		/* "allocate" the black and white pixels, so that they
-		   will be included by XCopyColormapAndFree() if it gets called */
+		XFreeColors(display, cmap, &(MI_BG_PIXEL(mi)), 1, 0);
+		XFreeColors(display, cmap, &(MI_FG_PIXEL(mi)), 1, 0);
 	}
+	/* else if (cmap) { (void) printf("cmap: this case is possible?\n");  } */
+	if (MI_PIXELS(mi))
+		(void) free((void *) MI_PIXELS(mi));
+	if ((MI_PIXELS(mi) = (unsigned long *) calloc(ncolors,
+			sizeof (unsigned long))) == NULL) {
+		(void) fprintf(stderr, "could not get the %d colors\n", ncolors);
+	}
+	/* "allocate" the black and white pixels, so that they
+	   will be included by XCopyColormapAndFree() if it gets called */
 #ifdef COMPLIANT_COLORMAP
-	Scr[screen].black_pixel = BlackPixelOfScreen(scr);
-	Scr[screen].white_pixel = WhitePixelOfScreen(scr);
+	MI_BLACK_PIXEL(mi) = BlackPixelOfScreen(scr);
+	MI_WHITE_PIXEL(mi) = WhitePixelOfScreen(scr);
 #else
-	Scr[screen].black_pixel = allocPixel(display, cmap, "Black", "Black");
-	Scr[screen].white_pixel = allocPixel(display, cmap, "White", "White");
+	MI_BLACK_PIXEL(mi) = allocPixel(display, cmap, "Black", "Black");
+	MI_WHITE_PIXEL(mi) = allocPixel(display, cmap, "White", "White");
 #endif
-	Scr[screen].bg_pixel = allocPixel(display, cmap, background, "White");
-	Scr[screen].fg_pixel = allocPixel(display, cmap, foreground, "Black");
+	MI_BG_PIXEL(mi) = allocPixel(display, cmap, background, "White");
+	MI_FG_PIXEL(mi) = allocPixel(display, cmap, foreground, "Black");
 	hsbramp(0.0, saturation, 1.0, 1.0, saturation, 1.0, colorcount,
 		red, green, blue);
 
-	Scr[screen].npixels = 0;
+	MI_NPIXELS(mi) = 0;
 	for (i = 0; i < colorcount; i++) {
 		xcolor.red = red[i] << 8;
 		xcolor.green = green[i] << 8;
@@ -246,7 +253,7 @@ fixColormap(Display * display, Window window,
 #else
 			if (verbose)
 				(void) fprintf(stderr, "ran out of colors on colormap\n");
-			if ((saturation != 1.0 || ncolors != 64) && Scr[screen].npixels < 2) {
+			if ((saturation != 1.0 || ncolors != 64) && MI_NPIXELS(mi) < 2) {
 				if (verbose)
 					(void) fprintf(stderr,
 						       "retrying with saturation = 1.0 and ncolors = 64\n");
@@ -255,36 +262,36 @@ fixColormap(Display * display, Window window,
 			break;
 #endif
 		}
-		Scr[screen].pixels[i] = xcolor.pixel;
-		Scr[screen].npixels++;
+		MI_PIXELS(mi)[i] = xcolor.pixel;
+		MI_NPIXELS(mi)++;
 	}
 	(void) free((void *) red);
 	(void) free((void *) green);
 	(void) free((void *) blue);
 	if (verbose)
-		(void) fprintf(stderr, "%d pixel%s allocated\n", Scr[screen].npixels,
-			       (Scr[screen].npixels == 1) ? "" : "s");
-	if (Scr[screen].npixels <= 4) {
-		XFreeColors(display, cmap, Scr[screen].pixels, Scr[screen].npixels, 0);
+		(void) fprintf(stderr, "%d pixel%s allocated\n", MI_NPIXELS(mi),
+			       (MI_NPIXELS(mi) == 1) ? "" : "s");
+	if (MI_NPIXELS(mi) <= 4) {
+		XFreeColors(display, cmap, MI_PIXELS(mi), MI_NPIXELS(mi), 0);
 #ifndef COMPLIANT_COLORMAP
-		XFreeColors(display, cmap, &(Scr[screen].black_pixel), 1, 0);
-		XFreeColors(display, cmap, &(Scr[screen].white_pixel), 1, 0);
+		XFreeColors(display, cmap, &(MI_BLACK_PIXEL(mi)), 1, 0);
+		XFreeColors(display, cmap, &(MI_WHITE_PIXEL(mi) ), 1, 0);
 #endif
-		XFreeColors(display, cmap, &(Scr[screen].bg_pixel), 1, 0);
-		XFreeColors(display, cmap, &(Scr[screen].fg_pixel), 1, 0);
+		XFreeColors(display, cmap, &(MI_BG_PIXEL(mi)), 1, 0);
+		XFreeColors(display, cmap, &(MI_FG_PIXEL(mi)), 1, 0);
 #ifndef COMPLIANT_COLORMAP
 		if (retry) {
-			fixColormap(display, window, screen, 64, 1.0,
+			fixColormap(mi, 64, 1.0,
 				    mono, install, inroot, inwindow, verbose);
 			return;
 		}
 #endif
-		monoColormap(scr, &(Scr[screen]), foreground, background);
-		Scr[screen].colormap = cmap = DefaultColormapOfScreen(scr);
+		monoColormap(scr, MI_SCREENINFO(mi), foreground, background);
+		MI_COLORMAP(mi) = cmap = DefaultColormapOfScreen(scr);
 		return;
 	}
-	Scr[screen].colormap = cmap;
-	if ((install || fixed) && !inroot && Scr[screen].npixels > 2) {
+	MI_COLORMAP(mi) = cmap;
+	if ((install || fixed) && !inroot && MI_NPIXELS(mi) > 2) {
 #if 0
 		(void) XGetWindowAttributes(display, window, &xgwa);
 		if (cmap != xgwa.colormap)
@@ -296,11 +303,11 @@ fixColormap(Display * display, Window window,
 #if 0
 	else {
 		/* white and black colors may not be right for GL modes so lets set them */
-		Scr[screen].black_pixel = BlackPixelOfScreen(scr);
-		Scr[screen].white_pixel = WhitePixelOfScreen(scr);
+		MI_BLACK_PIXEL(mi) = BlackPixelOfScreen(scr);
+		MI_WHITE_PIXEL(mi) = WhitePixelOfScreen(scr);
 		/* foreground and background colors may not be right.... */
-		BlackPixelOfScreen(scr) = Scr[screen].black_pixel;
-		WhitePixelOfScreen(scr) = Scr[screen].white_pixel;
+		BlackPixelOfScreen(scr) = MI_BLACK_PIXEL(mi);
+		WhitePixelOfScreen(scr) = MI_WHITE_PIXEL(mi);
 	}
 #endif
 }
@@ -407,8 +414,13 @@ free_colors(Display * dpy, Colormap cmap, XColor * colors, int ncolors)
 	int         i;
 
 	if (ncolors > 0) {
-		unsigned long *pixels = (unsigned long *)
-		malloc(sizeof (unsigned long) * ncolors);
+		unsigned long *pixels;
+
+		if ((pixels = (unsigned long *) malloc(sizeof (unsigned long) *
+				ncolors)) == NULL) {
+			(void) fprintf(stderr, "could not free colors\n");
+			return;
+		}
 
 		for (i = 0; i < ncolors; i++)
 			pixels[i] = colors[i].pixel;
@@ -494,8 +506,12 @@ make_color_ramp(Display * dpy, Colormap cmap,
 		return;
 
 	if (writable_p) {
-		unsigned long *pixels = (unsigned long *)
-		malloc(sizeof (unsigned long) * ((*ncolorsP) + 1));
+		unsigned long *pixels;
+
+		if ((pixels = (unsigned long *) malloc(sizeof (unsigned long) *
+				((*ncolorsP) + 1))) == NULL) {
+			goto FAIL;
+		}
 
 		/* allocate_writable_colors() won't do here, because we need exactly this
 		   number of cells, or the color sequence we've chosen won't fit. */

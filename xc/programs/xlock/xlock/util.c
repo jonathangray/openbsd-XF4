@@ -79,7 +79,11 @@ usleep(unsigned long usec)
 		return nanosleep(&rqt, NULL);
 	}
 #else /* !HAVE_NANOSLEEP */
+#ifdef SunCplusplus
+	(void) poll((pollfd *) 0, (int) 0, usec / 1000);	/* ms resolution */
+#else
 	(void) poll((void *) 0, (int) 0, usec / 1000);	/* ms resolution */
+#endif
 #endif /* !HAVE_NANOSLEEP */
 #else /* !SYSV */
 #if HAVE_GETTIMEOFDAY
@@ -143,11 +147,22 @@ matherr(register struct exception *x)
 
 	switch (x->type) {
 		case DOMAIN:
+			/* Suppress "asin: DOMAIN error" stderr message */
+			if (!strcmp(x->name, "asin")) {
+				x->retval = 0.0;
+				return ((debug) ? 0 : 1);	/* suppress message unless debugging */
+			}
+			/* Suppress "acos: DOMAIN error" stderr message */
+			if (!strcmp(x->name, "acos")) {
+				x->retval = 0.0;
+				return ((debug) ? 0 : 1);	/* suppress message unless debugging */
+			}
 			/* Suppress "atan2: DOMAIN error" stderr message */
 			if (!strcmp(x->name, "atan2")) {
 				x->retval = 0.0;
 				return ((debug) ? 0 : 1);	/* suppress message unless debugging */
 			}
+			/* change sqrt to return sqrt(-arg1), not NaN */
 			if (!strcmp(x->name, "sqrt")) {
 				x->retval = sqrt(-x->arg1);
 				/* x->retval = 0.0; */

@@ -2,7 +2,7 @@
 /* deco --- art as ugly as sin */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)deco.c 4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)deco.c	5.00 2000/11/01 xlockmore";
 
 #endif
 /*
@@ -21,7 +21,8 @@ static const char sccsid[] = "@(#)deco.c 4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 29-Oct-97: xlock version (David Bagley <bagleyd@tux.org>)
+ * 01-Nov-2000: Allocation checks
+ * 29-Oct-1997: xlock version (David Bagley <bagleyd@tux.org>)
  * 1997: xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
@@ -59,7 +60,7 @@ static const char sccsid[] = "@(#)deco.c 4.07 97/11/24 xlockmore";
 #ifdef MODE_deco
 
 ModeSpecOpt deco_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   deco_description =
@@ -152,7 +153,11 @@ init_deco(ModeInfo * mi)
 void
 draw_deco(ModeInfo * mi)
 {
-	decostruct *dp = &decos[MI_SCREEN(mi)];
+	decostruct *dp;
+
+	if (decos == NULL)
+		return;
+	dp = &decos[MI_SCREEN(mi)];
 
 	if (dp->time == 0) {
 		/* This fills up holes */

@@ -2,7 +2,7 @@
 /* swirl --- swirly patterns */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)swirl.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)swirl.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,14 +22,15 @@ static const char sccsid[] = "@(#)swirl.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 13-May-97: jwz@jwz.org: turned into a standalone program.
- * 21-Apr-95: improved startup time for TrueColour displays
- *            (limited to 16bpp to save memory) S.Early <sde1000@cam.ac.uk>
- * 09-Jan-95: fixed colour maps (more colourful) and the image now spirals
- *            outwards from the centre with a fixed number of points drawn
- *            every iteration. Thanks to M.Dobie <mrd@ecs.soton.ac.uk>.
- * 1994:      written.   Copyright (c) 1994 M.Dobie <mrd@ecs.soton.ac.uk>
- *            based on original code by R.Taylor
+ * 01-Nov-2000: Allocation checks
+ * 13-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 21-Apr-1995: improved startup time for TrueColour displays
+ *              (limited to 16bpp to save memory) S.Early <sde1000@cam.ac.uk>
+ * 09-Jan-1995: fixed colour maps (more colourful) and the image now spirals
+ *              outwards from the centre with a fixed number of points drawn
+ *              every iteration. Thanks to M.Dobie <mrd@ecs.soton.ac.uk>.
+ * 1994: written.   Copyright (c) 1994 M.Dobie <mrd@ecs.soton.ac.uk>
+ *       based on original code by R.Taylor
  */
 
 #ifdef STANDALONE
@@ -53,7 +54,7 @@ static const char sccsid[] = "@(#)swirl.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_swirl
 
 ModeSpecOpt swirl_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   swirl_description =
@@ -133,7 +134,6 @@ typedef struct swirl_data {
 	Bool        started, drawing;	/* are we drawing? */
 
 	/* image stuff */
-	unsigned char *image;	/* image data */
 	XImage     *ximage;
 
 	/* colours stuff */
@@ -179,6 +179,27 @@ random_no(unsigned int n)
 
 /****************************************************************/
 
+static void
+free_swirl(Display *display, SWIRL_P swirl)
+{
+	if (swirl->cmap != None) {
+		XFreeColormap(display, swirl->cmap);
+		swirl->cmap = None;
+	}
+	if (swirl->rgb_values != NULL) {
+		XFree((caddr_t) swirl->rgb_values);
+		swirl->rgb_values = NULL;
+	}
+	if (swirl->ximage != None) {
+		(void) XDestroyImage(swirl->ximage);
+		swirl->ximage = None;
+	}
+	if (swirl->knots != NULL) {
+		(void) free((void *) swirl->knots);
+		swirl->knots = NULL;
+	}
+}
+
 /*-
    initialise_swirl
 
@@ -209,7 +230,6 @@ initialise_swirl(SWIRL_P swirl)
 	swirl->drawing = False;
 
 	/* image stuff */
-	swirl->image = NULL;	/* image data */
 	swirl->ximage = NULL;
 
 	/* colours stuff */
@@ -228,13 +248,14 @@ initialise_swirl(SWIRL_P swirl)
  *
  * -      swirl is the swirl data
  */
-static void
+static Bool
 initialise_image(Display * dpy, SWIRL_P swirl)
 {
 	unsigned int pad;
 	int         bytes_per_line;
 	int         image_depth = swirl->rdepth;
 	int         data_depth = image_depth;
+	unsigned char *image;	/* image data */
 
 	/* On SGIs at least, using an XImage of depth 24 on a Visual of depth 24
 	 *  requires the XImage data to use 32 bits per pixel.  I don't understand
@@ -255,12 +276,19 @@ initialise_image(Display * dpy, SWIRL_P swirl)
 	bytes_per_line = ((swirl->width * data_depth + pad - 1) / pad) * (pad / 8);
 
 	/* allocate space for the image */
-	swirl->image = (unsigned char *) calloc(bytes_per_line * swirl->height, 1);
+	if ((image = (unsigned char *) calloc(bytes_per_line *
+			swirl->height, 1)) == NULL) {
+		return False;
+	}
 
 	/* create an ximage with this */
-	swirl->ximage = XCreateImage(dpy, swirl->visual, image_depth, ZPixmap,
-				     0, (char *) swirl->image, swirl->width,
-				     swirl->height, pad, bytes_per_line);
+	if ((swirl->ximage = XCreateImage(dpy, swirl->visual, image_depth, ZPixmap,
+				     0, (char *) image, swirl->width,
+				     swirl->height, pad, bytes_per_line)) == None) {
+		(void) free((void *) image);
+		return False;
+	}
+	return True;
 }
 
 /****************************************************************/
@@ -690,7 +718,7 @@ pre_rotate(SWIRL_P swirl, XColor * values)
  * -      swirl is the swirl data
  */
 
-static void
+static Bool
 create_colourmap(ModeInfo * mi, SWIRL_P swirl)
 {
 	Display    *display = MI_DISPLAY(mi);
@@ -706,7 +734,7 @@ create_colourmap(ModeInfo * mi, SWIRL_P swirl)
 	/* how many colours should we animate? */
 
 	if (MI_NPIXELS(mi) < 2)
-		return;
+		return True; /* actually a third case */
 
 	/* how fast to shift the colourmap? */
 	swirl->shift = (swirl->colours > 64) ? swirl->colours / 64 : 1;
@@ -730,8 +758,10 @@ create_colourmap(ModeInfo * mi, SWIRL_P swirl)
 		if (swirl->cmap) {
 			XFreeColormap(display, swirl->cmap);
 		}
-		swirl->cmap =
-			XCreateColormap(display, swirl->win, swirl->visual, AllocAll);
+		if ((swirl->cmap = XCreateColormap(display, swirl->win,
+				 swirl->visual, AllocAll)) == None) {
+			return False;
+		}
 	}
 	swirl->dcolours = (swirl->colours > preserve + 1) ?
 		swirl->colours - preserve : swirl->colours;
@@ -741,8 +771,10 @@ create_colourmap(ModeInfo * mi, SWIRL_P swirl)
 	/* allocate space for colour definitions (if not already there) */
 	if (swirl->rgb_values != NULL)
 		XFree((caddr_t) swirl->rgb_values);
-	swirl->rgb_values = (XColor *) calloc((swirl->colours + 3) * n_rotations,
-					      sizeof (XColor));
+	if ((swirl->rgb_values = (XColor *) calloc((swirl->colours + 3) *
+			 n_rotations, sizeof (XColor))) == NULL) {
+		return False;
+	}
 
 	/* select a set of colours for the colour map */
 	basic_map(swirl, swirl->rgb_values);
@@ -783,6 +815,7 @@ create_colourmap(ModeInfo * mi, SWIRL_P swirl)
 						   &(swirl->rgb_values[i]));
 		}
 	}
+	return True;
 }
 
 /****************************************************************/
@@ -822,7 +855,7 @@ install_map(Display * dpy, SWIRL_P swirl, int shift)
  *
  * swirl is the swirl data
  */
-static void
+static Bool
 create_knots(SWIRL_P swirl)
 {
 	int         k;
@@ -832,7 +865,10 @@ create_knots(SWIRL_P swirl)
 	/* create array for knots */
 	if (swirl->knots)
 		(void) free((void *) swirl->knots);
-	swirl->knots = (KNOT_P) calloc(swirl->n_knots, sizeof (KNOT));
+	if ((swirl->knots = (KNOT_P) calloc(swirl->n_knots,
+			sizeof (KNOT))) == NULL) {
+		return False;
+	}
 
 	/* no knots yet */
 	orbit = wheel = picasso = ray = hook = False;
@@ -927,6 +963,7 @@ create_knots(SWIRL_P swirl)
 		/* next knot */
 		knot++;
 	}
+	return True;
 }
 
 /****************************************************************/
@@ -1254,10 +1291,12 @@ init_swirl(ModeInfo * mi)
 		int         i;
 
 		/* allocate an array, one entry for each screen */
-		swirls = (SWIRL_P) calloc(ScreenCount(display), sizeof (SWIRL));
+		if ((swirls = (SWIRL_P) calloc(MI_NUM_SCREENS(mi),
+				sizeof (SWIRL))) == NULL)
+			return;
 
 		/* initialise them all */
-		for (i = 0; i < ScreenCount(display); i++)
+		for (i = 0; i < MI_NUM_SCREENS(mi); i++)
 			initialise_swirl(&swirls[i]);
 	}
 	/* get a pointer to this swirl */
@@ -1275,8 +1314,10 @@ init_swirl(ModeInfo * mi)
 		swirl->depth = 16;
 
 	/* initialise image for speeding up drawing */
-	initialise_image(display, swirl);
-
+	if (!initialise_image(display, swirl)) {
+		free_swirl(display, swirl);
+		return;
+	}
 	MI_CLEARWINDOW(mi);
 
 #ifdef STANDALONE
@@ -1291,7 +1332,10 @@ init_swirl(ModeInfo * mi)
 	initialise_colours(basic_colours, MI_SATURATION(mi));
 
 	/* set up the colour map */
-	create_colourmap(mi, swirl);
+	if (!create_colourmap(mi, swirl)) {
+		free_swirl(display, swirl);
+		return;
+	}
 
 	/* attach the colour map to the window (if we have one) */
 	if (!swirl->fixed_colourmap) {
@@ -1326,7 +1370,10 @@ init_swirl(ModeInfo * mi)
 		swirl->two_plane = False;
 
 	/* fix the knot values */
-	create_knots(swirl);
+	if (!create_knots(swirl)) {
+		free_swirl(display, swirl);
+		return;
+	}
 
 	/* we are off */
 	swirl->started = True;
@@ -1345,7 +1392,13 @@ init_swirl(ModeInfo * mi)
 void
 draw_swirl(ModeInfo * mi)
 {
-	SWIRL_P     swirl = &(swirls[MI_SCREEN(mi)]);
+	SWIRL_P     swirl;
+
+	if (swirls == NULL)
+		return;
+	swirl = &(swirls[MI_SCREEN(mi)]);
+	if (swirl->knots == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -1442,22 +1495,11 @@ release_swirl(ModeInfo * mi)
 {
 	/* does the swirls array exist? */
 	if (swirls != NULL) {
-		int         i;
+		int         screen;
 
 		/* free them all */
-		for (i = 0; i < MI_NUM_SCREENS(mi); i++) {
-			SWIRL_P     swirl = &(swirls[i]);
-
-			if (swirl->cmap != None) {
-				XFreeColormap(MI_DISPLAY(mi), swirl->cmap);
-			}
-			if (swirl->rgb_values != NULL)
-				XFree((caddr_t) swirl->rgb_values);
-			if (swirl->ximage != NULL)
-				(void) XDestroyImage(swirl->ximage);
-			if (swirl->knots)
-				(void) free((void *) swirl->knots);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_swirl(MI_DISPLAY(mi), &swirls[screen]);
 		/* deallocate an array, one entry for each screen */
 		(void) free((void *) swirls);
 		swirls = NULL;
@@ -1469,7 +1511,11 @@ release_swirl(ModeInfo * mi)
 void
 refresh_swirl(ModeInfo * mi)
 {
-	SWIRL_P     swirl = &(swirls[MI_SCREEN(mi)]);
+	SWIRL_P     swirl;
+
+	if (swirls == NULL)
+		return;
+	swirl = &swirls[MI_SCREEN(mi)];
 
 	if (swirl->started) {
 		MI_CLEARWINDOW(mi);

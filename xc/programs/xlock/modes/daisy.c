@@ -2,7 +2,7 @@
 /* daisy --- flowers in a field */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)daisy.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)daisy.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,10 +22,11 @@ static const char sccsid[] = "@(#)daisy.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 07-Aug-96: written.  Initially copied forest.c and made continual
- *            refinements, pyro was helpful too.  Based on a program
- *            I saw on a PC.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 07-Aug-1996: written.  Initially copied forest.c and made continual
+ *              refinements, pyro was helpful too.  Based on a program
+ *              I saw on a PC.
  *
  */
 
@@ -55,16 +56,16 @@ static Bool garden;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-garden", ".daisy.garden", XrmoptionNoArg, (caddr_t) "on"},
-	{"+garden", ".daisy.garden", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-garden", (char *) ".daisy.garden", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+garden", (char *) ".daisy.garden", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & garden, "garden", "Garden", DEF_GARDEN, t_Bool}
+	{(caddr_t *) & garden, (char *) "garden", (char *) "Garden", (char *) DEF_GARDEN, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+garden", "turn on/off garden"}
+	{(char *) "-/+garden", (char *) "turn on/off garden"}
 };
 
 ModeSpecOpt daisy_opts =
@@ -279,7 +280,11 @@ init_daisy(ModeInfo * mi)
 void
 draw_daisy(ModeInfo * mi)
 {
-	daisystruct *dp = &daisies[MI_SCREEN(mi)];
+	daisystruct *dp;
+
+	if (daisies == NULL)
+		return;
+	dp = &daisies[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -301,7 +306,11 @@ release_daisy(ModeInfo * mi)
 void
 refresh_daisy(ModeInfo * mi)
 {
-	daisystruct *dp = &daisies[MI_SCREEN(mi)];
+	daisystruct *dp;
+
+	if (daisies == NULL)
+		return;
+	dp = &daisies[MI_SCREEN(mi)];
 
 	if (dp->time < dp->ndaisies) {
 		MI_CLEARWINDOW(mi);

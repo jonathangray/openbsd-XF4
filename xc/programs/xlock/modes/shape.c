@@ -2,7 +2,7 @@
 /* shape --- basic in your face shapes */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)shape.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)shape.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,15 +22,16 @@ static const char sccsid[] = "@(#)shape.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 12-Mar-98: Got the idea for shadow from looking at xscreensaver web page.
- * 10-May-97: Compatible with xscreensaver
- * 03-Nov-95: formerly rect.c
- * 11-Aug-95: slight change to initialization of pixmaps
- * 27-Jun-95: added ellipses
- * 27-Feb-95: patch for VMS
- * 29-Sep-94: multidisplay bug fix <epstein_caleb@jpmorgan.com>
- * 15-Jul-94: xlock version David Bagley <bagleyd@tux.org>
- * 1992:      xscreensaver version Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 12-Mar-1998: Got the idea for shadow from looking at xscreensaver web page.
+ * 10-May-1997: Compatible with xscreensaver
+ * 03-Nov-1995: formerly rect.c
+ * 11-Aug-1995: slight change to initialization of pixmaps
+ * 27-Jun-1995: added ellipses
+ * 27-Feb-1995: patch for VMS
+ * 29-Sep-1994: multidisplay bug fix <epstein_caleb@jpmorgan.com>
+ * 15-Jul-1994: xlock version David Bagley <bagleyd@tux.org>
+ * 1992: xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
 /*-
@@ -104,24 +105,24 @@ static Bool stipple;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-shade", ".shape.shade", XrmoptionNoArg, (caddr_t) "on"},
-	{"+shade", ".shape.shade", XrmoptionNoArg, (caddr_t) "off"},
-	{"-border", ".shape.border", XrmoptionNoArg, (caddr_t) "on"},
-	{"+border", ".shape.border", XrmoptionNoArg, (caddr_t) "off"},
-	{"-stipple", ".shape.stipple", XrmoptionNoArg, (caddr_t) "on"},
-	{"+stipple", ".shape.stipple", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-shade", (char *) ".shape.shade", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+shade", (char *) ".shape.shade", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-border", (char *) ".shape.border", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+border", (char *) ".shape.border", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-stipple", (char *) ".shape.stipple", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+stipple", (char *) ".shape.stipple", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & shade, "shade", "Shade", DEF_SHADE, t_Bool},
-	{(caddr_t *) & border, "border", "Border", DEF_BORDER, t_Bool},
-	{(caddr_t *) & stipple, "stipple", "Stipple", DEF_STIPPLE, t_Bool}
+	{(caddr_t *) & shade, (char *) "shade", (char *) "Shade", (char *) DEF_SHADE, t_Bool},
+	{(caddr_t *) & border, (char *) "border", (char *) "Border", (char *) DEF_BORDER, t_Bool},
+	{(caddr_t *) & stipple, (char *) "stipple", (char *) "Stipple", (char *) DEF_STIPPLE, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+shade", "turn on/off shape's shadows"},
-	{"-/+border", "turn on/off shape's borders"},
-	{"-/+stipple", "turn on/off shape's stippling"}
+	{(char *) "-/+shade", (char *) "turn on/off shape's shadows"},
+	{(char *) "-/+border", (char *) "turn on/off shape's borders"},
+	{(char *) "-/+stipple", (char *) "turn on/off shape's stippling"}
 };
 
 ModeSpecOpt shape_opts =
@@ -154,8 +155,9 @@ ModStruct   shape_description =
 #include "bitmaps/vlines2.xbm"
 #include "bitmaps/vlines3.xbm"
 #define SHAPEBITS(n,w,h)\
-  sp->pixmaps[sp->init_bits++]=\
-		XCreateBitmapFromData(display,window,(char *)n,w,h)
+  if ((sp->pixmaps[sp->init_bits]=\
+  XCreateBitmapFromData(display,window,(char *)n,w,h))==None){\
+  free_shape(display,sp); return;} else {sp->init_bits++;}
 
 typedef struct {
 	int         width;
@@ -173,6 +175,16 @@ typedef struct {
 } shapestruct;
 
 static shapestruct *shapes = NULL;
+
+static void
+free_shape(Display *display, shapestruct *sp)
+{
+	int         bits;
+
+	for (bits = 0; bits < sp->init_bits; bits++)
+		XFreePixmap(display, sp->pixmaps[bits]);
+	sp->init_bits = 0;
+}
 
 void
 init_shape(ModeInfo * mi)
@@ -251,17 +263,19 @@ draw_shape(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	shapestruct *sp = &shapes[MI_SCREEN(mi)];
 	int         shape, i;
 	XPoint      shade_offset;
+	shapestruct *sp;
+
+	if (shapes == NULL)
+		return;
+	sp = &shapes[MI_SCREEN(mi)];
+	if (sp->stipple && !sp->init_bits)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	shade_offset.x = 0;
 	shade_offset.y = 0;
-	if (sp->stipple)
-		if (!sp->init_bits)
-			return;
 
 	if (sp->stipple) {
 		XSetBackground(display, gc, (MI_NPIXELS(mi) > 2) ?
@@ -273,12 +287,16 @@ draw_shape(ModeInfo * mi)
 	shape = NRAND(3);
 	if (sp->shade) {
 		i = MAX(ABS(sp->shade_offset.x), ABS(sp->shade_offset.y));
-		shade_offset.x = (short int) (((float) NRAND(i) + 2.0) /
-					      (1.0 + i) * sp->shade_offset.x);
-		shade_offset.y = (short int) (((float) NRAND(i) + 2.0) /
-					      (1.0 + i) * sp->shade_offset.y);
-		/* This is over-simplistic... it casts the same length shadow over
-		 * different depth objects.
+		shade_offset.x = (short) (((float) NRAND(i) + 2.0) /
+		     ((float) (1.0 + i) * sp->shade_offset.x));
+		/* cc: error 1405: "/opt/ansic/lbin/ccom"
+		   terminated abnormally with signal 11.
+		   *** Error exit code 9 */
+		/* Next line trips up HP cc -g -O, remove a flag */
+		shade_offset.y = (short) (((float) NRAND(i) + 2.0) /
+		     ((float) (1.0 + i) * sp->shade_offset.y));
+		/* This is over-simplistic... it casts the same
+		 * length shadow over different depth objects.
 		 */
 	}
 	if (shape == 2) {
@@ -395,13 +413,8 @@ release_shape(ModeInfo * mi)
 	if (shapes != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			shapestruct *sp = &shapes[screen];
-			int         bits;
-
-			for (bits = 0; bits < sp->init_bits; bits++)
-				XFreePixmap(MI_DISPLAY(mi), sp->pixmaps[bits]);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_shape(MI_DISPLAY(mi), &shapes[screen]);
 		(void) free((void *) shapes);
 		shapes = NULL;
 	}
@@ -412,5 +425,4 @@ refresh_shape(ModeInfo * mi)
 {
 	MI_CLEARWINDOW(mi);
 }
-
 #endif /* MODE_shape */

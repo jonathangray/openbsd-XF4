@@ -13,11 +13,11 @@ RM = rm -f
 LEX = lex # could really be flex
 #LEX = flex
 
-#LEXLIB = -ll
-LEXLIB = -lfl
+LEXLIB = -ll
+#LEXLIB = -lfl
 
 all : xlockgen
-	guibuild.pl
+	perl guibuild.pl
 
 lex.yy.c : xlockgen.lex
 	$(LEX) xlockgen.lex

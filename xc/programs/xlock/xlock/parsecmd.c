@@ -62,6 +62,10 @@ SOFTWARE.
    other options appearing before the longer version in the table.
 */
 
+#ifdef VMS
+#include "vms_x_fix.h"
+#endif
+
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #include <stdio.h>
@@ -250,7 +254,7 @@ XlockrmParseCommand(
 		    break;
 
 		default:
-		    _XReportParseError (&options[i], "unknown kind");
+		    _XReportParseError (&options[i], (char *) "unknown kind");
 		    break;
 		}
 	}

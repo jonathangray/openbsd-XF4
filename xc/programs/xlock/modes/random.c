@@ -2,7 +2,7 @@
 /* random --- run random modes for a certain duration */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)random.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)random.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -20,16 +20,17 @@ static const char sccsid[] = "@(#)random.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Made more compatible with xscreensaver :)
- * 18-Mar-96: Ron Hitchens <ron@idiom.com>
- *		Re-coded for the ModeInfo calling scheme.  Added the
- *		change hook.  Get ready for 3.8 release.
- * 23-Dec-95: Ron Hitchens <ron@idiom.com>
- *		Re-coded pickMode() to keep track of the modes, so
- *		that all modes are tried before there are any repeats.
- *		Also prevent a mode from being picked twice in a row
- *		(could happen as first pick after refreshing the list).
- * 04-Sep-95: Written by Heath A. Kehoe <hakehoe@icaen.uiowa.edu>.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Made more compatible with xscreensaver :)
+ * 18-Mar-1996: Ron Hitchens <ron@idiom.com>
+ *              Re-coded for the ModeInfo calling scheme.  Added the
+ *              change hook.  Get ready for 3.8 release.
+ * 23-Dec-1995: Ron Hitchens <ron@idiom.com>
+ *              Re-coded pickMode() to keep track of the modes, so
+ *              that all modes are tried before there are any repeats.
+ *              Also prevent a mode from being picked twice in a row
+ *              (could happen as first pick after refreshing the list).
+ * 04-Sep-1995: Written by Heath A. Kehoe <hakehoe@icaen.uiowa.edu>.
  *
  */
 
@@ -58,30 +59,30 @@ extern Bool fullrandom;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-duration", ".random.duration", XrmoptionSepArg, (caddr_t) NULL},
-	{"-modelist", ".random.modelist", XrmoptionSepArg, (caddr_t) NULL},
-	{"-sequential", ".random.sequential", XrmoptionNoArg, (caddr_t) "on"},
-      {"+sequential", ".random.sequential", XrmoptionNoArg, (caddr_t) "off"},
-	{"-sequential", ".random.sequential", XrmoptionNoArg, (caddr_t) "on"},
-      {"+sequential", ".random.sequential", XrmoptionNoArg, (caddr_t) "off"},
-	{"-fullrandom", ".random.fullrandom", XrmoptionNoArg, (caddr_t) "on"},
-	{"+fullrandom", ".random.fullrandom", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-duration", (char *) ".random.duration", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-modelist", (char *) ".random.modelist", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-sequential", (char *) ".random.sequential", XrmoptionNoArg, (caddr_t) "on"},
+      {(char *) "+sequential", (char *) ".random.sequential", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-sequential", (char *) ".random.sequential", XrmoptionNoArg, (caddr_t) "on"},
+      {(char *) "+sequential", (char *) ".random.sequential", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-fullrandom", (char *) ".random.fullrandom", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+fullrandom", (char *) ".random.fullrandom", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & duration, "duration", "Duration", DEF_DURATION, t_Int},
-    {(caddr_t *) & modelist, "modelist", "Modelist", DEF_MODELIST, t_String},
-	{(caddr_t *) & sequential, "sequential", "Sequential", DEF_SEQUENTIAL, t_Bool},
-{(caddr_t *) & fullrandom, "fullrandom", "FullRandom", DEF_FULLRANDOM, t_Bool}
+	{(caddr_t *) & duration, (char *) "duration", (char *) "Duration", (char *) DEF_DURATION, t_Int},
+    {(caddr_t *) & modelist, (char *) "modelist", (char *) "Modelist", (char *) DEF_MODELIST, t_String},
+	{(caddr_t *) & sequential, (char *) "sequential", (char *) "Sequential", (char *) DEF_SEQUENTIAL, t_Bool},
+{(caddr_t *) & fullrandom, (char *) "fullrandom", (char *) "FullRandom", (char *) DEF_FULLRANDOM, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-duration num", "how long a mode runs before changing to another"},
-	{"-modelist string", "list of modes to randomly choose from"},
-	{"-/+sequential", "turn on/off picking of modes sequentially"},
-	{"-/+fullrandom", "turn on/off full random choice of mode-options"}
+	{(char *) "-duration num", (char *) "how long a mode runs before changing to another"},
+	{(char *) "-modelist string", (char *) "list of modes to randomly choose from"},
+	{(char *) "-/+sequential", (char *) "turn on/off picking of modes sequentially"},
+	{(char *) "-/+fullrandom", (char *) "turn on/off full random choice of mode-options"}
 };
 
 ModeSpecOpt random_opts =
@@ -92,12 +93,18 @@ ModStruct   random_description =
 {"random", "init_random", "draw_random", "release_random",
  "refresh_random", "change_random", NULL, &random_opts,
  1, 1, 1, 1, 64, 1.0, "",
+#ifdef MODE_run
+#ifdef MODE_bomb
+ "Shows a random mode from above except blank, run, and bomb", 0, NULL};
+#else
+ "Shows a random mode from above except blank and run", 0, NULL};
+#endif
+#else
 #ifdef MODE_bomb
  "Shows a random mode from above except blank and bomb", 0, NULL};
-
 #else
  "Shows a random mode from above except blank", 0, NULL};
-
+#endif
 #endif
 
 #endif
@@ -120,6 +127,9 @@ static char special_modes[][MAXMODECHARS] =
 #ifdef MODE_bomb
 	"bomb",
 #endif
+#ifdef MODE_run
+	"run",
+#endif
 	"blank", "random"
 };
 
@@ -135,10 +145,16 @@ static char gl_modes[][MAXMODECHARS] =
 	"bubble3d",
 #endif
 #ifdef MODE_cage
-  "cage",
+	"cage",
+#endif
+#ifdef MODE_fire
+	"fire",
 #endif
 #ifdef MODE_gears
-  "gears",
+	"gears",
+#endif
+#ifdef MODE_glplanet
+	"glplanet",
 #endif
 #ifdef MODE_invert
 	"invert",
@@ -149,6 +165,9 @@ static char gl_modes[][MAXMODECHARS] =
 #ifdef MODE_moebius
 	"moebius",
 #endif
+#ifdef MODE_molecule
+	"molecule",
+#endif
 #ifdef MODE_morph3d
 	"morph3d",
 #endif
@@ -157,6 +176,15 @@ static char gl_modes[][MAXMODECHARS] =
 #endif
 #ifdef MODE_rubik
 	"rubik",
+#endif
+#ifdef MODE_sballs
+	"sballs",
+#endif
+#ifdef MODE_sierpinski3d
+	"sierpinski3d",
+#endif
+#ifdef MODE_skewb
+	"skewb",
 #endif
 #ifdef MODE_sproingies
 	"sproingies",
@@ -184,9 +212,6 @@ static char xpm_modes[][MAXMODECHARS] =
 {
 #ifdef MODE_bat
 	"bat",
-#endif
-#ifdef MODE_cartoon
-	"cartoon",
 #endif
 #ifdef MODE_image
 	"image",
@@ -266,6 +291,9 @@ static char nice_modes[][MAXMODECHARS] =
 #endif
 #ifdef MODE_deco
 	"deco",
+#endif
+#ifdef MODE_dragon
+	"dragon",
 #endif
 #ifdef MODE_eyes
 	"eyes",
@@ -355,7 +383,7 @@ static char nice_modes[][MAXMODECHARS] =
 	"sierpinski",
 #endif
 #ifdef MODE_solitare
-	"spline",
+	"solitare",
 #endif
 #ifdef MODE_spline
 	"spline",
@@ -420,17 +448,28 @@ static char use3d_modes[][MAXMODECHARS] =
 
 static char mouse_modes[][MAXMODECHARS] =
 {
+#ifndef DISABLE_INTERACTIVE
+#ifdef MODE_solitare
+	"solitare",
+#endif
+#ifdef MODE_tetris
+	"tetris",
+#endif
+#endif
 #ifdef MODE_eyes
 	"eyes",
+#endif
+#ifdef MODE_fire
+	"fire",
 #endif
 #ifdef MODE_julia
 	"julia",
 #endif
-#ifdef MODE_solitare
-	"solitare",
+#ifdef MODE_swarm
+	"swarm",
 #endif
 #ifdef MODE_swarm
-	"swarm"
+	"t3d"
 #endif
 };
 
@@ -483,8 +522,14 @@ static char fractal_modes[][MAXMODECHARS] =
 #ifdef MODE_discrete
 	"discrete",
 #endif
+#ifdef MODE_dragon
+	"dragon",
+#endif
 #ifdef MODE_drift
 	"drift",
+#endif
+#ifdef MODE_euler2d
+	"euler2d",
 #endif
 #ifdef MODE_flame
 	"flame",
@@ -571,6 +616,9 @@ static char geometry_modes[][MAXMODECHARS] =
 #ifdef MODE_petal
 	"petal",
 #endif
+#ifdef MODE_polyominoes
+	"polyominoes",
+#endif
 #ifdef MODE_qix
 	"qix",
 #endif
@@ -637,8 +685,8 @@ pickMode(void)
 	int         mode, i;
 
 	if (mode_indexes == NULL) {
-		if ((mode_indexes = (int *) calloc(nmodes, sizeof (int))) ==
-		    NULL) {
+		if ((mode_indexes = (int *) calloc(nmodes,
+				sizeof (int))) == NULL) {
 			if (sequential)
 				return modes[0];
 			else
@@ -669,8 +717,7 @@ pickMode(void)
 	return (last_mode = mode);	/* remember last mode picked */
 }
 
-static
-char       *
+static char *
 strpmtok(int *sign, char *str)
 {
 	static int  nextsign = 0;
@@ -733,15 +780,16 @@ strpmtok(int *sign, char *str)
 	return r;
 }
 
-static void
+static Bool
 parsemodelist(ModeInfo * mi)
 {
 	int         i, sign = 1, j, found;
 	char       *p;
 
-	modes = (int *) calloc(numprocs - 1, sizeof (int));
-
-	p = strpmtok(&sign, (modelist) ? modelist : "");
+	if ((modes = (int *) calloc(numprocs - 1, sizeof (int))) == NULL) {
+			return False;
+	}
+	p = strpmtok(&sign, (modelist) ? modelist : (char *) "");
 
 	while (p) {
 		if (!strcmp(p, "all")) {
@@ -840,10 +888,10 @@ parsemodelist(ModeInfo * mi)
 			(void) fprintf(stderr, "%d ", modes[i]);
 		(void) fprintf(stderr, "\n");
 	}
+	return True;
 }
 
-static
-void
+static void
 setMode(ModeInfo * mi, int newmode)
 {
 	randomstruct *rp = &randoms[MI_SCREEN(mi)];
@@ -886,8 +934,8 @@ init_random(ModeInfo * mi)
 
 	MI_SET_FLAG_STATE(mi, WI_FLAG_FULLRANDOM, fullrandom);
 	if (currentmode < 0) {
-		parsemodelist(mi);
-
+		if (!parsemodelist(mi))
+			return;
 		for (i = startscreen; i < MI_NUM_SCREENS(mi); i++) {
 			(void) XGetGCValues(MI_DISPLAY(mi), MI_GC(mi),
 					    GC_SAVE_VALUES, &(rp->gcvs));
@@ -898,7 +946,7 @@ init_random(ModeInfo * mi)
 			duration = 0;
 	}
 	if (rp->fix) {
-		fixColormap(MI_DISPLAY(mi), MI_WINDOW(mi), MI_SCREEN(mi), MI_NCOLORS(mi),
+		fixColormap(mi, MI_NCOLORS(mi),
 			MI_SATURATION(mi), MI_IS_MONO(mi), MI_IS_INSTALL(mi),
 		    MI_IS_INROOT(mi), MI_IS_INWINDOW(mi), MI_IS_VERBOSE(mi));
 		rp->fix = False;
@@ -910,11 +958,17 @@ void
 draw_random(ModeInfo * mi)
 {
 	int         scrn = MI_SCREEN(mi);
-	randomstruct *rp = &randoms[scrn];
 	int         newmode;
 	unsigned long now = seconds();
 	int         has_run = (duration == 0) ? 0 : (int) (now - starttime);
 	static int  do_init = 0;
+	randomstruct *rp;
+
+	if (randoms == NULL)
+		return;
+	rp = &randoms[scrn];
+	if (currentmode < 0)
+		return;
 
 	if ((scrn == startscreen) && do_init) {
 		do_init = 0;
@@ -930,7 +984,7 @@ draw_random(ModeInfo * mi)
 		change_now = False;
 	}
 	if (rp->fix) {
-		fixColormap(MI_DISPLAY(mi), MI_WINDOW(mi), MI_SCREEN(mi), MI_NCOLORS(mi),
+		fixColormap(mi, MI_NCOLORS(mi),
 			MI_SATURATION(mi), MI_IS_MONO(mi), MI_IS_INSTALL(mi),
 		    MI_IS_INROOT(mi), MI_IS_INWINDOW(mi), MI_IS_VERBOSE(mi));
 		rp->fix = False;
@@ -944,15 +998,18 @@ draw_random(ModeInfo * mi)
 void
 refresh_random(ModeInfo * mi)
 {
+	if (currentmode < 0)
+		return;
 	call_refresh_hook(&LockProcs[currentmode], mi);
 }
 
 void
 change_random(ModeInfo * mi)
 {
+	if (currentmode < 0)
+		return;
 	if (MI_SCREEN(mi) == startscreen)
 		change_now = True;	/* force a change on next draw callback */
-
 	draw_random(mi);
 }
 

@@ -2,7 +2,7 @@
 /* pacman --- Mr. Pacman and his ghost friends */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)pacman.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)pacman.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,8 @@ static const char sccsid[] = "@(#)pacman.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 04-Jun-97: Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 04-Jun-1997: Compatible with xscreensaver
  *
  */
 
@@ -56,7 +57,7 @@ static const char sccsid[] = "@(#)pacman.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_pacman
 
 ModeSpecOpt pacman_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   pacman_description =
@@ -107,7 +108,6 @@ typedef struct {
 	int         incx, incy;
 	GC          stippledGC;
 	Pixmap      ghostPixmap;
-	int         ghostWidth, ghostHeight;
 	int         graphics_format;
 	beingstruct pacman;
 	beingstruct *ghosts;
@@ -119,6 +119,37 @@ typedef struct {
 } pacmangamestruct;
 
 static pacmangamestruct *pacmangames = NULL;
+
+static void
+free_pacman(Display *display, pacmangamestruct *pp)
+{
+	int         dir, mouth;
+
+	if (pp->ghosts != NULL) {
+		(void) free((void *) pp->ghosts);
+		pp->ghosts = NULL;
+	}
+#ifdef DEFUNCT
+	if (pp->eaten != NULL) {
+		(void) free((void *) pp->eaten);
+		pp->eaten = NULL;
+	}
+#endif
+	if (pp->stippledGC != None) {
+		XFreeGC(display, pp->stippledGC);
+		pp->stippledGC = None;
+	}
+	if (pp->ghostPixmap != None) {
+		XFreePixmap(display, pp->ghostPixmap);
+		pp->ghostPixmap = None;
+	}
+	for (dir = 0; dir < 4; dir++)
+		for (mouth = 0; mouth < MAXMOUTH; mouth++)
+			if (pp->pacmanPixmap[dir][mouth] != None) {
+				XFreePixmap(display, pp->pacmanPixmap[dir][mouth]);
+				pp->pacmanPixmap[dir][mouth] = None;
+			}
+}
 
 #if DEFUNCT
 static void
@@ -163,6 +194,7 @@ clearcorners(ModeInfo * mi)
 	}
 }
 #endif
+
 static void
 repopulate(ModeInfo * mi)
 {
@@ -172,9 +204,9 @@ repopulate(ModeInfo * mi)
 #if DEFUNCT
 	if (pp->eaten)
 		(void) free((void *) pp->eaten);
-	pp->eaten = (unsigned int *) calloc((pp->nrows * pp->ncols),
-					    sizeof (unsigned int));
-
+	if ((pp->eaten = (unsigned int *) calloc((pp->nrows * pp->ncols),
+			sizeof (unsigned int))) == NULL)
+		return;
 #endif
 
 	MI_CLEARWINDOW(mi);
@@ -211,7 +243,6 @@ movepac(ModeInfo * mi)
 
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	GC          gc = MI_GC(mi);
 	pacmangamestruct *pp = &pacmangames[MI_SCREEN(mi)];
 	int         ghost, alldead, dir;
 	XPoint      delta;
@@ -266,7 +297,8 @@ movepac(ModeInfo * mi)
 
 	p.oldcf = pp->pacman.col * pp->xs + pp->xb;
 	p.oldrf = pp->pacman.row * pp->ys + pp->yb;
-	g = (being *) malloc(pp->nghosts * sizeof (being));
+	if ((g = (being *) malloc(pp->nghosts * sizeof (being))) == NULL)
+		return;
 
 	for (ghost = 0; ghost < pp->nghosts; ghost++) {
 		if (pp->ghosts[ghost].dead == 0) {
@@ -307,13 +339,12 @@ movepac(ModeInfo * mi)
 
 		dir = (ABS(p.cfactor) * (2 - p.cfactor) +
 		       ABS(p.rfactor) * (1 + p.rfactor)) % 4;
-		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
+		XSetForeground(display, pp->stippledGC, MI_BLACK_PIXEL(mi));
 #ifdef FLASH
-		XFillRectangle(display, window, gc,
-			       p.oldcf, p.oldrf,
-			       pp->xs, pp->ys);
+		XFillRectangle(display, window, pp->stippledGC,
+			     p.oldcf, p.oldrf, pp->xs, pp->ys);
 #else
-		ERASE_IMAGE(display, window, gc, p.cf, p.rf,
+		ERASE_IMAGE(display, window, pp->stippledGC, p.cf, p.rf,
 			    p.oldcf, p.oldrf, pp->xs, pp->ys);
 #endif
 		XSetTSOrigin(display, pp->stippledGC, p.cf, p.rf);
@@ -346,42 +377,31 @@ movepac(ModeInfo * mi)
 					delta.x * g[ghost].cfactor + pp->xb;
 				g[ghost].rf = pp->ghosts[ghost].row * pp->ys +
 					delta.y * g[ghost].rfactor + pp->yb;
-				XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
-				if (pp->pixelmode) {
-					XFillRectangle(display, window, gc,
-					      g[ghost].oldcf, g[ghost].oldrf,
-						       pp->xs, pp->ys);
-					if (MI_NPIXELS(mi) > 2)
-						XSetForeground(display, gc, MI_PIXEL(mi, BLUE));
-					else
-						XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
-					XFillRectangle(display, window, gc,
-						       g[ghost].cf, g[ghost].rf, pp->xs, pp->ys);
-					XFlush(display);
-				} else {
+				XSetForeground(display, pp->stippledGC, MI_BLACK_PIXEL(mi));
 #ifdef FLASH
-					XFillRectangle(display, window, gc,
-					      g[ghost].oldcf, g[ghost].oldrf,
-						       pp->xs, pp->ys);
+				XFillRectangle(display, window, pp->stippledGC,
+				    g[ghost].oldcf, g[ghost].oldrf, pp->xs, pp->ys);
 #else
-					ERASE_IMAGE(display, window, gc, g[ghost].cf, g[ghost].rf,
-						    g[ghost].oldcf, g[ghost].oldrf, pp->xs, pp->ys);
+				ERASE_IMAGE(display, window, pp->stippledGC,
+					g[ghost].cf, g[ghost].rf,
+					g[ghost].oldcf, g[ghost].oldrf, pp->xs, pp->ys);
 #endif
-					XSetTSOrigin(display, pp->stippledGC, g[ghost].cf, g[ghost].rf);
-					if (MI_NPIXELS(mi) > 2)
-						XSetForeground(display, pp->stippledGC, MI_PIXEL(mi, BLUE));
-					else
-						XSetForeground(display, pp->stippledGC, MI_WHITE_PIXEL(mi));
-					XSetStipple(display, pp->stippledGC, pp->ghostPixmap);
+				XSetTSOrigin(display, pp->stippledGC,
+					g[ghost].cf, g[ghost].rf);
+				if (MI_NPIXELS(mi) > 2)
+					XSetForeground(display, pp->stippledGC, MI_PIXEL(mi, BLUE));
+				else
+					XSetForeground(display, pp->stippledGC, MI_WHITE_PIXEL(mi));
+				XSetStipple(display, pp->stippledGC, pp->ghostPixmap);
+
 #ifdef FLASH
-					XSetFillStyle(display, pp->stippledGC, FillStippled);
+				XSetFillStyle(display, pp->stippledGC, FillStippled);
 #else
-					XSetFillStyle(display, pp->stippledGC, FillOpaqueStippled);
+				XSetFillStyle(display, pp->stippledGC, FillOpaqueStippled);
 #endif
-					XFillRectangle(display, window, pp->stippledGC,
-						       g[ghost].cf, g[ghost].rf, pp->xs, pp->ys);
-					XFlush(display);
-				}
+				XFillRectangle(display, window, pp->stippledGC,
+			       g[ghost].cf, g[ghost].rf, pp->xs, pp->ys);
+				XFlush(display);
 				g[ghost].oldcf = g[ghost].cf;
 				g[ghost].oldrf = g[ghost].rf;
 			}
@@ -413,12 +433,12 @@ movepac(ModeInfo * mi)
 			     (pp->ghosts[ghost].row == pp->pacman.nextrow) &&
 			     (pp->ghosts[ghost].col == pp->pacman.nextcol))) {
 				pp->ghosts[ghost].dead = 1;
-				XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
+				XSetForeground(display, pp->stippledGC, MI_BLACK_PIXEL(mi));
 				/*XFillRectangle(display, window, gc,
 				   pp->ghosts[ghost].col * pp->xs + pp->xb,
 				   pp->ghosts[ghost].row * pp->ys + pp->yb,
 				   pp->xs, pp->ys); */
-				XFillRectangle(display, window, gc,
+				XFillRectangle(display, window, pp->stippledGC,
 				 pp->ghosts[ghost].nextcol * pp->xs + pp->xb,
 				 pp->ghosts[ghost].nextrow * pp->ys + pp->yb,
 					       pp->xs, pp->ys);
@@ -464,38 +484,41 @@ init_pacman(ModeInfo * mi)
 			return;
 	}
 	pp = &pacmangames[MI_SCREEN(mi)];
+
 	pp->width = MI_WIDTH(mi);
 	pp->height = MI_HEIGHT(mi);
-	if (pp->stippledGC == None) {
-		gcv.foreground = MI_BLACK_PIXEL(mi);
-		gcv.background = MI_BLACK_PIXEL(mi);
-		if ((pp->stippledGC = XCreateGC(display, window,
-				 GCForeground | GCBackground, &gcv)) == None)
-			return;
-		pp->ghostWidth = CELL_WIDTH;
-		pp->ghostHeight = CELL_HEIGHT;
-		if (size == 0) {
-			if (pp->ghostPixmap == None) {
-				getPixmap(mi, window, CELL_WIDTH, CELL_HEIGHT, CELL_BITS,
-					  &(pp->ghostWidth), &(pp->ghostHeight), &(pp->ghostPixmap),
-					  &(pp->graphics_format));
-				pp->xs = pp->ghostWidth;
-				pp->ys = pp->ghostHeight;
-			}
-		}
+	if (pp->ghostPixmap != None) {
+		XFreePixmap(display, pp->ghostPixmap);
+		pp->ghostPixmap = None;
+	    pp->graphics_format = IS_NONE;
 	}
-	if (size == 0) {
-		if (MINGRIDSIZE * pp->ghostWidth > pp->width ||
-		    MINGRIDSIZE * pp->ghostHeight > pp->height) {
-			pp->pixelmode = 1;
-			pp->xs = pp->ys = MAX(MINSIZE, MIN(pp->width, pp->height) / MINGRIDSIZE);
-		} else {
-			pp->pixelmode = 0;
-			pp->xs = pp->ghostWidth;
-			pp->ys = pp->ghostHeight;
-		}
+	if (size == 0 ||
+		MINGRIDSIZE * size > pp->width ||
+		MINGRIDSIZE * size > pp->height) {
+	    int         ghostWidth, ghostHeight;
+
+		ghostWidth = CELL_WIDTH;
+		ghostHeight = CELL_HEIGHT;
+		getPixmap(mi, window, CELL_WIDTH, CELL_HEIGHT, CELL_BITS,
+			&ghostWidth, &ghostHeight, &(pp->ghostPixmap),
+			&(pp->graphics_format));
+		pp->xs = ghostWidth;
+		pp->ys = ghostHeight;
+		if (pp->width > MINGRIDSIZE * pp->xs &&
+            pp->height > MINGRIDSIZE * pp->ys) {
+            pp->pixelmode = False;
+        } else {
+			if (pp->ghostPixmap != None) {
+				XFreePixmap(display, pp->ghostPixmap);
+				pp->ghostPixmap = None;
+			    pp->graphics_format = IS_NONE;
+			}
+            pp->pixelmode = True;
+            pp->ys = MAX(MINSIZE, MIN(pp->width, pp->height) / MINGRIDSIZE);
+            pp->xs = pp->ys;
+        }
 	} else {
-		pp->pixelmode = 1;
+		pp->pixelmode = True;
 		if (size < -MINSIZE)
 			pp->ys = NRAND(MIN(-size, MAX(MINSIZE, MIN(pp->width, pp->height) /
 				      MINGRIDSIZE)) - MINSIZE + 1) + MINSIZE;
@@ -513,32 +536,82 @@ init_pacman(ModeInfo * mi)
 	pp->xb = pp->width - pp->ncols * pp->xs;
 	pp->yb = pp->height - pp->nrows * pp->ys;
 
+	if (pp->pixelmode) {
+        if ((pp->ghostPixmap = XCreatePixmap(display, window,
+           		pp->xs, pp->ys, 1)) == None) {
+			free_pacman(display, pp);
+			return;
+		}
+        gcv.foreground = 0;
+        gcv.background = 1;
+        if ((bg_gc = XCreateGC(display, pp->ghostPixmap,
+			GCForeground | GCBackground, &gcv)) == None) {
+			free_pacman(display, pp);
+			return;
+		}
+        gcv.foreground = 1;
+        gcv.background = 0;
+        if ((fg_gc = XCreateGC(display, pp->ghostPixmap,
+			GCForeground | GCBackground, &gcv)) == None) {
+        	XFreeGC(display, bg_gc);
+			free_pacman(display, pp);
+			return;
+		}
+        XFillRectangle(display, pp->ghostPixmap, bg_gc,
+            0, 0, pp->xs, pp->ys);
+		XFillArc(display, pp->ghostPixmap, fg_gc,
+			0, 0, pp->xs, pp->ys, 0, 11520);
+		XFillRectangle(display, pp->ghostPixmap, fg_gc,
+			0, pp->ys / 2, pp->xs, pp->ys / 2);
+        XFreeGC(display, bg_gc);
+        XFreeGC(display, fg_gc);
+    }
+	if (!pp->stippledGC) {
+		gcv.foreground = MI_BLACK_PIXEL(mi);
+		gcv.background = MI_BLACK_PIXEL(mi);
+		if ((pp->stippledGC = XCreateGC(display, window,
+				GCForeground | GCBackground, &gcv)) == None) {
+			free_pacman(display, pp);
+			return;
+		}
+	}
 	if (pp->pacmanPixmap[0][0] != None)
 		for (dir = 0; dir < 4; dir++)
 			for (mouth = 0; mouth < MAXMOUTH; mouth++)
 				XFreePixmap(display, pp->pacmanPixmap[dir][mouth]);
 
-
 	for (dir = 0; dir < 4; dir++)
 		for (mouth = 0; mouth < MAXMOUTH; mouth++) {
-			pp->pacmanPixmap[dir][mouth] = XCreatePixmap(display, MI_WINDOW(mi),
-							  pp->xs, pp->ys, 1);
+			if ((pp->pacmanPixmap[dir][mouth] = XCreatePixmap(display,
+					 MI_WINDOW(mi), pp->xs, pp->ys, 1)) == None) {
+				free_pacman(display, pp);
+				return;
+			}
 			gcv.foreground = 1;
-			fg_gc = XCreateGC(display, pp->pacmanPixmap[dir][mouth],
-					  GCForeground, &gcv);
+        	gcv.background = 0;
+			if ((fg_gc = XCreateGC(display, pp->pacmanPixmap[dir][mouth],
+					GCForeground | GCBackground, &gcv)) == None) {
+				free_pacman(display, pp);
+				return;
+			}
 			gcv.foreground = 0;
-			bg_gc = XCreateGC(display, pp->pacmanPixmap[dir][mouth],
-					  GCForeground, &gcv);
+        	gcv.background = 0;
+			if ((bg_gc = XCreateGC(display, pp->pacmanPixmap[dir][mouth],
+					GCForeground | GCBackground, &gcv)) == None) {
+        		XFreeGC(display, fg_gc);
+				free_pacman(display, pp);
+				return;
+			}
 			XFillRectangle(display, pp->pacmanPixmap[dir][mouth], bg_gc,
-				       0, 0, pp->xs, pp->ys);
+				0, 0, pp->xs, pp->ys);
 			if (pp->xs == 1 && pp->ys == 1)
 				XFillRectangle(display, pp->pacmanPixmap[dir][mouth], fg_gc,
-					       0, 0, pp->xs, pp->ys);
+					0, 0, pp->xs, pp->ys);
 			else
 				XFillArc(display, pp->pacmanPixmap[dir][mouth], fg_gc,
-					 0, 0, pp->xs, pp->ys,
-					 ((90 - dir * 90) + mouth * 5) * 64,
-					 (360 + (-2 * mouth * 5)) * 64);
+					0, 0, pp->xs, pp->ys,
+					((90 - dir * 90) + mouth * 5) * 64,
+					(360 + (-2 * mouth * 5)) * 64);
 			XFreeGC(display, fg_gc);
 			XFreeGC(display, bg_gc);
 		}
@@ -557,7 +630,11 @@ init_pacman(ModeInfo * mi)
 		pp->nghosts = MINGHOSTS;
 
 	if (!pp->ghosts)
-		pp->ghosts = (beingstruct *) calloc(pp->nghosts, sizeof (beingstruct));
+		if ((pp->ghosts = (beingstruct *) calloc(pp->nghosts,
+				sizeof (beingstruct))) == NULL) {
+			free_pacman(display, pp);
+			return;
+		}
 	for (ghost = 0; ghost < pp->nghosts; ghost++)
 		pp->ghosts[ghost].nextbox = NOWHERE;
 
@@ -581,8 +658,11 @@ init_pacman(ModeInfo * mi)
 #if DEFUNCT
 	if (pp->eaten)
 		(void) free((void *) pp->eaten);
-	pp->eaten = (unsigned int *) malloc((pp->nrows * pp->ncols) *
-					    sizeof (unsigned int));
+	if ((pp->eaten = (unsigned int *) malloc((pp->nrows * pp->ncols) *
+					    sizeof (unsigned int))) == NULL) {
+		free_pacman(display, pp);
+		return;
+	}
 
 	if (pp->eaten)
 		for (ghost = 0; ghost < (pp->nrows * pp->ncols); ghost++)
@@ -593,11 +673,16 @@ init_pacman(ModeInfo * mi)
 void
 draw_pacman(ModeInfo * mi)
 {
-	pacmangamestruct *pp = &pacmangames[MI_SCREEN(mi)];
 	int         g;
+	pacmangamestruct *pp;
+
+	if (pacmangames == NULL)
+		return;
+	pp = &pacmangames[MI_SCREEN(mi)];
+	if (pp->ghosts == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	do {
 		if (NRAND(3) == 2)
 			pp->pacman.nextbox = NRAND(5);
@@ -714,27 +799,10 @@ void
 release_pacman(ModeInfo * mi)
 {
 	if (pacmangames != NULL) {
-		int         screen, dir, mouth;
+		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			pacmangamestruct *pp = &pacmangames[screen];
-			Display    *display = MI_DISPLAY(mi);
-
-			if (pp->ghosts != NULL)
-				(void) free((void *) pp->ghosts);
-#ifdef DEFUNCT
-			if (pp->eaten != NULL)
-				(void) free((void *) pp->eaten);
-#endif
-			if (pp->stippledGC != None)
-				XFreeGC(display, pp->stippledGC);
-			if (pp->ghostPixmap != None)
-				XFreePixmap(display, pp->ghostPixmap);
-			if (pp->pacmanPixmap[0][0] != None)
-				for (dir = 0; dir < 4; dir++)
-					for (mouth = 0; mouth < MAXMOUTH; mouth++)
-						XFreePixmap(display, pp->pacmanPixmap[dir][mouth]);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_pacman(MI_DISPLAY(mi), &pacmangames[screen]);
 		(void) free((void *) pacmangames);
 		pacmangames = NULL;
 	}

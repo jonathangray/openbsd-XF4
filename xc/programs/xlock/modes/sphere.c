@@ -2,7 +2,7 @@
 /* sphere --- a bunch of shaded spheres */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)sphere.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)sphere.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)sphere.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 30-May-97: <jwz@jwz.org> made it go vertically as well as horizontally.
- * 27-May-97: <jwz@jwz.org> turned into a standalone program.
- * 02-Sep-93: xlock version David Bagley <bagleyd@tux.org>
+ * 01-Nov-2000: Allocation checks
+ * 30-May-1997: <jwz@jwz.org> made it go vertically as well as horizontally.
+ * 27-May-1997: <jwz@jwz.org> turned into a standalone program.
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
  * 1988: Revised to use SunView canvas instead of gfxsw Sun Microsystems
  * 1982: Orignal Algorithm Tom Duff Lucasfilm Ltd.
  */
@@ -74,7 +75,7 @@ static const char sccsid[] = "@(#)sphere.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_sphere
 
 ModeSpecOpt sphere_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   sphere_description =
@@ -121,13 +122,16 @@ init_sphere(ModeInfo * mi)
 	}
 	sp = &spheres[MI_SCREEN(mi)];
 
-	if (sp->points) {
+	if (sp->points != NULL) {
 		(void) free((void *) sp->points);
 		sp->points = NULL;
 	}
 	sp->width = MI_WIDTH(mi);
 	sp->height = MI_HEIGHT(mi);
-	sp->points = (XPoint *) malloc(sp->height * sizeof (XPoint));
+	if ((sp->points = (XPoint *) malloc(MIN(sp->width, sp->height) *
+			 sizeof (XPoint))) == NULL) {
+		return;
+	}
 
 	MI_CLEARWINDOW(mi);
 
@@ -142,12 +146,17 @@ draw_sphere(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	spherestruct *sp = &spheres[MI_SCREEN(mi)];
 	int         sqrd, nd;
 	register int minx = 0, maxx = 0, miny = 0, maxy = 0, npts = 0;
+	spherestruct *sp;
+
+	if (spheres == NULL)
+		return;
+	sp = &spheres[MI_SCREEN(mi)];
+	if (sp->points == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if ((sp->dirx && ABS(sp->x) >= sp->radius) ||
 	    (sp->diry && ABS(sp->y) >= sp->radius)) {
 		sp->radius = NRAND(MIN(sp->width / 2, sp->height / 2) - 1) + 1;
@@ -272,7 +281,7 @@ release_sphere(ModeInfo * mi)
 
 			if (sp->points) {
 				(void) free((void *) sp->points);
-				sp->points = NULL;
+				/* sp->points = NULL; */
 			}
 		}
 		(void) free((void *) spheres);
@@ -283,7 +292,11 @@ release_sphere(ModeInfo * mi)
 void
 refresh_sphere(ModeInfo * mi)
 {
-	spherestruct *sp = &spheres[MI_SCREEN(mi)];
+	spherestruct *sp;
+
+	if (spheres == NULL)
+		return;
+	sp = &spheres[MI_SCREEN(mi)];
 
 	MI_CLEARWINDOW(mi);
 

@@ -2,7 +2,7 @@
 /* starfish ---  */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)starfish.c	4.11 98/06/11 xlockmore";
+static const char sccsid[] = "@(#)starfish.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -17,8 +17,9 @@ static const char sccsid[] = "@(#)starfish.c	4.11 98/06/11 xlockmore";
  * implied warranty.
  *
  * Revision History:
- * 24-Feb-98:  xlockmore version by Jouk Jansen <joukj@hrem.stm.tudelft.nl>
- * 1997 :    original xscreensaver version by Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 24-Feb-1998: xlockmore version by Jouk Jansen <joukj@hrem.stm.tudelft.nl>
+ * 1997: original xscreensaver version by Jamie Zawinski <jwz@jwz.org>
  */
 
 #ifdef STANDALONE
@@ -54,31 +55,31 @@ static Bool blob, cycle_p;
 
 static XrmOptionDescRec opts[] =
 {
-     {"-cyclespeed", "starfish.cyclespeed", XrmoptionSepArg, (caddr_t) NULL},
-	{"-rotation", "starfish.rotation", XrmoptionSepArg, (caddr_t) NULL},
-	{"-thickness", "starfish.thickness", XrmoptionSepArg, (caddr_t) NULL},
-	{"-blob", ".starfish.blob", XrmoptionNoArg, (caddr_t) "on"},
-	{"+blob", ".starfish.blob", XrmoptionNoArg, (caddr_t) "off"},
-	{"-cycle", ".starfish.cycle", XrmoptionNoArg, (caddr_t) "on"},
-	{"+cycle", ".starfish.cycle", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-cyclespeed", (char *) "starfish.cyclespeed", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-rotation", (char *) "starfish.rotation", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-thickness", (char *) "starfish.thickness", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-blob", (char *) ".starfish.blob", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+blob", (char *) ".starfish.blob", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-cycle", (char *) ".starfish.cycle", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+cycle", (char *) ".starfish.cycle", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-{(caddr_t *) & cyclespeed, "cyclespeed", "CycleSpeed", DEF_CYCLESPEED, t_Int},
-	{(caddr_t *) & rotv, "rotation", "Rotation", DEF_ROTV, t_Float},
- {(caddr_t *) & thickness, "thickness", "Thickness", DEF_THICKNESS, t_Float},
-	{(caddr_t *) & blob, "blob", "Blob", DEF_BLOB, t_Bool},
-	{(caddr_t *) & cycle_p, "cycle", "Cycle", DEF_CYCLE, t_Bool}
+{(caddr_t *) & cyclespeed, (char *) "cyclespeed", (char *) "CycleSpeed", (char *) DEF_CYCLESPEED, t_Int},
+	{(caddr_t *) & rotv, (char *) "rotation", (char *) "Rotation", (char *) DEF_ROTV, t_Float},
+ {(caddr_t *) & thickness, (char *) "thickness", (char *) "Thickness", (char *) DEF_THICKNESS, t_Float},
+	{(caddr_t *) & blob, (char *) "blob", (char *) "Blob", (char *) DEF_BLOB, t_Bool},
+	{(caddr_t *) & cycle_p, (char *) "cycle", (char *) "Cycle", (char *) DEF_CYCLE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-cyclespeed num", "Cycling speed"},
-	{"-rotation num", "Rotation velocity"},
-	{"-thickness num", "Thickness"},
-	{"-/+blob", "turn on/off blob"},
-	{"-/+cycle", "turn on/off cycle"}
+	{(char *) "-cyclespeed num", (char *) "Cycling speed"},
+	{(char *) "-rotation num", (char *) "Rotation velocity"},
+	{(char *) "-thickness num", (char *) "Thickness"},
+	{(char *) "-/+blob", (char *) "turn on/off blob"},
+	{(char *) "-/+cycle", (char *) "turn on/off cycle"}
 };
 
 ModeSpecOpt starfish_opts =
@@ -87,7 +88,7 @@ ModeSpecOpt starfish_opts =
 #ifdef USE_MODULES
 ModStruct   starfish_description =
 {"starfish", "init_starfish", "draw_starfish", "release_starfish",
- "refresh_starfish", "init_starfish", NULL, &starfish_opts,
+ "init_starfish", "init_starfish", NULL, &starfish_opts,
  2000, 1, 1000, 1, 64, 1.0, "",
  "Shows starfish", 0, NULL};
 
@@ -125,14 +126,57 @@ typedef struct {
 	XColor     *colors;
 	int         ncolors;
 	Bool        cycle_p, mono_p, no_colors;
-	unsigned int fg_index;
+	unsigned long fg_index;
 	int         size, winwidth, winheight, stage, counter;
 	float       thickness;
 	unsigned long blackpixel, whitepixel, fg, bg;
 	int         direction;
+	ModeInfo   *mi;
 } starfishstruct;
 
 static starfishstruct *starfishes = NULL;
+
+
+static void
+free_starfish(Display *display, starfishstruct * sp)
+{
+	ModeInfo *mi = sp->mi;
+
+	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
+		MI_WHITE_PIXEL(mi) = sp->whitepixel;
+		MI_BLACK_PIXEL(mi) = sp->blackpixel;
+#ifndef STANDALONE
+		MI_FG_PIXEL(mi) = sp->fg;
+		MI_BG_PIXEL(mi) = sp->bg;
+#endif
+		if (sp->colors != NULL) {
+			if (sp->ncolors && !sp->no_colors)
+				free_colors(display, sp->cmap, sp->colors, sp->ncolors);
+			(void) free((void *) sp->colors);
+			sp->colors = NULL;
+		}
+		if (sp->cmap != None) {
+			XFreeColormap(display, sp->cmap);
+			sp->cmap = None;
+		}
+	}
+	if (sp->gc != None) {
+		XFreeGC(display, sp->gc);
+		sp->gc = None;
+	}
+	if (sp->splines != NULL) {
+		free_spline(sp->splines);
+		sp->splines = NULL;
+	}
+	if (sp->r != NULL) {
+		(void) free((void *) sp->r);
+		sp->r = NULL;
+	}
+	if (sp->prev != NULL) {
+		(void) free((void *) sp->prev);
+		sp->prev = NULL;
+	}
+}
 
 static void
 make_starfish(ModeInfo * mi)
@@ -211,54 +255,16 @@ make_starfish(ModeInfo * mi)
 		free_spline(sp->splines);
 	sp->splines = make_spline(sp->npoints);
 
-	if (sp->r)
+	if (sp->r != NULL)
 		(void) free((void *) sp->r);
-	sp->r = (long *) malloc(sizeof (*sp->r) * sp->npoints);
+	if ((sp->r = (long *) malloc(sizeof (*sp->r) * sp->npoints)) == NULL) {
+		free_starfish(MI_DISPLAY(mi), sp);
+		return;
+	}
 
 	for (i = 0; i < sp->npoints; i++)
 		sp->r[i] = ((i % sp->skip) == 0) ? 0 : sp->size;
 }
-
-
-void
-release_starfish(ModeInfo * mi)
-{
-	Display    *display = MI_DISPLAY(mi);
-
-	if (starfishes != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			starfishstruct *sp = &starfishes[screen];
-
-			if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
-				MI_WHITE_PIXEL(mi) = sp->whitepixel;
-				MI_BLACK_PIXEL(mi) = sp->blackpixel;
-#ifndef STANDALONE
-				MI_FG_PIXEL(mi) = sp->fg;
-				MI_BG_PIXEL(mi) = sp->bg;
-#endif
-				if (sp->colors && sp->ncolors && !sp->no_colors)
-					free_colors(display, sp->cmap, sp->colors, sp->ncolors);
-				if (sp->colors)
-					(void) free((void *) sp->colors);
-				if (sp->cmap)
-				  XFreeColormap(display, sp->cmap);
-			}
-			if (sp->gc != NULL)
-				XFreeGC(display, sp->gc);
-			if (sp->splines)
-				free_spline(sp->splines);
-			if (sp->r)
-				(void) free((void *) sp->r);
-			if (sp->prev)
-				(void) free((void *) sp->prev);
-		}
-		(void) free((void *) starfishes);
-		starfishes = NULL;
-	}
-}
-
 
 static void
 throb_starfish(starfishstruct * sp)
@@ -363,16 +369,20 @@ spin_starfish(starfishstruct * sp)
 }
 
 
-static void
+static Bool
 draw1_starfish(Display * display, Drawable drawable, GC gc, starfishstruct * sp)
 {
 	compute_closed_spline(sp->splines);
 	if (sp->prev) {
-		XPoint     *points = (XPoint *)
-		malloc(sizeof (XPoint) * (sp->n_prev + sp->splines->n_points + 2));
+		XPoint     *points;
 		int         i = sp->splines->n_points;
 		int         j = sp->n_prev;
 
+		if ((points = (XPoint *) malloc(sizeof (XPoint) *
+				(sp->n_prev + sp->splines->n_points + 2))) == NULL) {
+			free_starfish(display, sp);
+			return False;
+		}
 		(void) memcpy((char *) points, (char *) sp->splines->points,
 			      (i * sizeof (*points)));
 		(void) memcpy((char *) (points + i), (char *) sp->prev,
@@ -387,7 +397,11 @@ draw1_starfish(Display * display, Drawable drawable, GC gc, starfishstruct * sp)
 		(void) free((void *) sp->prev);
 		sp->prev = NULL;
 	}
-	sp->prev = (XPoint *) malloc(sp->splines->n_points * sizeof (XPoint));
+	if ((sp->prev = (XPoint *) malloc(sp->splines->n_points *
+			sizeof (XPoint))) == NULL) {
+		free_starfish(display, sp);
+		return False;
+	}
 	(void) memcpy((char *) sp->prev, (char *) sp->splines->points,
 		      sp->splines->n_points * sizeof (XPoint));
 	sp->n_prev = sp->splines->n_points;
@@ -401,6 +415,7 @@ draw1_starfish(Display * display, Drawable drawable, GC gc, starfishstruct * sp)
 			sp->splines->control_x[i], sp->splines->control_y[i]);
 	}
 #endif
+	return True;
 }
 
 
@@ -420,6 +435,7 @@ init_starfish(ModeInfo * mi)
 			return;
 	}
 	sp = &starfishes[MI_SCREEN(mi)];
+	sp->mi = mi;
 
 	if (MI_IS_FULLRANDOM(mi)) {
 		if (NRAND(10) == 9)
@@ -445,7 +461,7 @@ init_starfish(ModeInfo * mi)
 	else
 		sp->fg_index = MI_WHITE_PIXEL(mi);
 
-	if (!sp->gc) {
+	if (sp->gc == None) {
 		if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
 			XColor      color;
 
@@ -458,8 +474,11 @@ init_starfish(ModeInfo * mi)
 #endif
 			sp->blackpixel = MI_BLACK_PIXEL(mi);
 			sp->whitepixel = MI_WHITE_PIXEL(mi);
-			sp->cmap =	/*MI_COLORMAP(mi); */
-				XCreateColormap(display, window, MI_VISUAL(mi), AllocNone);
+			if ((sp->cmap = XCreateColormap(display, window,
+					MI_VISUAL(mi), AllocNone)) == None) {
+				free_starfish(display, sp);
+				return;
+			}
 			XSetWindowColormap(display, window, sp->cmap);
 			(void) XParseColor(display, sp->cmap, "black", &color);
 			(void) XAllocColor(display, sp->cmap, &color);
@@ -475,20 +494,25 @@ init_starfish(ModeInfo * mi)
 			(void) XAllocColor(display, sp->cmap, &color);
 			MI_FG_PIXEL(mi) = color.pixel;
 #endif
-			sp->colors = 0;
+			sp->colors = NULL;
 			sp->ncolors = 0;
 		}
 		gcv.foreground = sp->fg_index;
 		gcv.fill_rule = EvenOddRule;
-		sp->gc = XCreateGC(display, window, GCForeground | GCFillRule, &gcv);
+		if ((sp->gc = XCreateGC(display, window,
+				GCForeground | GCFillRule, &gcv)) == None) {
+			free_starfish(display, sp);
+			return;
+		}
 	}
 	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
 /* Set up colour map */
-		if (sp->colors && sp->ncolors && !sp->no_colors)
-			free_colors(display, sp->cmap, sp->colors, sp->ncolors);
-		if (sp->colors)
+		if (sp->colors != NULL) {
+			if (sp->ncolors && !sp->no_colors)
+				free_colors(display, sp->cmap, sp->colors, sp->ncolors);
 			(void) free((void *) sp->colors);
-		sp->colors = 0;
+			sp->colors = NULL;
+		}
 		sp->ncolors = MI_NCOLORS(mi);
 		if (sp->ncolors < 2)
 			sp->ncolors = 2;
@@ -498,9 +522,13 @@ init_starfish(ModeInfo * mi)
 			sp->mono_p = False;
 
 		if (sp->mono_p)
-			sp->colors = 0;
+			sp->colors = NULL;
 		else
-			sp->colors = (XColor *) malloc(sizeof (*sp->colors) * (sp->ncolors + 1));
+			if ((sp->colors = (XColor *) malloc(sizeof (*sp->colors) *
+					(sp->ncolors + 1))) == NULL) {
+			free_starfish(display, sp);
+			return;
+		}
 
 		if (sp->mono_p || sp->blob_p)
 			sp->cycle_p = False;
@@ -543,7 +571,7 @@ init_starfish(ModeInfo * mi)
 	sp->winwidth = MI_WIDTH(mi);
 	sp->winheight = MI_HEIGHT(mi);
 	MI_CLEARWINDOW(mi);
-	if (sp->prev) {
+	if (sp->prev != NULL) {
 		(void) free((void *) sp->prev);
 		sp->prev = NULL;
 	}
@@ -552,7 +580,7 @@ init_starfish(ModeInfo * mi)
 	make_starfish(mi);
 }
 
-static void
+static Bool
 run_starfish(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
@@ -561,7 +589,8 @@ run_starfish(ModeInfo * mi)
 
 	throb_starfish(sp);
 	spin_starfish(sp);
-	draw1_starfish(display, window, sp->gc, sp);
+	if (!draw1_starfish(display, window, sp->gc, sp))
+		return False;
 
 	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
 		if (sp->mono_p) {
@@ -584,23 +613,32 @@ run_starfish(ModeInfo * mi)
 		if (++sp->fg_index >= (unsigned int) MI_NPIXELS(mi))
 			sp->fg_index = 0;
 	}
+	return True;
 }
 
 void
 draw_starfish(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
-	starfishstruct *sp = &starfishes[MI_SCREEN(mi)];
+	starfishstruct *sp;
+
+	if (starfishes == NULL)
+		return;
+	sp = &starfishes[MI_SCREEN(mi)];
+	if (sp->r == NULL)
+		return;
 
 	if (sp->no_colors) {
+		free_starfish(display, sp);
 		init_starfish(mi);
 		return;
 	}
 	MI_IS_DRAWN(mi) = True;
 
-	if (!sp->stage)
-		run_starfish(mi);
-	else if (sp->cycle_p) {
+	if (!sp->stage) {
+		if (!run_starfish(mi))
+			return;
+	} else if (sp->cycle_p) {
 		rotate_colors(display, sp->cmap, sp->colors, sp->ncolors, sp->direction);
 
 		if (!NRAND(512))
@@ -617,10 +655,18 @@ draw_starfish(ModeInfo * mi)
 		init_starfish(mi);
 	}
 }
+
 void
-refresh_starfish(ModeInfo * mi)
+release_starfish(ModeInfo * mi)
 {
-	init_starfish(mi);
+	if (starfishes != NULL) {
+		int         screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_starfish(MI_DISPLAY(mi), &starfishes[screen]);
+		(void) free((void *) starfishes);
+		starfishes = NULL;
+	}
 }
 
 #endif /* MODE_starfish */

@@ -2,7 +2,7 @@
 /* clock --- displays an analog clock */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)clock.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)clock.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,11 +25,12 @@ static const char sccsid[] = "@(#)clock.c	4.07 97/11/24 xlockmore";
  * which is all mine.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 24-Dec-95: Ron Hitchens <ron@idiom.com> cycles range and defaults
- *            changed.
- * 01-Dec-95: Clock size changes each time it is displayed.
- * 01-Jun-95: Written.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 24-Dec-1995: Ron Hitchens <ron@idiom.com> cycles range and defaults
+ *              changed.
+ * 01-Dec-1995: Clock size changes each time it is displayed.
+ * 01-Jun-1995: Written.
  */
 
 #ifdef STANDALONE
@@ -51,7 +52,7 @@ static const char sccsid[] = "@(#)clock.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_clock
 
 ModeSpecOpt clock_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   clock_description =
@@ -373,8 +374,12 @@ init_clock(ModeInfo * mi)
 		cp->nclocks = NRAND(-cp->nclocks - MINCLOCKS + 1) + MINCLOCKS;
 	} else if (cp->nclocks < MINCLOCKS)
 		cp->nclocks = MINCLOCKS;
-	if (cp->oclocks == NULL)
-		cp->oclocks = (oclock *) malloc(cp->nclocks * sizeof (oclock));
+	if (cp->oclocks == NULL) {
+		if ((cp->oclocks = (oclock *) malloc(cp->nclocks *
+				sizeof (oclock))) == NULL) {
+			return;
+		}
+	}
 
 	cp->clock_count = MI_CYCLES(mi);
 	if (cp->clock_count < MIN_CYCLES)
@@ -405,11 +410,16 @@ init_clock(ModeInfo * mi)
 void
 draw_clock(ModeInfo * mi)
 {
-	clockstruct *cp = &clocks[MI_SCREEN(mi)];
 	int         clck;
+	clockstruct *cp;
+
+	if (clocks == NULL)
+		return;
+	cp = &clocks[MI_SCREEN(mi)];
+	if (cp->oclocks == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (++cp->clock_count >= MI_CYCLES(mi)) {
 		cp->clock_count = 0;
 		for (clck = 0; clck < cp->currentclocks; clck++)
@@ -440,8 +450,10 @@ release_clock(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			clockstruct *cp = &clocks[screen];
 
-			if (cp->oclocks != NULL)
+			if (cp->oclocks != NULL) {
 				(void) free((void *) cp->oclocks);
+				/* cp->oclocks = NULL; */
+			}
 		}
 		(void) free((void *) clocks);
 		clocks = NULL;
@@ -451,7 +463,11 @@ release_clock(ModeInfo * mi)
 void
 refresh_clock(ModeInfo * mi)
 {
-	clockstruct *cp = &clocks[MI_SCREEN(mi)];
+	clockstruct *cp;
+
+	if (clocks == NULL)
+		return;
+	cp = &clocks[MI_SCREEN(mi)];
 
 	MI_CLEARWINDOW(mi);
 	cp->redrawing = 1;

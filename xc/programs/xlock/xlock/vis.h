@@ -27,21 +27,5 @@ extern Bool fixedColors(ModeInfo * mi);
 #endif
 
 #ifdef USE_GL
-#include <GL/gl.h>
-#include <GL/glx.h>
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
-extern GLXContext *init_GL(ModeInfo * mi);
-extern void FreeAllGL(ModeInfo * mi);
-#ifdef __cplusplus
-  }
-#endif
-
-#endif
-
-#ifdef OPENGL_MESA_INCLUDES
-/* Allow OPEN GL using MESA includes */
-#undef MESA
+#include "visgl.h"
 #endif

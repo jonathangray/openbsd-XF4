@@ -1,9 +1,20 @@
+/* -*- Mode: C; tab-width: 4 -*- */
+/* invert --- shere inversion */
+
+#if !defined( lint ) && !defined( SABER )
+static const char sccsid[] = "@(#)invert.c	5.01 2001/03/01 xlockmore";
+
+#endif
+
+
 /*-
  * invert.c - Sphere inversion
  *
  * See xlock.c for copying information.
  *
  * Revision History:
+ * 01-Nov-2000: Allocation checks
+ * 199?: Written
  *
  * Tim Rowley (code from the Geometry Center <URL:http://www.geom.umn.edu/>
  *
@@ -18,6 +29,8 @@
  * Demonstration of turning a sphere inside out without creating
  * any kinks (two surfaces can occupy the same space at the same time).
  *
+ * Revision History:
+ * 01-Mar-2001: Added FPS stuff E.Lassauge <lassauge@mail.dotcom.fr>
  */
 
 /*-
@@ -26,7 +39,7 @@
  */
 #include <X11/Intrinsic.h>
 #include "xlock.h"
-#include "vis.h"
+#include "visgl.h"
 
 #ifdef MODE_invert
 
@@ -34,9 +47,21 @@
 #define STEPS 75
 
 ModeSpecOpt invert_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
-static spherestruct *spheres = NULL;
+#ifdef USE_MODULES
+ModStruct invert_description =
+{(char *) "invert", (char *) "init_invert",
+ (char *) "draw_invert", (char *) "release_invert",
+ (char *) "draw_invert", (char *) "init_invert",
+ NULL, &invert_opts,
+ 100, 1, 1, 1, 64, 1.0, (char *) "",
+ (char *) "Shows a sphere inverted without wrinkles", 0, NULL};
+
+#endif
+
+
+static spherestruct *spheres = (spherestruct *) NULL;
 
 /* new window size or exposure */
 static void
@@ -97,11 +122,27 @@ pinit(void)
   glMaterialf(GL_BACK, GL_SHININESS, 38.0);
 }
 
+static void
+free_invert(Display *display, spherestruct *gp)
+{
+  if (gp->glx_context) {
+    /* Display lists MUST be freed while their glXContext is current. */
+    glXMakeCurrent(display, gp->window, *(gp->glx_context));
+    if (glIsList(gp->frames)) {
+      glDeleteLists(gp->frames, STEPS);
+      gp->frames = 0;
+      /* Don't destroy the glXContext.  init_GL does that. */
+    }
+  }
+  if (gp->partlist != NULL) {
+    (void) free((void *) gp->partlist);
+    gp->partlist = (char *) NULL;
+  }
+}
+
 void
 init_invert(ModeInfo * mi)
 {
-  int         screen = MI_SCREEN(mi);
-
   spherestruct *gp;
 
   if (spheres == NULL) {
@@ -109,35 +150,51 @@ init_invert(ModeInfo * mi)
 					   sizeof (spherestruct))) == NULL)
       return;
   }
+  gp = &spheres[MI_SCREEN(mi)];
+  gp->window = MI_WINDOW(mi);
 
-  gp = &spheres[screen];
   gp->time = 0;
   gp->construction = 1;
-  gp->partlist = NULL;
+  gp->partlist = (char *) NULL;
   gp->numsteps = STEPS;
   gp->view_rotx = NRAND(360);
   gp->view_roty = NRAND(360);
   gp->view_rotz = NRAND(360);
-  gp->glx_context = init_GL(mi);
-  gp->frames = glGenLists(STEPS);
-
-  reshape(MI_WIDTH(mi), MI_HEIGHT(mi));
-  pinit();
+  if ((gp->glx_context = init_GL(mi)) != NULL) {
+    if ((gp->frames = glGenLists(STEPS)) == 0) {
+      free_invert(MI_DISPLAY(mi), gp);
+      return;
+    }
+    reshape(MI_WIDTH(mi), MI_HEIGHT(mi));
+    pinit();
+  } else {
+    MI_CLEARWINDOW(mi);
+  }
 }
 
 void
 draw_invert(ModeInfo * mi)
 {
-  spherestruct *gp = &spheres[MI_SCREEN(mi)];
   Display    *display = MI_DISPLAY(mi);
   Window      window = MI_WINDOW(mi);
   /* int         angle_incr = MI_CYCLES(mi) ? MI_CYCLES(mi) : 2; */
   int         rot_incr = MI_COUNT(mi) ? MI_COUNT(mi) : 1;
+  spherestruct *gp;
+
+  if (spheres == NULL)
+ 	return;
+  gp = &spheres[MI_SCREEN(mi)];
+
+  if (!gp->glx_context)
+    return;
 
   glDrawBuffer(GL_BACK);
 
   glXMakeCurrent(display, window, *(gp->glx_context));
-  invert_draw(gp);
+  if (!invert_draw(gp)) {
+    free_invert(display, gp);
+    return;
+  }
 
   /* let's do something so we don't get bored */
   if (gp->time == STEPS-1)
@@ -155,6 +212,7 @@ draw_invert(ModeInfo * mi)
   gp->view_rotz = (int) (gp->view_rotz + rot_incr) % 360;
 
   glFinish();
+  if (MI_IS_FPS(mi)) do_fps (mi);
   glXSwapBuffers(display, window);
 }
 
@@ -164,19 +222,12 @@ release_invert(ModeInfo * mi)
   if (spheres != NULL) {
     int         screen;
 
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      spherestruct *gp = &spheres[screen];
-
-      /* Display lists MUST be freed while their glXContext is current. */
-      glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(gp->glx_context));
-
-      glDeleteLists(gp->frames, STEPS);
-      free(gp->partlist);
-      /* Don't destroy the glXContext.  init_GL does that. */
-    }
+    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+       free_invert(MI_DISPLAY(mi), &spheres[screen]);
     (void) free((void *) spheres);
-    spheres = NULL;
+    spheres = (spherestruct *) NULL;
   }
+  FreeAllGL(mi);
 }
 
 

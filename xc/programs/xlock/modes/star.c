@@ -2,7 +2,7 @@
 /* star --- flying through an asteroid field */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)star.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)star.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -23,19 +23,20 @@ static const char sccsid[] = "@(#)star.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-Oct-96: Renamed from rock.  Added trek and rock options.
- *            Combined with features from star by Heath Rice
- *            <rice@asl.dl.nec.com>.
- *            The Enterprise flys by from a few different views.
- *            Also have one view of a Romulan ship.
- *  7-Sep-96:  Fixed problems with 3d mode <theiling@coli.uni-sb.de>
- * 8-May-96: Blue on left instead of green for 3d.  It seems more common
- *           than green.  Use "-left3d Green" if you have the other kind.
- * 17-Jan-96: 3D mode for star thanks to <theiling@coli.uni-sb.de>.
- *            Get out your 3D glasses, Red on left and Blue on right.
- * 14-Apr-95: Jeremie PETIT <petit@aurora.unice.fr> added a "move" feature.
- * 2-Sep-93: xlock version David Bagley <bagleyd@tux.org>
- * 1992:     xscreensaver version Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 10-Oct-1996: Renamed from rock.  Added trek and rock options.
+ *              Combined with features from star by Heath Rice
+ *              <rice@asl.dl.nec.com>.
+ *              The Enterprise flys by from a few different views.
+ *              Romulan ship has some trouble.
+ * 07-Sep-1996: Fixed problems with 3d mode <theiling@coli.uni-sb.de>
+ * 08-May-1996: Blue on left instead of green for 3d.  It seems more common
+ *              than green.  Use "-left3d Green" if you have the other kind.
+ * 17-Jan-1996: 3D mode for star thanks to <theiling@coli.uni-sb.de>.
+ *              Get out your 3D glasses, Red on left and Blue on right.
+ * 14-Apr-1995: Jeremie PETIT <petit@aurora.unice.fr> added a "move" feature.
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
+ * 1992: xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
 /*-
@@ -84,25 +85,25 @@ static Bool straight;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-trek", ".star.trek", XrmoptionSepArg, (caddr_t) NULL},
-	{"-rock", ".star.rock", XrmoptionNoArg, (caddr_t) "on"},
-	{"+rock", ".star.rock", XrmoptionNoArg, (caddr_t) "off"},
-	{"-straight", ".star.straight", XrmoptionNoArg, (caddr_t) "on"},
-	{"+straight", ".star.straight", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-trek", (char *) ".star.trek", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-rock", (char *) ".star.rock", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+rock", (char *) ".star.rock", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-straight", (char *) ".star.straight", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+straight", (char *) ".star.straight", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & trek, "trek", "Trek", DEF_TREK, t_Int},
-	{(caddr_t *) & rock, "rock", "Rock", DEF_ROCK, t_Bool},
-	{(caddr_t *) & straight, "straight", "Straight", DEF_STRAIGHT, t_Bool}
+	{(caddr_t *) & trek, (char *) "trek", (char *) "Trek", (char *) DEF_TREK, t_Int},
+	{(caddr_t *) & rock, (char *) "rock", (char *) "Rock", (char *) DEF_ROCK, t_Bool},
+	{(caddr_t *) & straight, (char *) "straight", (char *) "Straight", (char *) DEF_STRAIGHT, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-trek num", "chance of a Star Trek encounter"},
-	{"-/+rock", "turn on/off rocks"},
-	{"-/+straight", "turn on/off spin and shifting origin"}
+	{(char *) "-trek num", (char *) "chance of a Star Trek encounter"},
+	{(char *) "-/+rock", (char *) "turn on/off rocks"},
+	{(char *) "-/+straight", (char *) "turn on/off spin and shifting origin"}
 };
 
 ModeSpecOpt star_opts =
@@ -165,8 +166,9 @@ static BitmapType trekie[] =
  */
 
 #define TREKBITS(n,w,h)\
-  sp->trekPixmaps[sp->init_treks++]=\
-    XCreateBitmapFromData(display,window,(char *)n,w,h)
+  if ((sp->trekPixmaps[sp->init_treks]=\
+  XCreateBitmapFromData(display,window,(char *)n,w,h))==None){\
+  return False;} else {sp->init_treks++;}
 
 
 typedef struct {
@@ -326,6 +328,31 @@ move_trek(starstruct * sp, int direction, int width, int height)
 	}
 	sp->trek.size.x = width;
 	sp->trek.size.y = height;
+}
+
+static void
+free_star(Display *display, starstruct *sp)
+{
+	int         i;
+
+	if (sp->astars != NULL) {
+		(void) free((void *) sp->astars);
+		sp->astars = NULL;
+	}
+	if (sp->pixmaps != NULL) {
+		for (i = 0; i < sp->max_star_size; i++)
+			XFreePixmap(display, sp->pixmaps[i]);
+		(void) free((void *) sp->pixmaps);
+		sp->pixmaps = NULL;
+	}
+	if (sp->stippledGC != None) {
+		XFreeGC(display, sp->stippledGC);
+		sp->stippledGC = None;
+	}
+	for (i = 0; i < sp->init_treks; i++) {
+		XFreePixmap(display, sp->trekPixmaps[i]);
+	}
+	sp->init_treks = 0;
 }
 
 static void
@@ -496,7 +523,7 @@ star_draw(ModeInfo * mi, astar * astars, int draw_p)
 	}
 }
 
-static void
+static Bool
 init_pixmaps(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
@@ -515,7 +542,10 @@ init_pixmaps(ModeInfo * mi)
 		sp->max_star_size = size;
 	if (sp->max_star_size > MAXSIZE)
 		sp->max_star_size = MAXSIZE;
-	sp->pixmaps = (Pixmap *) calloc(sp->max_star_size, sizeof (Pixmap));
+	if ((sp->pixmaps = (Pixmap *) calloc(sp->max_star_size,
+			sizeof (Pixmap))) == None) {
+		return False;
+	}
 	for (i = 0; i < sp->max_star_size; i++) {
 		int         h = i + MINSIZE;
 		Pixmap      p;
@@ -526,19 +556,27 @@ init_pixmaps(ModeInfo * mi)
 		else		/* Dunno why this is required */
 			p = XCreatePixmap(display, window, 2 * h, 2 * h, 1);
 		sp->pixmaps[i] = p;
-		if (!p) {
-			(void) fprintf(stderr, "Could not allocate pixmaps, in star\n");
-			return;
+		if (p == None) {
+			return False;
 		}
-		if (!fg_gc) {	/* must use drawable of pixmap, not window (fmh) */
+		if (fg_gc == None) {	/* must use drawable of pixmap, not window (fmh) */
 			gcv.foreground = 1;
 			gcv.background = 0;
-			fg_gc = XCreateGC(display, p, GCForeground | GCBackground, &gcv);
+			if ((fg_gc = XCreateGC(display, p,
+					GCForeground | GCBackground,
+					&gcv)) == None) {
+				return False;
+			}
 		}
-		if (!bg_gc) {	/* must use drawable of pixmap, not window (fmh) */
+		if (bg_gc == None) {	/* must use drawable of pixmap, not window (fmh) */
 			gcv.foreground = 0;
 			gcv.background = 1;
-			bg_gc = XCreateGC(display, p, GCForeground | GCBackground, &gcv);
+			if ((bg_gc = XCreateGC(display, p,
+					GCForeground | GCBackground,
+					&gcv)) == None) {
+				XFreeGC(display, fg_gc);
+				return False;
+			}
 		}
 		XFillRectangle(display, p, bg_gc, 0, 0, h, h);
 		if (rock) {
@@ -563,12 +601,12 @@ init_pixmaps(ModeInfo * mi)
 	}
 	XFreeGC(display, fg_gc);
 	XFreeGC(display, bg_gc);
-	if (!sp->stippledGC) {
+	if (sp->stippledGC == None) {
 		gcv.foreground = MI_BLACK_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
 		if ((sp->stippledGC = XCreateGC(display, window,
 				 GCForeground | GCBackground, &gcv)) == None)
-			return;
+			return False;
 	}
 	if (!sp->init_treks && trek) {
 /* PURIFY 4.0.1 on SunOS4 reports a 3264 byte memory leak on the next line. *
@@ -578,6 +616,7 @@ init_pixmaps(ModeInfo * mi)
 		TREKBITS(enterprise5_bits, enterprise5_width, enterprise5_height);
 		TREKBITS(enterprise6_bits, enterprise6_width, enterprise6_height);
 	}
+	return True;
 }
 
 static void
@@ -599,7 +638,6 @@ compute_move(starstruct * sp, int axe)
 				/* 0 for x, 1 for y */
 {
 	int         limit[2];
-	int         change = 0;
 
 	limit[0] = sp->midx;
 	limit[1] = sp->midy;
@@ -627,9 +665,10 @@ compute_move(starstruct * sp, int axe)
 		sp->speed_dep[axe] = -MAX_DEP_SPEED;
 
 	if (!straight && !NRAND(DIRECTION_CHANGE_RATE)) {
-		/* We change direction */
-		change = (int) (LRAND() & 1);
+		int         change = (int) (LRAND() & 1);
+
 		if (change != 1) {
+			/* We change direction */
 			if (sp->direction[axe] == 0)
 				sp->direction[axe] = change - 1;	/* 0 becomes either 1 or -1 */
 			else
@@ -642,14 +681,22 @@ compute_move(starstruct * sp, int axe)
 void
 init_star(ModeInfo * mi)
 {
-	starstruct *sp;
+	Display *display = MI_DISPLAY(mi);
 	int         i;
-	static int  first = 1;
+	starstruct *sp;
 
 	if (stars == NULL) {
 		if ((stars = (starstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (starstruct))) == NULL)
+				sizeof (starstruct))) == NULL)
 			return;
+		for (i = 0; i < RESOLUTION; i++) {
+			sin_array[i] = SINF((((float) i) / (RESOLUTION / 2.0)) * M_PI);
+			cos_array[i] = COSF((((float) i) / (RESOLUTION / 2.0)) * M_PI);
+		}
+		/* We actually only need i/speed of these. Oh well. */
+		for (i = 1; i < (int) (sizeof (depths) / sizeof (depths[0])); i++)
+			depths[i] = (float) atan(((double) 0.5) / (((double) i) / DEPTH_SCALE));
+		depths[0] = M_PI_2;	/* avoid division by 0 */
 	}
 	sp = &stars[MI_SCREEN(mi)];
 
@@ -676,24 +723,20 @@ init_star(ModeInfo * mi)
 	if (sp->speed > 100)
 		sp->speed = 100;
 
-	if (first) {
-		first = 0;
-		for (i = 0; i < RESOLUTION; i++) {
-			sin_array[i] = SINF((((float) i) / (RESOLUTION / 2.0)) * M_PI);
-			cos_array[i] = COSF((((float) i) / (RESOLUTION / 2.0)) * M_PI);
+	if (sp->astars == NULL)
+		if ((sp->astars = (astar *) calloc(sp->nstars,
+				sizeof (astar))) == NULL) {
+			free_star(display, sp);
+			return;
 		}
-		/* We actually only need i/speed of these. Oh well. */
-		for (i = 1; i < (int) (sizeof (depths) / sizeof (depths[0])); i++)
-			depths[i] = (float) atan(((double) 0.5) / (((double) i) / DEPTH_SCALE));
-		depths[0] = M_PI_2;	/* avoid division by 0 */
-	}
-	if (!sp->astars)
-		sp->astars = (astar *) calloc(sp->nstars, sizeof (astar));
-	if (!sp->pixmaps)
-		init_pixmaps(mi);
+	if (sp->pixmaps == NULL)
+		if (!init_pixmaps(mi)) {
+			free_star(display, sp);
+			return;
+		}
 
 	/* don't want any exposure events from XCopyPlane */
-	XSetGraphicsExposures(MI_DISPLAY(mi), MI_GC(mi), False);
+	XSetGraphicsExposures(display, MI_GC(mi), False);
 	if (MI_IS_INSTALL(mi) && MI_IS_USE3D(mi)) {
 		MI_CLEARWINDOWCOLOR(mi, MI_NONE_COLOR(mi));
 	} else {
@@ -704,7 +747,13 @@ init_star(ModeInfo * mi)
 void
 draw_star(ModeInfo * mi)
 {
-	starstruct *sp = &stars[MI_SCREEN(mi)];
+	starstruct *sp;
+
+	if (stars == NULL)
+		return;
+	sp = &stars[MI_SCREEN(mi)];
+	if (sp->astars == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -739,23 +788,8 @@ release_star(ModeInfo * mi)
 	if (stars != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			Display    *display = MI_DISPLAY(mi);
-			starstruct *sp = &stars[screen];
-			int         i;
-
-			if (sp->astars != NULL)
-				(void) free((void *) sp->astars);
-			if (sp->pixmaps != NULL) {
-				for (i = 0; i < sp->max_star_size; i++)
-					XFreePixmap(display, sp->pixmaps[i]);
-				(void) free((void *) sp->pixmaps);
-			}
-			if (sp->stippledGC != NULL)
-				XFreeGC(display, sp->stippledGC);
-			for (i = 0; i < sp->init_treks; i++)
-				XFreePixmap(display, sp->trekPixmaps[i]);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_star(MI_DISPLAY(mi), &stars[screen]);
 		(void) free((void *) stars);
 		stars = NULL;
 	}

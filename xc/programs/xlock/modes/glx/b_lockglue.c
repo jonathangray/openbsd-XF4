@@ -1,11 +1,15 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)b_lockglue.c  4.11 98/06/16 xlockmore";
+static const char sccsid[] = "@(#)b_lockglue.c  5.01 2001/03/01 xlockmore";
 
 #endif
 
 /*-
  * BUBBLE3D (C) 1998 Richard W.M. Jones.
  * b_lockglue.c: Glue to make this all work with xlockmore.
+ *
+ * Revision History:
+ * 01-Mar-2001: Added FPS stuff - Eric Lassauge <lassauge@mail.dotcom.fr>
+ *
  */
 
 #include "bubble3d.h"
@@ -34,7 +38,7 @@ struct glb_config glb_config =
 	1.5,			/* scale_factor */
 	-4,			/* screen_bottom */
 	4,			/* screen_top */
-#if 0
+#if 1
 	{0.1, 0.0, 0.4, 0.0},	/* bg_colour */
 #else
 	{0.0, 0.0, 0.0, 0.0},	/* bg_colour */
@@ -60,14 +64,16 @@ struct glb_config glb_config =
 #ifdef MODE_bubble3d
 
 ModeSpecOpt bubble3d_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
-ModStruct   bubbles3d_description =
-{"bubbles3d", "init_bubble3d", "draw_bubble3d", "release_bubble3d",
- "draw_bubble3d", "change_bubble3d", NULL, &bubble3d_opts,
- 1000, 1, 2, 1, 64, 1.0, "",
- "Richard Jones's GL bubbles", 0, NULL };
+ModStruct   bubble3d_description =
+{(char *) "bubble3d", (char *) "init_bubble3d",
+ (char *) "draw_bubble3d", (char *) "release_bubble3d",
+ (char *) "draw_bubble3d", (char *) "change_bubble3d",
+ NULL, &bubble3d_opts,
+ 1000, 1, 2, 1, 64, 1.0, (char *) "",
+ (char *) "Richard Jones's GL bubbles", 0, NULL};
 
 #endif /* USE_MODULES */
 
@@ -108,18 +114,15 @@ init_bubble3d(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	int         screen = MI_SCREEN(mi);
 	struct context *c;
 
-	if (contexts == 0) {
-		contexts = (struct context *) malloc(sizeof (struct context) * MI_NUM_SCREENS(mi));
-
-		if (contexts == 0)
+	if (contexts == NULL) {
+		if ((contexts = (struct context *) malloc(sizeof (struct context) *
+				MI_NUM_SCREENS(mi))) == NULL)
 			return;
 	}
-	c = &contexts[screen];
-	c->glx_context = init_GL(mi);
-	if (c->glx_context != 0) {
+	c = &contexts[MI_SCREEN(mi)];
+	if ((c->glx_context = init_GL(mi)) != NULL) {
 		init(c);
 		reshape(MI_WIDTH(mi), MI_HEIGHT(mi));
 		do_display(c);
@@ -132,12 +135,15 @@ init_bubble3d(ModeInfo * mi)
 void
 draw_bubble3d(ModeInfo * mi)
 {
-	struct context *c = &contexts[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	struct context *c;
+
+	if (contexts == NULL)
+		return;
+	c = &contexts[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!c->glx_context)
 		return;
 
@@ -146,6 +152,7 @@ draw_bubble3d(ModeInfo * mi)
 
 	do_display(c);
 
+	if (MI_IS_FPS(mi)) do_fps (mi);
 	glFinish();
 	glXSwapBuffers(display, window);
 }
@@ -159,12 +166,22 @@ change_bubble3d(ModeInfo * mi)
 void
 release_bubble3d(ModeInfo * mi)
 {
-	struct context *c = &contexts[MI_SCREEN(mi)];
 
-	if (contexts != 0) {
-		glb_draw_end(c->draw_context);
+	if (contexts != NULL) {
+		int         screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
+			struct context *c = &contexts[screen];
+
+			if (c->glx_context) {
+	               		glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(c->glx_context));
+				if (c->draw_context) {
+					glb_draw_end(c->draw_context);
+				}
+			}
+		}
 		(void) free((void *) contexts);
-		contexts = 0;
+		contexts = (struct context *) NULL;
 	}
 	FreeAllGL(mi);
 }

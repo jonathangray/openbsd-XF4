@@ -14,7 +14,7 @@
  */
 
 /* Define to empty if the keyword does not work.  */
-#if !defined(_HPUX_SOURCE)
+#if !defined(_HPUX_SOURCE) && !defined(__cplusplus) && !defined(c_plusplus)
 #undef const
 #endif
 
@@ -92,6 +92,10 @@
 #undef HAVE_RAND48
 #undef HAVE_RANDOM
 #undef HAVE_RAND
+
+/* Avoid delaring these if the system has already done it for us. */
+#undef DECLARED_GETENV
+#undef DECLARED_SRAND48
 
 /* Enable use of matherr function */
 #undef USE_MATHERR
@@ -236,6 +240,9 @@
 /* Enable automatic logout mode (does not come up in random mode) */
 #undef USE_BOMB
 
+/* Disable interactive modes (useful in production environments) */
+#undef DISABLE_INTERACTIVE
+
 /* Enable unstable modes */
 #undef USE_UNSTABLE
 
@@ -265,8 +272,11 @@
 /* Define to use and link against PAM */
 #undef PAM
 
-/* AIX AFS Passwording */
+/* AIX & Solaris AFS Passwording */
 #undef AFS
+
+/* DEC Tru64 SIA Passwording */
+#undef SIA
 
 /* SUNOS Adjunct Passwording */
 #undef SUNOS_ADJUNCT_PASSWD
@@ -284,6 +294,7 @@
 #undef NL
 #undef FR
 #undef DE
+#undef JP
 
 /* enabling original mail icon xpm patch */
 #undef ORIGINAL_XPM_PATCH
@@ -323,11 +334,27 @@
  */
 /* #define COMPLIANT_COLORMAP */
 
+/* Blank only: may be good on high use workstations where cpu usage is
+   precious...
+ */
+/* #define BLANK_ONLY */
+
 /* Bad version of PAM  */
 /* #define BAD_PAM */
 
 /* Anybody with a password can unlock, good to use with HAVE_SYSLOG_H */
 /* #define GLOBAL_UNLOCK */
+
+/* I use this for testing SunCplusplus
+   I still get this in the link:
+   Undefined                       first referenced
+   symbol                             in file
+   gethostbyname(const char*)               ../xlock/resource.o
+   kill(long, int)                         ../xlock/logout.o
+   signal(int, void (*)(int))                   ../xlock/logout.o
+   also define HAVE_USLEEP
+ */
+/* #define SunCplusplus */
 
 /* I use this when I am working on something */
 /* #define UNDER_DEVELOPMENT */

@@ -2,7 +2,7 @@
 /* voters --- Dewdney's Voting Simulation */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)voters.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)voters.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,10 +22,11 @@ static const char sccsid[] = "@(#)voters.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-Jun-97: Coded from A.K. Dewdney's "The Armchair Universe, Computer
- *            Recreations from the Pages of Scientific American Magazine"
- *            W.H. Freedman and Company, New York, 1988  (Apr 1985)
- *            Used wator.c and demon.c as a guide.
+ * 01-Nov-2000: Allocation checks
+ * 10-Jun-1997: Coded from A.K. Dewdney's "The Armchair Universe, Computer
+ *              Recreations from the Pages of Scientific American Magazine"
+ *              W.H. Freedman and Company, New York, 1988  (Apr 1985)
+ *              Used wator.c and demon.c as a guide.
  */
 
 #ifdef STANDALONE
@@ -57,17 +58,17 @@ static int  neighbors;
 
 static XrmOptionDescRec opts[] =
 {
-        {"-neighbors", ".voters.neighbors", XrmoptionSepArg, (caddr_t) NULL}
+        {(char *) "-neighbors", (char *) ".voters.neighbors", XrmoptionSepArg, (caddr_t) NULL}
 };
 
 static argtype vars[] =
 {
-        {(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int
+        {(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int
 }
 };
 static OptionStruct desc[] =
 {
-        {"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
+        {(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
 };
 
 ModeSpecOpt voters_opts =
@@ -247,30 +248,36 @@ drawcell(ModeInfo * mi, int col, int row, unsigned long color, int bitmap,
 	}
 }
 
-static void
+static Bool
 init_list(voterstruct * vp)
 {
 	/* Waste some space at the beginning and end of list
 	   so we do not have to complicated checks against falling off the ends. */
-	vp->last = (CellList *) malloc(sizeof (CellList));
-	vp->first = (CellList *) malloc(sizeof (CellList));
+	if (((vp->last = (CellList *) malloc(sizeof (CellList))) == NULL) ||
+	    ((vp->first = (CellList *) malloc(sizeof (CellList))) == NULL)) {
+		return False;
+	}
 	vp->first->previous = vp->last->next = NULL;
 	vp->first->next = vp->last->previous = NULL;
 	vp->first->next = vp->last;
 	vp->last->previous = vp->first;
+	return True;
 }
 
-static void
+static Bool
 addto_list(voterstruct * vp, cellstruct info)
 {
 	CellList   *curr;
 
-	curr = (CellList *) malloc(sizeof (CellList));
+	if ((curr = (CellList *) malloc(sizeof (CellList))) == NULL) {
+		return False;
+	}
 	vp->last->previous->next = curr;
 	curr->previous = vp->last->previous;
 	curr->next = vp->last;
 	vp->last->previous = curr;
 	curr->info = info;
+	return True;
 }
 
 static void
@@ -547,8 +554,14 @@ advanceColors(ModeInfo * mi, int col, int row)
 void
 refresh_voters(ModeInfo * mi)
 {
-	voterstruct *vp = &voters[MI_SCREEN(mi)];
 	int         col, row, colrow;
+	voterstruct *vp;
+
+	if (voters == NULL)
+		return;
+	vp = &voters[MI_SCREEN(mi)];
+	if (vp->first == NULL)
+		return;
 
 	if (vp->painted) {
 		MI_CLEARWINDOW(mi);
@@ -564,12 +577,30 @@ refresh_voters(ModeInfo * mi)
 	}
 }
 
+static void
+free_voters(voterstruct *vp)
+{
+	if (vp->first != NULL) {
+		flush_list(vp);
+		(void) free((void *) vp->first);
+		vp->first = NULL;
+	}
+	if (vp->last != NULL) {
+		(void) free((void *) vp->last);
+		vp->last = NULL;
+	}
+	if (vp->arr != NULL) {
+		(void) free((void *) vp->arr);
+		vp->arr = NULL;
+	}
+}
+
 void
 init_voters(ModeInfo * mi)
 {
 	int         size = MI_SIZE(mi);
-	voterstruct *vp;
 	int         i, col, row, colrow;
+	voterstruct *vp;
 
 	if (voters == NULL) {
 		if ((voters = (voterstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -582,7 +613,10 @@ init_voters(ModeInfo * mi)
 	if (!vp->first) {	/* Genesis of democracy */
 		icon_width = donkey_width;
 		icon_height = donkey_height;
-		init_list(vp);
+		if (!init_list(vp)) {
+			free_voters(vp);
+			return;
+		}
 		for (i = 0; i < BITMAPS; i++) {
 			logo[i].width = icon_width;
 			logo[i].height = icon_height;
@@ -635,7 +669,7 @@ init_voters(ModeInfo * mi)
 		vp->ncols = nccols / 2;
 		vp->nrows = 2 * (ncrows / 4);
 		vp->xb = (vp->width - vp->xs * nccols) / 2 + vp->xs / 2;
-		vp->yb = (vp->height - vp->ys * (ncrows / 2) * 2) / 2 + vp->ys;
+		vp->yb = (vp->height - vp->ys * (ncrows / 2) * 2) / 2 + vp->ys - 2;
 		for (sides = 0; sides < 6; sides++) {
 			vp->hexagonList[sides].x = (vp->xs - 1) * hexagonUnit[sides].x;
 			vp->hexagonList[sides].y =
@@ -711,7 +745,10 @@ init_voters(ModeInfo * mi)
 	vp->npositions = vp->ncols * vp->nrows;
 	if (vp->arr != NULL)
 		(void) free((void *) vp->arr);
-	vp->arr = (char *) calloc(vp->npositions, sizeof (char));
+	if ((vp->arr = (char *) calloc(vp->npositions, sizeof (char))) == NULL) {
+		free_voters(vp);
+		return;
+	}
 
 	/* Play G-d with these numbers */
 	vp->nparties = MI_COUNT(mi);
@@ -741,14 +778,19 @@ init_voters(ModeInfo * mi)
 void
 draw_voters(ModeInfo * mi)
 {
-	voterstruct *vp = &voters[MI_SCREEN(mi)];
 	int         i, spineless_dude, neighbor_direction;
 	int         spineless_col, spineless_row;
 	int         new_opinion, old_opinion;
 	cellstruct  info;
+	voterstruct *vp;
+
+	if (voters == NULL)
+		return;
+	vp = &voters[MI_SCREEN(mi)];
+	if (vp->first == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	vp->painted = True;
 	if (vp->busyLoop) {
 		if (vp->busyLoop >= 5000)
@@ -783,7 +825,10 @@ draw_voters(ModeInfo * mi)
 		info.row = spineless_row;
 		if (MI_NPIXELS(mi) > 2) {
 			advanceColors(mi, spineless_col, spineless_row);
-			addto_list(vp, info);
+			if (!addto_list(vp, info)) {
+				free_voters(vp);
+				return;
+			}
 		}
 		drawcell(mi, spineless_col, spineless_row,
 			 (MI_NPIXELS(mi) + info.age / FACTOR +
@@ -805,18 +850,8 @@ release_voters(ModeInfo * mi)
 	if (voters != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			voterstruct *vp = &voters[screen];
-
-			if (vp->first)
-				flush_list(vp);
-			if (vp->last)
-				(void) free((void *) vp->last);
-			if (vp->first)
-				(void) free((void *) vp->first);
-			if (vp->arr != NULL)
-				(void) free((void *) vp->arr);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_voters(&voters[screen]);
 		(void) free((void *) voters);
 		voters = NULL;
 	}

@@ -2,7 +2,7 @@
 /* moebius --- Moebius Strip II, an Escher-like GL scene with ants. */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)moebius.c	4.08 97/01/04 xlockmore";
+static const char sccsid[] = "@(#)moebius.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -36,7 +36,7 @@ static const char sccsid[] = "@(#)moebius.c	4.08 97/01/04 xlockmore";
  * OpenGL at home.
  *
  * Since I'm not a native English speaker, my apologies for any grammatical
- * mistake.
+ * mistakes.
  *
  * My e-mail address is
  * m-vianna@usa.net
@@ -44,24 +44,27 @@ static const char sccsid[] = "@(#)moebius.c	4.08 97/01/04 xlockmore";
  * Marcelo F. Vianna (Jun-01-1997)
  *
  * Revision History:
- * 01-Jan-98: Mode separated from escher and renamed
- * 08-Jun-97: New scene implemented: "Impossible Cage" based in a M.C. Escher's
- *            painting with the same name (quite similar). The first GL mode
- *            to use texture mapping.
- *            The "Impossible Cage" scene doesn't use DEPTH BUFFER, the
- *            wood planks are drawn consistently using GL_CULL_FACE, and
- *            the painter's algorithm is used to sort the planks.
- *            Marcelo F. Vianna.
- * 07-Jun-97: Speed ups in Moebius Strip using GL_CULL_FACE.
- *            Marcelo F. Vianna.
- * 03-Jun-97: Initial Release (Only one scene: "Moebius Strip")
- *            The Moebius Strip scene was inspirated in a M.C. Escher's
- *            painting named Moebius Strip II in wich ants walk across a
- *            Moebius Strip path, sometimes meeting each other and sometimes
- *            being in "opposite faces" (note that the moebius strip has
- *            only one face and one edge).
- *            Marcelo F. Vianna.
- *
+ * 01-Mar-2001: backported from xscreensaver by lassauge@mail.dotcom.fr
+ *    Feb-2001: Made motion and rotation be smoother Jamie Zawinski
+ *              <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 01-Jan-1998: Mode separated from escher and renamed
+ * 08-Jun-1997: New scene implemented: "Impossible Cage" based in a M.C.
+ *              Escher's painting with the same name (quite similar). The
+ *              first GL mode to use texture mapping.
+ *              The "Impossible Cage" scene doesn't use DEPTH BUFFER, the
+ *              wood planks are drawn consistently using GL_CULL_FACE, and
+ *              the painter's algorithm is used to sort the planks.
+ *              Marcelo F. Vianna.
+ * 07-Jun-1997: Speed ups in Moebius Strip using GL_CULL_FACE.
+ *              Marcelo F. Vianna.
+ * 03-Jun-1997: Initial Release (Only one scene: "Moebius Strip")
+ *              The Moebius Strip scene was inspirated in a M.C. Escher's
+ *              painting named Moebius Strip II in wich ants walk across a
+ *              Moebius Strip path, sometimes meeting each other and sometimes
+ *              being in "opposite faces" (note that the moebius strip has
+ *              only one face and one edge).
+ *              Marcelo F. Vianna.
  */
 
 /*-
@@ -79,19 +82,22 @@ static const char sccsid[] = "@(#)moebius.c	4.08 97/01/04 xlockmore";
 #include <X11/Intrinsic.h>
 
 #ifdef STANDALONE
-#define PROGCLASS "Moebius"
-#define HACK_INIT init_moebius
-#define HACK_DRAW draw_moebius
-#define moebius_opts xlockmore_opts
-#define DEFAULTS "*delay: 1000 \n"
-#include "xlockmore.h"		/* from the xscreensaver distribution */
+# define PROGCLASS			"Moebius"
+# define HACK_INIT			init_moebius
+# define HACK_DRAW			draw_moebius
+# define HACK_RESHAPE			reshape_moebius
+# define moebius_opts			xlockmore_opts
+# define DEFAULTS			"*cycles:	1       \n"	\
+					"*delay:	20000   \n"	\
+					"*showFps:      False   \n"	\
+					"*wireframe:	False	\n"
+# include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
-#include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+# include "xlock.h"		/* from the xlockmore distribution */
+# include "visgl.h"
 #endif /* !STANDALONE */
 
 #ifdef MODE_moebius
-
 
 #include <GL/glu.h>
 #include "e_textures.h"
@@ -104,20 +110,21 @@ static int  noants;
 
 static XrmOptionDescRec opts[] =
 {
-  {"-solidmoebius", ".moebius.solidmoebius", XrmoptionNoArg, (caddr_t) "on"},
- {"+solidmoebius", ".moebius.solidmoebius", XrmoptionNoArg, (caddr_t) "off"},
-	{"-noants", ".moebius.noants", XrmoptionNoArg, (caddr_t) "on"},
-	{"+noants", ".moebius.noants", XrmoptionNoArg, (caddr_t) "off"}
+  {(char *) "-solidmoebius", (char *) ".moebius.solidmoebius", XrmoptionNoArg, (caddr_t) "on"},
+  {(char *) "+solidmoebius", (char *) ".moebius.solidmoebius", XrmoptionNoArg, (caddr_t) "off"},
+  {(char *) "-noants", (char *) ".moebius.noants", XrmoptionNoArg, (caddr_t) "on"},
+  {(char *) "+noants", (char *) ".moebius.noants", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & solidmoebius, "solidmoebius", "Solidmoebius", DEF_SOLIDMOEBIUS, t_Bool},
-	{(caddr_t *) & noants, "noants", "Noants", DEF_NOANTS, t_Bool}
+  {(caddr_t *) & solidmoebius, (char *) "solidmoebius", (char *) "Solidmoebius", (char *) DEF_SOLIDMOEBIUS, t_Bool},
+  {(caddr_t *) & noants, (char *) "noants", (char *) "Noants", (char *) DEF_NOANTS, t_Bool}
+
 };
 static OptionStruct desc[] =
 {
-	{"-/+solidmoebius", "select between a SOLID or a NET Moebius Strip"},
-	{"-/+noants", "turn on/off walking ants"}
+	{(char *) "-/+solidmoebius", (char *) "select between a SOLID or a NET Moebius Strip"},
+	{(char *) "-/+noants", (char *) "turn on/off walking ants"}
 };
 
 ModeSpecOpt moebius_opts =
@@ -141,14 +148,24 @@ ModStruct   moebius_description =
 #define Pi                         M_PI
 #endif
 
+#define ObjMoebiusStrip 0
+#define ObjAntBody      1
+#define MaxObj          2
+
 /*************************************************************************/
 
 typedef struct {
 	GLint       WindH, WindW;
 	GLfloat     step;
 	GLfloat     ant_position;
-	int         AreObjectsDefined[2];
+	Bool        AreObjectsDefined[MaxObj];
 	GLXContext *glx_context;
+
+  GLfloat rotx, roty, rotz;	   /* current object rotation */
+  GLfloat dx, dy, dz;		   /* current rotational velocity */
+  GLfloat ddx, ddy, ddz;	   /* current rotational acceleration */
+  GLfloat d_max;			   /* max velocity */
+
 } moebiusstruct;
 
 static float front_shininess[] =
@@ -191,37 +208,38 @@ static float MaterialGray6[] =
 static float MaterialGray8[] =
 {0.8, 0.8, 0.8, 1.0};
 
-static moebiusstruct *moebius = NULL;
-static GLuint objects;
+static moebiusstruct *moebius = (moebiusstruct *) NULL;
+static GLuint objects = 0;
 
 #define NUM_SCENES      2
 
-#define ObjMoebiusStrip 0
-#define ObjAntBody      1
-
-static void
+static Bool
 mySphere(float radius)
 {
 	GLUquadricObj *quadObj;
 
-	quadObj = gluNewQuadric();
+	if ((quadObj = gluNewQuadric()) == 0)
+		return False;
 	gluQuadricDrawStyle(quadObj, (GLenum) GLU_FILL);
 	gluSphere(quadObj, radius, 16, 16);
 	gluDeleteQuadric(quadObj);
+	return True;
 }
 
-static void
+static Bool
 myCone(float radius)
 {
 	GLUquadricObj *quadObj;
 
-	quadObj = gluNewQuadric();
+	if ((quadObj = gluNewQuadric()) == 0)
+		return False;
 	gluQuadricDrawStyle(quadObj, (GLenum) GLU_FILL);
 	gluCylinder(quadObj, radius, 0, radius * 3, 8, 1);
 	gluDeleteQuadric(quadObj);
+	return True;
 }
 
-static void
+static Bool
 draw_moebius_ant(moebiusstruct * mp, float *Material, int mono)
 {
 	static float ant_step = 0;
@@ -238,31 +256,39 @@ draw_moebius_ant(moebiusstruct * mp, float *Material, int mono)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Material);
 	if (!mp->AreObjectsDefined[ObjAntBody]) {
 		glNewList(objects + ObjAntBody, GL_COMPILE_AND_EXECUTE);
+		if (glGetError() != GL_NO_ERROR) {
+			return False;
+		}
 		glEnable(GL_CULL_FACE);
 		glPushMatrix();
 		glScalef(1, 1.3, 1);
-		mySphere(0.18);
+		if (!mySphere(0.18))
+			return False;
 		glScalef(1, 1 / 1.3, 1);
 		glTranslatef(0.00, 0.30, 0.00);
-		mySphere(0.2);
+		if (!mySphere(0.2))
+			return False;
 
 		glTranslatef(-0.05, 0.17, 0.05);
 		glRotatef(-90, 1, 0, 0);
 		glRotatef(-25, 0, 1, 0);
-		myCone(0.05);
+		if (!myCone(0.05))
+			return False;
 		glTranslatef(0.00, 0.10, 0.00);
-		myCone(0.05);
+		if (!myCone(0.05))
+			return False;
 		glRotatef(25, 0, 1, 0);
 		glRotatef(90, 1, 0, 0);
 
 		glScalef(1, 1.3, 1);
 		glTranslatef(0.15, -0.65, 0.05);
-		mySphere(0.25);
+		if (!mySphere(0.25))
+			return False;
 		glScalef(1, 1 / 1.3, 1);
 		glPopMatrix();
 		glDisable(GL_CULL_FACE);
 		glEndList();
-		mp->AreObjectsDefined[ObjAntBody] = 1;
+		mp->AreObjectsDefined[ObjAntBody] = True;
 #ifdef DEBUG_LISTS
 		(void) printf("Ant drawn SLOWLY\n");
 #endif
@@ -388,6 +414,7 @@ draw_moebius_ant(moebiusstruct * mp, float *Material, int mono)
 	glEnable(GL_LIGHTING);
 
 	ant_step += 0.3;
+	return True;
 }
 
 static void
@@ -413,7 +440,7 @@ RotateAaroundU(float Ax, float Ay, float Az,
 
 #define MoebiusDivisions 40
 #define MoebiusTransversals 4
-static void
+static Bool
 draw_moebius_strip(ModeInfo * mi)
 {
 	GLfloat     Phi, Theta;
@@ -426,6 +453,9 @@ draw_moebius_strip(ModeInfo * mi)
 
 	if (!mp->AreObjectsDefined[ObjMoebiusStrip]) {
 		glNewList(objects + ObjMoebiusStrip, GL_COMPILE_AND_EXECUTE);
+		if (glGetError() != GL_NO_ERROR) {
+			return False;
+		}
 
 		if (solidmoebius) {
 			glBegin(GL_QUAD_STRIP);
@@ -493,7 +523,7 @@ draw_moebius_strip(ModeInfo * mi)
 		}
 
 		glEndList();
-		mp->AreObjectsDefined[ObjMoebiusStrip] = 1;
+		mp->AreObjectsDefined[ObjMoebiusStrip] = True;
 #ifdef DEBUG_LISTS
 		(void) printf("Strip drawn SLOWLY\n");
 #endif
@@ -511,7 +541,8 @@ draw_moebius_strip(ModeInfo * mi)
 		glTranslatef(3, 0, 0);
 		glRotatef(mp->ant_position / 2 + 90, 0, 1, 0);
 		glTranslatef(0.28, 0, -0.45);
-		draw_moebius_ant(mp, MaterialYellow, mono);
+		if (!draw_moebius_ant(mp, MaterialYellow, mono))
+			return False;
 		glPopMatrix();
 
 		/* DRAW YELLOW ANT */
@@ -520,7 +551,8 @@ draw_moebius_strip(ModeInfo * mi)
 		glTranslatef(3, 0, 0);
 		glRotatef(mp->ant_position / 2, 0, 1, 0);
 		glTranslatef(0.28, 0, -0.45);
-		draw_moebius_ant(mp, MaterialBlue, mono);
+		if (!draw_moebius_ant(mp, MaterialBlue, mono))
+			return False;
 		glPopMatrix();
 
 		/* DRAW GREEN ANT */
@@ -530,7 +562,8 @@ draw_moebius_strip(ModeInfo * mi)
 		glRotatef(-mp->ant_position / 2, 0, 1, 0);
 		glTranslatef(0.28, 0, 0.45);
 		glRotatef(180, 1, 0, 0);
-		draw_moebius_ant(mp, MaterialGreen, mono);
+		if (!draw_moebius_ant(mp, MaterialGreen, mono))
+			return False;
 		glPopMatrix();
 
 		/* DRAW CYAN ANT */
@@ -540,16 +573,18 @@ draw_moebius_strip(ModeInfo * mi)
 		glRotatef(-mp->ant_position / 2 + 90, 0, 1, 0);
 		glTranslatef(0.28, 0, 0.45);
 		glRotatef(180, 1, 0, 0);
-		draw_moebius_ant(mp, MaterialCyan, mono);
+		if (!draw_moebius_ant(mp, MaterialCyan, mono))
+			return False;
 		glPopMatrix();
 	}
 	mp->ant_position += 1;
+	return True;
 }
 #undef MoebiusDivisions
 #undef MoebiusTransversals
 
 static void
-reshape(ModeInfo * mi, int width, int height)
+reshape_moebius(ModeInfo * mi, int width, int height)
 {
 	moebiusstruct *mp = &moebius[MI_SCREEN(mi)];
 
@@ -568,8 +603,8 @@ reshape(ModeInfo * mi, int width, int height)
 		glLineWidth(1);
 		glPointSize(1);
 	}
-	mp->AreObjectsDefined[ObjMoebiusStrip] = 0;
-	mp->AreObjectsDefined[ObjAntBody] = 0;
+	mp->AreObjectsDefined[ObjMoebiusStrip] = False;
+	mp->AreObjectsDefined[ObjAntBody] = False;
 }
 
 static void
@@ -612,10 +647,82 @@ pinit(void)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, front_specular);
 }
 
+
+
+/* lifted from lament.c */
+#define RANDSIGN() ((LRAND() & 1) ? 1 : -1)
+#define FLOATRAND(a) (((double)LRAND() / (double)MAXRAND) * a)
+
+static void
+rotate(GLfloat *pos, GLfloat *v, GLfloat *dv, GLfloat max_v)
+{
+  double ppos = *pos;
+
+  /* tick position */
+  if (ppos < 0)
+    ppos = -(ppos + *v);
+  else
+    ppos += *v;
+
+  if (ppos > 1.0)
+    ppos -= 1.0;
+  else if (ppos < 0)
+    ppos += 1.0;
+
+  if (ppos < 0) abort();
+  if (ppos > 1.0) abort();
+  *pos = (*pos > 0 ? ppos : -ppos);
+
+  /* accelerate */
+  *v += *dv;
+
+  /* clamp velocity */
+  if (*v > max_v || *v < -max_v)
+    {
+      *dv = -*dv;
+    }
+  /* If it stops, start it going in the other direction. */
+  else if (*v < 0)
+    {
+      if (random() % 4)
+	{
+	  *v = 0;
+
+	  /* keep going in the same direction */
+	  if (random() % 2)
+	    *dv = 0;
+	  else if (*dv < 0)
+	    *dv = -*dv;
+	}
+      else
+	{
+	  /* reverse gears */
+	  *v = -*v;
+	  *dv = -*dv;
+	  *pos = -*pos;
+	}
+    }
+
+  /* Alter direction of rotational acceleration randomly. */
+  if (! (random() % 120))
+    *dv = -*dv;
+
+  /* Change acceleration very occasionally. */
+  if (! (random() % 200))
+    {
+      if (*dv == 0)
+	*dv = 0.00001;
+      else if (random() & 1)
+	*dv *= 1.2;
+      else
+	*dv *= 0.8;
+    }
+}
+
+
 void
 init_moebius(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	moebiusstruct *mp;
 
 	if (moebius == NULL) {
@@ -623,16 +730,39 @@ init_moebius(ModeInfo * mi)
 					    sizeof (moebiusstruct))) == NULL)
 			return;
 	}
-	mp = &moebius[screen];
+	mp = &moebius[MI_SCREEN(mi)];
 	mp->step = NRAND(90);
 	mp->ant_position = NRAND(90);
 
+    mp->rotx = FLOATRAND(1.0) * RANDSIGN();
+    mp->roty = FLOATRAND(1.0) * RANDSIGN();
+    mp->rotz = FLOATRAND(1.0) * RANDSIGN();
+
+    /* bell curve from 0-1.5 degrees, avg 0.75 */
+    mp->dx = (FLOATRAND(1) + FLOATRAND(1) + FLOATRAND(1)) / (360*2);
+    mp->dy = (FLOATRAND(1) + FLOATRAND(1) + FLOATRAND(1)) / (360*2);
+    mp->dz = (FLOATRAND(1) + FLOATRAND(1) + FLOATRAND(1)) / (360*2);
+
+    mp->d_max = mp->dx * 2;
+
+    mp->ddx = 0.00006 + FLOATRAND(0.00003);
+    mp->ddy = 0.00006 + FLOATRAND(0.00003);
+    mp->ddz = 0.00006 + FLOATRAND(0.00003);
+
+    mp->ddx = 0.00001;
+    mp->ddy = 0.00001;
+    mp->ddz = 0.00001;
+
 	if ((mp->glx_context = init_GL(mi)) != NULL) {
 
-		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
+		reshape_moebius(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		glDrawBuffer(GL_BACK);
 		if (!glIsList(objects))
-			objects = glGenLists(3);
+			if ((objects = glGenLists(MaxObj)) == 0) {
+				MI_CLEARWINDOW(mi);
+				release_moebius(mi);
+				return;
+			}
 		pinit();
 	} else {
 		MI_CLEARWINDOW(mi);
@@ -642,9 +772,14 @@ init_moebius(ModeInfo * mi)
 void
 draw_moebius(ModeInfo * mi)
 {
-	moebiusstruct *mp = &moebius[MI_SCREEN(mi)];
+	moebiusstruct *mp;
+
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+
+        if (moebius == NULL)
+	    return;
+	mp = &moebius[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -665,14 +800,31 @@ draw_moebius(ModeInfo * mi)
 		glScalef(Scale4Iconic * mp->WindH / mp->WindW, Scale4Iconic, Scale4Iconic);
 	}
 
+    {
+      GLfloat x = mp->rotx;
+      GLfloat y = mp->roty;
+      GLfloat z = mp->rotz;
+      if (x < 0) x = 1 - (x + 1);
+      if (y < 0) y = 1 - (y + 1);
+      if (z < 0) z = 1 - (z + 1);
+      glRotatef(x * 360, 1.0, 0.0, 0.0);
+      glRotatef(y * 360, 0.0, 1.0, 0.0);
+      glRotatef(z * 360, 0.0, 0.0, 1.0);
+    }
+
 	/* moebius */
-	glRotatef(mp->step * 100, 1, 0, 0);
-	glRotatef(mp->step * 95, 0, 1, 0);
-	glRotatef(mp->step * 90, 0, 0, 1);
-	draw_moebius_strip(mi);
+	if (!draw_moebius_strip(mi)) {
+		release_moebius(mi);
+		return;
+	}
 
 	glPopMatrix();
 
+    rotate(&mp->rotx, &mp->dx, &mp->ddx, mp->d_max);
+    rotate(&mp->roty, &mp->dy, &mp->ddy, mp->d_max);
+    rotate(&mp->rotz, &mp->dz, &mp->ddz, mp->d_max);
+
+    if (MI_IS_FPS(mi)) do_fps (mi);
 	glFlush();
 
 	glXSwapBuffers(display, window);
@@ -697,10 +849,11 @@ release_moebius(ModeInfo * mi)
 {
 	if (moebius != NULL) {
 		(void) free((void *) moebius);
-		moebius = NULL;
+		moebius = (moebiusstruct *) NULL;
 	}
 	if (glIsList(objects)) {
-		glDeleteLists(objects, 3);
+		glDeleteLists(objects, MaxObj);
+		objects = 0;
 	}
 	FreeAllGL(mi);
 }

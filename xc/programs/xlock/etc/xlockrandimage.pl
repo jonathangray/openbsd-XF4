@@ -6,7 +6,7 @@
 # By the way the typical other xlock options that would be used here are
 # -mode [image | puzzle] -install
 
-$file = shift(@ARGV);
+local($file) = shift(@ARGV);
 if ($file eq "") {
     print "\nUsage: $0 [DIRECTORY | FILE] [other xlock options]\n";
     print "\tother xlock options typically are: -mode [image | puzzle] -install\n";

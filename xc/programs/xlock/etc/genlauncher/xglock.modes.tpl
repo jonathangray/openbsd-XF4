@@ -106,7 +106,11 @@ struct_option_bool BoolOpt[] =
   {"usefirst", "usefirst", "This option enables xlock to use the first keystroke in the password", '\000', '\000'},
   {"verbose", "verbose", "verbose launch", '\000', '\000'},
   {"debug", "debug", "This option allows xlock to be locked in a window", '\000', '\000'},
-  {"wireframe", "wireframe", "This option turns on wireframe rendering mode for GL", '\000', '\000'},
+  {"wireframe", "wireframe", "This option turns on wireframe rendering mode mainly for GL", '\000', '\000'},
+#ifdef USE_GL
+  {"showfps", "showfps", "This option turns on frame per sec display for GL", '\000', '\000'},
+  {"fpstop", "fpstop", "This option turns on top fps display for GL", '\000', '\000'},
+#endif
   {"install", "install", "Allows xlock to install its own colormap if xlock runs out of colors", '\000', '\000'},
   {"sound", "sound", "Allows you to turn on and off sound if installed with the capability", '\000', '\000'},
   {"timeelapsed", "timeelapsed", "Allows you to find out how long a machine is locked", '\000', '\000'},
@@ -239,6 +243,10 @@ struct_option_fntcol fntcolorOpt[] =
      (GtkWidget *)NULL, (GtkWidget *)NULL},
   {TFNTCOL_FONT, "planfont", "planfont", "font to use for lower part of password screen", "opt_fntcol_",
      (GtkWidget *)NULL, (GtkWidget *)NULL},
+#ifdef USE_GL
+  {TFNTCOL_FONT, "fpsfont", "fpsfont", "font to use for FPS display in GL mode", "opt_fntcol_",
+     (GtkWidget *)NULL, (GtkWidget *)NULL},
+#endif
   {TFNTCOL_FILE, "messagesfile", "messagesfile", "file to be used as the fortune generator", "opt_fntcol_",
      (GtkWidget *)NULL, (GtkWidget *)NULL},
   {TFNTCOL_FILE, "messagefile", "messagefile", "file whose contents are displayed", "opt_fntcol_",

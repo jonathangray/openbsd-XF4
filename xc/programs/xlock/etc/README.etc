@@ -29,11 +29,10 @@ xlockrandimage.pl picks a random image.  Does not have to be used since
   systems might not have dirent.h.
 
 Contributed by Charles Vidal <vidalc@club-internet.fr>
-xlock.tcl is another xlock launcher similar to xmlock and xalock but using
-  tcl.
+xlock.tcl is another xlock launcher similar to xmlock but using tcl.
 xlock.java and xlockFrame.java is yet another xlock launcher similar to
-  xmlock and xalock but this time using java.  Seems to require JDK 1.1.1,
-  on my 1.0 it can not spawn xlock.
+  xmlock but this time using java.  Requires at least JDK 1.1.1 to spawn
+  xlock.
 
 Contributed by Igor Markov <imarkov@math.ucla.edu>
 xlocksat.pl  use like "xlock -saturation `xlocksat.pl`"  The idea is that

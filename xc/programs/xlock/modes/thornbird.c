@@ -2,12 +2,12 @@
 /* thornbird --- continuously varying Thornbird set */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
+static const char sccsid[] = "@(#)thornbird.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
 /*-
- * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Sun.COM>
+ * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Procket.com>
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -25,8 +25,9 @@ static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
  * continuously varying the three free parameters.
  *
  * Revision History:
- * 04-Jun-99: 3D tumble added by Tim Auckland
- * 31-Jul-97: Adapted from discrete.c Copyright (c) 1996 by Tim Auckland
+ * 01-Nov-2000: Allocation checks
+ * 04-Jun-1999: 3D tumble added by Tim Auckland
+ * 31-Jul-1997: Adapted from discrete.c Copyright (c) 1996 by Tim Auckland
  */
 
 #ifdef STANDALONE
@@ -47,7 +48,7 @@ static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
 #ifdef MODE_thornbird
 
 ModeSpecOpt thornbird_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   thornbird_description =
@@ -89,6 +90,20 @@ typedef struct {
 
 static thornbirdstruct *thornbirds = NULL;
 
+static void
+free_thornbird(thornbirdstruct *hp)
+{
+	if (hp->pointBuffer != NULL) {
+		int         buffer;
+
+		for (buffer = 0; buffer < hp->nbuffers; buffer++)
+			if (hp->pointBuffer[buffer] != NULL)
+				(void) free((void *) hp->pointBuffer[buffer]);
+		(void) free((void *) hp->pointBuffer);
+		hp->pointBuffer = NULL;
+	}
+}
+
 void
 init_thornbird(ModeInfo * mi)
 {
@@ -115,10 +130,18 @@ init_thornbird(ModeInfo * mi)
 	hp->nbuffers = MI_CYCLES(mi);
 
 	if (hp->pointBuffer == NULL)
-		hp->pointBuffer = (XPoint **) calloc(MI_CYCLES(mi), sizeof (XPoint *));
+		if ((hp->pointBuffer = (XPoint **) calloc(MI_CYCLES(mi),
+				sizeof (XPoint *))) == NULL) {
+			free_thornbird(hp);
+			return;
+		}
 
 	if (hp->pointBuffer[0] == NULL)
-		hp->pointBuffer[0] = (XPoint *) malloc(MI_COUNT(mi) * sizeof (XPoint));
+		if ((hp->pointBuffer[0] = (XPoint *) malloc(MI_COUNT(mi) *
+				sizeof (XPoint))) == NULL) {
+			free_thornbird(hp);
+			return;
+		}
 
 	/* select frequencies for parameter variation */
 	hp->liss.f1 = LRAND() % 5000;
@@ -144,17 +167,23 @@ draw_thornbird(ModeInfo * mi)
 	Window      win = MI_WINDOW(mi);
 	double      oldj, oldi;
 	int         batchcount = MI_COUNT(mi);
-
 	int         k;
 	XPoint     *xp;
 	GC          gc = MI_GC(mi);
-	thornbirdstruct *hp = &thornbirds[MI_SCREEN(mi)];
-
-	int         erase = (hp->inc + 1) % MI_CYCLES(mi);
-	int         current = hp->inc % MI_CYCLES(mi);
+	int         erase;
+	int         current;
 
 	double      sint, cost, sinp, cosp;
+	thornbirdstruct *hp;
 
+	if (thornbirds == NULL)
+		return;
+	hp = &thornbirds[MI_SCREEN(mi)];
+	if (hp->pointBuffer == NULL)
+		return;
+
+	erase = (hp->inc + 1) % MI_CYCLES(mi);
+	current = hp->inc % MI_CYCLES(mi);
 	k = batchcount;
 
 
@@ -194,8 +223,11 @@ draw_thornbird(ModeInfo * mi)
 	MI_IS_DRAWN(mi) = True;
 
 	if (hp->pointBuffer[erase] == NULL) {
-		hp->pointBuffer[erase] =
-			(XPoint *) malloc(MI_COUNT(mi) * sizeof (XPoint));
+		if ((hp->pointBuffer[erase] = (XPoint *) malloc(MI_COUNT(mi) *
+				sizeof (XPoint))) == NULL) {
+			free_thornbird(hp);
+			return;
+		}
 	} else {
 		XSetForeground(dsp, gc, MI_BLACK_PIXEL(mi));
 		XDrawPoints(dsp, win, gc, hp->pointBuffer[erase],
@@ -221,18 +253,8 @@ release_thornbird(ModeInfo * mi)
 	if (thornbirds != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			thornbirdstruct *hp = &thornbirds[screen];
-
-			if (hp->pointBuffer != NULL) {
-				int         i;
-
-				for (i = 0; i < hp->nbuffers; i++)
-					if (hp->pointBuffer[i] != NULL)
-						(void) free((void *) hp->pointBuffer[i]);
-				(void) free((void *) hp->pointBuffer);
-			}
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_thornbird(&thornbirds[screen]);
 		(void) free((void *) thornbirds);
 		thornbirds = NULL;
 	}

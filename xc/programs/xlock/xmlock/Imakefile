@@ -21,7 +21,7 @@ AllTarget(xmlock)
 NormalProgramTarget(xmlock, $(XMLOCKOBJS), $(DEPXLIB), $(MLIBS), NullParameter)
 #else
 clean::
-	$(RM) xmlock
+	$(RM) xmlock .pure
 #endif
 
 DependTarget()

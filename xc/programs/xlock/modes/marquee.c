@@ -2,7 +2,7 @@
 /* marquee --- types a text-file or a text ribbon */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)marquee.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)marquee.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)marquee.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 03-Nov-95 Many changes (hopefully good ones) by David Bagley
- * 01-Oct-95 Written by Tobias Gloth
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 03-Nov-1995: Many changes (hopefully good ones) by David Bagley
+ * 01-Oct-1995: Written by Tobias Gloth
  */
 
 #ifdef STANDALONE
@@ -49,7 +50,7 @@ static const char sccsid[] = "@(#)marquee.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_marquee
 
 ModeSpecOpt marquee_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   marquee_description =
@@ -326,8 +327,11 @@ init_marquee(ModeInfo * mi)
 		gcv.graphics_exposures = False;
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
-		mp->gc = XCreateGC(display, MI_WINDOW(mi),
-				   GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+		if ((mp->gc = XCreateGC(display, MI_WINDOW(mi),
+				GCForeground | GCBackground | GCGraphicsExposures | GCFont,
+				&gcv)) == None) {
+			return;
+		}
 		mp->ascent = mode_font->ascent;
 		mp->height = font_height(mode_font);
 		for (i = 0; i < 256; i++)
@@ -371,12 +375,17 @@ draw_marquee(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	marqueestruct *mp = &marquees[MI_SCREEN(mi)];
-	char       *space = "        ";
+	char       *space = (char *) "        ";
 	char       *ch;
+	marqueestruct *mp = &marquees[MI_SCREEN(mi)];
+
+	if (marquees == NULL)
+		return;
+	mp = &marquees[MI_SCREEN(mi)];
+	if (mp->gc == None && mode_font != None)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	ch = mp->words;
 	if (isRibbon()) {
 		ch = mp->words;
@@ -501,7 +510,7 @@ release_marquee(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			marqueestruct *mp = &marquees[screen];
 
-			if (mp->gc != NULL)
+			if (mp->gc != None)
 				XFreeGC(MI_DISPLAY(mi), mp->gc);
 		}
 		(void) free((void *) marquees);

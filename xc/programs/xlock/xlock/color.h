@@ -17,8 +17,7 @@ extern unsigned long allocPixel(Display * display, Colormap cmap,
 
 extern void setColormap(Display * display, Window window, Colormap map,
 			Bool inwindow);
-extern void fixColormap(Display * display, Window window,
-			int screen, int ncolors, float saturation,
+extern void fixColormap(ModeInfo * mi, int ncolors, float saturation,
 	  Bool mono, Bool install, Bool inroot, Bool inwindow, Bool verbose);
 extern int  preserveColors(unsigned long black, unsigned long white,
 			   unsigned long bg, unsigned long fg);

@@ -2,7 +2,7 @@
 /* julia --- continuously varying Julia set */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)julia.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)julia.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,12 +25,13 @@ static const char sccsid[] = "@(#)julia.c	4.07 97/11/24 xlockmore";
  * American Magazine" Nov 1987.
  *
  * Revision History:
- * 28-May-97: jwz@jwz.org: added interactive frobbing with the mouse.
- * 10-May-97: jwz@jwz.org: turned into a standalone program.
- * 02-Dec-95: snagged boilerplate from hop.c
- *           used ifs {w0 = sqrt(x-c), w1 = -sqrt(x-c)} with random iteration
- *           to plot the julia set, and sinusoidially varied parameter for set
- *           and plotted parameter with a circle.
+ * 01-Nov-2000: Allocation checks
+ * 28-May-1997: jwz@jwz.org: added interactive frobbing with the mouse.
+ * 10-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 02-Dec-1995: snagged boilerplate from hop.c
+ *              used ifs {w0 = sqrt(x-c), w1 = -sqrt(x-c)} with random
+ *              iteration to plot the julia set, and sinusoidially varied
+ *              parameter for set and plotted parameter with a circle.
  */
 
 /*-
@@ -67,18 +68,18 @@ static Bool trackmouse;
 
 static XrmOptionDescRec opts[] =
 {
-        {"-trackmouse", ".julia.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
-        {"+trackmouse", ".julia.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
+        {(char *) "-trackmouse", (char *) ".julia.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
+        {(char *) "+trackmouse", (char *) ".julia.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-        {(caddr_t *) & trackmouse, "trackmouse", "TrackMouse", DEF_TRACKMOUSE, t_Bool}
+        {(caddr_t *) & trackmouse, (char *) "trackmouse", (char *) "TrackMouse", (char *) DEF_TRACKMOUSE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-        {"-/+trackmouse", "turn on/off the tracking of the mouse"}
+        {(char *) "-/+trackmouse", (char *) "turn on/off the tracking of the mouse"}
 };
 
 ModeSpecOpt julia_opts =
@@ -183,6 +184,31 @@ incr(ModeInfo * mi, juliastruct * jp)
 	}
 }
 
+static void
+free_julia(Display *display, juliastruct *jp)
+{
+	if (jp->pointBuffer != NULL) {
+		int         buffer;
+
+		for (buffer = 0; buffer < jp->nbuffers; buffer++)
+			if (jp->pointBuffer[buffer] != NULL)
+				(void) free((void *) jp->pointBuffer[buffer]);
+		(void) free((void *) jp->pointBuffer);
+		jp->pointBuffer = NULL;
+	}
+	if (jp->stippledGC != None) {
+		XFreeGC(display, jp->stippledGC);
+		jp->stippledGC = None;
+	}
+	if (jp->pixmap != None) {
+		XFreePixmap(display, jp->pixmap);
+		jp->pixmap = None;
+	}
+	if (jp->cursor != None) {
+		XFreeCursor(display, jp->cursor);
+		jp->cursor = None;
+	}
+}
 void
 init_julia(ModeInfo * mi)
 {
@@ -194,7 +220,7 @@ init_julia(ModeInfo * mi)
 
 	if (julias == NULL) {
 		if ((julias = (juliastruct *) calloc(MI_NUM_SCREENS(mi),
-					      sizeof (juliastruct))) == NULL)
+				sizeof (juliastruct))) == NULL)
 			return;
 	}
 	jp = &julias[MI_SCREEN(mi)];
@@ -214,11 +240,19 @@ init_julia(ModeInfo * mi)
 		black.green = 0;
 		black.blue = 0;
 		black.flags = DoRed | DoGreen | DoBlue;
-		bit = XCreatePixmapFromBitmapData(display, window, "\000", 1, 1,
-						  MI_BLACK_PIXEL(mi),
-						  MI_BLACK_PIXEL(mi), 1);
-		jp->cursor = XCreatePixmapCursor(display, bit, bit, &black, &black,
-						 0, 0);
+		if ((bit = XCreatePixmapFromBitmapData(display, window,
+				(char *) "\000", 1, 1, MI_BLACK_PIXEL(mi),
+				MI_BLACK_PIXEL(mi), 1)) == None) {
+			free_julia(display, jp);
+			return;
+		}
+			
+		if ((jp->cursor = XCreatePixmapCursor(display, bit, bit,
+				 &black, &black, 0, 0)) == None) {
+			XFreePixmap(display, bit);
+			free_julia(display, jp);
+			return;
+		}
 		XFreePixmap(display, bit);
 	}
 	XDefineCursor(display, window, jp->cursor);
@@ -228,14 +262,27 @@ init_julia(ModeInfo * mi)
 		jp->pixmap = None;
 	}
 	if (jp->pixmap == None) {
-		GC          fg_gc = None, bg_gc = None;
+		GC          fg_gc, bg_gc;
 
 		jp->circsize = (MIN(jp->centerx, jp->centery) / 96) * 2 + 1;
-		jp->pixmap = XCreatePixmap(display, window, jp->circsize, jp->circsize, 1);
+		if ((jp->pixmap = XCreatePixmap(display, window,
+				jp->circsize, jp->circsize, 1)) == None) {
+			free_julia(display, jp);
+			return;
+		}
 		gcv.foreground = 1;
-		fg_gc = XCreateGC(display, jp->pixmap, GCForeground, &gcv);
+		if ((fg_gc = XCreateGC(display, jp->pixmap, GCForeground,
+				&gcv)) == None) {
+			free_julia(display, jp);
+			return;
+		}
 		gcv.foreground = 0;
-		bg_gc = XCreateGC(display, jp->pixmap, GCForeground, &gcv);
+		if ((bg_gc = XCreateGC(display, jp->pixmap, GCForeground,
+				&gcv)) == None) {
+			XFreeGC(display, fg_gc);
+			free_julia(display, jp);
+			return;
+		}
 		XFillRectangle(display, jp->pixmap, bg_gc,
 			       0, 0, jp->circsize, jp->circsize);
 		if (jp->circsize < 2)
@@ -243,27 +290,37 @@ init_julia(ModeInfo * mi)
 		else
 			XFillArc(display, jp->pixmap, fg_gc,
 				 0, 0, jp->circsize, jp->circsize, 0, 23040);
-		if (fg_gc != None)
-			XFreeGC(display, fg_gc);
-		if (bg_gc != None)
-			XFreeGC(display, bg_gc);
+		XFreeGC(display, fg_gc);
+		XFreeGC(display, bg_gc);
 	}
 	if (!jp->stippledGC) {
 		gcv.foreground = MI_BLACK_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
 		if ((jp->stippledGC = XCreateGC(display, window,
-				 GCForeground | GCBackground, &gcv)) == None)
+				 GCForeground | GCBackground, &gcv)) == None) {
+			free_julia(display, jp);
 			return;
+		}
 	}
 	if (MI_NPIXELS(mi) > 2)
 		jp->pix = NRAND(MI_NPIXELS(mi));
 	jp->inc = NRAND(400) - 200;
 	jp->nbuffers = MI_CYCLES(mi) + 1;
-	if (!jp->pointBuffer)
-		jp->pointBuffer = (XPoint **) calloc(jp->nbuffers, sizeof (XPoint *));
+	if (jp->pointBuffer == NULL) {
+		if ((jp->pointBuffer = (XPoint **) calloc(jp->nbuffers,
+				sizeof (XPoint *))) == NULL) {
+			free_julia(display, jp);
+			return;
+		}
+	}
 	for (i = 0; i < jp->nbuffers; ++i) {
-		if (!jp->pointBuffer[i])
-			jp->pointBuffer[i] = (XPoint *) malloc(numpoints * sizeof (XPoint));
+		if (jp->pointBuffer[i] == NULL) {
+			if ((jp->pointBuffer[i] = (XPoint *) malloc(numpoints *
+					sizeof (XPoint))) == NULL) {
+				free_julia(display, jp);
+				return;
+			}
+		}
 		for (j = 0; j < numpoints; j++)
 			jp->pointBuffer[i][j].x = jp->pointBuffer[i][j].y = -1;		/* move initial point off screen */
 	}
@@ -280,14 +337,20 @@ draw_julia(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	juliastruct *jp = &julias[MI_SCREEN(mi)];
 	double      r, theta;
 	register double xr = 0.0, xi = 0.0;
 	int         k = 64, rnd = 0, i, j;
-	XPoint     *xp = jp->pointBuffer[jp->buffer], old_circle, new_circle;
+	XPoint     *xp, old_circle, new_circle;
+	juliastruct *jp;
+
+	if (julias == NULL)
+		return;
+	jp = &julias[MI_SCREEN(mi)];
+	if (jp->pointBuffer == NULL)
+		return;
+	xp = jp->pointBuffer[jp->buffer];
 
 	MI_IS_DRAWN(mi) = True;
-
 	old_circle.x = (int) (jp->centerx * jp->cr / 2) + jp->centerx - 2;
 	old_circle.y = (int) (jp->centery * jp->ci / 2) + jp->centery - 2;
 	incr(mi, jp);
@@ -380,24 +443,8 @@ release_julia(ModeInfo * mi)
 	if (julias != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			Display    *display = MI_DISPLAY(mi);
-			juliastruct *jp = &julias[screen];
-			int         buffer;
-
-			if (jp->pointBuffer) {
-				for (buffer = 0; buffer < jp->nbuffers; buffer++)
-					if (jp->pointBuffer[buffer])
-						(void) free((void *) jp->pointBuffer[buffer]);
-				(void) free((void *) jp->pointBuffer);
-			}
-			if (jp->stippledGC != None)
-				XFreeGC(display, jp->stippledGC);
-			if (jp->pixmap != None)
-				XFreePixmap(display, jp->pixmap);
-			if (jp->cursor)
-				XFreeCursor(display, jp->cursor);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_julia(MI_DISPLAY(mi), &julias[screen]);
 		(void) free((void *) julias);
 		julias = NULL;
 	}
@@ -406,7 +453,11 @@ release_julia(ModeInfo * mi)
 void
 refresh_julia(ModeInfo * mi)
 {
-	juliastruct *jp = &julias[MI_SCREEN(mi)];
+	juliastruct *jp;
+
+	if (julias == NULL)
+		return;
+	jp = &julias[MI_SCREEN(mi)];
 
 	MI_CLEARWINDOW(mi);
 	jp->redrawing = 1;

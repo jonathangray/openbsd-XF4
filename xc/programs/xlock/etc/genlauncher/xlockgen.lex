@@ -1,12 +1,12 @@
 /* xlockgen --- generates launcher include file */
-/* @(#)xlockgen.lex     2.0 99/10/10 xlockmore"
+/* @(#)xlockgen.lex     5.0 2000/11/01 xlockmore"
 /*
 /* Copyright (c) Charles Vidal */
 
 /*
  * to help adminitration and utils for launcher(s)
  * this file replace token by all modes token :
- * LISTLIBSX, LISTMOTIF, LISTTCL, LISTGTK
+ * LISTMOTIF, LISTTCL, LISTGTK
  * utils :
  * If you want all modes of xlock:
  * xlockgen -allmodes
@@ -46,28 +46,12 @@ char *End="\"";
     if (LockProcs[i].define != NULL)
       printf("%s\n", LockProcs[i].define);
     if (i != numprocs - 1) {
-      printf("{\"%s\",", LockProcs[i].cmdline_arg);
-      printf("\"%s\"},\n", LockProcs[i].desc);
+      printf("{(char *) \"%s\", ", LockProcs[i].cmdline_arg);
+      printf("(char *) \"%s\"},\n", LockProcs[i].desc);
     } else {
-      printf("{\"%s\",", LockProcs[i].cmdline_arg);
-      printf("\"%s\"},\n", LockProcs[i].desc);
+      printf("{(char *) \"%s\", ", LockProcs[i].cmdline_arg);
+      printf("(char *) \"%s\"},\n", LockProcs[i].desc);
     }
-    if (LockProcs[i].define != NULL)
-      printf("#endif\n");
-  }
-}
-"$%LISTLIBSX" {
-  int i;
-  int numprocs = sizeof (LockProcs) / sizeof (LockProcs[0]);
-
-  for (i = 0; i < numprocs; i++) {
-    if (LockProcs[i].define != NULL)
-      printf("%s\n", LockProcs[i].define);
-    if (i != numprocs - 1)
-      printf("%s%s%s\n", Begin, LockProcs[i].cmdline_arg, Sep);
-    else
-      printf("%s%s%s\n", Begin, LockProcs[i].cmdline_arg, Sep);
-    /*printf("%s%s%s\n", Begin, LockProcs[i].cmdline_arg, End);*/
     if (LockProcs[i].define != NULL)
       printf("#endif\n");
   }

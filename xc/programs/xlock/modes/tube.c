@@ -2,7 +2,7 @@
 /* tube --- animated tube */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)tube.c 4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)tube.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)tube.c 4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 4-Mar-97: Memory leak fix by Tom Schmidt <tschmidt@micron.com>
- * 7-Feb-97: Written by Dan Stromberg <strombrg@nis.acs.uci.edu>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 04-Mar-1997: Memory leak fix by Tom Schmidt <tschmidt@micron.com>
+ * 07-Feb-1997: Written by Dan Stromberg <strombrg@nis.acs.uci.edu>
  */
 
 
@@ -50,7 +51,7 @@ static const char sccsid[] = "@(#)tube.c 4.07 97/11/24 xlockmore";
 #ifdef MODE_tube
 
 ModeSpecOpt tube_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   tube_description =
@@ -79,22 +80,49 @@ typedef struct {
 	int         counter;
 	int         ncolors;
 	int         usable_colors;
-	Bool        fixed_colormap;
+	Bool        fixed_colormap, reverse;
 } tubestruct;
 
 static tubestruct *tubes = NULL;
+
+static void
+free_pts(tubestruct *tp)
+{
+	if (tp->pts != NULL) {
+		(void) free((void *) tp->pts);
+		tp->pts = NULL;
+	}
+	if (tp->proto_pts != NULL) {
+		(void) free((void *) tp->proto_pts);
+		tp->proto_pts = NULL;
+	}
+}
+
+static void
+free_tube(Display *display,  tubestruct *tp)
+{
+	free_pts(tp);
+	if (tp->cmap != None) {
+		XFreeColormap(display, tp->cmap);
+		tp->cmap = None;
+	}
+	if (tp->colors != NULL) {
+		XFree((caddr_t) tp->colors);
+		tp->colors = NULL;
+	}
+}
 
 void
 init_tube(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	tubestruct *tp;
 	int         screen_width, screen_height, preserve;
 	int         size = MI_SIZE(mi);
 	Bool        truecolor;
 	int         star = 1, lw;
 	unsigned long redmask, greenmask, bluemask;
+	tubestruct *tp;
 
 	if (tubes == NULL) {
 		if ((tubes = (tubestruct *) calloc(MI_NUM_SCREENS(mi),
@@ -124,21 +152,14 @@ init_tube(ModeInfo * mi)
 		tp->height = MIN(size, MAX(MINSIZE, screen_height / 2));
 	}
 	tp->average = (tp->width + tp->height) / 2;
-
-	tp->dx1 = NRAND(2);
+	tp->reverse = (Bool) (LRAND() & 1);
+	tp->dx1 = LRAND() & 1;
 	if (tp->dx1 == 0)
 		tp->dx1 = -1;
-	tp->dy1 = NRAND(2);
+	tp->dy1 = LRAND() & 1;
 	if (tp->dy1 == 0)
 		tp->dy1 = -1;
-	if (tp->pts) {
-		(void) free((void *) tp->pts);
-		tp->pts = NULL;
-	}
-	if (tp->proto_pts) {
-		(void) free((void *) tp->proto_pts);
-		tp->proto_pts = NULL;
-	}
+	free_pts(tp);
 	tp->shape = MI_COUNT(mi);
 	if (tp->shape < -MINSHAPE) {
 		tp->shape = NRAND(-tp->shape - MINSHAPE + 1) + MINSHAPE;
@@ -150,8 +171,13 @@ init_tube(ModeInfo * mi)
 		float       start;
 
 		tp->width = tp->height = tp->average;
-		tp->pts = (XPoint *) malloc((tp->shape + 1) * sizeof (XPoint));
-		tp->proto_pts = (XPoint *) malloc((tp->shape + 1) * sizeof (XPoint));
+		if (((tp->pts = (XPoint *) malloc((tp->shape + 1) *
+			 sizeof (XPoint))) == NULL) ||
+		    ((tp->proto_pts = (XPoint *) malloc((tp->shape + 1) *
+			 sizeof (XPoint))) == NULL)) {
+			free_tube(display, tp);
+			return;
+		}
 		start = (float) NRAND(360);
 		do {
 			star = NRAND(tp->shape / 2) + 1;	/* Not always a star but thats ok. */
@@ -200,10 +226,17 @@ init_tube(ModeInfo * mi)
 
 		/* allocate colormap, if needed */
 		if (tp->colors == NULL)
-			tp->colors = (XColor *) malloc(sizeof (XColor) * tp->ncolors);
+			if ((tp->colors = (XColor *) malloc(sizeof (XColor) *
+					tp->ncolors)) == NULL) {
+				free_tube(display, tp);
+				return;
+			}
 		if (tp->cmap == None)
-			tp->cmap = XCreateColormap(display, window,
-						   MI_VISUAL(mi), AllocAll);
+			if ((tp->cmap = XCreateColormap(display, window,
+						   MI_VISUAL(mi), AllocAll)) == None) {
+				free_tube(display, tp);
+				return;
+			}
 		tp->usable_colors = tp->ncolors - preserve;
 	}
 	tp->cur_color = NRAND(tp->ncolors);
@@ -216,11 +249,22 @@ draw_tube(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	tubestruct *tp = &tubes[MI_SCREEN(mi)];
 	unsigned int i, j;
-	int         k, lw = tp->linewidth / 2;
+	int         lw;
+	tubestruct *tp;
+
+	if (tubes == NULL)
+		return;
+	tp = &tubes[MI_SCREEN(mi)];
+#ifndef STANDALONE
+	if (!tp->fixed_colormap && tp->cmap == None)
+		return;
+#endif
+	if (tp->shape >= 3 && tp->pts == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
+	lw = tp->linewidth / 2;
 
 	/* advance drawing color */
 	tp->cur_color = (tp->cur_color + 1) % tp->ncolors;
@@ -278,8 +322,13 @@ draw_tube(ModeInfo * mi)
 #ifndef STANDALONE
 	/* advance colormap */
 	if (!tp->fixed_colormap && tp->usable_colors > 2) {
-		for (i = 0, j = tp->cur_color, k = 0;
+#if 1
+		for (i = 0, j = tp->cur_color;
 		     i < (unsigned int) tp->ncolors; i++) {
+#else
+		for (i = (unsigned int) tp->ncolors - 1, j = tp->cur_color;
+		     i >= 0; i--) {
+#endif
 			if (i == MI_WHITE_PIXEL(mi)) {
 				tp->colors[i].pixel = i;
 				tp->colors[i].red = 65535;
@@ -313,8 +362,10 @@ draw_tube(ModeInfo * mi)
 				tp->colors[i].blue = (short unsigned int) (range * j +
 							    tp->bottom.blue);
 				tp->colors[i].flags = DoRed | DoGreen | DoBlue;
-				j = (j + 1) % tp->ncolors;
-				k++;
+				if (tp->reverse)
+					j = (j + 1) % tp->ncolors;
+				else
+					j = (j - 1 + tp->ncolors) % tp->ncolors;
 			}
 		}
 		/* make the entire tube move forward */
@@ -334,18 +385,8 @@ release_tube(ModeInfo * mi)
 	if (tubes != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			tubestruct *tp = &tubes[screen];
-
-			if (tp->pts)
-				(void) free((void *) tp->pts);
-			if (tp->proto_pts)
-				(void) free((void *) tp->proto_pts);
-			if (tp->cmap != None)
-				XFreeColormap(MI_DISPLAY(mi), tp->cmap);
-			if (tp->colors != NULL)
-				XFree((caddr_t) tp->colors);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_tube(MI_DISPLAY(mi), &tubes[screen]);
 		(void) free((void *) tubes);
 		tubes = NULL;
 	}

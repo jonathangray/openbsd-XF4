@@ -2,7 +2,7 @@
 /* hyper --- spinning hypercubes, not just for tesseracts any more */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)hyper.c 4.12 98/08/04 xlockmore";
+static const char sccsid[] = "@(#)hyper.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -55,7 +55,8 @@ static const char sccsid[] = "@(#)hyper.c 4.12 98/08/04 xlockmore";
  * random chosen planes drawn may be nice.
  *
  * Revision History:
- * 04-Aug-98: Added "3d" support from Scientific American
+ * 01-Nov-2000: Added "3d" support from Scientific American
+ * 04-Aug-1998: Added "3d" support from Scientific American
  */
 
 #ifdef STANDALONE
@@ -94,27 +95,27 @@ extern XFontStruct *getFont(Display * display);
 
 static XrmOptionDescRec opts[] =
 {
-	{"-randomstart", ".hyper.randomStart", XrmoptionNoArg, "on"},
-	{"+randomstart", ".hyper.randomStart", XrmoptionNoArg, "off"},
-	{"-showaxes", ".hyper.showAxes", XrmoptionNoArg, "on"},
-	{"+showaxes", ".hyper.showAxes", XrmoptionNoArg, "off"},
-	{"-showplanes", ".hyper.showPlanes", XrmoptionNoArg, "on"},
-	{"+showplanes", ".hyper.showPlanes", XrmoptionNoArg, "off"},
-	{"-spindelay", ".hyper.spinDelay", XrmoptionSepArg, 0},
+	{(char *) "-randomstart", (char *) ".hyper.randomStart", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+randomstart", (char *) ".hyper.randomStart", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-showaxes", (char *) ".hyper.showAxes", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+showaxes", (char *) ".hyper.showAxes", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-showplanes", (char *) ".hyper.showPlanes", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+showplanes", (char *) ".hyper.showPlanes", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-spindelay", (char *) ".hyper.spinDelay", XrmoptionSepArg, 0},
 };
 static argtype vars[] =
 {
-  {(caddr_t *) & random_start, "randomStart", "RandomStart", "True", t_Bool},
-	{(caddr_t *) & show_axes, "showAxes", "ShowAxes", "True", t_Bool},
-	{(caddr_t *) & show_planes, "showPlanes", "ShowPlanes", "False", t_Bool},
-	{(caddr_t *) & spin_delay, "spinDelay", "SpinDelay", "2", t_Int},
+  {(caddr_t *) & random_start, (char *) "randomStart", (char *) "RandomStart", (char *) "True", t_Bool},
+	{(caddr_t *) & show_axes, (char *) "showAxes", (char *) "ShowAxes", (char *) "True", t_Bool},
+	{(caddr_t *) & show_planes, (char *) "showPlanes", (char *) "ShowPlanes", (char *) "False", t_Bool},
+	{(caddr_t *) & spin_delay, (char *) "spinDelay", (char *) "SpinDelay", (char *) "2", t_Int},
 };
 static OptionStruct desc[] =
 {
-	{"-/+randomstart", "turn on/off begining with random rotations"},
-	{"-/+showaxes", "turn on/off showing the axes"},
-	{"-/+showplanes", "turn on/off showing the planes"},
-	{"-spindelay num", "delay in seconds before chaning spin speed"},
+	{(char *) "-/+randomstart", (char *) "turn on/off begining with random rotations"},
+	{(char *) "-/+showaxes", (char *) "turn on/off showing the axes"},
+	{(char *) "-/+showplanes", (char *) "turn on/off showing the planes"},
+	{(char *) "-spindelay num", (char *) "delay in seconds before chaning spin speed"},
 };
 
 ModeSpecOpt hyper_opts =
@@ -219,8 +220,10 @@ typedef struct hyper {
 
 static hyperstruct *hypers = NULL;
 
-#define allocarray(ELTYPE,N) ((ELTYPE*)malloc((N)*sizeof(ELTYPE)))
-#define callocarray(ELTYPE,N) ((ELTYPE*)calloc(N,sizeof(ELTYPE)))
+#define allocarray(P,T,N) if((P=(T*)malloc((N)*sizeof(T)))==NULL) \
+ {free_hyper(display,hp);return False;}
+#define callocarray(P,T,N) if((P=(T*)calloc(N,sizeof(T)))==NULL) \
+ {free_hyper(display,hp);return False;}
 
 /*
  * Matrix handling & 3d transformation routines
@@ -341,170 +344,7 @@ figure_num_planes(int d)
 }
 
 static void
-figure_points(ModeInfo * mi)
-{
-	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
-	int         i, j, k, n, d, pix = 0;
-	int        *c;
-
-	/*
-	 * First, figure out the points.
-	 */
-	hp->num_points = figure_num_points(hp->num_d);
-#if DEBUG
-	assert(hp->num_points <= hp->max_points);
-#endif
-	hp->points = allocarray(vector, hp->num_points * hp->num_mat);
-	hp->xpoints[0] = allocarray(XPoint, hp->num_points);
-	hp->xpoints[1] = allocarray(XPoint, hp->num_points);
-	if (MI_IS_USE3D(mi)) {
-		hp->pointsleft = allocarray(vector, hp->num_points * hp->num_mat);
-		hp->xpointsleft[0] = allocarray(XPoint, hp->num_points);
-		hp->xpointsleft[1] = allocarray(XPoint, hp->num_points);
-	}
-	c = allocarray(int, hp->num_points);	/* will be lost, sigh */
-
-	ZeroMultiCounter(c, hp->num_d);
-	n = 0;
-	do {
-		for (i = 0; i < hp->num_d; i++) {
-			hp->points[n * hp->num_mat + i] = c[i];
-			if (MI_IS_USE3D(mi))
-				hp->pointsleft[n * hp->num_mat + i] = c[i];
-		}
-		n++;
-	} while (IncMultiCounter(c, hp->num_d));
-	(void) free((void *) c);
-#if DEBUG
-	assert(hp->num_points == n);
-#endif
-	/*
-	 * Next connect them.
-	 * We could do this more intelligently, but why bother?
-	 *
-	 * Connect points that differ by only one coordinate.
-	 */
-	if (MI_NPIXELS(mi) > 2)
-		pix = NRAND(MI_NPIXELS(mi));
-
-	hp->num_lines = figure_num_lines(hp->num_d);
-#if DEBUG
-	assert(hp->num_lines <= hp->max_lines);
-#endif
-	hp->lines = (line_segment *) malloc(hp->num_lines * sizeof (line_segment));
-	for (n = i = 0; i < hp->num_points; i++) {
-		for (j = i + 1; j < hp->num_points; j++) {
-			for (d = k = 0; k < hp->num_d; k++) {
-				if (hp->points[i * hp->num_mat + k] != hp->points[j * hp->num_mat + k])
-					d++;
-			}
-			if (d == 1) {
-				hp->lines[n].from = i;
-				hp->lines[n].to = j;
-				/* (void) printf ("from %x to %x ", i, j); */
-				if (MI_NPIXELS(mi) > 2) {
-					hp->lines[n].color = MI_PIXEL(mi, pix);
-					if (++pix >= MI_NPIXELS(mi))
-						pix = 0;
-				} else
-					hp->lines[n].color = MI_WHITE_PIXEL(mi);
-				n++;
-			}
-		}
-	}
-#if DEBUG
-	assert(hp->num_lines == n);
-#endif
-
-	/*
-	 * Now determine the planes of rotation.
-	 */
-	hp->num_planes = figure_num_planes(hp->num_d);
-#if DEBUG
-	assert(hp->num_planes <= max_planes);
-#endif
-	hp->show_planes = show_planes;
-
-	if (hp->show_planes) {
-		hp->planes = (plane_section *)
-				malloc(hp->num_planes * sizeof (plane_section));
-
-		/* Keeping it simple and just drawing planes that touch the
-		 * axes.  Still not the simple, have to figure out which pt c is
-	 	 * furthest away and draw it first... yuck.
- 		 */
-
-		for (n = i = 0; i < hp->num_d; i++) {
-			for (j = i + 1; j < hp->num_d; j++) {
-				hp->planes[n].a = 0;
-				hp->planes[n].b = 1 << i;
-				hp->planes[n].d = 1 << j;
-				hp->planes[n].c = hp->planes[n].b + hp->planes[n].d;
-				/*(void) printf ("a %d, b %d, c %d, d %d\n",
-					0, 1 << i, (1 << i) + (1 << j), 1 << j);*/
-				if (MI_NPIXELS(mi) > 2) {
-					hp->planes[n].color = MI_PIXEL(mi, pix);
-					if (++pix >= MI_NPIXELS(mi))
-						pix = 0;
-				} else
-					hp->planes[n].color = MI_WHITE_PIXEL(mi);
-				n++;
-			}
-		}
-	}
-
-	hp->axis_points = allocarray(int, hp->num_d + 1);
-
-	hp->rotations = allocarray(double, hp->num_planes);
-	hp->d_rotations = callocarray(double, hp->num_planes);
-	hp->dd_rotations = callocarray(double, hp->num_planes);
-	hp->cdd_rotations = callocarray(int, hp->num_planes);
-
-	hp->Trotations = allocarray(matrix, hp->num_planes * hp->num_matmat);
-	hp->Tall = allocarray(matrix, hp->num_matmat);
-
-	if (MI_IS_USE3D(mi)) {
-		hp->Trotationsleft = allocarray(matrix, hp->num_planes * hp->num_matmat);
-		hp->Tallleft = allocarray(matrix, hp->num_matmat);
-	}
-	hp->rotation_planes = allocarray(XPoint, hp->num_planes);
-
-	for (n = i = 0; i < hp->num_d; i++)
-		for (j = i + 1; j < hp->num_d; j++) {
-			hp->rotation_planes[n].x = i;
-			hp->rotation_planes[n].y = j;
-			n++;
-		}
-#if DEBUG
-	assert(hp->num_planes == n);
-#endif
-	/*
-	 * Potential random initial rotations.
-	 */
-#define FRAC (1024*16)
-	if (random_start) {
-		for (i = 0; i < hp->num_planes; i++)
-			hp->rotations[i] = 2.0 * NRAND(FRAC) * M_PI / FRAC;
-	}
-}
-
-static void
-figure_axis_points(hyperstruct * hp)
-{
-	int         i, j, num_set;
-
-	hp->show_axes = show_axes;
-	for (hp->num_axis_points = i = 0; i < hp->num_points; i++) {
-		for (num_set = j = 0; j < hp->num_d; j++)
-			if (hp->points[i * hp->num_mat + j] != 0.0)
-				num_set++;
-		if (num_set <= 1)
-			hp->axis_points[hp->num_axis_points++] = i;
-	}
-}
-
-static void
-free_hyper(hyperstruct * hp)
+free_hyperstuff(hyperstruct * hp)
 {
 	if (hp->axis_points) {
 		(void) free((void *) hp->axis_points);
@@ -581,6 +421,184 @@ free_hyper(hyperstruct * hp)
 }
 
 static void
+free_hyper(Display *display, hyperstruct *hp)
+{
+	if (hp->gc != None) {
+		XFreeGC(display, hp->gc);
+		hp->gc = None;
+	}
+	if (hp->font != None) {
+		XFreeFont(display, hp->font);
+		hp->font = None;
+	}
+	free_hyperstuff(hp);
+}
+
+static Bool
+figure_points(ModeInfo * mi)
+{
+	Display *display = MI_DISPLAY(mi);
+	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
+	int         i, j, k, n, d, pix = 0;
+	int        *c;
+
+	/*
+	 * First, figure out the points.
+	 */
+	hp->num_points = figure_num_points(hp->num_d);
+#if DEBUG
+	assert(hp->num_points <= hp->max_points);
+#endif
+	allocarray(hp->points, vector, hp->num_points * hp->num_mat);
+	allocarray(hp->xpoints[0], XPoint, hp->num_points);
+	allocarray(hp->xpoints[1], XPoint, hp->num_points);
+	if (MI_IS_USE3D(mi)) {
+		allocarray(hp->pointsleft, vector, hp->num_points * hp->num_mat);
+		allocarray(hp->xpointsleft[0], XPoint, hp->num_points);
+		allocarray(hp->xpointsleft[1], XPoint, hp->num_points);
+	}
+	allocarray(c, int, hp->num_points);	/* will be lost, sigh */
+
+	ZeroMultiCounter(c, hp->num_d);
+	n = 0;
+	do {
+		for (i = 0; i < hp->num_d; i++) {
+			hp->points[n * hp->num_mat + i] = c[i];
+			if (MI_IS_USE3D(mi))
+				hp->pointsleft[n * hp->num_mat + i] = c[i];
+		}
+		n++;
+	} while (IncMultiCounter(c, hp->num_d));
+	(void) free((void *) c);
+#if DEBUG
+	assert(hp->num_points == n);
+#endif
+	/*
+	 * Next connect them.
+	 * We could do this more intelligently, but why bother?
+	 *
+	 * Connect points that differ by only one coordinate.
+	 */
+	if (MI_NPIXELS(mi) > 2)
+		pix = NRAND(MI_NPIXELS(mi));
+
+	hp->num_lines = figure_num_lines(hp->num_d);
+#if DEBUG
+	assert(hp->num_lines <= hp->max_lines);
+#endif
+	allocarray(hp->lines, line_segment, hp->num_lines);
+	for (n = i = 0; i < hp->num_points; i++) {
+		for (j = i + 1; j < hp->num_points; j++) {
+			for (d = k = 0; k < hp->num_d; k++) {
+				if (hp->points[i * hp->num_mat + k] != hp->points[j * hp->num_mat + k])
+					d++;
+			}
+			if (d == 1) {
+				hp->lines[n].from = i;
+				hp->lines[n].to = j;
+				/* (void) printf ("from %x to %x ", i, j); */
+				if (MI_NPIXELS(mi) > 2) {
+					hp->lines[n].color = MI_PIXEL(mi, pix);
+					if (++pix >= MI_NPIXELS(mi))
+						pix = 0;
+				} else
+					hp->lines[n].color = MI_WHITE_PIXEL(mi);
+				n++;
+			}
+		}
+	}
+#if DEBUG
+	assert(hp->num_lines == n);
+#endif
+
+	/*
+	 * Now determine the planes of rotation.
+	 */
+	hp->num_planes = figure_num_planes(hp->num_d);
+#if DEBUG
+	assert(hp->num_planes <= max_planes);
+#endif
+	hp->show_planes = show_planes;
+
+	if (hp->show_planes) {
+		allocarray(hp->planes, plane_section, hp->num_planes);
+
+		/* Keeping it simple and just drawing planes that touch the
+		 * axes.  Still not that simple, have to figure out which pt c is
+	 	 * furthest away and draw it first... yuck.
+ 		 */
+
+		for (n = i = 0; i < hp->num_d; i++) {
+			for (j = i + 1; j < hp->num_d; j++) {
+				hp->planes[n].a = 0;
+				hp->planes[n].b = 1 << i;
+				hp->planes[n].d = 1 << j;
+				hp->planes[n].c = hp->planes[n].b + hp->planes[n].d;
+				/*(void) printf ("a %d, b %d, c %d, d %d\n",
+					0, 1 << i, (1 << i) + (1 << j), 1 << j);*/
+				if (MI_NPIXELS(mi) > 2) {
+					hp->planes[n].color = MI_PIXEL(mi, pix);
+					if (++pix >= MI_NPIXELS(mi))
+						pix = 0;
+				} else
+					hp->planes[n].color = MI_WHITE_PIXEL(mi);
+				n++;
+			}
+		}
+	}
+
+	allocarray(hp->axis_points, int, hp->num_d + 1);
+
+	allocarray(hp->rotations, double, hp->num_planes);
+	callocarray(hp->d_rotations, double, hp->num_planes);
+	callocarray(hp->dd_rotations, double, hp->num_planes);
+	callocarray(hp->cdd_rotations, int, hp->num_planes);
+
+	allocarray(hp->Trotations, matrix, hp->num_planes * hp->num_matmat);
+	allocarray(hp->Tall, matrix, hp->num_matmat);
+
+	if (MI_IS_USE3D(mi)) {
+		allocarray(hp->Trotationsleft, matrix, hp->num_planes * hp->num_matmat);
+		allocarray(hp->Tallleft, matrix, hp->num_matmat);
+	}
+	allocarray(hp->rotation_planes, XPoint, hp->num_planes);
+
+	for (n = i = 0; i < hp->num_d; i++)
+		for (j = i + 1; j < hp->num_d; j++) {
+			hp->rotation_planes[n].x = i;
+			hp->rotation_planes[n].y = j;
+			n++;
+		}
+#if DEBUG
+	assert(hp->num_planes == n);
+#endif
+	/*
+	 * Potential random initial rotations.
+	 */
+#define FRAC (1024*16)
+	if (random_start) {
+		for (i = 0; i < hp->num_planes; i++)
+			hp->rotations[i] = 2.0 * NRAND(FRAC) * M_PI / FRAC;
+	}
+	return True;
+}
+
+static void
+figure_axis_points(hyperstruct * hp)
+{
+	int         i, j, num_set;
+
+	hp->show_axes = show_axes;
+	for (hp->num_axis_points = i = 0; i < hp->num_points; i++) {
+		for (num_set = j = 0; j < hp->num_d; j++)
+			if (hp->points[i * hp->num_mat + j] != 0.0)
+				num_set++;
+		if (num_set <= 1)
+			hp->axis_points[hp->num_axis_points++] = i;
+	}
+}
+
+static Bool
 init_x_stuff(ModeInfo * mi)
 {
 	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
@@ -594,7 +612,7 @@ init_x_stuff(ModeInfo * mi)
 	if (hp->spinDelay < 0)
 		hp->spinDelay = 0;
 
-	free_hyper(hp);
+	free_hyperstuff(hp);
 	hp->num_d = MI_COUNT(mi);
 	if (hp->num_d < -MAX_D)
 		hp->num_d = -MAX_D;
@@ -608,12 +626,13 @@ init_x_stuff(ModeInfo * mi)
 	hp->num_mat = hp->num_d + 1;
 	hp->num_matmat = hp->num_mat * hp->num_mat;
 
-	if (!hp->font)
-		hp->font = getFont(MI_DISPLAY(mi));
-
+	if (hp->font == None) {
+		if ((hp->font = getFont(MI_DISPLAY(mi))) == None)
+			return False;
+	}
 	if (MI_NPIXELS(mi) <= 2 || MI_IS_USE3D(mi))
 		hp->normxor = False;
-	if (!hp->gc && (MI_NPIXELS(mi) <= 2 || !MI_IS_USE3D(mi))) {
+	if ((hp->gc == None) && (MI_NPIXELS(mi) <= 2 || !MI_IS_USE3D(mi))) {
 		long        options;
 
 		if (hp->normxor) {
@@ -626,8 +645,11 @@ init_x_stuff(ModeInfo * mi)
 			gcv.background = MI_BLACK_PIXEL(mi);
 		}
 		gcv.font = hp->font->fid;
-		hp->gc = XCreateGC(MI_DISPLAY(mi), MI_WINDOW(mi), options, &gcv);
+		if ((hp->gc = XCreateGC(MI_DISPLAY(mi), MI_WINDOW(mi), options,
+				&gcv)) == None)
+			return False;
 	}
+	return True;
 }
 
 static void
@@ -878,7 +900,7 @@ move_hyper(ModeInfo * mi)
 /* NEEDSWORK: These should be resources */
 #define default_cdd_rotation 10
 #define default_dd_rotation (M_PI/1024.0)
-	int         axis, max_axis;
+	int         axis;
 	int         faster;
 
 	hp->stationary = False;
@@ -898,11 +920,7 @@ move_hyper(ModeInfo * mi)
 			}
 		if (NRAND(3) < 1 + hp->stationary) {
 			/* Change!  But what? */
-			max_axis = hp->num_planes;
-
-			if (max_axis > hp->num_planes || max_axis < 0)
-				max_axis = hp->num_planes;
-			axis = NRAND(max_axis);
+			axis = NRAND(hp->num_planes);
 
 			/*
 			 * And how much?  33% chance faster, 66% slower.
@@ -933,7 +951,7 @@ move_hyper(ModeInfo * mi)
 	}
 }
 
-static void
+static Bool
 calc_transformation(ModeInfo * mi)
 {
 	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
@@ -947,15 +965,41 @@ calc_transformation(ModeInfo * mi)
 	dpoint      scale, range, offset;
 	double      scale_used;
 
-	Ttmp = allocarray(matrix, hp->num_matmat);
-	Tpre = allocarray(matrix, hp->num_matmat);
-	Tuser = allocarray(matrix, hp->num_matmat);
-	if (MI_IS_USE3D(mi)) {
-		Tuserleft = allocarray(matrix, hp->num_matmat);
+	Ttmp = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	Tpre = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	Tuser = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	Tpretranspose = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	Tscale = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	Tposttranspose = (matrix *) malloc(hp->num_matmat * sizeof (matrix));
+	if ((Ttmp == NULL) || (Tpre == NULL) || (Tuser == NULL) ||
+			(Tpretranspose == NULL) || (Tscale == NULL) ||
+			(Tposttranspose == NULL)) {
+		if (Ttmp == NULL)	
+			(void) free((void *) Ttmp);
+		if (Tpre == NULL)	
+			(void) free((void *) Tpre);
+		if (Tuser == NULL)	
+			(void) free((void *) Tuser);
+		if (Tpretranspose == NULL)	
+			(void) free((void *) Tpretranspose);
+		if (Tscale == NULL)	
+			(void) free((void *) Tscale);
+		if (Tposttranspose == NULL)	
+			(void) free((void *) Tposttranspose);
+		return False;
 	}
-	Tpretranspose = allocarray(matrix, hp->num_matmat);
-	Tscale = allocarray(matrix, hp->num_matmat);
-	Tposttranspose = allocarray(matrix, hp->num_matmat);
+	if (MI_IS_USE3D(mi)) {
+		if ((Tuserleft = (matrix *) malloc(hp->num_matmat *
+				sizeof (matrix))) == NULL) {
+			(void) free((void *) Ttmp);
+			(void) free((void *) Tpre);
+			(void) free((void *) Tuser);
+			(void) free((void *) Tpretranspose);
+			(void) free((void *) Tscale);
+			(void) free((void *) Tposttranspose);
+			return False;
+		}
+	}
 
 	/*
 	 * Adjust the data.
@@ -966,7 +1010,6 @@ calc_transformation(ModeInfo * mi)
 	for (i = 0; i < hp->num_d; i++) {
 		Tpre[i * hp->num_mat + hp->num_d] = -0.5;
 	}
-
 
 	/*
 	 * Figure the rotation.
@@ -1063,35 +1106,45 @@ calc_transformation(ModeInfo * mi)
 	(void) free((void *) Tpre);
 	(void) free((void *) Ttmp);
 	(void) free((void *) Tscale);
+	return True;
 }
 
 
-static void
+static Bool
 translate_point(hyperstruct * hp, matrix * Tall, vector * real, XPoint * screen_image)
 {
 	vector     *image;
 
-	image = allocarray(vector, hp->num_mat);
-
+    if ((image = (vector *) malloc(hp->num_mat * sizeof (vector))) == NULL)
+		return False;
 	MatVecMult(Tall, real, image, hp->num_mat);
 	screen_image->x = (short) image[0];
 	screen_image->y = (short) image[1];
 
 	(void) free((void *) image);
+	return True;
 }
 
-static void
+static Bool
 translate_points(ModeInfo * mi, int set)
 {
 	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
 	int         i;
 
-	calc_transformation(mi);
+	if (!calc_transformation(mi))
+		return False;
 	for (i = 0; i < hp->num_points; i++) {
-		translate_point(hp, hp->Tall, &hp->points[i * hp->num_mat], &hp->xpoints[set][i]);
-		if (MI_IS_USE3D(mi))
-			translate_point(hp, hp->Tallleft, &hp->pointsleft[i * hp->num_mat], &hp->xpointsleft[set][i]);
+		if (!translate_point(hp, hp->Tall, &hp->points[i * hp->num_mat],
+				&hp->xpoints[set][i]))
+			return False;
+		if (MI_IS_USE3D(mi)) {
+			if (!translate_point(hp, hp->Tallleft,
+					&hp->pointsleft[i * hp->num_mat],
+					&hp->xpointsleft[set][i]))
+				return False;
+		}
 	}
+	return True;
 }
 
 void
@@ -1111,8 +1164,9 @@ refresh_hyper(ModeInfo * mi)
 void
 init_hyper(ModeInfo * mi)
 {
-	hyperstruct *hp;
+	Display *display = MI_DISPLAY(mi);
 	int         i;
+	hyperstruct *hp;
 
 	if (hypers == NULL) {
 		if ((hypers = (hyperstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -1121,9 +1175,15 @@ init_hyper(ModeInfo * mi)
 	}
 	hp = &hypers[MI_SCREEN(mi)];
 
-	init_x_stuff(mi);
+	if (!init_x_stuff(mi)) {
+		free_hyper(display, hp);
+		return;
+	}
 
-	figure_points(mi);
+	if (!figure_points(mi)) {
+		free_hyper(display, hp);
+		return;
+	}
 
 	/*
 	 * Fix the d+1 coord of all points.
@@ -1137,8 +1197,14 @@ init_hyper(ModeInfo * mi)
 	figure_axis_points(hp);
 
 	hp->this_set = 0;
-	translate_points(mi, !hp->this_set);
-	translate_points(mi, hp->this_set);
+	if (!translate_points(mi, !hp->this_set)) {
+		free_hyper(display, hp);
+		return;
+	}
+	if (!translate_points(mi, hp->this_set)) {
+		free_hyper(display, hp);
+		return;
+	}
 	refresh_hyper(mi);
 	hp->painted = True;
 	hp->stationary = True;
@@ -1148,14 +1214,23 @@ init_hyper(ModeInfo * mi)
 void
 draw_hyper(ModeInfo * mi)
 {
-	hyperstruct *hp = &hypers[MI_SCREEN(mi)];
+	hyperstruct *hp;
+
+	if (hypers == NULL)
+		return;
+	hp = &hypers[MI_SCREEN(mi)];
+	if (hp->axis_points == NULL)
+		return;
 
 	hp->painted = False;
 	draw_hyper_step(mi, hp->this_set);
 
 	/* Set up next place */
 	move_hyper(mi);
-	translate_points(mi, hp->this_set);
+	if (!translate_points(mi, hp->this_set)) {
+		free_hyper(MI_DISPLAY(mi), hp);
+		return;
+	}
 	if (!hp->stationary)
 		hp->this_set = !hp->this_set;
 }
@@ -1175,15 +1250,8 @@ release_hyper(ModeInfo * mi)
 	if (hypers != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			hyperstruct *hp = &hypers[screen];
-
-			if (hp->gc != NULL)
-				XFreeGC(MI_DISPLAY(mi), hp->gc);
-			if (hp->font)
-				XFreeFont(MI_DISPLAY(mi), hp->font);
-			free_hyper(hp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_hyper(MI_DISPLAY(mi), &hypers[screen]);
 		(void) free((void *) hypers);
 		hypers = NULL;
 	}

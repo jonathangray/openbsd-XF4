@@ -2,7 +2,7 @@
 /* sierpinski --- Sierpinski's triangle fractal */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)sierpinski.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)sierpinski.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,10 +25,11 @@ static const char sccsid[] = "@(#)sierpinski.c	4.07 97/11/24 xlockmore";
  * "focused".  This is correct behavior.
  *
  * Revision History:
- * 18-Sep-97: 3D version Antti Kuntsi <kuntsi@iki.fi>.
- * 20-May-97: Changed the name tri to sierpinski for more compatiblity
- * 10-May-97: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
- * 05-Sep-96: Desmond Daignault Datatimes Incorporated
+ * 01-Nov-2000: Allocation checks
+ * 18-Sep-1997: 3D version Antti Kuntsi <kuntsi@iki.fi>.
+ * 20-May-1997: Changed the name tri to sierpinski for more compatiblity
+ * 10-May-1997: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
+ * 05-Sep-1996: Desmond Daignault Datatimes Incorporated
  *            <tekdd@dtol.datatimes.com> .
  */
 
@@ -50,7 +51,7 @@ static const char sccsid[] = "@(#)sierpinski.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_sierpinski
 
 ModeSpecOpt sierpinski_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   sierpinski_description =
@@ -113,11 +114,23 @@ startover(ModeInfo * mi)
 	MI_CLEARWINDOW(mi);
 }
 
+static void
+free_sierpinski(sierpinskistruct *sp)
+{
+	int corner;
+
+	for (corner = 0; corner < MAXCORNERS; corner++)
+		if (sp->pointBuffer[corner] != NULL) {
+			(void) free((void *) sp->pointBuffer[corner]);
+			sp->pointBuffer[corner] = NULL;
+		}
+}
+
 void
 init_sierpinski(ModeInfo * mi)
 {
-	sierpinskistruct *sp;
 	int         i;
+	sierpinskistruct *sp;
 
 	if (tris == NULL) {
 		if ((tris = (sierpinskistruct *) calloc(MI_NUM_SCREENS(mi),
@@ -138,8 +151,11 @@ init_sierpinski(ModeInfo * mi)
 	}
 	for (i = 0; i < sp->corners; i++) {
 		if (!sp->pointBuffer[i])
-			sp->pointBuffer[i] = (XPoint *) malloc(sp->total_npoints *
-							    sizeof (XPoint));
+			if ((sp->pointBuffer[i] = (XPoint *) malloc(sp->total_npoints *
+					sizeof (XPoint))) == NULL) {
+				free_sierpinski(sp);
+				return;
+			}
 	}
 	startover(mi);
 }
@@ -149,12 +165,17 @@ draw_sierpinski(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	sierpinskistruct *sp = &tris[MI_SCREEN(mi)];
 	XPoint     *xp[MAXCORNERS];
-	int         i = 0, v;
+	int         i, v;
+	sierpinskistruct *sp;
+
+	if (tris == NULL)
+		return;
+	sp = &tris[MI_SCREEN(mi)];
+	if (sp->pointBuffer[0] == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (MI_NPIXELS(mi) <= 2)
 		XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
 	for (i = 0; i < sp->corners; i++)
@@ -183,14 +204,10 @@ void
 release_sierpinski(ModeInfo * mi)
 {
 	if (tris != NULL) {
-		int         screen, i;
+		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			for (i = 0; i < MAXCORNERS; i++)
-				if (tris[screen].pointBuffer[i] != NULL) {
-					(void) free((void *) tris[screen].pointBuffer[i]);
-				}
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_sierpinski(&tris[screen]);
 		(void) free((void *) tris);
 		tris = NULL;
 	}

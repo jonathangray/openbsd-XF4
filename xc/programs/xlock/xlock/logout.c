@@ -37,8 +37,6 @@ static const char sccsid[] = "@(#)logout.c	4.02 97/04/01 xlockmore";
 
 #if defined( USE_AUTO_LOGOUT ) || defined( USE_BUTTON_LOGOUT ) || defined( USE_BOMB )
 
-extern void logoutUser(Display * display);
-
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
 #include <syslog.h>
 #endif
@@ -271,7 +269,7 @@ kill_tree(Display * display, Window window)
  */
 
 static void
-closedownLogout(Display * display)
+closedownLogout(Display * display, int screens)
 {
 	Atom        __SWM_DELETE_WINDOW = None;
 	Atom        __SWM_PROTOCOLS = None;
@@ -292,7 +290,7 @@ closedownLogout(Display * display)
 	__SWM_DELETE_WINDOW = XInternAtom(display, "__SWM_DELETE_WINDOW", False);
 
 	/* start looking for windows to kill -- be nice on pass 1 */
-	for (j = 0; j < ScreenCount(display); j++)
+	for (j = 0; j < screens; j++)
 		recurse_tree(display, RootWindow(display, j),
 			  __SWM_STATE, __SWM_PROTOCOLS, __SWM_DELETE_WINDOW);
 
@@ -301,7 +299,7 @@ closedownLogout(Display * display)
 
 	/* this will forcibly kill anything that's still around --
 	   this second pass may or may not be needed... */
-	for (j = 0; j < ScreenCount(display); j++)
+	for (j = 0; j < screens; j++)
 		kill_tree(display, RootWindow(display, j));
 	(void) sleep(NAP_TIME);
 }
@@ -370,7 +368,11 @@ uglyLogout(void)
 }
 
 void
-logoutUser(Display * display)
+logoutUser(Display * display
+#ifdef CLOSEDOWN_LOGOUT
+  , int screens
+#endif
+)
 {
 
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
@@ -407,8 +409,8 @@ logoutUser(Display * display)
 #endif
 
 #ifdef CLOSEDOWN_LOGOUT
-	/* Do not want to kill other user's processes like if telnetted in */
-	closedownLogout(display);
+	/* Do not want to kill other user's processes e.g. telnet session */
+	closedownLogout(display, screens);
 	return;
 #endif
 #ifdef SESSION_LOGOUT

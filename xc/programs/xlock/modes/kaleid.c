@@ -2,7 +2,7 @@
 /* kaleid --- Brewster's Kaleidoscope */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)kaleid.c  4.11 98/06/01 xlockmore";
+static const char sccsid[] = "@(#)kaleid.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,6 +25,11 @@ static const char sccsid[] = "@(#)kaleid.c  4.11 98/06/01 xlockmore";
  * event will the author be liable for any lost revenue or profits or
  * other special, indirect and consequential damages.
  *
+ * Revision History:
+ * 01-Nov-2000: Allocation checks
+ * 1998: Written
+ *
+ *
  *  -batchcount n     number of pens [default 4]
  *
  *  -cycle n          percentage of black in the pattern (0%-95%)
@@ -40,6 +45,10 @@ static const char sccsid[] = "@(#)kaleid.c  4.11 98/06/01 xlockmore";
  *  -/+serial         turn on/off sequential allocation of colors
  *
  *  -/+alternate      turn on/off alternate display mode
+ *
+ *  -/+spiral         turn on/off spiral mode
+ *
+ *  -/+spots          turn on/off spots mode
  *
  *  -/+quad           turn on/off quad mirrored/rotated mode similar
  *                       to size 4, works with alternate
@@ -69,6 +78,8 @@ static const char sccsid[] = "@(#)kaleid.c  4.11 98/06/01 xlockmore";
  "*disconnected: True \n" \
  "*serial: False \n" \
  "*alternate: False \n" \
+ "*spiral: False \n" \
+ "*spots: False \n" \
  "*linear: False \n" \
  "*quad: False \n" \
  "*oct: False \n"
@@ -88,6 +99,8 @@ static const char sccsid[] = "@(#)kaleid.c  4.11 98/06/01 xlockmore";
 #define DEF_QUAD          "False"
 #define DEF_OCT           "False"
 #define DEF_LINEAR        "False"
+#define DEF_SPIRAL        "False"
+#define DEF_SPOTS         "False"
 
 static Bool Disconnected;
 static Bool Serial;
@@ -95,41 +108,51 @@ static Bool Alternate;
 static Bool Quad;
 static Bool Oct;
 static Bool Linear;
+static Bool Spiral;
+static Bool Spots;
 
 static XrmOptionDescRec opts[] =
 {
-   {"-disconnected", ".kaleid.disconnected", XrmoptionNoArg, (caddr_t) "on"},
-  {"+disconnected", ".kaleid.disconnected", XrmoptionNoArg, (caddr_t) "off"},
-	{"-serial", ".kaleid.serial", XrmoptionNoArg, (caddr_t) "on"},
-	{"+serial", ".kaleid.serial", XrmoptionNoArg, (caddr_t) "off"},
-	{"-alternate", ".kaleid.alternate", XrmoptionNoArg, (caddr_t) "on"},
-	{"+alternate", ".kaleid.alternate", XrmoptionNoArg, (caddr_t) "off"},
-	{"-quad", ".kaleid.quad", XrmoptionNoArg, (caddr_t) "on"},
-	{"+quad", ".kaleid.quad", XrmoptionNoArg, (caddr_t) "off"},
-	{"-oct", ".kaleid.oct", XrmoptionNoArg, (caddr_t) "on"},
-	{"+oct", ".kaleid.oct", XrmoptionNoArg, (caddr_t) "off"},
-	{"-linear", ".kaleid.linear", XrmoptionNoArg, (caddr_t) "on"},
-	{"+linear", ".kaleid.linear", XrmoptionNoArg, (caddr_t) "off"}
+   {(char *) "-disconnected", (char *) ".kaleid.disconnected", XrmoptionNoArg, (caddr_t) "on"},
+  {(char *) "+disconnected", (char *) ".kaleid.disconnected", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-serial", (char *) ".kaleid.serial", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+serial", (char *) ".kaleid.serial", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-alternate", (char *) ".kaleid.alternate", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+alternate", (char *) ".kaleid.alternate", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-spiral", (char *) ".kaleid.spiral", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+spiral", (char *) ".kaleid.spiral", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-spots", (char *) ".kaleid.spots", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+spots", (char *) ".kaleid.spots", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-quad", (char *) ".kaleid.quad", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+quad", (char *) ".kaleid.quad", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-oct", (char *) ".kaleid.oct", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+oct", (char *) ".kaleid.oct", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-linear", (char *) ".kaleid.linear", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+linear", (char *) ".kaleid.linear", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & Disconnected, "disconnected", "Disconnected", DEF_DISCONNECTED, t_Bool},
-	{(caddr_t *) & Serial, "serial", "Serial", DEF_SERIAL, t_Bool},
-  {(caddr_t *) & Alternate, "alternate", "Alternate", DEF_ALTERNATE, t_Bool},
-	{(caddr_t *) & Quad, "quad", "Quad", DEF_QUAD, t_Bool},
-	{(caddr_t *) & Oct, "oct", "Oct", DEF_OCT, t_Bool},
-	{(caddr_t *) & Linear, "linear", "Linear", DEF_LINEAR, t_Bool}
+	{(caddr_t *) & Disconnected, (char *) "disconnected", (char *) "Disconnected", (char *) DEF_DISCONNECTED, t_Bool},
+	{(caddr_t *) & Serial, (char *) "serial", (char *) "Serial", (char *) DEF_SERIAL, t_Bool},
+    {(caddr_t *) & Alternate, (char *) "alternate", (char *) "Alternate", (char *) DEF_ALTERNATE, t_Bool},
+    {(caddr_t *) & Spiral, (char *) "spiral", (char *) "Spiral", (char *) DEF_SPIRAL, t_Bool},
+    {(caddr_t *) & Spots, (char *) "spots", (char *) "Spots", (char *) DEF_SPOTS, t_Bool},
+	{(caddr_t *) & Quad, (char *) "quad", (char *) "Quad", (char *) DEF_QUAD, t_Bool},
+	{(caddr_t *) & Oct, (char *) "oct", (char *) "Oct", (char *) DEF_OCT, t_Bool},
+	{(caddr_t *) & Linear, (char *) "linear", (char *) "Linear", (char *) DEF_LINEAR, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+disconnected", "turn on/off disconnected pen movement"},
-	{"-/+serial", "turn on/off sequential color selection"},
-	{"-/+alternate", "turn on/off alternate display mode"},
-	{"-/+quad", "turn on/off quad mirrored display mode"},
-	{"-/+oct", "turn on/off oct mirrored display mode"},
-	{"-/+linear", "select Cartesian/Polar coordinate display mode"}
+	{(char *) "-/+disconnected", (char *) "turn on/off disconnected pen movement"},
+	{(char *) "-/+serial", (char *) "turn on/off sequential color selection"},
+	{(char *) "-/+alternate", (char *) "turn on/off alternate display mode"},
+	{(char *) "-/+spiral", (char *) "turn on/off angular bounding mode"},
+	{(char *) "-/+spots", (char *) "turn on/off circle mode"},
+	{(char *) "-/+quad", (char *) "turn on/off quad mirrored display mode"},
+	{(char *) "-/+oct", (char *) "turn on/off oct mirrored display mode"},
+	{(char *) "-/+linear", (char *) "select Cartesian/Polar coordinate display mode"}
 };
 
 ModeSpecOpt kaleid_opts =
@@ -152,6 +175,8 @@ ModStruct   kaleid_description =
 #define MINSIZE 1
 #define QUAD (-4)
 #define OCT (-8)
+
+#define SpotsMult           3
 
 #define MinVelocity         6
 #define MaxVelocity         4
@@ -200,7 +225,7 @@ typedef struct {
 	double      slice;
 	int         bouncetype;
 	int         modetype;
-	Bool        alternate, disconnected, serial, linear;
+	Bool        alternate, disconnected, serial, linear, spiral, spots;
 } kaleidstruct;
 
 static kaleidstruct *kaleids = NULL;
@@ -326,11 +351,11 @@ GeneralPolarMoveAndBounce(
 {
 	kp->pen[pn].cx = kp->pen[pn].cx + kp->pen[pn].xv;
 	if (kp->pen[pn].cx < 0.0) {
-		kp->pen[pn].cx = -kp->pen[pn].cx;
+	    kp->pen[pn].cx = -kp->pen[pn].cx;
 		kp->pen[pn].xv = -kp->pen[pn].xv;
 	} else if (kp->pen[pn].cx >= kp->radius) {
-		kp->pen[pn].cx = (kp->radius - 1.0)
-			- (kp->pen[pn].cx - kp->radius);
+	    kp->pen[pn].cx = (kp->radius - 1.0)
+		    - (kp->pen[pn].cx - kp->radius);
 		kp->pen[pn].xv = -kp->pen[pn].xv;
 	}
 	switch (kp->bouncetype) {
@@ -360,14 +385,24 @@ GeneralPolarMoveAndBounce(
 	}
 
 	if (kp->pen[pn].cy < 0) {
-		kp->pen[pn].RadiusOut = True;
-		if (kp->pen[pn].oy >= 0) {
-			kp->pen[pn].yv = -kp->pen[pn].yv;
+	    if (kp->spiral) {
+		    kp->pen[pn].RadiusOut = False;
+		    kp->pen[pn].cy = kp->pen[pn].cy + 360.0;
+		} else {
+		    kp->pen[pn].RadiusOut = True;
+			if (kp->pen[pn].oy >= 0) {
+			    kp->pen[pn].yv = -kp->pen[pn].yv;
+			}
+		}
+	} else if (kp->spiral) {
+	    if (kp->pen[pn].cy > 360.0) {
+		    kp->pen[pn].RadiusOut = False;
+			kp->pen[pn].cy = kp->pen[pn].cy - 360.0;
 		}
 	} else if (kp->pen[pn].cy >= kp->slice) {
-		kp->pen[pn].RadiusOut = True;
+	    kp->pen[pn].RadiusOut = True;
 		if (kp->pen[pn].oy < kp->slice) {
-			kp->pen[pn].yv = -kp->pen[pn].yv;
+		    kp->pen[pn].yv = -kp->pen[pn].yv;
 		}
 	} else {
 		kp->pen[pn].RadiusOut = False;
@@ -394,14 +429,17 @@ GeneralRotated(
 
 	Angle = 0.0;
 	for (segnum = 0; segnum < kp->modetype; segnum += 1) {
-		segs[segnum].x1 = (int) (PolarToCartX(kp->pen[pn].ox,
-						      kp->pen[pn].oy + Angle
-					 ) + kp->widthby2
-			);
-		segs[segnum].y1 = (int) (PolarToCartY(kp->pen[pn].ox,
-						      kp->pen[pn].oy + Angle
-					 ) + kp->heightby2
-			);
+	    if (! kp->spots) {
+		    segs[segnum].x1 = (int) (PolarToCartX(kp->pen[pn].ox,
+								  kp->pen[pn].oy + Angle
+					     ) + kp->widthby2
+		        );
+
+			segs[segnum].y1 = (int) (PolarToCartY(kp->pen[pn].ox,
+								  kp->pen[pn].oy + Angle
+						 ) + kp->heightby2
+				);
+		}
 		segs[segnum].x2 = (int) (PolarToCartX(kp->pen[pn].cx,
 						      kp->pen[pn].cy + Angle
 					 ) + kp->widthby2
@@ -410,6 +448,11 @@ GeneralRotated(
 						      kp->pen[pn].cy + Angle
 					 ) + kp->heightby2
 			);
+
+		if (kp->spots) {
+		    segs[segnum].x1 = segs[segnum].x2;
+		    segs[segnum].y1 = segs[segnum].y2;
+		}
 
 		Angle += kp->slice;
 	}
@@ -432,15 +475,17 @@ GeneralMirrored(
 
 	Angle = 0.0;
 	for (segnum = 0; segnum < kp->modetype; segnum += 2) {
-		segs[segnum].x1 = (int) (PolarToCartX(kp->pen[pn].ox,
-						      kp->pen[pn].oy + Angle
-					 ) + kp->widthby2
-			);
+	    if (! kp->spots) {
+		    segs[segnum].x1 = (int) (PolarToCartX(kp->pen[pn].ox,
+								  kp->pen[pn].oy + Angle
+						 ) + kp->widthby2
+				);
 
-		segs[segnum].y1 = (int) (PolarToCartY(kp->pen[pn].ox,
-						      kp->pen[pn].oy + Angle
-					 ) + kp->heightby2
-			);
+			segs[segnum].y1 = (int) (PolarToCartY(kp->pen[pn].ox,
+								  kp->pen[pn].oy + Angle
+						 ) + kp->heightby2
+				);
+        }
 
 		segs[segnum].x2 = (int) (PolarToCartX(kp->pen[pn].cx,
 						      kp->pen[pn].cy + Angle
@@ -452,22 +497,29 @@ GeneralMirrored(
 					 ) + kp->heightby2
 			);
 
+		if (kp->spots) {
+		    segs[segnum].x1 = segs[segnum].x2;
+		    segs[segnum].y1 = segs[segnum].y2;
+		}
+
 		Angle += (2.0 * kp->slice);
 	}
 
 	Angle = 360.0 - kp->slice;
 	for (segnum = 1; segnum < kp->modetype; segnum += 2) {
-		segs[segnum].x1 =
-			(int) (PolarToCartX(kp->pen[pn].ox,
-					 (kp->slice - kp->pen[pn].oy) + Angle
-			       ) + kp->widthby2
-			);
+	    if (! kp->spots) {
+		    segs[segnum].x1 =
+			    (int) (PolarToCartX(kp->pen[pn].ox,
+						 (kp->slice - kp->pen[pn].oy) + Angle
+					   ) + kp->widthby2
+			    );
 
-		segs[segnum].y1 =
-			(int) (PolarToCartY(kp->pen[pn].ox,
-					 (kp->slice - kp->pen[pn].oy) + Angle
-			       ) + kp->heightby2
-			);
+			segs[segnum].y1 =
+			    (int) (PolarToCartY(kp->pen[pn].ox,
+					     (kp->slice - kp->pen[pn].oy) + Angle
+					   ) + kp->heightby2
+				);
+		}
 
 		segs[segnum].x2 =
 			(int) (PolarToCartX(kp->pen[pn].cx,
@@ -481,6 +533,10 @@ GeneralMirrored(
 			       ) + kp->heightby2
 			);
 
+		if (kp->spots) {
+		    segs[segnum].x1 = segs[segnum].x2;
+		    segs[segnum].y1 = segs[segnum].y2;
+		}
 		Angle -= (2.0 * kp->slice);
 	}
 }
@@ -787,20 +843,30 @@ GeneralLinearMoveAndBounce(
 
 
 	if (*angle < 0.0) {
-		kp->pen[pn].AngleOut = True;
-		if (*oangle > 0.0) {
-			rv = CartToRadius(kp->pen[pn].xv, kp->pen[pn].yv);
-			av = CartToAngle(kp->pen[pn].xv, kp->pen[pn].yv);
+	    if (kp->spiral) {
+		    kp->pen[pn].AngleOut = False;
+		    *angle = *angle + 360.0;
+		} else {
+		    kp->pen[pn].AngleOut = True;
+			  if (*oangle > 0.0) {
+				  rv = CartToRadius(kp->pen[pn].xv, kp->pen[pn].yv);
+				  av = CartToAngle(kp->pen[pn].xv, kp->pen[pn].yv);
 
-			para = PolarToCartX(rv, av);
-			perp = PolarToCartY(rv, av);
+				  para = PolarToCartX(rv, av);
+				  perp = PolarToCartY(rv, av);
 
-			rv = CartToRadius(para, -perp);
-			av = CartToAngle(para, -perp);
+				  rv = CartToRadius(para, -perp);
+				  av = CartToAngle(para, -perp);
 
-			kp->pen[pn].xv = PolarToCartX(rv, av);
-			kp->pen[pn].yv = PolarToCartY(rv, av);
+				  kp->pen[pn].xv = PolarToCartX(rv, av);
+				  kp->pen[pn].yv = PolarToCartY(rv, av);
+			  }
 		}
+    } else if (kp->spiral) {
+	    if (*angle > 360.0) {
+	         kp->pen[pn].AngleOut = False;
+			 *angle = *angle - 360.0;
+	    }
 	} else if (*angle > kp->slice) {
 		kp->pen[pn].AngleOut = True;
 		if (*oangle < kp->slice) {
@@ -838,10 +904,18 @@ GeneralLinearRotated(
 	GeneralLinearMoveAndBounce(kp, pn, &angle, &radius, &oangle, &oradius);
 
 	for (i = 0; i < kp->modetype; i += 1) {
-		segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle));
-		segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle));
+	    if (! kp->spots) {
+		    segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle));
+			segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle));
+		}
+
 		segs[i].x2 = (int) (kp->widthby2 + PolarToCartX(radius, angle));
 		segs[i].y2 = (int) (kp->heightby2 - PolarToCartY(radius, angle));
+
+		if (kp->spots) {
+		    segs[i].x1 = segs[i].x2;
+			segs[i].y1 = segs[i].y2;
+		}
 
 		oangle += kp->slice;
 		angle += kp->slice;
@@ -871,10 +945,18 @@ GeneralLinearMirrored(
 	hangle = angle;
 
 	for (i = 0; i < kp->modetype; i += 2) {
-		segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle));
-		segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle));
+	    if (! kp->spots) {
+		    segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle));
+			segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle));
+		}
+
 		segs[i].x2 = (int) (kp->widthby2 + PolarToCartX(radius, angle));
 		segs[i].y2 = (int) (kp->heightby2 - PolarToCartY(radius, angle));
+
+		if (kp->spots) {
+		    segs[i].x1 = segs[i].x2;
+			segs[i].y1 = segs[i].y2;
+		}
 
 		oangle += 2.0 * kp->slice;
 		angle += 2.0 * kp->slice;
@@ -883,10 +965,18 @@ GeneralLinearMirrored(
 	oangle = kp->slice * 2.0;
 	angle = kp->slice * 2.0;
 	for (i = 1; i < kp->modetype; i += 2) {
-		segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle - hoangle));
-		segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle - hoangle));
+	    if (! kp->spots) {
+		    segs[i].x1 = (int) (kp->widthby2 + PolarToCartX(oradius, oangle - hoangle));
+			segs[i].y1 = (int) (kp->heightby2 - PolarToCartY(oradius, oangle - hoangle));
+		}
+
 		segs[i].x2 = (int) (kp->widthby2 + PolarToCartX(radius, angle - hangle));
 		segs[i].y2 = (int) (kp->heightby2 - PolarToCartY(radius, angle - hangle));
+
+		if (kp->spots) {
+		    segs[i].x1 = segs[i].x2;
+			segs[i].y1 = segs[i].y2;
+		}
 
 		oangle += 2.0 * kp->slice;
 		angle += 2.0 * kp->slice;
@@ -899,31 +989,52 @@ GeneralLinearMirrored(
 static void
 random_velocity(kaleidstruct * kp, int i)
 {
+    int tMxRV, tMnRV;
+	int tMxAV, tMnAV;
+    int tMxV,  tMnV;
+	
+	if (kp->spots) {
+	    tMxRV = MaxRadialVelocity * SpotsMult;
+	    tMnRV = MinRadialVelocity * SpotsMult;
+	    tMxAV = MaxAngularVelocity * SpotsMult;
+	    tMnAV = MinAngularVelocity * SpotsMult;
+        tMxV  = MaxVelocity * SpotsMult;
+        tMnV  = MinVelocity * SpotsMult;
+	} else {
+	    tMxRV = MaxRadialVelocity;
+	    tMnRV = MinRadialVelocity;
+	    tMxAV = MaxAngularVelocity;
+	    tMnAV = MinAngularVelocity;
+        tMxV  = MaxVelocity;
+        tMnV  = MinVelocity;
+	}
+
+
 	if (kp->modetype > 0) {
-		kp->pen[i].xv = INTRAND(-MaxRadialVelocity, MaxRadialVelocity);
+		kp->pen[i].xv = INTRAND(-tMxRV, tMxRV);
 		if (kp->pen[i].xv > 0.0) {
-			kp->pen[i].xv += MinRadialVelocity;
+			kp->pen[i].xv += tMnRV;
 		} else if (kp->pen[i].xv < 0.0) {
-			kp->pen[i].xv -= MinRadialVelocity;
+			kp->pen[i].xv -= tMnRV;
 		}
-		kp->pen[i].yv = INTRAND(-MaxAngularVelocity, MaxAngularVelocity);
+		kp->pen[i].yv = INTRAND(-tMxAV, tMxAV);
 		if (kp->pen[i].yv > 0.0) {
-			kp->pen[i].yv += MinAngularVelocity;
+			kp->pen[i].yv += tMnAV;
 		} else if (kp->pen[i].yv < 0.0) {
-			kp->pen[i].yv -= MinAngularVelocity;
+			kp->pen[i].yv -= tMnAV;
 		}
 	} else {
-		kp->pen[i].xv = INTRAND(-MaxVelocity, MaxVelocity);
+		kp->pen[i].xv = INTRAND(-tMxV, tMxV);
 		if (kp->pen[i].xv > 0.0) {
-			kp->pen[i].xv += MinVelocity;
+			kp->pen[i].xv += tMnV;
 		} else if (kp->pen[i].xv < 0.0) {
-			kp->pen[i].xv -= MinVelocity;
+			kp->pen[i].xv -= tMnV;
 		}
-		kp->pen[i].yv = INTRAND(-MaxVelocity, MaxVelocity);
+		kp->pen[i].yv = INTRAND(-tMxV, tMxV);
 		if (kp->pen[i].yv > 0.0) {
-			kp->pen[i].yv += MinVelocity;
+			kp->pen[i].yv += tMnV;
 		} else if (kp->pen[i].yv < 0.0) {
-			kp->pen[i].yv -= MinVelocity;
+			kp->pen[i].yv -= tMnV;
 		}
 	}
 }
@@ -968,16 +1079,13 @@ random_position(kaleidstruct * kp, int i)
 void
 init_kaleid(ModeInfo * mi)
 {
-	kaleidstruct *kp = &kaleids[MI_SCREEN(mi)];
 	int         i;
+	kaleidstruct *kp;
 
 
 	if (kaleids == NULL) {
-		if ((kaleids = (kaleidstruct *) calloc(
-							  MI_NUM_SCREENS(mi),
-						       sizeof (kaleidstruct))
-		    ) == NULL
-			)
+		if ((kaleids = (kaleidstruct *) calloc(MI_NUM_SCREENS(mi),
+			       sizeof (kaleidstruct))) == NULL)
 			return;
 	}
 	kp = &kaleids[MI_SCREEN(mi)];
@@ -989,11 +1097,15 @@ init_kaleid(ModeInfo * mi)
 		kp->disconnected = (Bool) (LRAND() & 1);
 		kp->serial = (Bool) (LRAND() & 1);
 		kp->linear = (Bool) (LRAND() & 1);
+		kp->spiral = (Bool) (LRAND() & 1);
+		kp->spots = (Bool) (LRAND() & 1);
 	} else {
 		kp->alternate = Alternate;
 		kp->disconnected = Disconnected;
 		kp->serial = Serial;
 		kp->linear = Linear;
+		kp->spiral = Spiral;
+		kp->spots = Spots;
 	}
 
 	if (kp->PenCount < -MINPENS) {
@@ -1006,8 +1118,11 @@ init_kaleid(ModeInfo * mi)
 	} else if (kp->PenCount < MINPENS)
 		kp->PenCount = MINPENS;
 
-	if (kp->pen == NULL)
-		kp->pen = (penstruct *) malloc(kp->PenCount * sizeof (penstruct));
+	if (kp->pen == NULL) {
+		if ((kp->pen = (penstruct *) malloc(kp->PenCount *
+				sizeof (penstruct))) == NULL)
+			return;
+	}
 
 	if ((MI_SIZE(mi)) > MINSIZE) {
 		kp->modetype = (!kp->alternate + 1) * MI_SIZE(mi);
@@ -1080,9 +1195,14 @@ init_kaleid(ModeInfo * mi)
 			);
 	}
 
+	if (kp->spots) {
+	    kp->maxlwidth = 2 * kp->maxlwidth;
+	}
+
 	if (kp->maxlwidth <= 0) {
 		kp->maxlwidth = 1;
 	}
+
 	for (i = 0; i < kp->PenCount; i += 1) {
 		if (MI_NPIXELS(mi) > 2) {
 			kp->pen[i].pix = NRAND(MI_NPIXELS(mi));
@@ -1104,6 +1224,7 @@ init_kaleid(ModeInfo * mi)
 
 		random_velocity(kp, i);
 	}
+
 	MI_CLEARWINDOW(mi);
 
 }
@@ -1173,23 +1294,32 @@ draw_kaleid(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	kaleidstruct *kp = &kaleids[MI_SCREEN(mi)];
 	XSegment   *segs;
-	int         NumberOfSegments = 0;
+	int         NumberOfSegments;
 	int         i;
+	kaleidstruct *kp;
+
+	if (kaleids == NULL)
+			return;
+	kp = &kaleids[MI_SCREEN(mi)];
+	if (kp->pen == NULL)
+			return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (kp->modetype == QUAD) {
 		NumberOfSegments = 4;
-		segs = (XSegment *) malloc(NumberOfSegments * sizeof (XSegment));
 	} else if (kp->modetype == OCT) {
 		NumberOfSegments = 8;
-		segs = (XSegment *) malloc(NumberOfSegments * sizeof (XSegment));
 	} else {		/* if (kp->modetype > 0) */
 		NumberOfSegments = kp->modetype;
-		segs = (XSegment *) malloc(NumberOfSegments * sizeof (XSegment));
 	}
+	if ((segs = (XSegment *) malloc(NumberOfSegments *
+			sizeof (XSegment))) == NULL) {
+		(void) free((void *) kp->pen);
+		kp->pen = NULL;
+		return;
+	}
+
 	for (i = 0; i < kp->PenCount; i++) {
 		set_pen_attributes(mi, kp, i);
 
@@ -1206,7 +1336,8 @@ draw_kaleid(ModeInfo * mi)
 				OctMirrored(kp, i, segs);
 			}
 		} else {
-			if (kp->alternate) {
+			if (kp->alternate) {	  
+
 				if (kp->linear) {
 					GeneralLinearRotated(kp, i, segs);
 				} else {
@@ -1241,6 +1372,7 @@ draw_kaleid(ModeInfo * mi)
 			}
 		}
 	}
+	  
 
 	XSetLineAttributes(display, gc, 1, LineSolid, CapRound, JoinRound);
 	(void) free((void *) segs);
@@ -1256,7 +1388,7 @@ release_kaleid(ModeInfo * mi)
 		int         screen;
 
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			kaleidstruct *kp = &kaleids[MI_SCREEN(mi)];
+			kaleidstruct *kp = &kaleids[screen];
 
 			if (kp->pen != NULL)
 				(void) free((void *) kp->pen);

@@ -10,13 +10,14 @@ typedef struct {
   int         time;
   char       *partlist;
   int         forwards;
+  Window      window;
 } spherestruct;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void invert_draw(spherestruct *gp);
+  Bool invert_draw(spherestruct *gp);
 #ifdef __cplusplus
 }
 #endif

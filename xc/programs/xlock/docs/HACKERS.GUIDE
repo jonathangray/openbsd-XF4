@@ -552,6 +552,22 @@ I get some time...
 Last Update:
 Mon Mar 18 03:46:16 MST 1996
 
+Dave's Check List for new modes
+-------------------------------
+
+Do not use:
+#elif  had some trouble with it once somewhere I think, hmm maybe its ok.
+snprintf is a nice command but not all unixes support it like HPUX 10.20
+XSync(dsp, True) in modes, typing in password will be hard
+exit or abort in modes.... its a lock and this will unlock it.
+
+Please do:
+each allocation of memory should be checked or else a malicious user can
+  start many processes on the machine to unlock it
+
+Debug code:
+Use #define DEBUG for one-time debugging stuff that may still prove useful.
+I found in debugging X that XSynchronize(dsp, True) is real helpful.
 
 OK now you got a working mode $file.  What auxiliary files are there to change?
 $file.c mode.c mode.h                       You must have changed already
@@ -561,7 +577,6 @@ modes/glx/Imakefile                         If it is a gl mode
 xlock/XLock.ad                              Resource file
 xlock/xlock.man                             The manual
 xmlock/modes.h                              Motif launcher file (generated)
-xalock/modes.h                              Athena launcher file (generated)
 etc/xlock.tcl                               TCL lanuncher file (generated)
 etc/xlockFrame.java                         Java lanuncher file
 etc/system.fvwm2rc.xlock                    fvwm2 menu

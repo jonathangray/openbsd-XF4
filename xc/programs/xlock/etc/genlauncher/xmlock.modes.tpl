@@ -9,10 +9,10 @@ typedef struct LockStruct_s
 static LockStruct LockProcs[] =
 {
 $%LISTMOTIF#ifdef USE_BOMB
-{"bomb", "Shows a bomb and will autologout after a time"},
-{"random", "Shows a random mode (except blank and bomb)"}
+{(char *) "bomb", (char *) "Shows a bomb and will autologout after a time"},
+{(char *) "random", (char *) "Shows a random mode (except blank and bomb)"}
 #else
-{"random", "Shows a random mode (except blank)"}
+{(char *) "random", (char *) "Shows a random mode (except blank)"}
 #endif
 };
 

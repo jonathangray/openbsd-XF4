@@ -66,7 +66,8 @@ INSTPGMFLAGS = @INSTPGMFLAGS@
 #CC = g++ -g -Wall
 CC = @CC@
 
-LINT = lint
+#LINT = lint
+LINT = lint -Ncheck=%all
 #LINT = alint
 
 #DEPEND = makedepend
@@ -160,7 +161,7 @@ html :
 hlp :
 
 clean :
-	$(RM) *.o core *~ *% *.bak *.orig *.rej make.log MakeOut xmlock *.patch
+	$(RM) *.o core *~ *% *.bak *.orig *.rej make.log MakeOut xmlock *.patch .pure
 
 distclean : clean
 	$(RM) Makefile
@@ -197,7 +198,9 @@ distdepend :
 #
 # DO NOT DELETE: updated by make distdepend
 
+option.o: option.h
 xmlock.o: ../config.h
+xmlock.o: option.h
 xmlock.o: $(BITMAPDIR)/m-xlock.xbm
 xmlock.o: modes.h
 

@@ -21,7 +21,6 @@
 
 my(@GUI_LIST) = (
   "MOTIF,xmlock.modes.tpl,../../xmlock/modes.h,1",
-  "LIBSX,xalock.modes.tpl,../../xalock/modes.h,1",
   "GTK,xglock.modes.tpl,../../xglock/modes.h,1",
   "TCL,etc.xlock.tcl,../xlock.tcl,0",
   "JAVA,etc.xlock.java,../xlockFrame.java,0");
@@ -72,8 +71,6 @@ foreach $GUI (@GUI_LIST) {
     if (-r "$GUI_TPL") {
       if ($GUI_NAME eq "MOTIF") {
         &buildmotif ($GUI_NAME, $GUI_TPL, $datafile, $GUI_FILE,);
-      } elsif ($GUI_NAME eq "LIBSX") {
-        &buildlibsx ($GUI_NAME, $GUI_TPL, $datafile, $GUI_FILE,);
       } elsif ($GUI_NAME eq "GTK") {
         &buildgtk ($GUI_NAME, $GUI_TPL, $datafile, $GUI_FILE,);
       } elsif ($GUI_NAME eq "TCL") {
@@ -92,11 +89,11 @@ foreach $GUI (@GUI_LIST) {
 
 # to help adminitration and utils for launcher(s)
 # this file replace token by all modes token :
-# LISTLIBSX, LISTMOTIF, LISTTCL, LISTGTK
+# LISTMOTIF, LISTTCL, LISTGTK
 # utils :
 
 @Gui_Types=(
-  "\$\%LISTMOTIF", "\$\%LISTLIBSX", "\$\%LISTGTK",
+  "\$\%LISTMOTIF", "\$\%LISTGTK",
   "\$\%LISTTCL", "\$\%LISTJAVA");
 
 
@@ -130,64 +127,9 @@ sub buildmotif
               $mode++;
             } else {
               if (/^\s*\"(.*)\",.*,\s*"(.*)"}/) {
-                print OUTFILE "$2\n{\"$name\",\"$1\"},\n#endif\n";
+                print OUTFILE "\(char \*\) $2\n{\"$name\", \(char \*\) \"$1\"},\n#endif\n";
               } elsif (/^\s*\"(.*)\",.*,\s*(.*)}/) { #NULL
-                print OUTFILE "{\"$name\",\"$1\"},\n";
-              } else {
-                print OUTFILE "#$_#\n";
-              }
-              $mode = 0;
-            }
-          }
-        } else {
-          if (/^.*LockProcs\[\]\s*=/) {
-            $instruct = 1;
-            $mode = 0;
-          }
-        }
-      }
-      close(DATA);
-      $_ = $restOfLine;
-    }
-    print OUTFILE "$_";
-  }
-  close(TEMPLATE);
-  close(OUTFILE);
-}
-
-sub buildlibsx
-{
-  $name = $_[0];
-  $templatefile = $_[1];
-  $datafile = $_[2];
-  $outfile = $_[3];
-
-  open(TEMPLATE, "<$templatefile") || die("Could not open $templatefile for reading");
-  open(OUTFILE, ">$outfile") || die("Could not open $outfile for writing");
-  while (<TEMPLATE>) {
-    if (/^.*LISTLIBSX(.*)/) {
-      $restOfLine = "$1\n";
-      $_ = "$1\n";
-      open(DATA, "<$datafile") || die("Could not open $datafile for reading");
-      $instruct = 0;
-      while(<DATA>) {
-        chop();
-        if ($instruct) {
-          if (/^.*};/) {
-            $instruct = 0;
-          } else {
-            if ($mode == 0) {
-              if (/^\s*{\"(.*)\",/) {
-                $name = $1;
-                $mode++;
-              }
-            } elsif ($mode == 1) {
-              $mode++;
-            } else {
-              if (/^\s*\"(.*)\",.*,\s*"(.*)"}/) {
-                print OUTFILE "$2\n\"$name\",\n#endif\n";
-              } elsif (/^\s*\"(.*)\",.*,\s*(.*)}/) { #NULL
-                print OUTFILE "\"$name\",\n";
+                print OUTFILE "{\(char \*\) \"$name\", \(char \*\) \"$1\"},\n";
               } else {
                 print OUTFILE "#$_#\n";
               }

@@ -14,17 +14,17 @@
 
 #if HAVE_GETTIMEOFDAY
 	struct timeval tp;
-	int         interval, t_prev, t1_prev , t0;
+	int         interval, t_prev, t1_prev, t0;
 #ifdef DEBUG
 	int t_0;
 #endif
 
 	GETTIMEOFDAY(&tp);
-	t_prev = tp.tv_usec;
-	t1_prev = tp.tv_sec;
-        t0 = tp.tv_sec;
+	t_prev = (int) (tp.tv_usec);
+	t1_prev = (int) (tp.tv_sec);
+        t0 = (int) (tp.tv_sec);
 
 #ifdef DEBUG
-	t_0 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+	t_0 = (int) (tp.tv_sec * 1000 + tp.tv_usec / 1000);
 #endif
 #endif

@@ -2,7 +2,7 @@
 /* sproingies.c - 3D sproingies */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)sproingies.c	4.04 97/07/28 xlockmore";
+static const char sccsid[] = "@(#)sproingies.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,8 @@ static const char sccsid[] = "@(#)sproingies.c	4.04 97/07/28 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 07-Dec-96: Written.
+ * 01-Nov-2000: Allocation checks
+ * 07-Dec-1996: Written.
  */
 
 #ifdef STANDALONE
@@ -34,7 +35,6 @@ static const char sccsid[] = "@(#)sproingies.c	4.04 97/07/28 xlockmore";
 #ifdef MODE_sproingies
 
 #include <GL/gl.h>
-#include <GL/glu.h>
 #include "buildlwo.h"
 
 #define MAXSPROING 100
@@ -54,7 +54,7 @@ typedef struct {
 	struct sPosColor *positions;
 } sp_instance;
 
-static sp_instance *si_list = NULL;
+static sp_instance *si_list = (sp_instance *) NULL;
 static int  active_screens = 0;
 
 void        SproingieSwap(void);
@@ -75,12 +75,15 @@ build_TopsSides(int wireframe)
 	GLfloat     mat_color[4] =
 	{0.0, 0.0, 0.0, 1.0};
 
-	dl_num = glGenLists(2);
-	if (!dl_num)
+	if ((dl_num = glGenLists(2)) == 0)
 		return (0);	/* 0 means out of display lists. */
 
 	/* Surface: Tops */
 	glNewList(dl_num, GL_COMPILE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(dl_num, 2);
+		return (0);
+	}
 	mat_color[0] = 0.392157;
 	mat_color[1] = 0.784314;
 	mat_color[2] = 0.941176;
@@ -93,6 +96,10 @@ build_TopsSides(int wireframe)
 
 	/* Surface: Sides */
 	glNewList(dl_num + 1, GL_COMPILE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(dl_num, 2);
+		return (0);
+	}
 	mat_color[0] = 0.156863;
 	mat_color[1] = 0.156863;
 	mat_color[2] = 0.392157;
@@ -658,6 +665,7 @@ NextSproingieDisplay(int screen)
 }
 
 #if 0
+#include <GL/glu.h>
 void
 ReshapeSproingies(int w, int h)
 {
@@ -677,27 +685,31 @@ CleanupSproingies(int screen)
 	sp_instance *si = &si_list[screen];
 	int         t;
 
-	if (si->SproingieBoom) {
-		for (t = 0; t < 6; ++t)
+	for (t = 0; t < 6; ++t)
+		if (glIsList(si->sproingies[t])) {
 			glDeleteLists(si->sproingies[t], 1);
-
+			si->sproingies[t] = 0;
+		}
+	if (glIsList(si->TopsSides)) {
 		glDeleteLists(si->TopsSides, 2);
+		si->TopsSides = 0;
+	}
+	if (glIsList(si->SproingieBoom)) {
 		glDeleteLists(si->SproingieBoom, 1);
-
-		--active_screens;
 		si->SproingieBoom = 0;
 	}
 	if (si->positions) {
+		--active_screens;
 		(void) free((void *) (si->positions));
-		si->positions = NULL;
+		si->positions = (struct sPosColor *) NULL;
 	}
 	if ((active_screens == 0) && si_list) {
 		(void) free((void *) (si_list));
-		si_list = NULL;
+		si_list = (sp_instance *) NULL;
 	}
 }
 
-void
+Bool
 InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens,
 	       int mono)
 {
@@ -718,7 +730,7 @@ InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens,
 	if (si_list == NULL) {
 		if ((si_list = (sp_instance *) calloc(numscreens,
 					      sizeof (sp_instance))) == NULL)
-			return;
+			return False;
 	}
 	si = &si_list[screen];
 
@@ -748,11 +760,12 @@ InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens,
 	si->maxsproingies = mspr;
 
 	if (si->maxsproingies) {
-		si->positions = (struct sPosColor *) calloc(si->maxsproingies,
-						  sizeof (struct sPosColor));
-
-		if (!(si->positions))
+		if ((si->positions = (struct sPosColor *) calloc(si->maxsproingies,
+						  sizeof (struct sPosColor))) == NULL) {
 			si->maxsproingies = 0;
+			CleanupSproingies(screen);
+			return False;
+		}
 	}
 	for (t = 0; t < si->maxsproingies; ++t) {
 		si->positions[t].x = 0;
@@ -773,24 +786,47 @@ InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens,
 	si->positions[0].b = 0.656863;
 #endif
 
-	if (!(si->TopsSides = build_TopsSides(si->wireframe)))
+	if (!(si->TopsSides = build_TopsSides(si->wireframe))) {
 		(void) fprintf(stderr, "build_TopsSides\n");
+		CleanupSproingies(screen);
+		return False;
+	}
 
-	if (!(si->sproingies[0] = BuildLWO(si->wireframe, &LWO_s1_1)))
+	if (!(si->sproingies[0] = BuildLWO(si->wireframe, &LWO_s1_1))) {
 		(void) fprintf(stderr, "BuildLWO - 1\n");
-	if (!(si->sproingies[1] = BuildLWO(si->wireframe, &LWO_s1_2)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->sproingies[1] = BuildLWO(si->wireframe, &LWO_s1_2))) {
 		(void) fprintf(stderr, "BuildLWO - 2\n");
-	if (!(si->sproingies[2] = BuildLWO(si->wireframe, &LWO_s1_3)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->sproingies[2] = BuildLWO(si->wireframe, &LWO_s1_3))) {
 		(void) fprintf(stderr, "BuildLWO - 3\n");
-	if (!(si->sproingies[3] = BuildLWO(si->wireframe, &LWO_s1_4)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->sproingies[3] = BuildLWO(si->wireframe, &LWO_s1_4))) {
 		(void) fprintf(stderr, "BuildLWO - 4\n");
-	if (!(si->sproingies[4] = BuildLWO(si->wireframe, &LWO_s1_5)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->sproingies[4] = BuildLWO(si->wireframe, &LWO_s1_5))) {
 		(void) fprintf(stderr, "BuildLWO - 5\n");
-	if (!(si->sproingies[5] = BuildLWO(si->wireframe, &LWO_s1_6)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->sproingies[5] = BuildLWO(si->wireframe, &LWO_s1_6))) {
 		(void) fprintf(stderr, "BuildLWO - 6\n");
-
-	if (!(si->SproingieBoom = BuildLWO(si->wireframe, &LWO_s1_b)))
+		CleanupSproingies(screen);
+		return False;
+	}
+	if (!(si->SproingieBoom = BuildLWO(si->wireframe, &LWO_s1_b))) {
 		(void) fprintf(stderr, "BuildLWO - b\n");
+		CleanupSproingies(screen);
+		return False;
+	}
 
 	if (si->wireframe) {
 		glShadeModel(GL_FLAT);
@@ -820,6 +856,7 @@ InitSproingies(int wfmode, int grnd, int mspr, int screen, int numscreens,
 		glFrontFace(GL_CW);
 		/* glEnable(GL_NORMALIZE); */
 	}
+	return True;
 }
 
 #endif

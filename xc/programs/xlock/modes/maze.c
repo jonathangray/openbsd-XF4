@@ -2,7 +2,7 @@
 /* maze --- a varying maze */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)maze.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)maze.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,22 +22,23 @@ static const char sccsid[] = "@(#)maze.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 27-Oct-97: xpm and ras capability added.
- * 10-May-97: Compatible with xscreensaver
- * 27-Feb-96: Add ModeInfo args to init and callback hooks, use new
- *		ModeInfo handle to specify long pauses (eliminate onepause).
- *		Ron Hitchens <ron@idiom.com>
- * 20-Jul-95: minimum size fix Peter Schmitzberger <schmitz@coma.sbg.ac.at>
- * 17-Jun-95: removed sleep statements
- * 22-Mar-95: multidisplay fix Caleb Epstein <epstein_caleb@jpmorgan.com>
- * 9-Mar-95: changed how batchcount is used
- * 27-Feb-95: patch for VMS
- * 4-Feb-95: patch to slow down maze Heath Kehoe <hakehoe@icaen.uiowa.edu>
- * 17-Jun-94: HP ANSI C compiler needs a type cast for gray_bits
- *            Richard Lloyd <R.K.Lloyd@csc.liv.ac.uk>
- * 2-Sep-93: xlock version David Bagley <bagleyd@tux.org>
- * 7-Mar-93: Good ideas from xscreensaver Jamie Zawinski <jwz@jwz.org>
- * 6-Jun-85: Martin Weiss Sun Microsystems
+ * 01-Nov-2000: Allocation checks
+ * 27-Oct-1997: xpm and ras capability added
+ * 10-May-1997: Compatible with xscreensaver
+ * 27-Feb-1996: Add ModeInfo args to init and callback hooks, use new
+ *              ModeInfo handle to specify long pauses (eliminate onepause).
+ *		        Ron Hitchens <ron@idiom.com>
+ * 20-Jul-1995: minimum size fix Peter Schmitzberger <schmitz@coma.sbg.ac.at>
+ * 17-Jun-1995: removed sleep statements
+ * 22-Mar-1995: multidisplay fix Caleb Epstein <epstein_caleb@jpmorgan.com>
+ * 09-Mar-1995: changed how batchcount is used
+ * 27-Feb-1995: patch for VMS
+ * 04-Feb-1995: patch to slow down maze Heath Kehoe <hakehoe@icaen.uiowa.edu>
+ * 17-Jun-1994: HP ANSI C compiler needs a type cast for gray_bits
+ *              Richard Lloyd <R.K.Lloyd@csc.liv.ac.uk>
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
+ * 07-Mar-1993: Good ideas from xscreensaver Jamie Zawinski <jwz@jwz.org>
+ * 06-Jun-1985: Martin Weiss Sun Microsystems
  */
 
 /*-
@@ -87,7 +88,7 @@ static const char sccsid[] = "@(#)maze.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_maze
 
 ModeSpecOpt maze_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   maze_description =
@@ -294,9 +295,43 @@ free_path(mazestruct * mp)
 }
 
 static void
+free_stuff(Display * display, mazestruct * mp)
+{
+	if (mp->cmap != None) {
+		XFreeColormap(display, mp->cmap);
+		if (mp->backGC != None) {
+			XFreeGC(display, mp->backGC);
+			mp->backGC = None;
+		}
+		mp->cmap = None;
+	} else
+		mp->backGC = None;
+}
+
+static void
+free_maze(Display * display, mazestruct * mp)
+{
+	free_path(mp);
+	if (mp->grayGC != None) {
+		XFreeGC(display, mp->grayGC);
+		mp->grayGC = None;
+	}
+	if (mp->graypix != None) {
+		XFreePixmap(display, mp->graypix);
+		mp->graypix = None;
+	}
+	free_stuff(display, mp);
+	if (mp->logo != None) {
+		destroyImage(&mp->logo, &mp->graphics_format);
+		mp->logo = None;
+	}
+}
+
+static Bool
 set_maze_sizes(ModeInfo * mi)
 {
 	mazestruct *mp = &mazes[MI_SCREEN(mi)];
+	Display *display = MI_DISPLAY(mi);
 	int         size = MI_SIZE(mi);
 
 	if (size < -MINSIZE) {
@@ -322,15 +357,30 @@ set_maze_sizes(ModeInfo * mi)
 	mp->yb = (mp->height - mp->nrows * mp->ys) / 2;
 	mp->maze_size = mp->ncols * mp->nrows;
 	if (!mp->maze)
-		mp->maze = (unsigned short *)
-			calloc(mp->maze_size, sizeof (unsigned short));
-
+		if ((mp->maze = (unsigned short *) calloc(mp->maze_size,
+				 sizeof (unsigned short))) == NULL) {
+			free_maze(display, mp);
+			return False;
+		}
 	if (!mp->move_list)
-		mp->move_list = (paths *) calloc(mp->maze_size, sizeof (paths));
+		if ((mp->move_list = (paths *) calloc(mp->maze_size,
+				sizeof (paths))) == NULL) {
+			free_maze(display, mp);
+			return False;
+		}
 	if (!mp->save_path)
-		mp->save_path = (paths *) calloc(mp->maze_size, sizeof (paths));
+		if ((mp->save_path = (paths *) calloc(mp->maze_size,
+				sizeof (paths))) == NULL) {
+			free_maze(display, mp);
+			return False;
+		}
 	if (!mp->path)
-		mp->path = (paths *) calloc(mp->maze_size, sizeof (paths));
+		if (( mp->path = (paths *) calloc(mp->maze_size,
+				sizeof (paths))) == NULL) {
+			free_maze(display, mp);
+			return False;
+		}
+	return True;
 }				/* end of set_maze_sizes */
 
 
@@ -344,8 +394,7 @@ initialize_maze(ModeInfo * mi)
 	if (MI_NPIXELS(mi) <= 2) {
 		mp->color = MI_WHITE_PIXEL(mi);
 	} else {
-		i = NRAND(MI_NPIXELS(mi));
-		mp->color = MI_PIXEL(mi, i);
+		mp->color = MI_PIXEL(mi, NRAND(MI_NPIXELS(mi)));
 	}
 	XSetForeground(display, mp->backGC, mp->color);
 	XSetForeground(display, mp->grayGC, mp->color);
@@ -713,19 +762,24 @@ solve_maze(ModeInfo * mi)
 	}
 }				/* end of solve_maze() */
 
-static void
+static Bool
 init_stuff(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	mazestruct *mp = &mazes[MI_SCREEN(mi)];
 
-	if (!mp->logo)
+	if (mp->logo == None) {
 		getImage(mi, &mp->logo, ICON_WIDTH, ICON_HEIGHT, ICON_BITS,
 #if defined( USE_XPM ) || defined( USE_XPMINC )
 			 DEFAULT_XPM, ICON_NAME,
 #endif
 			 &mp->graphics_format, &mp->cmap, &mp->black);
+		if (mp->logo == None) {
+			free_maze(display, mp);
+			return False;
+		}
+	}
 #ifndef STANDALONE
 	if (mp->cmap != None) {
 		setColormap(display, window, mp->cmap, MI_IS_INWINDOW(mi));
@@ -733,7 +787,11 @@ init_stuff(ModeInfo * mi)
 			XGCValues   xgcv;
 
 			xgcv.background = mp->black;
-			mp->backGC = XCreateGC(display, window, GCBackground, &xgcv);
+			if ((mp->backGC = XCreateGC(display, window, GCBackground,
+					 &xgcv)) == None) {
+				free_maze(display, mp);
+				return False;
+			}
 		}
 	} else
 #endif /* STANDALONE */
@@ -741,39 +799,7 @@ init_stuff(ModeInfo * mi)
 		mp->black = MI_BLACK_PIXEL(mi);
 		mp->backGC = MI_GC(mi);
 	}
-}
-
-static void
-free_stuff(Display * display, mazestruct * mp)
-{
-	if (mp->cmap != None) {
-		XFreeColormap(display, mp->cmap);
-		if (mp->backGC != None) {
-			XFreeGC(display, mp->backGC);
-			mp->backGC = None;
-		}
-		mp->cmap = None;
-	} else
-		mp->backGC = None;
-}
-
-static void
-free_maze(Display * display, mazestruct * mp)
-{
-	free_path(mp);
-	if (mp->grayGC != NULL) {
-		XFreeGC(display, mp->grayGC);
-		mp->grayGC = NULL;
-	}
-	if (mp->graypix != None) {
-		XFreePixmap(display, mp->graypix);
-		mp->graypix = None;
-	}
-	free_stuff(display, mp);
-	if (mp->logo) {
-		destroyImage(&mp->logo, &mp->graphics_format);
-		mp->logo = NULL;
-	}
+	return True;
 }
 
 void
@@ -789,19 +815,26 @@ init_maze(ModeInfo * mi)
 	}
 	mp = &mazes[MI_SCREEN(mi)];
 
-	init_stuff(mi);
+	if (!init_stuff(mi))
+		return;
 
 	mp->width = MI_WIDTH(mi);
 	mp->height = MI_HEIGHT(mi);
 	mp->width = (mp->width >= 32) ? mp->width : 32;
 	mp->height = (mp->height >= 32) ? mp->height : 32;
 
-	if (!mp->graypix) {
-		mp->graypix = XCreateBitmapFromData(display, MI_WINDOW(mi),
-			     (char *) gray1_bits, gray1_width, gray1_height);
-	}
+	if (mp->graypix == None)
+		if ((mp->graypix = XCreateBitmapFromData(display, MI_WINDOW(mi),
+			     (char *) gray1_bits, gray1_width, gray1_height)) == None) {
+			free_maze(display, mp);
+			return;
+		}
 	if (!mp->grayGC) {
-		mp->grayGC = XCreateGC(display, MI_WINDOW(mi), 0L, (XGCValues *) 0);
+		if ((mp->grayGC = XCreateGC(display, MI_WINDOW(mi),
+				 0L, (XGCValues *) 0)) == None) {
+			free_maze(display, mp);
+			return;
+		}
 		XSetBackground(display, mp->grayGC, mp->black);
 		XSetFillStyle(display, mp->grayGC, FillOpaqueStippled);
 		XSetStipple(display, mp->grayGC, mp->graypix);
@@ -817,8 +850,13 @@ init_maze(ModeInfo * mi)
 void
 draw_maze(ModeInfo * mi)
 {
-	mazestruct *mp = &mazes[MI_SCREEN(mi)];
+	mazestruct *mp;
 
+	if (mazes == NULL)
+		return;
+	mp = &mazes[MI_SCREEN(mi)];
+	if (mp->graypix == None)
+		return;
 	if (mp->solving) {
 		solve_maze(mi);
 		return;
@@ -827,7 +865,8 @@ draw_maze(ModeInfo * mi)
 		case 0:
 			MI_CLEARWINDOWCOLORMAP(mi, mp->backGC, mp->black);
 
-			set_maze_sizes(mi);
+			if (!set_maze_sizes(mi))
+				return;
 			initialize_maze(mi);
 			create_maze_walls(mi);
 			mp->stage++;
@@ -861,12 +900,8 @@ release_maze(ModeInfo * mi)
 	if (mazes != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			mazestruct *mp = &mazes[screen];
-			Display    *display = MI_DISPLAY(mi);
-
-			free_maze(display, mp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_maze(MI_DISPLAY(mi), &mazes[screen]);
 		(void) free((void *) mazes);
 		mazes = NULL;
 	}
@@ -875,7 +910,13 @@ release_maze(ModeInfo * mi)
 void
 refresh_maze(ModeInfo * mi)
 {
-	mazestruct *mp = &mazes[MI_SCREEN(mi)];
+	mazestruct *mp;
+
+	if (mazes == NULL)
+		return;
+	mp = &mazes[MI_SCREEN(mi)];
+	if (mp->graypix == None)
+		return;
 
 #if defined( USE_XPM ) || defined( USE_XPMINC )
 	if (mp->graphics_format >= IS_XPM) {

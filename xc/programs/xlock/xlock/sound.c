@@ -13,19 +13,15 @@ static const char sccsid[] = "@(#)sound.c	4.00 97/01/01 xlockmore";
 #include "xlock.h"
 
 #ifdef USE_RPLAY
-/*-
- * The stuff below does not appear to _compile_ on Solaris>=2.6 with gcc
- * -- xlock maintainer
- */
 #include <rplay.h>
 
 void
-play_sound(char *string)
+play_sound(char *filename, Bool verbose)
 {
 	int         rplay_fd = rplay_open_default();
 
 	if (rplay_fd >= 0) {
-		rplay_sound(rplay_fd, string);
+		rplay_sound(rplay_fd, filename);
 		rplay_close(rplay_fd);
 	}
 }
@@ -45,10 +41,10 @@ play_sound(char *string)
 extern Display *dsp;
 
 void
-play_sound(char *string)
+play_sound(char *filename, Bool verbose)
 {
 	char       *auservername = DisplayString(dsp);
-	char       *fname = string;
+	char       *fname = filename;
 	AuServer   *aud;	/* audio server connection */
 
 	if (!(aud = AuOpenServer(auservername, 0, NULL, 0, NULL, NULL)))
@@ -66,6 +62,13 @@ play_sound(char *string)
   /* Anybody ever get this working? XAudio.007 */
 #endif
 
+#ifdef HAS_MMOV
+#include <prvdef.h>
+#include <ssdef.h>
+
+extern void PLAY_SOUND_MMOV(char* filename, Bool verbose);
+#endif
+
 #ifdef USE_VMSPLAY
 /*-
  * Jouk Jansen <joukj@hrem.stm.tudelft.nl> contributed this
@@ -79,8 +82,8 @@ play_sound(char *string)
 #include <iodef.h>
 #include "vms_amd.h"
 
-void
-play_sound(char *filename)
+int
+play_sound_so(char *filename, Bool verbose)
 {
 	int         i, j, status;
 	char        buffer[2048];
@@ -91,6 +94,8 @@ play_sound(char *filename)
 	int         fp;
 
 	status = AmdInitialize("SO:", volume);	/* Initialize access to AMD */
+        if ( status !=0 ) return status;
+   
 	AmdSelect(speaker);	/* Select which speaker */
 	fp = open(filename, O_RDONLY, 0777);	/* Open the file */
 	if (!(fp == -1)) {
@@ -104,18 +109,40 @@ play_sound(char *filename)
 		}
 	}
 	(void) close(fp);
+   return 0;
 }
 
 #endif
 
+#if defined( HAS_MMOV ) || defined( USE_VMSPLAY )
+void
+play_sound(char* filename, Bool verbose)
+{
+#ifdef USE_VMSPLAY
+   if ( play_sound_so(filename, verbose) != 0 )
+#endif
+     {
+#ifdef HAS_MMOV
+	int pr_status , privs[2] , SYS$SETPRV();
+
+	privs[1] = 0;
+	privs[0] = PRV$M_SYSNAM;
+	pr_status = SYS$SETPRV ( 1, privs, 0, 0 );
+	
+	if ( pr_status == SS$_NORMAL ) PLAY_SOUND_MMOV(filename, verbose);
+#endif
+     }
+}
+#endif
+
 #ifdef DEF_PLAY
 void
-play_sound(char *string)
+play_sound(char *filename, Bool verbose)
 {
 	char        *progrun = NULL;
 
-	if ((progrun = (char *) malloc(strlen(DEF_PLAY) + strlen(string) + 10)) != NULL) {
-		(void) sprintf(progrun, "( %s%s ) 2>&1", DEF_PLAY, string);
+	if ((progrun = (char *) malloc(strlen(DEF_PLAY) + strlen(filename) + 10)) != NULL) {
+		(void) sprintf(progrun, "( %s%s ) 2>&1", DEF_PLAY, filename);
 		/*(void) printf("%s\n", progrun); */
 		(void) system(progrun);
 		(void) free((void *) progrun);
@@ -127,7 +154,7 @@ play_sound(char *string)
 #ifdef USE_ESOUND
 
 #ifndef DEFAULT_SOUND_DIR
-#define DEFAULT_SOUND_DIR "/usr/lib/sounds/xlockmore/"
+#define DEFAULT_SOUND_DIR "/usr/share/sounds/xlockmore/"
 #endif
 
 #ifdef HAVE_LIBESD
@@ -171,13 +198,13 @@ static void	     	sound_esd_shutdown(void);
  */
 
 void
-play_sound(char *file)
+play_sound(char *filename, Bool verbose)
 {
 #ifdef DEBUG
-    (void) fprintf( stderr, "play_sound %s\n", file );
+    (void) fprintf( stderr, "play_sound %s\n", filename );
 #endif
-    if ( file && *file )
-      sound_esd_play( sound_esd_load_sample( file ) );
+    if ( filename && *filename )
+      sound_esd_play( sound_esd_load_sample( filename ) );
 }
 
 int init_sound(void)

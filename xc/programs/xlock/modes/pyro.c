@@ -2,7 +2,7 @@
 /* pyro --- fireworks */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)pyro.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)pyro.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)pyro.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 15-May-97: jwz@jwz.org: turned into a standalone program.
- * 05-Sep-96: Added 3d support Henrik Theiling <theiling@coli.uni-sb.de>
- * 16-Mar-91: Written, received from David Brooks <brooks@osf.org>
+ * 01-Nov-2000: Allocation checks
+ * 15-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 05-Sep-1996: Added 3d support Henrik Theiling <theiling@coli.uni-sb.de>
+ * 16-Mar-1991: Written, received from David Brooks <brooks@osf.org>
  */
 
 /*-
@@ -60,7 +61,7 @@ static const char sccsid[] = "@(#)pyro.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_pyro
 
 ModeSpecOpt pyro_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   pyro_description =
@@ -460,10 +461,10 @@ burst(ModeInfo * mi, pyrostruct * pp, rocket * rp)
 void
 init_pyro(ModeInfo * mi)
 {
-	pyrostruct *pp;
-	rocket     *rp;
 	int         rockn, starn;
 	int         size = MI_SIZE(mi);
+	rocket     *rp;
+	pyrostruct *pp;
 
 	if (pyros == NULL) {
 		if ((pyros = (pyrostruct *) calloc(MI_NUM_SCREENS(mi),
@@ -502,7 +503,10 @@ init_pyro(ModeInfo * mi)
 	pp->p_ignite = orig_p_ignite;
 
 	if (!pp->rockq) {
-		pp->rockq = (rocket *) malloc(pp->nrockets * sizeof (rocket));
+		if ((pp->rockq = (rocket *) malloc(pp->nrockets *
+				 sizeof (rocket))) == NULL) {
+			return;
+		}
 	}
 	pp->nflying = pp->fusilcount = 0;
 
@@ -548,12 +552,17 @@ init_pyro(ModeInfo * mi)
 void
 draw_pyro(ModeInfo * mi)
 {
-	pyrostruct *pp = &pyros[MI_SCREEN(mi)];
 	rocket     *rp;
 	int         rockn;
+	pyrostruct *pp;
+
+	if (pyros == NULL)
+		return;
+	pp = &pyros[MI_SCREEN(mi)];
+	if (pp->rockq == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (just_started || (NRAND(pp->p_ignite) == 0)) {
 		just_started = False;
 		if (NRAND(P_FUSILLADE) == 0) {

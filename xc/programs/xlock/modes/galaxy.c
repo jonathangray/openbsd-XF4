@@ -2,7 +2,7 @@
 /* galaxy --- spinning galaxies */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)galaxy.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)galaxy.c	5.01 2001/01/02 xlockmore";
 
 #endif
 
@@ -26,17 +26,20 @@ static const char sccsid[] = "@(#)galaxy.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 18-Apr-97: Memory leak fixed by Tom Schmidt <tschmidt@micron.com>
- * 07-Apr-97: Modified by Dave Mitchell <davem@magnet.com>
- *            random star sizes
- *            colors change depending on velocity
- * 23-Oct-94: Modified by David Bagley <bagleyd@tux.org>
- * 10-Oct-94: Add colors by Hubert Feyer
- * 30-Sep-94: Initial port by Hubert Feyer
- * 09-Mar-94: VMS can generate a random number 0.0 which results in a
- *            division by zero, corrected by Jouk Jansen
- *            <joukj@hrem.stm.tudelft.nl>
+ * 24-Dec-2000: Modified by Richard Loftin <rich@sevenravens.com>
+		fisheye lens view
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 18-Apr-1997: Memory leak fixed by Tom Schmidt <tschmidt@micron.com>
+ * 07-Apr-1997: Modified by Dave Mitchell <davem@magnet.com>
+ *              random star sizes
+ *              colors change depending on velocity
+ * 23-Oct-1994: Modified by David Bagley <bagleyd@tux.org>
+ * 10-Oct-1994: Add colors by Hubert Feyer
+ * 30-Sep-1994: Initial port by Hubert Feyer
+ * 09-Mar-1994: VMS can generate a random number 0.0 which results in a
+ *              division by zero, corrected by Jouk Jansen
+ *              <joukj@hrem.stm.tudelft.nl>
  */
 
 #ifdef STANDALONE
@@ -58,24 +61,30 @@ static const char sccsid[] = "@(#)galaxy.c	4.07 97/11/24 xlockmore";
 
 #ifdef MODE_galaxy
 
+static Bool fisheye;
 static Bool tracks;
 
+#define DEF_FISHEYE "True"
 #define DEF_TRACKS "False"
 
 static XrmOptionDescRec opts[] =
 {
-	{"-tracks", ".galaxy.tracks", XrmoptionNoArg, (caddr_t) "on"},
-	{"+tracks", ".galaxy.tracks", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-fisheye", (char *) ".galaxy.fisheye", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+fisheye", (char *) ".galaxy.fisheye", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-tracks", (char *) ".galaxy.tracks", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+tracks", (char *) ".galaxy.tracks", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & tracks, "tracks", "Tracks", DEF_TRACKS, t_Bool}
+	{(caddr_t *) & fisheye, (char *) "fisheye", (char *) "FishEye", (char *) DEF_FISHEYE, t_Bool},
+	{(caddr_t *) & tracks, (char *) "tracks", (char *) "Tracks", (char *) DEF_TRACKS, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+tracks", "turn on/off star tracks"}
+	{(char *) "-/+fisheye", (char *) "turn on/off fish eye view"},
+	{(char *) "-/+tracks", (char *) "turn on/off star tracks"}
 };
 
 ModeSpecOpt galaxy_opts =
@@ -98,7 +107,7 @@ ModStruct   galaxy_description =
 #endif
 
 #define MINSIZE       1
-#define MINGALAXIES    1
+#define MINGALAXIES    2
 #define MAX_STARS    300
 #define MAX_IDELTAT    50
 /* These come originally from the Cluster-version */
@@ -113,8 +122,9 @@ ModStruct   galaxy_description =
 #define GALAXYRANGESIZE  0.1
 #define GALAXYMINSIZE  0.1
 #define QCONS    0.001
+#define Z_OFFSET 1.25
 
-/*-
+/*
  *  The following is enabled, it does not look that good for some.
  *  (But it looks great for me.)  Maybe velocities should be measured
  *  relative to their galaxy-centers instead of absolute.
@@ -128,14 +138,15 @@ ModStruct   galaxy_description =
 #define NOTGREEN  (7 * MI_NPIXELS(mi) / 64)
 #define COLORS 8
 
-#define drawStar(x,y,size) if(size<=1) XDrawPoint(display,window,gc,x,y);\
-  else XFillArc(display,window,gc,x,y,size,size,0,23040)
+#define drawStar(x,y,size) if(size<=1) XDrawPoint(display,drawable,gc,x,y);\
+  else XFillArc(display,drawable,gc,x,y,size,size,0,23040)
 
 typedef struct {
 	double      pos[3], vel[3];
 	int         px, py;
 	int         color;
 	int         size;
+	int         Z_size;
 } Star;
 
 typedef struct {
@@ -163,6 +174,9 @@ typedef struct {
 	int         ngalaxies;	/* # galaxies */
 	int         f_hititerations;	/* # iterations before restart */
 	int         step;	/* */
+	Bool        tracks, fisheye;
+	double star_scale_Z;
+	Pixmap pixmap;
 } unistruct;
 
 static unistruct *universes = NULL;
@@ -185,6 +199,16 @@ free_galaxies(unistruct * gp)
 }
 
 static void
+free_galaxy(Display *display, unistruct * gp)
+{
+	free_galaxies(gp);
+	if (gp->pixmap != None) {
+		XFreePixmap(display, gp->pixmap);
+		gp->pixmap = None;
+	}
+}
+
+static Bool
 startover(ModeInfo * mi)
 {
 	unistruct  *gp = &universes[MI_SCREEN(mi)];
@@ -203,8 +227,11 @@ startover(ModeInfo * mi)
 	else if (gp->ngalaxies < MINGALAXIES)
 		gp->ngalaxies = MINGALAXIES;
 	if (gp->galaxies == NULL)
-		gp->galaxies = (Galaxy *) calloc(gp->ngalaxies, sizeof (Galaxy));
-
+		if ((gp->galaxies = (Galaxy *) calloc(gp->ngalaxies,
+				sizeof (Galaxy))) == NULL) {
+			free_galaxy(MI_DISPLAY(mi), gp);
+			return False;
+	}
 	for (i = 0; i < gp->ngalaxies; ++i) {
 		Galaxy     *gt = &gp->galaxies[i];
 		double      sinw1, sinw2, cosw1, cosw2;
@@ -223,7 +250,11 @@ startover(ModeInfo * mi)
 			gt->stars = NULL;
 		}
 		gt->nstars = (NRAND(MAX_STARS / 2)) + MAX_STARS / 2;
-		gt->stars = (Star *) malloc(gt->nstars * sizeof (Star));
+		if ((gt->stars = (Star *) malloc(gt->nstars *
+				sizeof (Star))) == NULL) {
+			free_galaxy(MI_DISPLAY(mi), gp);
+			return False;
+		}
 		w1 = 2.0 * M_PI * FLOATRAND;
 		w2 = 2.0 * M_PI * FLOATRAND;
 		sinw1 = SINF(w1);
@@ -248,8 +279,8 @@ startover(ModeInfo * mi)
 			gp->f_hititerations + FLOATRAND - 0.5;
 		gt->pos[1] = -gt->vel[1] * DELTAT *
 			gp->f_hititerations + FLOATRAND - 0.5;
-		gt->pos[2] = -gt->vel[2] * DELTAT *
-			gp->f_hititerations + FLOATRAND - 0.5;
+		gt->pos[2] = (-gt->vel[2] * DELTAT *
+			gp->f_hititerations + FLOATRAND - 0.5) + Z_OFFSET;
 
 		gt->mass = (int) (FLOATRAND * 1000.0) + 1;
 
@@ -294,6 +325,9 @@ startover(ModeInfo * mi)
 				st->size = MINSIZE;
 			else
 				st->size = size;
+
+			st->Z_size = st->size;
+
 		}
 	}
 
@@ -307,12 +341,14 @@ startover(ModeInfo * mi)
 	(void) printf("%dx%d pixel (%d-%d, %d-%d)\n",
 	  (gp->clip.right - gp->clip.left), (gp->clip.bottom - gp->clip.top),
 	       gp->clip.left, gp->clip.right, gp->clip.top, gp->clip.bottom);
-#endif /*0 */
+#endif
+	return True;
 }
 
 void
 init_galaxy(ModeInfo * mi)
 {
+	Display *display = MI_DISPLAY(mi);
 	unistruct  *gp;
 
 	if (universes == NULL) {
@@ -332,21 +368,58 @@ init_galaxy(ModeInfo * mi)
 	gp->scale = (double) (gp->clip.right + gp->clip.bottom) / 8.0;
 	gp->midx = gp->clip.right / 2;
 	gp->midy = gp->clip.bottom / 2;
-	startover(mi);
+
+	if (MI_IS_FULLRANDOM(mi)) {
+		gp->fisheye = !(NRAND(3));
+		if (!gp->fisheye)
+			gp->tracks = (Bool) (LRAND() & 1);
+	} else {
+		gp->fisheye = fisheye;
+		gp->tracks = tracks;
+	}
+
+	if (!startover(mi))
+		return;
+	if (gp->fisheye) {
+		if (gp->pixmap != None)
+			XFreePixmap(display, gp->pixmap);
+		if ((gp->pixmap = XCreatePixmap(display, MI_WINDOW(mi),
+				MI_WIDTH(mi), MI_HEIGHT(mi),
+				MI_DEPTH(mi))) == None) {
+			gp->fisheye = False;
+		}
+	}
+	if (gp->fisheye) {
+	        XSetGraphicsExposures(display, MI_GC(mi), False);
+		gp->scale *= Z_OFFSET;
+		gp->star_scale_Z = (gp->scale  * .005);
+		 /* don't want any exposure events from XCopyPlane */
+	}
+
 }
 
 void
 draw_galaxy(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
-	Window      window = MI_WINDOW(mi);
+	Drawable    drawable;
 	GC          gc = MI_GC(mi);
-	unistruct  *gp = &universes[MI_SCREEN(mi)];
 	double      d;		/* tmp */
 	int         i, j, k;	/* more tmp */
+	unistruct  *gp;
+	Bool        clipped;
 
+	if (universes == NULL)
+		return;
+	gp = &universes[MI_SCREEN(mi)];
+	if (gp->galaxies == NULL)
+		return;
+
+	if (gp->fisheye)
+		drawable = gp->pixmap;
+	else
+		drawable = MI_WINDOW(mi);
 	MI_IS_DRAWN(mi) = True;
-
 	for (i = 0; i < gp->ngalaxies; ++i) {
 		Galaxy     *gt = &gp->galaxies[i];
 
@@ -387,6 +460,20 @@ draw_galaxy(ModeInfo * mi)
 			st->pos[1] += v1;
 			st->pos[2] += v2;
 
+			clipped = True;
+			if (gp->fisheye) {
+/* clip if star Z position < 0.0 - also avoid divide by zero errors */
+
+			if(st->pos[2]>0.0)
+			{
+			st->px = (int) ((st->pos[0] * gp->scale) / st->pos[2]) + gp->midx;
+			st->py = (int) ((st->pos[1] * gp->scale) / st->pos[2]) + gp->midy;
+			st->size = (int) (gp->star_scale_Z / st->pos[2]) + st->Z_size;
+			if(st->size>12)st->size=12;
+			clipped = False;
+			}
+			} else {
+
 			if (st->px >= gp->clip.left &&
 			    st->px <= gp->clip.right - st->size &&
 			    st->py >= gp->clip.top &&
@@ -398,7 +485,7 @@ draw_galaxy(ModeInfo * mi)
 			st->py = (int) (st->pos[1] * gp->scale) + gp->midy;
 
 
-#ifdef WRAP
+#ifdef WRAP /* won't WRAP if FISHEYE_LENS */
 			if (st->px < gp->clip.left) {
 				(void) printf("wrap l -> r\n");
 				st->px = gp->clip.right;
@@ -421,7 +508,12 @@ draw_galaxy(ModeInfo * mi)
 			if (st->px >= gp->clip.left &&
 			    st->px <= gp->clip.right - st->size &&
 			    st->py >= gp->clip.top &&
-			    st->py <= gp->clip.bottom - st->size) {
+				 st->py <= gp->clip.bottom - st->size) {
+			clipped = False;
+			}
+			}
+			if (!clipped) {
+
 				if (MI_NPIXELS(mi) >= COLORS)
 #ifdef NO_VELOCITY_COLORING
 					XSetForeground(display, gc, MI_PIXEL(mi, gt->galcol));
@@ -430,7 +522,7 @@ draw_galaxy(ModeInfo * mi)
 #endif
 				else
 					XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
-				if (tracks) {
+				if (gp->tracks) {
 					drawStar(st->px + 1, st->py, st->size);
 				} else {
 					drawStar(st->px, st->py, st->size);
@@ -464,9 +556,18 @@ draw_galaxy(ModeInfo * mi)
 		gt->pos[2] += gt->vel[2] * DELTAT;
 	}
 
+	if (gp->fisheye) {
+		XCopyArea(display, drawable, MI_WINDOW(mi), gc,
+			0, 0, MI_WIDTH(mi), MI_HEIGHT(mi),0 , 0);
+	
+		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
+	
+		XFillRectangle(display, drawable, gc,
+			0, 0, MI_WIDTH(mi), MI_HEIGHT(mi));
+	}
 	gp->step++;
 	if (gp->step > gp->f_hititerations * 4)
-		startover(mi);
+		(void) startover(mi);
 }
 
 void
@@ -476,7 +577,7 @@ release_galaxy(ModeInfo * mi)
 		int         screen;
 
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_galaxies(&universes[screen]);
+			free_galaxy(MI_DISPLAY(mi), &universes[screen]);
 		(void) free((void *) universes);
 		universes = NULL;
 	}

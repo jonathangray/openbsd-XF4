@@ -2,7 +2,7 @@
 /* life1d --- Stephen Wolfram's 1d game of Life */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)life1d.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)life1d.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,13 +22,14 @@ static const char sccsid[] = "@(#)life1d.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 27-Oct-97: xpm and ras capability added... it does not make too much
+ * 01-Nov-2000: Allocation checks
+ * 27-Oct-1997: xpm and ras capability added... it does not make too much
  *              sense here but ...
- * 10-May-97: Compatible with xscreensaver
- * 27-Jul-95: written, used life.c as a basis, using totalistic rules
- *            (default).  Special thanks to Harold V. McIntosh
- *            <mcintosh@servidor.unam.mx> for providing me with the
- *            LCAU collection and references.
+ * 10-May-1997: Compatible with xscreensaver
+ * 27-Jul-1995: written, used life.c as a basis, using totalistic rules
+ *              (default).  Special thanks to Harold V. McIntosh
+ *              <mcintosh@servidor.unam.mx> for providing me with the
+ *              LCAU collection and references.
  *
  * References:
  * Dewdney, A.K., "The Armchair Universe, Computer Recreations from the
@@ -72,16 +73,16 @@ static Bool totalistic;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-totalistic", ".life1d.totalistic", XrmoptionNoArg, (caddr_t) "on"},
-	{"+totalistic", ".life1d.totalistic", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-totalistic", (char *) ".life1d.totalistic", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+totalistic", (char *) ".life1d.totalistic", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-{(caddr_t *) & totalistic, "totalistic", "Totalistic", DEF_TOTALISTIC, t_Bool}
+{(caddr_t *) & totalistic, (char *) "totalistic", (char *) "Totalistic", (char *) DEF_TOTALISTIC, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+totalistic", "turn on/off totalistic rules (else LCAU rules)"}
+	{(char *) "-/+totalistic", (char *) "turn on/off totalistic rules (else LCAU rules)"}
 };
 
 ModeSpecOpt life1d_opts =
@@ -97,8 +98,9 @@ ModStruct   life1d_description =
 #endif
 
 #define LIFE1DBITS(n,w,h)\
-  lp->pixmaps[lp->init_bits++]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1)
+  if ((lp->pixmaps[lp->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_life1d(display,lp); return;} else {lp->init_bits++;} 
 
 /* aliases for vars defined in the bitmap file */
 #define CELL_WIDTH   image_width
@@ -109,7 +111,7 @@ ModStruct   life1d_description =
 
 #if defined( USE_XPM ) || defined( USE_XPMINC )
 static char *image_name[] =
-{""};
+{(char *) ""};
 
 #define CELL_NAME image_name
 #define DEFAULT_XPM 0
@@ -542,19 +544,23 @@ compare(ModeInfo * mi)
 	return False;
 }
 
-static void
+static Bool
 init_stuff(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	life1dstruct *lp = &life1ds[MI_SCREEN(mi)];
 
-	if (!lp->logo)
+	if (lp->logo == None) {
 		getImage(mi, &lp->logo, CELL_WIDTH, CELL_HEIGHT, CELL_BITS,
 #if defined( USE_XPM ) || defined( USE_XPMINC )
 			 DEFAULT_XPM, CELL_NAME,
 #endif
 			 &lp->graphics_format, &lp->cmap, &lp->black);
+		if (lp->logo == None) {
+			return False;
+		}
+	}
 #ifndef STANDALONE
 	if (lp->cmap != None) {
 		setColormap(display, window, lp->cmap, MI_IS_INWINDOW(mi));
@@ -562,7 +568,10 @@ init_stuff(ModeInfo * mi)
 			XGCValues   xgcv;
 
 			xgcv.background = lp->black;
-			lp->backGC = XCreateGC(display, window, GCBackground, &xgcv);
+			if ((lp->backGC = XCreateGC(display, window, GCBackground,
+					&xgcv)) == NULL) {
+				return False;
+			}
 		}
 	} else
 #endif /* STANDALONE */
@@ -570,6 +579,7 @@ init_stuff(ModeInfo * mi)
 		lp->black = MI_BLACK_PIXEL(mi);
 		lp->backGC = MI_GC(mi);
 	}
+	return True;
 }
 
 static void
@@ -629,8 +639,8 @@ init_life1d(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	int         size = MI_SIZE(mi);
-	life1dstruct *lp;
 	int         i;
+	life1dstruct *lp;
 
 	if (life1ds == NULL) {
 		if ((life1ds = (life1dstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -639,7 +649,10 @@ init_life1d(ModeInfo * mi)
 	}
 	lp = &life1ds[MI_SCREEN(mi)];
 
-	init_stuff(mi);
+	if (!init_stuff(mi)) {
+		free_life1d(display, lp);
+		return;
+	}
 
 	lp->screen_generation = 0;
 	lp->row = 0;
@@ -653,17 +666,27 @@ init_life1d(ModeInfo * mi)
 		maxradius = 1;
 		maxsum_size = (int) power(maxstates, (2 * maxradius + 1));
 	}
-	if (lp->nextstate == NULL)
-		lp->nextstate = (char *) malloc(maxsum_size * sizeof (char));
+	if (lp->nextstate == NULL) {
+		if ((lp->nextstate = (char *) malloc(maxsum_size *
+				sizeof (char))) == NULL) {
+			free_life1d(display, lp);
+			return;
+		}
+	}
 
 	if (lp->init_bits == 0) {
 		XGCValues   gcv;
 
 		gcv.fill_style = FillOpaqueStippled;
-		lp->stippledGC = XCreateGC(display, window, GCFillStyle, &gcv);
-		for (i = 0; i < MAXSTATES - 1; i++)
+		if ((lp->stippledGC = XCreateGC(display, window, GCFillStyle,
+				&gcv)) == None) {
+			free_life1d(display, lp);
+			return;
+		}
+		for (i = 0; i < MAXSTATES - 1; i++) {
 			LIFE1DBITS(stipples[i + NUMSTIPPLES - MAXSTATES + 1],
 				   STIPPLESIZE, STIPPLESIZE);
+		}
 		LIFE1DBITS(stipples[NUMSTIPPLES / 2],
 			   STIPPLESIZE, STIPPLESIZE);	/* grey */
 	}
@@ -705,14 +728,23 @@ init_life1d(ModeInfo * mi)
 	lp->ncols = MAX(lp->width / lp->xs, 2);
 	lp->nrows = MAX(lp->height / lp->ys, 2);
 	lp->border = (lp->nrows / 2 + 1) * MI_CYCLES(mi);
-	lp->newcells = (unsigned char *) calloc(lp->ncols + 2 * lp->border,
-						sizeof (unsigned char));
+	if ((lp->newcells = (unsigned char *) calloc(lp->ncols + 2 * lp->border,
+			sizeof (unsigned char))) == NULL) {
+		free_life1d(display, lp);
+		return;
+	}
 
-	lp->oldcells = (unsigned char *) calloc(lp->ncols +
-		       2 * (maxradius + lp->border), sizeof (unsigned char));
+	if ((lp->oldcells = (unsigned char *) calloc(lp->ncols + 2 * (maxradius +
+			lp->border), sizeof (unsigned char))) == NULL) {
+		free_life1d(display, lp);
+		return;
+	}
 
-	lp->buffer = (unsigned char *) calloc(lp->ncols * lp->nrows,
-					      sizeof (unsigned char));
+	if ((lp->buffer = (unsigned char *) calloc(lp->ncols * lp->nrows,
+			sizeof (unsigned char))) == NULL) {
+		free_life1d(display, lp);
+		return;
+	}
 
 	lp->xb = (lp->width - lp->xs * lp->ncols) / 2;
 	lp->yb = (lp->height - lp->ys * lp->nrows) / 2;
@@ -747,12 +779,17 @@ init_life1d(ModeInfo * mi)
 void
 draw_life1d(ModeInfo * mi)
 {
-	life1dstruct *lp = &life1ds[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	int         col;
+	life1dstruct *lp;
+
+	if (life1ds == NULL)
+		return;
+	lp = &life1ds[MI_SCREEN(mi)];
+	if (lp->buffer == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (lp->busyLoop) {
 		if (lp->busyLoop >= 250)
 			lp->busyLoop = 0;
@@ -805,7 +842,8 @@ draw_life1d(ModeInfo * mi)
 			else
 				lp->repeating = 0;
 		}
-		lp->repeating += (lp->row == lp->nrows - 1) ? (lp->nrows - 1) * compare(mi) : 0;
+		lp->repeating += (lp->row == lp->nrows - 1) ?
+			(lp->nrows - 1) * compare(mi) : 0;
 	}
 	if (lp->repeating >= 1) {
 		XGCValues   gcv;
@@ -843,11 +881,8 @@ release_life1d(ModeInfo * mi)
 	if (life1ds != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			life1dstruct *lp = &life1ds[screen];
-
-			free_life1d(MI_DISPLAY(mi), lp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_life1d(MI_DISPLAY(mi), &life1ds[screen]);
 		(void) free((void *) life1ds);
 		life1ds = NULL;
 	}
@@ -856,8 +891,14 @@ release_life1d(ModeInfo * mi)
 void
 refresh_life1d(ModeInfo * mi)
 {
-	life1dstruct *lp = &life1ds[MI_SCREEN(mi)];
 	int         row, col, nrow;
+	life1dstruct *lp;
+
+	if (life1ds == NULL)
+		return;
+	lp = &life1ds[MI_SCREEN(mi)];
+	if (lp->buffer == NULL)
+		return;
 
 #if defined( USE_XPM ) || defined( USE_XPMINC )
         if (lp->graphics_format >= IS_XPM) {

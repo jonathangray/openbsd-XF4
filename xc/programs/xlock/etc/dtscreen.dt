@@ -248,15 +248,6 @@ ACTION StartDtscreenCage
 	DESCRIPTION	cage: The Impossible Cage, an Escher-like GL scene
 }
 
-ACTION StartDtscreenCartoon
-{
-	LABEL		StartDtscreenCartoon
-	TYPE		COMMAND
-	WINDOW_TYPE	NO_STDIO
-	EXEC_STRING	$DTSCREEN -mode cartoon
-	DESCRIPTION	cartoon: Bouncing cartoons
-}
-
 ACTION StartDtscreenClock
 {
 	LABEL		StartDtscreenClock
@@ -347,6 +338,15 @@ ACTION StartDtscreenDiscrete
 	DESCRIPTION	discrete: Various discrete maps
 }
 
+ACTION StartDtscreenDragon
+{
+	LABEL		StartDtscreenDragon
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode dragon
+	DESCRIPTION	dragon: Deventer's Hexagonal Dragons Maze
+}
+
 ACTION StartDtscreenDrift
 {
 	LABEL		StartDtscreenDrift
@@ -354,6 +354,15 @@ ACTION StartDtscreenDrift
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode drift
 	DESCRIPTION	drift: Cosmic drifting flame fractals
+}
+
+ACTION StartDtscreenEuler2d
+{
+	LABEL		StartDtscreenEuler2d
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode euler2d
+	DESCRIPTION	euler2d: A simulation of 2D incompressible inviscid fluid
 }
 
 ACTION StartDtscreenEyes
@@ -372,6 +381,15 @@ ACTION StartDtscreenFadeplot
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode fadeplot
 	DESCRIPTION	fadeplot: A fading plot of sine squared
+}
+
+ACTION StartDtscreenFire
+{
+	LABEL		StartDtscreenFire
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode fire
+	DESCRIPTION	fire: A 3D fire-like image
 }
 
 ACTION StartDtscreenFlag
@@ -417,6 +435,15 @@ ACTION StartDtscreenGears
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode gears
 	DESCRIPTION	gears: GL's gears
+}
+
+ACTION StartDtscreenGlplanet
+{
+	LABEL		StartDtscreenGlplanet
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode glplanet
+	DESCRIPTION	glplanet: GL's planet
 }
 
 ACTION StartDtscreenGoop
@@ -644,6 +671,15 @@ ACTION StartDtscreenMoebius
 	DESCRIPTION	moebius: Moebius Strip II, an Escher-like GL scene with ants
 }
 
+ACTION StartDtscreenMolecule
+{
+	LABEL		StartDtscreenMolecule
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode molecule
+	DESCRIPTION	molecule: Draws molecules
+}
+
 ACTION StartDtscreenMorph3d
 {
 	LABEL		StartDtscreenMorph3d
@@ -716,6 +752,15 @@ ACTION StartDtscreenPipes
 	DESCRIPTION	pipes: A selfbuilding pipe system
 }
 
+ACTION StartDtscreenPolyominoes
+{
+	LABEL		StartDtscreenPolyominoes
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode polyominoes
+	DESCRIPTION	polyominoes: Attempts to place polyominoes into a rectangle
+}
+
 ACTION StartDtscreenPuzzle
 {
 	LABEL		StartDtscreenPuzzle
@@ -743,6 +788,24 @@ ACTION StartDtscreenRubik
 	DESCRIPTION	rubik: An auto-solving Rubik's cube
 }
 
+ACTION StartDtscreenSballs
+{
+	LABEL		StartDtscreenSballs
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode sballs
+	DESCRIPTION	sballs: Balls spinning like crazy in OpenGL
+}
+
+ACTION StartDtscreenScooter
+{
+	LABEL		StartDtscreenScooter
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode scooter
+	DESCRIPTION	scooter: A journey through space tunnel and stars
+}
+
 ACTION StartDtscreenShape
 {
 	LABEL		StartDtscreenShape
@@ -761,6 +824,24 @@ ACTION StartDtscreenSierpinski
 	DESCRIPTION	sierpinski: Sierpinski's triangle
 }
 
+ACTION StartDtscreenSierpinski3d
+{
+	LABEL		StartDtscreenSierpinski3d
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode sierpinski3d
+	DESCRIPTION	sierpinski: Sierpinski's gasket
+}
+
+ACTION StartDtscreenSkewb
+{
+	LABEL		StartDtscreenSkewb
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode skewb
+	DESCRIPTION	skewb: An auto-solving Skewb
+}
+
 ACTION StartDtscreenSlip
 {
 	LABEL		StartDtscreenSlip
@@ -777,6 +858,15 @@ ACTION StartDtscreenSolitare
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode solitare
 	DESCRIPTION	solitare: Klondike's game of solitare
+}
+
+ACTION StartDtscreenSpace
+{
+	LABEL		StartDtscreenSpace
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode space
+	DESCRIPTION	space: A journey into deep space
 }
 
 ACTION StartDtscreenSphere
@@ -887,6 +977,15 @@ ACTION StartDtscreenTetris
 	DESCRIPTION	tetris: Tetris
 }
 
+ACTION StartDtscreenText3d
+{
+	LABEL		StartDtscreenText3d
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode text3d
+	DESCRIPTION	text3d: 3D text
+}
+
 ACTION StartDtscreenThornbird
 {
 	LABEL		StartDtscreenThornbird
@@ -903,6 +1002,15 @@ ACTION StartDtscreenTik_Tak
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode tik_tak +install
 	DESCRIPTION	tik_tak: Rotating polygons
+}
+
+ACTION StartDtscreenTransparent
+{
+	LABEL		StartDtscreenTransparent
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode blank -geometry 1x1 -enablesaver
+	DESCRIPTION	transparent: locked but work visible
 }
 
 ACTION StartDtscreenTriangle
@@ -975,6 +1083,15 @@ ACTION StartDtscreenWorld
 	WINDOW_TYPE	NO_STDIO
 	EXEC_STRING	$DTSCREEN -mode world
 	DESCRIPTION	world: Spinning Earths
+}
+
+ACTION StartDtscreenXcl
+{
+	LABEL		StartDtscreenXcl
+	TYPE		COMMAND
+	WINDOW_TYPE	NO_STDIO
+	EXEC_STRING	$DTSCREEN -mode xcl
+	DESCRIPTION	xcl: A control line combat model race
 }
 
 ACTION StartDtscreenXjack

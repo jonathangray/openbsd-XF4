@@ -2,7 +2,7 @@
 /* goop --- goop from a lava lamp */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)goop.c  4.10 98/03/24 xlockmore";
+static const char sccsid[] = "@(#)goop.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,8 +22,9 @@ static const char sccsid[] = "@(#)goop.c  4.10 98/03/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 24-Mar-98: xlock version David Bagley <bagleyd@tux.org>
- * 1997:      xscreensaver version Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 24-Mar-1998: xlock version David Bagley <bagleyd@tux.org>
+ * 1997: xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
 /*-
@@ -98,7 +99,7 @@ static const char sccsid[] = "@(#)goop.c  4.10 98/03/24 xlockmore";
 #ifdef MODE_goop
 
 ModeSpecOpt goop_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   goop_description =
@@ -140,7 +141,7 @@ typedef struct {
 enum goop_mode {
 	transparent,
 	opaque,
-	xor,
+	xored,
 	outline
 };
 
@@ -156,7 +157,7 @@ typedef struct {
 
 static goopstruct *goops = NULL;
 
-static void
+static Bool
 make_blob(blob * b, int maxx, int maxy, int size)
 {
 	int         i;
@@ -186,9 +187,11 @@ make_blob(blob * b, int maxx, int maxy, int size)
 	b->npoints = (int) (LRAND() % 5) + 5;
 
 	b->splines = make_spline(b->npoints);
-	b->r = (long *) malloc(sizeof (*b->r) * b->npoints);
+	if ((b->r = (long *) malloc(sizeof (*b->r) * b->npoints)) == NULL)
+		return False;
 	for (i = 0; i < b->npoints; i++)
 		b->r[i] = ((LRAND() % mid) + (mid / 2)) * RANDSIGN();
+	return True;
 }
 
 static void
@@ -301,7 +304,7 @@ draw_blob(Display * display, Drawable drawable, GC gc, blob * b,
 			   CoordModeOrigin);
 }
 
-static void
+static Bool
 make_layer(ModeInfo * mi, layer * l, int nblobs)
 {
 	int         i;
@@ -311,16 +314,22 @@ make_layer(ModeInfo * mi, layer * l, int nblobs)
 
 	l->nblobs = nblobs;
 
-	l->blobs = (blob *) calloc(l->nblobs, sizeof (blob));
+	if ((l->blobs = (blob *) calloc(l->nblobs, sizeof (blob))) == NULL)
+		return False;
 
 	blob_max = (width < height ? width : height) / 2;
 	blob_min = (blob_max * 2) / 3;
 	for (i = 0; i < l->nblobs; i++)
-		make_blob(&(l->blobs[i]), width, height,
-			  (int) (LRAND() % (blob_max - blob_min)) + blob_min);
+		if (!make_blob(&(l->blobs[i]), width, height,
+			  (int) (LRAND() % (blob_max - blob_min)) + blob_min))
+			return False;
 
-	l->pixmap = XCreatePixmap(MI_DISPLAY(mi), MI_WINDOW(mi), width, height, 1);
-	l->gc = XCreateGC(MI_DISPLAY(mi), l->pixmap, 0, &gcv);
+	if ((l->pixmap = XCreatePixmap(MI_DISPLAY(mi), MI_WINDOW(mi),
+			width, height, 1)) == None)
+		return False;
+	if ((l->gc = XCreateGC(MI_DISPLAY(mi), l->pixmap, 0, &gcv)) == None)
+		return False;
+	return True;
 }
 
 static void
@@ -360,13 +369,13 @@ free_goop(Display * display, goopstruct * gp)
 {
 	int         l;
 
-	if (gp->layers) {
+	if (gp->layers != NULL) {
 		for (l = 0; l < gp->nlayers; l++) {
-			if (gp->layers[l].blobs) {
+			if (gp->layers[l].blobs != NULL) {
 				int         b;
 
 				for (b = 0; b < gp->layers[l].nblobs; b++) {
-					if (gp->layers[l].blobs[b].r)
+					if (gp->layers[l].blobs[b].r != NULL)
 						(void) free((void *) gp->layers[l].blobs[b].r);
 					free_spline(gp->layers[l].blobs[b].splines);
 				}
@@ -377,16 +386,16 @@ free_goop(Display * display, goopstruct * gp)
 			if (gp->layers[l].pixmap != None)
 				XFreePixmap(display, gp->layers[l].pixmap);
 		}
-		if (gp->pixmap_gc != None) {
-			XFreeGC(display, gp->pixmap_gc);
-			gp->pixmap_gc = None;
-		}
-		if (gp->pixmap != None) {
-			XFreePixmap(display, gp->pixmap);
-			gp->pixmap = None;
-		}
 		(void) free((void *) gp->layers);
 		gp->layers = NULL;
+	}
+	if (gp->pixmap_gc != None) {
+		XFreeGC(display, gp->pixmap_gc);
+		gp->pixmap_gc = None;
+	}
+	if (gp->pixmap != None) {
+		XFreePixmap(display, gp->pixmap);
+		gp->pixmap = None;
 	}
 }
 
@@ -395,13 +404,12 @@ init_goop(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	goopstruct *gp;
 	int         i;
 	XGCValues   gcv;
 	int         nblobs;
-
 	unsigned long *plane_masks = 0;
 	unsigned long base_pixel = 0;
+	goopstruct *gp;
 
 	if (goops == NULL) {
 		if ((goops = (goopstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -410,8 +418,7 @@ init_goop(ModeInfo * mi)
 	}
 	gp = &goops[MI_SCREEN(mi)];
 
-
-	gp->mode = (False /* xor init */ ? xor
+	gp->mode = (False /* xor init */ ? xored
 		    : (True /* transparent init */ ? transparent : opaque));
 
 	gp->width = MI_WIDTH(mi);
@@ -422,8 +429,9 @@ init_goop(ModeInfo * mi)
 	gp->nlayers = 0;	/* planes init */
 	if (gp->nlayers <= 0)
 		gp->nlayers = (int) (LRAND() % (MI_DEPTH(mi) - 2)) + 2;
-	gp->layers = (layer *) calloc(gp->nlayers, sizeof (layer));
-
+	if ((gp->layers = (layer *) calloc(gp->nlayers, sizeof (layer))) == NULL) {
+		return; /* free_goop just ran */
+	}
 
 	if ((MI_NPIXELS(mi) < 2) && gp->mode == transparent)
 		gp->mode = opaque;
@@ -454,17 +462,23 @@ init_goop(ModeInfo * mi)
 	if (nblobs < 0) {
 		nblobs = NRAND(-nblobs) + 1;	/* Add 1 so its not too boring */
 	} {
-		int         lblobs[32];
+		int        *lblobs;
 		int         total = DEF_COUNT;
 
-		/* What does this do? DAB */
+		if ((lblobs = (int *) calloc(gp->nlayers,
+				sizeof (int))) == NULL) {
+			free_goop(display, gp);
+			return;
+		}
 		if (nblobs <= 0)
 			while (total)
 				for (i = 0; total && i < gp->nlayers; i++)
 					lblobs[i]++, total--;
 		for (i = 0; i < gp->nlayers; i++)
-			make_layer(mi, &(gp->layers[i]),
-				   (nblobs > 0 ? nblobs : lblobs[i]));
+			if (!make_layer(mi, &(gp->layers[i]),
+				   (nblobs > 0 ? nblobs : lblobs[i])))
+				free_goop(display, gp);
+		(void) free((void *) lblobs);
 	}
 
 	if (gp->mode == transparent && plane_masks) {
@@ -485,13 +499,21 @@ init_goop(ModeInfo * mi)
 				gp->layers[i].pixel = MI_WHITE_PIXEL(mi);
 		}
 	}
-	gp->pixmap = XCreatePixmap(display, window, MI_WIDTH(mi), MI_HEIGHT(mi),
-				   (gp->mode == xor ? 1 : MI_DEPTH(mi)));
+	if ((gp->pixmap = XCreatePixmap(display, window,
+			MI_WIDTH(mi), MI_HEIGHT(mi),
+			(gp->mode == xored ? 1 : MI_DEPTH(mi)))) == None) {
+		free_goop(display, gp);
+		return;
+	}
 
 	gcv.background = gp->background;
 	gcv.foreground = 255;	/* init */
 	gcv.line_width = 5;	/* thickness init */
-	gp->pixmap_gc = XCreateGC(display, gp->pixmap, GCLineWidth, &gcv);
+	if ((gp->pixmap_gc = XCreateGC(display, gp->pixmap, GCLineWidth,
+			 &gcv)) == None) {
+		free_goop(display, gp);
+		return;
+	}
 	MI_CLEARWINDOW(mi);
 }
 
@@ -500,11 +522,16 @@ draw_goop(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	goopstruct *gp = &goops[MI_SCREEN(mi)];
 	int         i;
+	goopstruct *gp;
+
+	if (goops == NULL)
+		return;
+	gp = &goops[MI_SCREEN(mi)];
+	if (gp->layers == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	switch (gp->mode) {
 		case transparent:
 
@@ -518,12 +545,13 @@ draw_goop(ModeInfo * mi)
 			XSetForeground(display, gp->pixmap_gc, ~0L);
 			for (i = 0; i < gp->nlayers; i++) {
 				XSetPlaneMask(display, gp->pixmap_gc, gp->layers[i].pixel);
-/*
-   XSetForeground (display, gp->pixmap_gc, ~0L);
-   XFillRectangle (display, gp->pixmap, gp->pixmap_gc, 0, 0,
-   gp->width, gp->height);
-   XSetForeground (display, gp->pixmap_gc, 0L);
- */
+
+#if 0
+			XSetForeground (display, gp->pixmap_gc, ~0L);
+			XFillRectangle (display, gp->pixmap, gp->pixmap_gc, 0, 0,
+				gp->width, gp->height);
+			XSetForeground (display, gp->pixmap_gc, 0L);
+#endif
 				draw_layer_blobs(display, gp->pixmap, gp->pixmap_gc,
 				     &(gp->layers[i]), gp->width, gp->height,
 						 True);
@@ -532,7 +560,7 @@ draw_goop(ModeInfo * mi)
 				  gp->width, gp->height, 0, 0);
 			break;
 
-		case xor:
+		case xored:
 			XSetFunction(display, gp->pixmap_gc, GXcopy);
 			XSetForeground(display, gp->pixmap_gc, 0);
 			XFillRectangle(display, gp->pixmap, gp->pixmap_gc, 0, 0,
@@ -574,11 +602,8 @@ release_goop(ModeInfo * mi)
 	if (goops != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			goopstruct *gp = &goops[screen];
-
-			free_goop(MI_DISPLAY(mi), gp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_goop(MI_DISPLAY(mi), &goops[screen]);
 		(void) free((void *) goops);
 		goops = NULL;
 	}

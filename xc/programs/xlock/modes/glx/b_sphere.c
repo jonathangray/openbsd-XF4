@@ -108,7 +108,7 @@ subdivide(GLfloat * v1, GLuint vi1,
 	int         i;
 
 	if (depth == 0) {
-		save_triangle(vi1, vi2, vi3);
+		(void) save_triangle(vi1, vi2, vi3);
 	} else {
 		GLuint      vi12, vi23, vi31;
 		GLfloat     v12[3], v23[3], v31[3];

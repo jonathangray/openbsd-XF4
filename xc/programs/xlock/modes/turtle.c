@@ -2,7 +2,7 @@
 /* turtle --- fractal curves */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)turtle.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)turtle.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)turtle.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 01-Dec-96: Not too proud how I hacked in 2 more curves
- * 30-Sep-96: started with Hilbert curve, David Bagley
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 01-Dec-1996: Not too proud how I hacked in 2 more curves
+ * 30-Sep-1996: started with Hilbert curve, David Bagley
  * From Fractal Programming in C by Roger T. Stevens
  */
 
@@ -44,7 +45,7 @@ static const char sccsid[] = "@(#)turtle.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_turtle
 
 ModeSpecOpt turtle_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   turtle_description =
@@ -235,8 +236,8 @@ generate_harter_heightway(ModeInfo * mi, double pt1x, double pt1y,
 void
 init_turtle(ModeInfo * mi)
 {
-	turtlestruct *tp;
 	int         i;
+	turtlestruct *tp;
 
 	if (turtles == NULL) {
 		if ((turtles = (turtlestruct *) calloc(MI_NUM_SCREENS(mi),
@@ -346,7 +347,11 @@ init_turtle(ModeInfo * mi)
 void
 draw_turtle(ModeInfo * mi)
 {
-	turtlestruct *tp = &turtles[MI_SCREEN(mi)];
+	turtlestruct *tp;
+
+	if (turtles == NULL)
+		return;
+	tp = &turtles[MI_SCREEN(mi)];
 
 	if (++tp->time > MI_CYCLES(mi))
 		init_turtle(mi);
@@ -385,12 +390,16 @@ draw_turtle(ModeInfo * mi)
 				}
 				break;
 			case CESARO_VAR:
-				generate_cesarovar(mi, tp->pt1.x, tp->pt1.y, tp->pt2.x, tp->pt2.y,
-						   tp->level, tp->sign);
+				generate_cesarovar(mi,
+					(double) tp->pt1.x, (double) tp->pt1.y,
+					(double) tp->pt2.x, (double) tp->pt2.y,
+					tp->level, tp->sign);
 				break;
 			case HARTER_HEIGHTWAY:
-				generate_harter_heightway(mi, tp->pt1.x, tp->pt1.y,
-				  tp->pt2.x, tp->pt2.y, tp->level, tp->sign);
+				generate_harter_heightway(mi,
+					(double) tp->pt1.x, (double) tp->pt1.y,
+				  	(double) tp->pt2.x, (double) tp->pt2.y,
+					tp->level, tp->sign);
 				break;
 		}
 }

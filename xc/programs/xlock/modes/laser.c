@@ -2,7 +2,7 @@
 /* laser --- spinning lasers */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)laser.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)laser.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,9 @@ static const char sccsid[] = "@(#)laser.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 1995: Written.
  */
 
 #ifdef STANDALONE
@@ -43,7 +45,7 @@ static const char sccsid[] = "@(#)laser.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_laser
 
 ModeSpecOpt laser_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   laser_description =
@@ -104,10 +106,23 @@ typedef struct {
 
 static lasersstruct *lasers = NULL;
 
+static void
+free_laser(Display *display, lasersstruct *lp)
+{
+	if (lp->laser != NULL) {
+		(void) free((void *) lp->laser);
+		lp->laser = NULL;
+	}
+	if (lp->stippledGC != None) {
+		XFreeGC(display, lp->stippledGC);
+		lp->stippledGC = None;
+	}
+}
 
 void
 init_laser(ModeInfo * mi)
 {
+	Display *display = MI_DISPLAY(mi);
 	int         i, c = 0;
 	lasersstruct *lp;
 
@@ -133,17 +148,24 @@ init_laser(ModeInfo * mi)
 	} else if (lp->ln < MINLASER)
 		lp->ln = MINLASER;
 
-	if (!lp->laser) {
-		lp->laser = (laserstruct *) malloc(lp->ln * sizeof (laserstruct));
+	if (lp->laser == NULL) {
+		if ((lp->laser = (laserstruct *) malloc(lp->ln *
+				sizeof (laserstruct))) == NULL) {
+			free_laser(display, lp);
+			return;
+		}
 	}
-	if (lp->stippledGC == NULL) {
+	if (lp->stippledGC == None) {
 		XGCValues   gcv;
 
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
 		lp->gcv_black.foreground = MI_BLACK_PIXEL(mi);
-		lp->stippledGC = XCreateGC(MI_DISPLAY(mi), MI_WINDOW(mi),
-					   GCForeground | GCBackground, &gcv);
+		if ((lp->stippledGC = XCreateGC(display, MI_WINDOW(mi),
+				GCForeground | GCBackground, &gcv)) == None) {
+			free_laser(display, lp);
+			return;
+		}
 	}
 	MI_CLEARWINDOW(mi);
 
@@ -202,8 +224,6 @@ draw_laser_once(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	lasersstruct *lp = &lasers[MI_SCREEN(mi)];
 	int         i;
-
-	MI_IS_DRAWN(mi) = True;
 
 	for (i = 0; i < lp->ln; i++) {
 		laserstruct *l = &lp->laser[i];
@@ -302,9 +322,16 @@ draw_laser_once(ModeInfo * mi)
 void
 draw_laser(ModeInfo * mi)
 {
-	lasersstruct *lp = &lasers[MI_SCREEN(mi)];
 	int         i;
+	lasersstruct *lp;
 
+	if (lasers == NULL)
+		return;
+	lp = &lasers[MI_SCREEN(mi)];
+	if (lp->laser == NULL)
+		return;
+
+	MI_IS_DRAWN(mi) = True;
 	for (i = 0; i < lp->lr; i++)
 		draw_laser_once(mi);
 
@@ -318,14 +345,8 @@ release_laser(ModeInfo * mi)
 	if (lasers != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			lasersstruct *lp = &lasers[screen];
-
-			if (lp->laser != NULL)
-				(void) free((void *) lp->laser);
-			if (lp->stippledGC != NULL)
-				XFreeGC(MI_DISPLAY(mi), lp->stippledGC);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_laser(MI_DISPLAY(mi), &lasers[screen]);
 		(void) free((void *) lasers);
 		lasers = NULL;
 	}

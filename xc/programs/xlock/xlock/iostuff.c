@@ -14,6 +14,9 @@ static const char sccsid[] = "@(#)iostuff.c	4.10 98/10/23 xlockmore";
  * 23-Apr-98: Separated out of util.c
  *
  */
+#ifdef USE_MAGICK
+# include "magick.h"
+#endif
 
 #ifdef STANDALONE
 #include "utils.h"
@@ -137,7 +140,7 @@ get_dir(char *fullpath, char *dir, char *filename)
 #else
 	ln = fullpath;
 	ip = 0;
-	while ((ip_temp = index_dir(ln, "/"))) {
+	while ((ip_temp = index_dir(ln, (char *) "/"))) {
 		ip = ip + ip_temp;
 		ln = fullpath + ip;
 	}
@@ -191,38 +194,61 @@ sel_image(struct dirent *name)
 	char       *name_tmp = name->d_name;
 	char       *filename_tmp = filename_r;
 	int         numfrag = -1;
-	static char *frags[64];
-	int         ip, i;
+#define MAX_FRAGS 64
+#ifdef VMS
+   char *frags[MAX_FRAGS];
+#else
+   static char *frags[MAX_FRAGS];
+#endif
+
+	int         ip, i = -1;
 
 	if (numfrag == -1) {
 		++numfrag;
-		while ((ip = index_dir(filename_tmp, "*"))) {
-			if (numfrag >= 64)
-				return 0;
-			frags[numfrag] = (char *) malloc(ip);
+		while ((ip = index_dir(filename_tmp, (char *) "*"))) {
+			if (numfrag >= MAX_FRAGS) {
+				numfrag--;
+				goto FAIL;
+			}
+			if ((frags[numfrag] = (char *) malloc(ip)) == NULL) {
+				numfrag--;
+				goto FAIL;
+			}
 			(void) strcpy(frags[numfrag], "\0");
 			(void) strncat(frags[numfrag], filename_tmp, ip - 1);
 			++numfrag;
 			filename_tmp = filename_tmp + ip;
 		}
-/* PURIFY says this leaks */
-		frags[numfrag] = (char *) malloc(strlen(filename_tmp) + 1);
-		(void) strcpy(frags[numfrag], filename_tmp);
+		if ( strlen( filename_tmp ) != 0 ) {
+			if (numfrag > 0 && frags[numfrag] != NULL)
+				(void) free((void *) frags[numfrag]);
+			if ((frags[numfrag] = (char *) malloc(strlen(filename_tmp) +
+					1)) == NULL) {
+				numfrag--;
+				goto FAIL;
+			}
+			(void) strcpy(frags[numfrag], filename_tmp);
+		} else
+			numfrag--;
 	}
 	for (i = 0; i <= numfrag; ++i) {
 		ip = index_dir(name_tmp, frags[i]);
 		(void) free((void *) frags[i]);
 		if (ip == 0) {
-			int         j;
-
-			for (j = i + 1; j <= numfrag; ++j)
-				(void) free((void *) frags[j]);
-			return (0);
+			goto FAIL;
 		}
 		name_tmp = name_tmp + ip;
 	}
 
 	return (1);
+FAIL:
+	{
+		int         j;
+
+		for (j = i + 1; j <= numfrag; ++j)
+			(void) free((void *) frags[j]);
+		return (0);
+	}
 }
 
 /* scandir implementiation for VMS  Author: J. Jansen */
@@ -249,9 +275,8 @@ scan_dir(const char *directoryname, struct dirent ***namelist,
  * PURIFY on SunOS4 and on Solaris 2 reports a cumulative memory leak on
  * the next line when used with the modes/glx/text3d.cc file. It only
  * leaks like this for the C++ modes, and is OK in the C modes. */
-	namelist_tmp = (struct dirent **) malloc(size_tmp * sizeof (struct dirent *));
-
-	if (namelist_tmp == NULL) {
+	if ((namelist_tmp = (struct dirent **) malloc(size_tmp *
+			sizeof (struct dirent *))) == NULL) {
 		if (debug)
 			(void) printf("scan_dir no memory\n");
 		return (-1);
@@ -266,21 +291,21 @@ scan_dir(const char *directoryname, struct dirent ***namelist,
 			continue;
 		if (++num_list_tmp >= size_tmp) {
 			size_tmp = size_tmp + _MEMBL_;
-			namelist_tmp = (struct dirent **) realloc(
-									 (void *) namelist_tmp, size_tmp * sizeof (struct dirent *));
-
-			if (namelist_tmp == NULL) {
+			if ((namelist_tmp = (struct dirent **) realloc(
+					(void *) namelist_tmp, size_tmp *
+					sizeof (struct dirent *))) == NULL) {
 				if (debug)
 					(void) printf("scan_dir no memory\n");
 				return (-1);
 			}
 		}
-		namelist_tmp[num_list_tmp - 1] =
+		if ((namelist_tmp[num_list_tmp - 1] =
 			(struct dirent *) malloc(sizeof (struct dirent)
 #ifdef SVR4
-					      + strlen    (new_entry->d_name)
+			 + strlen(new_entry->d_name)
 #endif
-		);
+		)) == NULL)
+				return (-1);
 
 		(void) strcpy(namelist_tmp[num_list_tmp - 1]->d_name, new_entry->d_name);
 
@@ -291,7 +316,6 @@ scan_dir(const char *directoryname, struct dirent ***namelist,
 	if (num_list_tmp && compare != NULL)
 		(void) qsort((void *) namelist_tmp, num_list_tmp,
 			     sizeof (struct dirent *), compare);
-
 	if (debug)
 		(void) printf("scan_dir number %d\n", num_list_tmp);
 	*namelist = namelist_tmp;
@@ -302,7 +326,7 @@ scan_dir(const char *directoryname, struct dirent ***namelist,
 
 #if HAVE_DIRENT_H
 static void
-getRandomImageFile(char *randomfile, char *randomfile_local)
+getRandomFile(char *randomfile, char *randomfile_local)
 {
 	extern char directory_r[DIRBUF];
 	struct dirent ***images_list = NULL;
@@ -321,20 +345,19 @@ getRandomImageFile(char *randomfile, char *randomfile_local)
 		(void) free((void *) image_list);
 		image_list = NULL;
 	}
-	images_list = (struct dirent ***) malloc(sizeof (struct dirent **));
-
-	num_list = scan_dir(directory_r, images_list, sel_image, NULL);
-	image_list = *images_list;
-	if (images_list) {
+	if ((images_list = (struct dirent ***) malloc(sizeof (struct dirent **))) != NULL) {
+		num_list = scan_dir(directory_r, images_list, sel_image, NULL);
+		image_list = *images_list;
 		(void) free((void *) images_list);
-		images_list = NULL;
-	}
-	if (num_list > 0) {
-		randomFileFromList(directory_r, image_list, num_list, randomfile_local);
-	} else if (num_list < 0) {
-		image_list = NULL;
+		if (num_list > 0) {
+			randomFileFromList(directory_r, image_list, num_list,
+				randomfile_local);
+		} else if (num_list < 0) {
+			num_list = 0;
+			image_list = NULL;
+		}
+	} else
 		num_list = 0;
-	}
 }
 
 #endif
@@ -349,7 +372,9 @@ extern int  XbmReadFileToImage(char *filename,
 #include <X11/xpm.h>		/* Normal spot */
 #endif
 #endif
-#include "ras.h"
+#ifndef USE_MAGICK
+# include "ras.h"
+#endif
 
 static XImage blogo =
 {
@@ -399,7 +424,7 @@ getImage(ModeInfo * mi, XImage ** logo,
 #endif /* !STANDALONE */
 	*graphics_format = 0;
 
-	if (bitmap_local) {
+	if (bitmap_local != NULL) {
 		(void) free((void *) bitmap_local);
 		bitmap_local = NULL;
 	}
@@ -407,15 +432,44 @@ getImage(ModeInfo * mi, XImage ** logo,
 #ifdef STANDALONE
 		bitmap_local = MI_BITMAP(mi);
 #else
-		bitmap_local = (char *) malloc(256);
+		if ((bitmap_local = (char *) malloc(256)) == NULL) {
+			(void) fprintf(stderr , "no memory for \"%s\"\n" ,
+				MI_BITMAP(mi));
+			return;
+		}
 		(void) strncpy(bitmap_local, MI_BITMAP(mi), 256);
 #if HAVE_DIRENT_H
-		getRandomImageFile(MI_BITMAP(mi), bitmap_local);
+		getRandomFile(MI_BITMAP(mi), bitmap_local);
 #endif
 #endif /* STANDALONE */
 	}
 	if (bitmap_local && strlen(bitmap_local)) {
-#ifndef STANDALONE
+#if defined( USE_MAGICK ) && !defined( STANDALONE )
+	   if ( readable( bitmap_local ) )
+	     {
+		if ( MI_NPIXELS( mi ) > 2 )
+		  {
+		     if ( MagickSuccess == MagickFileToImage( mi ,
+							     bitmap_local ,
+							     logo) )
+		       {
+			  *graphics_format = IS_MAGICKFILE;
+			  if ( !fixedColors( mi ) )
+			    SetImageColors( display , *ncm );
+			  *black = GetColor(mi, MI_BLACK_PIXEL(mi));
+			  (void) GetColor(mi, MI_WHITE_PIXEL(mi));
+			  (void) GetColor(mi, MI_BG_PIXEL(mi));
+			  (void) GetColor(mi, MI_FG_PIXEL(mi));
+		       }
+		  }
+	     }
+	   else
+	     {
+		(void) fprintf(stderr , "could not read file \"%s\"\n" ,
+			bitmap_local);
+	     }
+#else
+# ifndef STANDALONE
 		if (readable(bitmap_local)) {
 			if (MI_NPIXELS(mi) > 2) {
 				if (RasterSuccess == RasterFileToImage(mi, bitmap_local, logo)) {
@@ -462,7 +516,8 @@ getImage(ModeInfo * mi, XImage ** logo,
 				*logo = &blogo;
 			}
 		}
-		if (*graphics_format <= 0 && MI_IS_VERBOSE(mi))
+#endif
+	   if (*graphics_format <= 0 && MI_IS_VERBOSE(mi))
 			(void) fprintf(stderr,
 				       "\"%s\" is in an unrecognized format or not compatible with screen\n",
 				       bitmap_local);
@@ -492,7 +547,8 @@ getImage(ModeInfo * mi, XImage ** logo,
 	}
 #ifndef STANDALONE		/* Come back later */
 	if (*ncm != None && *graphics_format != IS_RASTERFILE &&
-	    *graphics_format != IS_XPMFILE && *graphics_format != IS_XPM) {
+	    *graphics_format != IS_XPMFILE && *graphics_format != IS_XPM &&
+	    *graphics_format != IS_MAGICKFILE) {
 		XFreeColormap(display, *ncm);
 		*ncm = None;
 	}
@@ -515,6 +571,7 @@ destroyImage(XImage ** logo, int *graphics_format)
 		case IS_XPM:
 		case IS_XPMFILE:
 		case IS_RASTERFILE:
+		case IS_MAGICKFILE:
 			if (logo && *logo)
 				(void) XDestroyImage(*logo);
 			break;
@@ -552,7 +609,6 @@ pickPixmap(Display * display, Drawable drawable, char *name,
 		*graphics_format = IS_XBM;
 		*pixmap = XCreateBitmapFromData(display, drawable,
 				     (char *) default_bits, *width, *height);
-
 	}
 }
 
@@ -573,10 +629,14 @@ getPixmap(ModeInfo * mi, Drawable drawable,
 #ifdef STANDALONE
 		bitmap_local = MI_BITMAP(mi);
 #else
-		bitmap_local = (char *) malloc(256);
+		if ((bitmap_local = (char *) malloc(256)) == NULL) {
+			(void) fprintf(stderr , "no memory for \"%s\"\n" ,
+				MI_BITMAP(mi));
+			return;
+		}
 		(void) strncpy(bitmap_local, MI_BITMAP(mi), 256);
 #if HAVE_DIRENT_H
-		getRandomImageFile(MI_BITMAP(mi), bitmap_local);
+		getRandomFile(MI_BITMAP(mi), bitmap_local);
 #endif
 #endif /* STANDALONE */
 	}
@@ -585,13 +645,47 @@ getPixmap(ModeInfo * mi, Drawable drawable,
 		   width, height, pixmap, graphics_format);
 }
 
+char *
+getModeFont(char *infont)
+{
+	static char *localfont = NULL;
+
+	if (localfont != NULL) {
+		(void) free((void *) localfont);
+		localfont = NULL;
+	}
+	if (infont && strlen(infont)) {
+#ifdef STANDALONE
+		localfont = infont;
+#else
+		if ((localfont = (char *) malloc(256)) == NULL) {
+			(void) fprintf(stderr , "no memory for \"%s\"\n" ,
+				infont);
+			return NULL;
+		}
+		(void) strncpy(localfont, infont, 256);
+#if HAVE_DIRENT_H
+		getRandomFile(infont, localfont);
+#endif
+#endif /* STANDALONE */
+	}
+	if (localfont && strlen(localfont) && !readable(localfont)) {
+		(void) fprintf(stderr,
+		       "could not read file \"%s\"\n", localfont);
+		if (localfont) {
+			(void) free((void *) localfont);
+			localfont = NULL;
+		}
+	}
+	return localfont;
+}
 
 #define FROM_PROGRAM 1
 #define FROM_FORMATTEDFILE    2
 #define FROM_FILE    3
 #define FROM_RESRC   4
 
-static char *def_words = "I'm out running around.";
+static char *def_words = (char *) "I'm out running around.";
 static int  getwordsfrom;
 
 static void
@@ -623,10 +717,9 @@ getWords(int screen, int screens)
 
 #endif
 
-	if (!buf) {
-		buf = (char *) calloc(screens * BUFSIZ, sizeof (char));
-
-		if (!buf)
+	if (buf == NULL) {
+		if ((buf = (char *) calloc(screens * BUFSIZ,
+				sizeof (char))) == NULL)
 			return NULL;
 	}
 	p = &buf[screen * BUFSIZ];
@@ -666,7 +759,7 @@ getWords(int screen, int screens)
 					(void) memset((char *) progerr, 0, sizeof (progerr));
 					(void) strcpy(progerr, "sh: ");
 					strcat_firstword(progerr, (!program || !*program) ?
-						      DEF_PROGRAM : program);
+						      (char *) DEF_PROGRAM : program);
 					(void) strcat(progerr, ": not found\n");
 					if (!strcmp(&buf[screen * BUFSIZ], progerr))
 						switch (NRAND(12)) {
@@ -826,3 +919,18 @@ getFont(Display * display)
 	}
 	return messagefont;
 }
+
+#ifdef USE_MB
+XFontSet
+getFontSet(Display * display)
+{
+	char **miss, *def;
+	int n_miss;
+	XFontSet fs;
+
+	fs = XCreateFontSet(display,
+			    DEF_MESSAGEFONTSET,
+			    &miss, &n_miss, &def);
+	return fs;
+}
+#endif

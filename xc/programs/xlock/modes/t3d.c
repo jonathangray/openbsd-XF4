@@ -2,7 +2,7 @@
 /* t3d --- Flying Balls Clock Demo */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)t3d.c	1.0 2000/01/26 xlockmore";
+static const char sccsid[] = "@(#)t3d.c	5.0 2000/11/01 xlockmore";
 
 #endif
 
@@ -30,11 +30,12 @@ static const char sccsid[] = "@(#)t3d.c	1.0 2000/01/26 xlockmore";
  *    -Get working better in password window.
  *
  * Revision History:
- *   26-Jan-2000 joukj@hrem.stm.tudelft.nl (Jouk Jansen) : adapted for
- *                            xlockmore. Modified colour-schemes.
- *    4-Jan-99 jwz@jwz.org -- adapted to xscreensaver framework,
- *                            to take advantage of the command-line options
- *                            provided by screenhack.c.
+ * 01-Nov-2000: Allocation checks
+ * 26-Jan-2000: joukj@hrem.stm.tudelft.nl (Jouk Jansen) : adapted for
+ *              xlockmore. Modified colour-schemes.
+ * 04-Jan-1999: jwz@jwz.org -- adapted to xscreensaver framework,
+ *              to take advantage of the command-line options
+ *              provided by screenhack.c.
  */
 
 #define FASTDRAW
@@ -57,6 +58,11 @@ static const char sccsid[] = "@(#)t3d.c	1.0 2000/01/26 xlockmore";
 #include "xlock.h"		/* in xlockmore distribution */
 #include "color.h"
 #endif /* STANDALONE */
+
+#ifdef TIME_WITH_SYS_TIME /* for sco */
+#include <time.h>
+#include <sys/time.h>
+#endif
 
 #ifdef MODE_t3d
 
@@ -99,38 +105,38 @@ static int fastch;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-cycle", ".tik_tak.cycle", XrmoptionNoArg, (caddr_t) "on"},
-	{"+cycle", ".tik_tak.cycle", XrmoptionNoArg, (caddr_t) "off"},
-	{"-move", "t3d.move", XrmoptionSepArg, (caddr_t) NULL},
-	{"-wobble", "t3d.wobble", XrmoptionSepArg, (caddr_t) NULL},
-	{"-mag", "t3d.mag", XrmoptionSepArg, (caddr_t) NULL},
-	{"-fast", "t3d.fast", XrmoptionSepArg, (caddr_t) NULL},
-        {"-minutes", ".t3d.minutes", XrmoptionNoArg, (caddr_t) "on"},
-        {"+minutes", ".t3d.minutes", XrmoptionNoArg, (caddr_t) "off"},
-        {"-trackmouse", ".t3d.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
-        {"+trackmouse", ".t3d.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-cycle", (char *) ".t3d.cycle", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+cycle", (char *) ".t3d.cycle", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-move", (char *) ".t3d.move", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-wobble", (char *) ".t3d.wobble", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-mag", (char *) ".t3d.mag", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-fast", (char *) ".t3d.fast", XrmoptionSepArg, (caddr_t) NULL},
+        {(char *) "-minutes", (char *) ".t3d.minutes", XrmoptionNoArg, (caddr_t) "on"},
+        {(char *) "+minutes", (char *) ".t3d.minutes", XrmoptionNoArg, (caddr_t) "off"},
+        {(char *) "-trackmouse", (char *) ".t3d.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
+        {(char *) "+trackmouse", (char *) ".t3d.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & cycle_p, "cycle", "Cycle", DEF_CYCLE, t_Bool},
-	{(caddr_t *) & move, "move", "Move", DEF_MOVE, t_Float},
-	{(caddr_t *) & wobble, "wobble", "Wobble", DEF_WOBBLE, t_Float},
-	{(caddr_t *) & mag, "mag", "Magnification", DEF_MAG, t_Float},
-	{(caddr_t *) & fastch, "fast", "Fast", DEF_FAST, t_Int},
-        {(caddr_t *) & minutes, "minutes", "Minutes", DEF_MINUTES, t_Bool},
-        {(caddr_t *) & trackmouse, "trackmouse", "TrackMouse", DEF_TRACKMOUSE, t_Bool}
+	{(caddr_t *) & cycle_p, (char *) "cycle", (char *) "Cycle", (char *) DEF_CYCLE, t_Bool},
+	{(caddr_t *) & move, (char *) "move", (char *) "Move", (char *) DEF_MOVE, t_Float},
+	{(caddr_t *) & wobble, (char *) "wobble", (char *) "Wobble", (char *) DEF_WOBBLE, t_Float},
+	{(caddr_t *) & mag, (char *) "mag", (char *) "Magnification", (char *) DEF_MAG, t_Float},
+	{(caddr_t *) & fastch, (char *) "fast", (char *) "Fast", (char *) DEF_FAST, t_Int},
+        {(caddr_t *) & minutes, (char *) "minutes", (char *) "Minutes", (char *) DEF_MINUTES, t_Bool},
+        {(caddr_t *) & trackmouse, (char *) "trackmouse", (char *) "TrackMouse", (char *) DEF_TRACKMOUSE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+cycle", "turn on/off colour cycling"},
-	{"-move num", "Move speed"},
-	{"-wobble num", "Wobble speed"},
-	{"-mag num", "Magnification factor"},
-	{"-fast num", "Fast"},
-        {"-/+minutes", "turn on/off minutes"},
-        {"-/+trackmouse", "turn on/off the tracking of the mouse"}
+	{(char *) "-/+cycle", (char *) "turn on/off colour cycling"},
+	{(char *) "-move num", (char *) "Move speed"},
+	{(char *) "-wobble num", (char *) "Wobble speed"},
+	{(char *) "-mag num", (char *) "Magnification factor"},
+	{(char *) "-fast num", (char *) "Fast"},
+        {(char *) "-/+minutes", (char *) "turn on/off minutes"},
+        {(char *) "-/+trackmouse", (char *) "turn on/off the tracking of the mouse"}
 };
 
 ModeSpecOpt t3d_opts =
@@ -175,11 +181,13 @@ typedef struct {
    struct tm *zeit;
    kugeldat kugeln[100];
    int         color_offset;
+   ModeInfo   *mi;
 } t3dstruct;
 
 static t3dstruct *t3ds = NULL;
 
-void t3d_zeiger( ModeInfo* mi , double dist,double rad, double z, double sec,
+static void
+t3d_zeiger( ModeInfo* mi , double dist,double rad, double z, double sec,
 		int *q)
 /* Zeiger zeichnen */
 {
@@ -205,7 +213,8 @@ void t3d_zeiger( ModeInfo* mi , double dist,double rad, double z, double sec,
   *q = n;
 }
 
-void t3d_manipulate( ModeInfo* mi , double k)
+static void
+t3d_manipulate( ModeInfo* mi , double k)
 /*-----------------------------------------------------------------*
  *                           Uhr zeichnen                          *
  *-----------------------------------------------------------------*/
@@ -213,9 +222,9 @@ void t3d_manipulate( ModeInfo* mi , double k)
   double i,l,/*xs,*/ys,zs,mod;
   double /*persec,*/sec,min,hour;
   int n;
-   t3dstruct *t3dp;
+  t3dstruct *t3dp;
 
-   t3dp = &t3ds[MI_SCREEN(mi)];
+  t3dp = &t3ds[MI_SCREEN(mi)];
 
   sec=TWOPI*modf(k/60,&mod);
   min=TWOPI*modf(k/3600,&mod);
@@ -268,7 +277,8 @@ void t3d_manipulate( ModeInfo* mi , double k)
     }
 }
 
-double t3d_gettime (void)
+static double
+t3d_gettime (void)
 {
   struct timeval time1;
   struct tm *zeit;
@@ -287,7 +297,8 @@ double t3d_gettime (void)
 }
 
 
-void t3d__sort( ModeInfo* mi , int l, int r)
+static void
+t3d__sort( ModeInfo* mi , int l, int r)
 {
   int i,j;
   kugeldat ex;
@@ -314,14 +325,16 @@ void t3d__sort( ModeInfo* mi , int l, int r)
   if (i<r) t3d__sort ( mi , i,r);
 }
 
-void t3d_vektorprodukt(double feld1[], double feld2[], double feld3[])
+static void
+t3d_vektorprodukt(double feld1[], double feld2[], double feld3[])
 {
   feld3[0]=feld1[1]*feld2[2]-feld1[2]*feld2[1];
   feld3[1]=feld1[2]*feld2[0]-feld1[0]*feld2[2];
   feld3[2]=feld1[0]*feld2[1]-feld1[1]*feld2[0];
 }
 
-void t3d_turn(double feld1[], double feld2[], double winkel)
+static void
+t3d_turn(double feld1[], double feld2[], double winkel)
 {
   double temp[3];
   double s,ca,sa,sx1,sx2,sx3;
@@ -339,7 +352,8 @@ void t3d_turn(double feld1[], double feld2[], double winkel)
   feld1[2]=ca*(feld1[2]-sx3)+sa*temp[2]+sx3;
 }
 
-void t3d_projektion( ModeInfo* mi)
+static void
+t3d_projektion( ModeInfo* mi)
 {
   double c1[3],c2[3],k[3],x1,y1;
   double cno,cnorm/*,magnit*/;
@@ -393,7 +407,8 @@ void t3d_projektion( ModeInfo* mi)
 }
 
 
-void t3d_viewpoint( ModeInfo* mi)
+static void
+t3d_viewpoint( ModeInfo* mi)
 /* 1: Blickrichtung v;3:Ebenenmittelpunkt m
    double feld1[],feld3[]; */
 {
@@ -408,7 +423,8 @@ void t3d_viewpoint( ModeInfo* mi)
    t3dp->zaehler=norm*norm* t3dp->zoom;
 }
 
-void t3d_fill_kugel(int i, Pixmap buf, int setcol , ModeInfo* mi )
+static void
+t3d_fill_kugel(int i, Pixmap buf, int setcol , ModeInfo* mi )
 {
    t3dstruct *t3dp;
    Display    *display = MI_DISPLAY(mi);
@@ -493,7 +509,8 @@ void t3d_fill_kugel(int i, Pixmap buf, int setcol , ModeInfo* mi )
 }
 
 
-void t3d_init_kugel( ModeInfo* mi )
+static void
+t3d_init_kugel( ModeInfo* mi )
 {
    t3dstruct *t3dp;
 
@@ -508,7 +525,7 @@ void t3d_init_kugel( ModeInfo* mi )
 #	ifdef FASTCOPY
       t3dp->kugeln[i].r1=-((double) i)/2 -1;
       t3dp->kugeln[i].x1=sum1ton(i);
-      t3dp->kugeln[i].y1=((double) i)/2 +1;
+      t3dp->kugeln[i].y1=i/2 +1;
 
       t3d_fill_kugel(i,t3dp->fastcircles,1 , mi );
 /*      setink((1<<MIN(24,t3dp->depth))-1);*/
@@ -516,7 +533,7 @@ void t3d_init_kugel( ModeInfo* mi )
       t3d_fill_kugel(i,t3dp->fastmask,0 , mi );
 #	else
       t3dp->kugeln[i].r1=-((double) i)/2 -1;
-      t3dp->kugeln[i].x1=t3dp->kugeln[i].y1=((double) i)/2 +1;
+      t3dp->kugeln[i].x1=t3dp->kugeln[i].y1=i/2 +1;
 
       t3d_fill_kugel(i,t3dp->buffer,1 , mi );
       t3dp->fastcircles[i]=XGetImage(display,t3dp->buffer,0,0,i+2,i+2,
@@ -528,14 +545,15 @@ void t3d_init_kugel( ModeInfo* mi )
 				  (1<<t3dp->depth)-1,ZPixmap);
       setink(MI_BLACK_PIXEL(mi));
       XFillRectangle (display, t3dp->buffer     , t3dp->gc, 0, 0,
-		      t3dp->width, t3dp->height);	
+		      t3dp->width, t3dp->height);
 #	endif
     }
   t3dp->fastdraw=1;
 #endif
 }
 
-void t3d_init_3d( ModeInfo* mi )
+static void
+t3d_init_3d( ModeInfo* mi )
 {
    t3dstruct *t3dp;
    double i;
@@ -566,7 +584,68 @@ void t3d_init_3d( ModeInfo* mi )
 
 }
 
-void t3d_initialize( ModeInfo* mi )
+
+static void
+free_t3d(Display *display, t3dstruct *t3dp)
+{
+	ModeInfo *mi = t3dp->mi;
+
+	if (t3dp->cursor != None) {
+		XFreeCursor(display, t3dp->cursor);
+		t3dp->cursor = None;
+	}
+	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
+		MI_WHITE_PIXEL(mi) = t3dp->whitepixel;
+		MI_BLACK_PIXEL(mi) = t3dp->blackpixel;
+#ifndef STANDALONE
+		MI_FG_PIXEL(mi) = t3dp->fg;
+		MI_BG_PIXEL(mi) = t3dp->bg;
+#endif
+		if (t3dp->colors != NULL) {
+			if (t3dp->ncolors && !t3dp->no_colors)
+				free_colors(display, t3dp->cmap, t3dp->colors, t3dp->ncolors);
+			(void) free((void *) t3dp->colors);
+			t3dp->colors = NULL;
+		}
+		if (t3dp->cmap != None) {
+			XFreeColormap(display, t3dp->cmap);
+			t3dp->cmap = None;
+		}
+	}
+	if (t3dp->buffer != None) {
+		XFreePixmap(display, t3dp->buffer);
+		t3dp->buffer = None;
+	}
+	if (t3dp->gc != None) {
+		XFreeGC(display, t3dp->gc);
+		t3dp->gc = None;
+	}
+#ifdef FASTCOPY
+	if (t3dp->orgc != None) {
+		XFreeGC(display, t3dp->orgc);
+		t3dp->orgc = None;
+	}
+	if (t3dp->andgc != None) {
+		XFreeGC(display, t3dp->andgc);
+		t3dp->andgc = None;
+	}
+	if (t3dp->fastcircles != None) {
+		XFreePixmap(display, t3dp->fastcircles);
+		t3dp->fastcircles = None;
+	}
+	if (t3dp->fastmask != None) {
+		XFreePixmap(display, t3dp->fastmask);
+		t3dp->fastmask = None;
+	}
+#endif
+	if (t3dp->zeit != NULL) {
+		(void) free((void *) t3dp->zeit);
+		t3dp->zeit = NULL;
+	}
+}
+
+static Bool
+t3d_initialize( ModeInfo* mi )
 {
    Display    *display = MI_DISPLAY(mi);
    Window      window = MI_WINDOW(mi);
@@ -581,7 +660,7 @@ void t3d_initialize( ModeInfo* mi )
 
    t3dp->movef = (double) move;
    t3dp->wobber = (double) wobble;
-   t3dp->fastch = fastch * mag;
+   t3dp->fastch = (int) (fastch * mag);
    if ( t3dp->fastch > MAXFAST )
      t3dp->fastch = MAXFAST;
 
@@ -596,16 +675,24 @@ void t3d_initialize( ModeInfo* mi )
 	t3dp->maxk = 34;
      }
    xgcv.foreground = MI_WHITE_PIXEL(mi);
-   t3dp->gc = XCreateGC (display, window, GCForeground, &xgcv);
+   if ((t3dp->gc = XCreateGC (display, window, GCForeground, &xgcv)) == None) {
+	free_t3d(display, t3dp);
+	return False;
+   }
 #ifdef FASTDRAW
    xgcv.function = GXor;
-   t3dp->orgc = XCreateGC (display, window, GCFunction | GCForeground, &xgcv );
+   if ((t3dp->orgc = XCreateGC (display, window, GCFunction | GCForeground,
+		&xgcv)) == None) {
+	free_t3d(display, t3dp);
+	return False;
+   }
    xgcv.function = GXandInverted;
-   t3dp->andgc = XCreateGC (display, window, GCFunction | GCForeground, &xgcv );
+   if ((t3dp->andgc = XCreateGC (display, window, GCFunction | GCForeground,
+		&xgcv)) == None) {
+	free_t3d(display, t3dp);
+	return False;
+   }
 #endif
-   t3dp->buffer = XCreatePixmap (display, window, t3dp->width ,
-				 t3dp->height , t3dp->depth);
-
    if (MI_IS_VERBOSE(mi))
      {
 	(void) printf("Time 3D drawing ");
@@ -621,15 +708,18 @@ void t3d_initialize( ModeInfo* mi )
      }
 
 #ifdef FASTCOPY
-  t3dp->fastcircles = XCreatePixmap (display, window, fastcw,
-				     t3dp->fastch+1, t3dp->depth);
-  t3dp->fastmask    = XCreatePixmap (display, window, fastcw,
-				     t3dp->fastch+1, t3dp->depth);
+   if (((t3dp->fastcircles = XCreatePixmap (display, window,
+		fastcw, t3dp->fastch+1, t3dp->depth)) == None) ||
+       ((t3dp->fastmask    = XCreatePixmap (display, window,
+		fastcw, t3dp->fastch+1, t3dp->depth)) == None)) {
+	free_t3d(display, t3dp);
+	return False;
+   }
 #endif
 
   setink(MI_BLACK_PIXEL(mi));
   XFillRectangle (display, t3dp->buffer , t3dp->gc, 0, 0, t3dp->width,
-		  t3dp->height);	
+		  t3dp->height);
 
 #ifdef FASTCOPY
   setink(MI_BLACK_PIXEL(mi));
@@ -640,11 +730,12 @@ void t3d_initialize( ModeInfo* mi )
 #endif
 
    if (MI_IS_VERBOSE(mi))
-     {
+   {
 	(void) printf("move\t%.2f\nwobber\t%.2f\nmag\t%.2f\n",
 	       t3dp->movef, t3dp->wobber, mag );
 	(void) printf("fast\t%i\nmarks\t%i\n", t3dp->fastch, t3dp->maxk);
-     }
+   }
+   return True;
 }
 
 void
@@ -660,6 +751,7 @@ init_t3d(ModeInfo * mi)
 			return;
 	}
 	t3dp = &t3ds[MI_SCREEN(mi)];
+	t3dp->mi = mi;
 
 	if (trackmouse && !t3dp->cursor) {	/* Create an invisible cursor */
 		Pixmap      bit;
@@ -669,25 +761,40 @@ init_t3d(ModeInfo * mi)
 		black.green = 0;
 		black.blue = 0;
 		black.flags = DoRed | DoGreen | DoBlue;
-		bit = XCreatePixmapFromBitmapData(display, window, "\000", 1, 1,
-						  MI_BLACK_PIXEL(mi),
-						  MI_BLACK_PIXEL(mi), 1);
-		t3dp->cursor = XCreatePixmapCursor(display, bit, bit, &black, &black,
-						 0, 0);
+		if ((bit = XCreatePixmapFromBitmapData(display, window,
+				(char *) "\000", 1, 1, MI_BLACK_PIXEL(mi),
+				MI_BLACK_PIXEL(mi), 1)) == None) {
+			free_t3d(display, t3dp);
+			return;
+		}
+		if ((t3dp->cursor = XCreatePixmapCursor(display, bit, bit,
+				&black, &black, 0, 0)) == None) {
+			XFreePixmap(display, bit);
+			free_t3d(display, t3dp);
+			return;
+		}
 		XFreePixmap(display, bit);
 	}
 	XDefineCursor(display, window, t3dp->cursor);
 
-   t3dp->width = MI_WIDTH(mi);
-   t3dp->height = MI_HEIGHT(mi);
-   t3dp->depth = MI_DEPTH(mi);
+	t3dp->width = MI_WIDTH(mi);
+	t3dp->height = MI_HEIGHT(mi);
+	t3dp->depth = MI_DEPTH(mi);
+	if (t3dp->buffer != None) {
+		XFreePixmap(display, t3dp->buffer);
+		t3dp->buffer = None;
+	}
+	if ((t3dp->buffer = XCreatePixmap (display, window,
+			t3dp->width, t3dp->height, t3dp->depth)) == None) {
+		free_t3d(display, t3dp);
+		return;
+  	}
 
    /* Initialization */
-   if (!t3dp->gc)
-     {
-	t3d_initialize( mi );
-	
-	
+   if (t3dp->gc == None) {
+	if (!t3d_initialize(mi))
+		return;
+
 	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2)
 	  {
 	     XColor      color;
@@ -701,8 +808,11 @@ init_t3d(ModeInfo * mi)
 #endif
 	     t3dp->blackpixel = MI_BLACK_PIXEL(mi);
 	     t3dp->whitepixel = MI_WHITE_PIXEL(mi);
-	     t3dp->cmap = XCreateColormap(display, window, MI_VISUAL(mi),
-					  AllocNone);
+	     if ((t3dp->cmap = XCreateColormap(display, window, MI_VISUAL(mi),
+			AllocNone)) == None) {
+		free_t3d(display, t3dp);
+		return;
+	     }
 	     XSetWindowColormap(display, window, t3dp->cmap);
 	     (void) XParseColor(display, t3dp->cmap, "black", &color);
 	     (void) XAllocColor(display, t3dp->cmap, &color);
@@ -718,11 +828,11 @@ init_t3d(ModeInfo * mi)
 	     (void) XAllocColor(display, t3dp->cmap, &color);
 	     MI_FG_PIXEL(mi) = color.pixel;
 #endif
-	     t3dp->colors = 0;
+	     t3dp->colors = NULL;
 	     t3dp->ncolors = 0;
      	  }
      }
-   t3dp->color_offset = NRAND(29);
+     t3dp->color_offset = NRAND(29);
 
 /*Set up t2d data */
    t3dp->direction = (LRAND() & 1) ? 1 : -1;
@@ -731,11 +841,12 @@ init_t3d(ModeInfo * mi)
 
    if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
 /* Set up colour map */
-		if (t3dp->colors && t3dp->ncolors && !t3dp->no_colors)
-			free_colors(display, t3dp->cmap, t3dp->colors, t3dp->ncolors);
-		if (t3dp->colors)
+		if (t3dp->colors != NULL) {
+			if (t3dp->ncolors && !t3dp->no_colors)
+				free_colors(display, t3dp->cmap, t3dp->colors, t3dp->ncolors);
 			(void) free((void *) t3dp->colors);
-		t3dp->colors = 0;
+			t3dp->colors = NULL;
+		}
 		t3dp->ncolors = MI_NCOLORS(mi);
 		if (t3dp->ncolors < 2)
 			t3dp->ncolors = 2;
@@ -745,9 +856,13 @@ init_t3d(ModeInfo * mi)
 			t3dp->mono_p = False;
 
 		if (t3dp->mono_p)
-			t3dp->colors = 0;
+			t3dp->colors = NULL;
 		else
-			t3dp->colors = (XColor *) malloc(sizeof (*t3dp->colors) * (t3dp->ncolors + 1));
+			if ((t3dp->colors = (XColor *) malloc(sizeof (*t3dp->colors) *
+					(t3dp->ncolors + 1))) == NULL) {
+				free_t3d(display, t3dp);
+				return;
+			}
 		t3dp->cycle_p = has_writable_cells(mi);
 		if (t3dp->cycle_p) {
 			if (MI_IS_FULLRANDOM(mi)) {
@@ -804,8 +919,11 @@ init_t3d(ModeInfo * mi)
 
    t3d_init_3d( mi );
 
-	 if (!t3dp->zeit)
-     t3dp->zeit = (struct tm *)malloc(sizeof(struct tm));
+   if (t3dp->zeit == NULL)
+     if ((t3dp->zeit = (struct tm *)malloc(sizeof(struct tm))) == NULL) {
+	free_t3d(display, t3dp);
+	return;
+     }
 
    t3d_init_kugel( mi );
 
@@ -819,7 +937,6 @@ init_t3d(ModeInfo * mi)
    t3d_viewpoint( mi );
 
    MI_CLEARWINDOW(mi);
-
 }
 
 void
@@ -828,41 +945,8 @@ release_t3d(ModeInfo * mi)
 	if (t3ds != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			Display    *display = MI_DISPLAY(mi);
-			t3dstruct *t3dp = &t3ds[screen];
-
-			if (t3dp->cursor)
-				XFreeCursor(display, t3dp->cursor);
-
-		   if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2)
-		     {
-			MI_WHITE_PIXEL(mi) = t3dp->whitepixel;
-			MI_BLACK_PIXEL(mi) = t3dp->blackpixel;
-#ifndef STANDALONE
-			MI_FG_PIXEL(mi) = t3dp->fg;
-			MI_BG_PIXEL(mi) = t3dp->bg;
-#endif
-			if (t3dp->colors && t3dp->ncolors && !t3dp->no_colors)
-			  free_colors(display, t3dp->cmap, t3dp->colors,
-				      t3dp->ncolors);
-			if (t3dp->colors)
-			  (void) free((void *) t3dp->colors);
-			if (t3dp->cmap)
-			XFreeColormap(display, t3dp->cmap);
-		     }
-
-		   XFreeGC(display, t3dp->gc );
-		   XFreePixmap(display, t3dp->buffer );
-#ifdef FASTCOPY
-		   XFreeGC(display, t3dp->orgc );
-		   XFreeGC(display, t3dp->andgc );
-		   XFreePixmap(display, t3dp->fastcircles );
-		   XFreePixmap(display, t3dp->fastmask );
-#endif
-			if (t3dp->zeit)
-		     free( t3dp->zeit );
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_t3d(MI_DISPLAY(mi), &t3ds[screen]);
 		(void) free((void *) t3ds);
 		t3ds = NULL;
 	}
@@ -873,17 +957,21 @@ draw_t3d(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	t3dstruct *t3dp = &t3ds[MI_SCREEN(mi)];
-   double dtime;
-   int button;
+	double dtime;
+	int button;
+	t3dstruct *t3dp;
 
-   if (t3dp->no_colors)
-     {
-	release_t3d(mi);
-        init_t3d(mi);
-        return;
-     }
+	if (t3ds == NULL)
+		return;
+	t3dp = &t3ds[MI_SCREEN(mi)];
+ 	if (t3dp->zeit == NULL)
+		return;
 
+	if (t3dp->no_colors) {
+		free_t3d(display, t3dp);
+		init_t3d(mi);
+		return;
+	}
 
    MI_IS_DRAWN(mi) = True;
 
@@ -935,7 +1023,7 @@ draw_t3d(ModeInfo * mi)
 	    }
 	}
 
-   XSync(display,0);
+   XFlush(display);
 
    XCopyArea (display, t3dp->buffer, window, t3dp->gc, 0, 0, t3dp->width,
 	      t3dp->height, 0, 0);
@@ -984,7 +1072,7 @@ draw_t3d(ModeInfo * mi)
      }
 
    if ((t3dp->px>0)&&(t3dp->px<t3dp->width)&&(t3dp->py>0)&&
-       (t3dp->py<t3dp->height) )		
+       (t3dp->py<t3dp->height) )
 	  {
 	    if ((t3dp->px !=t3dp->startx)&&( button == 2 ))
 	      {
@@ -1013,7 +1101,7 @@ draw_t3d(ModeInfo * mi)
 	  }
 	if (!( button == 1 )&&!( button == 3 ))
 	  t3dp->vturn=0;
-	
+
 	t3dp->speed=t3dp->speed+t3dp->speed*t3dp->vspeed;
 	if ((t3dp->speed<0.0000001) &&(t3dp->vspeed>0.000001)) t3dp->speed=0.000001;
 	t3dp->vspeed=.1*t3dp->vspeed;

@@ -48,6 +48,8 @@ String[] booleanOption={
 "-inroot ",
 "-timeelapsed ",
 "-install ",
+"-wireframe ",
+"-showfps ",
 "-use3d "};
 Checkbox bopt[]=new Checkbox[15];
  public void init()

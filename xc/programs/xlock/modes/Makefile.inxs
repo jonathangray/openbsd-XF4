@@ -94,9 +94,9 @@ sphere.o spiral.o spline.o \
 star.o strange.o swarm.o swirl.o \
 thornbird.o triangle.o tube.o turtle.o \
 vines.o voters.o \
-wator.o wire.o world.o worm.o \
-cartoon.o blank.o bomb.o
-# @XPM@XLOCKXPMOBJS = cartoon.o
+wator.o wire.o world.o worm.o xcl.o \
+blank.o bomb.o
+# @XPM@XLOCKXPMOBJS =
 # @BOMB@XLOCKBOMBOBJS = $(DOM)bomb.o
 # XLOCKUTILMODEOBJS = $(XLOCKBOMBOBJS)$(S)$(DOM)blank.o random.o
 XLOCKALLMODEOBJS = $(XLOCKMODEOBJS)$(S)\
@@ -127,9 +127,9 @@ sphere.c spiral.c spline.c \
 star.c strange.c swarm.c swirl.c \
 thornbird.c triangle.c tube.c turtle.c \
 vines.c voters.c \
-wator.c wire.c world.c worm.c \
-cartoon.c blank.c bomb.c
-# @XPM@XLOCKXPMSRCS = cartoon.c
+wator.c wire.c world.c worm.c xcl.c \
+blank.c bomb.c
+# @XPM@XLOCKXPMSRCS =
 # @BOMB@XLOCKBOMBSRCS = bomb.c
 # XLOCKUTILMODESRCS = $(XLOCKBOMBSRCS) blank.c random.c
 SRCS = $(XLOCKUTILSRCS) $(XLOCKXPMSRCS) $(XLOCKGLSRCS) \
@@ -153,9 +153,9 @@ sphere spiral spline \
 star strange swarm swirl \
 thornbird triangle tube turtle \
 vines voters \
-wator wire world worm \
-cartoon blank bomb
-# @XPM@XLOCKXPMEXES = cartoon
+wator wire world worm xcl \
+blank bomb
+# @XPM@XLOCKXPMEXES =
 # @BOMB@XLOCKBOMBEXES = bomb
 # XLOCKUTILMODEEXES = $(XLOCKBOMBEXES) blank random
 EXES = $(XLOCKUTILEXES) $(XLOCKXPMEXES) $(XLOCKGLEXES) \
@@ -441,9 +441,6 @@ bubble:		bubble.o		$(XLOCK_OBJS)
 bug:		bug.o		$(XLOCK_OBJS) $(AUTOMATA)
 	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(AUTOMATA) $(HACK_LIBS)
 
-cartoon:		cartoon.o		$(XLOCK_OBJS)
-	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(XPM_LIBS)
-
 clock:		clock.o		$(XLOCK_OBJS)
 	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(HACK_LIBS)
 
@@ -652,6 +649,9 @@ world:   world.o	   $(XLOCK_OBJS)
 	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(HACK_LIBS)
 
 worm:   worm.o	   $(XLOCK_OBJS)
+	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(HACK_LIBS)
+
+xcl:    xcl.o	   $(XLOCK_OBJS)
 	$(CC_HACK) -o $@ $@.o	$(XLOCK_OBJS) $(HACK_LIBS)
 
 ##############################################################################
@@ -1718,4 +1718,16 @@ worm.o: $(UTILS_SRC)/hsv.h
 worm.o: $(UTILS_SRC)/colors.h
 worm.o: $(UTILS_SRC)/grabscreen.h
 worm.o: $(UTILS_SRC)/visual.h
-
+xcl.o: $(HACK_SRC)/../xlockmore/xlock/xlockmore.h
+xcl.o: $(HACK_SRC)/../xlockmore/xlock/xlock.h
+xcl.o: $(HACK_SRC)/../config.h
+xcl.o: $(HACK_SRC)/../xlockmore/xlock/mode.h
+xcl.o: $(HACK_SRC)/../hacks/screenhack.h
+xcl.o: $(UTILS_SRC)/yarandom.h
+xcl.o: $(UTILS_SRC)/usleep.h
+xcl.o: $(UTILS_SRC)/resources.h
+xcl.o: $(UTILS_SRC)/hsv.h
+xcl.o: $(UTILS_SRC)/colors.h
+xcl.o: $(UTILS_SRC)/grabscreen.h
+xcl.o: $(UTILS_SRC)/visual.h
+xcl.o: $(UTILS_SRC)/erase.h

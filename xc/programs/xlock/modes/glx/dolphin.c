@@ -1,7 +1,7 @@
 /* atlantis --- Shows moving 3D sea animals */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)dolphin.c	1.3 2000/01/28 xlockmore";
+static const char sccsid[] = "@(#)dolphin.c	5.01 2001/04/17 xlockmore";
 
 #endif
 
@@ -80,6 +80,7 @@ static const char sccsid[] = "@(#)dolphin.c	1.3 2000/01/28 xlockmore";
 #ifdef MODE_atlantis
 
 #ifdef STANDALONE
+#include <math.h>
 #include <GL/glx.h>
 #endif
 
@@ -1955,9 +1956,12 @@ DrawDolphin(fishRec * fish, int wire)
 
 	pitch = fish->v * sin((fish->htail + 180.0) * RRAD);
 
+#if 0
+	/* Dead code */
 	if (fish->v > 2.0) {
 		chomp = -(fish->v - 2.0) * 200.0;
 	}
+#endif
 	chomp = 100.0;
 
 	P012[1] = iP012[1] + seg5;

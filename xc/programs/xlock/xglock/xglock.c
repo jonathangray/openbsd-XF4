@@ -1487,6 +1487,9 @@ main(gint argc, gchar *argv[])
     nb_genOpt = sizeof (generalOpt) / sizeof (generalOpt[0]);
     nb_fntColorOpt = sizeof (fntcolorOpt) / sizeof (fntcolorOpt[0]);
 
+#ifdef USE_MB
+    gtk_set_locale();
+#endif
     gtk_init(&argc, &argv);
     gtk_rc_parse(XGLOCKRC_FILE);
     gtk_rc_parse("xglockrc");

@@ -14,6 +14,6 @@
 
 #if HAVE_GETTIMEOFDAY && defined( DEBUG )
    GETTIMEOFDAY(&tp);
-   t_prev = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+   t_prev = (int) (tp.tv_sec * 1000 + tp.tv_usec / 1000);
    (void) printf( "Elapsed time in %s : %d\n" , ERASEMODE , t_prev - t_0 );
 #endif

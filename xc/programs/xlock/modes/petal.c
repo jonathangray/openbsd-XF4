@@ -2,7 +2,7 @@
 /* petal --- mathematical flowers */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)petal.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)petal.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -20,12 +20,13 @@ static const char sccsid[] = "@(#)petal.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 12-Aug-95: xlock version
- * Jan-95: xscreensaver version (Jamie Zawinski <jwz@jwz.org>)
- * 24-Jun-94: X11 version (Dale Moore  <Dale.Moore@cs.cmu.edu>)
- *            Based on a program for some old PDP-11 Graphics
- *            Display Processors at CMU.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 12-Aug-1995: xlock version
+ * Jan-1995: xscreensaver version (Jamie Zawinski <jwz@jwz.org>)
+ * 24-Jun-1994: X11 version (Dale Moore  <Dale.Moore@cs.cmu.edu>)
+ *              Based on a program for some old PDP-11 Graphics
+ *              Display Processors at CMU.
  */
 
 /*-
@@ -59,7 +60,7 @@ static const char sccsid[] = "@(#)petal.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_petal
 
 ModeSpecOpt petal_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   petal_description =
@@ -297,7 +298,10 @@ init_petal(ModeInfo * mi)
 	} else if (pp->lines < MINLINES)
 		pp->lines = MINLINES;
 	if (!pp->points)
-		pp->points = (XPoint *) malloc((pp->lines + 1) * sizeof (XPoint));
+		if ((pp->points = (XPoint *) malloc((pp->lines + 1) *
+				sizeof (XPoint))) == NULL) {
+			return;
+		}
 	pp->width = MI_WIDTH(mi);
 	pp->height = MI_HEIGHT(mi);
 
@@ -316,10 +320,13 @@ init_petal(ModeInfo * mi)
 void
 draw_petal(ModeInfo * mi)
 {
-	petalstruct *pp = &petals[MI_SCREEN(mi)];
+	petalstruct *pp;
+
+	if (petals == NULL)
+		return;
+	pp = &petals[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (++pp->time > MI_CYCLES(mi))
 		init_petal(mi);
 	else
@@ -346,7 +353,11 @@ release_petal(ModeInfo * mi)
 void
 refresh_petal(ModeInfo * mi)
 {
-	petalstruct *pp = &petals[MI_SCREEN(mi)];
+	petalstruct *pp;
+
+	if (petals == NULL)
+		return;
+	pp = &petals[MI_SCREEN(mi)];
 
 	if (pp->painted) {
 		MI_CLEARWINDOW(mi);

@@ -172,6 +172,8 @@ hup_handler(int interrupt)
 	message("malloc/free usage dump:");
 
 	(void) fprintf(dump_file,
+		       "Dumping on interrupt %d.\n", interrupt);
+	(void) fprintf(dump_file,
 		       "=================================================\n");
 	(void) fprintf(dump_file,
 		       "Caller      |   Number  |    Size   |    Heap   |\n");
@@ -225,7 +227,7 @@ static void *
 allocate_memory(ULONG length, void *caller_addr)
 {
 	mem_type   *temp;
-	mem_type   *new;
+	mem_type   *cnew;
 	mem_type   *last;
 	ULONG       req_size;
 	ULONG       incr;
@@ -291,12 +293,12 @@ allocate_memory(ULONG length, void *caller_addr)
 	}
 	/* if space is large enough to split */
 	if ((temp->hdr.chunk_size - req_size) > SPLIT_MIN) {
-		new = (mem_type *) ((char *) temp + req_size);
-		new->hdr.check_mark = FREE_MARKER;
-		new->hdr.chunk_size = temp->hdr.chunk_size - req_size;
-		new->hdr.caller = NULL;
-		new->hdr.next = temp->hdr.next;
-		temp->hdr.next = new;
+		cnew = (mem_type *) ((char *) temp + req_size);
+		cnew->hdr.check_mark = FREE_MARKER;
+		cnew->hdr.chunk_size = temp->hdr.chunk_size - req_size;
+		cnew->hdr.caller = NULL;
+		cnew->hdr.next = temp->hdr.next;
+		temp->hdr.next = cnew;
 		temp->hdr.chunk_size = req_size;
 	}
 	/* remove block from the free list */
@@ -447,7 +449,7 @@ realloc(void *ptr, ULONG new_length)
 	void       *caller_addr = (void *) *((ULONG *) & ptr - 1);
 	mem_type   *temp;
 	ULONG       alloc_length;
-	void       *new;
+	void       *cnew;
 
 	if (new_length == 0) {
 		if (ptr)
@@ -476,10 +478,10 @@ realloc(void *ptr, ULONG new_length)
 		temp->data[new_length] = EOD_MARKER;
 	} else {
 		/* we need a new chunk */
-		new = allocate_memory(new_length, caller_addr);
-		(void) memcpy(new, ptr, temp->hdr.used_length);
+		cnew = allocate_memory(new_length, caller_addr);
+		(void) memcpy(cnew, ptr, temp->hdr.used_length);
 		(void) free(ptr);
-		ptr = new;
+		ptr = cnew;
 	}
 
 	return (ptr);

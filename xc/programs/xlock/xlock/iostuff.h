@@ -24,6 +24,7 @@
 #define FALLBACK_FONTNAME "fixed"
 #ifndef DEF_MESSAGEFONT
 #define DEF_MESSAGEFONT "-*-times-*-*-*-*-18-*-*-*-*-*-*-*"
+#define DEF_MESSAGEFONTSET "-*-*-medium-r-normal-*-18-*-*-*-*-*-*-*"
 #endif
 #ifndef DEF_PROGRAM		/* Try the -o option ;) */
 #define DEF_PROGRAM "fortune -s"
@@ -36,9 +37,15 @@
 #define IS_XPM 4
 #define IS_XPMFILE 5
 #define IS_RASTERFILE 6
+#define IS_MAGICKFILE 7
+
+
+#ifdef __cplusplus
+  extern "C" {
+#endif
 
 extern FILE *my_fopen(char *, const char *);
-
+int index_dir(char *str1, char *substr);
 extern void get_dir(char *fullpath, char *dir, char *filename);
 #if HAVE_DIRENT_H
 extern int  sel_image(struct dirent *name);
@@ -68,5 +75,10 @@ extern void getPixmap(ModeInfo * mi, Drawable drawable,
 	  int default_width, int default_height, unsigned char *default_bits,
 		      int *width, int *height, Pixmap * pixmap,
 		      int *graphics_format);
+
+extern char * getModeFont(char *infont);
+#ifdef __cplusplus
+  }
+#endif
 
 #endif /* _FILE_H_ */

@@ -2,7 +2,7 @@
 /* flame --- recursive fractal cosmic flames */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)flame.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)flame.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,14 +22,15 @@ static const char sccsid[] = "@(#)flame.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 11-Aug-95: Got rid of polyominal since it was crashing xlock on some
- *            machines.
- * 01-Jun-95: This should look more like the original with some updates by
- *            Scott Draves.
- * 27-Jun-91: vary number of functions used.
- * 24-Jun-91: fixed portability problem with integer mod (%).
- * 06-Jun-91: Written, received from Scott Draves <spot@cs.cmu.edu>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 11-Aug-1995: Got rid of polynomial since it was crashing xlock on some
+ *              machines.
+ * 01-Jun-1995: This should look more like the original with some updates by
+ *              Scott Draves.
+ * 27-Jun-1991: vary number of functions used.
+ * 24-Jun-1991: fixed portability problem with integer mod (%).
+ * 06-Jun-1991: Written, received from Scott Draves <spot@cs.cmu.edu>
  */
 
 #ifdef STANDALONE
@@ -52,7 +53,7 @@ static const char sccsid[] = "@(#)flame.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_flame
 
 ModeSpecOpt flame_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   flame_description =
@@ -290,8 +291,12 @@ void
 draw_flame(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
-	flamestruct *fp = &flames[MI_SCREEN(mi)];
 	int         i, j, k;
+	flamestruct *fp;
+
+	if (flames == NULL)
+		return;
+	fp = &flames[MI_SCREEN(mi)];
 
 	if (!(fp->cur_level++ % fp->max_levels)) {
 		MI_CLEARWINDOW(mi);

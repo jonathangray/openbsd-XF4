@@ -2,7 +2,7 @@
 /* mountain -- square grid mountains */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)mountain.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)mountain.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,9 @@ static const char sccsid[] = "@(#)mountain.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 1995: Written
  */
 
 #ifdef STANDALONE
@@ -45,7 +47,7 @@ static const char sccsid[] = "@(#)mountain.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_mountain
 
 ModeSpecOpt mountain_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   mountain_description =
@@ -72,10 +74,9 @@ typedef struct {
 	int         stage;
 	int         h[WORLDWIDTH][WORLDWIDTH];
 	long        time;	/* up time */
-	int         first;
 	Bool        wireframe;
 	Bool        joke;
-	GC          stippled_GC;
+	GC          stippledGC;
 } mountainstruct;
 
 static mountainstruct *mountains = NULL;
@@ -167,9 +168,9 @@ drawamountain(ModeInfo * mi)
 void
 init_mountain(ModeInfo * mi)
 {
-	mountainstruct *mp;
 	int         i, j, x, y;
 	XGCValues   gcv;
+	mountainstruct *mp;
 
 	if (mountains == NULL) {
 		if ((mountains = (mountainstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -177,6 +178,7 @@ init_mountain(ModeInfo * mi)
 			return;
 	}
 	mp = &mountains[MI_SCREEN(mi)];
+
 	mp->width = MI_WIDTH(mi);
 	mp->height = MI_HEIGHT(mi);
 	mp->pixelmode = (mp->width + mp->height < 200);
@@ -191,13 +193,12 @@ init_mountain(ModeInfo * mi)
 		mp->wireframe = MI_IS_WIREFRAME(mi);
 	}
 
-	if (!mp->first) {
-		mp->first = 1;
+	if (mp->stippledGC == None) {
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
-
-		mp->stippled_GC = XCreateGC(MI_DISPLAY(mi), MI_WINDOW(mi),
-					  GCForeground | GCBackground, &gcv);
+		if ((mp->stippledGC = XCreateGC(MI_DISPLAY(mi), MI_WINDOW(mi),
+					  GCForeground | GCBackground, &gcv)) == None)
+			return;
 	}
 	MI_CLEARWINDOW(mi);
 
@@ -232,7 +233,13 @@ init_mountain(ModeInfo * mi)
 void
 draw_mountain(ModeInfo * mi)
 {
-	mountainstruct *mp = &mountains[MI_SCREEN(mi)];
+	mountainstruct *mp;
+
+	if (mountains == NULL)
+			return;
+	mp = &mountains[MI_SCREEN(mi)];
+	if (mp->stippledGC == NULL)
+			return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -259,8 +266,8 @@ release_mountain(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			mountainstruct *mp = &mountains[screen];
 
-			if (mp->stippled_GC)
-				XFreeGC(MI_DISPLAY(mi), mp->stippled_GC);
+			if (mp->stippledGC)
+				XFreeGC(MI_DISPLAY(mi), mp->stippledGC);
 		}
 		(void) free((void *) mountains);
 		mountains = NULL;
@@ -270,7 +277,11 @@ release_mountain(ModeInfo * mi)
 void
 refresh_mountain(ModeInfo * mi)
 {
-	mountainstruct *mp = &mountains[MI_SCREEN(mi)];
+	mountainstruct *mp;
+
+	if (mountains == NULL)
+			return;
+	mp = &mountains[MI_SCREEN(mi)];
 
 	MI_CLEARWINDOW(mi);
 	mp->x = 0;

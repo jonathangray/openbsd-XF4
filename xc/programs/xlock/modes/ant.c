@@ -5,7 +5,7 @@
  */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)ant.c	4.11 98/06/18 xlockmore";
+static const char sccsid[] = "@(#)ant.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,21 +25,22 @@ static const char sccsid[] = "@(#)ant.c	4.11 98/06/18 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 16-Apr-97: -neighbors 3 and 8 added
- * 01-Jan-97: Updated ant.c to handle more kinds of ants.  Thanks to
- *            J Austin David <Austin.David@tlogic.com>.  Check it out in
- *            java at http://havoc.gtf.gatech.edu/austin  He thought up the
- *            new Ladder ant.
- * 04-Apr-96: -neighbors 6 runtime-time option added for hexagonal ants
- *            (bees), coded from an idea of Jim Propp's in Science News,
- *            Oct 28, 1995 VOL. 148 page 287
- * 20-Sep-95: Memory leak in ant fixed.  Now random colors.
- * 05-Sep-95: Coded from A.K. Dewdney's "Computer Recreations", Scientific
- *            American Magazine" Sep 1989 pp 180-183, Mar 1990 p 121
- *            Also used Ian Stewart's Mathematical Recreations, Scientific
- *            American Jul 1994 pp 104-107
- *            also used demon.c and life.c as a guide.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 16-Apr-1997: -neighbors 3 and 8 added
+ * 01-Jan-1997: Updated ant.c to handle more kinds of ants.  Thanks to
+ *              J Austin David <Austin.David@tlogic.com>.  Check it out in
+ *              java at http://havoc.gtf.gatech.edu/austin  He thought up the
+ *              new Ladder ant.
+ * 04-Apr-1996: -neighbors 6 runtime-time option added for hexagonal ants
+ *              (bees), coded from an idea of Jim Propp's in Science News,
+ *              Oct 28, 1995 VOL. 148 page 287
+ * 20-Sep-1995: Memory leak in ant fixed.  Now random colors.
+ * 05-Sep-1995: Coded from A.K. Dewdney's "Computer Recreations", Scientific
+ *              American Magazine" Sep 1989 pp 180-183, Mar 1990 p 121
+ *              Also used Ian Stewart's Mathematical Recreations, Scientific
+ *              American Jul 1994 pp 104-107
+ *              also used demon.c and life.c as a guide.
  */
 
 /*-
@@ -90,27 +91,27 @@ static Bool sharpturn;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".ant.neighbors", XrmoptionSepArg, (caddr_t) NULL},
-	{"-truchet", ".ant.truchet", XrmoptionNoArg, (caddr_t) "on"},
-	{"+truchet", ".ant.truchet", XrmoptionNoArg, (caddr_t) "off"},
-	{"-eyes", ".ant.eyes", XrmoptionNoArg, (caddr_t) "on"},
-	{"+eyes", ".ant.eyes", XrmoptionNoArg, (caddr_t) "off"},
-	{"-sharpturn", ".ant.sharpturn", XrmoptionNoArg, (caddr_t) "on"},
-	{"+sharpturn", ".ant.sharpturn", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-neighbors", (char *) ".ant.neighbors", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-truchet", (char *) ".ant.truchet", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+truchet", (char *) ".ant.truchet", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-eyes", (char *) ".ant.eyes", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+eyes", (char *) ".ant.eyes", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-sharpturn", (char *) ".ant.sharpturn", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+sharpturn", (char *) ".ant.sharpturn", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int},
-	{(caddr_t *) & truchet, "truchet", "Truchet", DEF_TRUCHET, t_Bool},
-	{(caddr_t *) & eyes, "eyes", "Eyes", DEF_EYES, t_Bool},
-   {(caddr_t *) & sharpturn, "sharpturn", "SharpTurn", DEF_SHARPTURN, t_Bool}
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int},
+	{(caddr_t *) & truchet, (char *) "truchet", (char *) "Truchet", (char *) DEF_TRUCHET, t_Bool},
+	{(caddr_t *) & eyes, (char *) "eyes", (char *) "Eyes", (char *) DEF_EYES, t_Bool},
+   {(caddr_t *) & sharpturn, (char *) "sharpturn", (char *) "SharpTurn", (char *) DEF_SHARPTURN, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3 or 12"},
-	{"-/+truchet", "turn on/off Truchet lines"},
-	{"-/+eyes", "turn on/off eyes"},
-	{"-/+sharpturn", "turn on/off sharp turns (6, 8 or 12 neighbors only)"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3 or 12"},
+	{(char *) "-/+truchet", (char *) "turn on/off Truchet lines"},
+	{(char *) "-/+eyes", (char *) "turn on/off eyes"},
+	{(char *) "-/+sharpturn", (char *) "turn on/off sharp turns (6, 8 or 12 neighbors only)"}
 };
 
 ModeSpecOpt ant_opts =
@@ -118,16 +119,18 @@ ModeSpecOpt ant_opts =
 
 #ifdef USE_MODULES
 ModStruct   ant_description =
-{"ant", "init_ant", "draw_ant", "release_ant",
- "refresh_ant", "init_ant", NULL, &ant_opts,
- 1000, -3, 40000, -12, 64, 1.0, "",
- "Shows Langton's and Turk's generalized ants", 0, NULL};
+{(char *) "ant",
+ (char *) "init_ant", (char *) "draw_ant", (char *) "release_ant",
+ (char *) "refresh_ant", (char *) "init_ant", NULL, &ant_opts,
+ 1000, -3, 40000, -12, 64, 1.0, (char *) "",
+ (char *) "Shows Langton's and Turk's generalized ants", 0, NULL};
 
 #endif
 
 #define ANTBITS(n,w,h)\
-  ap->pixmaps[ap->init_bits++]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1)
+  if ((ap->pixmaps[ap->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_ant(display,ap); return;} else {ap->init_bits++;}
 
 /* If you change the table you may have to change the following 2 constants */
 #define STATES 2
@@ -965,6 +968,33 @@ getTurk(ModeInfo * mi, int i)
 			       ap->n, ap->neighbors, number, ap->ncolors);
 }
 
+static void
+free_ant(Display *display, antfarmstruct *ap)
+{
+	int         shade;
+
+	if (ap->stippledGC != None) {
+		XFreeGC(display, ap->stippledGC);
+		ap->stippledGC = None;
+	}
+	for (shade = 0; shade < ap->init_bits; shade++) {
+		XFreePixmap(display, ap->pixmaps[shade]);
+	}
+	ap->init_bits = 0;
+	if (ap->tape != NULL) {
+		(void) free((void *) ap->tape);
+		ap->tape = NULL;
+	}
+	if (ap->ants != NULL) {
+		(void) free((void *) ap->ants);
+		ap->ants = NULL;
+	}
+	if (ap->truchet_state != NULL) {
+		(void) free((void *) ap->truchet_state);
+		ap->truchet_state = NULL;
+	}
+}
+
 void
 init_ant(ModeInfo * mi)
 {
@@ -973,7 +1003,7 @@ init_ant(ModeInfo * mi)
 	int         size = MI_SIZE(mi);
 	antfarmstruct *ap;
 	int         col, row, dir;
-	long        i;
+	int         i;
 
 	if (antfarms == NULL) {
 		if ((antfarms = (antfarmstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -981,17 +1011,23 @@ init_ant(ModeInfo * mi)
 			return;
 	}
 	ap = &antfarms[MI_SCREEN(mi)];
+
 	ap->redrawing = 0;
 	if (MI_NPIXELS(mi) <= 2) {
 		if (ap->stippledGC == None) {
 			XGCValues   gcv;
 
 			gcv.fill_style = FillOpaqueStippled;
-			ap->stippledGC = XCreateGC(display, window, GCFillStyle, &gcv);
+			if ((ap->stippledGC = XCreateGC(display, window, GCFillStyle,
+					&gcv)) == None) {
+				free_ant(display, ap);
+				return;
+			}
 		}
 		if (ap->init_bits == 0) {
-			for (i = 1; i < NUMSTIPPLES; i++)
+			for (i = 1; i < NUMSTIPPLES; i++) {
 				ANTBITS(stipples[i], STIPPLESIZE, STIPPLESIZE);
+			}
 		}
 	}
 	ap->generation = 0;
@@ -1052,7 +1088,7 @@ init_ant(ModeInfo * mi)
 		ap->ncols = nccols / 2;
 		ap->nrows = 2 * (ncrows / 4);
 		ap->xb = (ap->width - ap->xs * nccols) / 2 + ap->xs / 2;
-		ap->yb = (ap->height - ap->ys * (ncrows / 2) * 2) / 2 + ap->ys;
+		ap->yb = (ap->height - ap->ys * (ncrows / 2) * 2) / 2 + ap->ys - 2;
 		for (i = 0; i < 6; i++) {
 			ap->shape.hexagon[i].x = (ap->xs - 1) * hexagonUnit[i].x;
 			ap->shape.hexagon[i].y = ((ap->ys - 1) * hexagonUnit[i].y / 2) * 4 / 3;
@@ -1140,17 +1176,27 @@ init_ant(ModeInfo * mi)
 		for (i = 0; i < (int) ap->ncolors - 1; i++)
 			ap->colors[i] = (unsigned char) (NRAND(MI_NPIXELS(mi)) +
 			     i * MI_NPIXELS(mi)) / ((int) (ap->ncolors - 1));
-	if (ap->ants == NULL)
-		ap->ants = (antstruct *) malloc(ap->n * sizeof (antstruct));
-	if (ap->tape != NULL)
+	if (ap->ants == NULL) {
+		if ((ap->ants = (antstruct *) malloc(ap->n * sizeof (antstruct))) ==
+				NULL) {
+			free_ant(display, ap);
+			return;
+		}
+	}
+	if (ap->tape != NULL) 
 		(void) free((void *) ap->tape);
-	ap->tape = (unsigned char *)
-		calloc(ap->ncols * ap->nrows, sizeof (unsigned char));
-
+	if ((ap->tape = (unsigned char *) calloc(ap->ncols * ap->nrows,
+			sizeof (unsigned char))) == NULL) {
+		free_ant(display, ap);
+		return;
+	}
 	if (ap->truchet_state != NULL)
 		(void) free((void *) ap->truchet_state);
-	ap->truchet_state = (unsigned char *)
-		calloc(ap->ncols * ap->nrows, sizeof (unsigned char));
+	if ((ap->truchet_state = (unsigned char *) calloc(ap->ncols * ap->nrows,
+			sizeof (unsigned char))) == NULL) {
+		free_ant(display, ap);
+		return;
+	}
 
 	row = ap->nrows / 2;
 	col = ap->ncols / 2;
@@ -1175,15 +1221,20 @@ init_ant(ModeInfo * mi)
 void
 draw_ant(ModeInfo * mi)
 {
-	antfarmstruct *ap = &antfarms[MI_SCREEN(mi)];
 	antstruct  *anant;
 	statestruct *status;
 	int         i, state_pos, tape_pos;
 	unsigned char color;
 	short       chg_dir, old_dir;
+	antfarmstruct *ap;
+
+	if (antfarms == NULL)
+		return;
+	ap = &antfarms[MI_SCREEN(mi)];
+	if (ap->ants == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	ap->painted = True;
 	for (i = 0; i < ap->n; i++) {
 		anant = &ap->ants[i];
@@ -1270,22 +1321,8 @@ release_ant(ModeInfo * mi)
 	if (antfarms != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			antfarmstruct *ap = &antfarms[screen];
-			int         shade;
-
-			if (ap->stippledGC != None) {
-				XFreeGC(MI_DISPLAY(mi), ap->stippledGC);
-			}
-			for (shade = 0; shade < ap->init_bits; shade++)
-				XFreePixmap(MI_DISPLAY(mi), ap->pixmaps[shade]);
-			if (ap->tape != NULL)
-				(void) free((void *) ap->tape);
-			if (ap->ants != NULL)
-				(void) free((void *) ap->ants);
-			if (ap->truchet_state != NULL)
-				(void) free((void *) ap->truchet_state);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_ant(MI_DISPLAY(mi), &antfarms[screen]);
 		(void) free((void *) antfarms);
 		antfarms = NULL;
 	}
@@ -1294,7 +1331,11 @@ release_ant(ModeInfo * mi)
 void
 refresh_ant(ModeInfo * mi)
 {
-	antfarmstruct *ap = &antfarms[MI_SCREEN(mi)];
+	antfarmstruct *ap;
+
+	if (antfarms == NULL)
+		return;
+	ap = &antfarms[MI_SCREEN(mi)];
 
 	if (ap->painted) {
 		MI_CLEARWINDOW(mi);

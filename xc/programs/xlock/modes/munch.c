@@ -2,7 +2,7 @@
 /* munch --- munching squares */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)munch.c 4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)munch.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -37,6 +37,9 @@ static const char sccsid[] = "@(#)munch.c 4.07 97/11/24 xlockmore";
  * documentation.  No representations are made about the suitability of this
  * software for any purpose.  It is provided "as is" without express or
  * implied warranty.
+ *
+ * Revision History:
+ * 01-Nov-2000: Allocation checks
  */
 
 /*-
@@ -63,7 +66,7 @@ static const char sccsid[] = "@(#)munch.c 4.07 97/11/24 xlockmore";
 #ifdef MODE_munch
 
 ModeSpecOpt munch_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   munch_description =
@@ -166,7 +169,7 @@ init_munch(ModeInfo * mi)
 	}
 	mp = &munches[MI_SCREEN(mi)];
 
-	if (!mp->gc) {
+	if (mp->gc == None) {
 		if ((mp->gc = XCreateGC(display, MI_WINDOW(mi),
 			     (unsigned long) 0, (XGCValues *) NULL)) == None)
 			return;
@@ -196,10 +199,15 @@ init_munch(ModeInfo * mi)
 void
 draw_munch(ModeInfo * mi)
 {
-	munchstruct *mp = &munches[MI_SCREEN(mi)];
+	munchstruct *mp;
+
+	if (munches == NULL)
+		return;
+	mp = &munches[MI_SCREEN(mi)];
+	if (mp->gc == None)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!mp->t) {		/* New one */
 		int         randflags = (int) LRAND();
 
@@ -242,10 +250,6 @@ draw_munch(ModeInfo * mi)
 void
 release_munch(ModeInfo * mi)
 {
-	Display    *display = MI_DISPLAY(mi);
-
-	MI_CLEARWINDOW(mi);
-
 	if (munches != NULL) {
 		int         screen;
 
@@ -253,9 +257,8 @@ release_munch(ModeInfo * mi)
 			munchstruct *mp = &munches[screen];
 
 			if (mp->gc != NULL)
-				XFreeGC(display, mp->gc);
+				XFreeGC(MI_DISPLAY(mi), mp->gc);
 		}
-
 		(void) free((void *) munches);
 		munches = NULL;
 	}

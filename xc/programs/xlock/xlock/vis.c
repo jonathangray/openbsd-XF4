@@ -9,6 +9,7 @@ static const char sccsid[] = "@(#)vis.c	4.07 97/01/30 xlockmore";
  * Copyright (c) 1991 by Patrick J. Naughton.
  *
  * Revision History:
+ * 19-Feb-01: Separated out pure GL stuff <lassauge@mail.dotcom.fr>
  * 23-Apr-97: Name conflict with xscreensaver, name changed.
  * 15-Oct-97: Separated out and modified.
  *
@@ -68,22 +69,22 @@ static struct visual_class_name {
 } VisualClassName[] = {
 
 	{
-		StaticGray, "StaticGray"
+		StaticGray, (char *) "StaticGray"
 	},
 	{
-		GrayScale, "GrayScale"
+		GrayScale, (char *) "GrayScale"
 	},
 	{
-		StaticColor, "StaticColor"
+		StaticColor, (char *) "StaticColor"
 	},
 	{
-		PseudoColor, "PseudoColor"
+		PseudoColor, (char *) "PseudoColor"
 	},
 	{
-		TrueColor, "TrueColor"
+		TrueColor, (char *) "TrueColor"
 	},
 	{
-		DirectColor, "DirectColor"
+		DirectColor, (char *) "DirectColor"
 	},
 	{
 		-1, NULL	/* Others are 0-5 respectively */
@@ -157,173 +158,6 @@ unsigned long *red_mask, unsigned long *blue_mask, unsigned long *green_mask)
 	return !fixedColors(mi);
 }
 
-#ifdef USE_GL
-
-#include <GL/gl.h>
-#include <GL/glx.h>
-
-static GLXContext *glXContext = NULL;
-static Bool *glOK = NULL;
-
-/*-
- * NOTE WELL:  We _MUST_ destroy the glXContext between each mode
- * in random mode, otherwise OpenGL settings and paramaters from one
- * mode will affect the default initial state for the next mode.
- * BUT, we are going to keep the visual returned by glXChooseVisual,
- * because it will still be good (and because Mesa must keep track
- * of each one, even after XFree(), causing a small memory leak).
- */
-
-static XVisualInfo *
-getGLVisual(Display * display, int screen, XVisualInfo * wantVis, int monochrome)
-{
-	if (wantVis) {
-		/* Use glXGetConfig() to see if wantVis has what we need already. */
-		int         depthBits, doubleBuffer;
-
-		/* glXGetConfig(display, wantVis, GLX_RGBA, &rgbaMode); */
-		glXGetConfig(display, wantVis, GLX_DEPTH_SIZE, &depthBits);
-		glXGetConfig(display, wantVis, GLX_DOUBLEBUFFER, &doubleBuffer);
-
-		if ((depthBits > 0) && doubleBuffer) {
-			return wantVis;
-		} else {
-			XFree((char *) wantVis);	/* Free it up since its useless now. */
-			wantVis = NULL;
-		}
-	}
-	/* If wantVis is useless, try glXChooseVisual() */
-	if (monochrome) {
-		/* Monochrome display - use color index mode */
-		int         attribList[] =
-		{GLX_DOUBLEBUFFER, None};
-
-		return glXChooseVisual(display, screen, attribList);
-	} else {
-		int         attribList[] =
-#if 1
-		{GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1, GLX_BLUE_SIZE, 1,
-		 GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 1, None};
-
-#else
-		{GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 1, None};
-
-#endif
-		return glXChooseVisual(display, screen, attribList);
-	}
-}
-
-/*-
- * The following function should be called on startup of any GL mode.
- * It returns a GLXContext for the calling mode to use with
- * glXMakeCurrent().
- */
-GLXContext *
-init_GL(ModeInfo * mi)
-{
-	Display    *display = MI_DISPLAY(mi);
-	Window      window = MI_WINDOW(mi);
-	int         screen = MI_SCREEN(mi);
-	XVisualInfo xvi_in, *xvi_out;
-	int         num_vis;
-	GLboolean   rgbaMode;
-
-#ifdef FX
-	extern void resetSize(ModeInfo * mi, Bool setGL);
-
-#endif
-
-	if (!glXContext) {
-		glXContext = (GLXContext *) calloc(MI_NUM_SCREENS(mi),
-						   sizeof (GLXContext));
-		if (!glXContext)
-			return NULL;
-	}
-	if (glXContext[screen]) {
-		glXDestroyContext(display, glXContext[screen]);
-		glXContext[screen] = NULL;
-	}
-	xvi_in.screen = screen;
-	xvi_in.visualid = XVisualIDFromVisual(MI_VISUAL(mi));
-	xvi_out = XGetVisualInfo(display, VisualScreenMask | VisualIDMask,
-				 &xvi_in, &num_vis);
-	if (!xvi_out) {
-		(void) fprintf(stderr, "Could not get XVisualInfo\n");
-		return NULL;
-	}
-/*-
- * PURIFY 4.0.1 on SunOS4 and on Solaris 2 reports a 104 byte memory leak on
- * the next line each time that a GL mode is run in random mode when using
- * MesaGL 2.2.  This cumulative leak can cause xlock to eventually crash if
- * available memory is depleted.  This bug is fixed in MesaGL 2.3. */
-	if (glOK && glOK[screen])
-		glXContext[screen] = glXCreateContext(display, xvi_out, 0, GL_TRUE);
-
-	XFree((char *) xvi_out);
-
-	if (!glXContext[screen]) {
-		if (MI_IS_VERBOSE(mi))
-			(void) fprintf(stderr,
-				       "GL could not create rendering context on screen %d.\n", screen);
-		return (NULL);
-	}
-/*-
- * PURIFY 4.0.1 on Solaris2 reports an uninitialized memory read on the next
- * line. PURIFY 4.0.1 on SunOS4 does not report this error. */
-	if (!glXMakeCurrent(display, window, glXContext[screen])) {
-		if (MI_IS_DEBUG(mi)) {
-			(void) fprintf(stderr, "GLX error\n");
-			(void) fprintf(stderr, "If using MesaGL, XGetWindowAttributes is\n");
-			(void) fprintf(stderr, "probably returning a null colormap in\n");
-			(void) fprintf(stderr, "XMesaCreateWindowBuffer in xmesa1.c .\n");
-		}
-		return (NULL);
-	}
-	/* True Color junk */
-	glGetBooleanv(GL_RGBA_MODE, &rgbaMode);
-	if (!rgbaMode) {
-		glIndexi(MI_WHITE_PIXEL(mi));
-		glClearIndex(MI_BLACK_PIXEL(mi));
-	}
-#ifdef FX
-	resetSize(mi, True);
-#endif
-	return (&(glXContext[screen]));
-}
-
-void
-FreeAllGL(ModeInfo * mi)
-{
-	int         scr;
-
-#ifdef FX
-	extern void resetSize(ModeInfo * mi, Bool setGL);
-
-#endif
-
-	if (glXContext) {
-		for (scr = 0; scr < MI_NUM_SCREENS(mi); scr++) {
-			if (glXContext[scr]) {
-				glXDestroyContext(MI_DISPLAY(mi), glXContext[scr]);
-				glXContext[scr] = NULL;
-			}
-		}
-		(void) free((void *) glXContext);
-		glXContext = NULL;
-	}
-#ifdef FX
-	resetSize(mi, False);
-#endif
-
-#if 0
-	if (glOK) {
-		(void) free((void *) glOK);
-		glOK = NULL;
-	}
-#endif
-}
-
-#endif
 
 extern Bool mono;
 
@@ -352,6 +186,7 @@ defaultVisualInfo(Display * display, int screen)
 	vTemplate.depth = DisplayPlanes(display, screen);
 	{
 #if defined( USE_GL )		/* go with what init_GL found */
+	extern Bool *glOK;
 		XVisualInfo *wantVis = NULL;
 
 		if (!glOK) {

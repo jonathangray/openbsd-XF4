@@ -23,6 +23,7 @@ C = .c
 CX = .cc
 S = $(N) $(N)
 #S = ,
+M = .xlk
 
 DU = $(UTILDIR)
 DOU = $(UTILOBJDIR)
@@ -40,34 +41,35 @@ CXG = $(CX) $(DG)
 # O as the object extension
 # S as the separator for object code
 
-@GL@XLOCKGLOBJS = $(DOG)cage$(OG)gears$(O)$(S)\
-@GL@$(DOG)moebius$(OG)morph3d$(O)$(S)\
-@GL@$(DOG)rubik$(OG)stairs$(OG)superquadrics$(O)$(S)\
-@GL@$(DOG)buildlwo$(OG)pipes$(OG)pipeobjs$(O)$(S)\
-@GL@$(DOG)sproingies$(OG)sproingiewrap$(OG)s1_b$(O)$(S)\
-@GL@$(DOG)s1_1$(OG)s1_2$(OG)s1_3$(OG)s1_4$(OG)s1_5$(OG)s1_6$(O)$(S)\
-@GL@$(DOG)atlantis$(OG)dolphin$(OG)shark$(OG)swim$(OG)whale$(O)$(S)\
-@GL@$(DOG)bubble3d$(OG)b_draw$(OG)b_sphere$(OG)b_lockglue$(O)
-@XPM@@GL@XLOCKXPMGLOBJS = $(DOG)lament$(O)
-@NOMODULES@@CCC@@GL@XLOCKCPPGLOBJS = $(DOG)invert$(OG)i_figureeight$(O)$(S)\
-@NOMODULES@@CCC@@GL@$(DOG)i_linkage$(OG)i_sphere$(OG)i_spline$(O)$(S)\
-@NOMODULES@@CCC@@GL@$(DOG)i_threejet$(OG)i_threejetvec$(O)$(S)\
-@NOMODULES@@CCC@@GL@$(DOG)i_twojet$(OG)i_twojetvec$(O)
+#@GL@CONSTRUCTIONGLOBJS =
+@UNSTABLE@@GL@XLOCKUNSTABLEGLOBJS = $(DOG)skewb$(O)$(S)$(CONSTRUCTIONGLOBJS)
+@CCC@@GL@INVERTOBJS = $(DOG)i_figureeight$(O)$(S)\
+@CCC@@GL@$(DOG)i_linkage$(OG)i_sphere$(OG)i_spline$(O)$(S)\
+@CCC@@GL@$(DOG)i_threejet$(OG)i_threejetvec$(O)$(S)\
+@CCC@@GL@$(DOG)i_twojet$(OG)i_twojetvec$(O)
+@CCC@@GL@XLOCKDEPCPPGLOBJS = $(INVERTOBJS)
+@CCC@@GL@XLOCKMULTCPPGLOBJS = $(DOG)invert$(O)
 @UNSTABLE@@CCC@@GL@@GLTT@XLOCKUNSTABLETEXTGLOBJS = $(DOG)text3d$(O)
-@GL@XLOCKGLSRCS = $(DG)cage$(CG)gears$(C) \
-@GL@$(DG)lament$(CG)moebius$(CG)morph3d$(C) \
-@GL@$(DG)rubik$(CG)stairs$(CG)superquadrics$(C) \
-@GL@$(DG)buildlwo$(CG)pipes$(CG)pipeobjs$(C) \
-@GL@$(DG)sproingies$(CG)sproingiewrap$(CG)s1_b$(C) \
-@GL@$(DG)s1_1$(CG)s1_2$(CG)s1_3$(CG)s1_4$(CG)s1_5$(CG)s1_6$(C) \
-@GL@$(DG)atlantis$(CG)dolphin$(CG)shark$(CG)swim$(CG)whale$(C) \
-@GL@$(DG)bubble3d$(CG)b_draw$(CG)b_sphere$(CG)b_lockglue$(CG)text3d$(CX) \
-@GL@$(DG)invert$(CG)i_figureeight$(CXG)i_linkage$(CX) \
-@GL@$(DG)i_sphere$(CXG)i_spline$(CX) \
-@GL@$(DG)i_threejet$(CXG)i_threejetvec$(CX) \
-@GL@$(DG)i_twojet$(CXG)i_twojetvec$(CX)
+@GL@SPROINGIESOBJS = $(DOG)buildlwo$(OG)sproingiewrap$(OG)s1_b$(O)$(S)\
+@GL@$(DOG)s1_1$(OG)s1_2$(OG)s1_3$(OG)s1_4$(OG)s1_5$(OG)s1_6$(O)
+@GL@ATLANTISOBJS = $(DOG)dolphin$(OG)shark$(OG)swim$(OG)whale$(O)
+@GL@MOLECULEOBJS = $(DOG)tube$(O)
+@GL@BUBBLE3DOBJS = $(DOG)b_draw$(OG)b_sphere$(OG)b_lockglue$(O)
+@GL@GLPLANETOBJS = $(DOG)sphere$(O)
+@GL@XLOCKDEPGLOBJS = $(DOG)xpm-ximage$(OG)pipeobjs$(O)$(S)\
+@GL@$(SPROINGIESOBJS)$(S)$(ATLANTISOBJS)$(S)$(GLPLANETOBJS)$(S)$(BUBBLE3DOBJS)$(S)\
+@GL@$(MOLECULEOBJS)$(S)$(XLOCKDEPCPPGLOBJS)
+@GL@XLOCKNORMGLOBJS = $(DOG)cage$(OG)gears$(O)$(S)\
+@GL@$(DOG)moebius$(OG)morph3d$(O)$(S)\
+@GL@$(DOG)rubik$(OG)sierpinski3d$(OG)stairs$(OG)superquadrics$(O)$(S)\
+@GL@$(XLOCKUNSTABLEGLOBJS)$(S)$(XLOCKUNSTABLETEXTGLOBJS)
+@GL@XLOCKMULTGLOBJS = $(DOG)fire$(OG)lament$(OG)sballs$(OG)molecule$(O)$(S)\
+@GL@$(DOG)pipes$(OG)sproingies$(OG)atlantis$(OG)bubble3d$(OG)glplanet$(O)$(S)\
+@GL@$(XLOCKMULTCPPGLOBJS)
+XLOCKGLOBJS = $(XLOCKNORMGLOBJS)$(S)\
+$(XLOCKDEPGLOBJS)$(S)$(XLOCKMULTGLOBJS)
 # default target
-all : $(XLOCKGLOBJS) $(XLOCKXPMGLOBJS) $(XLOCKCPPGLOBJS) $(XLOCKUNSTABLETEXTGLOBJS)
+all : $(XLOCKGLOBJS)
 
 # this tells GNU make not to export variables into the environment
 # But other makes do not understand its significance, so it must
@@ -96,7 +98,8 @@ CC = @CC@
 #CXX = g++ -fpermissive
 CXX = @CXX@
 
-LINT = lint
+#LINT = lint
+LINT = lint -Ncheck=%all
 #LINT = alint
 
 #DEPEND = makedepend
@@ -175,7 +178,7 @@ html :
 hlp :
 
 clean :
-	$(RM) *.o *.xlk core *~ *% *.bak *.orig *.rej make.log MakeOut *.patch
+	$(RM) *.o *.xlk core *~ *% *.bak *.orig *.rej make.log MakeOut *.patch .pure
 
 distclean : clean
 	$(RM) Makefile
@@ -213,235 +216,4 @@ distdepend :
 ##############################################################################
 #
 # DO NOT DELETE: updated by make distdepend
-
-$(GLOBJDIR)/cage.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/cage.o: ../../config.h
-$(GLOBJDIR)/cage.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/cage.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/cage.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/cage.o: e_textures.h
-$(GLOBJDIR)/gears.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/gears.o: ../../config.h
-$(GLOBJDIR)/gears.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/gears.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/gears.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/lament.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/lament.o: ../../config.h
-$(GLOBJDIR)/lament.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/lament.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/lament.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/lament.o: $(PIXMAPDIR)/lament.xpm
-$(GLOBJDIR)/moebius.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/moebius.o: ../../config.h
-$(GLOBJDIR)/moebius.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/moebius.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/moebius.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/moebius.o: e_textures.h
-$(GLOBJDIR)/morph3d.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/morph3d.o: ../../config.h
-$(GLOBJDIR)/morph3d.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/morph3d.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/morph3d.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/rubik.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/rubik.o: ../../config.h
-$(GLOBJDIR)/rubik.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/rubik.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/rubik.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/stairs.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/stairs.o: ../../config.h
-$(GLOBJDIR)/stairs.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/stairs.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/stairs.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/stairs.o: e_textures.h
-$(GLOBJDIR)/superquadrics.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/superquadrics.o: ../../config.h
-$(GLOBJDIR)/superquadrics.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/superquadrics.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/superquadrics.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/buildlwo.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/buildlwo.o: ../../config.h
-$(GLOBJDIR)/buildlwo.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/buildlwo.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/buildlwo.o: buildlwo.h
-$(GLOBJDIR)/pipes.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/pipes.o: ../../config.h
-$(GLOBJDIR)/pipes.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/pipes.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/pipes.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/pipes.o: buildlwo.h
-$(GLOBJDIR)/pipeobjs.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/pipeobjs.o: ../../config.h
-$(GLOBJDIR)/pipeobjs.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/pipeobjs.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/pipeobjs.o: buildlwo.h
-$(GLOBJDIR)/sproingies.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/sproingies.o: ../../config.h
-$(GLOBJDIR)/sproingies.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/sproingies.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/sproingies.o: buildlwo.h
-$(GLOBJDIR)/sproingiewrap.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/sproingiewrap.o: ../../config.h
-$(GLOBJDIR)/sproingiewrap.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/sproingiewrap.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/sproingiewrap.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/s1_b.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_b.o: ../../config.h
-$(GLOBJDIR)/s1_b.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_b.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_b.o: buildlwo.h
-$(GLOBJDIR)/s1_1.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_1.o: ../../config.h
-$(GLOBJDIR)/s1_1.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_1.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_1.o: buildlwo.h
-$(GLOBJDIR)/s1_2.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_2.o: ../../config.h
-$(GLOBJDIR)/s1_2.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_2.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_2.o: buildlwo.h
-$(GLOBJDIR)/s1_3.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_3.o: ../../config.h
-$(GLOBJDIR)/s1_3.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_3.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_3.o: buildlwo.h
-$(GLOBJDIR)/s1_4.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_4.o: ../../config.h
-$(GLOBJDIR)/s1_4.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_4.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_4.o: buildlwo.h
-$(GLOBJDIR)/s1_5.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_5.o: ../../config.h
-$(GLOBJDIR)/s1_5.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_5.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_5.o: buildlwo.h
-$(GLOBJDIR)/s1_6.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/s1_6.o: ../../config.h
-$(GLOBJDIR)/s1_6.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/s1_6.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/s1_6.o: buildlwo.h
-$(GLOBJDIR)/atlantis.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/atlantis.o: ../../config.h
-$(GLOBJDIR)/atlantis.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/atlantis.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/atlantis.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/atlantis.o: atlantis.h
-$(GLOBJDIR)/dolphin.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/dolphin.o: ../../config.h
-$(GLOBJDIR)/dolphin.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/dolphin.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/dolphin.o: atlantis.h
-$(GLOBJDIR)/shark.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/shark.o: ../../config.h
-$(GLOBJDIR)/shark.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/shark.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/shark.o: atlantis.h
-$(GLOBJDIR)/swim.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/swim.o: ../../config.h
-$(GLOBJDIR)/swim.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/swim.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/swim.o: atlantis.h
-$(GLOBJDIR)/whale.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/whale.o: ../../config.h
-$(GLOBJDIR)/whale.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/whale.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/whale.o: atlantis.h
-$(GLOBJDIR)/bubble3d.o: bubble3d.h
-$(GLOBJDIR)/bubble3d.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/bubble3d.o: ../../config.h
-$(GLOBJDIR)/bubble3d.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/bubble3d.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/b_draw.o: bubble3d.h
-$(GLOBJDIR)/b_draw.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/b_draw.o: ../../config.h
-$(GLOBJDIR)/b_draw.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/b_draw.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/b_sphere.o: bubble3d.h
-$(GLOBJDIR)/b_sphere.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/b_sphere.o: ../../config.h
-$(GLOBJDIR)/b_sphere.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/b_sphere.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/b_lockglue.o: bubble3d.h
-$(GLOBJDIR)/b_lockglue.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/b_lockglue.o: ../../config.h
-$(GLOBJDIR)/b_lockglue.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/b_lockglue.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/b_lockglue.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/text3d.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/text3d.o: ../../config.h
-$(GLOBJDIR)/text3d.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/text3d.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/text3d.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/invert.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/invert.o: ../../config.h
-$(GLOBJDIR)/invert.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/invert.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/invert.o: $(UTILDIR)/vis.h
-$(GLOBJDIR)/invert.o: i_linkage.h
-$(GLOBJDIR)/i_figureeight.o: i_figureeight.h
-$(GLOBJDIR)/i_figureeight.o: i_threejetvec.h
-$(GLOBJDIR)/i_figureeight.o: i_threejet.h
-$(GLOBJDIR)/i_figureeight.o: i_twojet.h
-$(GLOBJDIR)/i_figureeight.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_figureeight.o: ../../config.h
-$(GLOBJDIR)/i_figureeight.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_figureeight.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_figureeight.o: i_twojetvec.h
-$(GLOBJDIR)/i_linkage.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_linkage.o: ../../config.h
-$(GLOBJDIR)/i_linkage.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_linkage.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_linkage.o: i_linkage.h
-$(GLOBJDIR)/i_linkage.o: i_threejetvec.h
-$(GLOBJDIR)/i_linkage.o: i_threejet.h
-$(GLOBJDIR)/i_linkage.o: i_twojet.h
-$(GLOBJDIR)/i_linkage.o: i_twojetvec.h
-$(GLOBJDIR)/i_linkage.o: i_figureeight.h
-$(GLOBJDIR)/i_linkage.o: i_spline.h
-$(GLOBJDIR)/i_linkage.o: i_sphere.h
-$(GLOBJDIR)/i_sphere.o: i_threejetvec.h
-$(GLOBJDIR)/i_sphere.o: i_threejet.h
-$(GLOBJDIR)/i_sphere.o: i_twojet.h
-$(GLOBJDIR)/i_sphere.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_sphere.o: ../../config.h
-$(GLOBJDIR)/i_sphere.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_sphere.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_sphere.o: i_twojetvec.h
-$(GLOBJDIR)/i_sphere.o: i_figureeight.h
-$(GLOBJDIR)/i_sphere.o: i_spline.h
-$(GLOBJDIR)/i_sphere.o: i_sphere.h
-$(GLOBJDIR)/i_spline.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_spline.o: ../../config.h
-$(GLOBJDIR)/i_spline.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_spline.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_spline.o: i_spline.h
-$(GLOBJDIR)/i_spline.o: i_threejetvec.h
-$(GLOBJDIR)/i_spline.o: i_threejet.h
-$(GLOBJDIR)/i_spline.o: i_twojet.h
-$(GLOBJDIR)/i_spline.o: i_twojetvec.h
-$(GLOBJDIR)/i_spline.o: i_evert.h
-$(GLOBJDIR)/i_threejet.o: i_threejet.h
-$(GLOBJDIR)/i_threejet.o: i_twojet.h
-$(GLOBJDIR)/i_threejet.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_threejet.o: ../../config.h
-$(GLOBJDIR)/i_threejet.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_threejet.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_threejetvec.o: i_threejetvec.h
-$(GLOBJDIR)/i_threejetvec.o: i_threejet.h
-$(GLOBJDIR)/i_threejetvec.o: i_twojet.h
-$(GLOBJDIR)/i_threejetvec.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_threejetvec.o: ../../config.h
-$(GLOBJDIR)/i_threejetvec.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_threejetvec.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_threejetvec.o: i_twojetvec.h
-$(GLOBJDIR)/i_twojet.o: i_twojet.h
-$(GLOBJDIR)/i_twojet.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_twojet.o: ../../config.h
-$(GLOBJDIR)/i_twojet.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_twojet.o: $(UTILDIR)/random.h
-$(GLOBJDIR)/i_twojetvec.o: i_twojetvec.h
-$(GLOBJDIR)/i_twojetvec.o: i_twojet.h
-$(GLOBJDIR)/i_twojetvec.o: $(UTILDIR)/xlock.h
-$(GLOBJDIR)/i_twojetvec.o: ../../config.h
-$(GLOBJDIR)/i_twojetvec.o: $(UTILDIR)/mode.h
-$(GLOBJDIR)/i_twojetvec.o: $(UTILDIR)/random.h
 

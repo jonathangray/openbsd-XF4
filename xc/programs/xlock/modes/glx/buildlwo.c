@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)buildlwo.c	4.02 97/04/20 xlockmore";
+static const char sccsid[] = "@(#)buildlwo.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -12,7 +12,9 @@ static const char sccsid[] = "@(#)buildlwo.c	4.02 97/04/20 xlockmore";
  * If other people are interested in this, I will put up a
  * web page for it at http://www.netaxs.com/~emackey/lw2ogl/
  *
- * by Ed Mackey, 4/19/97
+ * Revision History:
+ * 01-Nov-2000: Allocation checks
+ * 19-Apr-1997: Written by Ed Mackey
  *
  */
 
@@ -26,7 +28,6 @@ static const char sccsid[] = "@(#)buildlwo.c	4.02 97/04/20 xlockmore";
 #include <GL/glx.h>
 #endif
 #include <GL/gl.h>
-#include <GL/glu.h>
 #include "buildlwo.h"
 
 GLuint
@@ -37,15 +38,18 @@ BuildLWO(int wireframe, struct lwo *object)
 	unsigned short int *pols;
 	int         p, num_pnts = 0;
 
-	dl_num = glGenLists(1);
-	if (!dl_num)
+	if ((dl_num = glGenLists(1)) == 0)
 		return (0);
+	glNewList(dl_num, GL_COMPILE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(dl_num, 1);
+		return (0);
+	}
 
 	pnts = object->pnts;
 	normals = object->normals;
 	pols = object->pols;
 
-	glNewList(dl_num, GL_COMPILE);
 
 	if (!pols) {
 		num_pnts = object->num_pnts;

@@ -28,6 +28,8 @@
 #define USE_GL
 #define USE_UNSTABLE
 #define USE_BOMB
+#define HAVE_TTF
+#define HAVE_GLTT
 
 typedef struct {
 	int	 dummy;
@@ -70,7 +72,7 @@ LockStruct  LockProcs[] =
 	 "Shows Langton's and Turk's generalized ants", 0, NULL, NULL},
 #ifdef USE_GL
 	{"atlantis",
-	 1000, 4, 100, 6000, 64, 1.0, "",
+	 18000, 4, 100, 6000, 64, 1.0, "",
 	 "Shows moving sharks/whales/dolphin", 0, NULL, "#ifdef USE_GL"},
 #endif
 	{"ball",
@@ -104,13 +106,8 @@ LockStruct  LockProcs[] =
 	 "Shows Palmiter's bug evolution and garden of Eden", 0, NULL, NULL},
 #ifdef USE_GL
 	{"cage",
-	 1000, 1, 1, 1, 64, 1.0, "",
+	 25000, 1, 1, 1, 64, 1.0, "",
 	 "Shows the Impossible Cage, an Escher-like GL scene", 0, NULL, "#ifdef USE_GL"},
-#endif
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-	{"cartoon",
-	 10000, 1, 1, 1, 64, 1.0, "",
-	 "Shows bouncing cartoons", 0, NULL, "#if defined( USE_XPM ) || defined( USE_XPMINC )"},
 #endif
 	{"clock",
 	 100000, -16, 200, -200, 64, 1.0, "",
@@ -139,18 +136,29 @@ LockStruct  LockProcs[] =
 	{"dilemma",
 	 200000, -2, 1000, 0, 64, 1.0, "",
 	 "Shows Lloyd's Prisoner's Dilemma simulation", 0, NULL, NULL},
+	{"dragon",
+	 2000000, 1, 16, -24, 64, 1.0, "",
+	 "Shows Deventer's Hexagonal Dragons Maze", 0, NULL, NULL},
 	{"discrete",
 	 1000, 4096, 2500, 1, 64, 1.0, "",
 	 "Shows various discrete maps", 0, NULL, NULL},
 	{"drift",
 	 10000, 30, 1, 1, 64, 1.0, "",
 	 "Shows cosmic drifting flame fractals", 0, NULL, NULL},
+	{"euler2d",
+	 1000, 1024, 3000, 1, 64, 1.0, "",
+	 "Shows a simulation of 2D incompressible inviscid fluid", 0, NULL, NULL},
 	{"eyes",
 	 20000, -8, 5, 1, 64, 1.0, "",
 	 "Shows eyes following a bouncing grelb", 0, NULL, NULL},
 	{"fadeplot",
 	 30000, 10, 1500, 1, 64, 0.6, "",
 	 "Shows a fading plot of sine squared", 0, NULL, NULL},
+#ifdef USE_GL
+	{"fire",
+	 10000, 800, 1, 1, 64, 1.0, "",
+	 "Shows a 3D fire-like image", 0, NULL, "#ifdef USE_GL"},
+#endif
 	{"flag",
 	 50000, 1, 1000, -7, 64, 1.0, "",
 	 "Shows a waving flag image", 0, NULL, NULL},
@@ -170,6 +178,11 @@ LockStruct  LockProcs[] =
 	{"gears",
 	 1000, 1, 2, 1, 64, 1.0, "",
 	 "Shows GL's gears", 0, NULL, "#ifdef USE_GL"},
+#endif
+#ifdef USE_GL
+	{"glplanet",
+	 1000, 1, 2, 1, 64, 1.0, "",
+	 "Animates texture mapped sphere (planet)", 0, NULL, "#ifdef USE_GL"},
 #endif
 	{"goop",
 	 10000, -12, 1, 1, 64, 1.0, "",
@@ -201,7 +214,7 @@ LockStruct  LockProcs[] =
 	 "Shows a sphere inverted without wrinkles", 0, NULL, "#if defined( USE_GL ) && defined( HAVE_CXX )"},
 #endif
         {"juggle",
-         2000, 30, 30, 1, 32, 1.0, "",
+         10000, 150, 30, 1, 64, 1.0, "",
          "Shows a Juggler, juggling", 0, NULL, NULL},
 	{"julia",
 	 10000, 1000, 20, 1, 64, 1.0, "",
@@ -212,10 +225,10 @@ LockStruct  LockProcs[] =
 	{"kumppa",
 	 10000, 1, 1, 1, 64, 1.0, "",
 	 "Shows kumppa", 0, NULL, NULL},
-#if defined( USE_GL ) && ( defined( USE_XPM ) || defined( USE_XPMINC ))
+#ifdef USE_GL
 	{"lament",
 	 10000, 1, 1, 1, 64, 1.0, "",
-	 "Shows Lemarchand's Box", 0, NULL, "#if defined( USE_GL ) && ( defined( USE_XPM ) || defined( USE_XPMINC ))"},
+	 "Shows Lemarchand's Box", 0, NULL, "#ifdef USE_GL"},
 #endif
 	{"laser",
 	 20000, -10, 200, 1, 64, 1.0, "",
@@ -239,7 +252,7 @@ LockStruct  LockProcs[] =
 	 10000, 1, 2000, -200, 64, 0.6, "",
 	 "Shows lissajous worms", 0, NULL, NULL},
 	{"loop",
-	 100000, 1, 1600, -12, 64, 1.0, "",
+	 100000, -5, 1600, -12, 64, 1.0, "",
 	 "Shows Langton's self-producing loops", 0, NULL, NULL},
 	{"lyapunov",
 	 25000, 600, 1, 1, 64, 1.0, "",
@@ -260,6 +273,9 @@ LockStruct  LockProcs[] =
 	{"moebius",
 	 1000, 1, 1, 1, 64, 1.0, "",
 	 "Shows Moebius Strip II, an Escher-like GL scene with ants", 0, NULL, "#ifdef USE_GL"},
+	{(char *) "molecule",
+	 50000, 1, 20, 1, 64, 1.0, "",
+	 "Draws molecules", 0, NULL, "#ifdef USE_GL"},
 	{"morph3d",
 	 1000, 0, 1, 1, 64, 1.0, "",
 	 "Shows GL morphing polyhedra", 0, NULL, "#ifdef USE_GL"},
@@ -287,6 +303,9 @@ LockStruct  LockProcs[] =
 	 1000, 2, 5, 500, 64, 1.0, "",
 	 "Shows a selfbuilding pipe system", 0, NULL, "#ifdef USE_GL"},
 #endif
+	{"polyominoes",
+	 6000, 1, 8192, 1, 64, 1.0, "",
+	 "Shows attempts to place polyominoes into a rectangle", 0, NULL, NULL},
 	{"puzzle",
 	 10000, 250, 1, 1, 64, 1.0, "",
 	 "Shows a puzzle being scrambled and then solved", 0, NULL, NULL},
@@ -300,19 +319,37 @@ LockStruct  LockProcs[] =
 	 100000, 25, 1, -64, 64, 0.6, "",
 	 "Shows a rolling ball", 0, NULL, NULL},
 	{"rotor",
-	 500, 4, 100, -6, 64, 0.3, "",
+	 100, 4, 100, -6, 64, 0.3, "",
 	 "Shows Tom's Roto-Rooter", 0, NULL, NULL},
 #ifdef USE_GL
 	{"rubik",
 	 10000, -30, 5, -6, 64, 1.0, "",
 	 "Shows an auto-solving Rubik's Cube", 0, NULL, "#ifdef USE_GL"},
 #endif
+#ifdef USE_GL
+	{"sballs",
+	 10000, 0, 10, 400, 64, 1.0, "",
+	 "Balls spinning like crazy in GL", 0, NULL, "#ifdef USE_GL"},
+#endif
+        {"scooter",
+         20000, 24, 3, 100, 64, 1.0, "",
+         "Shows a journey through space tunnel and stars", 0, NULL, NULL},
 	{"shape",
 	 10000, 100, 256, 1, 64, 1.0, "",
 	 "Shows stippled rectangles, ellipses, and triangles", 0, NULL, NULL},
 	{"sierpinski",
 	 400000, 2000, 100, 1, 64, 1.0, "",
 	 "Shows Sierpinski's triangle", 0, NULL, NULL},
+#ifdef USE_GL
+	{"sierpinski3d",
+         1000, 1, 2, 1, 64, 1.0, "",
+         "Shows GL's Sierpinski gasket", 0, NULL, "#ifdef USE_GL"},
+#endif
+#if defined(USE_GL) && defined( USE_UNSTABLE )
+	{"skewb",
+	 10000, -30, 5, 1, 64, 1.0, "",
+	 "Shows an auto-solving Skewb", 0, NULL, "#if defined(USE_GL) && defined( USE_UNSTABLE )"},
+#endif
 	{"slip",
 	 50000, 35, 50, 1, 64, 1.0, "",
 	 "Shows slipping blits", 0, NULL, NULL},
@@ -321,11 +358,9 @@ LockStruct  LockProcs[] =
 	 2000000, 1, 1, 1, 64, 1.0, "",
 	 "Shows Klondike's game of solitare", 0, NULL, "#ifdef HAVE_CXX"},
 #endif
-#ifdef USE_UNSTABLE
 	{"space",
 	 10000, 100, 1, 15, 64, 1.0, "",
 	 "Shows a journey into deep space", 0, NULL, "#ifdef USE_UNSTABLE"},
-#endif
 	{"sphere",
 	 5000, 1, 20, 0, 64, 1.0, "",
 	 "Shows a bunch of shaded spheres", 0, NULL, NULL},
@@ -358,21 +393,21 @@ LockStruct  LockProcs[] =
 	 "Shows 3D mathematical shapes", 0, NULL, "#ifdef USE_GL"},
 #endif
 	{"swarm",
-	 15000, 100, 1, 1, 64, 1.0, "",
+	 15000, -100, 1, -100, 64, 1.0, "",
 	 "Shows a swarm of bees following a wasp", 0, NULL, NULL},
 	{"swirl",
 	 5000, 5, 1, 1, 64, 1.0, "",
 	 "Shows animated swirling patterns", 0, NULL, NULL},
-  {"t3d",
-   250000, 1000, 60000, 0, 64, 1.0, "",
-   "Shows a Flying Balls Clock Demo", 0, NULL, NULL},
+	{"t3d",
+	 250000, 1000, 60000, 0, 64, 1.0, "",
+	 "Shows a Flying Balls Clock Demo", 0, NULL, NULL},
 	{"tetris",
-	 50000, 1, 1, 0, 64, 1.0, "",
+	 50000, 1, 1, -100, 64, 1.0, "",
 	 "Shows an autoplaying tetris game", 0, NULL, NULL},
-#if defined(USE_GL) & defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )
+#if defined(USE_GL) && defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )
 	{"text3d",
 	 100000, 1, 1, 1, 64, 1.0, "",
-	 "Shows 3D text", 0, NULL, "#if defined(USE_GL) & defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )"},
+	 "Shows 3D text", 0, NULL, "#if defined(USE_GL) && defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )"},
 #endif
 	{"thornbird",
 	 1000, 800, 16, 1, 64, 1.0, "",
@@ -407,6 +442,9 @@ LockStruct  LockProcs[] =
 	{"worm",
 	 17000, -20, 10, -3, 64, 1.0, "",
 	 "Shows wiggly worms", 0, NULL, NULL},
+	{"xcl",
+	 20000, -3, 1, 1, 64, 1.0, "",
+	 "Shows a control line combat model race", 0, NULL, NULL},
 	{"xjack",
 	 50000, 1, 1, 1, 64, 1.0, "",
 	 "Shows Jack having one of those days", 0, NULL, NULL},

@@ -31,6 +31,7 @@
 #define SRAND srand48
 #define LRAND lrand48
 #define MAXRAND (2147483648.0)
+#ifndef DECLARED_SRAND48
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -38,6 +39,7 @@ extern void srand48(long int);
 extern long int lrand48(void);
 #ifdef __cplusplus
 }
+#endif
 #endif
 #else /* HAVE_RAND48 */
 #ifdef HAVE_RANDOM
@@ -85,6 +87,14 @@ extern void SetRNG(long int s);
 #define SRAND(X) SetRNG((long) X)
 #endif
 #ifndef LRAND
+#ifdef __cplusplus
+  extern "C" {
+#endif
+extern long LongRNG(void);
+#ifdef __cplusplus
+  }
+#endif
+
 extern long LongRNG(void);
 #define LRAND() LongRNG()
 #endif

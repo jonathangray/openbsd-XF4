@@ -16,6 +16,8 @@
  * 22-May-95: Written.
  */
 
+#include "xlockimage.h"
+
 #define RasterColorError   1
 #define RasterSuccess      0
 #define RasterOpenFailed  -1
@@ -24,7 +26,3 @@
 #define RasterColorFailed -4
 
 extern int  RasterFileToImage(ModeInfo * mi, char *filename, XImage ** image);
-extern void SetImageColors(Display * display, Colormap cmap);
-extern unsigned long GetBlack(void);
-extern unsigned long GetWhite(void);
-extern unsigned long GetColor(ModeInfo * mi, unsigned long pixel);

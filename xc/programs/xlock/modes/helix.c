@@ -2,7 +2,7 @@
 /* helix --- string art */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)helix.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)helix.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,13 +22,14 @@ static const char sccsid[] = "@(#)helix.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 06-Apr-97: new ellipse code from Dan Stromberg <strombrg@nis.acs.uci.edu>
- * 11-Aug-95: found some typos, looks more interesting now
- * 08-Aug-95: speed up thanks to Heath A. Kehoe <hakehoe@icaen.uiowa.edu>
- * 17-Jun-95: removed sleep statements
- * 2-Sep-93: xlock version David Bagley <bagleyd@tux.org>
- * 1992:     xscreensaver version Jamie Zawinski <jwz@jwz.org>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 06-Apr-1997: new ellipse code from Dan Stromberg <strombrg@nis.acs.uci.edu>
+ * 11-Aug-1995: found some typos, looks more interesting now
+ * 08-Aug-1995: speed up thanks to Heath A. Kehoe <hakehoe@icaen.uiowa.edu>
+ * 17-Jun-1995: removed sleep statements
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
+ * 1992: xscreensaver version Jamie Zawinski <jwz@jwz.org>
  */
 
 /*-
@@ -67,16 +68,16 @@ static Bool ellipse;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-ellipse", ".helix.ellipse", XrmoptionNoArg, (caddr_t) "on"},
-	{"+ellipse", ".helix.ellipse", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-ellipse", (char *) ".helix.ellipse", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+ellipse", (char *) ".helix.ellipse", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & ellipse, "ellipse", "Ellipse", DEF_ELLIPSE, t_Bool}
+	{(caddr_t *) & ellipse, (char *) "ellipse", (char *) "Ellipse", (char *) DEF_ELLIPSE, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+ellipse", "turn on/off ellipse format"}
+	{(char *) "-/+ellipse", (char *) "turn on/off ellipse format"}
 };
 
 ModeSpecOpt helix_opts =
@@ -144,8 +145,6 @@ helix(ModeInfo * mi, int radius1, int radius2, int d_angle,
 			hp->color = 0;
 	} else
 		XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
-	x_1 = hp->xmid;
-	y_1 = hp->ymid + radius2;
 	x_2 = hp->xmid;
 	y_2 = hp->ymid + radius1;
 	angle = 0;
@@ -285,9 +284,9 @@ random_trig(ModeInfo * mi)
 void
 init_helix(ModeInfo * mi)
 {
-	helixstruct *hp;
 	int         i;
 	static int  first = 1;
+	helixstruct *hp;
 
 	if (helixes == NULL) {
 		if ((helixes = (helixstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -329,10 +328,13 @@ init_helix(ModeInfo * mi)
 void
 draw_helix(ModeInfo * mi)
 {
-	helixstruct *hp = &helixes[MI_SCREEN(mi)];
+	helixstruct *hp;
+
+	if (helixes == NULL)
+		return;
+	hp = &helixes[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (++hp->time > MI_CYCLES(mi))
 		init_helix(mi);
 	else
@@ -360,7 +362,11 @@ release_helix(ModeInfo * mi)
 void
 refresh_helix(ModeInfo * mi)
 {
-	helixstruct *hp = &helixes[MI_SCREEN(mi)];
+	helixstruct *hp;
+
+	if (helixes == NULL)
+		return;
+	hp = &helixes[MI_SCREEN(mi)];
 
 	if (hp->painted) {
 		MI_CLEARWINDOW(mi);

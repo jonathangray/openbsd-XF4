@@ -2,7 +2,7 @@
 /* bubble --- simple exploding bubbles */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)bubble.c	4.07 98/01/08 xlockmore";
+static const char sccsid[] = "@(#)bubble.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -24,7 +24,8 @@ static const char sccsid[] = "@(#)bubble.c	4.07 98/01/08 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-Jan-98: Written.
+ * 01-Nov-2000: Allocation checks
+ * 10-Jan-1998: Written.
  */
 
 #ifdef STANDALONE
@@ -50,16 +51,16 @@ static Bool boil;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-boil", ".bubble.boil", XrmoptionNoArg, (caddr_t) "on"},
-	{"+boil", ".bubble.boil", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-boil", (char *) ".bubble.boil", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+boil", (char *) ".bubble.boil", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & boil, "boil", "Boil", DEF_BOIL, t_Bool}
+	{(caddr_t *) & boil, (char *) "boil", (char *) "Boil", (char *) DEF_BOIL, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+boil", "turn on/off boil"}
+	{(char *) "-/+boil", (char *) "turn on/off boil"}
 };
 
 ModeSpecOpt bubble_opts =
@@ -163,6 +164,24 @@ changeBubble(ModeInfo * mi)
 	}
 }
 
+ 
+static void
+free_bubble(Display *display, bubblestruct *bp)
+{
+	if (bp->dbuf != None) {
+		XFreePixmap(display, bp->dbuf);
+		bp->dbuf = None;
+	}
+	if (bp->dbuf_gc != None) {
+		XFreeGC(display, bp->dbuf_gc);
+		bp->dbuf_gc = None;
+	}
+	if (bp->bubble != NULL) {
+		(void) free((void *) bp->bubble);
+		bp->bubble = NULL;
+	}
+}
+
 void
 init_bubble(ModeInfo * mi)
 {
@@ -205,14 +224,21 @@ init_bubble(ModeInfo * mi)
 		bp->nbubbles = MINBUBBLES;
 	if (bp->bubble != NULL)
 		(void) free((void *) bp->bubble);
-	bp->bubble = (bubbletype *) calloc(bp->nbubbles, sizeof (bubbletype));
-
+	if ((bp->bubble = (bubbletype *) calloc(bp->nbubbles,
+			sizeof (bubbletype))) == NULL) {
+		free_bubble(display, bp);
+		return;
+	}
 	if (MI_NPIXELS(mi) > 2)
 		bp->color = NRAND(MI_NPIXELS(mi));
 
-	if (bp->dbuf)
+	if (bp->dbuf != None)
 		XFreePixmap(display, bp->dbuf);
-	bp->dbuf = XCreatePixmap(display, window, bp->width, bp->height, 1);
+	if ((bp->dbuf = XCreatePixmap(display, window, bp->width, bp->height,
+			1)) == None) {
+		free_bubble(display, bp);
+		return;
+	}
 	/* Do not want any exposure events from XCopyPlane */
 	XSetGraphicsExposures(display, MI_GC(mi), False);
 
@@ -223,9 +249,12 @@ init_bubble(ModeInfo * mi)
 	gcv.line_width = 2;
 	if (bp->dbuf_gc)
 		XFreeGC(display, bp->dbuf_gc);
-	bp->dbuf_gc = XCreateGC(display, bp->dbuf,
-	       GCForeground | GCBackground | GCLineWidth | GCFunction, &gcv);
-
+	if ((bp->dbuf_gc = XCreateGC(display, bp->dbuf,
+	  		GCForeground | GCBackground | GCLineWidth | GCFunction,
+			&gcv)) == None) {
+		free_bubble(display, bp);
+		return;
+	}
 	MI_CLEARWINDOW(mi);
 }
 
@@ -235,10 +264,15 @@ draw_bubble(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	bubblestruct *bp = &bubbles[MI_SCREEN(mi)];
+	bubblestruct *bp;
 
+	if (bubbles == NULL)
+		return;
+	bp = &bubbles[MI_SCREEN(mi)];
+	if (bp->bubble == NULL)
+		return;
+	
 	MI_IS_DRAWN(mi) = True;
-
 	if (MI_NPIXELS(mi) <= 2)
 		XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
 	else {
@@ -262,16 +296,8 @@ release_bubble(ModeInfo * mi)
 	if (bubbles != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			bubblestruct *bp = &bubbles[screen];
-
-			if (bp->dbuf)
-				XFreePixmap(MI_DISPLAY(mi), bp->dbuf);
-			if (bp->dbuf_gc)
-				XFreeGC(MI_DISPLAY(mi), bp->dbuf_gc);
-			if (bp->bubble != NULL)
-				(void) free((void *) bp->bubble);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_bubble(MI_DISPLAY(mi), &bubbles[screen]);
 		(void) free((void *) bubbles);
 		bubbles = NULL;
 	}

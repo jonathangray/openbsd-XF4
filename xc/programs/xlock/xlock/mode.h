@@ -99,6 +99,7 @@
 #define MI_IS_INWINDOW(MI)	(!(MI)->root_p)
 #define MI_IS_ICONIC(MI)	(False)
 #define MI_IS_WIREFRAME(MI)	((MI)->wireframe_p)
+#define MI_IS_FPS(MI)	((MI)->fps_p)
 #define MI_IS_USE3D(MI)	((MI)->threed)
 #define MI_COUNT(MI)	((MI)->count)
 #define MI_NCOLORS(MI)    ((MI)->ncolors)
@@ -152,6 +153,7 @@ typedef struct ModeInfo {
 	Bool        wireframe_p;
 	char       *bitmap;
 	Bool        is_drawn;
+        Bool        fps_p;
 } ModeInfo;
 
 typedef enum {
@@ -303,7 +305,8 @@ typedef struct {
 #define WI_FLAG_VERBOSE		0x200
 #define WI_FLAG_FULLRANDOM	0x400
 #define WI_FLAG_WIREFRAME	0x800
-#define WI_FLAG_JUST_INITTED	0x1000	/* private state flag */
+#define WI_FLAG_FPS		0x1000
+#define WI_FLAG_JUST_INITTED	0x2000	/* private state flag */
 
 #ifdef __cplusplus
   extern "C" {
@@ -348,39 +351,40 @@ typedef struct ModeInfo_s {
 
 #define MI_DISPLAY(mi)		((mi)->windowinfo.display)
 #define MI_SCREEN(mi)		((mi)->windowinfo.screen)
-#define MI_SCREENPTR(mi)      ((mi)->windowinfo.screenptr)
+#define MI_SCREENPTR(mi)      	((mi)->windowinfo.screenptr)
 #define MI_REAL_SCREEN(mi)	((mi)->windowinfo.real_screen)
 #define MI_NUM_SCREENS(mi)	((mi)->windowinfo.num_screens)
 #define MI_MAX_SCREENS(mi)	((mi)->windowinfo.max_screens)
 #define MI_WINDOW(mi)		((mi)->windowinfo.window)
-#define MI_WIDTH(mi)	((mi)->windowinfo.width)
-#define MI_HEIGHT(mi)	((mi)->windowinfo.height)
-#define MI_DELTA3D(mi)	((mi)->windowinfo.delta3d)
-#define MI_FLAGS(mi)	((mi)->windowinfo.flags)
-#define MI_IS_DRAWN(mi)	((mi)->windowinfo.is_drawn)
+#define MI_WIDTH(mi)		((mi)->windowinfo.width)
+#define MI_HEIGHT(mi)		((mi)->windowinfo.height)
+#define MI_DELTA3D(mi)		((mi)->windowinfo.delta3d)
+#define MI_FLAGS(mi)		((mi)->windowinfo.flags)
+#define MI_IS_DRAWN(mi)		((mi)->windowinfo.is_drawn)
 #define MI_SET_FLAG_STATE(mi,f,bool) ((mi)->windowinfo.flags = \
 					(bool) ? (mi)->windowinfo.flags | f \
 					: (mi)->windowinfo.flags & ~(f))
-#define MI_FLAG_IS_SET(mi,f) ((mi)->windowinfo.flags & f)
-#define MI_FLAG_NOT_SET(mi,f) ( ! MI_FLAG_IS_SET(mi,f))
+#define MI_FLAG_IS_SET(mi,f) 	((mi)->windowinfo.flags & f)
+#define MI_FLAG_NOT_SET(mi,f) 	( ! MI_FLAG_IS_SET(mi,f))
 #define MI_IS_ICONIC(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_ICONIC))
-#define MI_IS_MONO(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_MONO))
+#define MI_IS_MONO(mi)		(MI_FLAG_IS_SET (mi, WI_FLAG_MONO))
 #define MI_IS_INWINDOW(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_INWINDOW))
 #define MI_IS_INROOT(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_INROOT))
 #define MI_IS_NOLOCK(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_NOLOCK))
 #define MI_IS_INSTALL(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_INSTALL))
-#define MI_IS_DEBUG(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_DEBUG))
-#define MI_IS_USE3D(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_USE3D))
+#define MI_IS_DEBUG(mi)		(MI_FLAG_IS_SET (mi, WI_FLAG_DEBUG))
+#define MI_IS_USE3D(mi)		(MI_FLAG_IS_SET (mi, WI_FLAG_USE3D))
 #define MI_IS_VERBOSE(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_VERBOSE))
-#define MI_IS_FULLRANDOM(mi) (MI_FLAG_IS_SET (mi, WI_FLAG_FULLRANDOM))
+#define MI_IS_FULLRANDOM(mi) 	(MI_FLAG_IS_SET (mi, WI_FLAG_FULLRANDOM))
 #define MI_IS_WIREFRAME(mi)	(MI_FLAG_IS_SET (mi, WI_FLAG_WIREFRAME))
+#define MI_IS_FPS(mi)		(MI_FLAG_IS_SET (mi, WI_FLAG_FPS))
 
 #define MI_SCREENINFO(mi)	((mi)->screeninfo)
-#define MI_DEPTH(mi)	((mi)->screeninfo->depth)
-#define MI_VISUAL(mi)	((mi)->screeninfo->visual)
+#define MI_DEPTH(mi)		((mi)->screeninfo->depth)
+#define MI_VISUAL(mi)		((mi)->screeninfo->visual)
 #define MI_VISUALCLASS(mi)	((mi)->screeninfo->visualclass)
 #define MI_COLORMAP_SIZE(mi)	((mi)->screeninfo->colormap_size)
-#define MI_RED_MASK(mi)	((mi)->screeninfo->red_mask)
+#define MI_RED_MASK(mi)		((mi)->screeninfo->red_mask)
 #define MI_GREEN_MASK(mi)	((mi)->screeninfo->green_mask)
 #define MI_BLUE_MASK(mi)	((mi)->screeninfo->blue_mask)
 #define MI_COLORMAP(mi)		((mi)->screeninfo->colormap)
@@ -403,13 +407,14 @@ typedef struct ModeInfo_s {
 #define MI_SIZE(mi)		((mi)->runinfo.size)
 #define MI_NCOLORS(mi)		((mi)->runinfo.ncolors)
 #define MI_SATURATION(mi)	((mi)->runinfo.saturation)
-#define MI_BITMAP(mi)	((mi)->runinfo.bitmap)
+#define MI_BITMAP(mi)		((mi)->runinfo.bitmap)
+#define MI_PAUSE(MI)		((mi)->runinfo.pause)
 
 #define MI_LOCKSTRUCT(mi)	((mi)->lockstruct)
 #define MI_DEFDELAY(mi)		((mi)->lockstruct->def_delay)
-#define MI_DEFCOUNT(mi)	((mi)->lockstruct->def_count)
+#define MI_DEFCOUNT(mi)		((mi)->lockstruct->def_count)
 #define MI_DEFCYCLES(mi)	((mi)->lockstruct->def_cycles)
-#define MI_DEFSIZE(mi)	((mi)->lockstruct->def_size)
+#define MI_DEFSIZE(mi)		((mi)->lockstruct->def_size)
 #define MI_DEFNCOLORS(mi)	((mi)->lockstruct->def_ncolors)
 #define MI_DEFSATURATION(mi)	((mi)->lockstruct->def_saturation)
 #define MI_DEFBITMAP(mi)	((mi)->lockstruct->def_bitmap)
@@ -479,22 +484,32 @@ extern void release_last_mode(ModeInfo *);
 
 /* -------------------------------------------------------------------- */
 
+/* if you just want the blank mode... how sad! */
+#ifndef BLANK_ONLY 
 /* comment out following defines to remove modes */
 #ifdef USE_GL
 #define MODE_cage
+#define MODE_fire
 #define MODE_gears
+#define MODE_lament
 #define MODE_moebius
+#define MODE_molecule
 #define MODE_morph3d
+#define MODE_glplanet
 #define MODE_rubik
+#define MODE_sierpinski3d
+#define MODE_sballs
+#define MODE_sproingies
 #define MODE_stairs
 #define MODE_superquadrics
-#define MODE_sproingies
+#ifdef USE_UNSTABLE
+#define MODE_skewb /* under development */
 #ifdef HAVE_CXX
-#if defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )
+#if defined( HAVE_TTF ) && defined( HAVE_GLTT )
 #define MODE_text3d
 #endif
 #endif
-#ifndef USE_MODULES
+#endif
 #define MODE_atlantis
 #define MODE_bubble3d
 #define MODE_pipes
@@ -503,21 +518,16 @@ extern void release_last_mode(ModeInfo *);
 #define MODE_invert
 #endif
 #endif
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-#define MODE_lament
-#endif
-#endif
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-#define MODE_cartoon
-#endif
 #ifdef HAVE_CXX
 #define MODE_solitare
 #endif
 #ifdef USE_UNSTABLE
-#define MODE_space
-#ifdef HAVE_CXX
+#define MODE_run /* VMS problems as well as --debug problems */
 #ifdef UNDER_DEVELOPMENT
+#if 0
+#ifdef HAVE_CXX
 #define MODE_billiards
+#endif
 #endif
 #endif
 #endif
@@ -534,7 +544,6 @@ extern void release_last_mode(ModeInfo *);
 #define MODE_coral
 #define MODE_crystal
 #define MODE_daisy
-#define MODE_decay
 #define MODE_dclock
 /*-
  * Comment out dclock sub-modes to disable them from random selection.
@@ -542,12 +551,15 @@ extern void release_last_mode(ModeInfo *);
  * have already gone by.
  */
 /* #define MODE_dclock_y2k */
-#define MODE_dclock_millennium
+/* #define MODE_dclock_millennium */
+#define MODE_decay
 #define MODE_deco
 #define MODE_demon
 #define MODE_dilemma
 #define MODE_discrete
+#define MODE_dragon
 #define MODE_drift
+#define MODE_euler2d
 #define MODE_eyes
 #define MODE_fadeplot
 #define MODE_flag
@@ -586,14 +598,17 @@ extern void release_last_mode(ModeInfo *);
 #define MODE_pacman
 #define MODE_penrose
 #define MODE_petal
+#define MODE_polyominoes
 #define MODE_puzzle
 #define MODE_pyro
 #define MODE_qix
 #define MODE_roll
 #define MODE_rotor
+#define MODE_scooter /* should be combined with star some day */
 #define MODE_shape
 #define MODE_sierpinski
 #define MODE_slip
+#define MODE_space /* should be combined with star some day */
 #define MODE_sphere
 #define MODE_spiral
 #define MODE_spline
@@ -615,10 +630,12 @@ extern void release_last_mode(ModeInfo *);
 #define MODE_wire
 #define MODE_world
 #define MODE_worm
+#define MODE_xcl
 #define MODE_xjack
 
 #ifdef USE_BOMB
 #define MODE_bomb
+#endif
 #endif
 
 #ifndef USE_MODULES
@@ -728,13 +745,6 @@ extern ModeHook change_cage;
 extern ModeSpecOpt cage_opts;
 #endif
 
-#ifdef MODE_cartoon
-extern ModeHook init_cartoon;
-extern ModeHook draw_cartoon;
-extern ModeHook release_cartoon;
-extern ModeSpecOpt cartoon_opts;
-#endif
-
 #ifdef MODE_clock
 extern ModeHook init_clock;
 extern ModeHook draw_clock;
@@ -816,12 +826,28 @@ extern ModeHook change_discrete;
 extern ModeSpecOpt discrete_opts;
 #endif
 
+#ifdef MODE_dragon
+extern ModeHook init_dragon;
+extern ModeHook draw_dragon;
+extern ModeHook release_dragon;
+extern ModeHook refresh_dragon;
+extern ModeSpecOpt dragon_opts;
+#endif
+
 #ifdef MODE_drift
 extern ModeHook init_drift;
 extern ModeHook draw_drift;
 extern ModeHook release_drift;
 extern ModeHook refresh_drift;
 extern ModeSpecOpt drift_opts;
+#endif
+
+#ifdef MODE_euler2d
+extern ModeHook init_euler2d;
+extern ModeHook draw_euler2d;
+extern ModeHook release_euler2d;
+extern ModeHook refresh_euler2d;
+extern ModeSpecOpt euler2d_opts;
 #endif
 
 #ifdef MODE_eyes
@@ -838,6 +864,15 @@ extern ModeHook draw_fadeplot;
 extern ModeHook release_fadeplot;
 extern ModeHook refresh_fadeplot;
 extern ModeSpecOpt fadeplot_opts;
+#endif
+
+#ifdef MODE_fire
+extern ModeHook init_fire;
+extern ModeHook draw_fire;
+extern ModeHook release_fire;
+extern ModeHook refresh_fire;
+extern ModeHook change_fire;
+extern ModeSpecOpt fire_opts;
 #endif
 
 #ifdef MODE_flag
@@ -886,6 +921,13 @@ extern ModeHook init_gears;
 extern ModeHook draw_gears;
 extern ModeHook release_gears;
 extern ModeSpecOpt gears_opts;
+#endif
+
+#ifdef MODE_glplanet
+extern ModeHook init_glplanet;
+extern ModeHook draw_glplanet;
+extern ModeHook release_glplanet;
+extern ModeSpecOpt glplanet_opts;
 #endif
 
 #ifdef MODE_goop
@@ -987,7 +1029,6 @@ extern ModeSpecOpt kaleid_opts;
 extern ModeHook init_kumppa;
 extern ModeHook draw_kumppa;
 extern ModeHook release_kumppa;
-extern ModeHook refresh_kumppa;
 extern ModeSpecOpt kumppa_opts;
 #endif
 
@@ -1114,6 +1155,13 @@ extern ModeHook change_moebius;
 extern ModeSpecOpt moebius_opts;
 #endif
 
+#ifdef MODE_molecule
+extern ModeHook init_molecule;
+extern ModeHook draw_molecule;
+extern ModeHook release_molecule;
+extern ModeSpecOpt molecule_opts;
+#endif
+
 #ifdef MODE_morph3d
 extern ModeHook init_morph3d;
 extern ModeHook draw_morph3d;
@@ -1181,6 +1229,14 @@ extern ModeHook change_pipes;
 extern ModeSpecOpt pipes_opts;
 #endif
 
+#ifdef MODE_polyominoes
+extern ModeHook init_polyominoes;
+extern ModeHook draw_polyominoes;
+extern ModeHook release_polyominoes;
+extern ModeHook refresh_polyominoes;
+extern ModeSpecOpt polyominoes_opts;
+#endif
+
 #ifdef MODE_puzzle
 extern ModeHook init_puzzle;
 extern ModeHook draw_puzzle;
@@ -1232,6 +1288,24 @@ extern ModeHook change_rubik;
 extern ModeSpecOpt rubik_opts;
 #endif
 
+#ifdef MODE_sballs
+extern ModeHook init_sballs;
+extern ModeHook draw_sballs;
+extern ModeHook release_sballs;
+extern ModeHook refresh_sballs;
+extern ModeHook change_sballs;
+extern ModeSpecOpt sballs_opts;
+#endif
+
+#ifdef MODE_scooter
+extern ModeHook init_scooter;
+extern ModeHook draw_scooter;
+extern ModeHook release_scooter;
+extern ModeHook refresh_scooter;
+extern ModeHook change_scooter;
+extern ModeSpecOpt scooter_opts;
+#endif
+
 #ifdef MODE_shape
 extern ModeHook init_shape;
 extern ModeHook draw_shape;
@@ -1246,6 +1320,21 @@ extern ModeHook draw_sierpinski;
 extern ModeHook release_sierpinski;
 extern ModeHook refresh_sierpinski;
 extern ModeSpecOpt sierpinski_opts;
+#endif
+
+#ifdef MODE_sierpinski3d
+extern ModeHook init_gasket;
+extern ModeHook draw_gasket;
+extern ModeHook release_gasket;
+extern ModeSpecOpt gasket_opts;
+#endif
+
+#ifdef MODE_skewb
+extern ModeHook init_skewb;
+extern ModeHook draw_skewb;
+extern ModeHook release_skewb;
+extern ModeHook change_skewb;
+extern ModeSpecOpt skewb_opts;
 #endif
 
 #ifdef MODE_slip
@@ -1328,7 +1417,6 @@ extern ModeSpecOpt star_opts;
 extern ModeHook init_starfish;
 extern ModeHook draw_starfish;
 extern ModeHook release_starfish;
-extern ModeHook refresh_starfish;
 extern ModeSpecOpt starfish_opts;
 #endif
 
@@ -1376,6 +1464,7 @@ extern ModeHook init_tetris;
 extern ModeHook draw_tetris;
 extern ModeHook release_tetris;
 extern ModeHook refresh_tetris;
+extern ModeHook change_tetris;
 extern ModeSpecOpt tetris_opts;
 #endif
 
@@ -1477,6 +1566,13 @@ extern ModeHook refresh_worm;
 extern ModeSpecOpt worm_opts;
 #endif
 
+#ifdef MODE_xcl
+extern ModeHook init_xcl;
+extern ModeHook draw_xcl;
+extern ModeHook release_xcl;
+extern ModeSpecOpt xcl_opts;
+#endif
+
 #ifdef MODE_xjack
 extern ModeHook init_xjack;
 extern ModeHook draw_xjack;
@@ -1489,6 +1585,14 @@ extern ModeHook draw_blank;
 extern ModeHook release_blank;
 extern ModeHook refresh_blank;
 extern ModeSpecOpt blank_opts;
+
+#ifdef MODE_run
+extern ModeHook init_run;
+extern ModeHook draw_run;
+extern ModeHook release_run;
+extern ModeHook refresh_run;
+extern ModeSpecOpt run_opts;
+#endif
 
 #ifdef MODE_bomb
 extern ModeHook init_bomb;

@@ -51,7 +51,7 @@ TwoJet Interpolate(const TwoJet v1, const TwoJet v2, const TwoJet weight) {
 }
 
 void printJet(const TwoJet v) {
- printf("%f (%f %f)\n",
+ (void) printf("%f (%f %f)\n",
   v.f,
   v.fu, v.fv
  );

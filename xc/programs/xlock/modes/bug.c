@@ -2,7 +2,7 @@
 /* bug --- Michael Palmiter's simulated evolution */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)bug.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)bug.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,10 +22,11 @@ static const char sccsid[] = "@(#)bug.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 24-Aug-95: Coded from A.K. Dewdney's, "Computer Recreations", Scientific
- *            American Magazine" May 1989 pp138-141 and Sept 1989 p 183.
- *            also used wator.c as a guide.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 24-Aug-1995: Coded from A.K. Dewdney's, "Computer Recreations", Scientific
+ *              American Magazine" May 1989 pp138-141 and Sept 1989 p 183.
+ *              also used wator.c as a guide.
  */
 
 /*-
@@ -61,19 +62,19 @@ static Bool eyes;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".bug.neighbors", XrmoptionSepArg, (caddr_t) NULL},
-	{"-eyes", ".bug.eyes", XrmoptionNoArg, (caddr_t) "on"},
-	{"+eyes", ".bug.eyes", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-neighbors", (char *) ".bug.neighbors", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-eyes", (char *) ".bug.eyes", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+eyes", (char *) ".bug.eyes", XrmoptionNoArg, (caddr_t) "off"},
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int},
-	{(caddr_t *) & eyes, "eyes", "Eyes", DEF_EYES, t_Bool},
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int},
+	{(caddr_t *) & eyes, (char *) "eyes", (char *) "Eyes", (char *) DEF_EYES, t_Bool},
 };
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6"},
-	{"-/+eyes", "turn on/off eyes"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6"},
+	{(char *) "-/+eyes", (char *) "turn on/off eyes"}
 };
 
 ModeSpecOpt bug_opts =
@@ -94,8 +95,9 @@ ModStruct   bug_description =
 #endif
 
 #define BUGBITS(n,w,h)\
-  bp->pixmaps[bp->init_bits++]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1)
+  if ((bp->pixmaps[bp->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_bug(display,bp); return;} else {bp->init_bits++;}
 
 #define BACTERIA 0
 #define BUG 1
@@ -745,29 +747,87 @@ eraseabug(ModeInfo * mi, int col, int row)
 }
 
 static void
+flush_buglist(bugfarmstruct * bp)
+{
+	while (bp->lastbug->previous != bp->firstbug) {
+		bp->currbug = bp->lastbug->previous;
+		bp->currbug->previous->next = bp->lastbug;
+		bp->lastbug->previous = bp->currbug->previous;
+		/*bp->arr[bp->currbug->info.col + bp->currbug->info.row * bp->ncols] = 0; */
+		(void) free((void *) bp->currbug);
+	}
+
+	while (bp->lasttemp->previous != bp->firsttemp) {
+		bp->currbug = bp->lasttemp->previous;
+		bp->currbug->previous->next = bp->lasttemp;
+		bp->lasttemp->previous = bp->currbug->previous;
+		/*bp->arr[bp->currbug->info.col + bp->currbug->info.row * bp->ncols] = 0; */
+		(void) free((void *) bp->currbug);
+	}
+}
+
+static void
+free_buglist(bugfarmstruct *bp)
+{
+	if (bp->firstbug != NULL) {
+		flush_buglist(bp);
+		(void) free((void *) bp->firstbug);
+		bp->firstbug = NULL;
+	}
+	if (bp->lastbug != NULL) {
+		(void) free((void *) bp->lastbug);
+		bp->lastbug = NULL;
+	}
+	if (bp->lasttemp != NULL) {
+		(void) free((void *) bp->lasttemp);
+		bp->lasttemp = NULL;
+	}
+	if (bp->firsttemp != NULL) {
+		(void) free((void *) bp->firsttemp);
+		bp->firsttemp = NULL;
+	}
+}
+
+static Bool
 init_buglist(bugfarmstruct * bp)
 {
 	/* Waste some space at the beginning and end of list
 	   so we do not have to complicated checks against falling off the ends. */
-	bp->lastbug = (BugList *) malloc(sizeof (BugList));
-	bp->firstbug = (BugList *) malloc(sizeof (BugList));
+	if ((bp->lastbug = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return False;
+	}
+	if ((bp->firstbug = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return False;
+	}
 	bp->firstbug->previous = bp->lastbug->next = NULL;
 	bp->firstbug->next = bp->lastbug->previous = NULL;
 	bp->firstbug->next = bp->lastbug;
 	bp->lastbug->previous = bp->firstbug;
 
-	bp->lasttemp = (BugList *) malloc(sizeof (BugList));
-	bp->firsttemp = (BugList *) malloc(sizeof (BugList));
+	if ((bp->lasttemp = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return False;
+	}
+	if ((bp->firsttemp = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return False;
+	}
 	bp->firsttemp->previous = bp->lasttemp->next = NULL;
 	bp->firsttemp->next = bp->lasttemp->previous = NULL;
 	bp->firsttemp->next = bp->lasttemp;
 	bp->lasttemp->previous = bp->firsttemp;
+	return True;
 }
 
 static void
 addto_buglist(bugfarmstruct * bp, bugstruct info)
 {
-	bp->currbug = (BugList *) malloc(sizeof (BugList));
+	if ((bp->currbug = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return;
+	}
 	bp->lastbug->previous->next = bp->currbug;
 	bp->currbug->previous = bp->lastbug->previous;
 	bp->currbug->next = bp->lastbug;
@@ -789,7 +849,10 @@ dupin_buglist(bugfarmstruct * bp)
 {
 	BugList    *temp;
 
-	temp = (BugList *) malloc(sizeof (BugList));
+	if ((temp = (BugList *) malloc(sizeof (BugList))) == NULL) {
+		free_buglist(bp);
+		return;
+	}
 	temp->previous = bp->babybug;
 	temp->next = bp->babybug->next;
 	bp->babybug->next = temp;
@@ -825,26 +888,6 @@ reattach_buglist(bugfarmstruct * bp)
 	bp->lasttemp->previous->next = bp->lastbug;
 	bp->lasttemp->previous = bp->firsttemp;
 	bp->firsttemp->next = bp->lasttemp;
-}
-
-static void
-flush_buglist(bugfarmstruct * bp)
-{
-	while (bp->lastbug->previous != bp->firstbug) {
-		bp->currbug = bp->lastbug->previous;
-		bp->currbug->previous->next = bp->lastbug;
-		bp->lastbug->previous = bp->currbug->previous;
-		/*bp->arr[bp->currbug->info.col + bp->currbug->info.row * bp->ncols] = 0; */
-		(void) free((void *) bp->currbug);
-	}
-
-	while (bp->lasttemp->previous != bp->firsttemp) {
-		bp->currbug = bp->lasttemp->previous;
-		bp->currbug->previous->next = bp->lasttemp;
-		bp->lasttemp->previous = bp->currbug->previous;
-		/*bp->arr[bp->currbug->info.col + bp->currbug->info.row * bp->ncols] = 0; */
-		(void) free((void *) bp->currbug);
-	}
 }
 
 static int
@@ -918,7 +961,7 @@ static void
 makebacteria(ModeInfo * mi,
 	     int n, int startx, int starty, int width, int height, Bool draw)
 {
-	int         nbacteria = 0, ntries = 0, col = 0, row, colrow;
+	int         nbacteria = 0, ntries = 0, col, row, colrow;
 	bugfarmstruct *bp = &bugfarms[MI_SCREEN(mi)];
 
 	/* Make bacteria but if can not, exit */
@@ -956,6 +999,49 @@ redrawbacteria(ModeInfo * mi, int colrow)
 	drawabacterium(mi, col, row, True);
 }
 
+static void
+free_bug(Display *display, bugfarmstruct *bp)
+{
+	int         shade;
+
+	if (bp->stippledGC != None) {
+		XFreeGC(display, bp->stippledGC);
+		bp->stippledGC = None;
+	}
+	for (shade = 0; shade < bp->init_bits; shade++) {
+		if (bp->pixmaps[shade] != None) {
+			XFreePixmap(display, bp->pixmaps[shade]);
+			bp->pixmaps[shade] = None;
+		}
+	}
+	bp->init_bits = 0;
+	if (bp->firstbug != NULL) {
+		flush_buglist(bp);
+		(void) free((void *) bp->firstbug);
+		bp->firstbug = NULL;
+	}
+	if (bp->lastbug != NULL) {
+		(void) free((void *) bp->lastbug);
+		bp->lastbug = NULL;
+	}
+	if (bp->lasttemp != NULL) {
+		(void) free((void *) bp->lasttemp);
+		bp->lasttemp = NULL;
+	}
+	if (bp->firsttemp != NULL) {
+		(void) free((void *) bp->firsttemp);
+		bp->firsttemp = NULL;
+	}
+	if (bp->arr != NULL) {
+		(void) free((void *) bp->arr);
+		bp->arr = NULL;
+	}
+	if (bp->bacteria != NULL) {
+		(void) free((void *) bp->bacteria);
+		bp->bacteria = NULL;
+	}
+}
+
 void
 init_bug(ModeInfo * mi)
 {
@@ -963,11 +1049,11 @@ init_bug(ModeInfo * mi)
 	Window      window = MI_WINDOW(mi);
 	int         size = MI_SIZE(mi);
 	XGCValues   gcv;
-	bugfarmstruct *bp;
 	int         nbugs = 0, ntries = 0, col = 0, row, gene, colrow, i;
 	int         nccols, ncrows;
 	double      sum;
 	bugstruct   info;
+	bugfarmstruct *bp;
 
 	if (bugfarms == NULL) {
 		if ((bugfarms = (bugfarmstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -975,21 +1061,30 @@ init_bug(ModeInfo * mi)
 			return;
 	}
 	bp = &bugfarms[MI_SCREEN(mi)];
+
 	if (MI_NPIXELS(mi) <= 3) {
 		if (bp->stippledGC == None) {
 			gcv.fill_style = FillOpaqueStippled;
-			bp->stippledGC = XCreateGC(display, window, GCFillStyle, &gcv);
+			if ((bp->stippledGC = XCreateGC(display, window,
+					GCFillStyle, &gcv)) == None) {
+				free_bug(display, bp);
+				return;
+			}
 		}
 		if (bp->init_bits == 0) {
-			for (i = 1; i < NUMSTIPPLES; i++)
+			for (i = 1; i < NUMSTIPPLES; i++) {
 				BUGBITS(stipples[i], STIPPLESIZE, STIPPLESIZE);
+			}
 		}
 	}
 	bp->generation = 0;
-	if (!bp->firstbug) {	/* Genesis */
+	if (bp->firstbug == NULL) {	/* Genesis */
 		/* Set up what will be a 'triply' linked list.
 		   doubly linked list, doubly linked to an array */
-		init_buglist(bp);
+		if (!init_buglist(bp)) {
+			free_bug(display, bp);
+			return;
+		}
 		genexp[MAXGENE] = 1;
 		for (i = 1; i <= MAXGENE; i++) {
 			genexp[MAXGENE + i] = genexp[MAXGENE + i - 1] * M_E;
@@ -1045,11 +1140,18 @@ init_bug(ModeInfo * mi)
 	bp->yb = (bp->height - bp->ys * ncrows) / 2;
 	if (bp->arr != NULL)
 		(void) free((void *) bp->arr);
-	bp->arr = (BugList **) calloc(bp->ncols * bp->nrows, sizeof (BugList *));
+	if ((bp->arr = (BugList **) calloc(bp->ncols * bp->nrows,
+			sizeof (BugList *))) == NULL) {
+		free_bug(display, bp);
+		return;
+	}
 	if (bp->bacteria != NULL)
 		(void) free((void *) bp->bacteria);
-	bp->bacteria = (char *) calloc(bp->ncols * bp->nrows, sizeof (char));
-
+	if ((bp->bacteria = (char *) calloc(bp->ncols * bp->nrows,
+			sizeof (char))) == NULL) {
+		free_bug(display, bp);
+		return;
+	}
 	bp->edenheight = bp->nrows / 4;
 	bp->edenwidth = bp->ncols / 4;
 	if ((bp->neighbors % 2) || bp->neighbors == 12) {
@@ -1158,6 +1260,10 @@ init_bug(ModeInfo * mi)
 			info.col = col;
 			info.row = row;
 			addto_buglist(bp, info);
+			if (bp->firstbug == NULL) {
+				free_bug(display, bp);
+				return;
+			}
 			bp->arr[colrow] = bp->currbug;
 			drawabug(mi, col, row, bp->currbug->info.color, (int) bp->currbug->info.direction * ANGLES / bp->neighbors);
 		}
@@ -1175,12 +1281,17 @@ init_bug(ModeInfo * mi)
 void
 draw_bug(ModeInfo * mi)
 {
-	bugfarmstruct *bp = &bugfarms[MI_SCREEN(mi)];
 	int         col, row, ncol = -1, nrow = -1, colrow, ncolrow;
 	int         absdir = 0, tryit, dir;
+	bugfarmstruct *bp;
+
+	if (bugfarms == NULL)
+		return;
+	bp = &bugfarms[MI_SCREEN(mi)];
+	if (bp->firstbug == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	bp->painted = True;
 	bp->currbug = bp->firstbug->next;
 	while (bp->currbug != bp->lastbug) {
@@ -1243,6 +1354,10 @@ draw_bug(ModeInfo * mi)
 					bp->babybug->info.age = 0;
 					bp->babybug->info.energy = INITENERGY;
 					dupin_buglist(bp);
+					if (bp->firstbug == NULL) {
+						free_bug(MI_DISPLAY(mi), bp);
+						return;
+					}
 					mutatebug(&bp->babybug->previous->info, bp->neighbors);
 					mutatebug(&bp->babybug->info, bp->neighbors);
 					bp->arr[colrow] = bp->babybug;
@@ -1286,28 +1401,8 @@ release_bug(ModeInfo * mi)
 	if (bugfarms != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			bugfarmstruct *bp = &bugfarms[screen];
-			int         shade;
-
-			if (bp->stippledGC != None) {
-				XFreeGC(MI_DISPLAY(mi), bp->stippledGC);
-			}
-			for (shade = 0; shade < bp->init_bits; shade++) {
-				if (bp->pixmaps[shade])
-					XFreePixmap(MI_DISPLAY(mi), bp->pixmaps[shade]);
-			}
-			if (bp->firstbug)
-				flush_buglist(bp);
-			(void) free((void *) bp->lastbug);
-			(void) free((void *) bp->firstbug);
-			(void) free((void *) bp->lasttemp);
-			(void) free((void *) bp->firsttemp);
-			if (bp->arr != NULL)
-				(void) free((void *) bp->arr);
-			if (bp->bacteria != NULL)
-				(void) free((void *) bp->bacteria);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_bug(MI_DISPLAY(mi), &bugfarms[screen]);
 		(void) free((void *) bugfarms);
 		bugfarms = NULL;
 	}
@@ -1316,7 +1411,11 @@ release_bug(ModeInfo * mi)
 void
 refresh_bug(ModeInfo * mi)
 {
-	bugfarmstruct *bp = &bugfarms[MI_SCREEN(mi)];
+	bugfarmstruct *bp;
+
+	if (bugfarms == NULL)
+		return;
+	bp = &bugfarms[MI_SCREEN(mi)];
 
 	if (bp->painted) {
 		MI_CLEARWINDOW(mi);

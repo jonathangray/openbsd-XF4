@@ -2,7 +2,7 @@
 /* bounce --- bouncing footballs */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)bounce.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)bounce.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,22 +22,25 @@ static const char sccsid[] = "@(#)bounce.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 01-Apr-97: Curtis Larsen <larsen@rtp3.med.utah.edu>
- * The modification is only for the inroot mode.  It causes the balls to see
- * children of the root window and bounce off of the sides of them.  New
- * windows are only recognized after every init_bounce, because fvwm did not
- * like xlock setting SubstructureNotifyMask on root.  I did not fix the
- * initial placement of balls yet, so they can start out underneath windows.
- * 18-Sep-95: tinkered with it to look like bat.c .
- * 15-Jul-94: cleaned up in time for the final match.
- * 4-Apr-94: spinning multiple ball version
- *             (I got a lot of help from with the physics of ball to ball
- *             collision looking at the source of xpool from Ismail ARIT
- *             <iarit@tara.mines.colorado.edu>
- * 22-Mar-94: got rid of flashing problem by only erasing parts of the image
- *             that will not be in the next image.
- * 2-Sep-93: xlock version David Bagley <bagleyd@tux.org>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 01-Apr-1997: Curtis Larsen <larsen@rtp3.med.utah.edu>
+ *              The modification is only for the inroot option.  It causes
+ *              the balls to see  children of the root window and bounce
+ *              off of the sides of them.  New windows are only recognized
+ *              after every init_bounce, because fvwm did not like xlock
+ *              setting SubstructureNotifyMask on root.  I did not fix the
+ *              initial placement of balls yet, so they can start out
+ *              underneath windows.
+ * 18-Sep-1995: tinkered with it to look like bat.c .
+ * 15-Jul-1994: cleaned up in time for the final match.
+ * 04-Apr-1994: spinning multiple ball version
+ *              (I got a lot of help from with the physics of ball to ball
+ *              collision looking at the source of xpool from Ismail ARIT
+ *              <iarit@tara.mines.colorado.edu>
+ * 22-Mar-1994: got rid of flashing problem by only erasing parts of the
+ *              image that will not be covered up by the next image.
+ * 02-Sep-1993: xlock version David Bagley <bagleyd@tux.org>
  * 1986: Sun Microsystems
  */
 
@@ -89,13 +92,15 @@ static const char sccsid[] = "@(#)bounce.c	4.07 97/11/24 xlockmore";
 #include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 #include "xlock.h"		/* in xlockmore distribution */
-
+#include "vis.h"
+#include "color.h"
 #endif /* STANDALONE */
+#include "iostuff.h"
 
 #ifdef MODE_bounce
 
 ModeSpecOpt bounce_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   bounce_description =
@@ -111,9 +116,24 @@ ModStruct   bounce_description =
 #include "bitmaps/bounce-2.xbm"
 #include "bitmaps/bounce-3.xbm"
 #include "bitmaps/bounce-mask.xbm"
+
 #define BALLBITS(n,w,h)\
-  bp->pixmaps[bp->init_orients++]=\
-		XCreateBitmapFromData(display,window,(char *)n,w,h)
+  if ((bp->pixmaps[bp->init_orients]=\
+  XCreateBitmapFromData(display,window,(char *)n,w,h))==None){\
+  free_bounce(display,bp); return False;} else {bp->init_orients++;}
+
+/* aliases for vars defined in the bitmap file */
+#define BOUNCE_WIDTH     image_width
+#define BOUNCE_HEIGHT    image_height
+#define BOUNCE_BITS      image_bits
+
+#include "bounce.xbm"
+
+#if defined( USE_XPM ) || defined( USE_XPMINC )
+#define BOUNCE_NAME      image_name
+#include "bounce.xpm"
+#define DEFAULT_XPM 1
+#endif
 
 #define MAX_STRENGTH 24
 #define FRICTION 24
@@ -122,7 +142,7 @@ ModStruct   bounce_description =
 #define TIME 32
 #define MINBALLS 1
 #define MINSIZE 1
-#define MINGRIDSIZE 6
+#define MINGRIDSIZE 5
 
 #define ORIENTS 4
 #define ORIENTCYCLE 16
@@ -150,6 +170,11 @@ typedef struct {
 	int         restartnum;
 	int         pixelmode;
 	ballstruct *balls;
+	int         graphics_format;
+	GC          backGC;
+	XImage     *logo;
+	unsigned long black;
+	Colormap    cmap;
 	GC          stippledGC;
 	Pixmap      pixmaps[ORIENTS + 1];
 	int         init_orients;
@@ -214,41 +239,53 @@ drawball(ModeInfo * mi, ballstruct * ball)
 	Window      window = MI_WINDOW(mi);
 	bouncestruct *bp = &bounces[MI_SCREEN(mi)];
 
-	if (bp->pixelmode) {
-		if (ball->xlast != -1) {
-			XSetForeground(display, MI_GC(mi), MI_BLACK_PIXEL(mi));
-			XFillRectangle(display, window, MI_GC(mi),
-				   ball->xlast, ball->ylast, bp->xs, bp->ys);
-		}
-		XSetForeground(display, MI_GC(mi), ball->color);
-		XFillRectangle(display, window, MI_GC(mi),
-			       ball->x, ball->y, bp->xs, bp->ys);
-	} else {
-		if (ball->xlast != -1) {
+	if (ball->xlast != -1) {
+		if (bp->logo && !bp->pixelmode) {
+			XSetForeground(display, bp->backGC, bp->black);
+#ifdef FLASH
+			XFillRectangle(display, window, bp->backGC,
+				ball->xlast, ball->ylast, bp->xs, bp->ys);
+#else
+			ERASE_IMAGE(display, window, bp->backGC,
+				ball->x, ball->y, ball->xlast, ball->ylast,
+				bp->xs, bp->ys);
+#endif
+		} else {
 			XSetForeground(display, bp->stippledGC, MI_BLACK_PIXEL(mi));
-			XSetStipple(display, bp->stippledGC, bp->pixmaps[ORIENTS]);
+			XSetStipple(display, bp->stippledGC,
+				bp->pixmaps[(bp->pixelmode) ? 0 : ORIENTS]);
 			XSetFillStyle(display, bp->stippledGC, FillStippled);
-			XSetTSOrigin(display, bp->stippledGC, ball->xlast, ball->ylast);
+			XSetTSOrigin(display, bp->stippledGC,
+				ball->xlast, ball->ylast);
 #ifdef FLASH
 			XFillRectangle(display, window, bp->stippledGC,
-				   ball->xlast, ball->ylast, bp->xs, bp->ys);
+				ball->xlast, ball->ylast, bp->xs, bp->ys);
 #else
-			ERASE_IMAGE(display, window, bp->stippledGC, ball->x, ball->y,
-				    ball->xlast, ball->ylast, bp->xs, bp->ys);
+			ERASE_IMAGE(display, window, bp->stippledGC,
+				ball->x, ball->y, ball->xlast, ball->ylast,
+				bp->xs, bp->ys);
 #endif
 		}
+	}
+	if (bp->logo && !bp->pixelmode) {
+	        XSetForeground(display, bp->backGC, ball->color);
+                if (bp->logo)
+                        (void) XPutImage(display, window, bp->backGC, bp->logo,
+                                 0, 0, ball->x, ball->y, bp->xs, bp->ys);
+	} else {
 		XSetTSOrigin(display, bp->stippledGC, ball->x, ball->y);
 		XSetForeground(display, bp->stippledGC, ball->color);
-		XSetStipple(display, bp->stippledGC, bp->pixmaps[ball->orient]);
+		XSetStipple(display, bp->stippledGC,
+			bp->pixmaps[(bp->pixelmode) ? 0 : ball->orient]);
 #ifdef FLASH
 		XSetFillStyle(display, bp->stippledGC, FillStippled);
 #else
 		XSetFillStyle(display, bp->stippledGC, FillOpaqueStippled);
 #endif
 		XFillRectangle(display, window, bp->stippledGC,
-			       ball->x, ball->y, bp->xs, bp->ys);
-		XFlush(display);
+			ball->x, ball->y, bp->xs, bp->ys);
 	}
+	XFlush(display);
 }
 
 static void
@@ -387,7 +424,7 @@ collide(bouncestruct * bp, int aball)
 }
 
 static void
-bounce_windows(ModeInfo * mi, bouncestruct * bs)
+bounce_windows(ModeInfo * mi, bouncestruct * bp)
 {
 	Window      root, parent, *children;
 	unsigned int nchildren;
@@ -395,20 +432,24 @@ bounce_windows(ModeInfo * mi, bouncestruct * bs)
 	int         n;
 
 	if (!MI_IS_INROOT(mi)) {
-		bs->nwindow = 0;
+		bp->nwindow = 0;
 		return;
 	}
 	if (XQueryTree(MI_DISPLAY(mi), MI_WINDOW(mi),
 		       &root, &parent, &children, &nchildren) == 0) {	/* failure */
-		bs->nwindow = 0;
+		bp->nwindow = 0;
 		return;
 	}
-	bs->nwindow = nchildren;
-	if (bs->windows != NULL) {
-		(void) free((void *) bs->windows);
+	bp->nwindow = nchildren;
+	if (bp->windows != NULL)
+		(void) free((void *) bp->windows);
+	if ((bp->windows = (ballwindow *) malloc(bp->nwindow *
+			sizeof (ballwindow))) == NULL) {
+		XFree((caddr_t) children);
+		bp->nwindow = 0;
+		return; 
 	}
-	bs->windows = (ballwindow *) malloc(bs->nwindow * sizeof (ballwindow));
-	for (n = 0, i = 0; i < bs->nwindow; i++) {
+	for (n = 0, i = 0; i < bp->nwindow; i++) {
 		XWindowAttributes att;
 
 /*-
@@ -417,11 +458,14 @@ bounce_windows(ModeInfo * mi, bouncestruct * bs)
    Major opcode of failed request:  3 (X_GetWindowAttributes)
  */
 		if (XGetWindowAttributes(MI_DISPLAY(mi), children[i], &att) == 0) {	/* failure */
-			bs->nwindow = 0;
+			XFree((caddr_t) children);
+			bp->nwindow = 0;
+			(void) free((void *) bp->windows);
+			bp->windows = NULL;
 			return;
 		}
-		if ((att.x < 0) || (att.x > bs->width) ||
-		    (att.y < 0) || (att.y > bs->height) ||
+		if ((att.x < 0) || (att.x > bp->width) ||
+		    (att.y < 0) || (att.y > bp->height) ||
 #if defined(__cplusplus) || defined(c_plusplus)
 		    (att.c_class != InputOutput) ||
 #else
@@ -430,15 +474,107 @@ bounce_windows(ModeInfo * mi, bouncestruct * bs)
 		    (att.map_state != IsViewable)) {
 			continue;
 		}
-		bs->windows[n].x = att.x;
-		bs->windows[n].y = att.y;
-		bs->windows[n].width = att.width;
-		bs->windows[n].height = att.height;
+		bp->windows[n].x = att.x;
+		bp->windows[n].y = att.y;
+		bp->windows[n].width = att.width;
+		bp->windows[n].height = att.height;
 		n++;
 	}
-	bs->nwindow = n;
+	bp->nwindow = n;
 	XFree((caddr_t) children);
 	return;
+}
+
+static void
+free_stuff(Display * display, bouncestruct * bp)
+{
+	int bits;
+
+	for (bits = 0; bits < bp->init_orients; bits++) {
+		if (bp->pixmaps[bits] != None) {
+			XFreePixmap(display, bp->pixmaps[bits]);
+			bp->pixmaps[bits] = None;
+		}
+	}
+	bp->init_orients = 0;
+	if (bp->cmap != None) {
+		XFreeColormap(display, bp->cmap);
+		if (bp->backGC != None) {
+			XFreeGC(display, bp->backGC);
+			bp->backGC = None;
+		}
+		bp->cmap = None;
+	} else
+		bp->backGC = None;
+	if (bp->logo != None) {
+		destroyImage(&bp->logo, &bp->graphics_format);
+		bp->logo = None;
+	}
+}
+
+static void
+free_bounce(Display *display, bouncestruct *bp)
+{
+	if (bp->balls != NULL) {
+		(void) free((void *) bp->balls);
+		bp->balls = NULL;
+	}
+	free_stuff(display, bp);
+	if (bp->stippledGC != None) {
+		XFreeGC(display, bp->stippledGC);
+		bp->stippledGC = None;
+	}
+	if (bp->windows != NULL) {
+		(void) free((void *) bp->windows);
+		bp->windows = NULL;
+	}
+
+}
+static Bool
+init_stuff(ModeInfo * mi)
+{
+        Display    *display = MI_DISPLAY(mi);
+        Window      window = MI_WINDOW(mi);
+        bouncestruct *bp = &bounces[MI_SCREEN(mi)];
+	XGCValues   gcv;
+
+        if (MI_BITMAP(mi) && strlen(MI_BITMAP(mi))) {
+                if (bp->logo == None) {
+                  getImage(mi, &bp->logo, BOUNCE_WIDTH, BOUNCE_HEIGHT, BOUNCE_BITS,
+#if defined( USE_XPM ) || defined( USE_XPMINC )
+                         DEFAULT_XPM, BOUNCE_NAME,
+#endif
+                         &bp->graphics_format, &bp->cmap, &bp->black);
+                	if (bp->logo == None) {
+				free_bounce(display, bp);
+				return False;
+			}
+		}
+	} else {
+		BALLBITS(bounce0_bits, bounce0_width, bounce0_height);
+		BALLBITS(bounce1_bits, bounce1_width, bounce1_height);
+		BALLBITS(bounce2_bits, bounce2_width, bounce2_height);
+		BALLBITS(bounce3_bits, bounce3_width, bounce3_height);
+		BALLBITS(bouncemask_bits, bouncemask_width, bouncemask_height);
+	}
+        if (bp->cmap != None) {
+
+#ifndef STANDALONE
+                setColormap(display, window, bp->cmap, MI_IS_INWINDOW(mi));
+#endif
+                if (bp->backGC == None) {
+                        gcv.background = bp->black;
+                        if ((bp->backGC = XCreateGC(display, window,
+					GCBackground, &gcv)) == None) {
+				free_bounce(display, bp);
+				return False;
+                	}
+                }
+        } else {
+                bp->black = MI_BLACK_PIXEL(mi);
+                bp->backGC = MI_GC(mi);
+        }
+	return True;
 }
 
 void
@@ -448,8 +584,8 @@ init_bounce(ModeInfo * mi)
 	Window      window = MI_WINDOW(mi);
 	int         size = MI_SIZE(mi);
 	bouncestruct *bp;
-	XGCValues   gcv;
 	int         i, tryagain = 0;
+	XGCValues   gcv;
 
 	if (bounces == NULL) {
 		if ((bounces = (bouncestruct *) calloc(MI_NUM_SCREENS(mi),
@@ -458,20 +594,7 @@ init_bounce(ModeInfo * mi)
 	}
 	bp = &bounces[MI_SCREEN(mi)];
 
-	if (!bp->stippledGC) {
-		gcv.foreground = MI_BLACK_PIXEL(mi);
-		gcv.background = MI_BLACK_PIXEL(mi);
-		if ((bp->stippledGC = XCreateGC(display, window,
-				 GCForeground | GCBackground, &gcv)) == None)
-			return;
-	}
-	if (!bp->init_orients) {
-		BALLBITS(bounce0_bits, bounce0_width, bounce0_height);
-		BALLBITS(bounce1_bits, bounce1_width, bounce1_height);
-		BALLBITS(bounce2_bits, bounce2_width, bounce2_height);
-		BALLBITS(bounce3_bits, bounce3_width, bounce3_height);
-		BALLBITS(bouncemask_bits, bouncemask_width, bouncemask_height);
-	}
+	free_stuff(display, bp);
 	bp->width = MI_WIDTH(mi);
 	bp->height = MI_HEIGHT(mi);
 	if (bp->width < 2)
@@ -490,19 +613,41 @@ init_bounce(ModeInfo * mi)
 		bp->nballs = NRAND(-bp->nballs - MINBALLS + 1) + MINBALLS;
 	} else if (bp->nballs < MINBALLS)
 		bp->nballs = MINBALLS;
-	if (!bp->balls)
-		bp->balls = (ballstruct *) malloc(bp->nballs * sizeof (ballstruct));
+	if (bp->balls == NULL) {
+		if ((bp->balls = (ballstruct *) malloc(bp->nballs *
+				sizeof (ballstruct))) == NULL) {
+			free_bounce(display, bp);
+			return;
+		}
+	}
+	if (!init_stuff(mi))
+		return;
+	if (bp->stippledGC == None) {
+		gcv.foreground = MI_BLACK_PIXEL(mi);
+		gcv.background = MI_BLACK_PIXEL(mi);
+		if ((bp->stippledGC = XCreateGC(display, window,
+			 GCForeground | GCBackground, &gcv)) == None) {
+			free_bounce(display, bp);
+			return;
+		}
+	}
 	if (size == 0 ||
 	 MINGRIDSIZE * size > bp->width || MINGRIDSIZE * size > bp->height) {
-		if (bp->width > MINGRIDSIZE * bounce0_width &&
-		    bp->height > MINGRIDSIZE * bounce0_height) {
+		if (bp->logo) {
+                        bp->xs = bp->logo->width;
+                        bp->ys = bp->logo->height;
+                } else {
+                        bp->xs = bounce0_width;
+                        bp->ys = bounce0_height;
+                }
+		if (bp->width > MINGRIDSIZE * bp->xs &&
+		    bp->height > MINGRIDSIZE * bp->ys) {
 			bp->pixelmode = False;
-			bp->xs = bounce0_width;
-			bp->ys = bounce0_height;
 		} else {
 			bp->pixelmode = True;
 			bp->ys = MAX(MINSIZE, MIN(bp->width, bp->height) / MINGRIDSIZE);
 			bp->xs = bp->ys;
+			free_stuff(display, bp);
 		}
 	} else {
 		bp->pixelmode = True;
@@ -515,6 +660,37 @@ init_bounce(ModeInfo * mi)
 			bp->ys = MIN(size, MAX(MINSIZE, MIN(bp->width, bp->height) /
 					       MINGRIDSIZE));
 		bp->xs = bp->ys;
+	}
+	if (bp->pixelmode) {
+		GC fg_gc, bg_gc;
+
+  		if ((bp->pixmaps[0] = XCreatePixmap(display, window,
+				bp->xs, bp->ys, 1)) == None) {
+			free_bounce(display, bp);
+			return;
+		}
+		bp->init_orients = 1;
+		gcv.foreground = 0;
+		gcv.background = 1;
+		if ((bg_gc = XCreateGC(display, bp->pixmaps[0],
+				 GCForeground | GCBackground, &gcv)) == None) {
+			free_bounce(display, bp);
+			return;
+		}
+		gcv.foreground = 1;
+		gcv.background = 0;
+		if ((fg_gc = XCreateGC(display, bp->pixmaps[0],
+				 GCForeground | GCBackground, &gcv)) == None) {
+			XFreeGC(display, bg_gc);
+			free_bounce(display, bp);
+			return;
+		}
+		XFillRectangle(display, bp->pixmaps[0], bg_gc,
+			0, 0, bp->xs, bp->ys);
+		XFillArc(display, bp->pixmaps[0], fg_gc,
+			0, 0, bp->xs, bp->ys, 0, 23040);
+		XFreeGC(display, bg_gc);
+		XFreeGC(display, fg_gc);
 	}
 	bp->avgsize = (bp->xs + bp->ys) / 2;
 	i = 0;
@@ -547,11 +723,16 @@ init_bounce(ModeInfo * mi)
 void
 draw_bounce(ModeInfo * mi)
 {
-	bouncestruct *bp = &bounces[MI_SCREEN(mi)];
 	int         i;
+	bouncestruct *bp;
+
+	if (bounces == NULL)
+		return;
+	bp = &bounces[MI_SCREEN(mi)];
+	if (bp->balls == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	for (i = 0; i < bp->nballs; i++) {
 		drawball(mi, &bp->balls[i]);
 		moveball(mi, &bp->balls[i]);
@@ -570,17 +751,8 @@ release_bounce(ModeInfo * mi)
 	if (bounces != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			bouncestruct *bp = &bounces[screen];
-			int         bits;
-
-			if (bp->balls != NULL)
-				(void) free((void *) bp->balls);
-			if (bp->stippledGC != NULL)
-				XFreeGC(MI_DISPLAY(mi), bp->stippledGC);
-			for (bits = 0; bits < bp->init_orients; bits++)
-				XFreePixmap(MI_DISPLAY(mi), bp->pixmaps[bits]);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_bounce(MI_DISPLAY(mi), &bounces[screen]);
 		(void) free((void *) bounces);
 		bounces = NULL;
 	}

@@ -2,7 +2,7 @@
 /* decay --- decayscreen */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)decay.c  4.14 99/03/17 xlockmore";
+static const char sccsid[] = "@(#)decay.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -18,7 +18,12 @@ static const char sccsid[] = "@(#)decay.c  4.14 99/03/17 xlockmore";
  * implied warranty.
  */
 
-/* decayscreen
+/*
+ * Revision History:
+ * 01-Nov-2000: Allocation checks
+ * 17-Mar-1999: Converted from xscreensaver's decayscreen
+ * 
+ * decayscreen
  *
  * Based on slidescreen program from the xscreensaver application and the
  * decay program for Sun framebuffers.  This is the comment from the decay.c
@@ -62,7 +67,7 @@ static const char sccsid[] = "@(#)decay.c  4.14 99/03/17 xlockmore";
 extern Bool hide;
 
 ModeSpecOpt decay_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   decay_description =
@@ -114,19 +119,42 @@ static decaystruct *	decay_info = NULL;
 #define	DEGREE	1
 
 static void
-init_stuff(ModeInfo * mi)
+free_decay(Display * display, decaystruct * dp)
+{
+	if (dp->cmap != None) {
+		XFreeColormap(display, dp->cmap);
+		if (dp->backGC != None) {
+			XFreeGC(display, dp->backGC);
+			dp->backGC = None;
+		}
+		dp->cmap = None;
+	} else
+		dp->backGC = None;
+	if (dp->hide && (dp->logo != None)) {
+		destroyImage(&dp->logo, &dp->graphics_format);
+		dp->logo = None;
+	}
+}
+
+static void
+alloc_decay(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	decaystruct *dp = &decay_info[MI_SCREEN(mi)];
 
 	if (dp->hide) {
-		if  (!dp->logo)
+		if (dp->logo == None) {
 			getImage(mi, &dp->logo, DECAY_WIDTH, DECAY_HEIGHT, DECAY_BITS,
 #if defined( USE_XPM ) || defined( USE_XPMINC )
 				DEFAULT_XPM, DECAY_NAME,
 #endif
 				&dp->graphics_format, &dp->cmap, &dp->black);
+			if (dp->logo == None) {
+				free_decay(display, dp);
+				return;
+			}
+		}
 #ifndef STANDALONE
 		if (dp->cmap != None) {
 			setColormap(display, window, dp->cmap, MI_IS_INWINDOW(mi));
@@ -135,6 +163,10 @@ init_stuff(ModeInfo * mi)
 
 				xgcv.background = dp->black;
 				dp->backGC = XCreateGC(display, window, GCBackground, &xgcv);
+				if (dp->backGC == None) {
+					free_decay(display, dp);
+					return;
+				}
 			}
 		} else
 #endif /* STANDALONE */
@@ -151,45 +183,21 @@ init_stuff(ModeInfo * mi)
 #endif /* STANDALONE */
 }
 
-static void
-free_stuff(Display * display, decaystruct * dp)
-{
-	if (dp->cmap != None) {
-		XFreeColormap(display, dp->cmap);
-		if (dp->backGC != None) {
-			XFreeGC(display, dp->backGC);
-			dp->backGC = None;
-		}
-		dp->cmap = None;
-	} else
-		dp->backGC = None;
-}
-
-static void
-free_decay(Display * display, decaystruct * dp)
-{
-	free_stuff(display, dp);
-	if (dp->hide && dp->logo) {
-		destroyImage(&dp->logo, &dp->graphics_format);
-		dp->logo = None;
-	}
-}
-
 void
-init_decay (ModeInfo * mi)
+init_decay(ModeInfo * mi)
 {
 	Display *display = MI_DISPLAY(mi);
 	Window window = MI_WINDOW(mi);
 	decaystruct *dp;
 
-	char *s = "random";
+	char *s = (char*) "random";
 
-	if (decay_info == NULL)
-		decay_info = (decaystruct *) calloc(MI_NUM_SCREENS(mi),
-						sizeof(decaystruct));
-	if(decay_info == NULL) return;
+	if (decay_info == NULL) {
+		if ((decay_info = (decaystruct *) calloc(MI_NUM_SCREENS(mi),
+						sizeof(decaystruct))) == NULL)
+			return;
+	}
 	dp = &decay_info[MI_SCREEN(mi)];
-
 
 	if      (s && !strcmp(s, "shuffle")) dp->mode = SHUFFLE;
 	else if (s && !strcmp(s, "up")) dp->mode = UP;
@@ -205,7 +213,7 @@ init_decay (ModeInfo * mi)
 	else {
 		if (s && *s && !!strcmp(s, "random"))
 			(void) fprintf(stderr, "%s: unknown mode %s\n", ProgramName, s);
-		dp->mode = LRAND() % (OUT+1);
+		dp->mode = (int) (LRAND() % (OUT+1));
 	}
 
 	if (MI_IS_FULLRANDOM(mi) && !hide)
@@ -216,9 +224,11 @@ init_decay (ModeInfo * mi)
 
 	dp->windowsize.x = MI_WIDTH(mi);
 	dp->windowsize.y = MI_HEIGHT(mi);
-	init_stuff(mi);
+	alloc_decay(mi);
+	if (!dp->backGC)
+		return;
 	if (dp->hide) {
-  		/* don't want any exposure events from XCopyArea */
+  		/* do not want any exposure events from XCopyArea */
   		XSetGraphicsExposures(display, dp->backGC, False);
 		MI_CLEARWINDOWCOLORMAP(mi, dp->backGC, dp->black);
 		dp->randompos.x =
@@ -267,8 +277,13 @@ draw_decay (ModeInfo * mi)
     static int upright_bias[]   = { L,L,L,R, R,R,R,R, U,U,U,U, U,D,D,D };
     static int downright_bias[] = { L,L,L,R, R,R,R,R, U,U,U,D, D,D,D,D };
     static int *bias;
+    decaystruct * dp;
 
-    decaystruct * dp = &decay_info[MI_SCREEN(mi)];
+	if (decay_info == NULL)
+		return;
+	dp = &decay_info[MI_SCREEN(mi)];
+	if (dp->backGC == None)
+		return;
 
     switch (dp->mode) {
       case SHUFFLE:	bias = no_bias; break;
@@ -330,28 +345,29 @@ void
 refresh_decay(ModeInfo * mi)
 {
 #if defined( USE_XPM ) || defined( USE_XPMINC )
-	decaystruct *dp = &decay_info[MI_SCREEN(mi)];
+	decaystruct *dp;
 
-        if (dp->graphics_format >= IS_XPM) {
-                /* This is needed when another program changes the colormap. */
-                free_decay(MI_DISPLAY(mi), dp);
-                init_decay(mi);
-                return;
-        }
+	if (decay_info == NULL)
+		return;
+	dp = &decay_info[MI_SCREEN(mi)];
+
+	if (dp->graphics_format >= IS_XPM) {
+		/* This is needed when another program changes the colormap. */
+		free_decay(MI_DISPLAY(mi), dp);
+		init_decay(mi);
+		return;
+	}
 #endif
 }
 
 void
 release_decay(ModeInfo * mi)
 {
-  if (decay_info != NULL) {
+	if (decay_info != NULL) {
 		int	screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			decaystruct *dp = &decay_info[screen];
-
-			free_decay(MI_DISPLAY(mi), dp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_decay(MI_DISPLAY(mi), &decay_info[screen]);
 		(void) free((void *) decay_info);
 		decay_info = NULL;
 	}

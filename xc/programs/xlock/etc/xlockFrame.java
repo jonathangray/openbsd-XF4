@@ -48,6 +48,8 @@ String[] booleanOption={
 "-inroot ",
 "-timeelapsed ",
 "-install ",
+"-wireframe ",
+"-showfps ",
 "-use3d "};
 Checkbox bopt[]=new Checkbox[15];
  public void init()
@@ -84,7 +86,6 @@ lst.addItem("bubble");
 lst.addItem("bubble3d");
 lst.addItem("bug");
 lst.addItem("cage");
-lst.addItem("cartoon");
 lst.addItem("clock");
 lst.addItem("coral");
 lst.addItem("crystal");
@@ -94,16 +95,20 @@ lst.addItem("decay");
 lst.addItem("deco");
 lst.addItem("demon");
 lst.addItem("dilemma");
+lst.addItem("dragon");
 lst.addItem("discrete");
 lst.addItem("drift");
+lst.addItem("euler2d");
 lst.addItem("eyes");
 lst.addItem("fadeplot");
+lst.addItem("fire");
 lst.addItem("flag");
 lst.addItem("flame");
 lst.addItem("flow");
 lst.addItem("forest");
 lst.addItem("galaxy");
 lst.addItem("gears");
+lst.addItem("glplanet");
 lst.addItem("goop");
 lst.addItem("grav");
 lst.addItem("helix");
@@ -140,14 +145,19 @@ lst.addItem("pacman");
 lst.addItem("penrose");
 lst.addItem("petal");
 lst.addItem("pipes");
+lst.addItem("polyominoes");
 lst.addItem("puzzle");
 lst.addItem("pyro");
 lst.addItem("qix");
 lst.addItem("roll");
 lst.addItem("rotor");
 lst.addItem("rubik");
+lst.addItem("sballs");
+lst.addItem("scooter");
 lst.addItem("shape");
 lst.addItem("sierpinski");
+lst.addItem("sierpinski3d");
+lst.addItem("skewb");
 lst.addItem("slip");
 lst.addItem("solitare");
 lst.addItem("space");
@@ -164,6 +174,7 @@ lst.addItem("swarm");
 lst.addItem("swirl");
 lst.addItem("t3d");
 lst.addItem("tetris");
+lst.addItem("text3d");
 lst.addItem("thornbird");
 lst.addItem("tik_tak");
 lst.addItem("triangle");
@@ -175,6 +186,7 @@ lst.addItem("wator");
 lst.addItem("wire");
 lst.addItem("world");
 lst.addItem("worm");
+lst.addItem("xcl");
 lst.addItem("xjack");
 lst.addItem("blank");
 lst.addItem("bomb");

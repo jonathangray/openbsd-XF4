@@ -2,7 +2,7 @@
 /* wire --- logical circuits based on simple state-changes (wireworld) */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)wire.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)wire.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,17 +22,44 @@ static const char sccsid[] = "@(#)wire.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 05-Dec-97: neighbors option added.
- * 10-May-97: Compatible with xscreensaver
- * 14-Jun-96: Coded from A.K. Dewdney's "Computer Recreations", Scientific
- *            American Magazine" Jan 1990 pp 146-148.  Used ant.c as an
- *            example.  do_gen() based on code by Kevin Dahlhausen
- *            <ap096@po.cwru.edu> and Stefan Strack
- *            <stst@vuse.vanderbilt.edu>.
+ * 01-Nov-2000: Allocation checks
+ * 05-Dec-1997: neighbors option added.
+ * 10-May-1997: Compatible with xscreensaver
+ * 14-Jun-1996: Coded from A.K. Dewdney's "Computer Recreations", Scientific
+ *              American Magazine" Jan 1990 pp 146-148.  Used ant.c as an
+ *              example.  do_gen() based on code by Kevin Dahlhausen
+ *              <ap096@po.cwru.edu> and Stefan Strack
+ *              <stst@vuse.vanderbilt.edu>.
  */
 
 /*-
- * OR gate is protected by diodes
+ *  # Rules file for Wireworld
+ *
+ *  # 0 is space, 1 is wire, 2 is tail, 3 is head
+ *  states 4
+ *
+ *  passive 2
+ *  0[0123][0123][0123][0123]0	# No way to make a space into signal or wire
+ *
+ *  # Signal propagation
+ *  2[0123][0123][0123][0123]1	# tail -> wire
+ *  3[0123][0123][0123][0123]2	# head -> tail
+ *
+ *  # 1 or 2 heads adjacent to a wire makes it a head
+ *  1(3*1)3			# wire with 1 head adjacent -> head
+ *  1(3*2)3			# wire with 2 heads adjacent -> head
+ *
+ *
+ *  " " is space, X is wire, o is tail, O is head
+ *
+ *   ->XXXoOXXX-> Electron moving in a wire
+ *
+ * Diode -- permits an electron to pass right to left, but not the other way.
+ *    XX
+ *  XX XXX
+ *    XX
+ *
+ * OR gate or fan-in where inputs are protected by diodes
  *           XX     XX
  * Input ->XXX XX XX XXX<- Input
  *           XX  X  XX
@@ -42,8 +69,9 @@ static const char sccsid[] = "@(#)wire.c	4.07 97/11/24 xlockmore";
  *               V
  *             Output
  *
- *   ->XXXoOXXX-> Electron moving in a wire
- *
+ * Dewdney's synchronous-logic flipflop.
+ * Bottom left input is write 1, top left is remember 0.
+ * When gate is on, 1 electron goes to output at right every 13 cycles
  * memory element, about to forget 1 and remember 0
  *         Remember 0
  *             o
@@ -85,17 +113,17 @@ static int  neighbors;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".wire.neighbors", XrmoptionSepArg, (caddr_t) NULL}
+	{(char *) "-neighbors", (char *) ".wire.neighbors", XrmoptionSepArg, (caddr_t) NULL}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int
 }
 };
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
 };
 
 ModeSpecOpt wire_opts =
@@ -111,8 +139,9 @@ ModStruct   wire_description =
 #endif
 
 #define WIREBITS(n,w,h)\
-  wp->pixmaps[wp->init_bits++]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1)
+  if ((wp->pixmaps[wp->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_wire(display,wp); return;} else {wp->init_bits++;}
 
 #define COLORS 4
 #define MINWIRES 32
@@ -441,21 +470,22 @@ drawcell_notused(ModeInfo * mi, int col, int row, unsigned char state)
 }
 #endif
 
-static void
+static Bool
 addtolist(ModeInfo * mi, int col, int row, unsigned char state)
 {
 	circuitstruct *wp = &circuits[MI_SCREEN(mi)];
 	CellList   *current = wp->cellList[state];
 
 	wp->cellList[state] = NULL;
-	if ((wp->cellList[state] = (CellList *) malloc(sizeof (CellList))) == NULL) {
-		wp->cellList[state] = current;
-		return;
+	if ((wp->cellList[state] = (CellList *) malloc(sizeof (CellList))) ==
+			NULL) {
+		return False;
 	}
 	wp->cellList[state]->pt.x = col;
 	wp->cellList[state]->pt.y = row;
 	wp->cellList[state]->next = current;
 	wp->ncells[state]++;
+	return True;
 }
 
 #ifdef DEBUG
@@ -490,7 +520,7 @@ free_state(circuitstruct * wp, int state)
 	wp->ncells[state] = 0;
 }
 
-static void
+static Bool
 draw_state(ModeInfo * mi, int state)
 {
 	circuitstruct *wp = &circuits[MI_SCREEN(mi)];
@@ -528,14 +558,15 @@ draw_state(ModeInfo * mi, int state)
 			current = current->next;
 		}
 	} else if (wp->neighbors == 4 || wp->neighbors == 8) {
-		XRectangle *rects = NULL;
+		XRectangle *rects;
 		/* Take advantage of XFillRectangles */
 		int         nrects = 0;
 
 		/* Create Rectangle list from part of the cellList */
-		if ((rects = (XRectangle *) malloc(wp->ncells[state] * sizeof (XRectangle))) == NULL) {
-			return;
-    }
+		if ((rects = (XRectangle *) malloc(wp->ncells[state] *
+				sizeof (XRectangle))) == NULL) {
+			return False;
+    	}
 
 		while (current) {
 			rects[nrects].x = wp->xb + current->pt.x * wp->xs;
@@ -575,6 +606,7 @@ draw_state(ModeInfo * mi, int state)
 	}
 	free_state(wp, state);
 	XFlush(MI_DISPLAY(mi));
+	return True;
 }
 
 #if 0
@@ -599,7 +631,7 @@ create_path(circuitstruct * wp, int n)
 	int         col, row;
 	int         count = 0;
 	int         dir, prob;
-	int         nextcol = 0, nextrow = 0, i;
+	int         nextcol, nextrow, i;
 
 #ifdef RANDOMSTART
 	/* Path usually "mushed" in a corner */
@@ -708,27 +740,37 @@ free_list(circuitstruct * wp)
 		free_state(wp, state);
 }
 
+static void
+free_wire(Display *display, circuitstruct *wp)
+{
+	int         shade;
+
+	for (shade = 0; shade < wp->init_bits; shade++)
+		XFreePixmap(display, wp->pixmaps[shade]);
+	wp->init_bits = 0;
+	if (wp->stippledGC != None) {
+		XFreeGC(display, wp->stippledGC);
+		wp->stippledGC = None;
+	}
+	if (wp->oldcells != NULL) {
+		(void) free((void *) wp->oldcells);
+		wp->oldcells = NULL;
+	}
+	if (wp->newcells != NULL) {
+		(void) free((void *) wp->newcells);
+		wp->newcells = NULL;
+	}
+	free_list(wp);
+}
+
 void
 release_wire(ModeInfo * mi)
 {
 	if (circuits != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			circuitstruct *wp = &circuits[screen];
-			int         shade;
-
-			for (shade = 0; shade < wp->init_bits; shade++)
-				if (wp->pixmaps[shade] != None)
-					XFreePixmap(MI_DISPLAY(mi), wp->pixmaps[shade]);
-			if (wp->stippledGC != None)
-				XFreeGC(MI_DISPLAY(mi), wp->stippledGC);
-			if (wp->oldcells != NULL)
-				(void) free((void *) wp->oldcells);
-			if (wp->newcells != NULL)
-				(void) free((void *) wp->newcells);
-			free_list(wp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_wire(MI_DISPLAY(mi), &circuits[screen]);
 		(void) free((void *) circuits);
 		circuits = NULL;
 	}
@@ -755,19 +797,15 @@ init_wire(ModeInfo * mi)
 	if ((MI_NPIXELS(mi) <= 2) && (wp->init_bits == 0)) {
 		if (wp->stippledGC == None) {
 			gcv.fill_style = FillOpaqueStippled;
-			wp->stippledGC = XCreateGC(display, window, GCFillStyle, &gcv);
-			if (wp->stippledGC == None) {
-				release_wire(mi);
+			if ((wp->stippledGC = XCreateGC(display, window, GCFillStyle,
+					&gcv)) == None) {
+				free_wire(display, wp);
 				return;
 			}
 		}
 		WIREBITS(stipples[NUMSTIPPLES - 1], STIPPLESIZE, STIPPLESIZE);
 		WIREBITS(stipples[NUMSTIPPLES - 3], STIPPLESIZE, STIPPLESIZE);
 		WIREBITS(stipples[2], STIPPLESIZE, STIPPLESIZE);
-		if (wp->pixmaps[2] == None) {
-			release_wire(mi);
-			return;
-		}
 	}
 	if (MI_NPIXELS(mi) > 2) {
 		wp->colors[0] = (NRAND(MI_NPIXELS(mi)));
@@ -902,8 +940,9 @@ init_wire(ModeInfo * mi)
 		(void) free((void *) wp->oldcells);
 		wp->oldcells = NULL;
 	}
-	if ((wp->oldcells = (unsigned char *) calloc(wp->bncols * wp->bnrows, sizeof (unsigned char))) == NULL) {
-		release_wire(mi);
+	if ((wp->oldcells = (unsigned char *) calloc(wp->bncols * wp->bnrows,
+			sizeof (unsigned char))) == NULL) {
+		free_wire(display, wp);
 		return;
 	}
 
@@ -911,8 +950,9 @@ init_wire(ModeInfo * mi)
 		(void) free((void *) wp->newcells);
 		wp->newcells = NULL;
 	}
-	if ((wp->newcells = (unsigned char *) calloc(wp->bncols * wp->bnrows, sizeof (unsigned char))) == NULL) {
-		release_wire(mi);
+	if ((wp->newcells = (unsigned char *) calloc(wp->bncols * wp->bnrows,
+			sizeof (unsigned char))) == NULL) {
+		free_wire(display, wp);
 		return;
 	}
 
@@ -931,14 +971,16 @@ init_wire(ModeInfo * mi)
 void
 draw_wire(ModeInfo * mi)
 {
-	circuitstruct *wp = &circuits[MI_SCREEN(mi)];
 	int         offset, i, j;
 	unsigned char *z, *znew;
+	circuitstruct *wp;
 
-	if (circuits == NULL) {
-		init_wire(mi);
+	if (circuits == NULL)
 		return;
-	}
+	wp = &circuits[MI_SCREEN(mi)];
+	if (wp->newcells == NULL)
+		return;
+
 	MI_IS_DRAWN(mi) = True;
 
 	/* wires do not grow so min max stuff does not change */
@@ -949,12 +991,18 @@ draw_wire(ModeInfo * mi)
 			znew = wp->newcells + offset;
 			if (*z != *znew) {	/* Counting on once a space always a space */
 				*z = *znew;
-				addtolist(mi, i - 2, j - 2, *znew - 1);
+				if (!addtolist(mi, i - 2, j - 2, *znew - 1)) {
+					free_wire(MI_DISPLAY(mi), wp);
+					return;
+				}
 			}
 		}
 	}
 	for (i = 0; i < COLORS - 1; i++)
-		draw_state(mi, i);
+		if (!draw_state(mi, i)) {
+			free_wire(MI_DISPLAY(mi), wp);
+			return;
+		}
 	if (++wp->generation > MI_CYCLES(mi)) {
 		init_wire(mi);
 		return;
@@ -978,12 +1026,12 @@ draw_wire(ModeInfo * mi)
 void
 refresh_wire(ModeInfo * mi)
 {
-	circuitstruct *wp = &circuits[MI_SCREEN(mi)];
+	circuitstruct *wp;
 
-	if (circuits == NULL) {
-		init_wire(mi);
+	if (circuits == NULL)
 		return;
-	}
+	wp = &circuits[MI_SCREEN(mi)];
+
 	MI_CLEARWINDOW(mi);
 	wp->redrawing = 1;
 	wp->redrawpos = 2 * wp->ncols + 2;

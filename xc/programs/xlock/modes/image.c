@@ -2,7 +2,7 @@
 /* image --- image bouncer */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)image.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)image.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)image.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 03-Nov-95: Patched to add an arbitrary xpm file.
- * 21-Sep-95: Patch if xpm fails to load <Markus.Zellner@anu.edu.au>.
- * 17-Jun-95: Pixmap stuff of Skip_Burrell@sterling.com added.
- * 07-Dec-94: Icons are now better centered if do not exactly fill an area.
- * 29-Jul-90: Written.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 03-Nov-1995: Patched to add an arbitrary xpm file.
+ * 21-Sep-1995: Patch if xpm fails to load <Markus.Zellner@anu.edu.au>.
+ * 17-Jun-1995: Pixmap stuff of Skip_Burrell@sterling.com added.
+ * 07-Dec-1994: Icons are now better centered if do not exactly fill an area.
+ * 29-Jul-1990: Written.
  */
 
 #ifdef STANDALONE
@@ -49,7 +50,7 @@ static const char sccsid[] = "@(#)image.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_image
 
 ModeSpecOpt image_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   image_description =
@@ -95,38 +96,6 @@ typedef struct {
 
 static imagestruct *ims = NULL;
 
-void init_image(ModeInfo * mi);
-
-static void
-init_stuff(ModeInfo * mi)
-{
-	Display    *display = MI_DISPLAY(mi);
-	Window      window = MI_WINDOW(mi);
-	imagestruct *ip = &ims[MI_SCREEN(mi)];
-
-	if (!ip->logo)
-		getImage(mi, &ip->logo, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_BITS,
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-			 DEFAULT_XPM, IMAGE_NAME,
-#endif
-			 &ip->graphics_format, &ip->cmap, &ip->black);
-#ifndef STANDALONE
-	if (ip->cmap != None) {
-		setColormap(display, window, ip->cmap, MI_IS_INWINDOW(mi));
-		if (ip->backGC == None) {
-			XGCValues   xgcv;
-
-			xgcv.background = ip->black;
-			ip->backGC = XCreateGC(display, window, GCBackground, &xgcv);
-		}
-	} else
-#endif /* STANDALONE */
-	{
-		ip->black = MI_BLACK_PIXEL(mi);
-		ip->backGC = MI_GC(mi);
-	}
-}
-
 static void
 free_stuff(Display * display, imagestruct * ip)
 {
@@ -149,10 +118,50 @@ free_image(Display * display, imagestruct * ip)
 		ip->icons = NULL;
 	}
 	free_stuff(display, ip);
-	if (ip->logo) {
+	if (ip->logo != None) {
 		destroyImage(&ip->logo, &ip->graphics_format);
-		ip->logo = NULL;
+		ip->logo = None;
 	}
+}
+
+static Bool
+init_stuff(ModeInfo * mi)
+{
+	Display    *display = MI_DISPLAY(mi);
+	Window      window = MI_WINDOW(mi);
+	imagestruct *ip = &ims[MI_SCREEN(mi)];
+
+	if (ip->logo == None) {
+		getImage(mi, &ip->logo, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_BITS,
+#if defined( USE_XPM ) || defined( USE_XPMINC )
+			 DEFAULT_XPM, IMAGE_NAME,
+#endif
+			 &ip->graphics_format, &ip->cmap, &ip->black);
+		if (ip->logo == None) {
+			free_image(display, ip);
+			return False;
+		}
+	}
+#ifndef STANDALONE
+	if (ip->cmap != None) {
+		setColormap(display, window, ip->cmap, MI_IS_INWINDOW(mi));
+		if (ip->backGC == None) {
+			XGCValues   xgcv;
+
+			xgcv.background = ip->black;
+			if ((ip->backGC = XCreateGC(display, window, GCBackground,
+					&xgcv)) == None) {
+				free_image(display, ip);
+				return False;
+			}
+		}
+	} else
+#endif /* STANDALONE */
+	{
+		ip->black = MI_BLACK_PIXEL(mi);
+		ip->backGC = MI_GC(mi);
+	}
+	return True;
 }
 
 static void
@@ -180,22 +189,6 @@ drawimages(ModeInfo * mi)
 }
 
 void
-refresh_image(ModeInfo * mi)
-{
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-	imagestruct *ip = &ims[MI_SCREEN(mi)];
-
-	if (ip->graphics_format >= IS_XPM) {
-		/* This is needed when another program changes the colormap. */
-		free_image(MI_DISPLAY(mi), ip);
-		init_image(mi);
-		return;
-	}
-#endif
-	drawimages(mi);
-}
-
-void
 init_image(ModeInfo * mi)
 {
 	imagestruct *ip;
@@ -208,7 +201,8 @@ init_image(ModeInfo * mi)
 	}
 	ip = &ims[MI_SCREEN(mi)];
 
-	init_stuff(mi);
+	if (!init_stuff(mi))
+		return;
 
 	ip->width = MI_WIDTH(mi);
 	ip->height = MI_HEIGHT(mi);
@@ -231,7 +225,11 @@ init_image(ModeInfo * mi)
 		ip->iconcount = ip->ncols * ip->nrows;
 	if (ip->icons != NULL)
 		(void) free((void *) ip->icons);
-	ip->icons = (imagetype *) malloc(ip->iconcount * sizeof (imagetype));
+	if ((ip->icons = (imagetype *) malloc(ip->iconcount *
+			sizeof (imagetype))) == NULL) {
+		free_image(MI_DISPLAY(mi), ip);
+		return;
+	}
 	for (i = 0; i < ip->iconcount; i++)
 		ip->icons[i].x = -1;
 
@@ -243,11 +241,16 @@ draw_image(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	imagestruct *ip = &ims[MI_SCREEN(mi)];
 	int         i;
+	imagestruct *ip;
 
+	if (ims == NULL)
+		return;
+	ip = &ims[MI_SCREEN(mi)];
+	if (ip->icons == NULL)
+		return;
+	
 	MI_IS_DRAWN(mi) = True;
-
 	XSetForeground(display, ip->backGC, ip->black);
 	for (i = 0; i < ip->iconcount; i++) {
 		if ((ip->ncols * ip->nrows > ip->iconcount) && ip->icons[i].x >= 0)
@@ -268,15 +271,33 @@ release_image(ModeInfo * mi)
 	if (ims != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			imagestruct *ip = &ims[screen];
-			Display    *display = MI_DISPLAY(mi);
-
-			free_image(display, ip);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_image(MI_DISPLAY(mi), &ims[screen]);
 		(void) free((void *) ims);
 		ims = NULL;
 	}
+}
+
+void
+refresh_image(ModeInfo * mi)
+{
+#if defined( USE_XPM ) || defined( USE_XPMINC )
+	imagestruct *ip;
+
+	if (ims == NULL)
+		return;
+	ip = &ims[MI_SCREEN(mi)];
+	if (ip->icons == NULL)
+		return;
+
+	if (ip->graphics_format >= IS_XPM) {
+		/* This is needed when another program changes the colormap. */
+		free_image(MI_DISPLAY(mi), ip);
+		init_image(mi);
+		return;
+	}
+#endif
+	drawimages(mi);
 }
 
 #endif /* MODE_image */

@@ -2,7 +2,7 @@
 /* text3d --- Shows moving 3D texts */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)text3d.cc	2.2 99/10/28 xlockmore";
+static const char sccsid[] = "@(#)text3d.cc	5.01 2001/03/09 xlockmore";
 
 #endif
 
@@ -24,32 +24,37 @@ static const char sccsid[] = "@(#)text3d.cc	2.2 99/10/28 xlockmore";
  * This module is based on a demo of the gltt graphics library
  * Copyright (C) 1998 Stephane Rehel.
  *
- * See the gltt Official Site at http://home.worldnet.fr/~rehel/gltt/gltt.html
+ * See the gltt Official Site at http://gltt.sourceforge.net/
+ * May have better luck at http://lassauge.free.fr/xlock/
  *
  * My e-mail address changed to lassauge@mail.dotcom.fr
- * Web site at http://perso.libertysurf.fr/lassauge/
+ * Web site at http://lassauge.free.fr/
  *
  * Eric Lassauge  (October-28-1999)
  *
- * REVISION HISTORY:
- *       99/10/28: fixes from Jouk "I play with every mode" Jansen.
- *                 Option ttanimate added.
- *       99/06/02: patches for initialization errors of GLTT library.
- *                 Thanks to Jouk Jansen and Scott <mcmillan@cambridge.com>.
- *                 text3d updates for fortunes thanks to Jouk Jansen
- *                 <joukj@hrem.stm.tudelft.nl>
- *                 Option no_split added.
- *
- *       98/08/23: add better handling of "faulty" fontfile and randomize
- *                 fontfile if '-ttfont' value is a directory.
- *                 Minor changes for AIX from Jouk Jansen (joukj@hrem.stm.tudelft.nl).
+ * Revision History:
+ * 09-Mar-2001: Removed an erroneous PushMatrix !!!
+ * 01-Nov-2000: Allocation checks
+ * 28-Oct-1999: fixes from Jouk "I play with every mode" Jansen.
+ *               Option ttanimate added.
+ * 02-Jun-1999: patches for initialization errors of GLTT library.
+ *              Thanks to Jouk Jansen and Scott <mcmillan@cambridge.com>.
+ *              text3d updates for fortunes thanks to Jouk Jansen
+ *              <joukj@hrem.stm.tudelft.nl>
+ *              Option no_split added.
+ * 23-Aug-1998: add better handling of "faulty" fontfile and randomize
+ *              fontfile if '-ttfont' value is a directory.
+ *              Minor changes for AIX from Jouk Jansen
+ *              (joukj@hrem.stm.tudelft.nl).
  *
  * TODO :
  *       Need more animation functions. Help welcome !!
  *       Light problem with some letters (don't know why they "reflect" more):
  *       is the problem in gltt or Mesa ???
  *       SPEED !!!!
- *
+ *       It may sigfault when compiled with -fschedule-insns2
+ *         (i686-pc-linux-gnu)
+ *          
  */
 
 #ifdef STANDALONE
@@ -72,8 +77,11 @@ extern "C"
 #else				/* !STANDALONE */
 #include "xlock.h"		/* from the xlockmore distribution */
 #include "vis.h"
-
+#ifdef HAS_MMOV
+#undef error
+#endif
 #endif				/* !STANDALONE */
+#include "iostuff.h"
 
 #ifdef MODE_text3d
 
@@ -107,10 +115,28 @@ extern "C" { void change_text3d(ModeInfo * mi); }
 extern "C" { void release_text3d(ModeInfo * mi); }
 extern "C" { void refresh_text3d(ModeInfo * mi); }
 
-/* Manage Option vars */
-/* I found this font on NT in c:\WINDOWS\SYSTEM\ARIAL.TTF can also be found
-   on Windows95 in c:\windows\fonts\arial.ttf */
-#define DEF_FONT "arial.ttf"
+/* arial.ttf is not supplied for legal reasons. */
+/* NT and Windows 3.1 in c:\WINDOWS\SYSTEM\ARIAL.TTF */
+/* Windows95 in c:\windows\fonts\arial.ttf */
+
+#ifndef DEF_TTFONT
+#if defined (SOLARIS2) || defined (SUNOS4)
+#if 0
+#define DEF_TTFONT "/usr/share/fonts/xlockmore/arial.ttf"
+#else
+/* Directory of only *.ttf */
+#define DEF_TTFONT "/usr/share/fonts/xlockmore/"
+#endif
+#else
+#if 0
+#define DEF_TTFONT "/usr/X11R6/lib/X11/fonts/TTF/arial.ttf"
+#else
+/* Directory of only *.ttf */
+#define DEF_TTFONT "/usr/X11R6/lib/X11/fonts/TTF/"
+#endif
+#endif
+#endif
+
 #define DEF_EXTRUSION  "25.0"
 #define DEF_ROTAMPL  "1.0"
 #define DEF_ROTFREQ  "0.001"
@@ -124,35 +150,37 @@ static char *mode_font;
 static int nosplit;
 static char *animate;
 
+/* Manage Option vars */
+
 static XrmOptionDescRec opts[] =
 {
-    {"-ttfont", ".text3d.ttfont", XrmoptionSepArg, (caddr_t) NULL},
-    {"-extrusion", ".text3d.extrusion", XrmoptionSepArg, (caddr_t) NULL},
-    {"-rot_amplitude", ".text3d.rot_amplitude", XrmoptionSepArg, (caddr_t) NULL},
-    {"-rot_frequency", ".text3d.rot_frequency", XrmoptionSepArg, (caddr_t) NULL},
-    {"-no_split", ".text3d.no_split", XrmoptionNoArg, (caddr_t) "on"},
-    {"+no_split", ".text3d.no_split", XrmoptionNoArg, (caddr_t) "off"},
-    {"-ttanimate", ".text3d.ttanimate", XrmoptionSepArg, (caddr_t) NULL},
+    {(char *) "-ttfont", (char *) ".text3d.ttfont", XrmoptionSepArg, (caddr_t) NULL},
+    {(char *) "-extrusion", (char *) ".text3d.extrusion", XrmoptionSepArg, (caddr_t) NULL},
+    {(char *) "-rot_amplitude", (char *) ".text3d.rot_amplitude", XrmoptionSepArg, (caddr_t) NULL},
+    {(char *) "-rot_frequency", (char *) ".text3d.rot_frequency", XrmoptionSepArg, (caddr_t) NULL},
+    {(char *) "-no_split", (char *) ".text3d.no_split", XrmoptionNoArg, (caddr_t) "on"},
+    {(char *) "+no_split", (char *) ".text3d.no_split", XrmoptionNoArg, (caddr_t) "off"},
+    {(char *) "-ttanimate", (char *) ".text3d.ttanimate", XrmoptionSepArg, (caddr_t) NULL},
 };
 
 static argtype vars[] =
 {
-    {(caddr_t *) & mode_font, "ttfont", "TTFont", DEF_FONT, t_String},
-    {(caddr_t *) & extrusion, "extrusion", "Extrusion", DEF_EXTRUSION, t_Float},
-    {(caddr_t *) & rampl, "rot_amplitude", "RotationAmplitude", DEF_ROTAMPL, t_Float},
-    {(caddr_t *) & rfreq, "rot_frequency", "RotationFrequency", DEF_ROTFREQ, t_Float},
-    {(caddr_t *) & nosplit, "no_split", "NoSplit", DEF_NOSPLIT, t_Bool},
-    {(caddr_t *) & animate, "ttanimate", "TTAnimate", DEF_ANIMATE, t_String},
+    {(caddr_t *) & mode_font, (char *) "ttfont", (char *) "TTFont", (char *) DEF_TTFONT, t_String},
+    {(caddr_t *) & extrusion, (char *) "extrusion", (char *) "Extrusion", (char *) DEF_EXTRUSION, t_Float},
+    {(caddr_t *) & rampl, (char *) "rot_amplitude", (char *) "RotationAmplitude", (char *) DEF_ROTAMPL, t_Float},
+    {(caddr_t *) & rfreq, (char *) "rot_frequency", (char *) "RotationFrequency", (char *) DEF_ROTFREQ, t_Float},
+    {(caddr_t *) & nosplit, (char *) "no_split", (char *) "NoSplit", (char *) DEF_NOSPLIT, t_Bool},
+    {(caddr_t *) & animate, (char *) "ttanimate", (char *) "TTAnimate", (char *) DEF_ANIMATE, t_String},
 };
 
 static OptionStruct desc[] =
 {
-    {"-ttfont filename", "Text3d TrueType font file name"},
-    {"-extrusion float", "Text3d extrusion length"},
-    {"-rot_amplitude float", "Text3d rotation amplitude"},
-    {"-rot_frequency float", "Text3d rotation frequency"},
-    {"-/+no_split", "Text3d words splitting off/on"},
-    {"-ttanimate anim_name", "Text3d animation function"},
+    {(char *) "-ttfont filename", (char *) "Text3d TrueType font file name"},
+    {(char *) "-extrusion float", (char *) "Text3d extrusion length"},
+    {(char *) "-rot_amplitude float", (char *) "Text3d rotation amplitude"},
+    {(char *) "-rot_frequency float", (char *) "Text3d rotation frequency"},
+    {(char *) "-/+no_split", (char *) "Text3d words splitting off/on"},
+    {(char *) "-ttanimate anim_name", (char *) "Text3d animation function"},
 };
 
 ModeSpecOpt text3d_opts =
@@ -168,27 +196,15 @@ ModStruct text3d_description =
 
 static text3dstruct *text3d = (text3dstruct *) NULL;
 
-/* Hacks to use $TOP/xlock/util.c and iostuff.c functions */
-extern "C" { int index_dir(char *str1, char *substr); }
-extern "C" { char *getWords(int screen, int screens); }
-extern "C" { FILE *my_fopen(char *filename, char *type); }
-
-#if HAVE_DIRENT_H
-#define sel_font	sel_image	/* "rename" the sel_image function */
-extern "C" { void get_dir(char *fullpath, char *dir, char *filename); }
-extern "C" { int sel_font(struct dirent *name); }
-extern "C" { int scan_dir(const char *directoryname,
-		 struct dirent ***namelist,
-		 int (*select) (struct dirent *),
-		 int (*compare) (const void *, const void *));
-}
-#endif				/* HAVE_DIRENT_H */
-
 const double angle_speed = 2.5 / 180.0 * M_PI;
 
 extern "C" {
 typedef void (*t3dAnimProc) (text3dstruct * tp);
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static void t3d_anim_fullrandom(text3dstruct * tp);
 static void t3d_anim_default(text3dstruct * tp);
@@ -201,6 +217,11 @@ static void t3d_anim_rotatexy(text3dstruct * tp);
 static void t3d_anim_rotateyz(text3dstruct * tp);
 static void t3d_anim_frequency(text3dstruct * tp);
 static void t3d_anim_amplitude(text3dstruct * tp);
+static char *fontfile = (char *) NULL;
+
+#ifdef __cplusplus
+}
+#endif
 
 static t3dAnimProc anim_array[] =
 {
@@ -219,19 +240,19 @@ static t3dAnimProc anim_array[] =
 
 static char * anim_names[] =
 {
-	"Random",
-	"FullRandom",
-	"Default",
-	"Default2",
-	"None",
-	"Crazy",
-	"UpDown",
-	"Extrude",
-	"RotateXY",
-	"RotateYZ",
-	"Frequency",	/* needs -rot_frequency /= 0.0 */
-	"Amplitude",	/* and   -rot_amplitude /= 0.0 */
-	NULL
+	(char *) "Random",
+	(char *) "FullRandom",
+	(char *) "Default",
+	(char *) "Default2",
+	(char *) "None",
+	(char *) "Crazy",
+	(char *) "UpDown",
+	(char *) "Extrude",
+	(char *) "RotateXY",
+	(char *) "RotateYZ",
+	(char *) "Frequency",	/* needs -rot_frequency /= 0.0 */
+	(char *) "Amplitude",	/* and   -rot_amplitude /= 0.0 */
+	(char *) NULL
 };
 
 static int anims=sizeof anim_array / sizeof anim_array[0] ;
@@ -250,73 +271,6 @@ static int anims=sizeof anim_array / sizeof anim_array[0] ;
  *-----------------------------------------------------------------------------
  */
 
-static char *
- text3d_newstr(char *s1)
-{
-    char *s;
-
-    s = (char *) malloc(strlen(s1));
-    strcpy(s, s1);
-    return s;
-}
-
-static int
- readable(char *filename)
-{
-    FILE *fp;
-
-    if ((fp = my_fopen(filename, "r")) == NULL)
-	return False;
-    (void) fclose(fp);
-    return True;
-}
-
-/*-------------------------------------------------------------*/
-#if HAVE_DIRENT_H
-
-static void
- randomFileFromList(char *directory,
-		    struct dirent **filelist, int numfiles, char *file_local)
-{
-    int num;
-
-    num = NRAND(numfiles);
-    if (strlen(directory) + strlen(filelist[num]->d_name) + 1 < 256)
-    {
-	(void) sprintf(file_local, "%s%s",
-		       directory, filelist[num]->d_name);
-    }
-}
-
-/*-------------------------------------------------------------*/
-static void
- getRandomFontFile(char *randomfile, char *randomfile_local)
-{
-    /* mimic getRandomImageFile from $TOP/xlock/iostuff.c */
-    char directory_r[DIRBUF];
-    struct dirent ***fonts_list;
-    struct dirent **font_list = (dirent **) NULL;
-    int num_list;
-
-    /* extern char 'stolen' from $TOP/xlock/resource.c */
-    extern char filename_r[MAXNAMLEN];
-
-    get_dir(randomfile, directory_r, filename_r);
-
-    fonts_list = (struct dirent ***) malloc(sizeof(struct dirent **));
-
-    num_list = scan_dir(directory_r, fonts_list, sel_font, (int (*)(const
-						 void *, const void *)) NULL);
-    font_list = *fonts_list;
-    (void) free((void *) fonts_list);
-    if (num_list > 0)
-    {
-	randomFileFromList(directory_r, font_list, num_list, randomfile_local);
-    }
-}
-#endif				/* HAVE_DIRENT_H */
-
-/*-------------------------------------------------------------*/
 
 #ifdef DIFFUSE_COLOR
 static void
@@ -456,6 +410,10 @@ public:
 #define FAC_AMPL	1.5
 
 #define FAC_RAND	25
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*-------------------------------------------------------------*/
 static void
@@ -641,6 +599,11 @@ static void
     anim_array[tp->animation](tp);
 }
 
+#ifdef __cplusplus
+}
+#endif
+
+
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 /*
@@ -680,10 +643,10 @@ static void
 
     if (!nosplit)
     {
-	text_length = index_dir(tp->words, " ");
+	text_length = index_dir(tp->words, (char *) " ");
 	if (text_length == 0)
 	    text_length = strlen(tp->words);
-	c_text = (char *) malloc(text_length);
+	if ((c_text = (char *) malloc(text_length)) != NULL)
 	strncpy(c_text, tp->words, text_length);
     }
     else
@@ -715,7 +678,7 @@ static void
     {
 	int ch = (unsigned char) c_text[i];
 
-#if ((MESA_MAJOR_VERSION > 3 ) || (( MESA_MAJOR_VERSION == 3 ) && (MESA_MINOR_VERSION > 0 )))
+#if ((XMESA_MAJOR_VERSION > 3 ) || (( XMESA_MAJOR_VERSION == 3 ) && (XMESA_MINOR_VERSION > 0 )))
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
@@ -730,6 +693,7 @@ static void
 	    continue;
 	FTGlyphVectorizer & v = vec[i];
 	v.setPrecision(10.0);
+	/* PURIFY reports an Array Bounds Write on the next line */
 	if (!v.init(g))
 	    continue;
 
@@ -769,10 +733,10 @@ static void
     }
 
     if (!nosplit)
-	free(c_text);
+	(void) free((void *) c_text);
     if (size_x == 0.0)
     {
-	fprintf(stderr, "Please give something to draw !\n");
+	(void) fprintf(stderr, "Please give something to draw !\n");
 	return;
     }
 
@@ -781,7 +745,7 @@ static void
     for (i = 0; i < text_length; ++i)
     {
 
-#if ((MESA_MAJOR_VERSION > 3 ) || (( MESA_MAJOR_VERSION == 3 ) && (MESA_MINOR_VERSION > 0 )))
+#if ((XMESA_MAJOR_VERSION > 3 ) || (( XMESA_MAJOR_VERSION == 3 ) && (XMESA_MINOR_VERSION > 0 )))
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
@@ -883,7 +847,7 @@ static void
     for (i = 0; i < text_length; ++i)
     {
 
-#if ((MESA_MAJOR_VERSION > 3 ) || (( MESA_MAJOR_VERSION == 3 ) && (MESA_MINOR_VERSION > 0 )))
+#if ((XMESA_MAJOR_VERSION > 3 ) || (( XMESA_MAJOR_VERSION == 3 ) && (XMESA_MINOR_VERSION > 0 )))
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
@@ -1028,7 +992,7 @@ static void
     for (i = 0; i < text_length; ++i)
     {
 
-#if ((MESA_MAJOR_VERSION > 3 ) || (( MESA_MAJOR_VERSION == 3 ) && (MESA_MINOR_VERSION > 0 )))
+#if ((XMESA_MAJOR_VERSION > 3 ) || (( XMESA_MAJOR_VERSION == 3 ) && (XMESA_MINOR_VERSION > 0 )))
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
@@ -1075,10 +1039,8 @@ static void
 void
  init_text3d(ModeInfo * mi)
 {
-    int screen = MI_SCREEN(mi);
-    text3dstruct *tp;
-    char *fontfile = (char *) NULL;
     int i;
+    text3dstruct *tp;
 
     if (text3d == NULL)
     {
@@ -1086,60 +1048,12 @@ void
 					      sizeof(text3dstruct))) == NULL)
 	    return;
     }
-    tp = &text3d[screen];
+    tp = &text3d[MI_SCREEN(mi)];
     tp->wire = MI_IS_WIREFRAME(mi);
     tp->extrusion = extrusion;
     tp->rampl = rampl;
     tp->rfreq = rfreq;
     tp->camera_dist = 0.0;
-
-    /* Get fontfile from mode_font (it can be a dir name) */
-    if (mode_font && strlen(mode_font))
-    {
-	fontfile = (char *) malloc(256);
-	(void) strncpy(fontfile, mode_font, 256);
-#if HAVE_DIRENT_H
-	getRandomFontFile(mode_font, fontfile);
-#endif
-    }
-
-    /* Check if fontfile exists */
-    if (!fontfile || !strlen(fontfile) || (fontfile && !readable(fontfile)))
-    {
-	(void) fprintf(stderr,
-		       "%s: could not read file \"%s\" !\n",
-		       MI_NAME(mi), fontfile);
-	(void) free((void *) text3d);
-	text3d = (text3dstruct *) NULL;
-#ifdef USE_BLANK
-	(void) fprintf(stderr,
-		       "%s: jumping to 'blank' mode.\n", MI_NAME(mi));
-	init_blank(mi);
-#endif
-	return;
-    }
-
-    tp->face = new FTFace;
-    if (!tp->face->open(fontfile))
-    {
-	fprintf(stderr, "%s: unable to open True Type font %s !\n", MI_NAME(mi), fontfile);
-	delete tp->face;
-
-	(void) free((void *) text3d);
-	text3d = (text3dstruct *) NULL;
-#ifdef USE_BLANK
-	(void) fprintf(stderr,
-		       "%s: jumping to 'blank' mode.\n", MI_NAME(mi));
-	init_blank(mi);
-#endif
-	return;
-    }
-    if (MI_IS_DEBUG(mi))
-    {
-	(void) fprintf(stderr,
-		       "%s:\n\tfontfile=%s .\n", MI_NAME(mi), fontfile);
-    }
-    free(fontfile);
 
     /* Get animation function */
     tp->animation = 0;	/* Not found equals "Random" */
@@ -1171,9 +1085,7 @@ void
 		   MI_NAME(mi), tp->animation, anim_names[tp->animation+1]);
     }
 
-    /* Initialize displayed string */
-    tp->words_start = tp->words =
-	text3d_newstr(getWords(MI_SCREEN(mi), MI_NUM_SCREENS(mi)));
+
     tp->counter = 0;
 
     if ((tp->glx_context = init_GL(mi)) != NULL)
@@ -1197,6 +1109,46 @@ void
     {
 	MI_CLEARWINDOW(mi);
     }
+	fontfile = getModeFont(mode_font);
+	if (!fontfile) {
+		release_text3d(mi);
+#ifdef USE_BLANK
+		(void) fprintf(stderr,
+			"%s: jumping to 'blank' mode.\n", MI_NAME(mi));
+		init_blank(mi);
+#endif
+		return;
+    }
+    tp->face = new FTFace;
+    if (!tp->face || !tp->face->open(fontfile)) {
+		(void) fprintf(stderr, "%s: unable to open True Type font %s !\n", MI_NAME(mi), fontfile);
+    	if (tp->face)
+			delete tp->face;
+		release_text3d(mi);
+#ifdef USE_BLANK
+		(void) fprintf(stderr,
+				"%s: jumping to 'blank' mode.\n", MI_NAME(mi));
+		init_blank(mi);
+#endif
+		return;
+    }
+    if (MI_IS_DEBUG(mi)) {
+		(void) fprintf(stderr,
+			"%s:\n\tfontfile=%s .\n", MI_NAME(mi), fontfile);
+    }
+
+    /* Do not free fontfile getModeFont handles potential leak */
+
+    /* Initialize displayed string */
+    tp->words_start = tp->words =
+	getWords(MI_SCREEN(mi), MI_NUM_SCREENS(mi));
+    if (MI_IS_DEBUG(mi))
+    {
+	(void) fprintf(stderr,
+		   "%s words:\n%s\n",
+		   MI_NAME(mi), tp->words);
+    }
+
 }
 
 /*
@@ -1207,29 +1159,25 @@ void
 void
  draw_text3d(ModeInfo * mi)
 {
-    text3dstruct *tp = (text3dstruct *) NULL;
-
     Display *display = MI_DISPLAY(mi);
     Window window = MI_WINDOW(mi);
+    text3dstruct *tp;
+
+    if (text3d == NULL) {
+#ifdef USE_BLANK
+	  draw_blank(mi);
+#endif
+	  return;
+	}
+    tp = &text3d[MI_SCREEN(mi)];
 
     MI_IS_DRAWN(mi) = True;
-
-    if (text3d)
-	tp = &text3d[MI_SCREEN(mi)];
-#ifdef USE_BLANK
-    if (!tp)
-    {
-	draw_blank(mi);
+    if (!tp->glx_context)
 	return;
-    }
-#else
-    if (!tp || !tp->glx_context)
-	return;
-#endif
     tp->counter = tp->counter + 1;
     if (tp->counter > MI_CYCLES(mi) & !nosplit)
     {
-	int text_length = index_dir(tp->words, " ");
+	int text_length = index_dir(tp->words, (char *) " ");
 
 	/* Every now and then, get a new word */
 	if (text_length == 0)
@@ -1239,18 +1187,14 @@ void
 	text_length = strlen(tp->words);
 	if (text_length == 0)
 	{
-	    (void) free((void *) tp->words_start);
 	    tp->words_start = tp->words =
-		text3d_newstr(getWords(MI_SCREEN(mi),
-				       MI_NUM_SCREENS(mi)));
+		getWords(MI_SCREEN(mi), MI_NUM_SCREENS(mi));
 	}
     }
     glDrawBuffer(GL_BACK);
     glXMakeCurrent(display, window, *(tp->glx_context));
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glPushMatrix();
 
     Draw(tp, display, window);
     Animate(tp);
@@ -1278,11 +1222,9 @@ void
 void
  release_text3d(ModeInfo * mi)
 {
-    int screen;
-
     if (text3d != NULL)
     {
-	for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+	for (int screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
 	{
 	    text3dstruct *tp = &text3d[screen];
 
@@ -1308,22 +1250,18 @@ void
 void
  change_text3d(ModeInfo * mi)
 {
-    text3dstruct *tp = (text3dstruct *) NULL;
+    text3dstruct *tp;
 
-    if (text3d)
-	tp = &text3d[MI_SCREEN(mi)];
-
+    if (text3d == NULL) {
 #ifdef USE_BLANK
-    if (!tp)
-    {
-	refresh_blank(mi);
-	return;
-    }
-#else
-    if (!tp || !tp->glx_context)
-	return;
+	  refresh_blank(mi);
 #endif
+	  return;
+	}
+    tp = &text3d[MI_SCREEN(mi)];
 
+    if (!tp->glx_context)
+	return;
     glDrawBuffer(GL_BACK);
     glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(tp->glx_context));
 }

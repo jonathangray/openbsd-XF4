@@ -1,7 +1,7 @@
 /* atlantis --- Shows moving 3D sea animals */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)shark.c	1.3 2000/01/28 xlockmore";
+static const char sccsid[] = "@(#)shark.c	5.01 2001/04/17 xlockmore";
 
 #endif
 
@@ -80,6 +80,7 @@ static const char sccsid[] = "@(#)shark.c	1.3 2000/01/28 xlockmore";
 #ifdef MODE_atlantis
 
 #ifdef STANDALONE
+#include <math.h>
 #include <GL/glx.h>
 #endif
 

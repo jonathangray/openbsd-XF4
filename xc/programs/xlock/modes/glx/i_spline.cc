@@ -24,9 +24,9 @@ void print_point (FILE *fp, TwoJetVec p, double ps, double pus, double pvs, doub
     xyz[2] = double(p.z)*ps + p.z.df_du()*pus/3. + p.z.df_dv()*pvs/3.
              + p.z.d2f_dudv()*puvs/9.;
     if (binary) {
-      fwrite(&xyz, sizeof(float), 3, fp);
+      (void) fwrite(&xyz, sizeof(float), 3, fp);
     } else {
-      fprintf(fp, "%g %g %g\n", xyz[0], xyz[1], xyz[2]);
+      (void) fprintf(fp, "%g %g %g\n", xyz[0], xyz[1], xyz[2]);
     }
   }
   else{
@@ -38,7 +38,7 @@ void print_point (FILE *fp, TwoJetVec p, double ps, double pus, double pvs, doub
     double nz= p.x.df_du()*p.y.df_dv()-p.y.df_du()*p.x.df_dv();
     double s = nx*nx + ny*ny + nz*nz;
     if(s > 0) s = sqrt(1/s);
-    fprintf(fp, "%f %f %f    %f %f %f\n", x, y, z, nx*s, ny*s, nz*s);
+    (void) fprintf(fp, "%f %f %f    %f %f %f\n", x, y, z, nx*s, ny*s, nz*s);
   }
 }
 
@@ -60,7 +60,7 @@ void printMesh(
     glNormal3d(nx*s, ny*s, nz*s);
     glVertex3d(x, y, z);
 #else
-    fprintf(fp, "%f %f %f    %f %f %f\n", x, y, z, nx*s, ny*s, nz*s);
+    (void) fprintf(fp, "%f %f %f    %f %f %f\n", x, y, z, nx*s, ny*s, nz*s);
 #endif
 }
 
@@ -91,9 +91,9 @@ void printSpline(FILE *fp, TwoJetVec v00, TwoJetVec v01,
 
     if (binary) {
       float sts[8] = {s0,t0, s1,t0, s0,t1, s1,t1};
-      fwrite(&sts, sizeof(float), 8, fp);
+      (void) fwrite(&sts, sizeof(float), 8, fp);
     } else {
-      fprintf(fp, "%g %g  %g %g  %g %g  %g %g\n\n",
+      (void) fprintf(fp, "%g %g  %g %g  %g %g  %g %g\n\n",
   	s0,t0,  s1,t0,  s0,t1, s1,t1);
     }
   }
@@ -107,9 +107,8 @@ void printSpline(FILE *fp, TwoJetVec v00, TwoJetVec v01,
   }
 }
 
-static inline double sqr(double x) {
-  return x*x;
-}
+#define sqr(A) ((A)*(A))
+
 static inline double calcSpeedV(TwoJetVec v) {
   return sqrt(sqr(v.x.df_dv()) + sqr(v.y.df_dv()) + sqr(v.z.df_dv()));
 }
@@ -147,14 +146,14 @@ char *parse_parts(char *parts)
 	} else {
 	    j = strtol(cp, &ncp, 0);
 	    if(cp == ncp) {
-		fprintf(stderr,
+		(void) fprintf(stderr,
 "evert -parts: expected string with alternating signs and strip numbers\n");
-		return NULL;
+		return (char *) NULL;
 	    }
 	    if(j < 0 || j >= n_strips) {
-		fprintf(stderr,
+		(void) fprintf(stderr,
 "evert -parts: bad strip number %d; must be in range 0..%d\n", j, n_strips-1);
-		return NULL;
+		return (char *) NULL;
 	    }
 	    partlist[j] |= bits;
 	    cp = ncp;
@@ -205,10 +204,10 @@ void printScene(
       speedu[j][k] = calcSpeedU(values[j][k]);
     }
   }
-/*
-  fprintf(fp, "Declare \"speeds\" \"varying float\"\n");
-  fprintf(fp, "Declare \"speedt\" \"varying float\"\n");
-*/
+#if 0
+  (void) fprintf(fp, "Declare \"speeds\" \"varying float\"\n");
+  (void) fprintf(fp, "Declare \"speedt\" \"varying float\"\n");
+#endif
 #ifndef XLOCK
   if(parts != NULL) {
     /* Construct matrices to replicate standard unit (u=0..1, v=0..1) into
@@ -219,27 +218,27 @@ void printScene(
     if(partlist == NULL)
 	return;
 
-    fprintf(fp, "{ INST transforms { TLIST\n");
+    (void) fprintf(fp, "{ INST transforms { TLIST\n");
     for(j = -1; j <= 1; j += 2) {
 	for(k = 0; k < n_strips; k++) {
 	  if(partlist[k] & (j<0 ? PART_NEG : PART_POS)) {
 	    double t = 2*M_PI * (j < 0 ? n_strips-1-k : k) / n_strips;
 	    double s = sin(t), c = cos(t);
 
-	    fprintf(fp, "# %c%d of %d\n", j<0 ? '-' : '+', k, n_strips);
-	    fprintf(fp, "\t%10f %10f %10f %10f\n", j*c, -s,	     0., 0.);
-	    fprintf(fp, "\t%10f %10f %10f %10f\n", j*s,  c,	     0., 0.);
-	    fprintf(fp, "\t%10f %10f %10f %10f\n", 0.,   0., (double)j, 0.);
-	    fprintf(fp, "\t%10f %10f %10f %10f\n", 0.,   0.,	     0., 1.);
+	    (void) fprintf(fp, "# %c%d of %d\n", j<0 ? '-' : '+', k, n_strips);
+	    (void) fprintf(fp, "\t%10f %10f %10f %10f\n", j*c, -s,	     0., 0.);
+	    (void) fprintf(fp, "\t%10f %10f %10f %10f\n", j*s,  c,	     0., 0.);
+	    (void) fprintf(fp, "\t%10f %10f %10f %10f\n", 0.,   0., (double)j, 0.);
+	    (void) fprintf(fp, "\t%10f %10f %10f %10f\n", 0.,   0.,	     0., 1.);
 	  }
 	}
     }
-    fprintf(fp, "}\ngeom ");
+    (void) fprintf(fp, "}\ngeom ");
   }
 #endif
 
   if(bezier) {
-    fprintf(fp, "{ STBBP%s\n", binary ? " BINARY" : "");
+    (void) fprintf(fp, "{ STBBP%s\n", binary ? " BINARY" : "");
     for (j = 0; j < jmax; j++) {
       u = umin + j*du;
       for (k = 0; k < kmax; k++) {
@@ -254,13 +253,13 @@ void printScene(
   else {
 #ifndef XLOCK
     int nu = kmax+1, nv = jmax+1;
-    fprintf(fp, "{ NMESH%s\n", binary ? " BINARY" : "");
+    (void) fprintf(fp, "{ NMESH%s\n", binary ? " BINARY" : "");
 
     if(binary) {
-	fwrite(&nu, sizeof(int), 1, stdout);
-	fwrite(&nv, sizeof(int), 1, stdout);
+	(void) fwrite(&nu, sizeof(int), 1, stdout);
+	(void) fwrite(&nv, sizeof(int), 1, stdout);
     } else {
-	fprintf(fp, "%d %d\n", nu, nv);
+	(void) fprintf(fp, "%d %d\n", nu, nv);
     }
 #endif
 
@@ -286,18 +285,18 @@ void printScene(
 
 #ifndef XLOCK
   if(parts)
-    fprintf(fp, " }\n");
-  fprintf(fp, "}\n");
+    (void) fprintf(fp, " }\n");
+  (void) fprintf(fp, "}\n");
 #endif
 
   for (j = 0; j <= jmax; j++) {
     if (values[j] != NULL) {
       (void) free((void *) values[j]);
-      values[j] = NULL;
+      values[j] = (TwoJetVec *) NULL;
     }
     if (speedu[j] != NULL) {
       (void) free((void *) speedu[j]);
-      speedu[j] = NULL;
+      speedu[j] = (double *) NULL;
     }
   }
   (void) free((void *) values);
@@ -306,7 +305,7 @@ void printScene(
 }
 
 void impossible(char *msg) {
-  fprintf(stderr, "%s\n", msg);
+  (void) fprintf(stderr, "%s\n", msg);
   exit(1);
 }
 

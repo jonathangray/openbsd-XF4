@@ -65,7 +65,8 @@ INSTPGMFLAGS = @INSTPGMFLAGS@
 #CC = g++ -g -Wall
 CC = @CC@
 
-LINT = lint
+#LINT = lint
+LINT = lint -Ncheck=%all
 #LINT = alint
 
 #DEPEND = makedepend

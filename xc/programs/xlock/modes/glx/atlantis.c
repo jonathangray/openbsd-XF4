@@ -1,7 +1,7 @@
 /* atlantis --- Shows moving 3D sea animals */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)atlantis.c	1.4 2000/01/28 xlockmore";
+static const char sccsid[] = "@(#)atlantis.c	5.01 2001/04/17 xlockmore";
 
 #endif
 
@@ -36,6 +36,13 @@ static const char sccsid[] = "@(#)atlantis.c	1.4 2000/01/28 xlockmore";
  *
  * REVISION HISTORY:
  *
+ * Jamie Zawinski, 2-Apr-01:  - The fishies were inside out!  The back faces
+ *                              were being drawn, not the front faces.
+ *                            - Added a texture to simulate light from the
+ *                              surface, like in the SGI version.
+ * 
+ * E.Lassauge - 01/03/01 : Added FPS stuff
+ *
  * David A. Bagley - 98/06/17 : Add whalespeed option. Global options to
  *                              initialize local variables are now:
  *                              XLock.atlantis.cycles: 100      ! SharkSpeed
@@ -53,7 +60,6 @@ static const char sccsid[] = "@(#)atlantis.c	1.4 2000/01/28 xlockmore";
  *                        Add support for -/+ wireframe (t'was so easy to do!)
  *
  * TODO :
- *        - try to add what's called underwater caustics in Mark Kilgard's pages
  *        - add a sort of background image
  *        - better handling of sizes and speeds
  *        - test standalone and module modes
@@ -104,37 +110,54 @@ static const char sccsid[] = "@(#)atlantis.c	1.4 2000/01/28 xlockmore";
 #define HACK_INIT init_atlantis
 #define HACK_DRAW draw_atlantis
 #define atlantis_opts xlockmore_opts
-#define DEFAULTS "*delay: 1000 \n" \
+#define DEFAULTS "*delay: 18000 \n" \
  "*count: 4 \n" \
  "*cycles: 100 \n" \
  "*size: 6000 \n" \
+ "*showFps:    False \n" \
+ "*wireframe:  False \n" \
  "*whalespeed: 250\n"
 #include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 #include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+#include "visgl.h"
 #endif /* !STANDALONE */
 
 #ifdef MODE_atlantis
 
 #include "atlantis.h"
 #include <GL/glu.h>
+#include "xpm-ximage.h"
+
+#ifdef STANDALONE
+#include "../images/sea-texture.xpm"
+#else /* !STANDALONE */
+#include "pixmaps/sea-texture.xpm"
+#endif /* !STANDALONE */
 
 #define DEF_WHALESPEED  "250"
+#define DEF_TEXTURE     "True"
+
 static int  whalespeed;
+static int  do_texture;
+
 static XrmOptionDescRec opts[] =
 {
-     {"-whalespeed", ".atlantis.whalespeed", XrmoptionSepArg, (caddr_t) NULL}
+     {(char *) "-whalespeed", (char *) ".atlantis.whalespeed", XrmoptionSepArg, (caddr_t) NULL},
+     {(char *) "-texture",    (char *) ".atlantis.texture",    XrmoptionNoArg, (caddr_t)"True"},
+     {(char *) "+texture",    (char *) ".atlantis.texture",    XrmoptionNoArg, (caddr_t)"False"},
 };
 
 static argtype vars[] =
 {
-{(caddr_t *) & whalespeed, "whalespeed", "WhaleSpeed", DEF_WHALESPEED, t_Int}
+ {(caddr_t *) & whalespeed, (char *) "whalespeed", (char *) "WhaleSpeed", (char *) DEF_WHALESPEED, t_Int},
+ {(caddr_t *) & do_texture, (char *) "texture",    (char *) "Texture",    (char *) DEF_TEXTURE,    t_Bool},
 };
 
 static OptionStruct desc[] =
 {
-	{"-whalespeed num", "speed of whales and the dolphin"}
+	{(char *) "-whalespeed num", (char *) "speed of whales and the dolphin"},
+	{(char *) "-texture num",    (char *) "whether to introduce water-like distortion"},
 };
 
 ModeSpecOpt atlantis_opts =
@@ -144,12 +167,22 @@ ModeSpecOpt atlantis_opts =
 ModStruct   atlantis_description =
 {"atlantis", "init_atlantis", "draw_atlantis", "release_atlantis",
  "refresh_atlantis", "change_atlantis", NULL, &atlantis_opts,
- 1000, NUM_SHARKS, SHARKSPEED, SHARKSIZE, 64, 1.0, "",
+ 18000, NUM_SHARKS, SHARKSPEED, SHARKSIZE, 64, 1.0, "",
  "Shows moving sharks/whales/dolphin", 0, NULL};
 
 #endif
 
-static atlantisstruct *atlantis = NULL;
+static atlantisstruct *atlantis = (atlantisstruct *) NULL;
+
+static void
+parse_image_data(ModeInfo *mi)
+{
+  atlantisstruct *ap = &atlantis[MI_SCREEN(mi)];
+  ap->texture = xpm_to_ximage (MI_DISPLAY(mi),
+                               MI_VISUAL(mi),
+                               MI_COLORMAP(mi),
+                               sea_texture);
+}
 
 static void
 InitFishs(atlantisstruct * ap)
@@ -190,8 +223,10 @@ InitFishs(atlantisstruct * ap)
 }
 
 static void
-Init(atlantisstruct * ap)
+Init(ModeInfo * mi)
 {
+        atlantisstruct *ap = &atlantis[MI_SCREEN(mi)];
+
 	static float ambient[] =
 	{0.1, 0.1, 0.1, 1.0};
 	static float diffuse[] =
@@ -212,23 +247,78 @@ Init(atlantisstruct * ap)
 	{0.0};
 	float       fblue = 0.0, fgreen;
 
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 
-	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_DEPTH_TEST);
+        if (ap->wire)
+          {
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
+          }
+        else
+          {
+            glDepthFunc(GL_LEQUAL);
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glEnable(GL_NORMALIZE);
+            glShadeModel(GL_SMOOTH);
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-	glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, lmodel_localviewer);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+            glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+            glLightfv(GL_LIGHT0, GL_POSITION, position);
+            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+            glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, lmodel_localviewer);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
+          }
+
+        if (ap->wire || !do_texture)
+          {
+            glDisable(GL_TEXTURE_2D);
+          }
+        else
+          {
+            GLfloat s_plane[] = { 1, 0, 0, 0 };
+            GLfloat t_plane[] = { 0, 0, 1, 0 };
+            GLfloat scale = 0.0005;
+
+            if (!ap->texture)
+              parse_image_data (mi);
+
+            clear_gl_error();
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                         ap->texture->width, ap->texture->height, 0,
+                         GL_RGBA, GL_UNSIGNED_BYTE,
+                         ap->texture->data);
+            check_gl_error("texture");
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+            glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+            glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+            glTexGenfv(GL_S, GL_EYE_PLANE, s_plane);
+            glTexGenfv(GL_T, GL_EYE_PLANE, t_plane);
+
+            glEnable(GL_TEXTURE_GEN_S);
+            glEnable(GL_TEXTURE_GEN_T);
+            glEnable(GL_TEXTURE_2D);
+
+            glMatrixMode(GL_TEXTURE);
+            glLoadIdentity();
+            glScalef(scale, scale, 1);
+            glMatrixMode(GL_MODELVIEW);
+          }
 
 	InitFishs(ap);
 
@@ -333,14 +423,14 @@ init_atlantis(ModeInfo * mi)
 						sizeof (fishRec))) == NULL) {
 			/* free everything up to now */
 			(void) free((void *) atlantis);
-			atlantis = NULL;
+			atlantis = (atlantisstruct *) NULL;
 			return;
 		}
 	}
 	ap->sharkspeed = MI_CYCLES(mi);		/* has influence on the "width"
 						   of the movement */
-	ap->sharksize = MI_SIZE(mi);	/* has influence on the "distance"
-					   of the sharks */
+	ap->sharksize = MI_SIZE(mi)?MI_SIZE(mi):SHARKSIZE;	/* has influence on the "distance"
+					                           of the sharks */
 	ap->whalespeed = whalespeed;
 	ap->wire = MI_IS_WIREFRAME(mi);
 
@@ -359,7 +449,7 @@ init_atlantis(ModeInfo * mi)
 
 		Reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		glDrawBuffer(GL_BACK);
-		Init(ap);
+		Init(mi);
 		AllDisplay(ap);
 		glXSwapBuffers(display, window);
 
@@ -390,14 +480,11 @@ draw_atlantis(ModeInfo * mi)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glPushMatrix();
-
 	AllDisplay(ap);
 	Animate(ap);
-
+	if (MI_IS_FPS(mi)) do_fps (mi);
 	glXSwapBuffers(display, window);
 }
-
 
 /*
  *-----------------------------------------------------------------------------
@@ -418,9 +505,13 @@ release_atlantis(ModeInfo * mi)
 
 			if (ap->sharks)
 				(void) free((void *) ap->sharks);
+			if (ap->texture)
+			{
+				XDestroyImage(ap->texture);
+			}
 		}
 		(void) free((void *) atlantis);
-		atlantis = NULL;
+		atlantis = (atlantisstruct *) NULL;
 	}
 	FreeAllGL(mi);
 }
@@ -439,7 +530,7 @@ change_atlantis(ModeInfo * mi)
 		return;
 
 	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(ap->glx_context));
-	Init(ap);
+	Init(mi);
 }
 
 #endif /* MODE_atlantis */

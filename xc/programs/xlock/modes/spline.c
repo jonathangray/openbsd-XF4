@@ -2,7 +2,7 @@
 /* spline --- spline fun */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)spline.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)spline.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,14 +22,15 @@ static const char sccsid[] = "@(#)spline.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 13-Sep-96: changed FOLLOW to a runtime option "-erase"
- * 17-Jan-96: added compile time option, FOLLOW to erase old splines like Qix
- *           thanks to Richard Duran <rduran@cs.utep.edu>
- * 9-Mar-95: changed how batchcount is used
- * 2-Sep-93: xlock version: David Bagley <bagleyd@tux.org>
- *           reminds me of a great "Twilight Zone" episode.
- * 1992:     X11 version Jef Poskanzer <jef@netcom.com>, <jef@well.sf.ca.us>
+ * 01-Nov-2000:
+ * 10-May-1997: Compatible with xscreensaver
+ * 13-Sep-1996: changed FOLLOW to a runtime option "-erase"
+ * 17-Jan-1996: added compile time option, FOLLOW to erase old splines like Qix
+ *              thanks to Richard Duran <rduran@cs.utep.edu>
+ * 09-Mar-1995: changed how batchcount is used
+ * 02-Sep-1993: xlock version: David Bagley <bagleyd@tux.org>
+ *              reminds me of a great "Twilight Zone" episode.
+ * 1992: X11 version Jef Poskanzer <jef@netcom.com>, <jef@well.sf.ca.us>
  *
  * spline fun #3
  */
@@ -73,18 +74,18 @@ static Bool erase;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-erase", ".spline.erase", XrmoptionNoArg, (caddr_t) "on"},
-	{"+erase", ".spline.erase", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-erase", (char *) ".spline.erase", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+erase", (char *) ".spline.erase", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & erase, "erase", "Erase", DEF_ERASE, t_Bool}
+	{(caddr_t *) & erase, (char *) "erase", (char *) "Erase", (char *) DEF_ERASE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+erase", "turn on/off the following erase of splines"}
+	{(char *) "-/+erase", (char *) "turn on/off the following erase of splines"}
 };
 
 ModeSpecOpt spline_opts =
@@ -132,15 +133,34 @@ static splinestruct *splines = NULL;
 static void XDrawSpline(Display * display, Drawable d, GC gc,
 			int x0, int y0, int x1, int y1, int x2, int y2);
 
+static void
+free_spline(splinestruct *sp)
+{
+
+	if (sp->pt != NULL) {
+		(void) free((void *) sp->pt);
+		sp->pt = NULL;
+	}
+	if (sp->splineq != NULL) {
+		int         spline;
+
+		for (spline = 0; spline < sp->nsplines; ++spline)
+			if (sp->splineq[spline] != NULL)
+				(void) free((void *) sp->splineq[spline]);
+		(void) free((void *) sp->splineq);
+		sp->splineq = NULL;
+	}
+}
+
 void
 init_spline(ModeInfo * mi)
 {
-	splinestruct *sp;
 	int         i;
+	splinestruct *sp;
 
 	if (splines == NULL) {
 		if ((splines = (splinestruct *) calloc(MI_NUM_SCREENS(mi),
-					     sizeof (splinestruct))) == NULL)
+				sizeof (splinestruct))) == NULL)
 			return;
 	}
 	sp = &splines[MI_SCREEN(mi)];
@@ -170,20 +190,31 @@ init_spline(ModeInfo * mi)
 		sp->points = NRAND(-sp->points - MINPOINTS + 1) + MINPOINTS;
 	} else if (sp->points < MINPOINTS)
 		sp->points = MINPOINTS;
-	if (!sp->pt)
-		sp->pt = (splinepointstruct *) malloc(sp->points *
-						 sizeof (splinepointstruct));
+	if (sp->pt == NULL)
+		if ((sp->pt = (splinepointstruct *) malloc(sp->points *
+				sizeof (splinepointstruct))) == NULL) {
+			free_spline(sp);
+			return;
+		}
 
 	if (sp->erase) {
 		sp->max_delta = 16;
 		sp->redrawing = 0;
 		sp->last = 0;
 		sp->nsplines = MI_CYCLES(mi) / 64 + 1;	/* So as to be compatible */
-		if (!sp->splineq)
-			sp->splineq = (XPoint **) calloc(sp->nsplines, sizeof (XPoint *));
+		if (sp->splineq == NULL)
+			if ((sp->splineq = (XPoint **) calloc(sp->nsplines,
+					sizeof (XPoint *))) == NULL) {
+				free_spline(sp);
+				return;
+			}
 		for (i = 0; i < sp->nsplines; ++i)
-			if (!sp->splineq[i])
-				sp->splineq[i] = (XPoint *) calloc(sp->points, sizeof (XPoint));
+			if (sp->splineq[i] == NULL)
+				if ((sp->splineq[i] = (XPoint *) calloc(sp->points,
+						sizeof (XPoint))) == NULL) {
+					free_spline(sp);
+					return;
+				}
 	} else {
 		sp->max_delta = 3;
 		sp->nsplines = 0;
@@ -212,11 +243,16 @@ draw_spline(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	splinestruct *sp = &splines[MI_SCREEN(mi)];
 	int         i, t, px, py, zx, zy, nx, ny;
+	splinestruct *sp;
+
+	if (splines == NULL)
+		return;
+	sp = &splines[MI_SCREEN(mi)];
+	if (sp->pt == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (sp->erase)
 		sp->first = (sp->last + 2) % sp->nsplines;
 
@@ -395,19 +431,8 @@ release_spline(ModeInfo * mi)
 	if (splines != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			splinestruct *sp = &splines[screen];
-			int         i;
-
-			if (sp->pt)
-				(void) free((void *) sp->pt);
-			if (sp->splineq) {
-				for (i = 0; i < sp->nsplines; ++i)
-					if (sp->splineq[i])
-						(void) free((void *) sp->splineq[i]);
-				(void) free((void *) sp->splineq);
-			}
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_spline(&splines[screen]);
 		(void) free((void *) splines);
 		splines = NULL;
 	}
@@ -416,7 +441,11 @@ release_spline(ModeInfo * mi)
 void
 refresh_spline(ModeInfo * mi)
 {
-	splinestruct *sp = &splines[MI_SCREEN(mi)];
+	splinestruct *sp;
+
+	if (splines == NULL)
+		return;
+	sp = &splines[MI_SCREEN(mi)];
 
 	if (sp->erase) {
 		sp->redrawing = 1;

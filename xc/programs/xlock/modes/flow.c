@@ -2,12 +2,12 @@
 /* flow --- flow of strange bees */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)flow.c 4.13 99/02/04 xlockmore";
+static const char sccsid[] = "@(#)flow.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
 /*-
- * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Sun.COM>
+ * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Procket.com>
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)flow.c 4.13 99/02/04 xlockmore";
  * other special, indirect and consequential damages.
  *
  * "flow" shows a variety of continuous phase-space flows around strange
- * attractors.  It includes the well-known Lorentz mask (the "Butterfly"
+ * attractors.  It includes the well-known Lorenz mask (the "Butterfly"
  * of chaos fame), two forms of Rossler's "Folded Band" and Poincare'
  * sections of the "Birkhoff Bagel" and Duffing's forced occilator.
  *
  * Revision History:
- * 28-Jan-98: This change catches 'lost' bees in flow.c and disables them.
+ * 01-Nov-2000: Allocation checks
+ * 28-Jan-1998: This change catches 'lost' bees in flow.c and disables them.
  *   I chose to disable them rather than reinitialise them because
  *   reinitialising can produce fake attractors.
  *   This has allowed me to relax some of the parameters and initial
@@ -35,19 +36,19 @@ static const char sccsid[] = "@(#)flow.c 4.13 99/02/04 xlockmore";
  *   result you may see some bees fly away at the start - these are the ones
  *   that 'missed' the attractor.  If the bee with the camera should fly
  *   away the mode will restart  :-)
- * 31-Nov-98: [TDA] Added Duffing  (what a strange day that was :) DAB)
+ * 31-Nov-1998: [TDA] Added Duffing  (what a strange day that was :) DAB)
  *   Duffing's forced oscillator has been added to the formula list and
  *   the parameters section has been updated to display it in Poincare'
  *   section.
- * 30-Nov-98: [TDA] Added travelling perspective option
+ * 30-Nov-1998: [TDA] Added travelling perspective option
  *   A more exciting point-of-view has been added to all autonomous flows.
  *   This views the flow as seen by a particle moving with the flow.  In the
  *   metaphor of the original code, I've attached a camera to one of the
  *   trained bees!
- * 30-Nov-98: [TDA] Much code cleanup.
- * 09-Apr-97: [TDA] Ported to xlockmore-4
- * 18-Jul-96: Adapted from swarm.c Copyright (c) 1991 by Patrick J. Naughton.
- * 31-Aug-90: Adapted from xswarm by Jeff Butterworth. (butterwo@ncsc.org)
+ * 30-Nov-1998: [TDA] Much code cleanup.
+ * 09-Apr-1997: [TDA] Ported to xlockmore-4
+ * 18-Jul-1996: Adapted from swarm.c Copyright (c) 1991 by Patrick J. Naughton.
+ * 31-Aug-1990: Adapted from xswarm by Jeff Butterworth. (butterwo@ncsc.org)
  */
 
 #ifdef STANDALONE
@@ -67,7 +68,8 @@ static const char sccsid[] = "@(#)flow.c 4.13 99/02/04 xlockmore";
 
 #ifdef MODE_flow
 
-ModeSpecOpt flow_opts = { 0, NULL, 0, NULL, NULL };
+ModeSpecOpt flow_opts =
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   flow_description = {
@@ -130,7 +132,7 @@ typedef struct {
 static flowstruct *flows = NULL;
 
 static dvector
-Lorentz(Par par, double x, double y, double z)
+Lorenz(Par par, double x, double y, double z)
 {
 	dvector d;
 
@@ -184,6 +186,32 @@ Duffing(Par par, double x, double y, double z)
 	return d;
 }
 
+static void
+free_flow(flowstruct *sp)
+{
+	if (sp->csegs != NULL) {
+		(void) free((void *) sp->csegs);
+		sp->csegs = NULL;
+	}
+	if (sp->cnsegs != NULL) {
+		(void) free((void *) sp->cnsegs);
+		sp->cnsegs = NULL;
+	}
+	if (sp->old_segs != NULL) {
+		(void) free((void *) sp->old_segs);
+		sp->old_segs = NULL;
+	}
+	if (sp->p[0] != NULL) {
+		(void) free((void *) sp->p[0]);
+		sp->p[0] = NULL;
+	}
+	if (sp->p[1] != NULL) {
+		(void) free((void *) sp->p[1]);
+		sp->p[1] = NULL;
+	}
+}
+
+
 void
 init_flow(ModeInfo * mi)
 {
@@ -191,7 +219,6 @@ init_flow(ModeInfo * mi)
 	int         b;
 	double      beemult = 1;
 	dvector     range;
-	static int  allocated = 0;
 
 	if (flows == NULL) {
 		if ((flows = (flowstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -219,7 +246,7 @@ init_flow(ModeInfo * mi)
 		beemult = 3;
 		/* fallthrough */
 	case 1:
-		sp->ODE = Lorentz;
+		sp->ODE = Lorenz;
 		sp->step = 0.02;
 		sp->size = 60;
 		sp->centre.x = 0;
@@ -310,46 +337,28 @@ init_flow(ModeInfo * mi)
 		break;
 	}
 
+	free_flow(sp); /* beecount changes with beemult */
 	sp->beecount = (int) (beemult * MI_COUNT(mi));
-	if (sp->beecount < 0)	/* random variations */
+	if (sp->beecount < 0) {	/* random variations */
 		sp->beecount = NRAND(-sp->beecount) + 1; /* Minimum 1 */
+	}
 
 	/* Clear the background. */
 	MI_CLEARWINDOW(mi);
 
-	if(!allocated || sp->beecount != allocated){ /* reallocate */
-		if (sp->csegs != NULL) {
-			(void) free((void *) sp->csegs);
-			sp->csegs = NULL;
-		}
-		if (sp->cnsegs != NULL) {
-			(void) free((void *) sp->cnsegs);
-			sp->cnsegs = NULL;
-		}
-		if (sp->old_segs != NULL) {
-			(void) free((void *) sp->old_segs);
-			sp->old_segs = NULL;
-		}
-		if (sp->p[0] != NULL) {
-			(void) free((void *) sp->p[0]);
-			sp->p[0] = NULL;
-		}
-		if (sp->p[1] != NULL) {
-			(void) free((void *) sp->p[1]);
-			sp->p[1] = NULL;
-		}
-	}
-
 	/* Allocate memory. */
-
-	if (!sp->csegs) {
-		sp->csegs = (XSegment *) malloc(sizeof (XSegment) * sp->beecount
-						* MI_NPIXELS(mi));
-		sp->cnsegs = (int *) malloc(sizeof (int) * MI_NPIXELS(mi));
-
-		sp->old_segs = (XSegment *) malloc(sizeof (XSegment) * sp->beecount);
-		sp->p[0] = (dvector *) malloc(sizeof (dvector) * sp->beecount);
-		sp->p[1] = (dvector *) malloc(sizeof (dvector) * sp->beecount);
+	if (((sp->csegs = (XSegment *) malloc(sizeof (XSegment) *
+			sp->beecount * MI_NPIXELS(mi))) == NULL) ||
+	    ((sp->cnsegs = (int *) malloc(sizeof (int) *
+			MI_NPIXELS(mi))) == NULL) ||
+	    ((sp->old_segs = (XSegment *) malloc(sizeof (XSegment) *
+			sp->beecount)) == NULL) ||
+	    ((sp->p[0] = (dvector *) malloc(sizeof (dvector) *
+			sp->beecount)) == NULL) || 
+	    ((sp->p[1] = (dvector *) malloc(sizeof (dvector) *
+			sp->beecount)) == NULL)) {
+		free_flow(sp);
+		return;
 	}
 
 	/* Initialize point positions, velocities, etc. */
@@ -367,10 +376,16 @@ draw_flow(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	flowstruct *sp = &flows[MI_SCREEN(mi)];
 	int         b, c, i;
 	int         col, ix;
 	double      M[3][3]; /* transformation matrix */
+	flowstruct *sp;
+
+	if (flows == NULL)
+		return;
+	sp = &flows[MI_SCREEN(mi)];
+	if (sp->csegs == NULL)
+		return;
 
 	if(!sp->view.depth){ /* simple 3D tumble */
 		double      sint, cost, sinp, cosp;
@@ -566,20 +581,8 @@ release_flow(ModeInfo * mi)
 	if (flows != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			flowstruct *sp = &flows[screen];
-
-			if (sp->csegs != NULL)
-				(void) free((void *) sp->csegs);
-			if (sp->cnsegs != NULL)
-				(void) free((void *) sp->cnsegs);
-			if (sp->old_segs != NULL)
-				(void) free((void *) sp->old_segs);
-			if (sp->p[0] != NULL)
-				(void) free((void *) sp->p[0]);
-			if (sp->p[1] != NULL)
-				(void) free((void *) sp->p[1]);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_flow(&flows[screen]);
 		(void) free((void *) flows);
 		flows = NULL;
 	}

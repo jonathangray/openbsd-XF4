@@ -2,7 +2,7 @@
 /* space --- A journey into deep space */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)space.c  4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)space.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -20,6 +20,10 @@ static const char sccsid[] = "@(#)space.c  4.07 97/11/24 xlockmore";
  * trade secrets or any patents by this file or any part thereof.  In no
  * event will the author be liable for any lost revenue or profits or
  * other special, indirect and consequential damages.
+ *
+ * Revision History:
+ * 01-Nov-2000: Allocation checks
+ * 1998: Written.
  */
 
 #ifdef STANDALONE
@@ -29,7 +33,6 @@ static const char sccsid[] = "@(#)space.c  4.07 97/11/24 xlockmore";
 #define space_opts xlockmore_opts
 #define DEFAULTS "*delay: 10000 \n" \
  "*count: 100 \n" \
- "*size: 15 \n" \
  "*ncolors: 64 \n" \
  "*use3d: False \n" \
  "*delta3d: 1.5 \n" \
@@ -46,13 +49,13 @@ static const char sccsid[] = "@(#)space.c  4.07 97/11/24 xlockmore";
 #ifdef MODE_space
 
 ModeSpecOpt space_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   space_description =
 {"space", "init_space", "draw_space", "release_space",
  "refresh_space", "init_space", NULL, &space_opts,
- 10000, 100, 1, 15, 64, 1.0, "",
+ 10000, 100, 1, 1, 64, 1.0, "",
  "a journey into deep space", 0, NULL};
 
 #endif
@@ -75,7 +78,6 @@ ModStruct   space_description =
 #define DEGREE 0.01/100		/* custom angle unit :) */
 
 typedef struct {
-	int         ok;		/* starfield is properly set */
 	int         nb;		/* stars number */
 	int         originX, originY;	/* screen width/2,height/2 */
 	double      zoom;	/* adapt to screen dimensions */
@@ -97,15 +99,49 @@ typedef struct {
 
 static SpaceStruct *spaces = NULL;
 
+static void
+free_space(SpaceStruct *sp)
+{
+	if (sp->starX != NULL) {
+		(void) free((void *) sp->starX);
+		sp->starX = NULL;
+	}
+	if (sp->starY != NULL) {
+		(void) free((void *) sp->starY);
+		sp->starY = NULL;
+	}
+	if (sp->starZ != NULL) {
+		(void) free((void *) sp->starZ);
+		sp->starY = NULL;
+	}
+	if (sp->stars1a != NULL) {
+		(void) free((void *) sp->stars1a);
+		sp->stars1a = NULL;
+	}
+	if (sp->stars1b != NULL) {
+		(void) free((void *) sp->stars1b);
+		sp->stars1b = NULL;
+	}
+	if (sp->stars2a != NULL) {
+		(void) free((void *) sp->stars2a);
+		sp->stars2a = NULL;
+	}
+	if (sp->stars2b != NULL) {
+		(void) free((void *) sp->stars2b);
+		sp->stars2b = NULL;
+	}
+}
+
 void
 init_space(ModeInfo * mi)
 {
-	SpaceStruct *sp;
 	int         i;
+	SpaceStruct *sp;
 
 	/* allocate a SpaceStruct for every screen */
 	if (spaces == NULL) {
-		if ((spaces = (SpaceStruct *) calloc(MI_NUM_SCREENS(mi), sizeof (SpaceStruct))) == NULL)
+		if ((spaces = (SpaceStruct *) calloc(MI_NUM_SCREENS(mi),
+				sizeof (SpaceStruct))) == NULL)
 			return;
 	}
 	sp = &spaces[MI_SCREEN(mi)];
@@ -114,28 +150,32 @@ init_space(ModeInfo * mi)
 	sp->originX = MI_WIDTH(mi) / 2;
 	sp->originY = MI_HEIGHT(mi) / 2;
 	sp->zoom = (double) MI_WIDTH(mi) * 0.54 + 40;
-	sp->ok = 0;
 
 	/* allocate stars buffers for current screen */
-	if ((sp->starX = (double *) calloc(sp->nb, sizeof (double))) == NULL)
-		            return;
-	if ((sp->starY = (double *) calloc(sp->nb, sizeof (double))) == NULL)
-		            return;
-	if ((sp->starZ = (double *) calloc(sp->nb, sizeof (double))) == NULL)
-		            return;
+	if (((sp->starX = (double *) calloc(sp->nb, sizeof (double))) == NULL) ||
+	    ((sp->starY = (double *) calloc(sp->nb, sizeof (double))) == NULL) ||
+	    ((sp->starZ = (double *) calloc(sp->nb, sizeof (double))) == NULL)) {
+		free_space(sp);
+		return;
+	}
 
 	/* allocate pixels buffers for current screen */
-	if ((sp->stars1a = (XPoint *) calloc(9 * sp->nb, sizeof (XPoint))) == NULL)
+	if (((sp->stars1a = (XPoint *) calloc(9 * sp->nb,
+			sizeof (XPoint))) == NULL) ||
+	    ((sp->stars1b = (XPoint *) calloc(9 * sp->nb,
+			sizeof (XPoint))) == NULL)) {
+		free_space(sp);
 		return;
-	if ((sp->stars1b = (XPoint *) calloc(9 * sp->nb, sizeof (XPoint))) == NULL)
-		return;
-	if (MI_IS_USE3D(mi)) {
-		if ((sp->stars2a = (XPoint *) calloc(9 * sp->nb, sizeof (XPoint))) == NULL)
-			return;
-		if ((sp->stars2b = (XPoint *) calloc(9 * sp->nb, sizeof (XPoint))) == NULL)
-			return;
 	}
-	sp->ok = 1;		/* mem allocations succeeded */
+	if (MI_IS_USE3D(mi)) {
+		if (((sp->stars2a = (XPoint *) calloc(9 * sp->nb,
+				sizeof (XPoint))) == NULL) ||
+		    ((sp->stars2b = (XPoint *) calloc(9 * sp->nb,
+				sizeof (XPoint))) == NULL)) {
+			free_space(sp);
+			return;
+		}
+	}
 	sp->pixel_nb = 0;
 	sp->stars1 = sp->stars1a;
 	sp->stars1copy = sp->stars1b;
@@ -169,9 +209,7 @@ void
 draw_space(ModeInfo * mi)
 {
 	int         i, n, originX, originY, x, x2 = 0, y, IS_SMALL;
-	double      _x, _y, _z, cosX, sinX, cosY, sinY, cosZ, sinZ, k, z,
-	            zoom;
-
+	double      _x, _y, _z, cosX, sinX, cosY, sinY, cosZ, sinZ, k, z, zoom;
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
@@ -182,7 +220,7 @@ draw_space(ModeInfo * mi)
 	if (spaces == NULL)
 		return;
 	sp = &spaces[MI_SCREEN(mi)];
-	if (!sp->ok)
+	if (sp->stars1a == NULL)
 		return;
 	originX = sp->originX;
 	originY = sp->originY;
@@ -399,22 +437,11 @@ refresh_space(ModeInfo * mi)
 void
 release_space(ModeInfo * mi)
 {
-	int         i;
-	SpaceStruct *sp;
-
 	if (spaces != NULL) {
-		for (i = 0; i < MI_NUM_SCREENS(mi); i++) {
-			sp = &spaces[i];
-			(void) free((void *) sp->starX);
-			(void) free((void *) sp->starY);
-			(void) free((void *) sp->starZ);
-			(void) free((void *) sp->stars1a);
-			(void) free((void *) sp->stars1b);
-			if (MI_IS_USE3D(mi)) {
-				(void) free((void *) sp->stars2a);
-				(void) free((void *) sp->stars2b);
-			}
-		}
+		int screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_space(&spaces[screen]);
 		(void) free((void *) spaces);
 		spaces = NULL;
 	}

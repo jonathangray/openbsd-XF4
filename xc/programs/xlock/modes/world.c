@@ -2,12 +2,12 @@
 /* world --- world spinner */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)world.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)world.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
 /*-
- * Copyright (c) 1993 Matthew Moyle-Croft <mmc@cs.adelaide.edu.au>
+ * Copyright (c) 1993 Matthew Moyle-Croft <matthew@moyle-croft.com>
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)world.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 04-Oct-95: multiscreen patch, thanks to Grant McDorman <grant@isgtec.com>.
- * 10-Jul-95: Backward spinning jump fixed by Neale Pickett <zephyr@nmt.edu>.
- * 17-Jul-94: Got batchcount to work.
- * 09-Jan-94: Written [ Modified from image.c ]
- * 29-Jul-90: image.c written. Copyright (c) 1991 by Patrick J. Naughton.
+ * 01-Nov-2000:
+ * 10-May-1997: Compatible with xscreensaver
+ * 04-Oct-1995: multiscreen patch, thanks to Grant McDorman <grant@isgtec.com>.
+ * 10-Jul-1995: Backward spinning jump fixed by Neale Pickett <zephyr@nmt.edu>.
+ * 17-Jul-1994: Got batchcount to work.
+ * 09-Jan-1994: Written [ Modified from image.c ]
+ * 29-Jul-1990: image.c written. Copyright (c) 1991 by Patrick J. Naughton.
  */
 
 #ifdef STANDALONE
@@ -46,7 +47,7 @@ static const char sccsid[] = "@(#)world.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_world
 
 ModeSpecOpt world_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   world_description =
@@ -152,8 +153,8 @@ static worldstruct *worlds = NULL;
 void
 init_world(ModeInfo * mi)
 {
-	worldstruct *wp;
 	int         i;
+	worldstruct *wp;
 
 	if (worlds == NULL) {
 		if ((worlds = (worldstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -188,7 +189,10 @@ init_world(ModeInfo * mi)
 #endif
 	if (wp->planets != NULL)
 		(void) free((void *) wp->planets);
-	wp->planets = (planetstruct *) malloc(wp->nplanets * sizeof (planetstruct));
+	if ((wp->planets = (planetstruct *) malloc(wp->nplanets *
+			sizeof (planetstruct))) == NULL) {
+		return;
+	}
 	for (i = 0; i < wp->nplanets; i++)
 		wp->planets[i].x = wp->planets[i].y = -1;
 
@@ -200,28 +204,33 @@ draw_world(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	worldstruct *wp = &worlds[MI_SCREEN(mi)];
 	int         i;
-
 #ifndef NOFLASH
 	int        *col, j;
+#endif
+	worldstruct *wp;
 
+	if (worlds == NULL)
+		return;
+	wp = &worlds[MI_SCREEN(mi)];
+	if (wp->planets == NULL)
+		return;
+
+#ifndef NOFLASH
 	if ((col = (int *) calloc(wp->ncols, sizeof (int))) == NULL)
 		            return;
-
 #endif
+
 	MI_IS_DRAWN(mi) = True;
 
 	if (wp->frame_num == NUM_EARTHS * NUM_REV) {
 		wp->frame_num = 0;
 		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 		for (i = 0; i < wp->nplanets; i++) {
-			if ((wp->ncols > wp->nplanets || wp->nrows < 2) &&
-			    wp->planets[i].x >= 0 && wp->planets[i].y >= 0)
-				XFillRectangle(display, MI_WINDOW(mi), gc,
-					  wp->xb + SIZE_X * wp->planets[i].x,
-					  wp->yb + SIZE_Y * wp->planets[i].y,
-					       SIZE_X, SIZE_Y);
+			XFillRectangle(display, MI_WINDOW(mi), gc,
+				 wp->xb + SIZE_X * wp->planets[i].x,
+				 wp->yb + SIZE_Y * wp->planets[i].y,
+				 SIZE_X, SIZE_Y);
 #ifdef NOFLASH
 			wp->planets[i].x = NRAND(wp->ncols);
 #else

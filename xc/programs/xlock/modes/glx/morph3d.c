@@ -2,7 +2,7 @@
 /* morph3d --- Shows 3D morphing objects */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)morph3d.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)morph3d.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -37,7 +37,7 @@ static const char sccsid[] = "@(#)morph3d.c	4.07 97/11/24 xlockmore";
  * mode, please refer to the Mesa package (ftp iris.ssec.wisc.edu on /pub/Mesa)
  *
  * Since I'm not a native English speaker, my apologies for any grammatical
- * mistake.
+ * mistakes.
  *
  * My e-mail address is
  * m-vianna@usa.net
@@ -45,8 +45,9 @@ static const char sccsid[] = "@(#)morph3d.c	4.07 97/11/24 xlockmore";
  * Marcelo F. Vianna (Feb-13-1997)
  *
  * Revision History:
- * 27-Jul-97: Speed ups by Marcelo F. Vianna.
- * 08-May-97: Speed ups by Marcelo F. Vianna.
+ * 01-Mar-2001: Added FPS stuff E.Lassauge <lassauge@mail.dotcom.fr>
+ * 27-Jul-1997: Speed ups by Marcelo F. Vianna.
+ * 08-May-1997: Speed ups by Marcelo F. Vianna.
  *
  */
 
@@ -79,7 +80,7 @@ static const char sccsid[] = "@(#)morph3d.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_moebius
 
 ModeSpecOpt morph3d_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   morph3d_description =
@@ -172,11 +173,11 @@ static float MaterialWhite[] =
 static float MaterialGray[] =
 {0.5, 0.5, 0.5, 1.0};
 
-static morph3dstruct *morph3d = NULL;
+static morph3dstruct *morph3d = (morph3dstruct *) NULL;
 
 #define TRIANGLE(Edge, Amp, Divisions, Z, VS)                                                                    \
 {                                                                                                                \
-  GLfloat   Xf,Yf,Xa,Yb,Xf2,Yf2,Yf_2,Yb2,Yb_2;                                                                   \
+  GLfloat   Xf,Yf,Xa,Yb=0.0,Xf2=0.0,Yf2=0.0,Yf_2=0.0,Yb2,Yb_2;                                                   \
   GLfloat   Factor=0.0,Factor1,Factor2;                                                                          \
   GLfloat   VertX,VertY,VertZ,NeiAX,NeiAY,NeiAZ,NeiBX,NeiBY,NeiBZ;                                               \
   GLfloat   Ax,Ay;                                                                                               \
@@ -348,8 +349,13 @@ draw_tetra(ModeInfo * mi)
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mp->MaterialColor[0]);
 
-	list = glGenLists(1);
+	if ((list = glGenLists(1)) == 0)
+		return;
 	glNewList(list, GL_COMPILE_AND_EXECUTE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(list, 1);
+		return;
+	}
 	TRIANGLE(2, mp->seno, mp->edgedivisions, 0.5 / SQRT6, mp->VisibleSpikes);
 	glEndList();
 
@@ -383,8 +389,13 @@ draw_cube(ModeInfo * mi)
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mp->MaterialColor[0]);
 
-	list = glGenLists(1);
+	if ((list = glGenLists(1)) == 0)
+		return;
 	glNewList(list, GL_COMPILE_AND_EXECUTE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(list, 1);
+		return;
+	}
 	SQUARE(2, mp->seno, mp->edgedivisions, 0.5, mp->VisibleSpikes)
 		glEndList();
 
@@ -416,8 +427,13 @@ draw_octa(ModeInfo * mi)
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mp->MaterialColor[0]);
 
-	list = glGenLists(1);
+	if ((list = glGenLists(1)) == 0)
+		return;
 	glNewList(list, GL_COMPILE_AND_EXECUTE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(list, 1);
+		return;
+	}
 	TRIANGLE(2, mp->seno, mp->edgedivisions, 1 / SQRT6, mp->VisibleSpikes);
 	glEndList();
 
@@ -473,8 +489,13 @@ draw_dodeca(ModeInfo * mi)
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mp->MaterialColor[0]);
 
-	list = glGenLists(1);
+	if ((list = glGenLists(1)) == 0)
+		return;
 	glNewList(list, GL_COMPILE_AND_EXECUTE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(list, 1);
+		return;
+	}
 	PENTAGON(1, mp->seno, mp->edgedivisions, sqr(TAU) * sqrt((TAU + 2) / 5) / 2, mp->VisibleSpikes);
 	glEndList();
 
@@ -544,8 +565,13 @@ draw_icosa(ModeInfo * mi)
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mp->MaterialColor[0]);
 
-	list = glGenLists(1);
+	if ((list = glGenLists(1)) == 0)
+		return;
 	glNewList(list, GL_COMPILE_AND_EXECUTE);
+	if (glGetError() != GL_NO_ERROR) {
+		glDeleteLists(list, 1);
+		return;
+	}
 	TRIANGLE(1.5, mp->seno, mp->edgedivisions, (3 * SQRT3 + SQRT15) / 12, mp->VisibleSpikes);
 	glEndList();
 
@@ -778,7 +804,6 @@ pinit(ModeInfo * mi)
 void
 init_morph3d(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	morph3dstruct *mp;
 
 	if (morph3d == NULL) {
@@ -786,14 +811,14 @@ init_morph3d(ModeInfo * mi)
 					    sizeof (morph3dstruct))) == NULL)
 			return;
 	}
-	mp = &morph3d[screen];
+	mp = &morph3d[MI_SCREEN(mi)];
 	mp->step = NRAND(90);
 	mp->VisibleSpikes = 1;
 
 	if ((mp->glx_context = init_GL(mi)) != NULL) {
 
 		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
-	    glDrawBuffer(GL_BACK);
+		glDrawBuffer(GL_BACK);
 		mp->object = MI_COUNT(mi);
 		if (mp->object <= 0 || mp->object > 5)
 			mp->object = NRAND(5) + 1;
@@ -806,10 +831,13 @@ init_morph3d(ModeInfo * mi)
 void
 draw_morph3d(ModeInfo * mi)
 {
-	morph3dstruct *mp = &morph3d[MI_SCREEN(mi)];
-
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	morph3dstruct *mp;
+
+	if (morph3d == NULL)
+		return;
+	mp = &morph3d[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -860,7 +888,7 @@ draw_morph3d(ModeInfo * mi)
 	glPopMatrix();
 
 	glFlush();
-
+	if (MI_IS_FPS(mi)) do_fps (mi);
 	glXSwapBuffers(display, window);
 
 	mp->step += 0.05;
@@ -883,7 +911,7 @@ release_morph3d(ModeInfo * mi)
 {
 	if (morph3d != NULL) {
 		(void) free((void *) morph3d);
-		morph3d = NULL;
+		morph3d = (morph3dstruct *) NULL;
 	}
 	FreeAllGL(mi);
 }

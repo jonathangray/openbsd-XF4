@@ -2,7 +2,7 @@
 /* demon --- David Griffeath's cellular automata */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)demon.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)demon.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,16 +22,17 @@ static const char sccsid[] = "@(#)demon.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 16-Apr-97: -neighbors 3, 9 (not sound mathematically), 12, and 8 added
- * 30-May-96: Ron Hitchens <ron@idiom.com>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 16-Apr-1997: -neighbors 3, 9 (not sound mathematically), 12, and 8 added
+ * 30-May-1996: Ron Hitchens <ron@idiom.com>
  *            Fixed memory management that caused leaks
- * 14-Apr-96: -neighbors 6 runtime-time option added
- * 21-Aug-95: Coded from A.K. Dewdney's "Computer Recreations", Scientific
- *            American Magazine" Aug 1989 pp 102-105.  Also very similar to
- *            hodgepodge machine described in A.K. Dewdney's "Computer
- *            Recreations", Scientific American Magazine" Aug 1988 pp 104-107.
- *            also used life.c as a guide.
+ * 14-Apr-1996: -neighbors 6 runtime-time option added
+ * 21-Aug-1995: Coded from A.K. Dewdney's "Computer Recreations", Scientific
+ *              American Magazine" Aug 1989 pp 102-105.  Also very similar
+ *              to hodgepodge machine described in A.K. Dewdney's "Computer
+ *              Recreations", Scientific American Magazine" Aug 1988
+ *              pp 104-107.  Also used life.c as a guide.
  */
 
 /*-
@@ -76,16 +77,16 @@ static int  neighbors;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".demon.neighbors", XrmoptionSepArg, (caddr_t) NULL}
+	{(char *) "-neighbors", (char *) ".demon.neighbors", XrmoptionSepArg, (caddr_t) NULL}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int}
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int}
 };
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
 };
 
 ModeSpecOpt demon_opts =
@@ -101,8 +102,9 @@ ModStruct   demon_description =
 #endif
 
 #define DEMONBITS(n,w,h)\
-  dp->pixmaps[dp->init_bits++]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1)
+  if ((dp->pixmaps[dp->init_bits]=\
+  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
+  free_demon(display,dp); return;} else {dp->init_bits++;}
 
 #define REDRAWSTEP 2000		/* How many cells to draw per cycle */
 #define MINSTATES 2
@@ -206,18 +208,22 @@ drawcell(ModeInfo * mi, int col, int row, unsigned char state)
 	}
 }
 
-static void
+static Bool
 addtolist(ModeInfo * mi, int col, int row, unsigned char state)
 {
 	demonstruct *dp = &demons[MI_SCREEN(mi)];
 	CellList   *current;
 
 	current = dp->cellList[state];
-	dp->cellList[state] = (CellList *) malloc(sizeof (CellList));
+	if ((dp->cellList[state] = (CellList *)
+		malloc(sizeof (CellList))) == NULL) {
+		return False;
+	}
 	dp->cellList[state]->pt.x = col;
 	dp->cellList[state]->pt.y = row;
 	dp->cellList[state]->next = current;
 	dp->ncells[state]++;
+	return True;
 }
 
 #ifdef DEBUG
@@ -251,7 +257,7 @@ free_state(demonstruct * dp, int state)
 		(void) free((void *) current);
 	}
 	dp->cellList[state] = NULL;
-	if (dp->ncells)
+	if (dp->ncells != NULL)
 		dp->ncells[state] = 0;
 }
 
@@ -288,6 +294,22 @@ free_struct(demonstruct * dp)
 }
 
 static void
+free_demon(Display *display, demonstruct *dp)
+{
+	int         shade;
+
+	if (dp->stippledGC != None) {
+		XFreeGC(display, dp->stippledGC);
+		dp->stippledGC = None;
+	}
+	for (shade = 0; shade < dp->init_bits; shade++) {
+		XFreePixmap(display, dp->pixmaps[shade]);
+	}
+	dp->init_bits = 0;
+	free_struct(dp);
+}
+
+static Bool
 draw_state(ModeInfo * mi, int state)
 {
 	demonstruct *dp = &demons[MI_SCREEN(mi)];
@@ -336,7 +358,10 @@ draw_state(ModeInfo * mi, int state)
 		int         ncells = 0;
 
 		/* Create Rectangle list from part of the cellList */
-		rects = (XRectangle *) malloc(dp->ncells[state] * sizeof (XRectangle));
+		if ((rects = (XRectangle *) malloc(dp->ncells[state] *
+			 sizeof (XRectangle))) == NULL) {
+			return False;
+		}
 		current = dp->cellList[state];
 		while (current) {
 			rects[ncells].x = dp->xb + current->pt.x * dp->xs;
@@ -377,6 +402,7 @@ draw_state(ModeInfo * mi, int state)
 	}
 	free_state(dp, state);
 	XFlush(MI_DISPLAY(mi));
+	return True;
 }
 
 static void
@@ -389,7 +415,8 @@ RandomSoup(ModeInfo * mi)
 		for (col = 0; col < dp->ncols; ++col) {
 			dp->oldcell[col + mrow] =
 				(unsigned char) LRAND() % ((unsigned char) dp->states);
-			addtolist(mi, col, row, dp->oldcell[col + mrow]);
+			if (!addtolist(mi, col, row, dp->oldcell[col + mrow]))
+				return; /* sparse soup */
 		}
 		mrow += dp->ncols;
 	}
@@ -409,6 +436,7 @@ init_demon(ModeInfo * mi)
 			return;
 	}
 	dp = &demons[MI_SCREEN(mi)];
+
 	dp->generation = 0;
 	dp->redrawing = 0;
 	if (MI_NPIXELS(mi) < NUMSTIPPLES) {
@@ -416,13 +444,18 @@ init_demon(ModeInfo * mi)
 			XGCValues   gcv;
 
 			gcv.fill_style = FillOpaqueStippled;
-			dp->stippledGC = XCreateGC(display, window, GCFillStyle, &gcv);
+			if ((dp->stippledGC = XCreateGC(display, window,
+				 GCFillStyle, &gcv)) == None) {
+				free_demon(display, dp);
+				return;
+			}
 		}
 		if (dp->init_bits == 0) {
 			int         i;
 
-			for (i = 1; i < NUMSTIPPLES; i++)
+			for (i = 1; i < NUMSTIPPLES; i++) {
 				DEMONBITS(stipples[i], STIPPLESIZE, STIPPLESIZE);
+			}
 		}
 	}
 	free_struct(dp);
@@ -444,8 +477,15 @@ init_demon(ModeInfo * mi)
 		dp->states = NRAND(-dp->states - MINSTATES + 1) + MINSTATES;
 	else if (dp->states < MINSTATES)
 		dp->states = plots[1][nk];
-	dp->cellList = (CellList **) calloc(dp->states, sizeof (CellList *));
-	dp->ncells = (int *) calloc(dp->states, sizeof (int));
+	if ((dp->cellList = (CellList **) calloc(dp->states,
+		sizeof (CellList *))) == NULL) {
+		free_demon(display, dp);
+		return;
+	}
+	if ((dp->ncells = (int *) calloc(dp->states, sizeof (int))) == NULL) {
+		free_demon(display, dp);
+		return;
+	}
 
 	dp->state = 0;
 
@@ -476,7 +516,7 @@ init_demon(ModeInfo * mi)
 		dp->ncols = nccols / 2;
 		dp->nrows = 2 * (ncrows / 4);
 		dp->xb = (dp->width - dp->xs * nccols) / 2 + dp->xs / 2;
-		dp->yb = (dp->height - dp->ys * (ncrows / 2) * 2) / 2 + dp->ys;
+		dp->yb = (dp->height - dp->ys * (ncrows / 2) * 2) / 2 + dp->ys - 2;
 		for (i = 0; i < 6; i++) {
 			dp->shape.hexagon[i].x = (dp->xs - 1) * hexagonUnit[i].x;
 			dp->shape.hexagon[i].y = ((dp->ys - 1) * hexagonUnit[i].y / 2) * 4 / 3;
@@ -533,11 +573,17 @@ init_demon(ModeInfo * mi)
 
 	MI_CLEARWINDOW(mi);
 
-	dp->oldcell = (unsigned char *)
-		malloc(dp->ncols * dp->nrows * sizeof (unsigned char));
+	if ((dp->oldcell = (unsigned char *)
+		malloc(dp->ncols * dp->nrows * sizeof (unsigned char))) == NULL) {
+		free_demon(display, dp);
+		return;
+	}
 
-	dp->newcell = (unsigned char *)
-		malloc(dp->ncols * dp->nrows * sizeof (unsigned char));
+	if ((dp->newcell = (unsigned char *)
+		malloc(dp->ncols * dp->nrows * sizeof (unsigned char))) == NULL) {
+		free_demon(display, dp);
+		return;
+	}
 
 	RandomSoup(mi);
 }
@@ -545,11 +591,16 @@ init_demon(ModeInfo * mi)
 void
 draw_demon(ModeInfo * mi)
 {
-	demonstruct *dp = &demons[MI_SCREEN(mi)];
 	int         i, j, k, l, mj = 0, ml;
+	demonstruct *dp;
+
+	if (demons == NULL)
+		return;
+	dp = &demons[MI_SCREEN(mi)];
+	if (dp->cellList == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (dp->state >= dp->states) {
 		(void) memcpy((char *) dp->newcell, (char *) dp->oldcell,
 			      dp->ncols * dp->nrows * sizeof (unsigned char));
@@ -569,7 +620,6 @@ draw_demon(ModeInfo * mi)
 						dp->newcell[i + mj] = dp->oldcell[k + ml];
 					/* E */
 					k = (i + 1 == dp->ncols) ? 0 : i + 1;
-					l = j;
 					ml = mj;
 					if (dp->oldcell[k + ml] ==
 					    (int) (dp->oldcell[i + mj] + 1) % dp->states)
@@ -596,7 +646,6 @@ draw_demon(ModeInfo * mi)
 						dp->newcell[i + mj] = dp->oldcell[k + ml];
 					/* W */
 					k = (!i) ? dp->ncols - 1 : i - 1;
-					l = j;
 					ml = mj;
 					if (dp->oldcell[k + ml] ==
 					    (int) (dp->oldcell[i + mj] + 1) % dp->states)
@@ -626,7 +675,6 @@ draw_demon(ModeInfo * mi)
 						dp->newcell[i + mj] = dp->oldcell[k + ml];
 					/* E */
 					k = (i + 1 == dp->ncols) ? 0 : i + 1;
-					l = j;
 					ml = mj;
 					if (dp->oldcell[k + ml] ==
 					    (int) (dp->oldcell[i + mj] + 1) % dp->states)
@@ -691,7 +739,6 @@ draw_demon(ModeInfo * mi)
 					if ((i + j) % 2) {	/* right */
 						/* W */
 						k = (!i) ? dp->ncols - 1 : i - 1;
-						l = j;
 						ml = mj;
 						if (dp->oldcell[k + ml] ==
 						    (int) (dp->oldcell[i + mj] + 1) % dp->states)
@@ -699,7 +746,6 @@ draw_demon(ModeInfo * mi)
 					} else {	/* left */
 						/* E */
 						k = (i + 1 == dp->ncols) ? 0 : i + 1;
-						l = j;
 						ml = mj;
 						if (dp->oldcell[k + ml] ==
 						    (int) (dp->oldcell[i + mj] + 1) % dp->states)
@@ -861,7 +907,10 @@ draw_demon(ModeInfo * mi)
 			for (i = 0; i < dp->ncols; i++)
 				if (dp->oldcell[i + mj] != dp->newcell[i + mj]) {
 					dp->oldcell[i + mj] = dp->newcell[i + mj];
-					addtolist(mi, i, j, dp->oldcell[i + mj]);
+					if (!addtolist(mi, i, j, dp->oldcell[i + mj])) {
+						free_demon(MI_DISPLAY(mi), dp);
+						return;
+					}
 				}
 			mj += dp->ncols;
 		}
@@ -870,7 +919,10 @@ draw_demon(ModeInfo * mi)
 		dp->state = 0;
 	} else {
 		if (dp->ncells[dp->state])
-			draw_state(mi, dp->state);
+			if (!draw_state(mi, dp->state)) {
+				free_demon(MI_DISPLAY(mi), dp);
+				return;
+			}
 		dp->state++;
 	}
 	if (dp->redrawing) {
@@ -892,25 +944,21 @@ release_demon(ModeInfo * mi)
 	if (demons != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			demonstruct *dp = &demons[screen];
-			int         shade;
-
-			if (dp->stippledGC != None) {
-				XFreeGC(MI_DISPLAY(mi), dp->stippledGC);
-			}
-			for (shade = 0; shade < dp->init_bits; shade++)
-				XFreePixmap(MI_DISPLAY(mi), dp->pixmaps[shade]);
-			free_struct(dp);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_demon(MI_DISPLAY(mi), &demons[screen]);
 		(void) free((void *) demons);
 		demons = NULL;
 	}
-} void
+}
 
+void
 refresh_demon(ModeInfo * mi)
 {
-	demonstruct *dp = &demons[MI_SCREEN(mi)];
+	demonstruct *dp;
+
+	if (demons == NULL)
+		return;
+	dp = &demons[MI_SCREEN(mi)];
 
 	dp->redrawing = 1;
 	dp->redrawpos = 0;

@@ -2,7 +2,7 @@
 /* drift --- drifting recursive fractal cosmic flames */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)drift.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)drift.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)drift.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
- * 01-Jan-97: Moved new flame to drift.  Compile time options now run time.
- * 01-Jun-95: Updated by Scott Draves.
- * 27-Jun-91: vary number of functions used.
- * 24-Jun-91: fixed portability problem with integer mod (%).
- * 06-Jun-91: Written, received from Scott Draves <spot@cs.cmu.edu>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
+ * 01-Jan-1997: Moved new flame to drift.  Compile time options now run time.
+ * 01-Jun-1995: Updated by Scott Draves.
+ * 27-Jun-1991: vary number of functions used.
+ * 24-Jun-1991: fixed portability problem with integer mod (%).
+ * 06-Jun-1991: Written, received from Scott Draves <spot@cs.cmu.edu>
  */
 
 #ifdef STANDALONE
@@ -60,20 +61,20 @@ static Bool liss;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-grow", ".drift.grow", XrmoptionNoArg, (caddr_t) "on"},
-	{"+grow", ".drift.grow", XrmoptionNoArg, (caddr_t) "off"},
-	{"-liss", ".drift.trail", XrmoptionNoArg, (caddr_t) "on"},
-	{"+liss", ".drift.trail", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-grow", (char *) ".drift.grow", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+grow", (char *) ".drift.grow", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-liss", (char *) ".drift.trail", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+liss", (char *) ".drift.trail", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & grow, "grow", "Grow", DEF_GROW, t_Bool},
-	{(caddr_t *) & liss, "liss", "Liss", DEF_LISS, t_Bool}
+	{(caddr_t *) & grow, (char *) "grow", (char *) "Grow", (char *) DEF_GROW, t_Bool},
+	{(caddr_t *) & liss, (char *) "liss", (char *) "Liss", (char *) DEF_LISS, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+grow", "turn on/off growing fractals, else they are animated"},
-	{"-/+liss", "turn on/off using lissojous figures to get points"}
+	{(char *) "-/+grow", (char *) "turn on/off growing fractals, else they are animated"},
+	{(char *) "-/+liss", (char *) "turn on/off using lissojous figures to get points"}
 };
 
 ModeSpecOpt drift_opts =
@@ -262,6 +263,19 @@ pick_df_coefs(ModeInfo * mi)
 }
 
 static void
+free_drift(driftstruct *dp)
+{
+	if (dp->ncpoints != NULL) {
+		(void) free((void *) dp->ncpoints);
+		dp->ncpoints = NULL;
+	}
+	if (dp->cpts != NULL) {
+		(void) free((void *) dp->cpts);
+		dp->cpts = NULL;
+	}
+}
+
+static void
 initfractal(ModeInfo * mi)
 {
 	driftstruct *dp = &drifts[MI_SCREEN(mi)];
@@ -272,11 +286,21 @@ initfractal(ModeInfo * mi)
 	dp->fuse = FUSE;
 	dp->total_points = 0;
 
-	if (!dp->ncpoints)
-		dp->ncpoints = (int *) malloc(sizeof (int) * MI_NCOLORS(mi));
+	if (!dp->ncpoints) {
+		if ((dp->ncpoints = (int *) malloc(sizeof (int) * MI_NCOLORS(mi))) ==
+			NULL) {
+			free_drift(dp);
+			return;
+		}
+	}
+	if (!dp->cpts) {
+		if ((dp->cpts = (XPoint *) malloc(MAXBATCH2 * sizeof (XPoint) *
+			 MI_NCOLORS(mi))) == NULL) {
+			free_drift(dp);
+			return;
+		}
+	}
 
-	if (!dp->cpts)
-		dp->cpts = (XPoint *) malloc(MAXBATCH2 * sizeof (XPoint) * MI_NCOLORS(mi));
 	if (dp->rainbow)
 		for (i = 0; i < MI_NPIXELS(mi); i++)
 			dp->ncpoints[i] = 0;
@@ -583,12 +607,16 @@ void
 draw_drift(ModeInfo * mi)
 {
 	Window      window = MI_WINDOW(mi);
-	driftstruct *dp = &drifts[MI_SCREEN(mi)];
+	driftstruct *dp;
 
-	dp->timer = 3000;
+	if (drifts == NULL)
+		return;
+	dp = &drifts[MI_SCREEN(mi)];
+	if (dp->ncpoints == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
+	dp->timer = 3000;
 	while (dp->timer) {
 		iter(dp);
 		draw(mi, dp, window);
@@ -628,12 +656,8 @@ release_drift(ModeInfo * mi)
 	if (drifts != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			driftstruct *dp = &drifts[screen];
-
-			(void) free((void *) dp->ncpoints);
-			(void) free((void *) dp->cpts);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_drift(&drifts[screen]);
 		(void) free((void *) drifts);
 		drifts = NULL;
 	}

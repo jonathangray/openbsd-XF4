@@ -21,11 +21,11 @@
 #include <GL/glu.h>
 
 /* Static configuration. */
-#define GLB_SLOW_GL          1	/* Set this if you have a slow GL
+#define GLB_SLOW_GL          0	/* Set this if you have a slow GL
 				   * implementation. If you have an accelerated
 				   * graphics card, set this to 0.
 				 */
-#define GLB_USE_BLENDING     0	/* Use alpha feature to create see-through
+#define GLB_USE_BLENDING     1	/* Use alpha feature to create see-through
 				   * bubbles.
 				 */
 #define GLB_VERTICES_EPSILON 0.0005	/* How close are identical vertices? */

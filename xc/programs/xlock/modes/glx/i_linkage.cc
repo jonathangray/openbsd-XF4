@@ -22,10 +22,10 @@ char *parse_parts(char *parts);
 double scale = M_PI;
 int scene = 0;
 int bezier = 0;
-char *parts = NULL;
+char *parts = (char *) NULL;
 int n_strips = N_STRIPS;
 
-void
+Bool
 invert_draw(spherestruct * gp)
 {
   double umin, vmin, umax, vmax;
@@ -61,7 +61,7 @@ invert_draw(spherestruct * gp)
   du = 0.04;
   dv = 0.04;
   umax = 2.0;
-  parts = "+0+1+2+3+4+5+6+7";
+  parts = (char *) "+0+1+2+3+4+5+6+7";
   time = (cos((M_PI*gp->time)/gp->numsteps)+1.0)/2.0;
   binary = 0;
 
@@ -74,6 +74,9 @@ invert_draw(spherestruct * gp)
 
   if (gp->construction) {
     glNewList(gp->frames+gp->time, GL_COMPILE);
+    if (glGetError() != GL_NO_ERROR) {
+	return False;
+    }
 
     if (time >= uncorrstart && uncorrstart >= 0)
       printScene(UnCorrugate, umin, umax, du, vmin, vmax, dv,
@@ -118,4 +121,5 @@ invert_draw(spherestruct * gp)
   }
 
   glPopMatrix();
+  return True;
 }

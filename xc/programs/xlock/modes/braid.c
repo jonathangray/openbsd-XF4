@@ -5,7 +5,7 @@
  */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)braid.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)braid.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,9 +25,10 @@ static const char sccsid[] = "@(#)braid.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
- * 01-Sep-95: color knotted components differently, J. Neil.
- * 29-Aug-95: Written.  John Neil <neil@math.idbsu.edu>
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Jamie Zawinski <jwz@jwz.org> compatible with xscreensaver
+ * 01-Sep-1995: color knotted components differently, J. Neil.
+ * 29-Aug-1995: Written.  John Neil <neil@math.idbsu.edu>
  */
 
 #ifdef STANDALONE
@@ -50,7 +51,7 @@ static const char sccsid[] = "@(#)braid.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_braid
 
 ModeSpecOpt braid_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   braid_description =
@@ -256,7 +257,8 @@ init_braid(ModeInfo * mi)
 
 	if (braid->linewidth < 0)
 		braid->linewidth = NRAND(-braid->linewidth) + 1;
-
+	if (braid->linewidth * braid->linewidth * 8 > MIN(MI_WIDTH(mi), MI_HEIGHT(mi)))
+       braid->linewidth = MIN(1, (int) sqrt((double) MIN(MI_WIDTH(mi), MI_HEIGHT(mi)) / 8));
 	for (i = 0; i < braid->nstrands; i++)
 		if (!(braid->components[i] & 1))
 			braid->components[i] *= -1;
@@ -267,7 +269,6 @@ draw_braid(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
-	braidtype  *braid = &braids[MI_SCREEN(mi)];
 	int         num_points = 500;
 	float       t_inc;
 	float       theta, psi;
@@ -275,9 +276,13 @@ draw_braid(ModeInfo * mi)
 	int         i, s;
 	float       x_1, y_1, x_2, y_2, r1, r2;
 	float       color, color_use = 0.0, color_inc;
+	braidtype  *braid;
+
+	if (braids == NULL)
+		return;
+	braid = &braids[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	XSetLineAttributes(display, MI_GC(mi), braid->linewidth,
 			   LineSolid,
 			   (braid->linewidth <= 3 ? CapButt : CapRound),

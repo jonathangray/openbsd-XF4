@@ -42,7 +42,7 @@ LockStruct  LockProcs[] =
 	 "Shows Langton's and Turk's generalized ants", (void *) NULL},
 #ifdef USE_GL
 	{"atlantis",
-	 1000, 4, 100, 6000, 1.00,
+	 18000, 4, 100, 6000, 1.00,
 	 "Shows moving sharks/whales/dolphin", (void *) NULL},
 #endif
 	{"ball",
@@ -76,13 +76,8 @@ LockStruct  LockProcs[] =
 	 "Shows Palmiter's bug evolution and garden of Eden", (void *) NULL},
 #ifdef USE_GL
 	{"cage",
-	 1000, 1, 1, 1, 1.00,
+	 25000, 1, 1, 1, 1.00,
 	 "Shows the Impossible Cage, an Escher-like GL scene", (void *) NULL},
-#endif
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-	{"cartoon",
-	 10000, 1, 1, 1, 1.00,
-	 "Shows bouncing cartoons", (void *) NULL},
 #endif
 	{"clock",
 	 100000, -16, 200, -200, 1.00,
@@ -111,18 +106,29 @@ LockStruct  LockProcs[] =
 	{"dilemma",
 	 200000, -2, 1000, 0, 1.00,
 	 "Shows Lloyd's Prisoner's Dilemma simulation", (void *) NULL},
+	{"dragon",
+	 2000000, 1, 16, -24, 1.00,
+	 "Shows Deventer's Hexagonal Dragons Maze", (void *) NULL},
 	{"discrete",
 	 1000, 4096, 2500, 1, 1.00,
 	 "Shows various discrete maps", (void *) NULL},
 	{"drift",
 	 10000, 30, 1, 1, 1.00,
 	 "Shows cosmic drifting flame fractals", (void *) NULL},
+	{"euler2d",
+	 1000, 1024, 3000, 1, 1.00,
+	 "Shows a simulation of 2D incompressible inviscid fluid", (void *) NULL},
 	{"eyes",
 	 20000, -8, 5, 1, 1.00,
 	 "Shows eyes following a bouncing grelb", (void *) NULL},
 	{"fadeplot",
 	 30000, 10, 1500, 1, 0.60,
 	 "Shows a fading plot of sine squared", (void *) NULL},
+#ifdef USE_GL
+	{"fire",
+	 10000, 800, 1, 1, 1.00,
+	 "Shows a 3D fire-like image", (void *) NULL},
+#endif
 	{"flag",
 	 50000, 1, 1000, -7, 1.00,
 	 "Shows a waving flag image", (void *) NULL},
@@ -142,6 +148,11 @@ LockStruct  LockProcs[] =
 	{"gears",
 	 1000, 1, 2, 1, 1.00,
 	 "Shows GL's gears", (void *) NULL},
+#endif
+#ifdef USE_GL
+	{"glplanet",
+	 1000, 1, 2, 1, 1.00,
+	 "Animates texture mapped sphere (planet)", (void *) NULL},
 #endif
 	{"goop",
 	 10000, -12, 1, 1, 1.00,
@@ -173,7 +184,7 @@ LockStruct  LockProcs[] =
 	 "Shows a sphere inverted without wrinkles", (void *) NULL},
 #endif
 	{"juggle",
-	 2000, 30, 30, 1, 1.00,
+	 10000, 150, 30, 1, 1.00,
 	 "Shows a Juggler, juggling", (void *) NULL},
 	{"julia",
 	 10000, 1000, 20, 1, 1.00,
@@ -184,7 +195,7 @@ LockStruct  LockProcs[] =
 	{"kumppa",
 	 10000, 1, 1, 1, 1.00,
 	 "Shows kumppa", (void *) NULL},
-#if defined( USE_GL ) && ( defined( USE_XPM ) || defined( USE_XPMINC ))
+#ifdef USE_GL
 	{"lament",
 	 10000, 1, 1, 1, 1.00,
 	 "Shows Lemarchand's Box", (void *) NULL},
@@ -211,7 +222,7 @@ LockStruct  LockProcs[] =
 	 10000, 1, 2000, -200, 0.60,
 	 "Shows lissajous worms", (void *) NULL},
 	{"loop",
-	 100000, 1, 1600, -12, 1.00,
+	 100000, -5, 1600, -12, 1.00,
 	 "Shows Langton's self-producing loops", (void *) NULL},
 	{"lyapunov",
 	 25000, 600, 1, 1, 1.00,
@@ -261,6 +272,9 @@ LockStruct  LockProcs[] =
 	 1000, 2, 5, 500, 1.00,
 	 "Shows a selfbuilding pipe system", (void *) NULL},
 #endif
+	{"polyominoes",
+	 6000, 1, 8192, 1, 1.00,
+	 "Shows attempts to place polyominoes into a rectangle", (void *) NULL},
 	{"puzzle",
 	 10000, 250, 1, 1, 1.00,
 	 "Shows a puzzle being scrambled and then solved", (void *) NULL},
@@ -274,19 +288,37 @@ LockStruct  LockProcs[] =
 	 100000, 25, 1, -64, 0.60,
 	 "Shows a rolling ball", (void *) NULL},
 	{"rotor",
-	 500, 4, 100, -6, 0.30,
+	 100, 4, 100, -6, 0.30,
 	 "Shows Tom's Roto-Rooter", (void *) NULL},
 #ifdef USE_GL
 	{"rubik",
 	 10000, -30, 5, -6, 1.00,
 	 "Shows an auto-solving Rubik's Cube", (void *) NULL},
 #endif
+#ifdef USE_GL
+	{"sballs",
+	 10000, 0, 10, 400, 1.00,
+	 "Balls spinning like crazy in GL", (void *) NULL},
+#endif
+	{"scooter",
+	 20000, 24, 3, 100, 1.00,
+	 "Shows a journey through space tunnel and stars", (void *) NULL},
 	{"shape",
 	 10000, 100, 256, 1, 1.00,
 	 "Shows stippled rectangles, ellipses, and triangles", (void *) NULL},
 	{"sierpinski",
 	 400000, 2000, 100, 1, 1.00,
 	 "Shows Sierpinski's triangle", (void *) NULL},
+#ifdef USE_GL
+	{"sierpinski3d",
+	 1000, 1, 2, 1, 1.00,
+	 "Shows GL's Sierpinski gasket", (void *) NULL},
+#endif
+#if defined(USE_GL) && defined( USE_UNSTABLE )
+	{"skewb",
+	 10000, -30, 5, 1, 1.00,
+	 "Shows an auto-solving Skewb", (void *) NULL},
+#endif
 	{"slip",
 	 50000, 35, 50, 1, 1.00,
 	 "Shows slipping blits", (void *) NULL},
@@ -334,7 +366,7 @@ LockStruct  LockProcs[] =
 	 "Shows 3D mathematical shapes", (void *) NULL},
 #endif
 	{"swarm",
-	 15000, 100, 1, 1, 1.00,
+	 15000, -100, 1, -100, 1.00,
 	 "Shows a swarm of bees following a wasp", (void *) NULL},
 	{"swirl",
 	 5000, 5, 1, 1, 1.00,
@@ -343,8 +375,13 @@ LockStruct  LockProcs[] =
 	 250000, 1000, 60000, 0, 1.00,
 	 "Shows a Flying Balls Clock Demo", (void *) NULL},
 	{"tetris",
-	 50000, 1, 1, 0, 1.00,
+	 50000, 1, 1, -100, 1.00,
 	 "Shows an autoplaying tetris game", (void *) NULL},
+#if defined(USE_GL) && defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )
+	{"text3d",
+	 100000, 1, 1, 1, 1.00,
+	 "Shows 3D text", (void *) NULL},
+#endif
 	{"thornbird",
 	 1000, 800, 16, 1, 1.00,
 	 "Shows an animated bird in a thorn bush fractal map", (void *) NULL},
@@ -378,6 +415,9 @@ LockStruct  LockProcs[] =
 	{"worm",
 	 17000, -20, 10, -3, 1.00,
 	 "Shows wiggly worms", (void *) NULL},
+	{"xcl",
+	 20000, -3, 1, 1, 1.00,
+	 "Shows a control line combat model race", (void *) NULL},
 	{"xjack",
 	 50000, 1, 1, 1, 1.00,
 	 "Shows Jack having one of those days", (void *) NULL},
@@ -453,7 +493,11 @@ struct_option_bool BoolOpt[] =
   {"usefirst", "usefirst", "This option enables xlock to use the first keystroke in the password", '\000', '\000'},
   {"verbose", "verbose", "verbose launch", '\000', '\000'},
   {"debug", "debug", "This option allows xlock to be locked in a window", '\000', '\000'},
-  {"wireframe", "wireframe", "This option turns on wireframe rendering mode for GL", '\000', '\000'},
+  {"wireframe", "wireframe", "This option turns on wireframe rendering mode mainly for GL", '\000', '\000'},
+#ifdef USE_GL
+  {"showfps", "showfps", "This option turns on frame per sec display for GL", '\000', '\000'},
+  {"fpstop", "fpstop", "This option turns on top fps display for GL", '\000', '\000'},
+#endif
   {"install", "install", "Allows xlock to install its own colormap if xlock runs out of colors", '\000', '\000'},
   {"sound", "sound", "Allows you to turn on and off sound if installed with the capability", '\000', '\000'},
   {"timeelapsed", "timeelapsed", "Allows you to find out how long a machine is locked", '\000', '\000'},
@@ -586,6 +630,10 @@ struct_option_fntcol fntcolorOpt[] =
      (GtkWidget *)NULL, (GtkWidget *)NULL},
   {TFNTCOL_FONT, "planfont", "planfont", "font to use for lower part of password screen", "opt_fntcol_",
      (GtkWidget *)NULL, (GtkWidget *)NULL},
+#ifdef USE_GL
+  {TFNTCOL_FONT, "fpsfont", "fpsfont", "font to use for FPS display in GL mode", "opt_fntcol_",
+     (GtkWidget *)NULL, (GtkWidget *)NULL},
+#endif
   {TFNTCOL_FILE, "messagesfile", "messagesfile", "file to be used as the fortune generator", "opt_fntcol_",
      (GtkWidget *)NULL, (GtkWidget *)NULL},
   {TFNTCOL_FILE, "messagefile", "messagefile", "file whose contents are displayed", "opt_fntcol_",

@@ -2,7 +2,7 @@
 /* eyes --- follow the bouncing Grelb */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)eyes.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)eyes.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -26,15 +26,20 @@ static const char sccsid[] = "@(#)eyes.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 04-Sep-97: Added interactive frobbing with mouse (copied from julia.c)
- * 10-May-97: Compatible with xscreensaver
- * 18-Mar-96: Changes for new hook calling conventions.  Keep per-screen
- *            state information.  Remove global accesses.
- * 21-Feb-96: Recoded to keep an off-screen image for each pair of eyes,
- *            and to only paint the changed parts to the screen.
- *            Allow the Grelb to enter from either side.
- * 18-Feb-96: Got the code into mostly working condition.
- * 15-Feb-96: Had a brainwave, started hacking the xeyes code.
+ * 01-Nov-2000: Allocation checks
+ * 04-Sep-1997: Added interactive frobbing with mouse (copied from julia.c)
+ * 10-May-1997: Compatible with xscreensaver
+ * 18-Mar-1996: Changes for new hook calling conventions.  Keep per-screen
+ *              state information.  Remove global accesses.
+ * 21-Feb-1996: Recoded to keep an off-screen image for each pair of eyes,
+ *              and to only paint the changed parts to the screen.
+ *              Allow the Grelb to enter from either side.
+ * 18-Feb-1996: Got the code into mostly working condition.
+ * 15-Feb-1996: Had a brainwave, started hacking the xeyes code.
+ *
+ * Put "random rotations and horizontal shifts in.
+ * At first try make the shifts "random" with a weighting scheme favouring
+ * shifts towards the most empty region.
  */
 
 #ifdef STANDALONE
@@ -64,18 +69,18 @@ static Bool trackmouse;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-track", ".eyes.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
-	{"+track", ".eyes.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-trackmouse", (char *) ".eyes.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+trackmouse", (char *) ".eyes.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & trackmouse, "trackmouse", "TrackMouse", DEF_TRACKMOUSE, t_Bool}
+	{(caddr_t *) & trackmouse, (char *) "trackmouse", (char *) "TrackMouse", (char *) DEF_TRACKMOUSE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+trackmouse", "turn on/off the tracking of the mouse"}
+	{(char *) "-/+trackmouse", (char *) "turn on/off the tracking of the mouse"}
 };
 
 ModeSpecOpt eyes_opts =
@@ -206,8 +211,6 @@ typedef struct {		/* per-screen info */
 /* ---------------------------------------------------------------------- */
 
 static EyeScrInfo *eye_info = NULL;
-
-static int  stuff_alloced = False;	/* is stuff here alloced */
 
 /* ---------------------------------------------------------------------- */
 
@@ -598,8 +601,9 @@ move_fly(ModeInfo * mi, Fly * f)
 				     &r, &c, &rx, &ry, &cx, &cy, &m);
 		if (cx <= 0 || cy <= 0 ||
 		    cx >= MI_WIDTH(mi) - f->width - 1 ||
-		    cy >= MI_HEIGHT(mi) - f->width - 1)
+		    cy >= MI_HEIGHT(mi) - f->width - 1) {
 			track_p = False;
+		}
 	}
 	if (track_p) {
 		f->x = cx;
@@ -698,7 +702,7 @@ create_eyes(ModeInfo * mi, Eyes * e, Eyes * eyes, int num_eyes)
 		e->eyelid_pixel = black_pixel;
 		e->eyeball_pixel = white_pixel;
 	} else {
-		lid_color = color = NRAND(npixels);
+		lid_color = NRAND(npixels);
 		e->eyelid_pixel = MI_PIXEL(mi, lid_color);
 
 		while ((color = NRAND(npixels + 5)) == lid_color) {
@@ -743,9 +747,8 @@ create_eyes(ModeInfo * mi, Eyes * e, Eyes * eyes, int num_eyes)
 		if (e->pixmap != None) {
 			XFreePixmap(display, e->pixmap);
 		}
-		e->pixmap = XCreatePixmap(display, window,
-					  e->width, e->height, MI_DEPTH(mi));
-		if (e->pixmap == None) {
+		if ((e->pixmap = XCreatePixmap(display, window,
+					  e->width, e->height, MI_DEPTH(mi))) == None) {
 			e->width = e->height = 0;
 			return;
 		}
@@ -860,29 +863,9 @@ paint_eyes(ModeInfo * mi, Eyes * e, Fly * f, Eyes * eyes, int num_eyes)
 
 /* ---------------------------------------------------------------------- */
 
-/*-
- *    Initialization that only needs to be done once.  If the
- *      release hook is called, this stuff may be freed and this
- *      function will have to allocate it again next time the
- *      init hook is called.
- */
 
 static void
-one_time_init(ModeInfo * mi)
-{
-	if (stuff_alloced) {
-		return;		/* only once, dude */
-	}
-	if (eye_info == NULL) {
-		if ((eye_info = (EyeScrInfo *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (EyeScrInfo))) == NULL)
-			return;
-	}
-	stuff_alloced = True;
-}
-
-static void
-free_eyes(Display * display, EyeScrInfo * ep)
+freePairsOfEyes(Display * display, EyeScrInfo * ep)
 {
 	int         en;
 
@@ -892,6 +875,34 @@ free_eyes(Display * display, EyeScrInfo * ep)
 				XFreePixmap(display, ep->eyes[en].pixmap);
 		(void) free((void *) ep->eyes);
 		ep->eyes = NULL;
+	}
+}
+
+static void
+free_eyes(Display * display, EyeScrInfo * ep)
+{
+	if (ep->flyGC != None) {
+		XFreeGC(display, ep->flyGC);
+		ep->flyGC = None;
+	}
+	if (ep->eyeGC != None) {
+		XFreeGC(display, ep->eyeGC);
+		ep->eyeGC = None;
+	}
+	if (ep->flypix != None) {
+		XFreePixmap(display, ep->flypix);
+		ep->flypix = None;
+	}
+#ifdef XBM_GRELB
+	if (ep->fly2pix != None) {
+		XFreePixmap(display, ep->fly2pix);
+		ep->fly2pix = None;
+	}
+#endif
+	freePairsOfEyes(display, ep);
+	if (ep->cursor != None) {
+		XFreeCursor(display, ep->cursor);
+		ep->cursor = None;
 	}
 }
 
@@ -907,11 +918,16 @@ init_eyes(ModeInfo * mi)
 	EyeScrInfo *ep;
 	int         i;
 
-	one_time_init(mi);
-
-	if (!stuff_alloced) {
-		/* if an alloc failed in one_time_init(), quit */
-		return;
+        /*-
+         *    Initialization that only needs to be done once.  If the
+         *      release hook is called, this stuff may be freed and this
+         *      function will have to allocate it again next time the
+         *      init hook is called.
+         */
+	if (eye_info == NULL) {
+		if ((eye_info = (EyeScrInfo *) calloc(MI_NUM_SCREENS(mi),
+					       sizeof (EyeScrInfo))) == NULL)
+			return;
 	}
 	ep = &eye_info[MI_SCREEN(mi)];
 
@@ -920,6 +936,7 @@ init_eyes(ModeInfo * mi)
 			  &(ep->flywidth), &(ep->flyheight), &(ep->flypix),
 			  &(ep->graphics_format));
 		if (ep->flypix == None) {
+			free_eyes(display, ep);
 			return;
 		}
 #ifdef XBM_GRELB
@@ -929,6 +946,10 @@ init_eyes(ModeInfo * mi)
 			  FLY2_WIDTH, FLY2_HEIGHT, FLY2_BITS,
 			  &(ep->fly2width), &(ep->fly2height), &(ep->fly2pix),
 			  &(ep->graphics_format));
+			if (ep->fly2pix == None) {
+				free_eyes(display, ep);
+				return;
+			}
 		}
 #endif
 	}
@@ -938,12 +959,15 @@ init_eyes(ModeInfo * mi)
 		gcv.foreground = MI_BLACK_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
 		if ((ep->flyGC = XCreateGC(display, window,
-				 GCForeground | GCBackground, &gcv)) == None)
+				 GCForeground | GCBackground, &gcv)) == None) {
+			free_eyes(display, ep);
 			return;
+		}
 	}
 	if (ep->eyeGC == None) {
 		if ((ep->eyeGC = XCreateGC(display, window,
 			   (unsigned long) 0, (XGCValues *) NULL)) == None) {
+			free_eyes(display, ep);
 			return;
 		}
 	}
@@ -951,7 +975,7 @@ init_eyes(ModeInfo * mi)
 	/* don't want any exposure events from XCopyArea */
 	XSetGraphicsExposures(display, ep->eyeGC, False);
 
-	free_eyes(display, ep);
+	freePairsOfEyes(display, ep);
 	if (MI_IS_ICONIC(mi))
 		ep->num_eyes = 1;
 	else {
@@ -966,8 +990,12 @@ init_eyes(ModeInfo * mi)
 				ep->num_eyes = NRAND(-ep->num_eyes) + 1;	/* Add 1 so its not too boring */
 		}
 	}
-	if (!ep->eyes)
-		ep->eyes = (Eyes *) calloc(ep->num_eyes, sizeof (Eyes));
+	if (!ep->eyes) {
+		if ((ep->eyes = (Eyes *) calloc(ep->num_eyes, sizeof (Eyes))) == NULL) {
+			free_eyes(display, ep);
+			return;
+		}
+	}
 
 	for (i = 0; i < ep->num_eyes; i++) {	/* place each eye pair */
 		/* don't assume None == 0 */
@@ -985,11 +1013,17 @@ init_eyes(ModeInfo * mi)
 		black.green = 0;
 		black.blue = 0;
 		black.flags = DoRed | DoGreen | DoBlue;
-		bit = XCreatePixmapFromBitmapData(display, window, "\000", 1, 1,
-						  MI_BLACK_PIXEL(mi),
-						  MI_BLACK_PIXEL(mi), 1);
-		ep->cursor = XCreatePixmapCursor(display, bit, bit, &black, &black,
-						 0, 0);
+		if ((bit = XCreatePixmapFromBitmapData(display, window,
+				(char *) "\000", 1, 1, MI_BLACK_PIXEL(mi),
+				MI_BLACK_PIXEL(mi), 1)) == None) {
+			free_eyes(display, ep);
+			return;
+		}
+		if ((ep->cursor = XCreatePixmapCursor(display, bit, bit,
+				&black, &black, 0, 0)) == None) {
+			free_eyes(display, ep);
+			return;
+		}
 		XFreePixmap(display, bit);
 	}
 	XDefineCursor(display, window, ep->cursor);
@@ -1006,15 +1040,17 @@ init_eyes(ModeInfo * mi)
 void
 draw_eyes(ModeInfo * mi)
 {
-	EyeScrInfo *ep = &eye_info[MI_SCREEN(mi)];
 	int         i;
+	EyeScrInfo *ep;
+
+	if (eye_info == NULL)
+		return;
+	ep = &eye_info[MI_SCREEN(mi)];
+	if (ep->flypix == None)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
-	if (!stuff_alloced) {
-		/* if startup init didn't finish, do nothing */
-		return;
-	}
 	move_fly(mi, &(ep->fly));
 	ep->time++;
 	for (i = 0; i < ep->num_eyes; i++) {
@@ -1035,32 +1071,14 @@ draw_eyes(ModeInfo * mi)
 void
 release_eyes(ModeInfo * mi)
 {
-	Display    *display = MI_DISPLAY(mi);
-
 	if (eye_info != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			EyeScrInfo *ep = &eye_info[screen];
-
-			if (ep->flyGC != None)
-				XFreeGC(display, ep->flyGC);
-			if (ep->eyeGC != None)
-				XFreeGC(display, ep->eyeGC);
-			if (ep->flypix != None)
-				XFreePixmap(display, ep->flypix);
-#ifdef XBM_GRELB
-			if (ep->fly2pix != None)
-				XFreePixmap(display, ep->fly2pix);
-#endif
-			free_eyes(display, ep);
-			if (ep->cursor)
-				XFreeCursor(display, ep->cursor);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_eyes(MI_DISPLAY(mi), &eye_info[screen]);
 		(void) free((void *) eye_info);
 	}
 	eye_info = NULL;
-	stuff_alloced = False;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1074,17 +1092,20 @@ release_eyes(ModeInfo * mi)
 void
 refresh_eyes(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	int         i;
+	EyeScrInfo *ep;
 
-	if (!stuff_alloced) {
-		return;		/* paranoia */
-	}
+	if (eye_info == NULL)
+		return;
+	ep = &eye_info[MI_SCREEN(mi)];
+	if (ep->eyeGC == None)
+		return;
+
 	MI_CLEARWINDOW(mi);
 
 	/* simply flag all the eyes as not painted, will repaint next time */
-	for (i = 0; i < eye_info[screen].num_eyes; i++) {
-		eye_info[screen].eyes[i].painted = False;
+	for (i = 0; i < ep->num_eyes; i++) {
+		ep->eyes[i].painted = False;
 	}
 }
 

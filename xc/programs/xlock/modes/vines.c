@@ -2,7 +2,7 @@
 /* vines --- vine fractals */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)vines.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)vines.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -24,16 +24,16 @@ static const char sccsid[] = "@(#)vines.c	4.07 97/11/24 xlockmore";
  * If you make a modification I would of course appreciate a copy.
  *
  * Revision History:
- * 11-Jul-97: David Hansen <dhansen@metapath.com>
- *            Changed names to vines and modified draw loop
- *            to honor batchcount so vines can be grown or
- *            plotted.
- * 10-May-97: Compatible with xscreensaver
- * 21-Mar-97: David Hansen <dhansen@metapath.com>
- *            Updated mode to draw complete patterns on every
- *            iteration instead of growing the vine.  Also made
- *            adjustments to randomization and changed variable
- *            names to make logic easier to follow.
+ * 01-Nov-2000: Allocation checks
+ * 11-Jul-1997: David Hansen <dhansen@metapath.com>
+ *              Changed names to vines and modified draw loop
+ *              to honor batchcount so vines can be grown or plotted.
+ * 10-May-1997: Compatible with xscreensaver
+ * 21-Mar-1997: David Hansen <dhansen@metapath.com>
+ *              Updated mode to draw complete patterns on every
+ *              iteration instead of growing the vine.  Also made
+ *              adjustments to randomization and changed variable
+ *              names to make logic easier to follow.
  */
 
 /*-
@@ -62,7 +62,7 @@ static const char sccsid[] = "@(#)vines.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_vines
 
 ModeSpecOpt vines_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   vines_description =
@@ -119,13 +119,16 @@ init_vines(ModeInfo * mi)
 void
 draw_vines(ModeInfo * mi)
 {
-	vinestruct *fp = &vines[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
 	int         count;
+	vinestruct *fp;
 
-	MI_IS_DRAWN(mi) = True;
+	if (vines == NULL)
+		return;
+	fp = &vines[MI_SCREEN(mi)];
 
+	/* MI_IS_DRAWN(mi) = True; */
 	if (fp->i >= fp->length) {
 		if (--(fp->iterations) == 0) {
 			init_vines(mi);
@@ -165,8 +168,8 @@ draw_vines(ModeInfo * mi)
 		fp->x1 = fp->x2;
 		fp->y1 = fp->y2;
 
-		fp->x2 += (int) (fp->i * ((cos(fp->a) * 360) / (2 * M_PI)));
-		fp->y2 += (int) (fp->i * ((sin(fp->a) * 360) / (2 * M_PI)));
+		fp->x2 += (int) (fp->i * (cos((double) fp->a) * 360.0) / (2.0 * M_PI));
+		fp->y2 += (int) (fp->i * (sin((double) fp->a) * 360.0) / (2.0 * M_PI));
 		fp->i++;
 	}
 }				/* draw_vines */

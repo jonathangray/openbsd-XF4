@@ -5,7 +5,7 @@
  */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)nose.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)nose.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -23,15 +23,16 @@ static const char sccsid[] = "@(#)nose.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 06-Jun-97: Compatible with xscreensaver and now colorized (idea from
- *            xscreensaver but colors are random).
- * 27-Feb-96: Added new ModeInfo arg to init and callback hooks.  Removed
- *		references to onepause, now uses MI_PAUSE(mi) interface.
- *		Ron Hitchens <ron@idiom.com>
- * 10-Oct-95: A better way of handling fortunes from a file, thanks to
- *            Jouk Jansen <joukj@hrem.stm.tudelft.nl>.
- * 21-Sep-95: font option added, debugged for multiscreens
- * 12-Aug-95: xlock version
+ * 01-Nov-2000: Allocation checks
+ * 06-Jun-1997: Compatible with xscreensaver and now colorized (idea from
+ *              xscreensaver but colors are random).
+ * 27-Feb-1996: Added new ModeInfo arg to init and callback hooks.  Removed
+ *              references to onepause, now uses MI_PAUSE(mi) interface.
+ *              Ron Hitchens <ron@idiom.com>
+ * 10-Oct-1995: A better way of handling fortunes from a file, thanks to
+ *              Jouk Jansen <joukj@hrem.stm.tudelft.nl>.
+ * 21-Sep-1995: font option added, debugged for multiscreens
+ * 12-Aug-1995: xlock version
  * 1992: xscreensaver version, noseguy (Jamie Zawinski <jwz@jwz.org>)
  * 1990: X11 version, xnlock (Dan Heller <argv@sun.com>)
  */
@@ -70,7 +71,7 @@ static const char sccsid[] = "@(#)nose.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_nose
 
 ModeSpecOpt nose_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   nose_description =
@@ -93,8 +94,6 @@ ModStruct   nose_description =
 #include "bitmaps/nose-stepl.xbm"
 #include "bitmaps/nose-stepr.xbm"
 
-#define font_height(f) ((f == None) ? 8 : f->ascent + f->descent)
-
 #define L 0
 #define R 1
 #define LSTEP 2
@@ -109,7 +108,11 @@ ModStruct   nose_description =
 #define TALK 1
 #define FREEZE 2
 
+#ifndef USE_MB
 extern XFontStruct *getFont(Display * display);
+#else
+extern XFontSet getFontSet(Display * display);
+#endif
 extern char *getWords(int screen, int screens);
 extern int  isRibbon(void);
 
@@ -136,7 +139,25 @@ typedef struct {
 
 static nosestruct *noses = NULL;
 
+#ifdef USE_MB
+static XFontSet mode_font = None;
+#else
 static XFontStruct *mode_font = None;
+#endif
+
+#ifdef USE_MB
+static int font_height(XFontSet f) {
+  XRectangle ink, log;
+  if (f == None) {
+	return 8;
+  } else {
+	XmbTextExtents(mode_font, "M¤¢", strlen("M¤¢"), &ink, &log);
+	return log.height;
+  }
+}
+#else
+#define font_height(f) ((f == None) ? 8 : f->ascent + f->descent)
+#endif
 
 #define LEFT 001
 #define RIGHT 002
@@ -152,6 +173,31 @@ XSetStipple(d,g,p); XSetTSOrigin(d,g,x,y);\
 XFillRectangle(d,np,g,x,y,w,h)
 
 static void
+free_nose(Display *display, nosestruct *np)
+{
+	int         pix;
+
+	if (np->text_fg_gc != None) {
+		XFreeGC(display, np->text_fg_gc);
+	    np->text_fg_gc = None;
+	}
+	if (np->text_bg_gc != None) {
+		XFreeGC(display, np->text_bg_gc);
+	    np->text_bg_gc = None;
+	}
+	for (pix = 0; pix < PIXMAPS; pix++) {
+		if (np->position[pix] != None) {
+			XFreePixmap(display, np->position[pix]);
+	   		np->position[pix] = None;
+		}
+		if (np->noseGC[pix] != None) {
+			XFreeGC(display, np->noseGC[pix]);
+	   		np->noseGC[pix] = None;
+		}
+	}
+}
+
+static Bool
 pickClothes(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
@@ -172,35 +218,48 @@ pickClothes(ModeInfo * mi)
 	gcv.foreground = MI_BLACK_PIXEL(mi);
 	gcv.background = MI_BLACK_PIXEL(mi);
 	for (i = 0; i < PIXMAPS; i++) {
-		np->position[i] = XCreatePixmap(display, window, PIXMAP_SIZE, PIXMAP_SIZE,
-						MI_DEPTH(mi));
-		np->noseGC[i] = XCreateGC(display, np->position[i],
-		    GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+		if ((np->position[i] = XCreatePixmap(display, window,
+				PIXMAP_SIZE, PIXMAP_SIZE, MI_DEPTH(mi))) == None)
+			return False;
+		if ((np->noseGC[i] = XCreateGC(display, np->position[i],
+				GCForeground | GCBackground | GCGraphicsExposures,
+				&gcv)) == None)
+			return False;
 		XFillRectangle(display, np->position[i], np->noseGC[i],
 			       0, 0, PIXMAP_SIZE, PIXMAP_SIZE);
 	}
 	XSetBackground(display, gc, MI_BLACK_PIXEL(mi));
 	XSetFillStyle(display, gc, FillStippled);
 	/* DOWN NOSE GUY */
-	hat_pix = XCreateBitmapFromData(display, window,
-					(char *) nose_hat_down_bits,
-				  nose_hat_down_width, nose_hat_down_height);
-	face_pix = XCreateBitmapFromData(display, window,
-					 (char *) nose_face_down_bits,
-				nose_face_down_width, nose_face_down_height);
-	shoe_pix = XCreateBitmapFromData(display, window,
-					 (char *) nose_shoe_front_bits,
-			      nose_shoe_front_width, nose_shoe_front_height);
+	if ((shoe_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_shoe_front_bits,
+			nose_shoe_front_width, nose_shoe_front_height)) == None){
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoe_pix, np->position[D],
 	     (PIXMAP_SIZE - nose_shoe_front_width) / 2,
 	     nose_hat_height + nose_face_front_height + 3,
 	     nose_shoe_front_width, nose_shoe_front_height);
+	if ((face_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_face_down_bits,
+			nose_face_down_width, nose_face_down_height)) == None) {
+		XFreePixmap(display, shoe_pix);
+		return False;
+	}
 	COPY(display, gc, face_color, face_pix, np->position[D],
 	  (PIXMAP_SIZE - nose_face_down_width) / 2, nose_hat_down_height + 7,
 	     nose_face_down_width, nose_face_down_height);
+	XFreePixmap(display, face_pix);
+	if ((hat_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_hat_down_bits,
+			nose_hat_down_width, nose_hat_down_height)) == None) {
+		XFreePixmap(display, shoe_pix);
+		return False;
+	}
 	COPY(display, gc, hat_color, hat_pix, np->position[D],
 	     (PIXMAP_SIZE - nose_hat_down_width) / 2, 7,
 	     nose_hat_down_width, nose_hat_down_height);
+	XFreePixmap(display, hat_pix);
 	if (MI_NPIXELS(mi) <= 2) {
 		XSetFillStyle(display, gc, FillSolid);
 		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
@@ -208,19 +267,17 @@ pickClothes(ModeInfo * mi)
 			       0, nose_hat_down_height + 6, PIXMAP_SIZE, 1);
 		XSetFillStyle(display, gc, FillStippled);
 	}
-	XFreePixmap(display, face_pix);
-	XFreePixmap(display, hat_pix);
 	/* FRONT NOSE GUY */
-	hat_pix = XCreateBitmapFromData(display, window,
-					(char *) nose_hat_bits,
-					nose_hat_width, nose_hat_height);
-	face_pix = XCreateBitmapFromData(display, window,
-					 (char *) nose_face_front_bits,
-			      nose_face_front_width, nose_face_front_height);
 	COPY(display, gc, shoe_color, shoe_pix, np->position[F],
 	     (PIXMAP_SIZE - nose_shoe_front_width) / 2,
 	     nose_hat_height + nose_face_front_height + 3,
 	     nose_shoe_front_width, nose_shoe_front_height);
+	XFreePixmap(display, shoe_pix);
+	if ((hat_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_hat_bits,
+			nose_hat_width, nose_hat_height)) == None) {
+		return False;
+	}
 	COPY(display, gc, hat_color, hat_pix, np->position[F],
 	     (PIXMAP_SIZE - nose_hat_width) / 2, 4,
 	     nose_hat_width, nose_hat_height);
@@ -231,14 +288,23 @@ pickClothes(ModeInfo * mi)
 			       0, nose_hat_height + 3, PIXMAP_SIZE, 1);
 		XSetFillStyle(display, gc, FillStippled);
 	}
+	if ((face_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_face_front_bits,
+			nose_face_front_width, nose_face_front_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		return False;
+	}
 	COPY(display, gc, face_color, face_pix, np->position[F],
 	     (PIXMAP_SIZE - nose_face_front_width) / 2, nose_hat_height + 1,
 	     nose_face_front_width, nose_face_front_height);
-	XFreePixmap(display, shoe_pix);
 	/* FRONT LEFT NOSE GUY */
-	shoel_pix = XCreateBitmapFromData(display, window,
-					  (char *) nose_shoe_left_bits,
-				nose_shoe_left_width, nose_shoe_left_height);
+	if ((shoel_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_shoe_left_bits,
+			nose_shoe_left_width, nose_shoe_left_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		XFreePixmap(display, face_pix);
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoel_pix, np->position[LF],
 	     (PIXMAP_SIZE - nose_shoe_left_width) / 2 - 4,
 	     nose_hat_height + nose_face_front_height + 3,
@@ -257,9 +323,14 @@ pickClothes(ModeInfo * mi)
 	     (PIXMAP_SIZE - nose_face_front_width) / 2, nose_hat_height + 1,
 	     nose_face_front_width, nose_face_front_height);
 	/* FRONT RIGHT NOSE GUY */
-	shoer_pix = XCreateBitmapFromData(display, window,
-					  (char *) nose_shoe_right_bits,
-			      nose_shoe_right_width, nose_shoe_right_height);
+	if ((shoer_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_shoe_right_bits,
+			nose_shoe_right_width, nose_shoe_right_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		XFreePixmap(display, shoel_pix);
+		XFreePixmap(display, face_pix);
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoer_pix, np->position[RF],
 	     (PIXMAP_SIZE - nose_shoe_right_width) / 2 + 4,
 	     nose_hat_height + nose_face_front_height + 3,
@@ -279,13 +350,11 @@ pickClothes(ModeInfo * mi)
 	     nose_face_front_width, nose_face_front_height);
 	XFreePixmap(display, face_pix);
 	/* LEFT NOSE GUY */
-	face_pix = XCreateBitmapFromData(display, window,
-					 (char *) nose_face_left_bits,
-				nose_face_left_width, nose_face_left_height);
 	COPY(display, gc, shoe_color, shoel_pix, np->position[L],
 	     (PIXMAP_SIZE - nose_shoe_left_width) / 2 - 4,
 	     nose_hat_height + nose_face_front_height + 3,
 	     nose_shoe_left_width, nose_shoe_left_height);
+	XFreePixmap(display, shoel_pix);
 	COPY(display, gc, hat_color, hat_pix, np->position[L],
 	     (PIXMAP_SIZE - nose_hat_width) / 2, 4,
 	     nose_hat_width, nose_hat_height);
@@ -296,18 +365,30 @@ pickClothes(ModeInfo * mi)
 			       0, nose_hat_height + 3, PIXMAP_SIZE, 1);
 		XSetFillStyle(display, gc, FillStippled);
 	}
+	if ((face_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_face_left_bits,
+			nose_face_left_width, nose_face_left_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		XFreePixmap(display, shoer_pix);
+		return False;
+	}
 	COPY(display, gc, face_color, face_pix, np->position[L],
 	   (PIXMAP_SIZE - nose_face_left_width) / 2 - 4, nose_hat_height + 4,
 	     nose_face_left_width, nose_face_left_height);
-	XFreePixmap(display, shoel_pix);
 	/* LEFT NOSE GUY STEPPING */
-	shoel_pix = XCreateBitmapFromData(display, window,
-					  (char *) nose_step_left_bits,
-				nose_step_left_width, nose_step_left_height);
+	if ((shoel_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_step_left_bits,
+			nose_step_left_width, nose_step_left_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		XFreePixmap(display, face_pix);
+		XFreePixmap(display, shoer_pix);
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoel_pix, np->position[LSTEP],
 	     (PIXMAP_SIZE - nose_step_left_width) / 2,
 	     nose_hat_height + nose_face_front_height - 1,
 	     nose_step_left_width, nose_step_left_height);
+	XFreePixmap(display, shoel_pix);
 	COPY(display, gc, hat_color, hat_pix, np->position[LSTEP],
 	     (PIXMAP_SIZE - nose_hat_width) / 2, 4,
 	     nose_hat_width, nose_hat_height);
@@ -322,15 +403,19 @@ pickClothes(ModeInfo * mi)
 	   (PIXMAP_SIZE - nose_face_left_width) / 2 - 4, nose_hat_height + 4,
 	     nose_face_left_width, nose_face_left_height);
 	XFreePixmap(display, face_pix);
-	XFreePixmap(display, shoel_pix);
 	/* RIGHT NOSE GUY */
-	face_pix = XCreateBitmapFromData(display, window,
-					 (char *) nose_face_right_bits,
-			      nose_face_right_width, nose_face_right_height);
+	if ((face_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_face_right_bits,
+			nose_face_right_width, nose_face_right_height)) == None) {
+		XFreePixmap(display, hat_pix);
+		XFreePixmap(display, shoer_pix);
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoer_pix, np->position[R],
 	     (PIXMAP_SIZE - nose_shoe_right_width) / 2 + 4,
 	     nose_hat_height + nose_face_front_height + 3,
 	     nose_shoe_right_width, nose_shoe_right_height);
+	XFreePixmap(display, shoer_pix);
 	COPY(display, gc, hat_color, hat_pix, np->position[R],
 	     (PIXMAP_SIZE - nose_hat_width) / 2, 4,
 	     nose_hat_width, nose_hat_height);
@@ -344,18 +429,23 @@ pickClothes(ModeInfo * mi)
 	COPY(display, gc, face_color, face_pix, np->position[R],
 	  (PIXMAP_SIZE - nose_face_right_width) / 2 + 4, nose_hat_height + 4,
 	     nose_face_right_width, nose_face_right_height);
-	XFreePixmap(display, shoer_pix);
 	/* RIGHT NOSE GUY STEPPING */
-	shoer_pix = XCreateBitmapFromData(display, window,
-					  (char *) nose_step_right_bits,
-			      nose_step_right_width, nose_step_right_height);
+	if ((shoer_pix = XCreateBitmapFromData(display, window,
+			(char *) nose_step_right_bits,
+			nose_step_right_width, nose_step_right_height)) == None) {
+		XFreePixmap(display, face_pix);
+		XFreePixmap(display, hat_pix);
+		return False;
+	}
 	COPY(display, gc, shoe_color, shoer_pix, np->position[RSTEP],
 	     (PIXMAP_SIZE - nose_step_right_width) / 2,
 	     nose_hat_height + nose_face_front_height - 1,
 	     nose_step_right_width, nose_step_right_height);
+	XFreePixmap(display, shoer_pix);
 	COPY(display, gc, hat_color, hat_pix, np->position[RSTEP],
 	     (PIXMAP_SIZE - nose_hat_width) / 2, 4,
 	     nose_hat_width, nose_hat_height);
+	XFreePixmap(display, hat_pix);
 	if (MI_NPIXELS(mi) <= 2) {
 		XSetFillStyle(display, gc, FillSolid);
 		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
@@ -367,9 +457,8 @@ pickClothes(ModeInfo * mi)
 	  (PIXMAP_SIZE - nose_face_right_width) / 2 + 4, nose_hat_height + 4,
 	     nose_face_right_width, nose_face_right_height);
 	XFreePixmap(display, face_pix);
-	XFreePixmap(display, shoer_pix);
-	XFreePixmap(display, hat_pix);
 	XSetFillStyle(display, gc, FillSolid);
+	return True;
 }
 
 static void
@@ -470,6 +559,9 @@ talk(ModeInfo * mi, Bool force_erase)
 	int         width = 0, height, Y, Z, total = 0;
 	register char *p, *p2;
 	char        buf[BUFSIZ], args[MAXLINES][MAXWIDTH];
+#ifdef USE_MB
+	XRectangle ink, log;
+#endif
 
 	/* clear what we've written */
 	if (np->talking || force_erase) {
@@ -491,8 +583,14 @@ talk(ModeInfo * mi, Bool force_erase)
 		args[0][MAXWIDTH - 1] = '\0';
 		if (mode_font == None)
 			width = 8;
-		else
+		else {
+#ifdef USE_MB
+			XmbTextExtents(mode_font, np->words, total, &ink, &log);
+			width = ink.width;
+#else
 			width = XTextWidth(mode_font, np->words, total);
+#endif
+		}
 		height = 0;
 	} else
 		/* p2 now points to the first '\n' */
@@ -500,8 +598,15 @@ talk(ModeInfo * mi, Bool force_erase)
 			int         w;
 
 			*p2 = 0;
-			if (mode_font != None && (w = XTextWidth(mode_font, p, p2 - p)) > width)
+#ifdef USE_MB
+			XmbTextExtents(mode_font, p, p2 - p, &ink, &log);
+			if (mode_font != None && (w = log.width) > width)
+			  width = w;
+#else
+			if (mode_font != None &&
+					(w = XTextWidth(mode_font, p, p2 - p)) > width)
 				width = w;
+#endif
 			total += p2 - p;	/* total chars; count to determine reading time */
 			(void) strncpy(args[height], p, MAXWIDTH - 1);
 			args[height][MAXWIDTH - 1] = '\0';
@@ -542,8 +647,13 @@ talk(ModeInfo * mi, Bool force_erase)
 
 	/* now print each string in reverse order (start at bottom of box) */
 	for (Z = 0; Z < height; Z++) {
+#ifdef USE_MB
+		(void) XmbDrawString(display, window, mode_font, np->text_fg_gc,
+			 np->s.x + 15, np->s.y + Y, args[Z], strlen(args[Z]));
+#else
 		(void) XDrawString(display, window, np->text_fg_gc,
 			np->s.x + 15, np->s.y + Y, args[Z], strlen(args[Z]));
+#endif
 		Y += font_height(mode_font);
 	}
 	np->busyLoop = (total / 15) * 10;
@@ -661,9 +771,8 @@ init_nose(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	nosestruct *np;
 	XGCValues   gcv;
-	int         i = 0;
+	nosestruct *np;
 
 	if (noses == NULL) {
 		if ((noses = (nosestruct *) calloc(MI_NUM_SCREENS(mi),
@@ -682,33 +791,60 @@ init_nose(ModeInfo * mi)
 
 	XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
 
-	/* don't want any exposure events from XCopyPlane */
+	/* do not want any exposure events from XCopyPlane */
 	XSetGraphicsExposures(display, gc, False);
 
-	if (mode_font == None)
+	if (mode_font == None) {
+#ifdef USE_MB
+		mode_font = getFontSet(display);
+#else
 		mode_font = getFont(display);
-	if (np->noseGC[0] == NULL)
-		pickClothes(mi);
+#endif
+	}
+	if (np->noseGC[0] == None)
+		if (!pickClothes(mi)) {
+			free_nose(display, np);
+			return;
+		}
 	np->words = getWords(MI_SCREEN(mi), MI_NUM_SCREENS(mi));
 	if (np->text_fg_gc == NULL && mode_font != None) {
+#ifndef USE_MB
 		gcv.font = mode_font->fid;
 		XSetFont(display, gc, mode_font->fid);
+#endif
 		gcv.graphics_exposures = False;
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
-		np->text_fg_gc = XCreateGC(display, window,
-					   GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+		if ((np->text_fg_gc = XCreateGC(display, window,
+#ifdef USE_MB
+				 GCForeground | GCBackground | GCGraphicsExposures,
+#else
+				 GCForeground | GCBackground | GCGraphicsExposures | GCFont,
+#endif
+				 &gcv)) == None) {
+			free_nose(display, np);
+			return;
+		}
 		gcv.foreground = MI_BLACK_PIXEL(mi);
 		gcv.background = MI_WHITE_PIXEL(mi);
-		np->text_bg_gc = XCreateGC(display, window,
-					   GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+		if ((np->text_bg_gc = XCreateGC(display, window,
+#ifdef USE_MB
+				 GCForeground | GCBackground | GCGraphicsExposures,
+#else
+				 GCForeground | GCBackground | GCGraphicsExposures | GCFont,
+#endif
+				 &gcv)) == None) {
+			free_nose(display, np);
+			return;
+		}
 	}
 	np->up = 1;
 	if (np->tinymode) {
+		int pos = NRAND(PIXMAPS);
+
 		np->x = 0;
 		np->y = 0;
-		i = (NRAND(PIXMAPS));
-		XCopyArea(display, np->position[i], window, np->noseGC[i],
+		XCopyArea(display, np->position[pos], window, np->noseGC[pos],
 			  0, 0, PIXMAP_SIZE, PIXMAP_SIZE,
 			  (np->width - PIXMAP_SIZE) / 2,
 			  (np->height - PIXMAP_SIZE) / 2);
@@ -724,10 +860,15 @@ init_nose(ModeInfo * mi)
 void
 draw_nose(ModeInfo * mi)
 {
-	nosestruct *np = &noses[MI_SCREEN(mi)];
+	nosestruct *np;
+
+	if (noses == NULL)
+		return;
+	np = &noses[MI_SCREEN(mi)];
+	if (np->noseGC[0] == None)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (np->busyLoop > 0) {
 		np->busyLoop--;
 		return;
@@ -748,27 +889,17 @@ release_nose(ModeInfo * mi)
 	if (noses != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			Display    *display = MI_DISPLAY(mi);
-			nosestruct *np = &noses[screen];
-			int         i;
-
-			if (np->text_fg_gc != NULL)
-				XFreeGC(display, np->text_fg_gc);
-			if (np->text_bg_gc != NULL)
-				XFreeGC(display, np->text_bg_gc);
-			for (i = 0; i < PIXMAPS; i++) {
-				if (np->position[i])
-					XFreePixmap(display, np->position[i]);
-				if (np->noseGC[i] != NULL)
-					XFreeGC(display, np->noseGC[i]);
-			}
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_nose(MI_DISPLAY(mi), &noses[screen]);
 		(void) free((void *) noses);
 		noses = NULL;
 	}
 	if (mode_font != None) {
+#ifdef USE_MB
+		XFreeFontSet(MI_DISPLAY(mi), mode_font);
+#else
 		XFreeFont(MI_DISPLAY(mi), mode_font);
+#endif
 		mode_font = None;
 	}
 }

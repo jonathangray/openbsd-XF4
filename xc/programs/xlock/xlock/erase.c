@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)erase.c	4.14 99/04/23 xlockmore";
+static const char sccsid[] = "@(#)erase.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -9,10 +9,11 @@ static const char sccsid[] = "@(#)erase.c	4.14 99/04/23 xlockmore";
  * (c) 1997 by Johannes Keukelaar <johannes@nada.kth.se>
  *
  * Revision History:
- *   17-May-99 : changed timing by Jouk Jansen
- *   13-Aug-98 : changed to be used with xlockmore by Jouk Jansen
- *               <joukj@hrem.stm.tudelft.nl>
- *   1997      : original version by Johannes Keukelaar <johannes@nada.kth.se>
+ * 01-Nov-2000: Allocation checks
+ * 17-May-1999: changed timing by Jouk Jansen
+ * 13-Aug-1998: changed to be used with xlockmore by Jouk Jansen
+ *              <joukj@hrem.stm.tudelft.nl>
+ * 1997: original version by Johannes Keukelaar <johannes@nada.kth.se>
  *
  * Permission to use in any way granted. Provided "as is" without expressed
  * or implied warranty. NO WARRANTY, NO EXPRESSION OF SUITABILITY FOR ANY
@@ -41,14 +42,18 @@ random_lines(Display * dpy, Window window, GC gc,
 	     int width, int height, int delay, int granularity)
 {
 #define ERASEMODE "random_lines"
-	Bool        horiz_p = LRAND() & 1;
+	Bool        horiz_p = (Bool) (LRAND() & 1);
 	int         max = (horiz_p ? height : width);
-	int        *lines = (int *) calloc(max, sizeof (*lines));
+	int        *lines;
 	int         i;
-        int         actual_delay = delay / max;
+	int         actual_delay = delay / max;
 
 #include "erase_init.h"
 
+	if ((lines = (int *) calloc(max, sizeof (int))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
 	for (i = 0; i < max; i++)
 		lines[i] = i;
 
@@ -88,13 +93,17 @@ random_squares(Display * dpy, Window window, GC gc,
 #define ERASEMODE "random_squares"
 	int         randsize = MAX(1, MIN(width, height) / (16 + NRAND(32)));
 	int         max = (height / randsize + 1) * (width / randsize + 1);
-	int        *squares = (int *) calloc(max, sizeof (*squares));
+	int        *squares;
 	int         i;
 	int         columns = width / randsize + 1;  /* Add an extra for roundoff */
-        int         actual_delay = delay / max;
+	int         actual_delay = delay / max;
 
 #include "erase_init.h"
 
+	if ((squares = (int *) calloc(max, sizeof (int))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
 	for (i = 0; i < max; i++)
 		squares[i] = i;
 
@@ -130,17 +139,21 @@ venetian(Display * dpy, Window window, GC gc,
 	 int width, int height, int delay, int granularity)
 {
 #define ERASEMODE "venetian"
-	Bool        horiz_p = LRAND() & 1;
-	Bool        flip_p = LRAND() & 1;
+	Bool        horiz_p = (Bool) (LRAND() & 1);
+	Bool        flip_p = (Bool) (LRAND() & 1);
 	int         max = (horiz_p ? height : width);
-	int        *lines = (int *) calloc(max, sizeof (*lines));
+	int        *lines;
 	int         i, j;
-        int         actual_delay = delay / max;
+	int         actual_delay = delay / max;
 
 #include "erase_init.h"
 
 /*	granularity /= 6;*/
 
+	if ((lines = (int *) calloc(max, sizeof (int))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
 	j = 0;
 	for (i = 0; i < max * 2; i++) {
 		int         line = ((i / 16) * 16) - ((i % 16) * 15);
@@ -174,15 +187,19 @@ triple_wipe(Display * dpy, Window window, GC gc,
 	    int width, int height, int delay, int granularity)
 {
 #define ERASEMODE "triple_wipe"
-	Bool        flip_x = LRAND() & 1;
-	Bool        flip_y = LRAND() & 1;
+	Bool        flip_x = (Bool) (LRAND() & 1);
+	Bool        flip_y = (Bool) (LRAND() & 1);
 	int         max = width + (height / 2);
-	int        *lines = (int *) calloc(max, sizeof (int));
+	int        *lines;
 	int         i;
-        int         actual_delay = delay / max;
+	int         actual_delay = delay / max;
 
 #include "erase_init.h"
 
+	if ((lines = (int *) calloc(max, sizeof (int))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
 	for (i = 0; i < width / 2; i++)
 		lines[i] = i * 2 + height;
 	for (i = 0; i < height / 2; i++)
@@ -224,15 +241,19 @@ quad_wipe(Display * dpy, Window window, GC gc,
 	  int width, int height, int delay, int granularity)
 {
 #define ERASEMODE "quad_wipe"
-	Bool        flip_x = LRAND() & 1;
-	Bool        flip_y = LRAND() & 1;
+	Bool        flip_x = (Bool) (LRAND() & 1);
+	Bool        flip_y = (Bool) (LRAND() & 1);
 	int         max = width + height;
-	int        *lines = (int *) calloc(max, sizeof (int));
+	int        *lines;
 	int         i;
-        int         actual_delay = delay / max;
+	int         actual_delay = delay / max;
 
 #include "erase_init.h"
 
+	if ((lines = (int *) calloc(max, sizeof (int))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
 /*	granularity /= 3;*/
 
 	for (i = 0; i < max / 4; i++) {
@@ -274,11 +295,11 @@ circle_wipe(Display * dpy, Window window, GC gc,
 {
 #define ERASEMODE "circle_wipe"
 	int         full = 360 * 64;
-	int         inc = full / 64;
+	int         inc = 360;
 	int         start = NRAND(full);
 	int         rad = (width > height ? width : height);
 	int         i;
-        int         actual_delay = delay * inc / full;
+	int         actual_delay = delay * inc / full;
 
 #include "erase_init.h"
 
@@ -313,7 +334,7 @@ three_circle_wipe(Display * dpy, Window window, GC gc,
 	int         inc = full / 240;
 	int         start = NRAND(q);
 	int         rad = (width > height ? width : height);
-        int         actual_delay = delay * inc / q;
+	int         actual_delay = delay * inc / q;
 
 #include "erase_init.h"
 
@@ -356,17 +377,17 @@ squaretate(Display * dpy, Window window, GC gc,
 {
 #define ERASEMODE "squaretate"
 #ifdef FAST_CPU
-	int         steps = (((width > height ? width : width) * 2) /
+	int         steps = (((width > height ? width : height) * 2) /
 granularity);
 
 #else
-	int         steps = (((width > height ? width : width)) / (4 *
+	int         steps = (((width > height ? width : height)) / (8 *
 granularity));
 
 #endif
 	int         i;
-	Bool        flip = LRAND() & 1;
-        int         actual_delay = delay / steps;
+	Bool        flip = (Bool) (LRAND() & 1);
+	int         actual_delay = delay / steps;
 
 #include "erase_init.h"
 
@@ -435,78 +456,76 @@ fizzle (Display *dpy, Window window, GC gc,
 # define BY 31
 # define SIZE (BX*BY)
 
-  int array[SIZE];
-  int i, j;
-  XPoint *skews;
-  int nx, ny;
-  int actual_delay = delay / SIZE;
+	int array[SIZE];
+	int i, j;
+	XPoint *skews;
+	int nx, ny;
+	int actual_delay = delay / SIZE;
 
 #include "erase_init.h"
 
-  /* Distribute the numbers [0,SIZE) randomly in the array */
-  {
-    int indices[SIZE];
+	/* Distribute the numbers [0,SIZE) randomly in the array */
+	{
+		int indices[SIZE];
 
-    for( i = 0; i < SIZE; i++ ) {
-      array[i] = -1;
-      indices[i] = i;
-    }
+		for (i = 0; i < SIZE; i++) {
+			array[i] = -1;
+			indices[i] = i;
+		}
 
-    for( i = 0; i < SIZE; i++ ) {
-      j = LRAND()%(SIZE-i);
-      array[indices[j]] = i;
-      indices[j] = indices[SIZE-i-1];
-    }
-  }
+		for (i = 0; i < SIZE; i++) {
+			j = (int) (LRAND() % (SIZE - i));
+			array[indices[j]] = i;
+			indices[j] = indices[SIZE - i - 1];
+		}
+	}
 
-  /* nx, ny are the number of cells across and down, rounded up */
-  nx = width  / BX + (0 == (width %BX) ? 0 : 1);
-  ny = height / BY + (0 == (height%BY) ? 0 : 1);
-  skews = (XPoint *)malloc(sizeof(XPoint) * (nx*ny));
-  if( (XPoint *)0 != skews ) {
-    for( i = 0; i < nx; i++ ) {
-      for( j = 0; j < ny; j++ ) {
-        skews[j * nx + i].x = LRAND()%BX;
-        skews[j * nx + i].y = LRAND()%BY;
-      }
-    }
-  }
+	/* nx, ny are the number of cells across and down, rounded up */
+	nx = width  / BX + (0 == (width % BX) ? 0 : 1);
+	ny = height / BY + (0 == (height % BY) ? 0 : 1);
+	if ((skews = (XPoint *) malloc(nx * ny * sizeof (XPoint))) == NULL) {
+		XDrawRectangle(dpy, window, gc, 0, 0, width, height);
+		return;
+	}
+	for (i = 0; i < nx; i++) {
+		for (j = 0; j < ny; j++) {
+			skews[j * nx + i].x = (short) (LRAND() % BX);
+			skews[j * nx + i].y = (short) (LRAND() % BY);
+		}
+	}
 
-# define SKEWX(cx, cy) (((XPoint *)0 == skews)?0:skews[cy*nx + cx].x)
-# define SKEWY(cx, cy) (((XPoint *)0 == skews)?0:skews[cy*nx + cx].y)
+# define SKEWX(cx, cy) (skews[cy*nx + cx].x)
+# define SKEWY(cx, cy) (skews[cy*nx + cx].y)
 
-  for( i = 0; i < SIZE; i++ ) {
-    int x = array[i] % BX;
-    int y = array[i] / BX;
+	for (i = 0; i < SIZE; i++) {
+		int x = array[i] % BX;
+		int y = array[i] / BX;
+		int iy, cy;
 
-    {
-      int iy, cy;
-      for( iy = 0, cy = 0; iy < height; iy += BY, cy++ ) {
-        int ix, cx;
-        for( ix = 0, cx = 0; ix < width; ix += BX, cx++ ) {
-          int xx = ix + (SKEWX(cx, cy) + x*((cx%(BX-1))+1))%BX;
-          int yy = iy + (SKEWY(cx, cy) + y*((cy%(BY-1))+1))%BY;
-          XDrawPoint(dpy, window, gc, xx, yy);
-        }
-      }
-    }
+		for (iy = 0, cy = 0; iy < height; iy += BY, cy++) {
+			int ix, cx;
 
-    if( (BX-1) == (i%BX) ) {
-      XSync (dpy, False);
-    }
+			for (ix = 0, cx = 0; ix < width; ix += BX, cx++) {
+				int xx = ix + (SKEWX(cx, cy) + x*((cx%(BX-1))+1))%BX;
+				int yy = iy + (SKEWY(cx, cy) + y*((cy%(BY-1))+1))%BY;
+
+				XDrawPoint(dpy, window, gc, xx, yy);
+			}
+		}
+
+		if ((BX-1) == (i%BX)) {
+			XSync (dpy, False);
+		}
 
 #define LOOPVAR i
 # include "erase.h"
 #undef LOOPVAR
-
-  }
+	}
 
 # undef SKEWX
 # undef SKEWY
 
-  if( (XPoint *)0 != skews ) {
-    free(skews);
-  }
+	(void) free((void *) skews);
 
 # undef BX
 # undef BY
@@ -528,18 +547,17 @@ spiral (Display *display, Window window, GC context,
 SPIRAL_ERASE_ARC_COUNT)
 # define SPIRAL_ERASE_DELAY (0)
 
-  double angle;
-  int arc_limit;
-  int arc_max_limit;
-  int length_step;
-  XPoint points [3];
-   int actual_delay;
+	double angle;
+	int arc_limit;
+	int arc_max_limit;
+	int length_step;
+	XPoint points [3];
+	int actual_delay;
 
 #include "erase_init.h"
 
   angle = 0.0;
-  arc_limit = 1;
-  arc_max_limit = (int) (ceil (sqrt ((width * width) + (height * height)))
+  arc_max_limit = (int) (ceil (sqrt((double) (width * width) + (height * height)))
                          / 2.0);
   length_step = ((arc_max_limit + SPIRAL_ERASE_LOOP_COUNT - 1) /
                  SPIRAL_ERASE_LOOP_COUNT);
@@ -577,7 +595,7 @@ SPIRAL_ERASE_ARC_COUNT)
 #undef LOOPVAR
 
 #if (SPIRAL_ERASE_DELAY != 0)
-          usleep (SPIRAL_ERASE_DELAY);
+          (void) usleep (SPIRAL_ERASE_DELAY);
 # endif /* (SPIRAL_ERASE_DELAY != 0) */
     }
 # undef SPIRAL_ERASE_DELAY
@@ -595,37 +613,37 @@ static struct eraser_names {
 } erasers[] = {
 
 	{
-		random_lines, "random_lines"
+		random_lines, (char *) "random_lines"
 	},
 	{
-		random_squares, "random_squares"
+		random_squares, (char *) "random_squares"
 	},
 	{
-		venetian, "venetian"
+		venetian, (char *) "venetian"
 	},
 	{
-		triple_wipe, "triple_wipe"
+		triple_wipe, (char *) "triple_wipe"
 	},
 	{
-		quad_wipe, "quad_wipe"
+		quad_wipe, (char *) "quad_wipe"
 	},
 	{
-		circle_wipe, "circle_wipe"
+		circle_wipe, (char *) "circle_wipe"
 	},
 	{
-		three_circle_wipe, "three_circle_wipe"
+		three_circle_wipe, (char *) "three_circle_wipe"
 	},
 	{
-		squaretate, "squaretate"
+		squaretate, (char *) "squaretate"
 	},
 	{
-		fizzle , "fizzle"
+		fizzle , (char *) "fizzle"
 	},
 	{
-		spiral , "spiral"
+		spiral , (char *) "spiral"
 	},
 	{
-		no_fade, "no_fade"
+		no_fade, (char *) "no_fade"
 	}
 };
 

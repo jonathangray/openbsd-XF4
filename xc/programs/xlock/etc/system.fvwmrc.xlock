@@ -31,7 +31,9 @@ Popup "Fractal-Lock"
 	Title	"Fractal-Lock"
 	Exec	"Coral"		exec xlock -mode coral &
 	Exec	"Discrete"	exec xlock -mode discrete &
+	Exec	"Dragon"	exec xlock -mode dragon &
 	Exec	"Drift"		exec xlock -mode drift -fullrandom &
+	Exec	"Euler2d"	exec xlock -mode euler2d &
 	Exec	"Flame"		exec xlock -mode flame &
 	Exec	"Flow"		exec xlock -mode flow &
 	Exec	"Forest"	exec xlock -mode forest &
@@ -67,6 +69,7 @@ Popup "Geometry-Lock"
 	Exec	"Penrose"	exec xlock -mode penrose +ammann &
 	Exec	"Penrose Ammann"	exec xlock -mode penrose -ammann &
 	Exec	"Petal"		exec xlock -mode petal &
+	Exec	"Polyominoes"	exec xlock -mode polyominoes &
 	Exec	"Qix"		exec xlock -mode qix +complete &
 	Exec	"Qix complete"	exec xlock -mode qix -complete &
 	Exec	"Rotor"		exec xlock -mode rotor &
@@ -87,6 +90,8 @@ Popup "Space-Lock"
 	Exec	"Grav Trail"	exec xlock -mode grav -trail &
 	Exec	"Grav Decay"	exec xlock -mode grav -decay &
 	Exec	"Rock"i		exec xlock -mode star -rock &
+	Exec	"Scooter"	exec xlock -mode scooter &
+	Exec	"Space"		exec xlock -mode space &
 	Exec	"Star"		exec xlock -mode star +rock +use3d -trek 0 &
 	Exec	"Star3dk"	exec xlock -mode star -use3d &
 	Exec	"Star Trek"	exec xlock -mode star -trek 100 &
@@ -130,12 +135,12 @@ Popup "Assorted-Lock"
 	Exec	"Tube"		exec xlock -mode tube -install &
 	Exec	"Worm"		exec xlock -mode worm +use3d &
 	Exec	"Worm3d"	exec xlock -mode worm -use3d &
+	Exec	"Xcl"		exec xlock -mode xcl &
 	Exec	"Xjack"		exec xlock -mode xjack &
 EndPopup
 
 Popup "XPM-Lock"
 	Exec	"Bat"		exec xlock -mode bat &
-	Exec	"Cartoon"	exec xlock -mode cartoon &
 	Exec	"Image"		exec xlock -mode image &
 	Exec	"Flag"		exec xlock -mode flag &
 	Exec	"Life"		exec xlock -mode life &
@@ -149,13 +154,18 @@ Popup "GL-Lock"
 	Exec	"Atlantis"	exec xlock -mode atlantis &
 	Exec	"Bubble3d"	exec xlock -mode bubble3d &
 	Exec	"Cage"		exec xlock -mode cage &
+	Exec	"Fire"		exec xlock -mode fire &
 	Exec	"Gears"		exec xlock -mode gears &
+	Exec	"GL-Planet"	exec xlock -mode glplanet &
 	Exec	"Invert"	exec xlock -mode invert &
 	Exec	"Lament"	exec xlock -mode lament &
 	Exec	"Moebius"	exec xlock -mode moebius &
+	Exec	"Molecule"	exec xlock -mode molecule &
 	Exec	"Morph3d"	exec xlock -mode morph3d &
 	Exec	"Pipes"		exec xlock -mode pipes &
 	Exec	"Rubik"		exec xlock -mode rubik &
+	Exec	"Sballs"	exec xlock -mode sballs &
+	Exec	"Sierpinski3d"	exec xlock -mode sierpinski3d &
 	Exec	"Sproingies"	exec xlock -mode sproingies &
 	Exec	"Stairs"	exec xlock -mode stairs &
 	Exec	"Superquadrics"	exec xlock -mode superquadrics &
@@ -185,6 +195,7 @@ EndPopup
 Popup "Special-Lock"
 	Title	"Special-Lock"
 	Exec	"Blank"	exec xlock -mode blank &
+	Exec	"Transparent"	exec xlock -mode blank -geometry 1x1 -enablesaver &
 	Exec	"Bomb"	exec xlock -mode bomb &
 	Exec	"Random nice"	exec xlock -mode random -modelist allnice -fullrandom -neighbors 0 &
 	Exec	"Random standard"	exec xlock -mode random -modelist all-allgl -fullrandom -neighbors 0 &
@@ -244,7 +255,9 @@ Popup "Fractal-Saver"
 	Title	"Fractal-Saver"
 	Exec	"Coral"		exec xlock -nolock -mode coral &
 	Exec	"Discrete"	exec xlock -nolock -mode discrete &
+	Exec	"Dragon"	exec xlock -nolock -mode dragon &
 	Exec	"Drift"		exec xlock -nolock -mode drift -fullrandom &
+	Exec	"Euler2d"	exec xlock -nolock -mode euler2d &
 	Exec	"Flame"		exec xlock -nolock -mode flame &
 	Exec	"Flow"		exec xlock -nolock -mode flow &
 	Exec	"Forest"	exec xlock -nolock -mode forest &
@@ -280,6 +293,7 @@ Popup "Geometry-Saver"
 	Exec	"Penrose"	exec xlock -nolock -mode penrose +ammann &
 	Exec	"Penrose Ammann"	exec xlock -nolock -mode penrose -ammann &
 	Exec	"Petal"		exec xlock -nolock -mode petal &
+	Exec	"Polyominoes"	exec xlock -nolock -mode polyominoes &
 	Exec	"Qix"		exec xlock -nolock -mode qix +complete &
 	Exec	"Qix complete"	exec xlock -nolock -mode qix -complete &
 	Exec	"Rotor"		exec xlock -nolock -mode rotor &
@@ -300,6 +314,8 @@ Popup "Space-Saver"
 	Exec	"Grav Trail"	exec xlock -nolock -mode grav -trail &
 	Exec	"Grav Decay"	exec xlock -nolock -mode grav -decay &
 	Exec	"Rock"		exec xlock -nolock -mode star -rock &
+	Exec	"Scooter"	exec xlock -nolock -mode scooter &
+	Exec	"Space"		exec xlock -nolock -mode space &
 	Exec	"Star"		exec xlock -nolock -mode star +rock +use3d +trek 0 &
 	Exec	"Star3d"	exec xlock -nolock -mode star -use3d &
 	Exec	"Star Trek"	exec xlock -nolock -mode star -trek 100 &
@@ -343,12 +359,12 @@ Popup "Assorted-Saver"
 	Exec	"Tube"		exec xlock -nolock -mode tube -install &
 	Exec	"Worm"		exec xlock -nolock -mode worm +use3d &
 	Exec	"Worm3d"	exec xlock -nolock -mode worm -use3d &
+	Exec	"Xcl"		exec xlock -nolock -mode xcl &
 	Exec	"Xjack"		exec xlock -nolock -mode xjack &
 EndPopup
 
 Popup "XPM-Saver"
 	Exec	"Bat"		exec xlock -nolock -mode bat &
-	Exec	"Cartoon"	exec xlock -nolock -mode cartoon &
 	Exec	"Image"		exec xlock -nolock -mode image &
 	Exec	"Flag"		exec xlock -nolock -mode flag &
 	Exec	"Life"		exec xlock -nolock -mode life &
@@ -362,13 +378,18 @@ Popup "GL-Saver"
 	Exec	"Atlantis"	exec xlock -nolock -mode atlantis &
 	Exec	"Bubble3d"	exec xlock -nolock -mode bubble3d &
 	Exec	"Cage"		exec xlock -nolock -mode cage &
+	Exec	"Fire"		exec xlock -nolock -mode fire &
 	Exec	"Gears"		exec xlock -nolock -mode gears &
-	Exec	"Moebius"	exec xlock -nolock -mode invert &
-	Exec	"Moebius"	exec xlock -nolock -mode lament &
+	Exec	"GL-Planet"	exec xlock -nolock -mode glplanet &
+	Exec	"Invert"	exec xlock -nolock -mode invert &
+	Exec	"Lament"	exec xlock -nolock -mode lament &
 	Exec	"Moebius"	exec xlock -nolock -mode moebius &
+	Exec	"Molecule"	exec xlock -nolock -mode molecule &
 	Exec	"Morph3d"	exec xlock -nolock -mode morph3d &
 	Exec	"Pipes"		exec xlock -nolock -mode pipes &
 	Exec	"Rubik"		exec xlock -nolock -mode rubik &
+	Exec	"Sballs"	exec xlock -nolock -mode sballs &
+	Exec	"Sierpinski3d"	exec xlock -nolock -mode sierpinski3d &
 	Exec	"Sproingies"	exec xlock -nolock -mode sproingies &
 	Exec	"Stairs"	exec xlock -nolock -mode stairs &
 	Exec	"Superquadrics"	exec xlock -nolock -mode superquadrics &

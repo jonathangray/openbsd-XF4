@@ -2,7 +2,7 @@
 /* dclock --- floating digital clock or message */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)dclock.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)dclock.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,17 +22,18 @@ static const char sccsid[] = "@(#)dclock.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 07-May-99: New "savers" added for y2k and second millennium countdowns.
- *            Tom Schmidt <tschmidt@micron.com>
- * 04-Dec-98: New "savers" added for hiv, veg, and lab.
- *            hiv one due to Kenneth Stailey <kstailey@disclosure.com>
- * 10-Aug-98: Population Explosion and Tropical Forest Countdown stuff
- *            I tried to get precise numbers but they may be off a few percent.
- *            Whether or not, its still pretty scary IMHO.
- *            Although I am a US citizen... I have the default for area in
- *            metric.  David Bagley <bagleyd@tux.org>
- * 10-May-97: Compatible with xscreensaver
- * 29-Aug-95: Written.
+ * 01-Nov-2000: Allocation checks
+ * 07-May-1999: New "savers" added for y2k and second millennium countdowns.
+ *              Tom Schmidt <tschmidt@micron.com>
+ * 04-Dec-1998: New "savers" added for hiv, veg, and lab.
+ *              hiv one due to Kenneth Stailey <kstailey@disclosure.com>
+ * 10-Aug-1998: Population Explosion and Tropical Forest Countdown stuff
+ *              I tried to get precise numbers but they may be off a few
+ *              percent.  Whether or not, its still pretty scary IMHO.
+ *              Although I am a US citizen... I have the default for area in
+ *              metric.  David Bagley <bagleyd@tux.org>
+ * 10-May-1997: Compatible with xscreensaver
+ * 29-Aug-1995: Written.
  */
 
 /*-
@@ -110,7 +111,11 @@ static const char sccsid[] = "@(#)dclock.c	4.07 97/11/24 xlockmore";
 #ifdef NL
 # define AREA_STRING "Hectare"
 #else
+#ifdef JP
+# include "dclock-msg-jp.h"
+#else
 # define AREA_STRING "Hectares"
+#endif
 #endif
 #define AREA_MIN 35.303144
 #define AREA_TIME_START 1184193000.0
@@ -118,7 +123,11 @@ static const char sccsid[] = "@(#)dclock.c	4.07 97/11/24 xlockmore";
 #ifdef NL
 # define AREA_STRING "Acre"
 #else
+#ifdef JP
+# include "dclock-msg-jp.h"
+#else
 # define AREA_STRING "Acres"
+#endif
 #endif
 #define AREA_MIN 87.198766
 #define AREA_TIME_START 2924959000.0
@@ -211,44 +220,44 @@ static Bool millennium;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-led", ".dclock.led", XrmoptionNoArg, (caddr_t) "on"},
-	{"+led", ".dclock.led", XrmoptionNoArg, (caddr_t) "off"},
-	{"-popex", ".dclock.popex", XrmoptionNoArg, (caddr_t) "on"},
-	{"+popex", ".dclock.popex", XrmoptionNoArg, (caddr_t) "off"},
-	{"-forest", ".dclock.forest", XrmoptionNoArg, (caddr_t) "on"},
-	{"+forest", ".dclock.forest", XrmoptionNoArg, (caddr_t) "off"},
-	{"-hiv", ".dclock.hiv", XrmoptionNoArg, (caddr_t) "on"},
-	{"+hiv", ".dclock.hiv", XrmoptionNoArg, (caddr_t) "off"},
-	{"-lab", ".dclock.lab", XrmoptionNoArg, (caddr_t) "on"},
-	{"+lab", ".dclock.lab", XrmoptionNoArg, (caddr_t) "off"},
-	{"-veg", ".dclock.veg", XrmoptionNoArg, (caddr_t) "on"},
-	{"+veg", ".dclock.veg", XrmoptionNoArg, (caddr_t) "off"},
-	{"-y2k", ".dclock.y2k", XrmoptionNoArg, (caddr_t) "on"},
-	{"+y2k", ".dclock.y2k", XrmoptionNoArg, (caddr_t) "off"},
-	{"-millennium", ".dclock.millennium", XrmoptionNoArg, (caddr_t) "on"},
-	{"+millennium", ".dclock.millennium", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-led", (char *) ".dclock.led", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+led", (char *) ".dclock.led", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-popex", (char *) ".dclock.popex", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+popex", (char *) ".dclock.popex", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-forest", (char *) ".dclock.forest", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+forest", (char *) ".dclock.forest", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-hiv", (char *) ".dclock.hiv", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+hiv", (char *) ".dclock.hiv", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-lab", (char *) ".dclock.lab", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+lab", (char *) ".dclock.lab", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-veg", (char *) ".dclock.veg", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+veg", (char *) ".dclock.veg", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-y2k", (char *) ".dclock.y2k", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+y2k", (char *) ".dclock.y2k", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-millennium", (char *) ".dclock.millennium", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+millennium", (char *) ".dclock.millennium", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & led, "led", "LED", DEF_LED, t_Bool},
-	{(caddr_t *) & popex, "popex", "PopEx", DEF_POPEX, t_Bool},
-	{(caddr_t *) & forest, "forest", "Forest", DEF_FOREST, t_Bool},
-	{(caddr_t *) & hiv, "hiv", "Hiv", DEF_HIV, t_Bool},
-	{(caddr_t *) & lab, "lab", "Lab", DEF_LAB, t_Bool},
-	{(caddr_t *) & veg, "veg", "Veg", DEF_VEG, t_Bool},
-	{(caddr_t *) & y2k, "y2k", "Y2K", DEF_Y2K, t_Bool},
-	{(caddr_t *) & millennium, "millennium", "Millennium", DEF_Y2001, t_Bool}
+	{(caddr_t *) & led, (char *) "led", (char *) "LED", (char *) DEF_LED, t_Bool},
+	{(caddr_t *) & popex, (char *) "popex", (char *) "PopEx", (char *) DEF_POPEX, t_Bool},
+	{(caddr_t *) & forest, (char *) "forest", (char *) "Forest", (char *) DEF_FOREST, t_Bool},
+	{(caddr_t *) & hiv, (char *) "hiv", (char *) "Hiv", (char *) DEF_HIV, t_Bool},
+	{(caddr_t *) & lab, (char *) "lab", (char *) "Lab", (char *) DEF_LAB, t_Bool},
+	{(caddr_t *) & veg, (char *) "veg", (char *) "Veg", (char *) DEF_VEG, t_Bool},
+	{(caddr_t *) & y2k, (char *) "y2k", (char *) "Y2K", (char *) DEF_Y2K, t_Bool},
+	{(caddr_t *) & millennium, (char *) "millennium", (char *) "Millennium", (char *) DEF_Y2001, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+led", "turn on/off Light Emitting Diode seven segment display"},
-	{"-/+popex", "turn on/off population explosion counter"},
-	{"-/+forest", "turn on/off tropical forest destruction counter"},
-	{"-/+hiv", "turn on/off HIV infection counter"},
-	{"-/+lab", "turn on/off Animal Research counter"},
-	{"-/+veg", "turn on/off Animal Consumation counter"},
-	{"-/+y2k", "turn on/off Year 2000 countdown"},
-	{"-/+millennium", "turn on/off 3rd Millennium (1 January 2001) countdown"},
+	{(char *) "-/+led", (char *) "turn on/off Light Emitting Diode seven segment display"},
+	{(char *) "-/+popex", (char *) "turn on/off population explosion counter"},
+	{(char *) "-/+forest", (char *) "turn on/off tropical forest destruction counter"},
+	{(char *) "-/+hiv", (char *) "turn on/off HIV infection counter"},
+	{(char *) "-/+lab", (char *) "turn on/off Animal Research counter"},
+	{(char *) "-/+veg", (char *) "turn on/off Animal Consumation counter"},
+	{(char *) "-/+y2k", (char *) "turn on/off Year 2000 countdown"},
+	{(char *) "-/+millennium", (char *) "turn on/off 3rd Millennium (1 January 2001) countdown"},
 };
 
 ModeSpecOpt dclock_opts =
@@ -283,7 +292,7 @@ ModStruct   dclock_description =
 #define Y2001_STRING "Décompte pour le Second Millénaire (1er Janvier 2001)"
 #define POST_Y2001_STRING "Temps depuis le Second Millénaire (1er Janvier 2001)"
 #define DAY "jour"
-#define DALED_YS "jours"
+#define DAYS "jours"
 #define HOUR "heure"
 #define HOURS "heures"
 #define MINUTE "minute"
@@ -309,13 +318,16 @@ ModStruct   dclock_description =
 #define Y2001_STRING "Aftellen tot het tweede millennium (1 Januari 2001)"
 #define POST_Y2001_STRING "Tijd sinds het tweede millennium (1 Januari 2001)"
 #define DAY "dag"
-#define DALED_YS "dagen"
+#define DAYS "dagen"
 #define HOUR "uur"
 #define HOURS "uren"
 #define MINUTE "minuut"
 #define MINUTES "minuten"
 #define SECOND "seconde"
 #define SECONDS "seconden"
+#else
+#ifdef JP
+#include "dclock-msg-jp.h"
 #else
 #define POPEX_STRING "World Population"
 #define PEOPLE_STRING " People"
@@ -331,7 +343,7 @@ ModStruct   dclock_description =
 #define Y2001_STRING "Countdown to the end of the Second Millennium (1 January 2001, 0:00 hour)"
 #define POST_Y2001_STRING "Time since the start of the Third Millennium (1 January 2001)"
 #define DAY "day"
-#define DALED_YS "days"
+#define DAYS "days"
 #define HOUR "hour"
 #define HOURS "hours"
 #define MINUTE "minute"
@@ -340,15 +352,43 @@ ModStruct   dclock_description =
 #define SECONDS "seconds"
 #endif
 #endif
+#endif
 
+#ifdef USE_MB
+static XFontSet mode_font = None;
+static int font_height(XFontSet f)
+{
+  XRectangle ink, log;
+  if (f == None) {
+    return 8;
+  } else {
+      XmbTextExtents(mode_font, "My", strlen("My"), &ink, &log);
+      return log.height;
+  }
+}
+#define DELTA 0.2
+extern XFontSet getFontSet(Display * display);
+#else
+static XFontStruct *mode_font = None;
 #define font_height(f) (f->ascent + f->descent)
-
+#define DELTA 0
 extern XFontStruct *getFont(Display * display);
+#endif
+
+#ifdef USE_MB
+#define free_font(d) if (mode_font!=None){XFreeFontSet(d,mode_font); \
+mode_font = None;}
+#else
+#define free_font(d) if (mode_font!=None){XFreeFont(d,mode_font); \
+mode_font = None;}
+#endif
+
+#define STRSIZE 50
 
 typedef struct {
 	int         color;
 	short       height, width;
-	char       *str, str1[40], str2[40], str1old[80], str2old[80];
+	char       *str, str1[STRSIZE], str2[STRSIZE], str1old[STRSIZE], str2old[STRSIZE];
 	char       *str1pta, *str2pta, *str1ptb, *str2ptb;
 	time_t      timenew, timeold;
 	int         tzoffset;
@@ -368,33 +408,31 @@ typedef struct {
 
 static dclockstruct *dclocks = NULL;
 
-static XFontStruct *mode_font = None;
-
-#define BASE 10.0
-#define GROUP 3
-static double logbase;
 
 static unsigned long
-timeAtLastNewYear(unsigned long timeNow)
+timeAtLastNewYear(long timeNow)
 {
-  int year = 1970, days; /* Beginning of time */
-	unsigned long  lastNewYear = 0;
-	unsigned long secondCount = 0;
+  struct tm *t;
 
-	while (lastNewYear + secondCount < timeNow) {
-		lastNewYear += secondCount;
-		days = 365;
-		if ((!(year % 400)) || ((year % 100) && (!(year % 4))))
-			days++;
-		secondCount = days * 24 * 60 * 60;
-		year++;
-	}
-	return lastNewYear;
+  t = localtime((const time_t *) &timeNow);
+  return (unsigned long)(t->tm_year);
 }
+
+#ifndef HAVE_SNPRINTF
+static double logbase;
+#define BASE 10.0
+#define GROUP 3
+#endif
 
 static void
 convert(double x, char *string)
 {
+#ifdef HAVE_SNPRINTF
+/* Also old C compiler can not accept this syntax, but this syntax awares
+   locale.  Known to work with gcc-2.95.2 and glibc-2.1.3. */
+	(void) snprintf(string, STRSIZE, "%'.0f", x);
+#else
+	
 	int         i, j, k = 0;
 	int         place = (int) (log(x) / logbase);
 	double      divisor = 1.0;
@@ -411,48 +449,53 @@ convert(double x, char *string)
 			string[k++] = ',';
 		}
 	}
-	string[k++] = '\0';
+	string[k] = '\0';
+#endif
 }
 
 static void
 dayhrminsec(long timeCount, int tzoffset, char *string)
 {
-	int	 days, hours, minutes, secs;
-	char	*buf;
+	int days, hours, minutes, seconds;
+	int bufsize, i;
 
-	timeCount = abs(timeCount);
-	days = timeCount / 86400;
-	hours = (timeCount / 3600) % 24;
-	minutes = (timeCount / 60) % 60;
-	secs = timeCount % 60;
-	buf = (char *) malloc(16);
-	(void) sprintf(string, "%d ", days);
-	if (days == 1)
-		(void) strcat(string, DAY);
-	else
-		(void) strcat(string, DALED_YS);
-	(void) sprintf(buf, ", %d ", hours);
-	(void) strcat(string, buf);
-	if (hours == 1)
-		(void) strcat(string, HOUR);
-	else
-		(void) strcat(string, HOURS);
-	(void) sprintf(buf, ", %d ", minutes);
-	(void) strcat(string, buf);
-	if (minutes == 1)
-		(void) strcat(string, MINUTE);
-	else
-		(void) strcat(string, MINUTES);
-	(void) sprintf(buf, ", %d ", secs);
-	(void) strcat(string, buf);
-	if (secs == 1)
-		(void) strcat(string, SECOND);
-	else
-		(void) strcat(string, SECONDS);
-	if (!tzoffset)
+	timeCount = ABS(timeCount);
+	days = (int) (timeCount / 86400);
+	hours = (int) ((timeCount / 3600) % 24);
+	minutes = (int) ((timeCount / 60) % 60);
+	seconds = (int) (timeCount % 60);
+
+	/* snprintf would make this easier but its not always available */
+	bufsize = 16 + strlen((days==1) ? DAY : DAYS);
+	if (bufsize >= STRSIZE)
+          return;
+	(void) sprintf(string, "%d %s", days, (days==1) ? DAY : DAYS);
+
+	i = strlen(string);
+	bufsize = 4 + strlen((hours==1) ? HOUR : HOURS);
+	if (i + bufsize >= STRSIZE)
+          return;
+	(void) sprintf(&string[i], " %d %s", hours, (hours==1) ? HOUR : HOURS);
+
+	i = strlen(string);
+	bufsize = 4 + strlen((minutes==1) ? MINUTE : MINUTES);
+	if (i + bufsize >= STRSIZE)
+          return;
+	(void) sprintf(&string[i], " %d %s", minutes, (minutes==1) ? MINUTE : MINUTES);
+
+	i = strlen(string);
+	bufsize += 4 + strlen((seconds==1) ? SECOND : SECONDS);
+	if (i + bufsize >= STRSIZE)
+          return;
+	(void) sprintf(&string[i], " %d %s", seconds, (seconds==1) ? SECOND : SECONDS);
+
+	if (!tzoffset) {
+		i = strlen(string);
+		bufsize += 6;  /* strlen(" (UTC)"); */
+        	if (i + bufsize >= STRSIZE)
+          		return;
 		(void) strcat(string, " (UTC)");
-	(void) free((void *) buf);
-	buf = NULL;
+	}
 }
 
 static void
@@ -575,6 +618,23 @@ drawanumber(ModeInfo * mi, int startx, int starty, int digit)
 }
 
 static void
+free_dclock(Display *display, dclockstruct *dp)
+{
+	if (dp->fgGC != None) {
+		XFreeGC(display, dp->fgGC);
+		dp->fgGC = None;
+	}
+	if (dp->bgGC) {
+		XFreeGC(display, dp->bgGC);
+		dp->bgGC = None;
+	}
+	if (dp->pixmap) {
+		XFreePixmap(display, dp->pixmap);
+		dp->pixmap = None;
+	}
+}
+
+static void
 drawDclock(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
@@ -582,7 +642,6 @@ drawDclock(ModeInfo * mi)
 	GC          gc = MI_GC(mi);
 	dclockstruct *dp = &dclocks[MI_SCREEN(mi)];
 	short       xold, yold;
-	char       *tmppt;
 
 	if (dp->led) {
 		dp->timeold = dp->timenew = time((time_t *) NULL);
@@ -592,90 +651,60 @@ drawDclock(ModeInfo * mi)
 		if (dp->timeold != (dp->timenew = time((time_t *) NULL))) {
 			/* only parse if time has changed */
 			dp->timeold = dp->timenew;
-			dp->str = ctime(&dp->timeold);
 
 			if (!dp->popex && !dp->forest && !dp->hiv && !dp->lab &&
 			    !dp->veg && !dp->y2k && !dp->millennium) {
-
-				/* keep last disp time so it can be cleared even if it changed */
-				tmppt = dp->str1ptb;
-				dp->str1ptb = dp->str1pta;
-				dp->str1pta = tmppt;
-
-				/* copy the hours portion for 24 to 12 hr conversion */
-				(void) strncpy(dp->str1pta, (dp->str + 11), 8);
-				dp->hour = (short) (dp->str1pta[0] - 48) * 10 +
-					(short) (dp->str1pta[1] - 48);
-				if (dp->hour > 12) {
-					dp->hour -= 12;
-					(void) strcpy(dp->str1pta + 8, " PM");
-				} else {
-					if (dp->hour == 0)
-						dp->hour += 12;
-					(void) strcpy(dp->str1pta + 8, " AM");
-				}
-				dp->str1pta[0] = (dp->hour / 10) + 48;
-				dp->str1pta[1] = (dp->hour % 10) + 48;
-				if (dp->str1pta[0] == '0')
-					dp->str1pta[0] = ' ';
-				/* keep last disp time so it can be cleared even if it changed */
+				(void) strftime(dp->str1pta, STRSIZE, "%I:%M:%S %p", localtime(&(dp->timeold)));
 			}
-			tmppt = dp->str2ptb;
-			dp->str2ptb = dp->str2pta;
-			dp->str2pta = tmppt;
-
-			/* copy day month */
-			(void) strncpy(dp->str2pta, dp->str, 11);
-			/* copy year */
-			(void) strncpy(dp->str2pta + 11, (dp->str + 20), 4);
+			(void) strftime(dp->str2pta, STRSIZE, "%a %b %d %Y", localtime(&(dp->timeold)));
 		}
 	} else {
-		unsigned long timeNow, timeLocal;
+		long timeNow, timeLocal;
 		timeNow = seconds();
 		timeLocal = timeNow - dp->tzoffset;
 
 		if (dp->popex) {
 			convert(PEOPLE_TIME_START + (PEOPLE_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, PEOPLE_STRING);
+			(void) strncat(dp->str2, PEOPLE_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->forest) {
 			convert(AREA_TIME_START - (AREA_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, TROPICAL_STRING);
-			(void) strcat(dp->str2, AREA_STRING);
+			(void) strncat(dp->str2, TROPICAL_STRING, STRSIZE-strlen(dp->str2));
+			(void) strncat(dp->str2, AREA_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->hiv) {
 			convert(HIV_TIME_START + (HIV_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, CASES_STRING);
+			(void) strncat(dp->str2, CASES_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->lab) {
 			convert((LAB_MIN / 60.0) * (timeNow - timeAtLastNewYear(timeNow)),
 				dp->str2);
-			(void) strcat(dp->str2, YEAR_STRING);
+			(void) strncat(dp->str2, YEAR_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->veg) {
 			convert((VEG_MIN / 60.0) * (timeNow - timeAtLastNewYear(timeNow)),
 				dp->str2);
-			(void) strcat(dp->str2, YEAR_STRING);
+			(void) strncat(dp->str2, YEAR_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->y2k) {
 			if (Y2K_TIME_START >= timeLocal)
-				dp->str1pta = Y2K_STRING;
+				dp->str1pta = (char *) Y2K_STRING;
 			else
-				dp->str1pta = POST_Y2K_STRING;
+				dp->str1pta = (char *) POST_Y2K_STRING;
 			dp->str1ptb = dp->str1pta;
 			dayhrminsec(Y2K_TIME_START - timeLocal, dp->tzoffset, dp->str2);
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->millennium) {
 			if (Y2001_TIME_START >= timeLocal)
-				dp->str1pta = Y2001_STRING;
+				dp->str1pta = (char *) Y2001_STRING;
 			else
-				dp->str1pta = POST_Y2001_STRING;
+				dp->str1pta = (char *) POST_Y2001_STRING;
 			dp->str1ptb = dp->str1pta;
 			dayhrminsec(Y2001_TIME_START - timeLocal, dp->tzoffset, dp->str2);
 			dp->str2pta = dp->str2;
@@ -686,8 +715,20 @@ drawDclock(ModeInfo * mi)
 	xold = dp->clockx;
 	yold = dp->clocky;
 	if (!dp->led) {
+#ifdef USE_MB
+		{
+			XRectangle ink, logical;
+
+			XmbTextExtents(mode_font, dp->str1pta, strlen(dp->str1pta), &ink, &logical);
+			dp->text_width1 = logical.width;
+			XmbTextExtents(mode_font, dp->str2pta, strlen(dp->str2pta), &ink, &logical);
+			dp->text_width2 = logical.width;
+		}
+#else
 		dp->text_width1 = XTextWidth(mode_font, dp->str1pta, strlen(dp->str1pta));
 		dp->text_width2 = XTextWidth(mode_font, dp->str2pta, strlen(dp->str2pta));
+#endif
+
 		if (dp->text_width1 > dp->text_width2) {
 			dp->text_width = dp->text_width1;
 			dp->text_start1 = 0;
@@ -732,30 +773,51 @@ drawDclock(ModeInfo * mi)
 	    dp->pixh != (1 + !dp->led) * dp->text_height) {
 		XGCValues   gcv;
 
-		if (dp->fgGC)
-			XFreeGC(display, dp->fgGC);
-		if (dp->bgGC)
-			XFreeGC(display, dp->bgGC);
-		if (dp->pixmap) {
-			XFreePixmap(display, dp->pixmap);
+		if (dp->pixmap)
 			MI_CLEARWINDOWCOLORMAPFAST(mi, gc, MI_BLACK_PIXEL(mi));
-		}
+		free_dclock(display, dp);
 		dp->pixw = dp->text_width;
 		if (dp->led)
 			dp->pixh = dp->text_height;
 		else
-			dp->pixh = 2 * dp->text_height;
-		dp->pixmap = XCreatePixmap(display, window, dp->pixw, dp->pixh, 1);
+			dp->pixh = (2 + DELTA) * dp->text_height;
+		if ((dp->pixmap =
+			XCreatePixmap(display, window, dp->pixw, dp->pixh, 1)) == None) {
+			free_dclock(display, dp);
+			dp->pixw = 0;
+			dp->pixh = 0;
+			return;
+		}
+#ifndef USE_MB
 		gcv.font = mode_font->fid;
+#endif
 		gcv.background = 0;
 		gcv.foreground = 1;
 		gcv.graphics_exposures = False;
-		dp->fgGC = XCreateGC(display, dp->pixmap,
-				     GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+		if ((dp->fgGC = XCreateGC(display, dp->pixmap,
+			GCForeground | GCBackground | GCGraphicsExposures
+#ifndef USE_MB
+			| GCFont
+#endif
+			, &gcv)) == None) {
+			free_dclock(display, dp);
+			dp->pixw = 0;
+			dp->pixh = 0;
+			return;
+		}
 		gcv.foreground = 0;
-		dp->bgGC = XCreateGC(display, dp->pixmap,
-				     GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
-		XSetLineAttributes(MI_DISPLAY(mi), dp->fgGC,
+		if ((dp->bgGC = XCreateGC(display, dp->pixmap,
+			GCForeground | GCBackground | GCGraphicsExposures
+#ifndef USE_MB
+			| GCFont
+#endif
+			, &gcv)) == None) {
+			free_dclock(display, dp);
+			dp->pixw = 0;
+			dp->pixh = 0;
+			return;
+		}
+		XSetLineAttributes(display, dp->fgGC,
 		  (unsigned int) (LED_WIDTH),
 		  LineSolid, CapButt, JoinMiter);
 	}
@@ -781,12 +843,21 @@ drawDclock(ModeInfo * mi)
 		startx += (int) (LED_XS + LED_WIDTH + LED_INC);
 		drawanumber(mi, startx, starty, dp->str[18] - '0');
 	} else {
+#ifdef USE_MB
+		(void) XmbDrawString(display, dp->pixmap, mode_font, dp->fgGC,
+			dp->text_start1, dp->text_ascent,
+			dp->str1pta, strlen(dp->str1pta));
+		(void) XmbDrawString(display, dp->pixmap, mode_font, dp->fgGC,
+			dp->text_start2, dp->text_ascent + dp->text_height,
+			dp->str2pta, strlen(dp->str2pta));
+#else
 		(void) XDrawString(display, dp->pixmap, dp->fgGC,
-			   dp->text_start1, dp->text_ascent,
-			   dp->str1pta, strlen(dp->str1pta));
+			dp->text_start1, dp->text_ascent,
+			dp->str1pta, strlen(dp->str1pta));
 		(void) XDrawString(display, dp->pixmap, dp->fgGC,
 			dp->text_start2, dp->text_ascent + dp->text_height,
-			   dp->str2pta, strlen(dp->str2pta));
+			dp->str2pta, strlen(dp->str2pta));
+#endif
 	}
 
 	XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
@@ -803,9 +874,23 @@ drawDclock(ModeInfo * mi)
 	else
 		XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
 	XCopyPlane(display, dp->pixmap, window, gc,
-		   0, 0, dp->text_width, 2 * dp->text_height,
+		   0, 0, dp->text_width, (2 + DELTA) * dp->text_height,
 		dp->clockx - dp->text_start1, dp->clocky - dp->text_ascent,
 		   1L);
+}
+
+void
+release_dclock(ModeInfo * mi)
+{
+	if (dclocks != NULL) {
+		int         screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_dclock(MI_DISPLAY(mi), &dclocks[screen]);
+		(void) free((void *) dclocks);
+		dclocks = NULL;
+	}
+	free_font(MI_DISPLAY(mi));
 }
 
 void
@@ -813,13 +898,15 @@ init_dclock(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	dclockstruct *dp;
-	unsigned long timeNow, timeLocal;
+	long timeNow, timeLocal;
 #if defined(HAVE_TZSET) && !(defined(BSD) && BSD >= 199306)
 	extern long timezone;
 #endif
 
 	if (dclocks == NULL) {
+#ifndef HAVE_SNPRINTF
 		logbase = log(BASE);
+#endif
 		if ((dclocks = (dclockstruct *) calloc(MI_NUM_SCREENS(mi),
 					     sizeof (dclockstruct))) == NULL)
 			return;
@@ -901,12 +988,23 @@ init_dclock(ModeInfo * mi)
 		dp->millennium = millennium;
 	}
 
-	if (mode_font == None)
+	if (mode_font == None) {
+#ifdef USE_MB
+		mode_font = getFontSet(display);
+#else
 		mode_font = getFont(display);
+#endif
+		if (mode_font == None) {
+			release_dclock(mi);
+			return;
+		}
+	}
 	if (!dp->done) {
 		dp->done = 1;
+#ifndef USE_MB
 		if (mode_font != None)
 			XSetFont(display, MI_GC(mi), mode_font->fid);
+#endif
 	}
 	/* (void)time(&dp->timenew); */
 #if defined(HAVE_TZSET) && (!defined(HAVE_TIMELOCAL) || (defined(BSD) && BSD >= 199306))
@@ -914,11 +1012,13 @@ init_dclock(ModeInfo * mi)
 #endif
 	dp->timeold = dp->timenew = time((time_t *) NULL);
 #if defined(HAVE_TIMELOCAL) && !(defined(BSD) && BSD >= 199306)
-	if (!dp->tzoffset)
-		dp->tzoffset = timelocal(&dp->timeold) - timegm(&dp->timeold);
+	dp->tzoffset = mktime(localtime(&dp->timeold)) -
+		mktime(gmtime(&dp->timeold));
 #else
-#ifdef HAVE_TZSET
-	dp->tzoffset = (int)timezone;
+#if defined(HAVE_TZSET)
+        dp->tzoffset = (int)timezone;
+#else
+	dp->tzoffset = 0;
 #endif
 #endif
 	if (dp->tzoffset > 86400 || dp->tzoffset < -86400)
@@ -961,87 +1061,76 @@ init_dclock(ModeInfo * mi)
 		else
 			dp->clocky = NRAND(dp->maxy);
 	} else {
+#ifdef USE_MB
+		dp->text_descent = 0;
+		dp->text_ascent = font_height(mode_font);
+#else
 		dp->text_descent = mode_font->descent;
 		dp->text_ascent = mode_font->ascent;
+#endif
 		if (dp->popex) {
-			dp->str1pta = POPEX_STRING;
+			dp->str1pta = (char *) POPEX_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->forest) {
-			dp->str1pta = FOREST_STRING;
+			dp->str1pta = (char *) FOREST_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->hiv) {
-			dp->str1pta = HIV_STRING;
+			dp->str1pta = (char *) HIV_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->lab) {
-			dp->str1pta = LAB_STRING;
+			dp->str1pta = (char *) LAB_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->veg) {
-			dp->str1pta = VEG_STRING;
+			dp->str1pta = (char *) VEG_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->y2k) {
 			if (Y2K_TIME_START >= timeLocal)
-				dp->str1pta = Y2K_STRING;
+				dp->str1pta = (char *) Y2K_STRING;
 			else
-				dp->str1pta = POST_Y2K_STRING;
+				dp->str1pta = (char *) POST_Y2K_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else if (dp->millennium) {
 			if (Y2001_TIME_START >= timeLocal)
-				dp->str1pta = Y2001_STRING;
+				dp->str1pta = (char *) Y2001_STRING;
 			else
-				dp->str1pta = POST_Y2001_STRING;
+				dp->str1pta = (char *) POST_Y2001_STRING;
 			dp->str1ptb = dp->str1pta;
 		} else {
-			(void) strncpy(dp->str1, (dp->str + 11), 8);
-			dp->hour = (short) (dp->str1[0] - 48) * 10 + (short) (dp->str1[1] - 48);
-			if (dp->hour > 12) {
-				dp->hour -= 12;
-				(void) strcpy(dp->str1 + 8, " PM");
-			} else {
-				if (dp->hour == 0)
-					dp->hour += 12;
-				(void) strcpy(dp->str1 + 8, " AM");
-			}
-			dp->str1[0] = (dp->hour / 10) + 48;
-			dp->str1[1] = (dp->hour % 10) + 48;
-			if (dp->str1[0] == '0')
-				dp->str1[0] = ' ';
-			dp->str1[11] = 0;	/* terminate dp->str1 */
-			dp->str1old[11] = 0;	/* terminate dp->str1old */
+			struct tm *t = localtime((const time_t *) &timeLocal);
 
-			(void) strncpy(dp->str2, dp->str, 11);
-			(void) strncpy(dp->str2 + 11, (dp->str + 20), 4);
-			dp->str2[15] = 0;	/* terminate dp->str2 */
-			dp->str2old[15] = 0;	/* terminate dp->str2old */
+			(void) strftime(dp->str1, STRSIZE, "%I:%M:%S %p", t);
+			dp->hour = t->tm_hour;
+			(void) strftime(dp->str2, STRSIZE, "%a %b %d %Y", t);
 
 			dp->str1pta = dp->str1;
 			dp->str1ptb = dp->str1old;
 		}
 		if (dp->popex) {
 			convert(PEOPLE_TIME_START + (PEOPLE_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, PEOPLE_STRING);
+			(void) strncat(dp->str2, PEOPLE_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->forest) {
 			convert(AREA_TIME_START - (AREA_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, TROPICAL_STRING);
-			(void) strcat(dp->str2, AREA_STRING);
+			(void) strncat(dp->str2, TROPICAL_STRING, STRSIZE-strlen(dp->str2));
+			(void) strncat(dp->str2, AREA_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->hiv) {
 			convert(HIV_TIME_START + (HIV_MIN / 60.0) * timeNow, dp->str2);
-			(void) strcat(dp->str2, CASES_STRING);
+			(void) strncat(dp->str2, CASES_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->lab) {
 			convert((LAB_MIN / 60.0) * (timeNow - timeAtLastNewYear(timeNow)),
 				dp->str2);
-			(void) strcat(dp->str2, YEAR_STRING);
+			(void) strncat(dp->str2, YEAR_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 			dp->str2ptb = dp->str2pta;
 		} else if (dp->veg) {
 			convert((VEG_MIN / 60.0) * (timeNow - timeAtLastNewYear(timeNow)),
 				dp->str2);
-			(void) strcat(dp->str2, YEAR_STRING);
+			(void) strncat(dp->str2, YEAR_STRING, STRSIZE-strlen(dp->str2));
 			dp->str2pta = dp->str2;
 		} else if (dp->y2k) {
 			dayhrminsec(Y2K_TIME_START - timeLocal, dp->tzoffset, dp->str2);
@@ -1055,8 +1144,19 @@ init_dclock(ModeInfo * mi)
 		}
 
 		dp->text_height = font_height(mode_font);
+#ifdef USE_MB
+		{
+			XRectangle ink, logical;
+
+			XmbTextExtents(mode_font, dp->str1pta, strlen(dp->str1pta), &ink, &logical);
+			dp->text_width1 = logical.width;
+			XmbTextExtents(mode_font, dp->str2pta, strlen(dp->str2pta), &ink, &logical);
+			dp->text_width2 = logical.width;
+		}
+#else
 		dp->text_width1 = XTextWidth(mode_font, dp->str1pta, strlen(dp->str1pta));
 		dp->text_width2 = XTextWidth(mode_font, dp->str2pta, strlen(dp->str2pta));
+#endif
 		if (dp->text_width1 > dp->text_width2) {
 			dp->text_width = dp->text_width1;
 			dp->text_start1 = 0;
@@ -1092,41 +1192,19 @@ init_dclock(ModeInfo * mi)
 void
 draw_dclock(ModeInfo * mi)
 {
-	dclockstruct *dp = &dclocks[MI_SCREEN(mi)];
+	dclockstruct *dp;
+
+	if (dclocks == NULL)
+		return;
+	dp = &dclocks[MI_SCREEN(mi)];
+	if (mode_font == None)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	drawDclock(mi);
 	if (MI_NPIXELS(mi) > 2) {
 		if (++dp->color >= MI_NPIXELS(mi))
 			dp->color = 0;
-	}
-}
-
-void
-release_dclock(ModeInfo * mi)
-{
-	if (dclocks != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			dclockstruct *dp = &dclocks[screen];
-			Display    *display = MI_DISPLAY(mi);
-
-			if (dp->fgGC)
-				XFreeGC(display, dp->fgGC);
-			if (dp->bgGC)
-				XFreeGC(display, dp->bgGC);
-			if (dp->pixmap)
-				XFreePixmap(display, dp->pixmap);
-
-		}
-		(void) free((void *) dclocks);
-		dclocks = NULL;
-	}
-	if (mode_font != None) {
-		XFreeFont(MI_DISPLAY(mi), mode_font);
-		mode_font = None;
 	}
 }
 

@@ -2,7 +2,7 @@
 /* cage --- the Impossible Cage, an Escher like scene. */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)cage.c	4.07 98/01/04 xlockmore";
+static const char sccsid[] = "@(#)cage.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -36,7 +36,7 @@ static const char sccsid[] = "@(#)cage.c	4.07 98/01/04 xlockmore";
  * OpenGL at home.
  *
  * Since I'm not a native English speaker, my apologies for any grammatical
- * mistake.
+ * mistakes.
  *
  * My e-mail address is
  * m-vianna@usa.net
@@ -44,24 +44,25 @@ static const char sccsid[] = "@(#)cage.c	4.07 98/01/04 xlockmore";
  * Marcelo F. Vianna (Jun-01-1997)
  *
  * Revision History:
- * 01-Jan-98: Mode separated from escher and renamed
- * 08-Jun-97: New scene implemented: "Impossible Cage" based in a M.C. Escher's
- *            painting with the same name (quite similar). The first GL mode
- *            to use texture mapping.
- *            The "Impossible Cage" scene doesn't use DEPTH BUFFER, the
- *            wood planks are drawn consistently using GL_CULL_FACE, and
- *            the painter's algorithm is used to sort the planks.
- *            Marcelo F. Vianna.
- * 07-Jun-97: Speed ups in Moebius Strip using GL_CULL_FACE.
- *            Marcelo F. Vianna.
- * 03-Jun-97: Initial Release (Only one scene: "Moebius Strip")
- *            The Moebius Strip scene was inspirated in a M.C. Escher's
- *            painting named Moebius Strip II in wich ants walk across a
- *            Moebius Strip path, sometimes meeting each other and sometimes
- *            being in "opposite faces" (note that the moebius strip has
- *            only one face and one edge).
- *            Marcelo F. Vianna.
- *
+ * 01-Mar-2001: Added FPS stuff E.Lassauge <lassauge@mail.dotcom.fr>
+ * 01-Nov-2000: Allocation checks
+ * 01-Jan-1998: Mode separated from escher and renamed
+ * 08-Jun-1997: New scene implemented: "Impossible Cage" based in a M.C.
+ *              Escher's painting with the same name (quite similar). The
+ *              first GL mode to use texture mapping.
+ *              The "Impossible Cage" scene doesn't use DEPTH BUFFER, the
+ *              wood planks are drawn consistently using GL_CULL_FACE, and
+ *              the painter's algorithm is used to sort the planks.
+ *              Marcelo F. Vianna.
+ * 07-Jun-1997: Speed ups in Moebius Strip using GL_CULL_FACE.
+ *              Marcelo F. Vianna.
+ * 03-Jun-1997: Initial Release (Only one scene: "Moebius Strip")
+ *              The Moebius Strip scene was inspirated in a M.C. Escher's
+ *              painting named Moebius Strip II in wich ants walk across a
+ *              Moebius Strip path, sometimes meeting each other and sometimes
+ *              being in "opposite faces" (note that the moebius strip has
+ *              only one face and one edge).
+ *              Marcelo F. Vianna.
  */
 
 /*-
@@ -83,12 +84,13 @@ static const char sccsid[] = "@(#)cage.c	4.07 98/01/04 xlockmore";
 #define HACK_INIT init_cage
 #define HACK_DRAW draw_cage
 #define cage_opts xlockmore_opts
-#define DEFAULTS "*delay: 1000 \n" \
+#define DEFAULTS "*delay: 25000 \n" \
+ "*showFps  : False \n" \
  "*wireframe: False \n"
 #include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 #include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+#include "visgl.h"
 
 #endif /* !STANDALONE */
 
@@ -99,13 +101,13 @@ static const char sccsid[] = "@(#)cage.c	4.07 98/01/04 xlockmore";
 #include "e_textures.h"
 
 ModeSpecOpt cage_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   cage_description =
 {"cage", "init_cage", "draw_cage", "release_cage",
  "draw_cage", "change_cage", NULL, &cage_opts,
- 1000, 1, 1, 1, 1.0, 4, "",
+ 25000, 1, 1, 1, 1.0, 4, "",
  "Shows the Impossible Cage, an Escher-like GL scene", 0, NULL};
 
 #endif
@@ -119,12 +121,15 @@ ModStruct   cage_description =
 #define Pi                         M_PI
 #endif
 
+#define ObjWoodPlank    0
+#define MaxObj          1
+
 /*************************************************************************/
 
 typedef struct {
 	GLint       WindH, WindW;
 	GLfloat     step;
-	int         AreObjectsDefined[1];
+	Bool        AreObjectsDefined[MaxObj];
 	GLXContext *glx_context;
 } cagestruct;
 
@@ -148,20 +153,21 @@ static float lmodel_twoside[] =
 static float MaterialWhite[] =
 {0.7, 0.7, 0.7, 1.0};
 
-static cagestruct *cage = NULL;
-static GLuint objects;
-
-#define ObjWoodPlank    0
+static cagestruct *cage = (cagestruct *) NULL;
+static GLuint objects = 0;
 
 #define PlankWidth      3.0
 #define PlankHeight     0.35
 #define PlankThickness  0.15
 
-static void
+static Bool 
 draw_woodplank(cagestruct * cp)
 {
 	if (!cp->AreObjectsDefined[ObjWoodPlank]) {
 		glNewList(objects + ObjWoodPlank, GL_COMPILE_AND_EXECUTE);
+		if (glGetError() != GL_NO_ERROR) {
+			return False;
+		}
 		glBegin(GL_QUADS);
 		glNormal3f(0, 0, 1);
 		glTexCoord2f(0, 0);
@@ -219,7 +225,7 @@ draw_woodplank(cagestruct * cp)
 		glVertex3f(-PlankWidth, -PlankHeight, PlankThickness);
 		glEnd();
 		glEndList();
-		cp->AreObjectsDefined[ObjWoodPlank] = 1;
+		cp->AreObjectsDefined[ObjWoodPlank] = True;
 #ifdef DEBUG_LISTS
 		(void) printf("WoodPlank drawn SLOWLY\n");
 #endif
@@ -229,94 +235,102 @@ draw_woodplank(cagestruct * cp)
 		(void) printf("WoodPlank drawn quickly\n");
 #endif
 	}
+	return True;
 }
 
-static void
+static Bool
 draw_impossiblecage(cagestruct * cp)
 {
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glTranslatef(0.0, PlankHeight - PlankWidth, -PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 0, 1);
 	glTranslatef(0.0, PlankHeight - PlankWidth, PlankWidth - PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glTranslatef(0.0, PlankWidth - PlankHeight, -PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(0.0, PlankWidth - PlankHeight, 3 * PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 0, 1);
 	glTranslatef(0.0, PlankWidth - PlankHeight, PlankWidth - PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(0.0, PlankWidth - PlankHeight, PlankWidth - 3 * PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(0.0, PlankHeight - PlankWidth, 3 * PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 0, 1);
 	glTranslatef(0.0, PlankHeight - PlankWidth, PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(0.0, PlankHeight - PlankWidth, PlankWidth - 3 * PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glTranslatef(0.0, PlankHeight - PlankWidth, PlankWidth + PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 0, 1);
 	glTranslatef(0.0, PlankWidth - PlankHeight, PlankThickness - PlankWidth);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glTranslatef(0.0, PlankWidth - PlankHeight, PlankWidth + PlankThickness);
-	draw_woodplank(cp);
+	if (!draw_woodplank(cp))
+		return False;
 	glPopMatrix();
+	return True;
 }
 
 static void
 reshape(ModeInfo * mi, int width, int height)
 {
 	cagestruct *cp = &cage[MI_SCREEN(mi)];
+	int i;
 
 	glViewport(0, 0, cp->WindW = (GLint) width, cp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
 	glMatrixMode(GL_MODELVIEW);
-	if (width >= 1024) {
-		glLineWidth(3);
-		glPointSize(3);
-	} else if (width >= 512) {
-		glLineWidth(2);
-		glPointSize(2);
-	} else {
-		glLineWidth(1);
-		glPointSize(1);
-	}
-	cp->AreObjectsDefined[ObjWoodPlank] = 0;
+	i = width / 512 + 1;
+	glLineWidth(i);
+	glPointSize(i);
+	cp->AreObjectsDefined[ObjWoodPlank] = False;
 }
 
 static void
-pinit(void)
+pinit(ModeInfo *mi)
 {
 	glClearDepth(1.0);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -344,8 +358,10 @@ pinit(void)
 	glEnable(GL_CULL_FACE);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, WoodTextureWidth, WoodTextureHeight,
-			  GL_RGB, GL_UNSIGNED_BYTE, WoodTextureData);
+	if (!MI_IS_MONO(mi))
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3,
+			WoodTextureWidth, WoodTextureHeight,
+			GL_RGB, GL_UNSIGNED_BYTE, WoodTextureData);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -357,9 +373,31 @@ pinit(void)
 }
 
 void
+release_cage(ModeInfo * mi)
+{
+	if (cage != NULL) {
+		int screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
+			cagestruct *cp = &cage[screen];
+
+			if (cp->glx_context) {
+				if (glIsList(objects)) {
+					glDeleteLists(objects, MaxObj);
+					objects = 0;
+				}
+				cp->glx_context = (GLXContext *) NULL;
+			}
+		}
+		(void) free((void *) cage);
+		cage = (cagestruct *) NULL;
+	}
+	FreeAllGL(mi);
+}
+
+void
 init_cage(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	cagestruct *cp;
 
 	if (cage == NULL) {
@@ -367,16 +405,20 @@ init_cage(ModeInfo * mi)
 					       sizeof (cagestruct))) == NULL)
 			return;
 	}
-	cp = &cage[screen];
-	cp->step = NRAND(90);
+	cp = &cage[MI_SCREEN(mi)];
 
+	cp->step = NRAND(90);
 	if ((cp->glx_context = init_GL(mi)) != NULL) {
 
 		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		glDrawBuffer(GL_BACK);
 		if (!glIsList(objects))
-			objects = glGenLists(1);
-		pinit();
+			if ((objects = glGenLists(MaxObj)) == 0) {
+				MI_CLEARWINDOW(mi);
+				release_cage(mi);
+				return;
+			}
+		pinit(mi);
 	} else {
 		MI_CLEARWINDOW(mi);
 	}
@@ -385,12 +427,15 @@ init_cage(ModeInfo * mi)
 void
 draw_cage(ModeInfo * mi)
 {
-	cagestruct *cp = &cage[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	cagestruct *cp;
+
+	if (cage == NULL)
+		return;
+	cp = &cage[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!cp->glx_context)
 		return;
 
@@ -412,10 +457,13 @@ draw_cage(ModeInfo * mi)
 	glRotatef(cp->step * 100, 0, 0, 1);
 	glRotatef(25 + cos(cp->step * 5) * 6, 1, 0, 0);
 	glRotatef(204.5 - sin(cp->step * 5) * 8, 0, 1, 0);
-	draw_impossiblecage(cp);
+	if (!draw_impossiblecage(cp)) {
+		release_cage(mi);
+		return;
+	}
 
 	glPopMatrix();
-
+	if (MI_IS_FPS(mi)) do_fps (mi);
 	glFlush();
 
 	glXSwapBuffers(display, window);
@@ -432,20 +480,7 @@ change_cage(ModeInfo * mi)
 		return;
 
 	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(cp->glx_context));
-	pinit();
-}
-
-void
-release_cage(ModeInfo * mi)
-{
-	if (cage != NULL) {
-		(void) free((void *) cage);
-		cage = NULL;
-	}
-	if (glIsList(objects)) {
-		glDeleteLists(objects, 1);
-	}
-	FreeAllGL(mi);
+	pinit(mi);
 }
 
 #endif

@@ -151,7 +151,7 @@ glb_bubble_new(GLfloat x, GLfloat y, GLfloat z, GLfloat scale,
 	for (i = 0; i < nr_vertices; ++i)
 		for (j = 0; j < glb_config.nr_nudge_axes; ++j)
 			b->contributions[i * glb_config.nr_nudge_axes + j]
-				= max(0, dotprod(vertices[i], axes[j]));
+				= max(0.0, dotprod(vertices[i], axes[j]));
 
 	return (void *) b;
 }
@@ -165,18 +165,15 @@ glb_bubble_delete(void *bb)
 	if (b != NULL) {
 		if (b->nudge_angle_incr) {
 			(void) free((void *) b->nudge_angle_incr);
-			b->nudge_angle_incr = NULL;
 		}
 		if (b->nudge_angle) {
 			(void) free((void *) b->nudge_angle);
-			b->nudge_angle = NULL;
 		}
 		if (b->contributions) {
 			(void) free((void *) b->contributions);
-			b->contributions = NULL;
 		}
 		(void) free((void *) b);
-		b = NULL;
+		b = (bubble *) NULL;
 	}
 }
 

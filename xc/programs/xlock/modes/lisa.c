@@ -2,7 +2,7 @@
 /* lisa --- animated full-loop lisajous figures */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)lisa.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)lisa.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,8 @@ static const char sccsid[] = "@(#)lisa.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
  *
  * The inspiration for this program, Lasp, was written by Adam B. Roach
  * in 1990, assisted by me, Caleb Cullen.  It was written first in C, then
@@ -61,18 +62,18 @@ static Bool additive;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-additive", ".lisa.additive", XrmoptionNoArg, (caddr_t) "True"},
-	{"+additive", ".lisa.additive", XrmoptionNoArg, (caddr_t) "False"}
+	{(char *) "-additive", (char *) ".lisa.additive", XrmoptionNoArg, (caddr_t) "True"},
+	{(char *) "+additive", (char *) ".lisa.additive", XrmoptionNoArg, (caddr_t) "False"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & additive, "additive", "Additive", DEF_ADDITIVE, t_Bool}
+	{(caddr_t *) & additive, (char *) "additive", (char *) "Additive", (char *) DEF_ADDITIVE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+additive", "turn on/off additive functions mode"}
+	{(char *) "-/+additive", (char *) "turn on/off additive functions mode"}
 };
 
 ModeSpecOpt lisa_opts =
@@ -169,6 +170,20 @@ static lisafuncs Function[NUMSTDFUNCS] =
 };
 
 static void
+free_lisa(lisacons *lc)
+{
+	while (lc->lisajous) {
+		int    lctr;
+
+		for (lctr = 0; lctr < lc->nlisajous; lctr++) {
+			(void) free((void *) lc->lisajous[lctr].lastpoint);
+		}
+		(void) free((void *) lc->lisajous);
+		lc->lisajous = NULL;
+	}
+}
+
+static Bool
 drawlisa(ModeInfo * mi, lisas * loop)
 {
 	XPoint     *np;
@@ -180,7 +195,10 @@ drawlisa(ModeInfo * mi, lisas * loop)
 	double      xprod, yprod, xsum, ysum;
 
 	/* Allocate the np array */
-	np = (XPoint *) calloc(loop->nsteps, sizeof (XPoint));
+	if ((np = (XPoint *) calloc(loop->nsteps, sizeof (XPoint))) == NULL) {
+		free_lisa(lc);
+		return False;
+	}
 
 	/* Update the center */
 	loop->center.x += loop->dx;
@@ -310,9 +328,10 @@ drawlisa(ModeInfo * mi, lisas * loop)
 	}
 	(void) free((void *) lp);
 	loop->lastpoint = np;
+	return True;
 }
 
-static void
+static Bool 
 initlisa(ModeInfo * mi, lisas * loop)
 {
 	lisacons   *lc = &Lisa[MI_SCREEN(mi)];
@@ -342,8 +361,10 @@ initlisa(ModeInfo * mi, lisas * loop)
 	loop->dy++;
 	lf[0] = &Function[lc->loopcount % NUMSTDFUNCS];
 	if ((lp = loop->lastpoint = (XPoint *)
-	     calloc(loop->nsteps, sizeof (XPoint))) == NULL)
-		return;
+	     calloc(loop->nsteps, sizeof (XPoint))) == NULL) {
+		free_lisa(lc);
+		return False;
+	}
 	phase = lc->loopcount % loop->nsteps;
 
 	for (pctr = 0; pctr < loop->nsteps; pctr++) {
@@ -401,7 +422,7 @@ initlisa(ModeInfo * mi, lisas * loop)
 	XSetLineAttributes(MI_DISPLAY(mi), MI_GC(mi), 1,
 			   LineSolid, CapProjecting, JoinMiter);
 #endif
-
+	return True;
 }
 
 static void
@@ -411,14 +432,21 @@ refreshlisa(ModeInfo * mi)
 	int         lctr;
 
 	for (lctr = 0; lctr < lc->nlisajous; lctr++) {
-		drawlisa(mi, &lc->lisajous[lctr]);
+		if (!drawlisa(mi, &lc->lisajous[lctr]))
+			return;
 	}
 }
 
 void
 refresh_lisa(ModeInfo * mi)
 {
-	lisacons   *lc = &Lisa[MI_SCREEN(mi)];
+	lisacons   *lc;
+
+	if (Lisa == NULL)
+		return;
+	lc = &Lisa[MI_SCREEN(mi)];
+	if (lc->lisajous == NULL)
+		return;
 
 	if (lc->painted) {
 		lc->painted = False;
@@ -430,9 +458,15 @@ refresh_lisa(ModeInfo * mi)
 void
 change_lisa(ModeInfo * mi)
 {
-	lisacons   *lc = &Lisa[MI_SCREEN(mi)];
 	lisas      *loop;
 	int         lctr;
+	lisacons   *lc;
+
+	if (Lisa == NULL)
+		return;
+	lc = &Lisa[MI_SCREEN(mi)];
+	if (lc->lisajous == NULL)
+		return;
 
 	lc->loopcount = 0;
 	for (lctr = 0; lctr < lc->nlisajous; lctr++) {
@@ -447,12 +481,12 @@ change_lisa(ModeInfo * mi)
 void
 init_lisa(ModeInfo * mi)
 {
-	lisacons   *lc;
 	int         lctr;
+	lisacons   *lc;
 
 	if (Lisa == NULL) {
-		if ((Lisa = (lisacons *) calloc(MI_NUM_SCREENS(mi), sizeof (lisacons)))
-		    == NULL)
+		if ((Lisa = (lisacons *) calloc(MI_NUM_SCREENS(mi),
+				 sizeof (lisacons))) == NULL)
 			return;
 	}
 	lc = &Lisa[MI_SCREEN(mi)];
@@ -466,11 +500,12 @@ init_lisa(ModeInfo * mi)
 	lc->painted = False;
 
 	if (lc->lisajous == NULL) {
-		if ((lc->lisajous = (lisas *) calloc(lc->nlisajous, sizeof (lisas)))
-		    == NULL)
+		if ((lc->lisajous = (lisas *) calloc(lc->nlisajous,
+				sizeof (lisas))) == NULL)
 			return;
 		for (lctr = 0; lctr < lc->nlisajous; lctr++) {
-			initlisa(mi, &lc->lisajous[lctr]);
+			if (!initlisa(mi, &lc->lisajous[lctr]))
+				return;
 			lc->loopcount++;
 		}
 	} else {
@@ -481,10 +516,15 @@ init_lisa(ModeInfo * mi)
 void
 draw_lisa(ModeInfo * mi)
 {
-	lisacons   *lc = &Lisa[MI_SCREEN(mi)];
+	lisacons   *lc;
+
+	if (Lisa == NULL)
+		return;
+	lc = &Lisa[MI_SCREEN(mi)];
+	if (lc->lisajous == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	lc->painted = True;
 	if (++lc->loopcount > lc->maxcycles) {
 		change_lisa(mi);
@@ -495,20 +535,11 @@ draw_lisa(ModeInfo * mi)
 void
 release_lisa(ModeInfo * mi)
 {
-	lisacons   *lc;
-	int         lctr, sctr;
-
 	if (Lisa) {
-		for (sctr = 0; sctr < MI_NUM_SCREENS(mi); sctr++) {
-			lc = &Lisa[sctr];
-			while (lc->lisajous) {
-				for (lctr = 0; lctr < lc->nlisajous; lctr++) {
-					(void) free(lc->lisajous[lctr].lastpoint);
-				}
-				(void) free(lc->lisajous);
-				lc->lisajous = NULL;
-			}
-		}
+		int    screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_lisa(&Lisa[screen]);
 		(void) free(Lisa);
 		Lisa = NULL;
 	}

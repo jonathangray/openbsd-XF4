@@ -2,7 +2,7 @@
 /* wator --- Dewdney's Wa-Tor, water torus simulation */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)wator.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)wator.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)wator.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 29-Aug-95: Efficiency improvements.
- * 12-Dec-94: Coded from A.K. Dewdney's "The Armchair Universe, Computer
- *            Recreations from the Pages of Scientific American Magazine"
- *            W.H. Freedman and Company, New York, 1988  (Dec 1984 and
- *            June 1985) also used life.c as a guide.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 29-Aug-1995: Efficiency improvements.
+ * 12-Dec-1994: Coded from A.K. Dewdney's "The Armchair Universe, Computer
+ *              Recreations from the Pages of Scientific American Magazine"
+ *              W.H. Freedman and Company, New York, 1988  (Dec 1984 and
+ *              June 1985) also used life.c as a guide.
  */
 
 #ifdef STANDALONE
@@ -57,18 +58,18 @@ static int  neighbors;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-neighbors", ".wator.neighbors", XrmoptionSepArg, (caddr_t) NULL}
+	{(char *) "-neighbors", (char *) ".wator.neighbors", XrmoptionSepArg, (caddr_t) NULL}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int
+	{(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int
 }
 };
 
 static OptionStruct desc[] =
 {
-	{"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
+	{(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"}
 };
 
 ModeSpecOpt wator_opts =
@@ -301,28 +302,36 @@ drawcell(ModeInfo * mi, int col, int row, unsigned long color, int bitmap,
 	}
 }
 
-static void
+static Bool
 init_kindlist(watorstruct * wp, int kind)
 {
 	/* Waste some space at the beginning and end of list
 	   so we do not have to complicated checks against falling off the ends. */
-	wp->lastkind[kind] = (CellList *) malloc(sizeof (CellList));
-	wp->firstkind[kind] = (CellList *) malloc(sizeof (CellList));
+	if (((wp->lastkind[kind] = (CellList *) malloc(sizeof (CellList))) ==
+			NULL) ||
+	    ((wp->firstkind[kind] = (CellList *) malloc(sizeof (CellList))) ==
+			 NULL)) {
+		return False;
+	}
 	wp->firstkind[kind]->previous = wp->lastkind[kind]->next = NULL;
 	wp->firstkind[kind]->next = wp->lastkind[kind]->previous = NULL;
 	wp->firstkind[kind]->next = wp->lastkind[kind];
 	wp->lastkind[kind]->previous = wp->firstkind[kind];
+	return True;
 }
 
-static void
+static Bool
 addto_kindlist(watorstruct * wp, int kind, cellstruct info)
 {
-	wp->currkind = (CellList *) malloc(sizeof (CellList));
+	if ((wp->currkind = (CellList *) malloc(sizeof (CellList))) == NULL) {
+		return False;
+	}
 	wp->lastkind[kind]->previous->next = wp->currkind;
 	wp->currkind->previous = wp->lastkind[kind]->previous;
 	wp->currkind->next = wp->lastkind[kind];
 	wp->lastkind[kind]->previous = wp->currkind;
 	wp->currkind->info = info;
+	return True;
 }
 
 static void
@@ -334,18 +343,21 @@ removefrom_kindlist(watorstruct * wp, CellList * ptr)
 	(void) free((void *) ptr);
 }
 
-static void
+static Bool
 dupin_kindlist(watorstruct * wp)
 {
 	CellList   *temp;
 
-	temp = (CellList *) malloc(sizeof (CellList));
+	if ((temp = (CellList *) malloc(sizeof (CellList))) == NULL) {
+		return False;
+	}
 	temp->previous = wp->babykind;
 	temp->next = wp->babykind->next;
 	wp->babykind->next = temp;
 	temp->next->previous = temp;
 	temp->info = wp->babykind->info;
 	wp->babykind = temp;
+	return True;
 }
 
 /*-
@@ -609,13 +621,35 @@ neighbor_position(watorstruct * wp, int col, int row, int dir)
 	return row * wp->ncols + col;
 }
 
+static void
+free_wator(watorstruct *wp)
+{
+	int kind;
+
+	for (kind = 0; kind <= KINDS; kind++) {
+		if (wp->firstkind[kind] != NULL) {
+			flush_kindlist(wp, kind);
+			(void) free((void *) wp->firstkind[kind]);
+			wp->firstkind[kind] = NULL;
+		}
+		if (wp->lastkind[kind] != NULL) {
+			(void) free((void *) wp->lastkind[kind]);
+			wp->lastkind[kind] = NULL;
+		}
+	}
+	if (wp->arr != NULL) {
+		(void) free((void *) wp->arr);
+		wp->arr = NULL;
+	}
+}
+
 void
 init_wator(ModeInfo * mi)
 {
 	int         size = MI_SIZE(mi);
-	watorstruct *wp;
 	int         i, col, row, colrow, kind;
 	cellstruct  info;
+	watorstruct *wp;
 
 	if (wators == NULL) {
 		if ((wators = (watorstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -631,7 +665,10 @@ init_wator(ModeInfo * mi)
 		/* Set up what will be a 'triply' linked list.
 		   doubly linked list, doubly linked to an array */
 		for (kind = FISH; kind <= KINDS; kind++)
-			init_kindlist(wp, kind);
+			if (!init_kindlist(wp, kind)) {
+				free_wator(wp);
+				return;
+			}
 		for (i = 0; i < BITMAPS; i++) {
 			logo[i].width = icon_width;
 			logo[i].height = icon_height;
@@ -689,7 +726,7 @@ init_wator(ModeInfo * mi)
 		wp->ncols = nccols / 2;
 		wp->nrows = 2 * (ncrows / 4);
 		wp->xb = (wp->width - wp->xs * nccols) / 2 + wp->xs / 2;
-		wp->yb = (wp->height - wp->ys * (ncrows / 2) * 2) / 2 + wp->ys;
+		wp->yb = (wp->height - wp->ys * (ncrows / 2) * 2) / 2 + wp->ys - 2;
 		for (sides = 0; sides < 6; sides++) {
 			wp->shape.hexagon[sides].x = (wp->xs - 1) * hexagonUnit[sides].x;
 			wp->shape.hexagon[sides].y =
@@ -766,7 +803,11 @@ init_wator(ModeInfo * mi)
 
 	if (wp->arr != NULL)
 		(void) free((void *) wp->arr);
-	wp->arr = (CellList **) calloc(wp->positions, sizeof (CellList *));
+	if ((wp->arr = (CellList **) calloc(wp->positions,
+			sizeof (CellList *))) == NULL) {
+		free_wator(wp);
+		return;
+	}
 
 	/* Play G-d with these numbers */
 	wp->nkind[FISH] = wp->positions / 3;
@@ -803,7 +844,10 @@ init_wator(ModeInfo * mi)
 					info.color = 0;
 				info.col = col;
 				info.row = row;
-				addto_kindlist(wp, kind, info);
+				if (!addto_kindlist(wp, kind, info)) {
+					free_wator(wp);
+					return;
+				}
 				wp->arr[colrow] = wp->currkind;
 				drawcell(mi, col, row,
 					 wp->currkind->info.color, wp->currkind->info.direction, True);
@@ -815,18 +859,21 @@ init_wator(ModeInfo * mi)
 void
 draw_wator(ModeInfo * mi)
 {
-	watorstruct *wp = &wators[MI_SCREEN(mi)];
 	int         col, row;
 	int         colrow, cr, position;
 	int         i, numok;
-
 	struct {
 		int         pos, dir;
 	} acell[12];
+	watorstruct *wp;
 
+	if (wators == NULL)
+		return;
+	wp = &wators[MI_SCREEN(mi)];
+	if (wp->arr == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	wp->painted = True;
 	/* Alternate updates, fish and sharks live out of phase with each other */
 	wp->kind = (wp->kind + 1) % KINDS;
@@ -869,7 +916,10 @@ draw_wator(ModeInfo * mi)
 					if (++(wp->currkind->info.age) >= wp->breed[wp->kind]) {	/* breed */
 						cutfrom_kindlist(wp);	/* This rotates out who goes first */
 						wp->babykind->info.age = 0;
-						dupin_kindlist(wp);
+						if (!dupin_kindlist(wp)) {
+							free_wator(wp);
+							return;
+						}
 						wp->arr[colrow] = wp->babykind;
 						wp->babykind->info.col = col;
 						wp->babykind->info.row = row;
@@ -925,7 +975,10 @@ draw_wator(ModeInfo * mi)
 					if (++(wp->currkind->info.age) >= wp->breed[wp->kind]) {	/* breed */
 						cutfrom_kindlist(wp);	/* This rotates out who goes first */
 						wp->babykind->info.age = 0;
-						dupin_kindlist(wp);
+						if (!dupin_kindlist(wp)) {
+							free_wator(wp);
+							return;
+						}
 						wp->arr[colrow] = wp->babykind;
 						wp->babykind->info.col = col;
 						wp->babykind->info.row = row;
@@ -962,22 +1015,10 @@ void
 release_wator(ModeInfo * mi)
 {
 	if (wators != NULL) {
-		int         screen, kind;
+		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			watorstruct *wp = &wators[screen];
-
-			for (kind = 0; kind <= KINDS; kind++) {
-				if (wp->firstkind[0])
-					flush_kindlist(wp, kind);
-				if (wp->lastkind[kind])
-					(void) free((void *) wp->lastkind[kind]);
-				if (wp->firstkind[kind])
-					(void) free((void *) wp->firstkind[kind]);
-			}
-			if (wp->arr != NULL)
-				(void) free((void *) wp->arr);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_wator(&wators[screen]);
 		(void) free((void *) wators);
 		wators = NULL;
 	}
@@ -986,7 +1027,11 @@ release_wator(ModeInfo * mi)
 void
 refresh_wator(ModeInfo * mi)
 {
-	watorstruct *wp = &wators[MI_SCREEN(mi)];
+	watorstruct *wp;
+
+	if (wators == NULL)
+		return;
+	wp = &wators[MI_SCREEN(mi)];
 
 	if (wp->painted) {
 		MI_CLEARWINDOW(mi);

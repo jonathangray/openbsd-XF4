@@ -2,7 +2,7 @@
 /* lament --- Shows Lemarchand's Box */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)lament.c       4.12 98/09/15 xlockmore";
+static const char sccsid[] = "@(#)lament.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -15,9 +15,14 @@ static const char sccsid[] = "@(#)lament.c       4.12 98/09/15 xlockmore";
  * documentation.  No representations are made about the suitability of this
  * software for any purpose.  It is provided "as is" without express or
  * implied warranty.
+ *
+ * Revisions:
+ * 01-Mar-2001: Added FPS stuff - Eric Lassauge <lassauge@mail.dotcom.fr>
+ * 01-Nov-2000: Allocation checks
+ * 25-Jul-1998: Written by jwz
  */
 
-/* Animates Lemarchand's Box, the Lament Configuration.  By jwz, 25-Jul-98.
+/* Animates Lemarchand's Box, the Lament Configuration.
 
    TODO:
 
@@ -82,7 +87,16 @@ static const char sccsid[] = "@(#)lament.c       4.12 98/09/15 xlockmore";
 
    *  However, the motion is better than that used by gears, superquadrics,
    etc.; so maybe I should make them all share the same motion code.
+
+   * E.Lassauge - 28-Nov-2000:  modified release part to add freeing of GL objects
+
+   * E.Lassauge - 21-Nov-2000:  use new common xpm_to_ximage function
+
  */
+
+#ifdef VMS
+#include "vms_x_fix.h"
+#endif
 
 #include <X11/Intrinsic.h>
 
@@ -92,18 +106,17 @@ static const char sccsid[] = "@(#)lament.c       4.12 98/09/15 xlockmore";
 #define HACK_DRAW	draw_lament
 #define lament_opts	xlockmore_opts
 #define DEFAULTS	"*delay:	10000   \n"	\
+			"*showFps:      False   \n"     \
 			"*wireframe:	False	\n"	\
 			"*texture:	True	\n"
 #include "xlockmore.h"
 #else /* !STANDALONE */
 #include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+#include "visgl.h"
 #endif /* !STANDALONE */
 
 #ifdef MODE_lament
 
-#undef HAVE_XPM
-#define HAVE_XPM
 #undef countof
 #define countof(x) ((int)(sizeof((x))/sizeof((*x))))
 
@@ -113,18 +126,18 @@ static Bool do_texture;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-texture", ".lament.texture", XrmoptionNoArg, (caddr_t) "on"},
-	{"+texture", ".lament.texture", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-texture", (char *) ".lament.texture", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+texture", (char *) ".lament.texture", XrmoptionNoArg, (caddr_t) "off"},
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & do_texture, "texture", "Texture", DEF_TEXTURE, t_Bool},
+	{(caddr_t *) & do_texture, (char *) "texture", (char *) "Texture", (char *) DEF_TEXTURE, t_Bool},
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+texture", "turn on/off texturing"}
+	{(char *) "-/+texture", (char *) "turn on/off texturing"}
 };
 
 ModeSpecOpt lament_opts =
@@ -134,22 +147,18 @@ ModeSpecOpt lament_opts =
 ModStruct   lament_description =
 {"lament", "init_lament", "draw_lament", "release_lament",
  "draw_lament", "change_lament", NULL, &lament_opts,
- 10000, 1, 1, 1, 4, 1.0, "",
+ 10000, 1, 1, 1, 64, 1.0, "",
  "Shows Lemarchand's Box", 0, NULL};
 
 #endif
 
-#if USE_XPMINC
-#include <xpm.h>
-#else
-#include <X11/xpm.h>		/* Normal spot */
-#endif
+#include "xpm-ximage.h"
+
 #ifdef STANDALONE
 #include "../images/lament.xpm"
 #else
 #include "pixmaps/lament.xpm"
 #endif
-
 
 #define RANDSIGN() ((LRAND() & 1) ? 1 : -1)
 #define FLOATRAND(a) (((double)LRAND() / (double)MAXRAND) * a)
@@ -205,10 +214,10 @@ typedef struct {
 
 	int         anim_pause;	/* countdown before animating again */
 	GLfloat     anim_r, anim_y, anim_z;	/* relative position during anims */
-
+	Window      window;
 } lament_configuration;
 
-static lament_configuration *lcs = NULL;
+static lament_configuration *lcs = (lament_configuration *) NULL;
 
 #define FACE_N 3
 #define FACE_S 2
@@ -216,107 +225,6 @@ static lament_configuration *lcs = NULL;
 #define FACE_W 4
 #define FACE_U 5
 #define FACE_D 1
-
-#ifdef HAVE_XPM
-static      Bool
-bigendian(void)
-{
-	union {
-		int         i;
-		char        c[sizeof (int)];
-	} u;
-
-	u.i = 1;
-	return !u.c[0];
-}
-#endif /* HAVE_XPM */
-
-
-static void
-parse_image_data(ModeInfo * mi)
-{
-#ifdef HAVE_XPM
-	lament_configuration *lc = &lcs[MI_SCREEN(mi)];
-
-	/* All we want to do is get RGB data out of the XPM file built in to this
-	   program.  This is a pain, because there is no way  (as of XPM version
-	   4.6, at least) to get libXpm to make an XImage without also allocating
-	   colors with XAllocColor.  So, instead, we create an XpmImage and parse
-	   out the RGB values of the pixels ourselves; and construct an XImage
-	   by hand.  Regardless of the depth of the visual we're using, this
-	   XImage will have 32 bits per pixel, 8 each per R, G, and B.  We put
-	   0xFF in the fourth slot, as GL will interpret that as "alpha".
-	 */
-	XpmImage    xpm_image;
-	XpmInfo     *xpm_info = NULL;
-	int         result;
-	int         x, y, i;
-	int         bpl, wpl;
-	XColor      colors[255];
-
-	result = XpmCreateXpmImageFromData(lament_faces, &xpm_image, xpm_info);
-	if (result != XpmSuccess) {
-		(void) fprintf(stderr, "unable to parse xpm data (%d).\n", result);
-		return;
-	}
-	lc->texture = XCreateImage(MI_DISPLAY(mi), MI_VISUAL(mi), 32, ZPixmap, 0, 0,
-				   xpm_image.width, xpm_image.height, 32, 0);
-
-	bpl = lc->texture->bytes_per_line;
-	wpl = bpl / 4;
-
-	lc->texture->data = (char *) malloc(xpm_image.height * bpl);
-
-	/* Parse the colors in the XPM into RGB values. */
-	for (i = 0; i < (int) xpm_image.ncolors; i++)
-		if (!XParseColor(MI_DISPLAY(mi), MI_COLORMAP(mi),
-				 xpm_image.colorTable[i].c_color,
-				 &colors[i])) {
-			(void) fprintf(stderr, "unparsable color: %s\n",
-				       xpm_image.colorTable[i].c_color);
-			return;
-		}
-	/* Translate the XpmImage to an RGB XImage. */
-	{
-		int         rpos, gpos, bpos, apos;	/* bitfield positions */
-
-		/* Note that unlike X, which is endianness-agnostic (since any XImage
-		   can have its own specific bit ordering, with the server reversing
-		   things as necessary) OpenGL pretends everything is client-side, so
-		   we need to pack things in the right order for the client machine.
-		 */
-		if (bigendian())
-			rpos = 24, gpos = 16, bpos = 8, apos = 0;
-		else
-			rpos = 0, gpos = 8, bpos = 16, apos = 24;
-
-		for (y = 0; y < (int) xpm_image.height; y++) {
-			int         y2 = (xpm_image.height - 1 - y);	/* Texture maps are upside down. */
-
-			unsigned int *oline = (unsigned int *) (lc->texture->data + (y * bpl));
-			unsigned int *iline = (unsigned int *) (xpm_image.data + (y2 * wpl));
-
-			for (x = 0; x < (int) xpm_image.width; x++) {
-				XColor     *c = &colors[iline[x]];
-
-				/* pack it as RGBA */
-				oline[x] = (((c->red >> 8) << rpos) |
-					    ((c->green >> 8) << gpos) |
-					    ((c->blue >> 8) << bpos) |
-					    (0xFF << apos));
-			}
-		}
-	}
-
-	/* I sure hope these only free the contents, and not the args. */
-	XpmFreeXpmImage(&xpm_image);
-	XpmFreeXpmInfo(xpm_info);
-
-#else /* !HAVE_XPM */
-	(void) fprintf(stderr, "not compiled with XPM support.\n");
-	return;
-#endif /* !HAVE_XPM */
-}
 
 
 
@@ -2267,8 +2175,27 @@ reshape(int width, int height)
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-
 static void
+free_lament(Display *display, lament_configuration *lc)
+{
+	if (lc->glx_context) {
+		glXMakeCurrent(display, lc->window, *(lc->glx_context));
+		if (glIsList(lc->box)) {
+			glDeleteLists(lc->box, 16);
+			lc->box = 0;
+		}
+	}
+	if (lc->texture != NULL) {
+		int i;
+
+		for (i = 0; i < 6; i++)
+			glDeleteTextures(1, &lc->texids[i]);
+		XDestroyImage(lc->texture);
+		lc->texture = (XImage *) NULL;
+	}
+}
+
+static Bool
 gl_init(ModeInfo * mi)
 {
 	lament_configuration *lc = &lcs[MI_SCREEN(mi)];
@@ -2315,10 +2242,11 @@ gl_init(ModeInfo * mi)
 		glEnable(GL_NORMALIZE);
 		glEnable(GL_CULL_FACE);
 	}
+#if defined( USE_XPM ) || defined( USE_XPMINC )
 	if (do_texture) {
 #ifdef HAVE_GLBINDTEXTURE
 		int         i;
-#if ((MESA_MAJOR_VERSION < 3 ) || (( MESA_MAJOR_VERSION == 3 ) && (MESA_MINOR_VERSION == 0 )))
+#if ((XMESA_MAJOR_VERSION < 3 ) || (( XMESA_MAJOR_VERSION == 3 ) && (XMESA_MINOR_VERSION == 0 )))
 		/* E.Lassauge - 11/23/98
 		 * It looks like there's a bug in MESA (up to 3.1beta1) for the
 		 * "Default" texture (named '0'). For this texture
@@ -2343,13 +2271,20 @@ gl_init(ModeInfo * mi)
 
 		for (i = 0; i < 6; i++)
 			glGenTextures(1, &lc->texids[i]);
+                if ((lc->texture = xpm_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
+				MI_COLORMAP(mi), lament_faces)) == None) {
+                	(void) fprintf(stderr, "unable to parse xpm data.\n");
+			for (i = 0; i < 6; i++)
+				glDeleteTextures(1, &lc->texids[i]);
+			do_texture = False;
+		}
+		else
+		{
 
-		parse_image_data(mi);
+		  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+		  glPixelStorei(GL_UNPACK_ROW_LENGTH, lc->texture->width);
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, lc->texture->width);
-
-		for (i = 0; i < 6; i++) {
+		  for (i = 0; i < 6; i++) {
 			int         height = lc->texture->width;	/* assume square */
 
 			glBindTexture(GL_TEXTURE_2D, lc->texids[i]);
@@ -2366,16 +2301,21 @@ gl_init(ModeInfo * mi)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+		  }
 		}
 
 #else /* !HAVE_GLBINDTEXTURE */
 		(void) fprintf(stderr,
 		"this version of GL does not support multiple texture maps.\n"
 			       "\tGet OpenGL 1.1.\n");
-		return;
+		return True;
 #endif /* !HAVE_GLBINDTEXTURE */
 	}
-	lc->box = glGenLists(16);
+#endif
+	if ((lc->box = glGenLists(16)) == 0) {
+		free_lament(MI_DISPLAY(mi), lc);
+		return False;
+	}
 	lc->star1 = lc->box + 1;
 	lc->star2 = lc->box + 2;
 	lc->tetra_une = lc->box + 3;
@@ -2398,6 +2338,7 @@ gl_init(ModeInfo * mi)
 	tetra(mi, wire);
 	lid(mi, wire);
 	taser(mi, wire);
+	return True;
 }
 
 
@@ -2406,15 +2347,15 @@ init_lament(ModeInfo * mi)
 {
 	lament_configuration *lc;
 
-	if (!lcs) {
-		lcs = (lament_configuration *)
-			calloc(MI_NUM_SCREENS(mi), sizeof (lament_configuration));
-		if (!lcs) {
+	if (lcs == NULL) {
+		if ((lcs = (lament_configuration *) calloc(MI_NUM_SCREENS(mi),
+				 sizeof (lament_configuration))) == NULL) {
 			(void) fprintf(stderr, "out of memory\n");
 			return;
 		}
 	}
 	lc = &lcs[MI_SCREEN(mi)];
+	lc->window = MI_WINDOW(mi);
 
 	lc->rotx = FLOATRAND(1.0) * RANDSIGN();
 	lc->roty = FLOATRAND(1.0) * RANDSIGN();
@@ -2440,7 +2381,11 @@ init_lament(ModeInfo * mi)
 
 	if ((lc->glx_context = init_GL(mi)) != NULL) {
 		reshape(MI_WIDTH(mi), MI_HEIGHT(mi));
-		gl_init(mi);
+		if (!gl_init(mi)) {
+			MI_CLEARWINDOW(mi);
+		}
+	} else {
+		MI_CLEARWINDOW(mi);
 	}
 }
 
@@ -2449,9 +2394,13 @@ void
 draw_lament(ModeInfo * mi)
 {
 	static int  tick = 0;
-	lament_configuration *lc = &lcs[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	lament_configuration *lc;
+
+	if (lcs == NULL)
+		return;
+	lc = &lcs[MI_SCREEN(mi)];
 
 	if (!lc->glx_context)
 		return;
@@ -2460,6 +2409,7 @@ draw_lament(ModeInfo * mi)
 
 	glXMakeCurrent(display, window, *(lc->glx_context));
 	draw(mi);
+        if (MI_IS_FPS(mi)) do_fps (mi);
 	glFinish();
 	glXSwapBuffers(display, window);
 
@@ -2482,7 +2432,11 @@ draw_lament(ModeInfo * mi)
 void
 change_lament(ModeInfo * mi)
 {
-	lament_configuration *lc = &lcs[MI_SCREEN(mi)];
+	lament_configuration *lc;
+
+	if (lcs == NULL)
+		return;
+	lc = &lcs[MI_SCREEN(mi)];
 
 	if (!lc->glx_context)
 		return;
@@ -2495,20 +2449,10 @@ release_lament(ModeInfo * mi)
 	if (lcs != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			lament_configuration *lc = &lcs[MI_SCREEN(mi)];
-
-			if (lc->texture)
-				XDestroyImage(lc->texture);
-			if (lc->glx_context) {
-				glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(lc->glx_context));
-
-				if (glIsList(lc->box))
-					glDeleteLists(lc->box, 16);
-			}
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_lament(MI_DISPLAY(mi), &lcs[screen]);
 		(void) free((void *) lcs);
-		lcs = NULL;
+		lcs = (lament_configuration *) NULL;
 	}
 	FreeAllGL(mi);
 }

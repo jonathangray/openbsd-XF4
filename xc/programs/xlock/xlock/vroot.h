@@ -62,6 +62,10 @@
  * - include X11/Xlib.h and support RootWindowOfScreen, too 9/17/91
  */
 
+#ifdef VMS
+#include "vms_x_fix.h"
+#endif
+
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
@@ -86,7 +90,7 @@ VirtualRootWindowOfScreen(Screen * s)
 #endif
 		{
 			Display    *dpy = DisplayOfScreen(s);
-			Atom        __SWM_VROOT = None;
+			Atom        __SWM_VROOT;
 			int         i;
 			Window      rootReturn, parentReturn, *children;
 			unsigned int numChildren;

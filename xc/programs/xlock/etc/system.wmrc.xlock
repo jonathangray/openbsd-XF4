@@ -28,7 +28,9 @@
 "Fractal" MENU
 	"Coral"		EXEC	xlock -mode coral
 	"Discrete"	EXEC	xlock -mode discrete
+	"Dragon"	EXEC	xlock -mode dragon
 	"Drift"		EXEC	xlock -mode drift -fullrandom
+	"Euler2d"	EXEC	xlock -mode euler2d
 	"Flame"		EXEC	xlock -mode flame
 	"Flow"		EXEC	xlock -mode flow
 	"Forest"	EXEC	xlock -mode forest
@@ -63,6 +65,7 @@
 	"Penrose"	EXEC	xlock -mode penrose +ammann
 	"Penrose Ammann"	EXEC xlock -mode penrose -ammann
 	"Petal"		EXEC	xlock -mode petal
+	"Polyominoes"	EXEC	xlock -mode polyominoes
 	"Qix"		EXEC	xlock -mode qix +complete
 	"Qix complete"		EXEC	xlock -mode qix -complete
 	"Rotor"		EXEC	xlock -mode rotor
@@ -82,6 +85,8 @@
 	"Grav Trail"	EXEC	xlock -mode grav -trail
 	"Grav Decay"	EXEC	xlock -mode grav -decay
 	"Rock"		EXEC	xlock -mode star -rock
+	"Scooter"	EXEC	xlock -mode scooter
+	"Space"		EXEC	xlock -mode space
 	"Star"		EXEC	xlock -mode star +rock +use3d +trek 0
 	"Star3d"	EXEC	xlock -mode star -use3d
 	"Star Trek"	EXEC	xlock -mode star -trek 100
@@ -124,12 +129,12 @@
 	"Tube"		EXEC	xlock -mode tube -install
 	"Worm"		EXEC	xlock -mode worm +use3d
 	"Worm3d"	EXEC	xlock -mode worm -use3d
+	"Xcl"		EXEC	xlock -mode xcl
 	"Xjack"		EXEC	xlock -mode xjack
 "Assorted" END
 
 "XPM" MENU
 	"Bat"		EXEC	xlock -mode bat
-	"Cartoon"	EXEC	xlock -mode cartoon
 	"Image"		EXEC	xlock -mode image
 	"Flag"		EXEC	xlock -mode flag
 	"Life"		EXEC	xlock -mode life
@@ -143,13 +148,18 @@
 	"Atlantis"	EXEC	xlock -mode atlantis
 	"Bubble3d"	EXEC	xlock -mode bubble3d
 	"Cage"		EXEC	xlock -mode cage
+	"Fire"		EXEC	xlock -mode fire
 	"Gears"		EXEC	xlock -mode gears
+	"GL-Planet"	EXEC	xlock -mode glplanet
 	"Invert"	EXEC	xlock -mode invert
 	"Lament"	EXEC	xlock -mode lament
 	"Moebius"	EXEC	xlock -mode moebius
+	"Molecule"	EXEC	xlock -mode molecule
 	"Morph3d"	EXEC	xlock -mode morph3d
 	"Pipes"		EXEC	xlock -mode pipes
 	"Rubik"		EXEC	xlock -mode rubik
+	"Sballs"	EXEC	xlock -mode sballs
+	"Sierpinski3d"	EXEC	xlock -mode sierpinski3d
 	"Sproingies"	EXEC	xlock -mode sproingies
 	"Stairs"	EXEC	xlock -mode stairs
 	"Superquadrics"	EXEC	xlock -mode superquadrics
@@ -176,6 +186,7 @@
 
 "Special" MENU
 	"Blank"		EXEC	xlock -mode blank
+	"Transparent"	EXEC	xlock -mode blank -geometry 1x1 -enablesaver
 	"Bomb"		EXEC	xlock -mode bomb
 	"Random nice"	EXEC	xlock -mode random -modelist allnice -fullrandom -neighbors 0
 	"Random standard"	EXEC	xlock -mode random -modelist all-allgl -fullrandom -neighbors 0
@@ -209,7 +220,9 @@
 "Fractal" MENU
 	"Coral"		EXEC	xlock -nolock -mode coral
 	"Discrete"	EXEC	xlock -nolock -mode discrete
+	"Dragon"	EXEC	xlock -nolock -mode dragon
 	"Drift"		EXEC	xlock -nolock -mode drift -fullrandom
+	"Euler2d"	EXEC	xlock -nolock -mode euler2d
 	"Flame"		EXEC	xlock -nolock -mode flame
 	"Flow"		EXEC	xlock -nolock -mode flow
 	"Forest"	EXEC	xlock -nolock -mode forest
@@ -244,6 +257,7 @@
 	"Penrose"	EXEC	xlock -nolock -mode penrose +ammann
 	"Penrose Ammann"	EXEC xlock -nolock -mode penrose -ammann
 	"Petal"		EXEC	xlock -nolock -mode petal
+	"Polyominoes"	EXEC	xlock -nolock -mode polyominoes
 	"Qix"		EXEC	xlock -nolock -mode qix +complete
 	"Qix complete"	EXEC	xlock -nolock -mode qix -complete
 	"Rotor"		EXEC	xlock -nolock -mode rotor
@@ -263,6 +277,8 @@
 	"Grav Trail"	EXEC	xlock -nolock -mode grav -trail
 	"Grav Decay"	EXEC	xlock -nolock -mode grav -decay
 	"Rock"		EXEC	xlock -nolock -mode star -rock
+	"Scooter"	EXEC	xlock -nolock -mode scooter
+	"Space"		EXEC	xlock -nolock -mode space
 	"Star"		EXEC	xlock -nolock -mode star +rock +use3d +trek 0
 	"Star3d"	EXEC	xlock -nolock -mode star -use3d
 	"Star Trek"	EXEC	xlock -nolock -mode star -trek 100
@@ -305,12 +321,12 @@
 	"Tube"		EXEC	xlock -nolock -mode tube -install
 	"Worm"		EXEC	xlock -nolock -mode worm +use3d
 	"Worm3d"	EXEC	xlock -nolock -mode worm -use3d
+	"Xcl"		EXEC	xlock -nolock -mode xcl
 	"Xjack"		EXEC	xlock -nolock -mode xjack
 "Assorted" END
 
 "XPM" MENU
 	"Bat"		EXEC	xlock -nolock -mode bat
-	"Cartoon"	EXEC	xlock -nolock -mode cartoon
 	"Image"		EXEC	xlock -nolock -mode image
 	"Flag"		EXEC	xlock -nolock -mode flag
 	"Life"		EXEC	xlock -nolock -mode life
@@ -324,13 +340,18 @@
 	"Atlantis"	EXEC	xlock -nolock -mode atlantis
 	"Bubble3d"	EXEC	xlock -nolock -mode bubble3d
 	"Cage"		EXEC	xlock -nolock -mode cage
+	"Fire"		EXEC	xlock -nolock -mode fire
 	"Gears"		EXEC	xlock -nolock -mode gears
+	"GL-Planet"	EXEC	xlock -nolock -mode glplanet
 	"Invert"	EXEC	xlock -nolock -mode invert
 	"Lament"	EXEC	xlock -nolock -mode lament
 	"Moebius"	EXEC	xlock -nolock -mode moebius
+	"Molecule"	EXEC	xlock -nolock -mode molecule
 	"Morph3d"	EXEC	xlock -nolock -mode morph3d
 	"Pipes"		EXEC	xlock -nolock -mode pipes
 	"Rubik"		EXEC	xlock -nolock -mode rubik
+	"Sballs"	EXEC	xlock -nolock -mode sballs
+	"Sierpinski3d"	EXEC	xlock -nolock -mode sierpinski3d
 	"Sproingies"	EXEC	xlock -nolock -mode sproingies
 	"Stairs"	EXEC	xlock -nolock -mode stairs
 	"Superquadrics"	EXEC	xlock -nolock -mode superquadrics

@@ -2,7 +2,7 @@
 /* ball --- bouncing balls with random drawing functions that leave a trail */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)ball.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)ball.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,7 +22,8 @@ static const char sccsid[] = "@(#)ball.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
  */
 
 #ifdef STANDALONE
@@ -43,7 +44,7 @@ static const char sccsid[] = "@(#)ball.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_ball
 
 ModeSpecOpt ball_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   ball_description =
@@ -207,7 +208,7 @@ randomball(ModeInfo * mi, int i)
 	int         x, y, bn;
 	int         dum;
 	int         attempts;
-	unsigned long randbg = 1;
+	unsigned long randbg;
 
 	attempts = 0;
 	if (bp->bounce == -2)
@@ -250,9 +251,7 @@ randomball(ModeInfo * mi, int i)
 			bti->def = 0;
 			return;
 		}
-	}
-
-	while ((inwin(bp, x, y, &dum, bti->rad) != NONE) ||
+	} while ((inwin(bp, x, y, &dum, bti->rad) != NONE) ||
 	       (inwin(bp, bti->dx + x, bti->dy + y, &dum, bti->rad) != NONE));
 
 	bti->def = 1;
@@ -282,14 +281,35 @@ randomball(ModeInfo * mi, int i)
 		 bti->rad, bti->rad, 0, 360 * 64);
 }
 
+static void
+free_ball(Display *display, ballstruct *bp)
+{
+	if (bp->bt != NULL) {
+		int i;
+
+		for (i = 0; i < bp->nballs; i++) {
+			if (bp->bt[i].GcF != None) {
+				XFreeGC(display, bp->bt[i].GcF);
+				bp->bt[i].GcF = None;
+			}
+			if (bp->bt[i].GcB != None) {
+				XFreeGC(display, bp->bt[i].GcB);
+				bp->bt[i].GcB = None;
+			}
+		}
+		(void) free((void *) bp->bt);
+		bp->bt = NULL;
+	}
+}
+
 void
 init_ball(ModeInfo * mi)
 {
-	ballstruct *bp;
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	int         GcLp, i;
 	int         size = MI_SIZE(mi);
+	ballstruct *bp;
 
 	if (balls == NULL) {
 		if ((balls = (ballstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -313,7 +333,11 @@ init_ball(ModeInfo * mi)
 	} else if (bp->nballs < MINBALLS)
 		bp->nballs = MINBALLS;
 	if (bp->bt == NULL) {
-		bp->bt = (balltype *) calloc(bp->nballs, sizeof (balltype));
+		if ((bp->bt = (balltype *) calloc(bp->nballs, sizeof (balltype))) ==
+				NULL) {
+			free_ball(display, bp);
+			return;
+		}
 	}
 	if (size == 0 ||
 	 MINGRIDSIZE * size > bp->width || MINGRIDSIZE * size > bp->height) {
@@ -341,10 +365,16 @@ init_ball(ModeInfo * mi)
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
 		for (GcLp = 0; GcLp < bp->nballs; GcLp++) {
-			bp->bt[GcLp].GcB = XCreateGC(display, window,
-					  GCForeground | GCBackground, &gcv);
-			bp->bt[GcLp].GcF = XCreateGC(display, window,
-					  GCForeground | GCBackground, &gcv);
+			if ((bp->bt[GcLp].GcB = XCreateGC(display, window,
+					  GCForeground | GCBackground, &gcv)) == NULL) {
+				free_ball(display, bp);
+				return;
+			}
+			if ((bp->bt[GcLp].GcF = XCreateGC(display, window,
+					  GCForeground | GCBackground, &gcv)) == NULL) {
+				free_ball(display, bp);
+				return;
+			}
 		}
 	}
 	for (GcLp = 0; GcLp < bp->nballs; GcLp++) {
@@ -369,16 +399,21 @@ init_ball(ModeInfo * mi)
 void
 draw_ball(ModeInfo * mi)
 {
-	ballstruct *bp = &balls[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	int         i, n;
 	int         td;
 	int         dx, dy;
 	int         redo;
+	ballstruct *bp;
+
+	if (balls == NULL)
+		return;
+	bp = &balls[MI_SCREEN(mi)];
+	if (bp->bt == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	td = 10;
 	bp->painted = True;
 	for (i = 0; i < bp->nballs; i++) {
@@ -479,21 +514,10 @@ void
 release_ball(ModeInfo * mi)
 {
 	if (balls != NULL) {
-		int         screen, i;
+		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			ballstruct *bp = &balls[screen];
-
-			for (i = 0; i < bp->nballs; i++) {
-				if (bp->bt[i].GcF)
-					XFreeGC(MI_DISPLAY(mi), bp->bt[i].GcF);
-				if (bp->bt[i].GcB)
-					XFreeGC(MI_DISPLAY(mi), bp->bt[i].GcB);
-			}
-			if (bp->bt != NULL)
-				(void) free((void *) bp->bt);
-
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_ball(MI_DISPLAY(mi), &balls[screen]);
 		(void) free((void *) balls);
 		balls = NULL;
 	}
@@ -502,7 +526,11 @@ release_ball(ModeInfo * mi)
 void
 refresh_ball(ModeInfo * mi)
 {
-	ballstruct *bp = &balls[MI_SCREEN(mi)];
+	ballstruct *bp;
+
+	if (balls == NULL)
+		return;
+	bp = &balls[MI_SCREEN(mi)];
 
 	if (bp->painted)
 		MI_CLEARWINDOW(mi);

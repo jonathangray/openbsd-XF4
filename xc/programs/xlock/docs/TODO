@@ -1,8 +1,54 @@
 General problems:
+  o For security (Theo de Raadt <deraadt@cvs.openbsd.org>)
+    - in initpasswd()
+
+    - create two pipes
+    - fork a child
+        - read a password from the pipe
+        - do a check
+        - write a 1 or a 0
+        loop
+
+    - have the parent revoke it's uid's completely.
+        - use one pipe to send passwords to the child
+        - read for 0 or 1
+        - use SIGCHLD to detect child exit
+
+  o Switching consoles using XFree-4.0, the X server sends a fully-obscured
+   event to all its clients, and when I switch back to the graphical
+   terminal, it sends fully-visible or partially-obscured event to its
+   clients.  xlock doesn't handle these event, it still can consume 99% of
+   CPU time in several lock-modes. It would be really good if xlock, when
+   receiving an obscure-event, stopped doing anything CPU-consuming stuff.
+
+   The three messages (fully visible, partially visible and fully obscured)
+   exist in X11 for a long time. Launch the utility 'xev' and move another
+   window over it, and see what it prints. This is useful so that
+   applications (such as fractal animators or Spectrum/C64 emulators or
+   really anything) know if its window is not visible and therefore can save
+   a lot of cpu time if it doesn't even want to draw (update) its contents.
+   For example there's a spectrum emulator at
+   http://www.inf.bme.hu/~mszeredi/spectemu/spectemu.html, if you launch this
+   and switch to full speed mode, you'll see that it runs much faster if its
+   window is obscured by another window or windows.
+
+   Using the XFree-3.3 servers if you switched back to the linux console, no
+   events were sent to the applications, so they couldn't realize that thier
+   contents is not visible to the user in this case. In XFree-4.0 the windows
+   get the fully-obscured event when you switch to linux console, so for
+   example a Spectrum emulator can save really a lot of cpu time, since it
+   doesn't need to redraw its screen 50 times per second.
 
   o It would be nice to have an option -idletime time.  Where xlock would
    run after a certain idle time.  (Here xautolock may help you, see
    above).
+
+  o If an user tries to log in, and his password is wrong,
+   and the input password doesn't has lower-case letters,
+   but upper-case letters, the the message is printed:
+   "Password invalid - please check if SHIFT LOCK is enabled".
+   (It should be possible also to check directly for SHIFT LOCK,
+   I think, but probably more work..)
 
   o xscreensaver compatibility
     2 of the writable modes: mandelbrot, tube-> get them to RUN (compile OK)
@@ -37,15 +83,40 @@ General problems:
     xlock -mode moebius -visual PseudoColor
     (all the gl modes are messed up anyway... all mono)
 
-  o some configurations of linux: swarm has noise when bees go beyond screen
+  o some configurations of linux: swarm and flow has noise when bees go
+    beyond screen (also may happen with forest).
     Sun Ultra5 PCI Bus 24 bit display: flow has some noise (usually red)
+    This is especially true if you use -inwindow for swarm, flow, euler2d.
 
   o A few uninitialized memory reads and memory leaks were detected in some
    of the code.  grep for "PURIFY" in the source files to see where the
    remaining problems are.  Also see docs/Purify for more details.
 
-  o -mono does not work for XPM, especially cartoon (others use XBM when
-   mono), also cage and stairs.
+  o  -showfps option may give a Zero Page Read and SEGV error using Mesa
+     and Sun
+
+  o superquadrics does not work on some Linux boxes (not mine).
+
+  o Text3d will dump core on some linux boxes (not mine) due to random font
+   routine.  Temporary solution: use arial.ttf directly.  See "#if 0" in
+   text3d.cc.
+
+  o glplanet does not stars clearly on Sun with OpenGL except when in
+   password window (Sun with Mesa ok).
+
+  o glplanet.c, i_spline.cc, molecule.c exit code should be recoded
+
+  o gears.c, lament.c , moebius.c, molecule.c sierpinski3d.c tube.c decay.c
+   goop.c abort code should be recoded.
+
+  o molecule logs me out on Sun Ultra 5 with OpenGL 1.2.1 and 1.2.2
+   (using gcc or cc) when the return key is held down.  This has not
+   been repeated on any other Sun.  Tracing on this seems to indicate
+   the release code but when commented out would still die (done
+   with XSynchronize on).
+
+  o -mono does not work for XPM (they just use XBM when mono), also cage
+   and stairs.
 
   o Not all resources are listed in "xlock -resources", e.g. nolock.
    If xlock is renamed these resources are not picked up.
@@ -97,10 +168,119 @@ General problems:
    mode-dependent?  Most Xservers that support TrueColor, etc, visuals also
    support PseudoColor visuals and it would be nice to have color-cycling
    modes like "starfish" and "swirl" pick a PseudoColor visual if available,
-   while modes like "cartoon" could prevent colormap flashing by picking a
-   TrueColor visual.
+   while xpm modes could prevent colormap flashing by picking a TrueColor
+   visual.
    I heard that VisualDepthMask taken out of vis.c it seems to work better
    to get a PseudoColor visual one a root window of 24 bits.
+
+  o  From Duncan Simpson <dps@io.stargate.co.uk>
+
+Due to the introduction of Xinerama, and a couple of monitor displays, I would
+find a horizontal fivision option that runs two windows each half the width
+of the display (which corresponds to one window one each monitor).
+
+I do not know the details of x2x, although I guess various sorts of multiple
+monitor technology might benefit from this sort of support (one could think
+of Xnest with re-direction to appropiate screens).
+
+Information on x2x is almost certainly somewhere on the web, but I do not 
+have a URL on me (ask your favorite search engine, I guess). I think it 
+involves using multiple boxes for display driving purposes---I hear someone in 
+the lab has 4 screens across with x2x (the pointer moves off one screem onto 
+another). Xnest is an xserver that asks a parent X server to do the work, and 
+I think you can use it to present different display information and so forth.
+
+Xinemera is much easier, it basically just glues mutliple bits of hardare 
+together into a single huge bit of virtual hardware. It does not appear in the 
+extensions list. xlock just sees a single display with 2304x900 pixels on my 
+system, which is actually 2 screens 1152x900 each.  AFAIK there is no easy way 
+to detect Xinemera modulo strange aspect ratios and the like (e.g. my display 
+is suspicously wide, assuming I am using conventional display hardware). 
+Recycled 1990 SUN monitors are conventional, albeit rather pickier about the 
+video signal that one expects these days.
+
+I was thinking I could add -hdiv 2 and would xlock use half the display width, 
+in my case 1152, as the width of an appropiate number of windows (2 for half 
+width). One could think of a maximum window width, with the code generating an 
+appropiate number of windows, for a similar effect. I image neither option 
+would involve vast amounts of code or internal changes.
+
+Actually, on a more careful analysis Xinereama is listed in the extensions and 
+in extensions/Xinerama.h I see the following functions
+
+Bool XineramaIsActive(Display *dpy);
+XineramaScreenInfo * 
+XineramaQueryScreens(
+   Display *dpy,
+   int     *number
+);
+
+XinermaScreenInfo is a structure that contains screen number, x and y origin, 
+width and height (one per head, judjing by the function prototype). The 
+extension is not supported everywhere but feature test macros or autoconf 
+should cope. Imake apparently includes
+
+#define XineramaDefines -DPANORAMIX
+
+if you have the support (and presumably this means you have the header too). 
+My proposal would be less elegant.
+
+~$ gcc -o xintest.^H ci^H^Hxintest.c -:^HL/usr/X11R6/lib -lX11 
+=^H-lXext -lXinerama
+~$ ./xintest 
+Xinerama supported: event base 0, error base 0
+Xinerama active
+There are 2 heads
+Head 0: screen 0 size  1152x900 starting at 0,0
+Head 1: screen 1 size  1152x900 starting at 1152,0
+~$ exit
+
+Script done on Sat Apr 15 19:25:46 2000
+
+Which has interesting effects in ink blot mode (50% of the ink blot on each 
+screen, not indeal). Modes dewsned for about 4x3 suffer quite badly from 
+stretching pn 2304x900... hence my desire for a version aof xlockmore aware of 
+the screen boundaries.
+#include <stdio.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/Xinerama.h>
+
+int main(void)
+{
+    Display *dpy;
+    int xin, ev, err, i, nh;
+    XineramaScreenInfo *scr;
+
+    dpy=XOpenDisplay("");
+    xin=XineramaQueryExtension(dpy, &ev, &err);
+
+    if (!xin)
+    {
+        printf("Xinerama not avialable\n");
+        XCloseDisplay(dpy);
+        return 0;
+    }
+    printf ("Xinerama supported: event base %d, error base %d\n",
+            ev, err);
+
+    printf("Xinerama %sactive\n", XineramaIsActive(dpy) ? "" : "in");
+    
+    if ((scr=XineramaQueryScreens(dpy, &nh))!=NULL)
+    {
+        printf("There are %d heads\n", nh);
+        for (i=0; i<nh; i++)
+        {
+            printf ("Head %d: screen %d size  %dx%d starting at %d,%d\n",
+                    i, (scr+i)->screen_number,
+                    (scr+i)->width, (scr+i)->height,
+                    (scr+i)->x_org, (scr+i)->y_org);
+        }
+        XFree(scr);
+    }
+    XCloseDisplay(dpy);
+    return 0;
+}
+
 
   o modes from xscreensaver :) : bubbles, moire, LMorph, halo, ImsMap, BlitSpin
 
@@ -225,9 +405,19 @@ New mode ideas... (some may be very hard :) ):
       A spinning GL mailbox would be really cool.  Note that the password
       screen can be setup to show if one has mail.
   o "minimal" a random minimal surface generator.
+  o "pangea" a mode showing the changes to the earth's surface over
+      millions of years.
   o "snow" mode with a nice Winter scene picture background and snowflakes
       falling
+  o "soap" mode showing soap films
   o "squig" mode from squig/xsquig (xsquig is too slow)
+  o "venus" mode showing the transformation of a Etruscan Venus to a
+      Roman surface to a Boy surface to a Ida surface, back into a
+      Etruscan Venus using GL.  This is a 3D shadow of a 4D Klein Bottle
+      (which in turn is a a 3D moebius strip).
+      (Science News October 24, 1987 Vol 132, No 17.)
+  o Simulations like sandpile avalanches or forest fires.
+      (Science News July 15, 1989 Vol 136, No 3.)
   o A NT-like GL 3D Maze, where you are inside the maze
   o NT-like GL FlowerBox spring and Flying Objects
   o A GL 4D ico where the 6 4D "platonic" objects "roll" around in 3D space.

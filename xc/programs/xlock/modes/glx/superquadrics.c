@@ -2,7 +2,7 @@
 /* superquadrics --- 3D mathematical shapes */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)superquadrics.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)superquadrics.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -31,6 +31,8 @@ static const char sccsid[] = "@(#)superquadrics.c	4.07 97/11/24 xlockmore";
  * quadric surface in a similar fashion.
  *
  * Revision History:
+ * 01-Mar-2001: Added FPS stuff - Eric Lassauge <lassauge@mail.dotcom.fr>
+ * 01-Nov-2000: Allocation checks
  * 30-Mar-97: Turned into a module for xlockmore 4.02 alpha.  The code
  *    is almost unrecognizable now from the first revision, except for
  *    a few remaining two-letter variable names.  I still don't have
@@ -79,18 +81,19 @@ static const char sccsid[] = "@(#)superquadrics.c	4.07 97/11/24 xlockmore";
 #include <X11/Intrinsic.h>
 
 #ifdef STANDALONE
-#define PROGCLASS "Superquadrics"
-#define HACK_INIT init_superquadrics
-#define HACK_DRAW draw_superquadrics
-#define superquadrics_opts xlockmore_opts
-#define DEFAULTS "*delay: 100 \n" \
- "*count: 25 \n" \
- "*cycles: 40 \n" \
- "*wireframe: False \n"
-#include "xlockmore.h"		/* from the xscreensaver distribution */
-#else /* !STANDALONE */
-#include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+# define PROGCLASS				"Superquadrics"
+# define HACK_INIT				init_superquadrics
+# define HACK_DRAW				draw_superquadrics
+# define superquadrics_opts			xlockmore_opts
+# define DEFAULTS	"*delay:	40000   \n"	\
+			"*count:	25      \n"	\
+			"*cycles:	40      \n"	\
+			"*showfps:      False   \n"	\
+			"*wireframe:	False	\n"
+# include "xlockmore.h"			/* from the xscreensaver distribution */
+#else  /* !STANDALONE */
+# include "xlock.h"			/* from the xlockmore distribution */
+# include "visgl.h"
 #endif /* !STANDALONE */
 
 #ifdef MODE_superquadrics
@@ -108,15 +111,15 @@ static float spinspeed;
 
 static XrmOptionDescRec opts[] =
 {
-  {"-spinspeed", ".superquadrics.spinspeed", XrmoptionSepArg, (caddr_t) NULL}
+  {(char *) "-spinspeed",(char *) ".superquadrics.spinspeed", XrmoptionSepArg, (caddr_t) NULL}
 };
 static argtype vars[] =
 {
-  {(caddr_t *) & spinspeed, "spinspeed", "Spinspeed", DEF_SPINSPEED, t_Float}
+  {(caddr_t *) & spinspeed, (char *) "spinspeed", (char *) "Spinspeed", (char *)DEF_SPINSPEED, t_Float}
 };
 static OptionStruct desc[] =
 {
-	{"-spinspeed num", "speed of rotation, in degrees per frame"}
+	{(char *) "-spinspeed num", (char *) "speed of rotation, in degrees per frame"}
 };
 
 ModeSpecOpt superquadrics_opts =
@@ -160,7 +163,7 @@ typedef struct {
 	state       now, later;
 } superquadricsstruct;
 
-static superquadricsstruct *superquadrics = NULL;
+static superquadricsstruct *superquadrics = (superquadricsstruct *) NULL;
 
 #define CLIP_NORMALS 10000.0
 
@@ -742,12 +745,15 @@ init_superquadrics(ModeInfo * mi)
 void
 draw_superquadrics(ModeInfo * mi)
 {
-	superquadricsstruct *sp = &superquadrics[MI_SCREEN(mi)];
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	superquadricsstruct *sp;
+
+	if (superquadrics == NULL)
+		return;
+	sp = &superquadrics[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!sp->glx_context)
 		return;
 
@@ -755,6 +761,7 @@ draw_superquadrics(ModeInfo * mi)
 
 	NextSuperquadricDisplay(sp);
 
+    	if (MI_IS_FPS(mi)) do_fps (mi);
 	glFinish();
 	glXSwapBuffers(display, window);
 }
@@ -770,7 +777,7 @@ release_superquadrics(ModeInfo * mi)
 {
 	if (superquadrics != NULL) {
 		(void) free((void *) superquadrics);
-		superquadrics = NULL;
+		superquadrics = (superquadricsstruct *) NULL;
 	}
 	FreeAllGL(mi);
 }

@@ -2,7 +2,7 @@
 /* spiral --- spiraling dots */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)spiral.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)spiral.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,12 +22,13 @@ static const char sccsid[] = "@(#)spiral.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: jwz@jwz.org: turned into a standalone program.
- * 24-Jul-95: Fix to allow cycles not to have an arbitrary value by
- *            Peter Schmitzberger (schmitz@coma.sbg.ac.at).
- * 06-Mar-95: Finished cleaning up and final testing.
- * 03-Mar-95: Cleaned up code.
- * 12-Jul-94: Written.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 24-Jul-1995: Fix to allow cycles not to have an arbitrary value by
+ *              Peter Schmitzberger (schmitz@coma.sbg.ac.at).
+ * 06-Mar-1995: Finished cleaning up and final testing.
+ * 03-Mar-1995: Cleaned up code.
+ * 12-Jul-1994: Written.
  *
  * Low CPU usage mode.
  * Idea based on a graphics demo I saw a *LONG* time ago.
@@ -51,7 +52,7 @@ static const char sccsid[] = "@(#)spiral.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_spiral
 
 ModeSpecOpt spiral_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   spiral_description =
@@ -142,7 +143,10 @@ init_spiral(ModeInfo * mi)
 	sp->nlength = MI_CYCLES(mi);
 
 	if (!sp->traildots)
-		sp->traildots = (Traildots *) malloc(sp->nlength * sizeof (Traildots));
+		if ((sp->traildots = (Traildots *) malloc(sp->nlength *
+				sizeof (Traildots))) == NULL) {
+			return;
+		}
 
 	/* initialize the allocated array */
 	for (i = 0; i < sp->nlength; i++) {
@@ -191,11 +195,16 @@ draw_spiral(ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
 	GC          gc = MI_GC(mi);
-	spiralstruct *sp = &spirals[MI_SCREEN(mi)];
 	int         i, j;
+	spiralstruct *sp;
+
+	if (spirals == NULL)
+		return;
+	sp = &spirals[MI_SCREEN(mi)];
+	if (sp->traildots == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (sp->erase == 1) {
 		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 		draw_dots(mi, sp->inc);
@@ -306,7 +315,11 @@ release_spiral(ModeInfo * mi)
 void
 refresh_spiral(ModeInfo * mi)
 {
-	spiralstruct *sp = &spirals[MI_SCREEN(mi)];
+	spiralstruct *sp;
+
+	if (spirals == NULL)
+		return;
+	sp = &spirals[MI_SCREEN(mi)];
 
 	MI_CLEARWINDOW(mi);
 	sp->redrawing = 1;

@@ -33,6 +33,7 @@ static const char sccsid[] = "@(#)option.c	4.00 97/01/01 xlockmore";
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef VMS
+#include <vms_x_fix.h>
 #include <descrip.h>
 #include <lib$routines.h>
 #endif
@@ -44,10 +45,17 @@ static const char sccsid[] = "@(#)option.c	4.00 97/01/01 xlockmore";
 #include <Xm/CascadeB.h>
 #include <Xm/PushBG.h>
 #include <Xm/List.h>
-#include <Xm/MessageB.h>
+#include <Xm/Label.h>
+#include <Xm/ToggleBG.h>
 
-#define OPTIONS 8
-#define REGULAR_OPTIONS (OPTIONS-2)
+
+#include <Xm/MessageB.h> /* needed ? */
+
+#include "option.h"
+
+/*#define OPTIONS 8*/
+/*#define REGULAR_OPTIONS (OPTIONS-2)*/
+
 #define NBPROGNAME 3
 #define MAXNAMES 10000
 Widget      Menuoption;
@@ -56,6 +64,9 @@ static Widget Options[OPTIONS];
 /* extern variables */
 extern Widget toplevel;
 
+void exitcallback(Widget w, XtPointer client_data, XtPointer call_data);
+
+
 /* Widget */
 static Widget PromptDialog, FontSelectionDialog, ProgramSelectionDialog;
 
@@ -63,23 +74,53 @@ static Widget PromptDialog, FontSelectionDialog, ProgramSelectionDialog;
 char       *c_Options[OPTIONS];
 extern char *r_Options[OPTIONS];
 
-static char *prompts[REGULAR_OPTIONS] =
+Widget Toggles[TOGGLES];
+
+static char *prompts[OPTIONS] =
 {
-	"Enter the user name.",
-	"Enter the password message.",
-	"Enter the info message.",
-	"Enter the valid message.",
-	"Enter the invalid message.",
-	"Enter the geometry mxn."
+	(char *) "Enter the user name.",
+	(char *) "Enter the password message.",
+	(char *) "Enter the info message.",
+	(char *) "Enter the valid message.",
+	(char *) "Enter the invalid message.",
+	(char *) "Enter the geometry mxn."
 };
 
 static char *prognames[NBPROGNAME] =
 {
-	"fortune",
-	"finger",
-	"echo hello world"
+	(char *) "fortune",
+	(char *) "finger",
+	(char *) "echo hello world"
 };
 static int  loadfont = 0;
+
+char *r_Toggles[TOGGLES] =
+{
+        (char *) "allowaccess",
+        (char *) "allowroot",
+        (char *) "debug",
+        (char *) "echokeys",
+        (char *) "echokeys",
+        (char *) "enablesaver",
+        (char *) "fullrandom",
+        (char *) "grabmouse",
+        (char *) "grabmouse",
+        (char *) "grabserver",
+        (char *) "install",
+        (char *) "mousemotion",
+        (char *) "nolock",
+        (char *) "remote",
+        (char *) "sound",
+        (char *) "timeelapsed",
+        (char *) "trackmouse",
+        (char *) "use3d",
+        (char *) "usefirst",
+        (char *) "usefirst",
+        (char *) "verbose",
+        (char *) "wireframe",
+	(char *) "mono"
+
+};
 
 /* string temp */
 static char **whichone;
@@ -101,7 +142,7 @@ managePrompt(char *s)
 		XtSetArg(args[ac], XmNtextString, label_str2);
 		ac++;
 	} else {
-		label_str2 = XmStringCreateSimple("");
+		label_str2 = XmStringCreateSimple((char *) "");
 		XtSetArg(args[ac], XmNtextString, label_str2);
 		ac++;
 	}
@@ -117,59 +158,68 @@ managePrompt(char *s)
 static void
 f_option(Widget w, XtPointer client_data, XtPointer call_data)
 {
-	switch ((int) client_data) {
-		case REGULAR_OPTIONS:	/* font */
-			{
-				int         numdirnames, i;
-				char      **dirnames;
-				XmString    label_str;
-				Widget      listtmp;
-				Cursor      tmp;
-
-				whichone = &c_Options[REGULAR_OPTIONS];
-				if (!loadfont) {
-					tmp = XCreateFontCursor(XtDisplay(toplevel), XC_watch);
-					XDefineCursor(XtDisplay(toplevel), XtWindow(toplevel), tmp);
-					dirnames = XListFonts(XtDisplay(toplevel), "*", MAXNAMES, &numdirnames);
-					listtmp = XmSelectionBoxGetChild(FontSelectionDialog, XmDIALOG_LIST);
-					for (i = 0; i < numdirnames; i++) {
-						label_str = XmStringCreateSimple(dirnames[i]);
-						XmListAddItemUnselected(listtmp, label_str, 0);
-						XmStringFree(label_str);
-					}
-					tmp = XCreateFontCursor(XtDisplay(toplevel), XC_left_ptr);
-					XDefineCursor(XtDisplay(toplevel), XtWindow(toplevel), tmp);
-					loadfont = 1;
-					XFreeFontNames(dirnames);
-				}
-				XtManageChild(FontSelectionDialog);
-			}
-			break;
-
-		case (REGULAR_OPTIONS + 1):	/* program */
-			whichone = &c_Options[REGULAR_OPTIONS + 1];
-/* PURIFY 4.0.1 on Solaris 2 reports a 71 byte memory leak on the next line. */
-			XtManageChild(ProgramSelectionDialog);
-			break;
-
-		default:
 			whichone = &c_Options[(int) client_data];
 			managePrompt(prompts[(int) client_data]);
-	}
 }
+
+#if 0
+/******************************
+ * Callback for the font dialog
+******************************/
+static void
+f_fontdia(Widget w, XtPointer client_data, XtPointer call_data)
+{
+	int         numdirnames, i;
+	char      **dirnames;
+	XmString    label_str;
+	Widget      listtmp;
+	Cursor      tmp;
+
+	whichone = &c_Options[OPTIONS];
+	if (!loadfont) {
+		tmp = XCreateFontCursor(XtDisplay(toplevel), XC_watch);
+		XDefineCursor(XtDisplay(toplevel), XtWindow(toplevel), tmp);
+		dirnames = XListFonts(XtDisplay(toplevel), "*", MAXNAMES, &numdirnames);
+		listtmp = XmSelectionBoxGetChild(FontSelectionDialog, XmDIALOG_LIST);
+		for (i = 0; i < numdirnames; i++) {
+			label_str = XmStringCreateSimple(dirnames[i]);
+			XmListAddItemUnselected(listtmp, label_str, 0);
+			XmStringFree(label_str);
+		}
+		tmp = XCreateFontCursor(XtDisplay(toplevel), XC_left_ptr);
+		XDefineCursor(XtDisplay(toplevel), XtWindow(toplevel), tmp);
+		loadfont = 1;
+		XFreeFontNames(dirnames);
+	}
+	XtManageChild(FontSelectionDialog);
+}
+
+/******************************
+ * Callback for the program dialog
+******************************/
+static void f_programdia(Widget w, XtPointer client_data, XtPointer call_data) {
+			/*whichone = &c_Options[REGULAR_OPTIONS + 1];*/
+/* PURIFY 4.0.1 on Solaris 2 reports a 71 byte memory leak on the next line. */
+			XtManageChild(ProgramSelectionDialog);
+	}
+#endif
 
 static void
 f_Dialog(Widget w, XtPointer client_data, XtPointer call_data)
 {
-	static char *quoted_text = NULL;
+	static char *quoted_text;
 	char       *nonquoted_text = NULL;
 	XmSelectionBoxCallbackStruct *scb =
-	(XmSelectionBoxCallbackStruct *) call_data;
+		(XmSelectionBoxCallbackStruct *) call_data;
 
 	if (whichone != NULL)
 		XtFree(*whichone);
 	XmStringGetLtoR(scb->value, XmSTRING_DEFAULT_CHARSET, &nonquoted_text);
-	quoted_text = (char *) malloc(strlen(nonquoted_text) + 3);
+	if ((quoted_text = (char *) malloc(strlen(nonquoted_text) + 3)) ==
+			NULL) {
+		(void) fprintf(stderr, "Memory error\n");
+		return;
+	}
 	(void) sprintf(quoted_text, "\"%s\"", nonquoted_text);
 	(void) free((void *) nonquoted_text);
 	*whichone = quoted_text;
@@ -177,12 +227,23 @@ f_Dialog(Widget w, XtPointer client_data, XtPointer call_data)
 
 /* Setup Widget */
 void
-Setup_Option(Widget MenuBar)
+setup_Option(Widget MenuBar)
 {
 	Arg         args[15];
 	int         i, ac = 0;
 	XmString    label_str;
-	Widget      listtmp, pulldownmenu;
+	Widget      listtmp, pulldownmenu,exitwidget;
+
+/** 
+ ** Popup Menu File
+ **/
+	pulldownmenu = XmCreatePulldownMenu(MenuBar, "PopupFile", NULL, 0);
+	label_str = XmStringCreateSimple((char *) "File");
+	XtVaCreateManagedWidget("File", xmCascadeButtonWidgetClass, MenuBar,
+		XmNlabelString, label_str, XmNsubMenuId, pulldownmenu, NULL);
+	XmStringFree(label_str);
+	exitwidget = XtVaCreateManagedWidget("Exit", xmPushButtonGadgetClass, pulldownmenu, NULL);
+	XtAddCallback(exitwidget, XmNactivateCallback, exitcallback,NULL);
 
 	pulldownmenu = XmCreatePulldownMenu(MenuBar, "PopupOptions", NULL, 0);
 	label_str = XmStringCreateSimple("Options");
@@ -192,6 +253,7 @@ Setup_Option(Widget MenuBar)
 
 	for (i = 0; i < OPTIONS; i++) {
 		Options[i] = XtVaCreateManagedWidget(r_Options[i],
+/*				xmToggleButtonGadgetClass, pulldownmenu, NULL);*/
 				xmPushButtonGadgetClass, pulldownmenu, NULL);
 		XtAddCallback(Options[i], XmNactivateCallback, f_option, (XtPointer) i);
 	}
@@ -214,5 +276,19 @@ Setup_Option(Widget MenuBar)
 		label_str = XmStringCreateSimple(prognames[i]);
 		XmListAddItemUnselected(listtmp, label_str, 0);
 		XmStringFree(label_str);
+	}
+
+/**
+ ** Make the menu with all options boolean
+***/
+	pulldownmenu = XmCreatePulldownMenu(MenuBar, "PopupSwitches", NULL, 0);
+	label_str = XmStringCreateSimple("Switches");
+	XtVaCreateManagedWidget("Switches", xmCascadeButtonWidgetClass, MenuBar,
+		XmNlabelString, label_str, XmNsubMenuId, pulldownmenu, NULL);
+	XmStringFree(label_str);
+
+        for (i = 0; i < TOGGLES; i++) {
+		Toggles[i] = XtVaCreateManagedWidget(r_Toggles[i],
+				xmToggleButtonGadgetClass, pulldownmenu, NULL);
 	}
 }

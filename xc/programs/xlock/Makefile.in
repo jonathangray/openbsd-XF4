@@ -6,12 +6,10 @@
 ############################################################
 
 SUBDIRS = xlock modes/glx modes xmlock xglock
-# Do not build by default, since it usually does not work
-# xalock
 
 MAKE_SUBDIR = for dir in $(SUBDIRS) ; do ( cd $$dir ; $(MAKE) $@ ) ; done
 # convenient not to use configure just to clean
-MAKEIN_SUBDIR = for dir in $(SUBDIRS) ; do ( cd $$dir ; $(MAKE) -f Makefile.in $@ ) ; done
+MAKEIN_SUBDIR = for dir in $(SUBDIRS) ; do ( cd $$dir ; sed s/@MODULES@/\#/ Makefile.in > Makefile ; $(MAKE) $@ ) ; done
 
 all :
 	@$(MAKE_SUBDIR)
@@ -94,7 +92,7 @@ clean :
 
 distclean :
 	$(RM) core *~ *% *.bak *.orig *.rej make.log MakeOut *.patch
-	$(RM) Makefile config.status config.cache config.log config.h xalock/Makefile
+	$(RM) Makefile config.status config.cache config.log config.h
 	@$(MAKEIN_SUBDIR)
 
 Makefile : Makefile.in config.status

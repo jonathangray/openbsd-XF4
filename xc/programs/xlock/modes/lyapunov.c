@@ -2,7 +2,7 @@
 /* lyapunov --- animated lyapunov space */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)lyapunov.c 4.13 98/12/21 xlockmore";
+static const char sccsid[] = "@(#)lyapunov.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -28,7 +28,8 @@ static const char sccsid[] = "@(#)lyapunov.c 4.13 98/12/21 xlockmore";
  * Magazine" Sep 1991 for more info.
  *
  * Revision History:
- * 17-Dec-98: Used as basis mandelbrot.c
+ * 01-Nov-2000: Allocation checks
+ * 17-Dec-1998: Used mandelbrot.c as basis
  */
 
 
@@ -62,7 +63,7 @@ static const char sccsid[] = "@(#)lyapunov.c 4.13 98/12/21 xlockmore";
 #define FLOATRAND(min,max) ((min)+((double) LRAND()/((double) MAXRAND))*((max)-(min)))
 
 ModeSpecOpt lyapunov_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   lyapunov_description =
@@ -82,6 +83,7 @@ static int debug;
 
 typedef struct {
 	int         column;
+	Bool        backwards, reverse;
 	XColor      fgcol, bgcol;	/* foreground and background colour specs */
 	Bool        fixed_colormap;
 	int         ncolors;
@@ -92,10 +94,10 @@ typedef struct {
 	int         usable_colors;
 	unsigned int cur_color;
 	int         screen_width;
-	int			screen_height;
-	float			reptop;
-  unsigned long periodic_forcing;
-  int firstone;
+	int         screen_height;
+	float       reptop;
+	unsigned long periodic_forcing;
+	int firstone;
 } lyapstruct;
 
 static lyapstruct *lyaps = NULL;
@@ -105,9 +107,9 @@ static double
 reps(unsigned long periodic_forcing, int firstone, int iter, double a, double b)
 {
 	int         forcing_index = firstone, n;
-  double      x = 0.5, total = 0.0, gamma;
+	double      x = 0.5, total = 0.0, gamma;
 
-  a += OFFSET, b += OFFSET;
+	a += OFFSET, b += OFFSET;
 	for (n = 1; n <= iter; n++) {
  		gamma = (periodic_forcing & (1 << forcing_index)) ? b : a;
 		if (forcing_index == 0)
@@ -115,29 +117,42 @@ reps(unsigned long periodic_forcing, int firstone, int iter, double a, double b)
 		else
 			forcing_index--;
 		x = gamma * x * (1.0 - x);
-		/* Sci. Am. article says this should be a table */
+		/* Sci. Am. article says this should be a lookup table */
 		total += (log(ABS(gamma * (1.0 - 2.0 * x))) / M_LN2);
 #ifdef DEBUG
 		if (debug)
-    /*if (!(n % 1000)) */
-    (void) printf("gamma %g, a %g,  b %g, result %g, n %d, total %g, x %g, index %d\n",
+			/* if (!(n % 1000)) */
+			(void) printf("gamma %g, a %g,  b %g, result %g, n %d, total %g, x %g, index %d\n",
 			 gamma, a, b, total / n, n, total, x, forcing_index);
 #endif
 	}
 	return (total / ((double) iter));
 }
 
+static void
+free_lyapunov(Display *display, lyapstruct *lp)
+{
+	if (lp->cmap != None) {
+		XFreeColormap(display, lp->cmap);
+		lp->cmap = None;
+	}
+	if (lp->colors != NULL) {
+		XFree((caddr_t) lp->colors);
+		lp->colors = NULL;
+	}
+}
+
 void
 init_lyapunov(ModeInfo * mi)
 {
-	lyapstruct *lp;
 	int         preserve;
 	Bool        truecolor;
 	unsigned long redmask, greenmask, bluemask;
 	Window      window = MI_WINDOW(mi);
 	Display    *display = MI_DISPLAY(mi);
 	int i = NRAND(MAXPOWER);
-  unsigned long power2;
+	unsigned long power2;
+	lyapstruct *lp;
 
 	if (lyaps == NULL) {
 		if ((lyaps = (lyapstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -149,12 +164,16 @@ init_lyapunov(ModeInfo * mi)
 #ifdef DEBUG
 	debug = MI_IS_DEBUG(mi);
 #endif
-	lp->column = 0;
-
-	MI_CLEARWINDOW(mi);
-
 	lp->screen_width = MI_WIDTH(mi);
 	lp->screen_height = MI_HEIGHT(mi);
+	lp->reverse = (Bool) (LRAND() & 1);
+	lp->backwards = (Bool) (LRAND() & 1);
+	if (lp->backwards)
+		lp->column = lp->screen_width - 1;
+	else
+		lp->column = 0;
+
+	MI_CLEARWINDOW(mi);
 
 	lp->reptop = 0.6;
 
@@ -211,10 +230,17 @@ init_lyapunov(ModeInfo * mi)
 
 		/* allocate colormap, if needed */
 		if (lp->colors == NULL)
-			lp->colors = (XColor *) malloc(sizeof (XColor) * lp->ncolors);
+			if ((lp->colors = (XColor *) malloc(sizeof (XColor) *
+					lp->ncolors)) == NULL) {
+				free_lyapunov(display, lp);
+				return;
+			}
 		if (lp->cmap == None)
-			lp->cmap = XCreateColormap(display, window,
-						   MI_VISUAL(mi), AllocAll);
+			if ((lp->cmap = XCreateColormap(display, window,
+					MI_VISUAL(mi), AllocAll)) == None) {
+				free_lyapunov(display, lp);
+				return;
+			}
 		lp->usable_colors = lp->ncolors - preserve;
 	}
 
@@ -246,11 +272,15 @@ draw_lyapunov(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	lyapstruct *lp = &lyaps[MI_SCREEN(mi)];
-	int         h;
-
+	int         h, j;
 	unsigned int i;
-	int         j, k;
+	lyapstruct *lp;
+
+	if (lyaps == NULL)
+		return;
+	lp = &lyaps[MI_SCREEN(mi)];
+	if (!lp->fixed_colormap && lp->colors == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -268,7 +298,7 @@ draw_lyapunov(ModeInfo * mi)
 		}
 		/* advance colormap */
 		if (!lp->fixed_colormap && lp->usable_colors > 2) {
-			for (i = 0, j = lp->cur_color, k = 0;
+			for (i = 0, j = lp->cur_color;
 			     i < (unsigned int) lp->ncolors; i++) {
 				if (i == MI_WHITE_PIXEL(mi)) {
 					lp->colors[i].pixel = i;
@@ -306,8 +336,10 @@ draw_lyapunov(ModeInfo * mi)
 					lp->colors[i].blue = (short unsigned int) (range * j +
 							    lp->bottom.blue);
 					lp->colors[i].flags = DoRed | DoGreen | DoBlue;
-					j = (j + 1) % lp->ncolors;
-					k++;
+					if (lp->reverse)
+						j = (j + 1) % lp->ncolors;
+					else
+						j = (j - 1 + lp->ncolors) % lp->ncolors;
 #else
 					lp->colors[i].pixel = i;
 					lp->colors[i].red = pick_rgb(lp->bottom.red,lp->top.red,
@@ -317,8 +349,10 @@ draw_lyapunov(ModeInfo * mi)
 					lp->colors[i].blue = pick_rgb(lp->bottom.blue,lp->top.blue,
 						j,lp->ncolors);
 					lp->colors[i].flags = DoRed | DoGreen | DoBlue;
-					j = (j + 1) % lp->ncolors;
-					k++;
+					if (lp->reverse)
+						j = (j + 1) % lp->ncolors;
+					else
+						j = (j - 1 + lp->ncolors) % lp->ncolors;
 #endif
 				}
 			}
@@ -328,17 +362,21 @@ draw_lyapunov(ModeInfo * mi)
 		}
 	}
 #endif /* !STANDALONE */
-	/* so we iterate columns beyond the width of the physical screen, so that
-	** we just wait around and show what we've done
+	/* so we iterate columns beyond the width of the physical screen,
+        ** so that we just wait around and show what we've done
 	*/
-	if (lp->column >= 4 * lp->screen_width) {
+	if ((!lp->backwards && (lp->column >= 4 * lp->screen_width)) ||
+	    (lp->backwards && (lp->column < -3 * lp->screen_width))) {
 		/* reset to left edge of screen */
 		init_lyapunov(mi);
 		return;
 		/* select a new region! */
-	} else if (lp->column >= lp->screen_width) {
+	} else if (lp->column >= lp->screen_width || lp->column < 0) {
 		/* delay a while */
-		lp->column++;
+		if (lp->backwards)
+			lp->column--;
+		else
+			lp->column++;
 		return;
 	}
 	for (h = 0; h < lp->screen_height; h++) {
@@ -373,12 +411,15 @@ draw_lyapunov(ModeInfo * mi)
 				XSetForeground(display, gc, MI_PIXEL(mi, color));
 #endif /* !STANDALONE */
 		}
-		/* we no longer have vertical symmetry - so we colpute all points
-		** and don't draw with redundancy
+		/* we no longer have vertical symmetry - so we compute all points
+		** and do not draw with redundancy
 		*/
 		XDrawPoint(display, window, gc, lp->column, h);
 	}
-	lp->column++;
+	if (lp->backwards)
+		lp->column--;
+	else
+		lp->column++;
 }
 
 void
@@ -387,14 +428,8 @@ release_lyapunov(ModeInfo * mi)
 	if (lyaps != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			lyapstruct *lp = &lyaps[screen];
-
-			if (lp->cmap != None)
-				XFreeColormap(MI_DISPLAY(mi), lp->cmap);
-			if (lp->colors != NULL)
-				XFree((caddr_t) lp->colors);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_lyapunov(MI_DISPLAY(mi), &lyaps[screen]);
 		(void) free((void *) lyaps);
 		lyaps = NULL;
 	}

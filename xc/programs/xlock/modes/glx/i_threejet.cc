@@ -133,7 +133,7 @@ ThreeJet Interpolate(const ThreeJet v1, const ThreeJet v2, const ThreeJet weight
 }
 
 void printJet(const ThreeJet v) {
- printf("%f (%f %f)\n",
+ (void) printf("%f (%f %f)\n",
   v.f,
   v.fu, v.fv
  );

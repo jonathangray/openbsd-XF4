@@ -2,7 +2,7 @@
 /* matrix --- screensaver inspired by the 1999 sci-fi flick "The Matrix" */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
+static const char sccsid[] = "@(#)matrix.c	5.00 2000/11/01 xlockmore";
 #endif
 
 /* Matrix-style screensaver
@@ -22,9 +22,8 @@ static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- *
+ * 01-Nov-2000: Allocation checks
  * 23-Jul-1999: Unleashed on an unsuspecting world
- *
  * 29-Jun-1999: More hacking by Jeremy Buhler (jbuhler@cs.washington.edu)
  *              - fix memory-related bugs found by xlock maintainer
  *              - properly reinitialize screen with new size when init()
@@ -47,7 +46,6 @@ static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
  *              - consistently use PICK_MATRIX() instead of passing
  *                mp as a parameter whenever the active screen is
  *                implicitly required.
- *
  * 27-Jun-1999: Overhauled by Jeremy Buhler (jbuhler@cs.washington.edu)
  *              - use screen-to-screen copies as much as possible
  *              - get by with a single pixmap per column instead of two
@@ -56,7 +54,6 @@ static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
  *              - fixed double-freeing in release_matrix()
  *              - increased delay to 10 ms to prevent hyperfast scrolling
  *              - minor cleanups; removed unused or duplicate code/data
- *
  * 26-Jun-1999: Tweaks by Jeremy Buhler (jbuhler@cs.washington.edu)
  *              - Use larger Katakana font with numbers
  *              - tweak character colors
@@ -66,12 +63,14 @@ static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
  *                pixmaps
  *              - minor code cleanups to allow future parameterization
  *                of speed, density
- *
  * 09-Jun-1999: Tweaks by Joan Touzet to look more like the original film's
  *              effects
- *
  * 22-Apr-1999: Initial version
  */
+
+#ifdef VMS
+#include "vms_x_fix.h"
+#endif
 
 #include <X11/Intrinsic.h>
 
@@ -86,7 +85,8 @@ static const char sccsid[] = "@(#)matrix.c	4.15 99/06/30 xlockmore";
 #include "xlock.h"		/* in xlockmore distribution */
 #endif /* STANDALONE */
 
-ModeSpecOpt matrix_opts = {0, NULL, 0, NULL, NULL};
+ModeSpecOpt matrix_opts =
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   matrix_description =
@@ -365,17 +365,203 @@ static const unsigned char katakana_bits[] = {
 
 /*************************************************************************/
 
-
 /*
  * state of the Matrix
  */
 static matrix_t *matrix = NULL;
 
 
-/* local prototypes */
-static void init_active_screen(const ModeInfo *mi);
-static void free_screen(const ModeInfo *mi, matrix_t *mp);
-static void new_column(const ModeInfo *mi, column_t *);
+/* NAME: new_column
+ *
+ * FUNCTION: clears and generates a pixmap of "matrix" data
+ */
+
+static void new_column(const ModeInfo *mi, column_t *c)
+{
+  matrix_t *mp = PICK_MATRIX(mi);
+  int currChar;
+
+  /*
+   * clear the pixmap to get rid of previous data or initialize
+   */
+  XSetForeground(MI_DISPLAY(mi), MI_GC(mi), mp->bg);
+  XFillRectangle(MI_DISPLAY(mi), c->pixmap, MI_GC(mi),
+				 0, 0, PIXMAP_WIDTH, mp->pixmapHeight);
+
+  /*
+   * Write characters into the column pixmap, starting at the
+   * bottom and moving upwards.  Decrement the string length, gap length,
+   * and next-speed-update timers for the column and reinitialize them
+   * if necessary.
+   */
+  for (currChar = mp->charsPerPixmap - 1; currChar >= 0; currChar--) {
+	  if (c->nextSpeedUpdate-- == 0) {
+		  c->speed = MATRIX_SPEED;
+		  c->nextSpeedUpdate = mp->speedUpdateInterval;
+
+		  /* tweak to prevent really slow columns from remaining slow */
+		  if (c->speed <= 2)
+			c->nextSpeedUpdate /= 2;
+	  }
+
+	  if (c->gapLen > 0) {
+		  c->gapLen--;
+		  continue;
+	  } else if (c->strLen == 0) {
+		  /*
+		   * generate a gap of random length in the string, followed
+		   * by a random number of characters.  Set the endChar flag
+		   * to indicate the end of a new string.
+		   */
+		  c->gapLen  = MATRIX_GAPLEN;
+		  c->strLen  = MATRIX_STRLEN;
+		  c->endChar = True;
+	  } else {
+		  Pixmap src;
+		  int kOffset;
+
+		  if (c->endChar) {
+			  src = mp->kana[1]; /* a bold, non-numeric character */
+			  kOffset = MATRIX_RANDOM(10, katakana_num_cells);
+			  c->endChar = False;
+			} else {             /* inside a string - kana or number */
+			  src = mp->kana[0];
+			  kOffset = MATRIX_RANDOM(0, katakana_num_cells);
+			}
+
+		  XCopyArea(MI_DISPLAY(mi), src, c->pixmap, MI_GC(mi),
+					kOffset * katakana_cell_width, 0,
+					katakana_cell_width, katakana_cell_height,
+					0, currChar * katakana_cell_height);
+
+		  c->strLen--;
+		}
+	}
+}
+
+/* NAME: free_matrix
+ *
+ * FUNCTION: delete the data associated with a single screen.  Be careful
+ * not to do spurious free()s of nonexistent data, and to nullify all
+ * freed pointers that might be reused past the end of this call.
+ */
+static void
+free_matrix(Display *display, matrix_t *mp)
+{
+	if (mp->columns != NULL) {
+	  int c;
+
+	  for (c = 0; c < mp->num_cols; c++) {
+		  if (mp->columns[c].pixmap)
+			XFreePixmap(display, mp->columns[c].pixmap);
+	  }
+
+	  (void) free((void *) mp->columns);
+	  mp->columns = NULL;
+	}
+
+	if (mp->kana[0]) {
+	  XFreePixmap(display, mp->kana[0]);
+	  mp->kana[0] = None;
+	}
+
+	if (mp->kana[1]) {
+	  XFreePixmap(display, mp->kana[1]);
+	  mp->kana[1] = None;
+	}
+}
+
+/* NAME: setup_matrix()
+ *
+ * FUNCTION: Initialize the Matrix state for the current screen.
+ *           Based on the width and height of the display,
+ *           allocate and initialize column data structures.
+ */
+
+static void setup_matrix(const ModeInfo *mi)
+{
+  matrix_t *mp = PICK_MATRIX(mi);
+  Display *display = MI_DISPLAY(mi);
+  Window window = MI_WINDOW(mi);
+  int c;
+
+  /* screen may have changed size/depth/who-knows-what */
+  free_matrix(display, mp);
+
+  if (MI_NPIXELS(mi) > 2) {
+	  mp->fg   = MI_PIXEL(mi, GREEN);
+	  mp->bold = MI_PIXEL(mi, BRIGHTGREEN);
+  } else
+	mp->fg = mp->bold = MI_WHITE_PIXEL(mi);
+
+  mp->bg = MI_BLACK_PIXEL(mi);
+
+  if ((mp->kana[0] = XCreatePixmapFromBitmapData(display, window,
+		(char *) katakana_bits, katakana_width, katakana_height,
+		mp->bg, mp->fg, MI_DEPTH(mi))) == None) {
+	free_matrix(display, mp);
+	return;
+  }
+
+  if ((mp->kana[1] = XCreatePixmapFromBitmapData(display, window,
+		(char *) katakana_bits, katakana_width, katakana_height,
+		mp->bg, mp->bold, MI_DEPTH(mi))) == None) {
+	free_matrix(display, mp);
+	return;
+  }
+
+  /*
+   * Using the width of the kana font, determine how many
+   * columns can fit across the current screen (with a little
+   * padding).
+   */
+  mp->num_cols = (int) (MI_WIDTH(mi) / (1.3 * katakana_cell_width));
+
+  if ((mp->columns = (column_t *) calloc(mp->num_cols,
+		sizeof(column_t))) == NULL) {
+	free_matrix(display, mp);
+	return; 
+  }
+
+  /*
+   * If we're randomizing columns, keep the column pixmap height small
+   * to save memory and minimize time for each column update.  Otherwise,
+   * make the height large to maximize variety without updating the pixmaps.
+   */
+#ifdef RANDOMIZE_COLUMNS
+  mp->charsPerPixmap = MI_HEIGHT(mi) / (4 * katakana_cell_height);
+#else
+  mp->charsPerPixmap = MI_HEIGHT(mi) / katakana_cell_height;
+#endif
+
+  if (!mp->charsPerPixmap)  /* sanity check for tiny windows */
+	mp->charsPerPixmap = 1;
+
+  mp->pixmapHeight = mp->charsPerPixmap * katakana_cell_height;
+
+  for (c = 0; c < mp->num_cols; c++)
+	if ((mp->columns[c].pixmap  = XCreatePixmap(display, window,
+		  PIXMAP_WIDTH, mp->pixmapHeight, MI_DEPTH(mi))) == None) {
+		free_matrix(display, mp);
+		return;
+	}
+
+  /* Change the speed of a column after it's covered half the screen */
+  mp->speedUpdateInterval = MI_HEIGHT(mi) / (2 * katakana_cell_height);
+
+  /* initialize the column data */
+  for (c = 0; c < mp->num_cols; c++) {
+	  column_t *column = &(mp->columns[c]);
+
+	  column->yPtr = mp->pixmapHeight;
+
+	  column->nextSpeedUpdate = 0; /* will generate new speed  */
+	  column->strLen  = 0;         /* will generate new string */
+
+	  new_column(mi, column);
+  }
+}
+
 
 
 /* NAME: init_matrix
@@ -390,24 +576,17 @@ static void new_column(const ModeInfo *mi, column_t *);
 
 void init_matrix(ModeInfo *mi)
 {
-  matrix_t *mp;
-
-  if (matrix == NULL)
-	if((matrix = (matrix_t *)
-		calloc(MI_NUM_SCREENS(mi), sizeof(matrix_t))) == NULL)
-	  {
-		perror("init_matrix:calloc");
+  if (matrix == NULL) {
+	if ((matrix = (matrix_t *) calloc(MI_NUM_SCREENS(mi),
+			 sizeof(matrix_t))) == NULL)
 		return;
-	  }
+  }
 
   /* don't want any exposure events from XCopyArea */
   XSetGraphicsExposures(MI_DISPLAY(mi), MI_GC(mi), False);
 
-  mp = PICK_MATRIX(mi);
-
-  /* screen may have changed size/depth/who-knows-what */
-  free_screen(mi, mp);
-  init_active_screen(mi);
+  MI_CLEARWINDOW(mi);
+  setup_matrix(mi);
 }
 
 
@@ -417,11 +596,18 @@ void init_matrix(ModeInfo *mi)
  */
 void draw_matrix(ModeInfo *mi)
 {
-  matrix_t *mp = PICK_MATRIX(mi);
-  double xDistance = (double) MI_WIDTH(mi) / (double) mp->num_cols;
+  double xDistance;
   int i;
+  matrix_t *mp;
+
+  if (matrix == NULL)
+	return;
+  mp = PICK_MATRIX(mi);
+  if (mp->columns == NULL)
+	return;
 
   MI_IS_DRAWN(mi) = True;
+  xDistance = (double) MI_WIDTH(mi) / (double) mp->num_cols;
 
   /*
    * THEORY OF OPERATION
@@ -447,8 +633,7 @@ void draw_matrix(ModeInfo *mi)
    * Hence, we can achieve smooth scrolling with only one pixmap per column.
    */
 
-  for (i = 0; i < mp->num_cols; i++)
-	{
+  for (i = 0; i < mp->num_cols; i++) {
 	  column_t *c = &(mp->columns[i]);
 	  int xOffset = (int) (i * xDistance);
 	  int yDelta  = c->speed;
@@ -510,19 +695,18 @@ void draw_matrix(ModeInfo *mi)
 
 void release_matrix(ModeInfo *mi)
 {
-  int screen;
 
   /* If the matrix exists, free all data associated with all screens.
-   * free_screen() does no harm if given nonexistent screens.
+   * free_matrix() does no harm if given nonexistent screens.
    */
-  if (matrix != NULL)
-	{
-	  for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-		free_screen(mi, &matrix[screen]);
+  if (matrix != NULL) {
+	int screen;
 
+	for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+		free_matrix(MI_DISPLAY(mi), &matrix[screen]);
 	  (void) free((void *) matrix);
 	  matrix = NULL;
-	}
+  }
 }
 
 
@@ -533,8 +717,14 @@ void release_matrix(ModeInfo *mi)
 
 void refresh_matrix(ModeInfo *mi)
 {
-  matrix_t *mp = PICK_MATRIX(mi);
   int c;
+  matrix_t *mp;
+
+  if (matrix == NULL)
+	return;
+  mp = PICK_MATRIX(mi);
+  if (mp->columns == NULL)
+	return;
 
   /* We simply clear the whole window and restart the scrolling operation.
    * In principle, it is possible to restore at least some of the
@@ -554,13 +744,18 @@ void refresh_matrix(ModeInfo *mi)
 
 void change_matrix(ModeInfo *mi)
 {
-  matrix_t *mp = PICK_MATRIX(mi);
   int c;
+  matrix_t *mp;
+
+  if (matrix == NULL)
+	return;
+  mp = PICK_MATRIX(mi);
+  if (mp->columns == NULL)
+	return;
 
   MI_CLEARWINDOW(mi);
 
-  for (c = 0; c < mp->num_cols; c++)
-	{
+  for (c = 0; c < mp->num_cols; c++) {
 	  column_t *column = &(mp->columns[c]);
 
 	  column->yPtr = mp->pixmapHeight;
@@ -569,208 +764,5 @@ void change_matrix(ModeInfo *mi)
 	  column->strLen  = 0;         /* will generate new string */
 
 	  new_column(mi, column);
-	}
-}
-
-/***********************************************************************/
-
-
-/* NAME: init_active_screen()
- *
- * FUNCTION: Initialize the Matrix state for the current screen.
- *           Based on the width and height of the display,
- *           allocate and initialize column data structures.
- */
-
-static void init_active_screen(const ModeInfo *mi)
-{
-  matrix_t *mp = PICK_MATRIX(mi);
-  int c;
-
-  if (MI_NPIXELS(mi) > 2)
-	{
-	  mp->fg   = MI_PIXEL(mi, GREEN);
-	  mp->bold = MI_PIXEL(mi, BRIGHTGREEN);
-	}
-  else
-	mp->fg = mp->bold = MI_WHITE_PIXEL(mi);
-
-  mp->bg = MI_BLACK_PIXEL(mi);
-
-  mp->kana[0] =
-	XCreatePixmapFromBitmapData(MI_DISPLAY(mi),
-								MI_WINDOW(mi), (char *) katakana_bits,
-								katakana_width, katakana_height,
-								mp->bg, mp->fg, MI_DEPTH(mi));
-
-  mp->kana[1] =
-	XCreatePixmapFromBitmapData(MI_DISPLAY(mi),
-								MI_WINDOW(mi), (char *) katakana_bits,
-								katakana_width, katakana_height,
-								mp->bg, mp->bold, MI_DEPTH(mi));
-
-
-  /*
-   * Using the width of the kana font, determine how many
-   * columns can fit across the current screen (with a little
-   * padding).
-   */
-  mp->num_cols = (int) (MI_WIDTH(mi) / (1.3 * katakana_cell_width));
-
-  mp->columns = (column_t *) calloc(mp->num_cols, sizeof(column_t));
-  if (mp->columns == NULL)
-	{
-	  perror("init_active_screen:calloc");
-	  return;
-	}
-
-  /*
-   * If we're randomizing columns, keep the column pixmap height small
-   * to save memory and minimize time for each column update.  Otherwise,
-   * make the height large to maximize variety without updating the pixmaps.
-   */
-#ifdef RANDOMIZE_COLUMNS
-  mp->charsPerPixmap = MI_HEIGHT(mi) / (4 * katakana_cell_height);
-#else
-  mp->charsPerPixmap = MI_HEIGHT(mi) / katakana_cell_height;
-#endif
-
-  if (!mp->charsPerPixmap)  /* sanity check for tiny windows */
-	mp->charsPerPixmap = 1;
-
-  mp->pixmapHeight = mp->charsPerPixmap * katakana_cell_height;
-
-  for (c = 0; c < mp->num_cols; c++)
-	mp->columns[c].pixmap  = XCreatePixmap(MI_DISPLAY(mi), MI_WINDOW(mi),
-										   PIXMAP_WIDTH, mp->pixmapHeight,
-										   MI_DEPTH(mi));
-
-  /* Change the speed of a column after it's covered half the screen */
-  mp->speedUpdateInterval = MI_HEIGHT(mi) / (2 * katakana_cell_height);
-
-  /* initialize the column data */
-  for (c = 0; c < mp->num_cols; c++)
-	{
-	  column_t *column = &(mp->columns[c]);
-
-	  column->yPtr = mp->pixmapHeight;
-
-	  column->nextSpeedUpdate = 0; /* will generate new speed  */
-	  column->strLen  = 0;         /* will generate new string */
-
-	  new_column(mi, column);
-	}
-}
-
-
-/* NAME: free_screen
- *
- * FUNCTION: delete the data associated with a single screen.  Be careful
- * not to do spurious free()s of nonexistent data, and to nullify all
- * freed pointers that might be reused past the end of this call.
- */
-static void free_screen(const ModeInfo *mi, matrix_t *mp)
-{
-  if (mp->columns != NULL)
-	{
-	  int c;
-
-	  for (c = 0; c < mp->num_cols; c++)
-		{
-		  if (mp->columns[c].pixmap)
-			XFreePixmap(MI_DISPLAY(mi), mp->columns[c].pixmap);
-		}
-
-	  free(mp->columns);
-	  mp->columns = NULL;
-	}
-
-  if (mp->kana[0])
-	{
-	  XFreePixmap(MI_DISPLAY(mi), mp->kana[0]);
-	  mp->kana[0] = 0;
-	}
-
-  if (mp->kana[1])
-	{
-	  XFreePixmap(MI_DISPLAY(mi), mp->kana[1]);
-	  mp->kana[1] = 0;
-	}
-}
-
-
-/* NAME: new_column
- *
- * FUNCTION: clears and generates a pixmap of "matrix" data
- */
-
-static void new_column(const ModeInfo *mi, column_t *c)
-{
-  matrix_t *mp = PICK_MATRIX(mi);
-  int currChar;
-
-  /*
-   * clear the pixmap to get rid of previous data or initialize
-   */
-  XSetForeground(MI_DISPLAY(mi), MI_GC(mi), mp->bg);
-  XFillRectangle(MI_DISPLAY(mi), c->pixmap, MI_GC(mi),
-				 0, 0, PIXMAP_WIDTH, mp->pixmapHeight);
-
-  /*
-   * Write characters into the column pixmap, starting at the
-   * bottom and moving upwards.  Decrement the string length, gap length,
-   * and next-speed-update timers for the column and reinitialize them
-   * if necessary.
-   */
-  for (currChar = mp->charsPerPixmap - 1; currChar >= 0; currChar--)
-	{
-	  if (c->nextSpeedUpdate-- == 0)
-		{
-		  c->speed = MATRIX_SPEED;
-		  c->nextSpeedUpdate = mp->speedUpdateInterval;
-
-		  /* tweak to prevent really slow columns from remaining slow */
-		  if (c->speed <= 2)
-			c->nextSpeedUpdate /= 2;
-		}
-
-	  if (c->gapLen > 0)
-		{
-		  c->gapLen--;
-		  continue;
-		}
-	  else if (c->strLen == 0)
-		{
-		  /*
-		   * generate a gap of random length in the string, followed
-		   * by a random number of characters.  Set the endChar flag
-		   * to indicate the end of a new string.
-		   */
-		  c->gapLen  = MATRIX_GAPLEN;
-		  c->strLen  = MATRIX_STRLEN;
-		  c->endChar = True;
-		}
-	  else
-		{
-		  Pixmap src;
-		  int kOffset;
-
-		  if (c->endChar)
-			{
-			  src = mp->kana[1]; /* a bold, non-numeric character */
-			  kOffset = MATRIX_RANDOM(10, katakana_num_cells);
-			  c->endChar = False;
-			} else {             /* inside a string - kana or number */
-			  src = mp->kana[0];
-			  kOffset = MATRIX_RANDOM(0, katakana_num_cells);
-			}
-
-		  XCopyArea(MI_DISPLAY(mi), src, c->pixmap, MI_GC(mi),
-					kOffset * katakana_cell_width, 0,
-					katakana_cell_width, katakana_cell_height,
-					0, currChar * katakana_cell_height);
-
-		  c->strLen--;
-		}
-	}
+  }
 }

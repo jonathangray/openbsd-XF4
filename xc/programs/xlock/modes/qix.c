@@ -2,7 +2,7 @@
 /* qix --- vector swirl */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)qix.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)qix.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,17 +22,18 @@ static const char sccsid[] = "@(#)qix.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 03-Mar-98: Combined with Darrick Brown's "geometry".
- * 10-May-97: Compatible with xscreensaver
- * 29-Jul-90: support for multiple screens.
- *	      made check_bounds_?() a macro.
- *	      fixed initial parameter setup.
- * 15-Dec-89: Fix for proper skipping of {White,Black}Pixel() in colors.
- * 08-Oct-89: Fixed bug in memory allocation in init_qix().
- *	      Moved seconds() to an extern.
- * 23-Sep-89: Switch to random() and fixed bug w/ less than 4 lines.
- * 20-Sep-89: Lint.
- * 24-Mar-89: Written.
+ * 01-Nov-2000: Allocation checks
+ * 03-Mar-1998: Combined with Darrick Brown's "geometry".
+ * 10-May-1997: Compatible with xscreensaver
+ * 29-Jul-1990: support for multiple screens.
+ *	            made check_bounds_?() a macro.
+ *	            fixed initial parameter setup.
+ * 15-Dec-1989: Fix for proper skipping of {White,Black}Pixel() in colors.
+ * 08-Oct-1989: Fixed bug in memory allocation in init_qix().
+ *	            Moved seconds() to an extern.
+ * 23-Sep-1989: Switch to random() and fixed bug w/ less than 4 lines.
+ * 20-Sep-1989: Lint.
+ * 24-Mar-1989: Written.
  */
 
 #ifdef STANDALONE
@@ -61,20 +62,20 @@ static Bool kaleid;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-complete", ".qix.complete", XrmoptionNoArg, (caddr_t) "on"},
-	{"+complete", ".qix.complete", XrmoptionNoArg, (caddr_t) "off"},
-	{"-kaleid", ".qix.kaleid", XrmoptionNoArg, (caddr_t) "on"},
-	{"+kaleid", ".qix.kaleid", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-complete", (char *) ".qix.complete", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+complete", (char *) ".qix.complete", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-kaleid", (char *) ".qix.kaleid", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+kaleid", (char *) ".qix.kaleid", XrmoptionNoArg, (caddr_t) "off"}
 };
 static argtype vars[] =
 {
-      {(caddr_t *) & complete, "complete", "Complete", DEF_COMPLETE, t_Bool},
-	{(caddr_t *) & kaleid, "kaleid", "Kaleid", DEF_KALEID, t_Bool}
+      {(caddr_t *) & complete, (char *) "complete", (char *) "Complete", (char *) DEF_COMPLETE, t_Bool},
+	{(caddr_t *) & kaleid, (char *) "kaleid", (char *) "Kaleid", (char *) DEF_KALEID, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-/+complete", "turn on/off complete morphing graph"},
-	{"-/+kaleid", "turn on/off complete kaleidoscope"}
+	{(char *) "-/+complete", (char *) "turn on/off complete morphing graph"},
+	{(char *) "-/+kaleid", (char *) "turn on/off complete kaleidoscope"}
 };
 
 ModeSpecOpt qix_opts =
@@ -124,6 +125,23 @@ static qixstruct *qixs = NULL;
     } else if ((val) >= (max)) {					\
 	*(del) = -(NRAND((qp)->max_delta)) - (qp)->offset;	\
     }								\
+}
+
+static void
+free_qix(qixstruct *qp)
+{
+	if (qp->lineq != NULL) {
+		(void) free((void *) qp->lineq);
+		qp->lineq = NULL;
+	}
+	if (qp->delta != NULL) {
+		(void) free((void *) qp->delta);
+		qp->delta = NULL;
+	}
+	if (qp->position != NULL) {
+		(void) free((void *) qp->position);
+		qp->position = NULL;
+	}
 }
 
 void
@@ -181,8 +199,16 @@ init_qix(ModeInfo * mi)
 	if (qp->position)
 		(void) free((void *) qp->position);
 
-	qp->delta = (XPoint *) malloc(qp->npoints * sizeof (XPoint));
-	qp->position = (XPoint *) malloc(qp->npoints * sizeof (XPoint));
+	if ((qp->delta = (XPoint *) malloc(qp->npoints *
+			sizeof (XPoint))) == NULL) {
+		free_qix(qp);
+		return;
+	}
+	if ((qp->position = (XPoint *) malloc(qp->npoints *
+			sizeof (XPoint))) == NULL) {
+		free_qix(qp);
+		return;
+	}
 	for (i = 0; i < qp->npoints; i++) {
 		qp->delta[i].x = NRAND(qp->max_delta) + qp->offset;
 		qp->delta[i].y = NRAND(qp->max_delta) + qp->offset;
@@ -204,7 +230,11 @@ init_qix(ModeInfo * mi)
 		qp->lineq = NULL;
 	}
 	if (!qp->kaleid) {
-		qp->lineq = (XPoint *) malloc(qp->nlines * sizeof (XPoint));
+		if ((qp->lineq = (XPoint *) malloc(qp->nlines *
+				sizeof (XPoint))) == NULL) {
+			free_qix(qp);
+			return;
+		}
 		for (i = 0; i < qp->nlines; i++)
 			qp->lineq[i].x = qp->lineq[i].y = -1;	/* move initial point off screen */
 	}
@@ -369,16 +399,8 @@ release_qix(ModeInfo * mi)
 	if (qixs != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			qixstruct  *qp = &qixs[screen];
-
-			if (qp->lineq)
-				(void) free((void *) qp->lineq);
-			if (qp->delta)
-				(void) free((void *) qp->delta);
-			if (qp->position)
-				(void) free((void *) qp->position);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_qix(&qixs[screen]);
 		(void) free((void *) qixs);
 		qixs = NULL;
 	}

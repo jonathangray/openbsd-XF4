@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T -w
 # This is used  to add life to life
 # This is a QUICK hack to convert life files to xlock's life format.
 # Patterns MUST have <= 64 pts at start for life.c to use the data generated
@@ -13,6 +13,8 @@
 #...........****.....**
 #..........****........
 #..........*...........
+
+local($PTS, $X, $Y);
 
 print "
 Drop these points in life.c, within the 'patterns' array.

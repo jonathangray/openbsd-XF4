@@ -2,7 +2,7 @@
 /* solitare --- Shows a pointless game, used in the Mandarin Candidate */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)solitare.cc	1.0 99/12/10 xlockmore";
+static const char sccsid[] = "@(#)solitare.cc	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -33,6 +33,7 @@ static const char sccsid[] = "@(#)solitare.cc	1.0 99/12/10 xlockmore";
  *   http://wildsav.idv.uni-linz.ac.at/mfx/psol-cardsets/index.html
  *
  * Revision History:
+ * 01-Nov-2000: Allocation checks
  * 17-Jan-2000: autoplay, trackmouse, resizing, release
  * 10-Dec-1999: wanted to do some C++, may end up using GL but not for now.
  *
@@ -84,22 +85,26 @@ enum Suits {spade, diamond, club, heart};
 #ifdef FR
 // Ace => As, Jack => Valet,
 // Queen = Reine (Dame), King = Roi, Joker = Joker
-static char *RankNames[] = {NULL, "A", "2", "3", "4", "5", "6", "7",
-	"8", "9", "10", "V", "D", "R"};
+static const char *RankNames[] = {"", "A",
+	"2", "3", "4", "5", "6", "7", "8", "9", "10",
+	"V", "D", "R"};
 #else
 #ifdef NL
 // Ace => Aas, Jack => Boer (Farmer),
 // Queen = Vrouw (Lady), King = Heer (Gentleman), Joker = Joker
-static char *RankNames[] = {NULL, "A", "2", "3", "4", "5", "6", "7",
-	"8", "9", "10", "B", "V", "H"};
+static const char *RankNames[] = {"", "A",
+	"2", "3", "4", "5", "6", "7", "8", "9", "10",
+	"B", "V", "H"};
 #else
 #ifdef RU
 // Some may be approximations to Cyrillic
-static char *RankNames[] = {NULL, "T", "2", "3", "4", "5", "6", "7",
-	"8", "9", "10", "B", "Q", "K"};
+static const char *RankNames[] = {"", "T",
+	"2", "3", "4", "5", "6", "7", "8", "9", "10",
+	"B", "Q", "K"};
 #else
-static char *RankNames[] = {NULL, "A", "2", "3", "4", "5", "6", "7",
-	"8", "9", "10", "J", "Q", "K"};
+static const char *RankNames[] = {"", "A",
+	"2", "3", "4", "5", "6", "7", "8", "9", "10",
+	"J", "Q", "K"};
 #endif
 #endif
 #endif
@@ -191,13 +196,13 @@ drawSuit(ModeInfo * mi, Suits suit, int x, int y, int width, int height)
 			XFillArc(display, window, gc,
 				x + width / 2 - 1, y, width / 2, height / 2, 0, 23040);
 			polygon[0].x =  x + width / 2;
-			polygon[0].y =  y + height / 4;
+			polygon[0].y =  y + short(float(height) / 4.1);
 			polygon[1].x =  short(float(-width) / 2.7);
-			polygon[1].y =  height / 4;
+			polygon[1].y =  short(float(height) / 4.1);
 			polygon[2].x =  short(float(width) / 2.7);
-			polygon[2].y =  height / 2;
+			polygon[2].y =  short(float(height) / 2.05);
 			polygon[3].x =  short(float(width) / 2.7);
-			polygon[3].y =  -height / 2;
+			polygon[3].y =  short(float(-height) / 2.05);
 			XFillPolygon(display, window, gc,
 				polygon, 4, Convex, CoordModePrevious);
 			break;
@@ -216,7 +221,7 @@ public:
 	int whichRank();
 	Colors whichColor();
 };
-inline Card::Card(Suits suit, int rank) { this->suit = suit; this->rank = rank;}
+inline Card::Card(Suits a_suit, int a_rank) { this->suit = a_suit; this->rank = a_rank;}
 inline Suits Card::whichSuit() { return this->suit;}
 inline int Card::whichRank() { return this->rank;}
 inline Colors Card::whichColor() { return ((whichSuit() % MAXCOLORS) ? red : black);}
@@ -254,18 +259,20 @@ inline int CardView::y() { return locationY; }
 inline void CardView::moveTo(int lx, int ly) { locationX = lx; locationY = ly; }
 
 //cardview.cc
-CardView::CardView(ModeInfo * mi, Card * card)
+CardView::CardView(ModeInfo * a_mi, Card * a_card)
 {
-	this->mi = mi;
-	this->card = card;
+	this->mi = a_mi;
+	this->card = a_card;
 	faceUp = False;
 	locationX = locationY = 0;
 }
 
-CardView::CardView(ModeInfo * mi, Suits suit, int rank)
+CardView::CardView(ModeInfo * a_mi, Suits suit, int rank)
 {
-	this->mi = mi;
-	this->card = new Card(suit, rank);
+	this->mi = a_mi;
+	if ((this->card = new Card(suit, rank)) == NULL) {
+		return;
+	}
 	faceUp = False;
 	locationX = locationY = 0;
 }
@@ -286,7 +293,7 @@ void CardView::draw()
 		} else {
 			XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 		}
-		if (width() > 16 && height() > 18) {
+		if (width() > 16 && height() > 34) {
 #ifdef CENTERLABEL
 			XDrawString(display, window, gc,
 				x() + width() / 2 - strlen(RankNames[card->whichRank()]) * 8,
@@ -309,9 +316,15 @@ void CardView::draw()
 			x() + round(width() * 0.35), y() + round(height() * 0.55),
 			round(0.3 * width()), round(0.3 * height()));
 #else
-		drawSuit(mi, card->whichSuit(),
-			x() + 5, y() + 25,
-			round(0.3 * width()), round(0.3 * height()));
+		if (width() > 16 && height() > 34) {
+			drawSuit(mi, card->whichSuit(),
+				x() + 5, y() + 25,
+				round(0.3 * width()), round(0.3 * height()));
+		} else {
+			drawSuit(mi, card->whichSuit(),
+				x() + 2, y() + 2,
+				round(0.3 * width()), round(0.3 * height()));
+		}
 #endif
 		XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 		XDrawLine(display, window, gc,
@@ -386,10 +399,10 @@ private:
 	CardLink * link;
 };
 
-inline CardLink::CardLink(ModeInfo *mi, Suits suit, int rank) : CardView(mi, suit, rank) { ; }
-inline CardLink::CardLink(ModeInfo *mi, Card * card) : CardView(mi, card) { ; }
+inline CardLink::CardLink(ModeInfo *a_mi, Suits suit, int rank) : CardView(a_mi, suit, rank) { ; }
+inline CardLink::CardLink(ModeInfo *a_mi, Card * a_card) : CardView(a_mi, a_card) { ; }
 inline CardLink * CardLink::nextCard() { return link; }
-inline void CardLink::setLink(CardLink * card) { link = card; }
+inline void CardLink::setLink(CardLink * a_card) { link = a_card; }
 
 class CardPile
 {
@@ -401,7 +414,7 @@ public:
 	virtual Bool canTake(Card *);
 	Bool contains(int, int); // mouse interaction
 	virtual void displayPile();
-	virtual void initialize();
+	virtual Bool initialize();
 	virtual void cleanup();
 	CardLink * removeCard();
 	virtual Bool select(int, int); // mouse interaction
@@ -415,21 +428,21 @@ protected:
 
 #define nilLink (CardLink *) 0
 
-inline CardPile::CardPile(ModeInfo * mi) { this->mi = mi; top = nilLink; }
+inline CardPile::CardPile(ModeInfo * a_mi) { this->mi = a_mi; top = nilLink; }
 
 class DealPile : public CardPile
 {
 public:
 	DealPile(ModeInfo *);
 	virtual void cleanup();
-	void shuffle(CardPile *);
+	Bool shuffle(CardPile *);
 };
-inline DealPile::DealPile(ModeInfo * mi) : CardPile(mi) { ; }
+inline DealPile::DealPile(ModeInfo * a_mi) : CardPile(a_mi) { ; }
 
 class SuitPile : public CardPile
 {
 public:
-	SuitPile(ModeInfo * mi, int s) : CardPile(mi) { suit = s; }
+	SuitPile(ModeInfo * a_mi, int s) : CardPile(a_mi) { suit = s; }
 	virtual void updateLocation(ModeInfo *);
 	virtual Bool canTake(Card *);
 private:
@@ -439,7 +452,7 @@ private:
 class AlternatePile : public CardPile
 {
 public:
-	AlternatePile(ModeInfo * mi, int p) : CardPile(mi) { pile = p; }
+	AlternatePile(ModeInfo * a_mi, int p) : CardPile(a_mi) { pile = p; }
 	virtual void updateLocation(ModeInfo *);
 	virtual void addCard(CardLink *);
 	virtual Bool canTake(Card *);
@@ -447,7 +460,7 @@ public:
 	virtual void displayPile();
 	virtual Bool select(int, int);
 	virtual Bool select(Bool);
-	virtual void initialize();
+	virtual Bool initialize();
 private:
 	int pile;
 };
@@ -455,10 +468,10 @@ private:
 class DeckPile : public CardPile
 {
 public:
-	DeckPile(ModeInfo * mi) : CardPile(mi) { ; }
+	DeckPile(ModeInfo * a_mi) : CardPile(a_mi) { ; }
 	virtual void updateLocation(ModeInfo *);
 	virtual void addCard(CardLink *);
-	virtual void initialize();
+	virtual Bool initialize();
 	virtual Bool select(int, int);
 	virtual Bool select(Bool);
 };
@@ -466,7 +479,7 @@ public:
 class DiscardPile : public CardPile
 {
 public:
-	DiscardPile(ModeInfo * mi) : CardPile(mi) { ; }
+	DiscardPile(ModeInfo * a_mi) : CardPile(a_mi) { ; }
 	virtual void updateLocation(ModeInfo *);
 	virtual void addCard(CardLink *);
 	virtual Bool select(int, int);
@@ -479,7 +492,7 @@ class GameTable
 public:
 	GameTable(ModeInfo *);
 	~GameTable();
-	void newGame(ModeInfo *);
+	Bool newGame(ModeInfo *);
 	Bool suitCanAdd(Card *);
 	CardPile * suitAddPile(Card *);
 	Bool alternateCanAdd(Card *);
@@ -536,7 +549,7 @@ void CardPile::addCard(CardLink * card)
 	}
 }
 
-void CardPile::updateLocation(ModeInfo * mi)
+void CardPile::updateLocation(ModeInfo * a_mi)
 {
 	;
 }
@@ -570,20 +583,21 @@ void CardPile::displayPile()
 	}
 }
 
-void CardPile::initialize()
+Bool CardPile::initialize()
 {
 	top = nilLink;
+	return True;
 }
 
 void CardPile::cleanup()
 {
 	CardLink *p;
 
-  while (top != nilLink) {
-    p = top;
+	while (top != nilLink) {
+  		p = top;
 		top = top->nextCard();
-    delete p;
-   }
+		delete p;
+	}
 }
 
 CardLink * CardPile::removeCard()
@@ -597,9 +611,9 @@ CardLink * CardPile::removeCard()
 	return p;
 }
 
-Bool CardPile::select(int x, int y)
+Bool CardPile::select(int a_x, int a_y)
 {
-	// from virtual, x & y unused
+	// from virtual, a_x & a_y unused
 	return select(True);
 }
 
@@ -621,7 +635,7 @@ void DealPile::cleanup()
    }
 }
 
-void DealPile::shuffle(CardPile * pile)
+Bool DealPile::shuffle(CardPile * pile)
 {
 	CardLink *p, *q;
 	int max, limit, i;
@@ -634,7 +648,7 @@ void DealPile::shuffle(CardPile * pile)
 	}
 	// then pull them out, randomly, one at a time
 	for (; max > 0; max--) {
-		limit = ((LRAND() >> 3) % max) + 1;
+		limit = (int) ((LRAND() >> 3) % max) + 1;
 		for ( i= 1, p = top; i <= limit; ) {
 			while (p->isFaceUp())
 				p = p->nextCard();
@@ -642,15 +656,18 @@ void DealPile::shuffle(CardPile * pile)
 			if (i <= limit)
 				p = p->nextCard();
 		}
-		q = new CardLink(mi, p->thisCard());
+		if ((q = new CardLink(mi, p->thisCard())) == NULL) {
+			return False;
+		}
 		pile->addCard(q);
 		p->flip();
 	}
+	return True;
 }
 
-void DeckPile::updateLocation(ModeInfo * mi)
+void DeckPile::updateLocation(ModeInfo * a_mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp = &solitare[MI_SCREEN(a_mi)];
 
 	//set pile
 	x = round(((bp->cardwidth + 2.0 * MAXSUITS * bp->cardwidth *
@@ -664,12 +681,14 @@ void DeckPile::updateLocation(ModeInfo * mi)
 	}
 }
 
-void DeckPile::initialize()
+Bool DeckPile::initialize()
 {
 	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
 
 	CardPile::initialize();
-	bp->game->dealPile->shuffle(this);
+	if (!bp->game->dealPile->shuffle(this))
+    	return False;
+	return True;
 }
 
 void DeckPile::addCard(CardLink *c)
@@ -679,9 +698,9 @@ void DeckPile::addCard(CardLink *c)
 	CardPile::addCard(c);
 }
 
-Bool DeckPile::select(int x, int y)
+Bool DeckPile::select(int a_x, int a_y)
 {
-	// from virtual, x & y unused
+	// from virtual, a_x & a_y unused
 	return select(True);
 }
 
@@ -704,9 +723,9 @@ Bool DeckPile::select(Bool first)
 	return didSomething;
 }
 
-void DiscardPile::updateLocation(ModeInfo * mi)
+void DiscardPile::updateLocation(ModeInfo * a_mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp = &solitare[MI_SCREEN(a_mi)];
 
 	//set pile
 	x = round(((bp->cardwidth + 2.0 * MAXSUITS * bp->cardwidth *
@@ -728,9 +747,9 @@ void DiscardPile::addCard(CardLink *c)
 }
 
 // play the current face card
-Bool DiscardPile::select(int x, int y)
+Bool DiscardPile::select(int a_x, int a_y)
 {
-	// from virtual, x & y unused
+	// from virtual, a_x & a_y unused
 	return select(True);
 }
 
@@ -761,9 +780,9 @@ Bool DiscardPile::select(Bool first)
 	return False;
 }
 
-void SuitPile::updateLocation(ModeInfo * mi)
+void SuitPile::updateLocation(ModeInfo * a_mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp = &solitare[MI_SCREEN(a_mi)];
 
 	//set pile
 	x = round(((bp->cardwidth + 2.0 * suit * bp->cardwidth *
@@ -791,9 +810,9 @@ Bool SuitPile::canTake(Card * card)
 	return False;
 }
 
-void AlternatePile::updateLocation(ModeInfo * mi)
+void AlternatePile::updateLocation(ModeInfo * a_mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp = &solitare[MI_SCREEN(a_mi)];
 	int ty;
 
 	//set pile
@@ -810,9 +829,9 @@ void AlternatePile::updateLocation(ModeInfo * mi)
 		if (p->isFaceUp())
 			bf = p;
 	}
-  if (bf != nilLink) {
+	if (bf != nilLink) {
 		// ok but this is wrong.  Since we only have a singly link
-		// we will do this slightly ineffiently...
+		// we will do this slightly inefficiently...
 		ty = y;
 		while (bf != top) {
 			CardLink *sp;
@@ -824,19 +843,20 @@ void AlternatePile::updateLocation(ModeInfo * mi)
 	}
 }
 
-void AlternatePile::initialize()
+Bool AlternatePile::initialize()
 {
 	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
-	int pile;
+	int a_pile;
 
 	//put the right number of cards on the alternate
-	CardPile::initialize();
-	for (pile = 0; pile <= this->pile; pile++)
+	(void) CardPile::initialize();
+	for (a_pile = 0; a_pile <= this->pile; a_pile++)
 		addCard((bp->game->deckPile)->removeCard());
 	// flip the last one
 	if (top != nilLink) {
 		top->flip();
 	}
+	return True;
 }
 
 void AlternatePile::addCard(CardLink * card)
@@ -880,7 +900,7 @@ Bool AlternatePile::canTake(Card *card)
 	return False;
 }
 
-void AlternatePile::copyBuild(CardLink *card, CardPile * pile)
+void AlternatePile::copyBuild(CardLink *card, CardPile * a_pile)
 {
 	CardLink *tempCard;
 
@@ -888,9 +908,9 @@ void AlternatePile::copyBuild(CardLink *card, CardPile * pile)
 	tempCard = removeCard();
 	displayPile();
 	if (card != tempCard)
-		copyBuild(card, pile);
-	pile->addCard(tempCard);
-	pile->displayPile();
+		copyBuild(card, a_pile);
+	a_pile->addCard(tempCard);
+	a_pile->displayPile();
 }
 
 static void stackDisplay(CardLink *p)
@@ -910,7 +930,7 @@ void AlternatePile::displayPile()
 	}
 }
 
-Bool AlternatePile::select(int x, int y)
+Bool AlternatePile::select(int a_x, int a_y)
 {
 	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
 	CardLink *c;
@@ -927,7 +947,7 @@ Bool AlternatePile::select(int x, int y)
 	}
 
 	// if it was to top card, see if we can move it
-	if (top->includes(x, y)) {
+	if (top->includes(a_x, a_y)) {
 		// see if we ca move it to a suit pile
 		if (bp->game->suitCanAdd(top->thisCard())) {
 			copyBuild(top, bp->game->suitAddPile(top->thisCard()));
@@ -943,7 +963,7 @@ Bool AlternatePile::select(int x, int y)
 
 	// else see if we can move a pile
 	for (c = top->nextCard(); c!= nilLink; c = c->nextCard())
-		if (c->isFaceUp() && c->includes(x, y)) {
+		if (c->isFaceUp() && c->includes(a_x, a_y)) {
 			if (bp->game->alternateCanAdd(c->thisCard())) {
 				copyBuild(c, bp->game->alternateAddPile(c->thisCard()));
 			}
@@ -1005,28 +1025,51 @@ GameTable::GameTable(ModeInfo *mi)
 	bp->cardwidth = bp->width / (MAXALTERNATEPILES + 1);
 	bp->cardheight = bp->height / 5;
 	// Create the original (unshuffled) deck (with no cards) ... dah daaah!
-	dealPile = new DealPile(mi);
+	if ((dealPile = new DealPile(mi)) == NULL) {
+		return;
+	}
 	for (suit = 0; suit < MAXSUITS; suit++)
 		for (rank = 1; rank <= MAXRANK; rank++) {
+            CardLink * deal;
 			// 52 pickup, creating new cards and creating links
-			dealPile->addCard(new CardLink(mi, Suits(suit), rank));
+			if ((deal = new CardLink(mi, Suits(suit), rank)) == NULL) {
+				dealPile->cleanup();
+				delete dealPile;
+				return;
+			}
+			dealPile->addCard(deal);
 		}
 	// create 2 piles the deck and discard piles
-	allPiles[0] = deckPile = new DeckPile(mi);
+	if ((allPiles[0] = deckPile = new DeckPile(mi)) == NULL) {
+		dealPile->cleanup();
+		delete dealPile;
+		return;
+	}
 	deckPile->updateLocation(mi);
-	allPiles[1] = discardPile = new DiscardPile(mi);
+	if ((allPiles[1] = discardPile = new DiscardPile(mi)) == NULL) {
+		dealPile->cleanup();
+		delete dealPile;
+		delete deckPile;
+		return;
+	}
 	discardPile->updateLocation(mi);
 
 	// create suit piles
 	for (suit = 0; suit < MAXSUITS; suit++) {
-		allPiles[suit + 2] = suitPiles[Suits(suit)] = new SuitPile(mi, suit);
+		if ((allPiles[suit + 2] = suitPiles[Suits(suit)] = new SuitPile(mi, suit)) == NULL) {
+			delete this;
+			return;
+		}
 		(suitPiles[Suits(suit)])->updateLocation(mi);
 	}
 
 	// create alternate piles
 	for (pile = 0; pile < MAXALTERNATEPILES; pile++) {
-		allPiles[pile + 2 + MAXSUITS] = alternatePiles[pile] =
-			new AlternatePile(mi, pile);
+		if ((allPiles[pile + 2 + MAXSUITS] = alternatePiles[pile] =
+			new AlternatePile(mi, pile)) == NULL) {
+			delete this;
+			return;
+		}
 		(alternatePiles[pile])->updateLocation(mi);
 	}
 }
@@ -1067,15 +1110,17 @@ void GameTable::Resize(ModeInfo *mi)
 	}
 }
 
-void GameTable::newGame(ModeInfo * mi)
+Bool GameTable::newGame(ModeInfo * mi)
 {
 	int pile;
 
 	// initialize all the piles
 	for (pile = 0; pile < MAXPILES; pile++)
-		allPiles[pile]->initialize();
+		if (!allPiles[pile]->initialize())
+			return False;
 	// redraw the game window
 	Redraw(mi);
+	return True;
 }
 
 void GameTable::Redraw(ModeInfo * mi)
@@ -1187,31 +1232,38 @@ extern "C" { void change_solitare(ModeInfo * mi); }
 extern "C" { void release_solitare(ModeInfo * mi); }
 extern "C" { void refresh_solitare(ModeInfo * mi); }
 
+#ifndef DISABLE_INTERACTIVE
 static XrmOptionDescRec opts[] =
 {
-	{"-trackmouse", ".solitare.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
-	{"+trackmouse", ".solitare.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-trackmouse", (char *) ".solitare.trackmouse", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+trackmouse", (char *) ".solitare.trackmouse", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & trackmouse, "trackmouse", "TrackMouse", DEF_TRACKMOUSE, t_Bool}
+	{(caddr_t *) & trackmouse, (char *) "trackmouse", (char *) "TrackMouse", (char *) DEF_TRACKMOUSE, t_Bool}
 };
 
 static OptionStruct desc[] =
 {
-	{"-/+trackmouse", "turn on/off the tracking of the mouse"}
+	{(char *) "-/+trackmouse", (char *) "turn on/off the tracking of the mouse"}
 };
 
 ModeSpecOpt solitare_opts =
 {sizeof opts / sizeof opts[0], opts, sizeof vars / sizeof vars[0], vars, desc};
+#else
+ModeSpecOpt solitare_opts =
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
+#endif
 
 #ifdef USE_MODULES
 ModStruct solitare_description =
-{"solitare", "init_solitare", "draw_solitare", "release_solitare",
- "refresh_solitare", "init_solitare", NULL, &solitare_opts,
- 2000000, 1, 1, 1, 64, 1.0, "",
- "Shows Klondike's game of solitare", 0, NULL};
+{(char *) "solitare", (char *) "init_solitare",
+ (char *) "draw_solitare", (char *) "release_solitare",
+ (char *) "refresh_solitare", (char *) "init_solitare",
+ NULL, &solitare_opts,
+ 2000000, 1, 1, 1, 64, 1.0, (char *) "",
+ (char *) "Shows Klondike's game of solitare", 0, NULL};
 #endif
 
 /*
@@ -1243,7 +1295,8 @@ init_solitare(ModeInfo * mi)
 	MI_CLEARWINDOW(mi);
 #ifdef DOFONT
 	Display    *display = MI_DISPLAY(mi);
-	 XGCValues gcv;
+	XGCValues gcv;
+
 	 if (mode_font == None)
 		mode_font = getFont(display);
 	  if (mode_font != None) {
@@ -1252,8 +1305,11 @@ init_solitare(ModeInfo * mi)
 			gcv.graphics_exposures = False;
 			gcv.foreground = MI_WHITE_PIXEL(mi);
 			gcv.background = MI_BLACK_PIXEL(mi);
-			mp->gc = XCreateGC(display, MI_WINDOW(mi),
-			  GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+			if ((mp->gc = XCreateGC(display, MI_WINDOW(mi),
+			  GCForeground | GCBackground | GCGraphicsExposures | GCFont,
+					&gcv)) == None) {
+				return;
+			}
 			mp->ascent = mode_font->ascent;
 			mp->height = font_height(mode_font);
 			for (i = 0; i < 256; i++)
@@ -1264,15 +1320,19 @@ init_solitare(ModeInfo * mi)
 		if (bp->width != MI_WIDTH(mi) || bp->height != MI_HEIGHT(mi)) {
 			/* Let us not be creative then... */
 			bp->game->Resize(mi);
-	    bp->painted = True;
+			bp->painted = True;
 			refresh_solitare(mi);
 			return;
 		}
 		delete bp->game;
 	}
 	bp->painted = False;
-	bp->game = new GameTable(mi);
-	bp->game->newGame(mi);
+	if ((bp->game = new GameTable(mi)) == NULL) {
+		return;
+	}
+	if (!bp->game->newGame(mi)) {
+		delete bp->game;
+	}
 }
 
 /*
@@ -1283,7 +1343,13 @@ init_solitare(ModeInfo * mi)
 void
 draw_solitare(ModeInfo * mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp;
+
+	if (solitare == NULL)
+		return;
+	bp = &solitare[MI_SCREEN(mi)];
+	if (!bp->game)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 	bp->painted = True;
@@ -1295,8 +1361,9 @@ draw_solitare(ModeInfo * mi)
 		if (!bp->game->HandleMouse(mi)) {
 			bp->showend++;
 		}
-	} else if (!bp->game->HandleGenerate())
-			bp->showend++;
+	} else if (!bp->game->HandleGenerate()) {
+		bp->showend++;
+	}
 }
 
 /*
@@ -1312,8 +1379,7 @@ release_solitare(ModeInfo * mi)
 {
 	if (solitare != NULL) {
 		for (int screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			Display    *display = MI_DISPLAY(mi);
-	    solitarestruct *bp = &solitare[screen];
+			solitarestruct *bp = &solitare[screen];
 
 			if (bp->game)
 				delete bp->game;
@@ -1326,7 +1392,13 @@ release_solitare(ModeInfo * mi)
 void
 refresh_solitare(ModeInfo * mi)
 {
-	solitarestruct *bp = &solitare[MI_SCREEN(mi)];
+	solitarestruct *bp;
+
+	if (solitare == NULL)
+		return;
+	bp = &solitare[MI_SCREEN(mi)];
+	if (!bp->game)
+		return;
 
 	if (bp->painted) {
 		bp->game->Redraw(mi);

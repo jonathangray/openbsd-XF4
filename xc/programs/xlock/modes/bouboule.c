@@ -2,7 +2,7 @@
 /* bouboule --- glob of spheres twisting and changing size */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)bouboule.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)bouboule.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,13 +22,15 @@ static const char sccsid[] = "@(#)bouboule.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 15-May-97: jwz@jwz.org: turned into a standalone program.
- * 04-Sep-96: Added 3d support Henrik Theiling <theiling@coli-uni-sb.de>
- * 20-Feb-96: Added tests so that already malloced objects are not
- *            malloced twice, thanks to the report from <mccomb@interport.net>
- * 01-Feb-96: Patched by Jouk Jansen <joukj@hrem.stm.tudelft.nl> for VMS
- *            Patched by <bagleyd@tux.org> for TrueColor displays
- * 30-Jan-96: Wrote all that I wanted to.
+ * 01-Nov-2000: Allocation checks
+ * 15-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 04-Sep-1996: Added 3d support Henrik Theiling <theiling@coli-uni-sb.de>
+ * 20-Feb-1996: Added tests so that already malloced objects are not
+ *              malloced twice, thanks to the report from
+ *              <mccomb@interport.net>
+ * 01-Feb-1996: Patched by Jouk Jansen <joukj@hrem.stm.tudelft.nl> for VMS
+ *              Patched by <bagleyd@tux.org> for TrueColor displays
+ * 30-Jan-1996: Wrote all that I wanted to.
  *
  * Sort of starfield with a 3D engine.  For a real starfield, I only scale
  * the sort of sphere you see to the whole sky and clip the stars to the
@@ -91,7 +93,7 @@ static const char sccsid[] = "@(#)bouboule.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_bouboule
 
 ModeSpecOpt bouboule_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   bouboule_description =
@@ -270,7 +272,7 @@ sinvary(SinVariable * v)
 }
 
 /*************************************************/
-static void
+static Bool
 sininit(SinVariable * v,
 	double alpha, double step, double minimum, double maximum,
 	short int mayrand)
@@ -281,18 +283,24 @@ sininit(SinVariable * v,
 	v->maximum = maximum;
 	v->mayrand = mayrand;
 	if (mayrand != 0) {
-		if (v->varrand == NULL)
-			v->varrand = (SinVariable *) calloc(1, sizeof (SinVariable));
-		sininit(v->varrand,
-			VARRANDALPHA,
-			VARRANDSTEP,
-			VARRANDMIN,
-			VARRANDMAX,
-			0);
+		if (v->varrand == NULL) {
+			if ((v->varrand = (SinVariable *) calloc(1,
+					sizeof (SinVariable))) == NULL) {
+				return False;
+			}
+		}
+		if (!sininit(v->varrand,
+				VARRANDALPHA,
+				VARRANDSTEP,
+				VARRANDMIN,
+				VARRANDMAX,
+				0))
+			return False;
 		sinvary(v->varrand);
 	}
 	/* We calculate the values at least once for initialization */
 	sinvary(v);
+	return True;
 }
 
 static void
@@ -306,6 +314,47 @@ sinfree(SinVariable * point)
 		next = temp->varrand;
 		(void) free((void *) temp);
 	}
+}
+
+static void
+free_stars(StarField *sp)
+{
+	if (sp->star != NULL) {
+		(void) free((void *) sp->star);
+		sp->star = NULL;
+	}
+	if (sp->xarc != NULL) {
+		(void) free((void *) sp->xarc);
+		sp->xarc = NULL;
+	}
+	if (sp->xarcleft != NULL) {
+		(void) free((void *) sp->xarcleft);
+		sp->xarcleft = NULL;
+	}
+#if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
+	if (sp->oldxarc != NULL) {
+		(void) free((void *) sp->oldxarc);
+		sp->oldxarc = NULL;
+	}
+	if (sp->oldxarcleft != NULL) {
+		(void) free((void *) sp->oldxarcleft);
+		sp->oldxarcleft = NULL;
+	}
+#endif
+}
+
+static void
+free_bouboule(StarField *sp)
+{
+	free_stars(sp);
+	sinfree(&(sp->x));
+	sinfree(&(sp->y));
+	sinfree(&(sp->z));
+	sinfree(&(sp->sizex));
+	sinfree(&(sp->sizey));
+	sinfree(&(sp->thetax));
+	sinfree(&(sp->thetay));
+	sinfree(&(sp->thetaz));
 }
 
 /***************/
@@ -351,79 +400,95 @@ init_bouboule(ModeInfo * mi)
 
 	sp->NbStars = MI_COUNT(mi);
 	if (sp->NbStars < -MINSTARS) {
-		if (sp->star) {
-			(void) free((void *) sp->star);
-			sp->star = NULL;
-		}
-		if (sp->xarc) {
-			(void) free((void *) sp->xarc);
-			sp->xarc = NULL;
-		}
-		if (sp->xarcleft) {
-			(void) free((void *) sp->xarcleft);
-			sp->xarcleft = NULL;
-		}
-#if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
-		if (sp->oldxarc) {
-			(void) free((void *) sp->oldxarc);
-			sp->oldxarc = NULL;
-		}
-		if (sp->oldxarcleft) {
-			(void) free((void *) sp->oldxarcleft);
-			sp->oldxarcleft = NULL;
-		}
-#endif
+		free_stars(sp);
 		sp->NbStars = NRAND(-sp->NbStars - MINSTARS + 1) + MINSTARS;
 	} else if (sp->NbStars < MINSTARS)
 		sp->NbStars = MINSTARS;
 
 	/* We get memory for lists of objects */
-	if (sp->star == NULL)
-		sp->star = (Star *) malloc(sp->NbStars * sizeof (Star));
-	if (sp->xarc == NULL)
-		sp->xarc = (XArc *) malloc(sp->NbStars * sizeof (XArc));
-	if (MI_IS_USE3D(mi) && sp->xarcleft == NULL)
-		sp->xarcleft = (XArc *) malloc(sp->NbStars * sizeof (XArc));
+	if (sp->star == NULL) {
+		if ((sp->star = (Star *) malloc(sp->NbStars *
+				sizeof (Star))) == NULL) {
+			free_bouboule(sp);
+			return;
+		}
+	}
+	if (sp->xarc == NULL) {
+		if ((sp->xarc = (XArc *) malloc(sp->NbStars *
+				sizeof (XArc))) == NULL) {
+			free_bouboule(sp);
+			return;
+		}
+	}
+	if (MI_IS_USE3D(mi) && sp->xarcleft == NULL) {
+		if ((sp->xarcleft = (XArc *) malloc(sp->NbStars *
+				sizeof (XArc))) == NULL) {
+			free_bouboule(sp);
+			return;
+		}
+	}
 #if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
-	if (sp->oldxarc == NULL)
-		sp->oldxarc = (XArc *) malloc(sp->NbStars * sizeof (XArc));
-	if (MI_IS_USE3D(mi) && sp->oldxarcleft == NULL)
-		sp->oldxarcleft = (XArc *) malloc(sp->NbStars * sizeof (XArc));
+	if (sp->oldxarc == NULL) {
+		if ((sp->oldxarc = (XArc *) malloc(sp->NbStars *
+				sizeof (XArc))) == NULL) {
+			free_bouboule(sp);
+			return;
+		}
+	}
+	if (MI_IS_USE3D(mi) && sp->oldxarcleft == NULL) {
+		if ((sp->oldxarcleft = (XArc *) malloc(sp->NbStars *
+				sizeof (XArc))) == NULL) {
+			free_bouboule(sp);
+			return;
+		}
+	}
 #endif
 
 	{
 		/* We initialize evolving variables */
-		sininit(&sp->x,
+		if (!sininit(&sp->x,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(100) + 100.0),
 			((double) sp->width) / 4.0,
 			3.0 * ((double) sp->width) / 4.0,
-			POSCANRAND);
-		sininit(&sp->y,
+			POSCANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
+		if (!sininit(&sp->y,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(100) + 100.0),
 			((double) sp->height) / 4.0,
 			3.0 * ((double) sp->height) / 4.0,
-			POSCANRAND);
+			POSCANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
 
 		/* for z, we have to ensure that the bouboule does not get behind */
 		/* the eyes of the viewer.  His/Her eyes are at 0.  Because the */
 		/* bouboule uses the x-radius for the z-radius, too, we have to */
 		/* use the x-values. */
-		sininit(&sp->z,
+		if (!sininit(&sp->z,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(100) + 100.0),
 			((double) sp->width / 2.0 + MINZVAL),
 			((double) sp->width / 2.0 + MAXZVAL),
-			POSCANRAND);
+			POSCANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
 
 
-		sininit(&sp->sizex,
+		if (!sininit(&sp->sizex,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(100) + 100.0),
 			MIN(((double) sp->width) - sp->x.value,
 			    sp->x.value) / 5.0,
 			MIN(((double) sp->width) - sp->x.value,
 			    sp->x.value),
-			SIZECANRAND);
+			SIZECANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
 
-		sininit(&sp->sizey,
+		if (!sininit(&sp->sizey,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(100) + 100.0),
 			MAX(sp->sizex.value / MAX_SIZEX_SIZEY,
 			    sp->sizey.maximum / 5.0),
@@ -431,27 +496,39 @@ init_bouboule(ModeInfo * mi)
 			    MIN(((double) sp->height) -
 				sp->y.value,
 				sp->y.value)),
-			SIZECANRAND);
+			SIZECANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
 
-		sininit(&sp->thetax,
+		if (!sininit(&sp->thetax,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(200) + 200.0),
 			-M_PI, M_PI,
-			THETACANRAND);
-		sininit(&sp->thetay,
+			THETACANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
+		if (!sininit(&sp->thetay,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(200) + 200.0),
 			-M_PI, M_PI,
-			THETACANRAND);
-		sininit(&sp->thetaz,
+			THETACANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
+		if (!sininit(&sp->thetaz,
 			NRAND(3142) / 1000.0, M_PI / (NRAND(400) + 400.0),
 			-M_PI, M_PI,
-			THETACANRAND);
+			THETACANRAND)) {
+		    free_bouboule(sp);
+		    return;
+		}
 	}
 	for (i = 0; i < sp->NbStars; i++) {
 		Star       *star;
-		XArc       *arc = NULL, *arcleft = NULL;
+		XArc       *arc, *arcleft = NULL;
 
 #if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
-		XArc       *oarc = NULL, *oarcleft = NULL;
+		XArc       *oarc, *oarcleft = NULL;
 
 #endif
 
@@ -552,11 +629,11 @@ draw_bouboule(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	StarField  *sp = &starfield[MI_SCREEN(mi)];
 	int         i, diff = 0;
 	double      CX, CY, CZ, SX, SY, SZ;
 	Star       *star;
-	XArc       *arc = NULL, *arcleft = NULL;
+	XArc       *arc, *arcleft = NULL;
+	StarField  *sp;
 
 #if (ADAPT_ERASE == 1)
 	struct timeval tv1;
@@ -574,6 +651,12 @@ draw_bouboule(ModeInfo * mi)
 
 	/* star in 3d mode, otherwise 0 */
 #endif
+
+	if (starfield == NULL)
+		return;
+	sp = &starfield[MI_SCREEN(mi)];
+	if (sp->star == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -806,30 +889,8 @@ release_bouboule(ModeInfo * mi)
 	if (starfield != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			StarField  *sp = &starfield[screen];
-
-			if (sp->star)
-				(void) free((void *) sp->star);
-			if (sp->xarc)
-				(void) free((void *) sp->xarc);
-			if (sp->xarcleft)
-				(void) free((void *) sp->xarcleft);
-#if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
-			if (sp->oldxarc)
-				(void) free((void *) sp->oldxarc);
-			if (sp->oldxarcleft)
-				(void) free((void *) sp->oldxarcleft);
-#endif
-			sinfree(&(sp->x));
-			sinfree(&(sp->y));
-			sinfree(&(sp->z));
-			sinfree(&(sp->sizex));
-			sinfree(&(sp->sizey));
-			sinfree(&(sp->thetax));
-			sinfree(&(sp->thetay));
-			sinfree(&(sp->thetaz));
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_bouboule(&starfield[screen]);
 		(void) free((void *) starfield);
 		starfield = NULL;
 	}
@@ -844,7 +905,6 @@ refresh_bouboule(ModeInfo * mi)
 	} else {
 		MI_CLEARWINDOW(mi);
 	}
-
 }
 
 #endif /* MODE_bouboule */

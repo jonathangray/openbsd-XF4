@@ -27,7 +27,9 @@ AddToMenu "Fractal-Lock"
 +	"Fractal-Lock"	Title
 +	"Coral"		Exec	xlock -mode coral
 +	"Discrete"	Exec	xlock -mode discrete
++	"Dragon"	Exec	xlock -mode dragon
 +	"Drift"		Exec	xlock -mode drift -fullrandom
++	"Euler2d"	Exec	xlock -mode euler2d
 +	"Flame"		Exec	xlock -mode flame
 +	"Flow"		Exec	xlock -mode flow
 +	"Forest"	Exec	xlock -mode forest
@@ -62,6 +64,7 @@ AddToMenu "Geometry-Lock"
 +	"Penrose"	Exec	xlock -mode penrose +ammann
 +	"Penrose Ammann"	Exec xlock -mode penrose -ammann
 +	"Petal"		Exec	xlock -mode petal
++	"Polyominoes"	Exec	xlock -mode polyominoes
 +	"Qix"		Exec	xlock -mode qix +complete
 +	"Qix complete"	Exec	xlock -mode qix -complete
 +	"Rotor"		Exec	xlock -mode rotor
@@ -81,6 +84,8 @@ AddToMenu "Space-Lock"
 +	"Grav Trail"	Exec	xlock -mode grav -trail
 +	"Grav Decay"	Exec	xlock -mode grav -decay
 +	"Rock"		Exec	xlock -mode star -rock
++	"Scooter	Exec	xlock -mode scooter
++	"Space"		Exec	xlock -mode space
 +	"Star"		Exec	xlock -mode star +rock +use3d +trek 0
 +	"Star3d"	Exec	xlock -mode star -use3d
 +	"Star Trek"	Exec	xlock -mode star -trek 100
@@ -123,12 +128,12 @@ AddToMenu "Assorted-Lock"
 +	"Tube"		Exec	xlock -mode tube -install
 +	"Worm"		Exec	xlock -mode worm +use3d
 +	"Worm3d"	Exec	xlock -mode worm -use3d
++	"Xcl"		Exec	xlock -mode xcl
 +	"Xjack"		Exec	xlock -mode xjack
 
 AddToMenu "XPM-Lock"
 +	"XPM-Lock"	Title
 +	"Bat"		Exec	xlock -mode bat
-+	"Cartoon"	Exec	xlock -mode cartoon
 +	"Image"		Exec	xlock -mode image
 +	"Flag"		Exec	xlock -mode flag
 +	"Life"		Exec	xlock -mode life
@@ -142,13 +147,18 @@ AddToMenu "GL-Lock"
 +	"Atlantis"	Exec	xlock -mode atlantis
 +	"Bubble3d"	Exec	xlock -mode bubble3d
 +	"Cage"		Exec	xlock -mode cage
++	"Fire"		Exec	xlock -mode fire
 +	"Gears"		Exec	xlock -mode gears
++	"GL-Planet"	Exec	xlock -mode glplanet
 +	"Invert"	Exec	xlock -mode invert
 +	"Lament"	Exec	xlock -mode lament
 +	"Moebius"	Exec	xlock -mode moebius
++	"Molecule"	Exec	xlock -mode molecule
 +	"Morph3d"	Exec	xlock -mode morph3d
 +	"Pipes"		Exec	xlock -mode pipes
 +	"Rubik"		Exec	xlock -mode rubik
++	"Sballs"	Exec	xlock -mode sballs
++	"Sierpinski3d"	Exec	xlock -mode sierpinski3d
 +	"Sproingies"	Exec	xlock -mode sproingies
 +	"Stairs"	Exec	xlock -mode stairs
 +	"Superquadrics"	Exec	xlock -mode superquadrics
@@ -174,6 +184,7 @@ AddToMenu "Xjack-Message-Lock"
 AddToMenu "Special-Lock"
 +	"Special-Lock"	Title
 +	"Blank"		Exec	xlock -mode blank
++	"Transparent"	Exec	xlock -mode blank -geometry 1x1 -enablesaver
 +	"Bomb"		Exec	xlock -mode bomb
 +	"Random nice"	Exec	xlock -mode random -modelist allnice -fullrandom -neighbors 0
 +	"Random standard"	Exec	xlock -mode random -modelist all-allgl -fullrandom -neighbors 0
@@ -205,7 +216,9 @@ AddToMenu "Fractal-Saver"
 +	"Fractal-Saver"	Title
 +	"Coral"		Exec	xlock -nolock -mode coral
 +	"Discrete"	Exec	xlock -nolock -mode discrete
++	"Dragon"	Exec	xlock -nolock -mode dragon
 +	"Drift"		Exec	xlock -nolock -mode drift -fullrandom
++	"Euler2d"	Exec	xlock -nolock -mode euler2d
 +	"Flame"		Exec	xlock -nolock -mode flame
 +	"Flow"		Exec	xlock -nolock -mode flow
 +	"Forest"	Exec	xlock -nolock -mode forest
@@ -240,6 +253,7 @@ AddToMenu "Geometry-Saver"
 +	"Penrose"	Exec	xlock -nolock -mode penrose +ammann
 +	"Penrose Ammann"	Exec xlock -nolock -mode penrose -ammann
 +	"Petal"		Exec	xlock -nolock -mode petal
++	"Polyominoes"	Exec	xlock -nolock -mode polyominoes
 +	"Qix"		Exec	xlock -nolock -mode qix +complete
 +	"Qix complete"	Exec	xlock -nolock -mode qix -complete
 +	"Rotor"		Exec	xlock -nolock -mode rotor
@@ -259,6 +273,8 @@ AddToMenu "Space-Saver"
 +	"Grav Trail"	Exec	xlock -nolock -mode grav -trail
 +	"Grav Decay"	Exec	xlock -nolock -mode grav -decay
 +	"Rock"		Exec	xlock -nolock -mode star -rock
++	"Scooter"	Exec	xlock -nolock -mode scooter
++	"Space"		Exec	xlock -nolock -mode space
 +	"Star"		Exec	xlock -nolock -mode star +rock +use3d +trek 0
 +	"Star3d"	Exec	xlock -nolock -mode star -use3d
 +	"Star Trek"	Exec	xlock -nolock -mode star -trek 100
@@ -301,12 +317,12 @@ AddToMenu "Assorted-Saver"
 +	"Tube"		Exec	xlock -nolock -mode tube -install
 +	"Worm"		Exec	xlock -nolock -mode worm +use3d
 +	"Worm3d"	Exec	xlock -nolock -mode worm -use3d
++	"Xcl"		Exec	xlock -nolock -mode xcl
 +	"Xjack"		Exec	xlock -nolock -mode xjack
 
 AddToMenu "XPM-Saver"
 +	"XPM-Saver"	Title
 +	"Bat"		Exec	xlock -nolock -mode bat
-+	"Cartoon"	Exec	xlock -nolock -mode cartoon
 +	"Image"		Exec	xlock -nolock -mode image
 +	"Flag"		Exec	xlock -nolock -mode flag
 +	"Life"		Exec	xlock -nolock -mode life
@@ -320,12 +336,17 @@ AddToMenu "GL-Saver"
 +	"Atlantis"	Exec	xlock -nolock -mode atlantis
 +	"Bubble3d"	Exec	xlock -nolock -mode bubble3d
 +	"Cage"		Exec	xlock -nolock -mode cage
++	"Fire"		Exec	xlock -nolock -mode fire
 +	"Gears"		Exec	xlock -nolock -mode gears
++	"GL-Planet"	Exec	xlock -nolock -mode glplanet
 +	"Lament"	Exec	xlock -nolock -mode lament
 +	"Moebius"	Exec	xlock -nolock -mode moebius
++	"Molecule"	Exec	xlock -nolock -mode molecule
 +	"Morph3d"	Exec	xlock -nolock -mode morph3d
 +	"Pipes"		Exec	xlock -nolock -mode pipes
 +	"Rubik"		Exec	xlock -nolock -mode rubik
++	"Sballs"	Exec	xlock -nolock -mode sballs
++	"Sierpinski3d"	Exec	xlock -nolock -mode sierpinski3d
 +	"Sproingies"	Exec	xlock -nolock -mode sproingies
 +	"Stairs"	Exec	xlock -nolock -mode stairs
 +	"Superquadrics"	Exec	xlock -nolock -mode superquadrics

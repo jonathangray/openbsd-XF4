@@ -2,7 +2,7 @@
 /* stairs --- Infinite Stairs, and Escher-like scene. */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)stairs.c	5.01 2001/03/01 xlockmore";
 
 #endif
 
@@ -31,7 +31,7 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
  * OpenGL at home.
  *
  * Since I'm not a native English speaker, my apologies for any grammatical
- * mistake.
+ * mistakes.
  *
  * My e-mail address is
  * m-vianna@usa.net
@@ -39,11 +39,12 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
  * Marcelo F. Vianna (Jun-01-1997)
  *
  * Revision History:
- * 07-Jan-98: This would be a scene for the escher mode, but now escher mode
- *            was splitted in different modes for each scene. This is the
- *            initial release and is not working yet.
- *            Marcelo F. Vianna.
- *
+ * 01-Mar-2001: Added FPS stuff - Eric Lassauge <lassauge@mail.dotcom.fr>
+ * 01-Nov-2000: Allocation checks
+ * 07-Jan-1998: This would be a scene for the escher mode, but now escher mode
+ *              was splitted in different modes for each scene. This is the
+ *              initial release and is not working yet.
+ *              Marcelo F. Vianna.
  */
 
 /*-
@@ -69,7 +70,7 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
 #include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 #include "xlock.h"		/* from the xlockmore distribution */
-#include "vis.h"
+#include "visgl.h"
 #endif /* !STANDALONE */
 
 #ifdef MODE_stairs
@@ -78,7 +79,7 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
 #include "e_textures.h"
 
 ModeSpecOpt stairs_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   stairs_description =
@@ -98,13 +99,20 @@ ModStruct   stairs_description =
 #define Pi                         M_PI
 #endif
 
+#if 0
+#define ObjSphere    0
+#define MaxObj       1
+#endif
+
 /*************************************************************************/
 
 typedef struct {
 	GLint       WindH, WindW;
 	GLfloat     step;
 	Bool        direction;
-	int         AreObjectsDefined[1];
+#if 0
+	Bool        AreObjectsDefined[MaxObj];
+#endif
 	int         sphere_position;
 	GLXContext *glx_context;
 } stairsstruct;
@@ -193,24 +201,26 @@ static float positions[] =
 
 #define NPOSITIONS ((sizeof positions) / (sizeof positions[0]))
 
-static stairsstruct *stairs = NULL;
-static GLuint objects;
-
-#define ObjSphere    0
+static stairsstruct *stairs = (stairsstruct *) NULL;
+#if 0
+static GLuint objects = 0;
+#endif
 
 #define PlankWidth      3.0
 #define PlankHeight     0.35
 #define PlankThickness  0.15
 
-static void
+static Bool
 mySphere(float radius)
 {
 	GLUquadricObj *quadObj;
 
-	quadObj = gluNewQuadric();
+	if ((quadObj = gluNewQuadric()) == 0)
+		return False;
 	gluQuadricDrawStyle(quadObj, (GLenum) GLU_FILL);
 	gluSphere(quadObj, radius, 16, 16);
 	gluDeleteQuadric(quadObj);
+	return True;
 }
 
 static void
@@ -274,7 +284,7 @@ draw_block(GLfloat width, GLfloat height, GLfloat thickness)
 	glEnd();
 }
 
-static void
+static Bool
 draw_stairs_internal(ModeInfo * mi)
 {
 	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
@@ -314,36 +324,30 @@ draw_stairs_internal(ModeInfo * mi)
 	glTranslatef((GLfloat) positions[sp->sphere_position],
 		     (GLfloat) positions[sp->sphere_position + 1],
 		     (GLfloat) positions[sp->sphere_position + 2]);
-	if (sp->sphere_position == 0)	/* FUDGE soo its not so obvious */
-		mySphere(0.48);
-	else
-		mySphere(0.5);
+	/* FUDGE sphere_position soo its not so obvious */
+	if (!mySphere((sp->sphere_position == 0) ? 0.48	: 0.5))
+		return False;
 	glPopMatrix();
 	sp->sphere_position += 3;
 	if (sp->sphere_position >= (int) NPOSITIONS)
 		sp->sphere_position = 0;
+	return True;
 }
 
 static void
 reshape(ModeInfo * mi, int width, int height)
 {
 	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
+	int i;
 
 	glViewport(0, 0, sp->WindW = (GLint) width, sp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
 	glMatrixMode(GL_MODELVIEW);
-	if (width >= 1024) {
-		glLineWidth(3);
-		glPointSize(3);
-	} else if (width >= 512) {
-		glLineWidth(2);
-		glPointSize(2);
-	} else {
-		glLineWidth(1);
-		glPointSize(1);
-	}
+	i = width / 512 + 1;
+	glLineWidth(i);
+	glPointSize(i);
 }
 
 static void
@@ -387,9 +391,32 @@ pinit(void)
 }
 
 void
+release_stairs(ModeInfo * mi)
+{
+	if (stairs != NULL) {
+#if 0
+		int screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
+			stairsstruct *sp = &stairs[screen];
+
+			if (sp->glx_context) {
+				if (glIsList(objects)) {
+					glDeleteLists(objects, MaxObj);
+					objects = 0;
+				}
+			}
+		}
+#endif
+		(void) free((void *) stairs);
+		stairs = (stairsstruct *) NULL;
+	}
+	FreeAllGL(mi);
+}
+
+void
 init_stairs(ModeInfo * mi)
 {
-	int         screen = MI_SCREEN(mi);
 	stairsstruct *sp;
 
 	if (stairs == NULL) {
@@ -397,7 +424,8 @@ init_stairs(ModeInfo * mi)
 					     sizeof (stairsstruct))) == NULL)
 			return;
 	}
-	sp = &stairs[screen];
+	sp = &stairs[MI_SCREEN(mi)];
+
 	sp->step = 0.0;
 	sp->direction = LRAND() & 1;
 	sp->sphere_position = NRAND(NPOSITIONS / 3) * 3;
@@ -406,8 +434,12 @@ init_stairs(ModeInfo * mi)
 
 		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		glDrawBuffer(GL_BACK);
+#if 0
 		if (!glIsList(objects))
-			objects = glGenLists(1);
+			if ((objects = glGenLists(MaxObj)) == 0) {
+				MI_CLEARWINDOW(mi);
+			}
+#endif
 		pinit();
 	} else {
 		MI_CLEARWINDOW(mi);
@@ -417,13 +449,15 @@ init_stairs(ModeInfo * mi)
 void
 draw_stairs(ModeInfo * mi)
 {
-	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
-
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
+	stairsstruct *sp;
+
+	if (stairs == NULL)
+			return;
+	sp = &stairs[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (!sp->glx_context)
 		return;
 
@@ -448,10 +482,14 @@ draw_stairs(ModeInfo * mi)
 		sp->step = 0;
 		sp->direction = LRAND() & 1;
 	}
-	draw_stairs_internal(mi);
+	if (!draw_stairs_internal(mi)) {
+		release_stairs(mi);
+		return;
+	}
 
 	glPopMatrix();
 
+	if (MI_IS_FPS(mi)) do_fps (mi);
 	glFlush();
 
 	glXSwapBuffers(display, window);
@@ -462,26 +500,17 @@ draw_stairs(ModeInfo * mi)
 void
 change_stairs(ModeInfo * mi)
 {
-	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
+	stairsstruct *sp;
+
+	if (stairs == NULL)
+			return;
+	sp = &stairs[MI_SCREEN(mi)];
 
 	if (!sp->glx_context)
 		return;
 
 	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(sp->glx_context));
 	pinit();
-}
-
-void
-release_stairs(ModeInfo * mi)
-{
-	if (stairs != NULL) {
-		(void) free((void *) stairs);
-		stairs = NULL;
-	}
-	if (glIsList(objects)) {
-		glDeleteLists(objects, 1);
-	}
-	FreeAllGL(mi);
 }
 
 #endif

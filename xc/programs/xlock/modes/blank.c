@@ -2,7 +2,7 @@
 /* blank --- blank screen */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)blank.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)blank.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,15 +22,15 @@ static const char sccsid[] = "@(#)blank.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver :)  OK you probably should not
- *    use this for xscreensaver but I could not resist.
- * 21-Mar-96: Ron Hitchens <ron@idiom.com>
- *		Bonehead alert.  Don't blank during password prompting.
- * 19-Mar-96: Ron Hitchens <ron@idiom.com>
- *		Changed to activate X server's native screensaver.
- *		On some devices, this will result in power saving "sleep"
- *		mode, or video blanking.
- * 31-Aug-90: Written.
+ * 10-May-1997: Compatible with xscreensaver :)  OK you probably should not
+ *              use this for xscreensaver but I could not resist.
+ * 21-Mar-1996: Ron Hitchens <ron@idiom.com>
+ *		        Bonehead alert.  Don't blank during password prompting.
+ * 19-Mar-1996: Ron Hitchens <ron@idiom.com>
+ *		        Changed to activate X server's native screensaver.
+ *		        On some devices, this will result in power saving "sleep"
+ *		        mode, or video blanking.
+ * 31-Aug-1990: Written.
  */
 
 #ifdef STANDALONE
@@ -45,7 +45,7 @@ static const char sccsid[] = "@(#)blank.c	4.07 97/11/24 xlockmore";
 #endif /* STANDALONE */
 
 ModeSpecOpt blank_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   blank_description =

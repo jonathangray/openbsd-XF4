@@ -131,11 +131,12 @@ dovtlock(void)
 
     if (debug)
       (void) fprintf(stderr,"dovtlock start\n");
-    if ( display_nr == -1 )
+    if ( display_nr == -1 ) {
       if ( dispname )
         display_nr = DISPLAY_NR( dispname );
       else
         display_nr = 0;
+	}
     getrootprivs();
     x_vt_active = is_x_vt_active(display_nr);
     if ( ! x_vt_active ) {
@@ -158,11 +159,12 @@ dovtunlock(void)
 
     if (debug)
       (void) fprintf(stderr,"dovtunlock start\n");
-    if ( display_nr == -1 )
+    if ( display_nr == -1 ) {
       if ( dispname )
         display_nr = DISPLAY_NR( dispname );
       else
         display_nr = 0;
+	}
     getrootprivs();
     if (is_x_vt_active(display_nr))
       lockvt(False);

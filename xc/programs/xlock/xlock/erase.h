@@ -14,22 +14,22 @@
 
 #if HAVE_GETTIMEOFDAY
 		GETTIMEOFDAY(&tp);
-		if ( tp.tv_sec - t0 >= erasetime ) {
+		if (tp.tv_sec - t0 >= erasetime ) {
 			break;
 		}
 #endif
 		if (actual_delay > 0 && ((LOOPVAR % granularity) == 0))
 #if HAVE_GETTIMEOFDAY
 		{
-			interval = tp.tv_usec - t_prev +
-				1000000 * ( tp.tv_sec - t1_prev );
+			interval = (int) (tp.tv_usec - t_prev +
+				1000000 * ( tp.tv_sec - t1_prev ));
 			interval = actual_delay * granularity - interval;
 			if (interval > 0)
-				usleep(interval);
+				(void) usleep(interval);
 			GETTIMEOFDAY(&tp);
-			t_prev = tp.tv_usec;
-			t1_prev = tp.tv_sec;
+			t_prev = (int) (tp.tv_usec);
+			t1_prev = (int) (tp.tv_sec);
 		}
 #else
-			usleep( actual_delay * granularity );
+			(void) usleep( actual_delay * granularity );
 #endif

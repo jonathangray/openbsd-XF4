@@ -2,7 +2,7 @@
 /* kumppa ---  */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)kumppa.c	4.11 98/06/11 xlockmore";
+static const char sccsid[] = "@(#)kumppa.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -34,16 +34,14 @@ static const char sccsid[] = "@(#)kumppa.c	4.11 98/06/11 xlockmore";
    from the X Consortium.
 
    * Revision History:
-   * 16-Jul-98:  xlockmore version by Jouk Jansen <joukj@hrem.stm.tudelft.nl>
-   * Feb 1998 :  original xscreensaver version by Teemu Suutari <temisu@utu.fi>
+   * 01-Nov-2000: Allocation checks
+   * 16-Jul-1998: xlockmore version by Jouk Jansen <joukj@hrem.stm.tudelft.nl>
+   * Feb 1998 : original xscreensaver version by Teemu Suutari <temisu@utu.fi>
  */
 
 /*-
    *** This is contest-version. Don't look any further, code is *very* ugly.
  */
-
-
-#include <math.h>
 
 
 #if 0
@@ -87,36 +85,36 @@ static float speed;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-speed", ".kumppa.speed", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-speed", (char *) ".kumppa.speed", XrmoptionSepArg, (caddr_t) NULL},
 #if 0
 #ifdef HAVE_XDBE_EXTENSION
-	{"-dbuf", ".kumppa.dbuf", XrmoptionNoArg, (caddr_t) "on"},
-	{"+dbuf", ".kumppa.dbuf", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-dbuf", (char *) ".kumppa.dbuf", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+dbuf", (char *) ".kumppa.dbuf", XrmoptionNoArg, (caddr_t) "off"},
 #endif				/* HAVE_XDBE_EXTENSION */
 #endif
-	{"-rrandom", ".kumppa.rrandom", XrmoptionNoArg, (caddr_t) "on"},
-	{"+rrandom", ".kumppa.rrandom", XrmoptionNoArg, (caddr_t) "off"}
+	{(char *) "-rrandom", (char *) ".kumppa.rrandom", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+rrandom", (char *) ".kumppa.rrandom", XrmoptionNoArg, (caddr_t) "off"}
 };
 
 static argtype vars[] =
 {
-	{(caddr_t *) & speed, "speed", "speed", DEF_SPEED, t_Float},
+	{(caddr_t *) & speed, (char *) "speed", (char *) "speed", (char *) DEF_SPEED, t_Float},
 #if 0
 #ifdef HAVE_XDBE_EXTENSION
-	{(caddr_t *) & usedouble, "dbuf", "dbuf", DEF_USEDOUBLE, t_Bool},
+	{(caddr_t *) & usedouble, (char *) "dbuf", (char *) "dbuf", (char *) DEF_USEDOUBLE, t_Bool},
 #endif				/* HAVE_XDBE_EXTENSION */
 #endif
-	{(caddr_t *) & cosilines, "rrandom", "rrandom", DEF_COSILINES, t_Bool}
+	{(caddr_t *) & cosilines, (char *) "rrandom", (char *) "rrandom", (char *) DEF_COSILINES, t_Bool}
 };
 static OptionStruct desc[] =
 {
-	{"-speed num", "Speed"},
+	{(char *) "-speed num", (char *) "Speed"},
 #if 0
 #ifdef HAVE_XDBE_EXTENSION
-	{"-/+dbuf", "turn on/off double buffering"},
+	{(char *) "-/+dbuf", (char *) "turn on/off double buffering"},
 #endif				/* HAVE_XDBE_EXTENSION */
 #endif
-	{"-/+rrandom", "turn on/off random"}
+	{(char *) "-/+rrandom", (char *) "turn on/off random"}
 };
 
 ModeSpecOpt kumppa_opts =
@@ -125,7 +123,7 @@ ModeSpecOpt kumppa_opts =
 #ifdef USE_MODULES
 ModStruct   kumppa_description =
 {"kumppa", "init_kumppa", "draw_kumppa", "release_kumppa",
- "refresh_kumppa", "init_kumppa", NULL, &kumppa_opts,
+ "init_kumppa", "init_kumppa", NULL, &kumppa_opts,
  10000, 1, 1000, 1, 64, 1.0, "",
  "Shows Kumppa", 0, NULL};
 
@@ -184,6 +182,7 @@ typedef struct {
 	int         c;
 	long        c1;
 	Bool        cosilines;
+	ModeInfo   *mi;
 } kumppastruct;
 
 static kumppastruct *kumppas = NULL;
@@ -277,7 +276,76 @@ rotate(ModeInfo * mi)
 		s->stateY = 0;
 }
 
+static void
+free_kumppa(Display *display, kumppastruct *s)
+{
+	ModeInfo *mi = s->mi;
 
+	if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
+		int i;
+
+		MI_WHITE_PIXEL(mi) = s->whitepixel;
+		MI_BLACK_PIXEL(mi) = s->blackpixel;
+#ifndef STANDALONE
+		MI_FG_PIXEL(mi) = s->fg;
+		MI_BG_PIXEL(mi) = s->bg;
+#endif
+		if (s->fgc[32] != None) {
+			XFreeGC(display, s->fgc[32]);
+			s->fgc[32] = None;
+		}
+#if 0
+		if (mono_p) {
+			if (s->fgc[1] != None) {
+				XFreeGC(display, s->fgc[1]);
+				s->fgc[1] = None;
+			}
+		} else
+#endif
+		for (i = 0; i < 32; i++) {
+			if (s->fgc[i] != None) {
+				XFreeGC(display, s->fgc[i]);
+				s->fgc[i] = None;
+			}
+		}
+		if (s->cgc != None) {
+			XFreeGC(display, s->cgc);
+			s->cgc = None;
+		}
+		if (s->cmap != None) {
+			XFreeColormap(display, s->cmap);
+			s->cmap = None;
+		}
+	}
+	if (s->acosinus != NULL) {
+		(void) free((void *) s->acosinus);
+		s->acosinus = NULL;
+	}
+	if (s->Xrotations != NULL) {
+		(void) free((void *) s->Xrotations);
+		s->Xrotations = NULL;
+	}
+	if (s->Yrotations != NULL) {
+		(void) free((void *) s->Yrotations);
+		s->Yrotations = NULL;
+	}
+	if (s->Xrottable != NULL) {
+		(void) free((void *) s->Xrottable);
+		s->Xrottable = NULL;
+	}
+	if (s->Yrottable != NULL) {
+		(void) free((void *) s->Yrottable);
+		s->Yrottable = NULL;
+	}
+	if (s->rotateX != NULL) {
+		(void) free((void *) s->rotateX);
+		s->rotateX = NULL;
+	}
+	if (s->rotateY != NULL) {
+		(void) free((void *) s->rotateY);
+		s->rotateY = NULL;
+	}
+}
 
 static void
 make_rots(ModeInfo * mi, double xspeed, double yspeed)
@@ -295,22 +363,28 @@ make_rots(ModeInfo * mi, double xspeed, double yspeed)
 	s->rotsizeY = (int) (2 / yspeed + 1);
 	iy = (double) (s->midy + 1) / (double) (s->rotsizeY);
 
-	if (s->Xrotations)
+	if (s->Xrotations != NULL)
 		(void) free((void *) s->Xrotations);
-	if (s->Yrotations)
+	if (s->Yrotations != NULL)
 		(void) free((void *) s->Yrotations);
-
-	s->Xrotations = (int *) calloc((s->midx + 2), sizeof (int));
-	s->Yrotations = (int *) calloc((s->midy + 2), sizeof (int));
-
-	if (s->Xrottable)
+	if (s->Xrottable != NULL)
 		(void) free((void *) s->Xrottable);
-	if (s->Yrottable)
+	if (s->Yrottable != NULL)
 		(void) free((void *) s->Yrottable);
-	s->Xrottable = (int *) malloc((s->rotsizeX + 1) * sizeof (int));
-	s->Yrottable = (int *) malloc((s->rotsizeY + 1) * sizeof (int));
 
-	chks = (Bool *) malloc(((s->midx > s->midy) ? s->midx : s->midy) * sizeof (Bool));
+	if (((s->Xrotations = (int *) calloc((s->midx + 2),
+			sizeof (int))) == NULL) ||
+	    ((s->Yrotations = (int *) calloc((s->midy + 2),
+			sizeof (int))) == NULL) ||
+	    ((s->Xrottable = (int *) malloc((s->rotsizeX + 1) *
+			sizeof (int))) == NULL) ||
+	    ((s->Yrottable = (int *) malloc((s->rotsizeY + 1) *
+			sizeof (int))) == NULL) ||
+	    ((chks = (Bool *) malloc(((s->midx > s->midy) ? s->midx : s->midy) *
+			sizeof (Bool))) == NULL)) {
+		free_kumppa(MI_DISPLAY(mi), s);
+		return; 
+	}
 
 
 	maxi = 0;
@@ -371,7 +445,12 @@ make_rots(ModeInfo * mi, double xspeed, double yspeed)
 	s->Xrottable[a] = c;
 	if (s->rotateX)
 		(void) free((void *) s->rotateX);
-	s->rotateX = (int *) calloc((maxi + 2) << 1, sizeof (int));
+	if ((s->rotateX = (int *) calloc((maxi + 2) << 1,
+			sizeof (int))) == NULL) {
+		free_kumppa(MI_DISPLAY(mi), s);
+		(void) free((void *) chks);
+		return; 
+	}
 
 	maxi = 0;
 	c = 0;
@@ -432,7 +511,12 @@ make_rots(ModeInfo * mi, double xspeed, double yspeed)
 	s->Yrottable[a] = c;
 	if (s->rotateY)
 		(void) free((void *) s->rotateY);
-	s->rotateY = (int *) calloc((maxi + 2) << 1, sizeof (int));
+	if ((s->rotateY = (int *) calloc((maxi + 2) << 1,
+			sizeof (int))) == NULL) {
+		free_kumppa(MI_DISPLAY(mi), s);
+		/* (void) free((void *) chks); */
+		/* return; */
+	}
 
 	(void) free((void *) chks);
 }
@@ -454,6 +538,7 @@ init_kumppa(ModeInfo * mi)
 			return;
 	}
 	s = &kumppas[MI_SCREEN(mi)];
+	s->mi = mi;
 
 	if (!s->acosinus) {
 		if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
@@ -468,7 +553,11 @@ init_kumppa(ModeInfo * mi)
 #endif
 			s->blackpixel = MI_BLACK_PIXEL(mi);
 			s->whitepixel = MI_WHITE_PIXEL(mi);
-			s->cmap = XCreateColormap(display, window, MI_VISUAL(mi), AllocNone);
+			if ((s->cmap = XCreateColormap(display, window,
+					MI_VISUAL(mi), AllocNone)) == None) {
+				free_kumppa(display, s);
+				return;
+			}
 
 			XSetWindowColormap(display, window, s->cmap);
 			(void) XParseColor(display, s->cmap, "black", &color);
@@ -488,14 +577,24 @@ init_kumppa(ModeInfo * mi)
 
 			xgcv.function = GXcopy;
 			xgcv.foreground = MI_BLACK_PIXEL(mi);
-			s->fgc[32] = XCreateGC(display, window, GCForeground | GCFunction, &xgcv);
+			if ((s->fgc[32] = XCreateGC(display, window,
+					GCForeground | GCFunction,
+					&xgcv)) == None) {
+				free_kumppa(display, s);
+				return;
+			}
 
 			n = 0;
 #if 0
 			if (mono_p) {
 				s->fgc[0] = s->fgc[32];
 				xgcv.foreground = MI_BLACK_PIXEL(mi);
-				s->fgc[1] = XCreateGC(display, window, GCForeground | GCFunction, &xgcv);
+				if ((s->fgc[1] = XCreateGC(display, window,
+						GCForeground | GCFunction,
+						&xgcv)) == None) {
+					free_kumppa(display, s);
+					return;
+				}
 				for (i = 0; i < 32; i += 2)
 					s->fgc[i] = s->fgc[0];
 				for (i = 1; i < 32; i += 2)
@@ -509,13 +608,27 @@ init_kumppa(ModeInfo * mi)
 					color.flags = DoRed | DoGreen | DoBlue;
 					(void) XAllocColor(display, s->cmap, &color);
 					xgcv.foreground = color.pixel;
-					s->fgc[i] = XCreateGC(display, window, GCForeground | GCFunction, &xgcv);
+					if ((s->fgc[i] = XCreateGC(display, window,
+							GCForeground | GCFunction,
+							&xgcv)) == None) {
+						free_kumppa(display, s);
+						return;
+					}
 				}
 			xgcv.foreground = MI_BLACK_PIXEL(mi);
 			xgcv.function = GXcopy;
-			s->cgc = XCreateGC(display, window, GCForeground | GCFunction, &xgcv);
+			if ((s->cgc = XCreateGC(display, window,
+					GCForeground | GCFunction,
+					&xgcv)) == None) {
+				free_kumppa(display, s);
+				return;
+			}
 		}
-		s->acosinus = (float *) malloc(24 * sizeof (float));
+		if ((s->acosinus = (float *) malloc(24 *
+				sizeof (float))) == NULL) {
+			free_kumppa(display, s);
+			return;
+		}
 		(void) memcpy(s->acosinus, acosinus, 24 * sizeof (float));
 		(void) memcpy(s->ocoords, ocoords, 8 * sizeof (int));
 	}
@@ -579,7 +692,6 @@ draw_kumppa(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc;
-	kumppastruct *s = &kumppas[MI_SCREEN(mi)];
 
 #if 0
 #ifdef HAVE_XDBE_EXTENSION
@@ -589,9 +701,15 @@ draw_kumppa(ModeInfo * mi)
 #endif
 	int         a, b, e;
 	float       f;
+	kumppastruct *s;
+
+	if (kumppas == NULL)
+		return;
+	s = &kumppas[MI_SCREEN(mi)];
+	if (s->Xrotations == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 
 #if 0
 #ifdef HAVE_XDBE_EXTENSION
@@ -677,66 +795,15 @@ draw_kumppa(ModeInfo * mi)
 	}
 }
 
-
-void
-refresh_kumppa(ModeInfo * mi)
-{
-	init_kumppa(mi);
-}
-
 void
 release_kumppa(ModeInfo * mi)
 {
-	Display    *display = MI_DISPLAY(mi);
 
 	if (kumppas != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			kumppastruct *s = &kumppas[screen];
-
-			if (MI_IS_INSTALL(mi) && MI_NPIXELS(mi) > 2) {
-				int i;
-
-				MI_WHITE_PIXEL(mi) = s->whitepixel;
-				MI_BLACK_PIXEL(mi) = s->blackpixel;
-#ifndef STANDALONE
-				MI_FG_PIXEL(mi) = s->fg;
-				MI_BG_PIXEL(mi) = s->bg;
-#endif
-				if (s->fgc[32])
-					XFreeGC(display, s->fgc[32]);
-#if 0
-				if (mono_p) {
-					if (s->fgc[1])
-						XFreeGC(display, s->fgc[1]);
-				} else
-#endif
-				for (i = 0; i < 32; i++) {
-					if (s->fgc[i])
-						XFreeGC(display, s->fgc[i]);
-				}
-				if (s->cgc)
-					XFreeGC(display, s->cgc);
-				if (s->cmap) {
-					XFreeColormap(display, s->cmap);
-				}
-			}
-			if (s->acosinus)
-				(void) free((void *) s->acosinus);
-			if (s->Xrotations)
-				(void) free((void *) s->Xrotations);
-			if (s->Yrotations)
-				(void) free((void *) s->Yrotations);
-			if (s->Xrottable)
-				(void) free((void *) s->Xrottable);
-			if (s->Yrottable)
-				(void) free((void *) s->Yrottable);
-			if (s->rotateX)
-				(void) free((void *) s->rotateX);
-			if (s->rotateY)
-				(void) free((void *) s->rotateY);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_kumppa(MI_DISPLAY(mi), &kumppas[screen]);
 		(void) free((void *) kumppas);
 		kumppas = NULL;
 	}

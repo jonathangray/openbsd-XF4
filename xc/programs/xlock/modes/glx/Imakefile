@@ -28,36 +28,48 @@ CXG = $(CX) $(DG)
 
 XCOMM  List of object files
 #ifdef GLLibrary
-#ifdef XpmLibrary
-XLOCKXPMGLOBJS = $(DOG)lament$(O)
+#ifdef Unstable
+XLOCKUNSTABLEGLOBJS = $(DOG)skewb$(O)
 #endif
 #ifdef CPPCompiler
-#ifndef Modules
-XLOCKCPPGLOBJS = $(DOG)invert$(OG)i_figureeight$(O)$(S)\
+INVERTOBJS = $(DOG)i_figureeight$(O)$(S)\
 $(DOG)i_linkage$(OG)i_sphere$(OG)i_spline$(O)$(S)\
 $(DOG)i_threejet$(OG)i_threejetvec$(O)$(S)\
 $(DOG)i_twojet$(OG)i_twojetvec$(O)
-#endif
-#if defined(Unstable) && defined(TtfLibrary) && defined(GlttLibrary)
+XLOCKDEPCPPGLOBJS = $(INVERTOBJS)
+XLOCKMULTCPPGLOBJS = $(DOG)invert$(O)
+#if defined(TtfLibrary) && defined(GlttLibrary) && defined(Unstable)
 XLOCKUNSTABLETEXTGLOBJS = $(DOG)text3d$(O)
 #endif
 #endif
+SPROINGIESOBJS = $(DOG)buildlwo$(OG)sproingiewrap$(OG)s1_b$(O)$(S)\
+$(DOG)s1_1$(OG)s1_2$(OG)s1_3$(OG)s1_4$(OG)s1_5$(OG)s1_6$(O)
+ATLANTISOBJS = $(DOG)dolphin$(OG)shark$(OG)swim$(OG)whale$(O)
+GLPLANETOBJS = $(DOG)sphere$(O)
+BUBBLE3DOBJS = $(DOG)b_draw$(OG)b_sphere$(OG)b_lockglue$(O)
+MOLECULEOBJS = $(DOG)tube$(O)
+XLOCKDEPGLOBJS = $(DOG)xpm-ximage$(OG)pipeobjs$(O)$(S)\
+$(SPROINGIESOBJS)$(S)$(ATLANTISOBJS)$(S)$(GLPLANETOBJS)$(S)$(BUBBLE3DOBJS)$(S)\
+$(MOLECULEOBJS)$(S)$(XLOCKDEPCPPGLOBJS)
 XLOCKNORMGLOBJS = $(DOG)cage$(OG)gears$(O)$(S)\
 $(DOG)moebius$(OG)morph3d$(O)$(S)\
-$(DOG)rubik$(OG)stairs$(OG)superquadrics$(O)
-#ifndef Modules
-XLOCKMULTGLOBJS = $(DOG)buildlwo$(OG)pipes$(OG)pipeobjs$(O)$(S)\
-$(DOG)sproingies$(OG)sproingiewrap$(OG)s1_b$(O)$(S)\
-$(DOG)s1_1$(OG)s1_2$(OG)s1_3$(OG)s1_4$(OG)s1_5$(OG)s1_6$(O)$(S)\
-$(DOG)atlantis$(OG)dolphin$(OG)shark$(OG)swim$(OG)whale$(O)$(S)\
-$(DOG)bubble3d$(OG)b_draw$(OG)b_sphere$(OG)b_lockglue$(O)
-#endif
-XLOCKGLOBJS = $(XLOCKNORMGLOBJS)$(S)$(XLOCKMULTGLOBJS)$(S)\
-$(XLOCKXPMGLOBJS)$(S)$(XLOCKCPPGLOBJS)$(S)$(XLOCKUNSTABLETEXTGLOBJS)
+$(DOG)rubik$(OG)sierpinski3d$(OG)stairs$(OG)superquadrics$(O)$(S)\
+$(XLOCKUNSTABLEGLOBJS)$(S)$(XLOCKUNSTABLETEXTGLOBJS)
+XLOCKMULTGLOBJS = $(DOG)fire$(OG)lament$(OG)sballs$(OG)molecule$(O)$(S)\
+$(DOG)pipes$(OG)sproingies$(OG)atlantis$(OG)bubble3d$(OG)glplanet$(O)$(S)\
+$(XLOCKMULTCPPGLOBJS)
+XLOCKGLOBJS = $(XLOCKNORMGLOBJS)$(S)\
+$(XLOCKDEPGLOBJS)$(S)$(XLOCKMULTGLOBJS)
 #endif
 XCOMM default target
+
 #ifdef Modules
-MODULES = $(XLOCKGLOBJS:.o=.xlk)
+
+NORMMODULES = $(XLOCKNORMMODEOBJS:.o=.xlk)
+
+MULTMODULES = $(XLOCKMULTMODEOBJS:.o=.xlk)
+
+MODULES = $(NORMMODULES) $(MULTMODULES)
 
 EXTRA_LDOPTIONS += $(MODULEFLAGS)
 
@@ -65,12 +77,59 @@ all:: $(XLOCKMODULES)
 
 InstallMultiple($(MODULES), $(DEF_MODULEPATH))
 
-$(MODULES) : %.xlk:%.o
+$(CX)$(O) :
+	$(CXX) -c -o $@ $(CFLAGS) $<
+XCOMM	Sun and gcc
+XCOMM	$(CXX) -c -o $@ -isystem /usr/openwin/include $(CFLAGS) $<
+
+$(NORMMODULES) : %.xlk:%.o
 	$(RM) $@
 	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $<
 
+$(DOG)fire.xlk : $(DOG)xpm-ximage.o
+$(DOG)lament.xlk : $(DOG)xpm-ximage.o
+$(DOG)sballs.xlk : $(DOG)xpm-ximage.o
+
+$(DOG)fire.xlk $(DOG)lament.xlk $(DOG)sballs.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(DOG)xpm-ximage.o $<
+
+$(DOG)pipes.xlk : $(DOG)buildlwo.o $(DOG)pipeobjs.o
+
+$(DOG)pipes.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(DOG)buildlwo.o $(DOG)pipeobjs.o $<
+
+$(DOG)sproingies.xlk : $(SPROINGIESOBJS)
+
+$(DOG)sproingies.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(SPROINGIESOBJS) $<
+
+$(DOG)atlantis.xlk : $(ATLANTISOBJS)
+
+$(DOG)atlantis.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(ATLANTISOBJS) $<
+
+
+$(DOG)bubble3d.xlk : $(BUBBLE3DOBJS)
+
+$(DOG)bubble3d.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(BUBBLE3DOBJS) $<
+
+#ifdef CPPCompiler
+
+$(DOG)invert.xlk : $(INVERTOBJS)
+
+$(DOG)invert.xlk : %.xlk:%.o
+	$(RM) $@
+	$(CCLINK) $(CFLAGS) $(SHLIBLDFLAGS) -o $@ $(INVERTOBJS) $<
+#endif
+
 clean::
-	$(RM) $(MODULES)
+	$(RM) *.xlk .pure
 
 #else
 all:: $(XLOCKGLOBJS)

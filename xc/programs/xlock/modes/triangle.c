@@ -2,7 +2,7 @@
 /* triangle --- create a triangle-mountain */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)triangle.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)triangle.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,29 +22,30 @@ static const char sccsid[] = "@(#)triangle.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 22-Dec-97: Removed MI_PAUSE since it does not work on multiscreens.
- * 10-May-97: Compatible with xscreensaver
- * 10-Mar-96: re-arranged and re-formatted the code for appearance and
- *            to make common subroutines.  Simplified.
- *	          Ron Hitchens <ron@idiom.com>
- * 07-Mar-96: Removed internal delay code, set MI_PAUSE(mi) for inter-scene
- *            delays.  No other delays are needed here.
- *            Made pause time sensitive to value of cycles (in 10ths of a
- *            second).  Removed (hopefully) all references to globals.
- *	          Ron Hitchens <ron@idiom.com>
- * 27-Feb-96: Undid the changes listed below.  Added ModeInfo argument.
- *	          Implemented delay between scenes using the MI_PAUSE(mi)
- *            scheme.  Ron Hitchens <ron@idiom.com>
- * 27-Dec-95: Ron Hitchens <ron@idiom.com>
- *            Modified logic of draw_triangle() to provide a delay
- *            (sensitive to the value of cycles) between each iteration.
- *            Because this mode is so compute intensive, when the new
- *            event loop adjusted the delay to compensate, this mode had
- *            almost no delay time left.  This change pauses between each
- *            new landscape, but could still be done better (it is not
- *            sensitive to input events while drawing, for example).
- * 03-Nov-95: Many changes (hopefully some good ones) by David Bagley
- * 01-Oct-95: Written by Tobias Gloth
+ * 01-Nov-2000: Allocation checks
+ * 22-Dec-1997: Removed MI_PAUSE since it does not work on multiscreens.
+ * 10-May-1997: Compatible with xscreensaver
+ * 10-Mar-1996: re-arranged and re-formatted the code for appearance and
+ *              to make common subroutines.  Simplified.
+ *	            Ron Hitchens <ron@idiom.com>
+ * 07-Mar-1996: Removed internal delay code, set MI_PAUSE(mi) for inter-scene
+ *              delays.  No other delays are needed here.
+ *              Made pause time sensitive to value of cycles (in 10ths of a
+ *              second).  Removed (hopefully) all references to globals.
+ *	            Ron Hitchens <ron@idiom.com>
+ * 27-Feb-1996: Undid the changes listed below.  Added ModeInfo argument.
+ *	            Implemented delay between scenes using the MI_PAUSE(mi)
+ *              scheme.  Ron Hitchens <ron@idiom.com>
+ * 27-Dec-1995: Ron Hitchens <ron@idiom.com>
+ *              Modified logic of draw_triangle() to provide a delay
+ *              (sensitive to the value of cycles) between each iteration.
+ *              Because this mode is so compute intensive, when the new
+ *              event loop adjusted the delay to compensate, this mode had
+ *              almost no delay time left.  This change pauses between each
+ *              new landscape, but could still be done better (it is not
+ *              sensitive to input events while drawing, for example).
+ * 03-Nov-1995: Many changes (hopefully some good ones) by David Bagley
+ * 01-Oct-1995: Written by Tobias Gloth
  */
 
 #ifdef STANDALONE
@@ -57,7 +58,9 @@ static const char sccsid[] = "@(#)triangle.c	4.07 97/11/24 xlockmore";
  "*wireframe: False \n" \
  "*fullrandom: False \n"
 #define SMOOTH_COLORS
-							  /* #define UNIFORM_COLORS *//* To get blue water uncomment, but ... */
+#if 0
+#define UNIFORM_COLORS /* To get blue water uncomment, but ... */
+#endif
 #include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 #include "xlock.h"		/* in xlockmore distribution */
@@ -66,7 +69,7 @@ static const char sccsid[] = "@(#)triangle.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_triangle
 
 ModeSpecOpt triangle_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   triangle_description =
@@ -236,9 +239,9 @@ draw_mesh(ModeInfo * mi, trianglestruct * tp, int d, int count)
 void
 init_triangle(ModeInfo * mi)
 {
-	trianglestruct *tp;
 	short      *tmp;
 	int         i, dim, one;
+	trianglestruct *tp;
 
 	if (triangles == NULL) {
 		if ((triangles = (trianglestruct *) calloc(MI_NUM_SCREENS(mi),
@@ -299,11 +302,14 @@ init_triangle(ModeInfo * mi)
 void
 draw_triangle(ModeInfo * mi)
 {
-	trianglestruct *tp = &triangles[MI_SCREEN(mi)];
 	int         d, d2, i, j, delta;
+	trianglestruct *tp;
+
+	if (triangles == NULL)
+		return;
+	tp = &triangles[MI_SCREEN(mi)];
 
 	MI_IS_DRAWN(mi) = True;
-
 	if (tp->busyLoop > 0) {
 		if (tp->busyLoop >= 100)
 			tp->busyLoop = -1;

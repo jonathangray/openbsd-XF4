@@ -2,7 +2,7 @@
 /* xjack -- Jack having one of those days */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)xjack.c	4.13 98/10/10 xlockmore";
+static const char sccsid[] = "@(#)xjack.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,7 +25,8 @@ static const char sccsid[] = "@(#)xjack.c	4.13 98/10/10 xlockmore";
  * don't come in!  Now, do you think you can handle that?
  *
  * Revision History:
- * 10-Oct-98: revision history edited.
+ * 01-Nov-2000: Allocation checks
+ * 10-Oct-1998: revision history edited.
  */
 
 #ifdef STANDALONE
@@ -49,7 +50,7 @@ static const char sccsid[] = "@(#)xjack.c	4.13 98/10/10 xlockmore";
 #ifdef MODE_xjack
 
 ModeSpecOpt xjack_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct	 xjack_description =
@@ -92,6 +93,28 @@ static const char *source_message;
 extern char *message;
 
 void
+release_xjack(ModeInfo * mi)
+{
+	if (jacks != NULL) {
+		int				 screen;
+
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
+			jackstruct *jp = &jacks[screen];
+			Display		*display = MI_DISPLAY(mi);
+
+			if (jp->gc)
+				XFreeGC(display, jp->gc);
+		}
+		(void) free((void *) jacks);
+		jacks = NULL;
+	}
+	if (mode_font != None) {
+		XFreeFont(MI_DISPLAY(mi), mode_font);
+		mode_font = None;
+	}
+}
+
+void
 init_xjack(ModeInfo * mi)
 {
 	Display		*display = MI_DISPLAY(mi);
@@ -106,15 +129,21 @@ init_xjack(ModeInfo * mi)
 	}
 	jp = &jacks[MI_SCREEN(mi)];
 	if (mode_font == None)
-		mode_font = getFont(display);
-	if (jp->gc == NULL && mode_font != None) {
+		if ((mode_font = getFont(display)) == None) {
+			release_xjack(mi);
+		}
+
+	if (jp->gc == NULL) {
 		gcv.font = mode_font->fid;
 		XSetFont(display, MI_GC(mi), mode_font->fid);
 		gcv.graphics_exposures = False;
 		gcv.foreground = MI_WHITE_PIXEL(mi);
 		gcv.background = MI_BLACK_PIXEL(mi);
-		jp->gc = XCreateGC(display, MI_WINDOW(mi),
-					 GCForeground | GCBackground | GCGraphicsExposures | GCFont, &gcv);
+		if ((jp->gc = XCreateGC(display, MI_WINDOW(mi),
+				GCForeground | GCBackground | GCGraphicsExposures | GCFont,
+				&gcv)) == None) {
+			return;
+		}
 		jp->ascent = mode_font->ascent;
 		jp->height = font_height(mode_font);
 	}
@@ -160,8 +189,14 @@ draw_xjack(ModeInfo * mi)
 {
 	Display		*display = MI_DISPLAY(mi);
 	Window			window = MI_WINDOW(mi);
-	jackstruct *jp = &jacks[MI_SCREEN(mi)];
 	const char *s2;
+	jackstruct *jp;
+
+	if (jacks == NULL)
+		return;
+	jp = &jacks[MI_SCREEN(mi)];
+	if (jp->gc == None)
+		return;
 
 	jp->word_length = 0;
 	for (s2 = jp->s; *s2 && *s2 != ' '; s2++)
@@ -227,9 +262,9 @@ draw_xjack(ModeInfo * mi)
 					jp->y--;
 					lines--;
 #if 0
-					XSync (display, True);
+					XFlush(display);
 					if (delay)
-						 usleep (delay * 10);
+						 (void) usleep (delay * 10);
 #endif
 				}
 				if (jp->y < 0)
@@ -307,9 +342,9 @@ draw_xjack(ModeInfo * mi)
 				jp->x--;
 				jp->s--;
 #if 0
-				XSync (display, True);
+				XFlush(display);
 				if (delay)
-					 usleep (0xFFFF & (delay + (NRAND(delay * 10))));
+					 (void) usleep (0xFFFF & (delay + (NRAND(delay * 10))));
 #endif
 			}
 		}
@@ -370,14 +405,14 @@ draw_xjack(ModeInfo * mi)
 	}
 
 #if 0
-	XSync (display, True);
+	XFlush(display);
 	if (delay) {
-		usleep (delay);
+		(void) usleep (delay);
 		if (!NRAND(3))
-			usleep(0xFFFFFF & ((NRAND(delay * 5)) + 1));
+			(void) usleep(0xFFFFFF & ((NRAND(delay * 5)) + 1));
 
 		if (jp->break_para)
-			usleep(0xFFFFFF & ((NRAND(delay * 15)) + 1));
+			(void) usleep(0xFFFFFF & ((NRAND(delay * 15)) + 1));
 	}
 #endif
 
@@ -404,8 +439,8 @@ draw_xjack(ModeInfo * mi)
 				n1++;
 			}
 #if 0
-			XSync (display, True);
-			usleep (5000000);
+			XFlush(display);
+			(void) usleep (5000000);
 #endif
 			while (*n2) {
 				(void) XDrawString (display, window, jp->gc,
@@ -419,34 +454,12 @@ draw_xjack(ModeInfo * mi)
 			}
 			jp->y++;
 #if 0
-			XSync (display, True);
-			usleep (500000);
+			XFlush(display);
+			(void) usleep (500000);
 #endif
 		}
 	}
 #endif
-}
-
-void
-release_xjack(ModeInfo * mi)
-{
-	if (jacks != NULL) {
-		int				 screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			jackstruct *jp = &jacks[screen];
-			Display		*display = MI_DISPLAY(mi);
-
-			if (jp->gc)
-				XFreeGC(display, jp->gc);
-		}
-		(void) free((void *) jacks);
-		jacks = NULL;
-	}
-	if (mode_font != None) {
-		XFreeFont(MI_DISPLAY(mi), mode_font);
-		mode_font = None;
-	}
 }
 
 #endif /* MODE_xjack */

@@ -1,6 +1,6 @@
 #!/bin/sh -
 # Wrapper script to get better performance
-#	by Tim Auckland <Tim.Auckland@Sun.COM>
+#	by Tim Auckland <Tim.Auckland@Procket.com>
 # It simply suspends all netscape and JAVA applications and resumes them
 # once xlock exits.  These applications poll when idle and that is quite
 # inconsiderate when you need all the cycles you can get for a good

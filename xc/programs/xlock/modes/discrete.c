@@ -2,12 +2,12 @@
 /* discrete --- chaotic mappings */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
+static const char sccsid[] = "@(#)discrete.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
 /*-
- * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Sun.COM>
+ * Copyright (c) 1996 by Tim Auckland <Tim.Auckland@Procket.com>
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -27,8 +27,9 @@ static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
  * Map" and the "Bird in a Thornbush" fractal.
  *
  * Revision History:
- * 31-Jul-97: Ported to xlockmore-4
- * 08-Aug-96: Adapted from hop.c Copyright (c) 1991 by Patrick J. Naughton.
+ * 01-Nov-2000: Allocation checks
+ * 31-Jul-1997: Ported to xlockmore-4
+ * 08-Aug-1996: Adapted from hop.c Copyright (c) 1991 by Patrick J. Naughton.
  */
 
 #ifdef STANDALONE
@@ -49,7 +50,7 @@ static const char sccsid[] = "@(#)discrete.c 4.10 98/04/24 xlockmore";
 #ifdef MODE_discrete
 
 ModeSpecOpt discrete_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   discrete_description =
@@ -114,7 +115,6 @@ init_discrete(ModeInfo * mi)
 			return;
 	}
 	hp = &discretes[MI_SCREEN(mi)];
-
 
 	hp->maxx = MI_WIDTH(mi);
 	hp->maxy = MI_HEIGHT(mi);
@@ -237,12 +237,15 @@ init_discrete(ModeInfo * mi)
 	hp->pix = 0;
 	hp->inc = 0;
 
-	if (hp->pointBuffer == NULL)
+	if (hp->pointBuffer == NULL) {
 		hp->pointBuffer = (XPoint *) malloc(sizeof (XPoint) * MI_COUNT(mi));
+		/* if fails will check later */
+	}
 
 	/* Clear the background. */
 	MI_CLEARWINDOW(mi);
 
+	XSetForeground(MI_DISPLAY(mi), MI_GC(mi), MI_WHITE_PIXEL(mi));
 	hp->count = 0;
 }
 
@@ -258,7 +261,13 @@ draw_discrete(ModeInfo * mi)
 	int         k;
 	XPoint     *xp;
 	GC          gc = MI_GC(mi);
-	discretestruct *hp = &discretes[MI_SCREEN(mi)];
+	discretestruct *hp;
+
+	if (discretes == NULL)
+		return;
+	hp = &discretes[MI_SCREEN(mi)];
+	if (hp->pointBuffer == NULL)
+		return;
 
 	k = count;
 	xp = hp->pointBuffer;
@@ -394,8 +403,10 @@ release_discrete(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			discretestruct *hp = &discretes[screen];
 
-			if (hp->pointBuffer != NULL)
+			if (hp->pointBuffer != NULL) {
 				(void) free((void *) hp->pointBuffer);
+				/* hp->pointBuffer = NULL; */
+			}
 		}
 		(void) free((void *) discretes);
 		discretes = NULL;

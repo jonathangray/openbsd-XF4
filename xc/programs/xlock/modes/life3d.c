@@ -2,7 +2,7 @@
 /* life3d --- Extension to Conway's game of Life, Carter Bays' S45/B5 3d life */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)life3d.c	4.07 98/01/18 xlockmore";
+static const char sccsid[] = "@(#)life3d.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,11 +22,12 @@ static const char sccsid[] = "@(#)life3d.c	4.07 98/01/18 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 18-Apr-97: Memory leak fixed by Tom Schmidt <tschmidt@micron.com>
- * 12-Mar-95: added LIFE_S567B6 compile-time option
- * 12-Feb-95: shooting gliders added
- * 07-Dec-94: used life.c and a DOS version of 3dlife
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 18-Apr-1997: Memory leak fixed by Tom Schmidt <tschmidt@micron.com>
+ * 12-Mar-1995: added LIFE_S567B6 compile-time option
+ * 12-Feb-1995: shooting gliders added
+ * 07-Dec-1994: used life.c and a DOS version of 3dlife
  * Copyright 1993 Anthony Wesley awesley@canb.auug.org.au found at
  * life.anu.edu.au /pub/complex_systems/alife/3DLIFE.ZIP
  * There is some flashing that was not in the original.  This is because
@@ -76,18 +77,18 @@ static char *lifefile;
 
 static XrmOptionDescRec opts[] =
 {
-	{"-rule", ".life3d.rule", XrmoptionSepArg, (caddr_t) NULL},
-	{"-lifefile", ".life3d.lifefile", XrmoptionSepArg, (caddr_t) NULL}
+	{(char *) "-rule", (char *) ".life3d.rule", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-lifefile", (char *) ".life3d.lifefile", XrmoptionSepArg, (caddr_t) NULL}
 };
 static argtype vars[] =
 {
-	{(caddr_t *) & rule, "rule", "Rule", DEF_RULE, t_String},
-	{(caddr_t *) & lifefile, "lifefile", "LifeFile", "", t_String}
+	{(caddr_t *) & rule, (char *) "rule", (char *) "Rule", (char *) DEF_RULE, t_String},
+	{(caddr_t *) & lifefile, (char *) "lifefile", (char *) "LifeFile", (char *) "", t_String}
 };
 static OptionStruct desc[] =
 {
-	{"-rule string", "S<survial_neighborhood>/B<birth_neighborhood> parameters"},
-	{"-lifefile file", "life file"},
+	{(char *) "-rule string", (char *) "S<survial_neighborhood>/B<birth_neighborhood> parameters"},
+	{(char *) "-lifefile file", (char *) "life file"},
 };
 
 ModeSpecOpt life3d_opts =
@@ -119,7 +120,8 @@ ModStruct   life3d_description =
 #define Set3D(x,y,z) SetMem(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z,ON)
 #define Reset3D(x,y,z) SetMem(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z,OFF)
 
-#define SetList3D(x,y,z) SetMem(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z,ON), AddToList(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z)
+#define SetList3D(x,y,z) if (!SetMem(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z,ON)) return False; \
+if (!AddToList(lp,(unsigned int)x,(unsigned int)y,(unsigned int)z)) return False;
 
 #define CellState3D(c) ((c)&ON)
 #define CellNbrs3D(c) ((c)&0x1f)	/* 26 <= 31 */
@@ -1314,8 +1316,8 @@ parseFile(void)
 {
 	FILE       *file;
 	static Bool done = False;
-	int         firstx = 0, firsty = 0, x = 0, y = 0, z = 0, i = 0;
-	int         c = 0, cprev = ' ';
+	int         firstx, firsty, x = 0, y = 0, z = 0, i = 0;
+	int         c, cprev = ' ';
 	char        line[256];
 
 	if (done)
@@ -1350,7 +1352,11 @@ parseFile(void)
 	}
 	firstx = x;
 	firsty = y;
-	filePattern = (char *) malloc((3 * NUMFILEPTS + 1) * sizeof (char));
+	if ((filePattern = (char *) malloc((3 * NUMFILEPTS + 1) *
+			 sizeof (char))) == NULL) {
+		(void) fprintf(stderr, "not enough memory\n");
+		(void) fclose(file);
+	}
 
 	while (c != EOF && x < 127 && y < 127 && i < 3 * NUMFILEPTS) {
 		if (c == '0' || c == 'O' || c == '*') {
@@ -1385,22 +1391,17 @@ Init3D(life3dstruct * lp)
 	lp->eraserend.prev = &lp->eraserhead;
 }
 
-static CellList *
-NewCell(void)
-{
-	return ((CellList *) malloc(sizeof (CellList)));
-}
-
 /*-
  * Function that adds the cell (assumed live) at (x,y,z) onto the search
  * list so that it is scanned in future generations
  */
-static void
+static Bool
 AddToList(life3dstruct * lp, unsigned int x, unsigned int y, unsigned int z)
 {
 	CellList   *tmp;
 
-	tmp = NewCell();
+	if ((tmp = (CellList *) malloc(sizeof (CellList))) == NULL)
+		return False;
 	tmp->x = x;
 	tmp->y = y;
 	tmp->z = z;
@@ -1413,6 +1414,7 @@ AddToList(life3dstruct * lp, unsigned int x, unsigned int y, unsigned int z)
 		lp->ptrend = tmp;
 	}
 	lp->ptrend->next = NULL;
+	return True;
 }
 
 static void
@@ -1473,29 +1475,27 @@ MemInit(life3dstruct * lp)
 	lp->memstart = 0;
 }
 
-static void
-BaseOffset(life3dstruct * lp,
-	   unsigned int x, unsigned int y, unsigned int z, int *b, int *o)
-{
-	*b = ((x & 0x7c) << 7) + ((y & 0x7c) << 2) + ((z & 0x7c) >> 2);
-	*o = (x & 3) + ((y & 3) << 2) + ((z & 3) << 4);
+#define BASE_OFFSET(x,y,z,b,o) \
+b = ((x & 0x7c) << 7) + ((y & 0x7c) << 2) + ((z & 0x7c) >> 2); \
+o = (x & 3) + ((y & 3) << 2) + ((z & 3) << 4); \
+if (lp->base[b] == NULL) {\
+if ((lp->base[b] = (unsigned char *) calloc(64, sizeof (unsigned char))) == NULL) {return False;}}
 
-	if (!lp->base[*b])
-		lp->base[*b] = (unsigned char *) calloc(64, sizeof (unsigned char));
-}
 
-static int
-GetMem(life3dstruct * lp, unsigned int x, unsigned int y, unsigned int z)
+static Bool
+GetMem(life3dstruct * lp, unsigned int x, unsigned int y, unsigned int z,
+		int *m)
 {
 	int         b, o;
 
 	if (lp->memstart)
 		MemInit(lp);
-	BaseOffset(lp, x, y, z, &b, &o);
-	return lp->base[b][o];
+	BASE_OFFSET(x, y, z, b, o);
+	*m = lp->base[b][o];
+	return True;
 }
 
-static void
+static Bool
 SetMem(life3dstruct * lp,
        unsigned int x, unsigned int y, unsigned int z, unsigned int val)
 {
@@ -1503,12 +1503,12 @@ SetMem(life3dstruct * lp,
 
 	if (lp->memstart)
 		MemInit(lp);
-
-	BaseOffset(lp, x, y, z, &b, &o);
+	BASE_OFFSET(x, y, z, b, o);
 	lp->base[b][o] = val;
+	return True;
 }
 
-static void
+static Bool
 ChangeMem(life3dstruct * lp,
 	  unsigned int x, unsigned int y, unsigned int z, unsigned int val)
 {
@@ -1516,8 +1516,9 @@ ChangeMem(life3dstruct * lp,
 
 	if (lp->memstart)
 		MemInit(lp);
-	BaseOffset(lp, x, y, z, &b, &o);
+	BASE_OFFSET(x, y, z, b, o);
 	lp->base[b][o] += val;
+	return True;
 }
 
 static void
@@ -1543,7 +1544,7 @@ ClearMem(life3dstruct * lp)
  * (x,y,z) Note that the offset() macro implements wrapping - the world is a
  * torus.
  */
-static void
+static Bool
 IncrementNbrs3D(life3dstruct * lp, CellList * cell)
 {
 	int         xc, yc, zc, x, y, z;
@@ -1555,8 +1556,10 @@ IncrementNbrs3D(life3dstruct * lp, CellList * cell)
 		for (y = yc - 1; y != yc + 2; ++y)
 			for (x = xc - 1; x != xc + 2; ++x)
 				if (x != xc || y != yc || z != zc)
-					ChangeMem(lp,
-						  (unsigned int) x, (unsigned int) y, (unsigned int) z, 1);
+					if (!ChangeMem(lp,
+						  (unsigned int) x, (unsigned int) y, (unsigned int) z, 1))
+						return False;
+	return True;
 }
 
 static void
@@ -1565,7 +1568,7 @@ End3D(life3dstruct * lp)
 	CellList   *ptr;
 
 	while (lp->ptrhead != NULL) {
-		SetMem(lp, lp->ptrhead->x, lp->ptrhead->y, lp->ptrhead->z, OFF);
+		/* SetMem(lp, lp->ptrhead->x, lp->ptrhead->y, lp->ptrhead->z, OFF); */
 		DelFromList(lp, lp->ptrhead);
 	}
 	ptr = lp->eraserhead.next;
@@ -1576,7 +1579,7 @@ End3D(life3dstruct * lp)
 	MemInit(lp);
 }
 
-static void
+static Bool
 RunLife3D(life3dstruct * lp)
 {
 	unsigned int x, y, z, xc, yc, zc;
@@ -1586,7 +1589,8 @@ RunLife3D(life3dstruct * lp)
 	/* Step 1 - Add 1 to all neighbours of living cells. */
 	ptr = lp->ptrhead;
 	while (ptr != NULL) {
-		IncrementNbrs3D(lp, ptr);
+		if (!IncrementNbrs3D(lp, ptr))
+			return False;
 		ptr = ptr->next;
 	}
 
@@ -1607,25 +1611,34 @@ RunLife3D(life3dstruct * lp)
 		for (z = zc - 1; z != zc + 2; ++z)
 			for (y = yc - 1; y != yc + 2; ++y)
 				for (x = xc - 1; x != xc + 2; ++x)
-					if (x != xc || y != yc || z != zc)
-						if ((c = GetMem(lp, x, y, z))) {
+					if (x != xc || y != yc || z != zc) {
+						if (!GetMem(lp, x, y, z, &c))
+							return False;
+						if (c) {
 							if (CellState3D(c) == OFF) {
-								if (lp->param.birth & (1 << CellNbrs3D(c)))
+								if (lp->param.birth & (1 << CellNbrs3D(c))) {
 									SetList3D(x, y, z);
-								else
-									Reset3D(x, y, z);
+								} else {
+									if (!Reset3D(x, y, z))
+										return False;
+								}
 							}
 						}
-		c = GetMem(lp, xc, yc, zc);
-		if (lp->param.survival & (1 << CellNbrs3D(c)))
-			Set3D(xc, yc, zc);
-		else {
-			SetMem(lp, ptr->x, ptr->y, ptr->z, OFF);
+					}
+		if (!GetMem(lp, xc, yc, zc, &c))
+			return False;
+		if (lp->param.survival & (1 << CellNbrs3D(c))) {
+			if (!Set3D(xc, yc, zc))
+				return False;
+		} else {
+			if (!SetMem(lp, ptr->x, ptr->y, ptr->z, OFF))
+				return False;
 			DelFromList(lp, ptr);
 		}
 		ptr = ptrnextcell;
 	}
 	ClearMem(lp);
+	return True;
 }
 
 #if 0
@@ -1660,7 +1673,7 @@ DisplayList(life3dstruct * lp)
 
 #endif
 
-static void
+static Bool
 RandomSoup(ModeInfo * mi, int n, int v)
 {
 	life3dstruct *lp = &life3ds[MI_SCREEN(mi)];
@@ -1672,14 +1685,16 @@ RandomSoup(ModeInfo * mi, int n, int v)
 	for (z = lp->nstacks / 2 - v; z < lp->nstacks / 2 + v; ++z)
 		for (y = lp->nrows / 2 - v; y < lp->nrows / 2 + v; ++y)
 			for (x = lp->ncolumns / 2 - v; x < lp->ncolumns / 2 + v; ++x)
-				if (NRAND(100) < n)
+				if (NRAND(100) < n) {
 					SetList3D(x, y, z);
+				}
 	if (MI_IS_VERBOSE(mi)) {
 		(void) fprintf(stdout, "random pattern\n");
 	}
+	return True;
 }
 
-static void
+static Bool
 GetPattern(ModeInfo * mi, int pattern_rule, int pattern)
 {
 	life3dstruct *lp = &life3ds[MI_SCREEN(mi)];
@@ -1711,12 +1726,14 @@ GetPattern(ModeInfo * mi, int pattern_rule, int pattern)
 		y += lp->nrows / 2;
 		z += lp->nstacks / 2;
 		if (x >= 0 && y >= 0 && z >= 0 &&
-		    x < lp->ncolumns && y < lp->nrows && z < lp->nstacks)
+		    x < lp->ncolumns && y < lp->nrows && z < lp->nstacks) {
 			SetList3D(x, y, z);
+		}
 	}
 	if (MI_IS_VERBOSE(mi) && !filePattern) {
 		(void) fprintf(stdout, "table number %d\n", pattern);
 	}
+	return True;
 }
 
 static void
@@ -1759,50 +1776,6 @@ SortList(life3dstruct * lp)
 	XPoint      point;
 	CellList   *ptr;
 
-	for (i = 0; i < NBUCKETS; ++i)
-		lp->buckethead[i] = lp->bucketend[i] = NULL;
-
-	/* Calculate distances and re-arrange pointers to chain off buckets */
-	ptr = lp->ptrhead;
-	while (ptr != NULL) {
-
-		x = (double) ptr->x - lp->ox;
-		y = (double) ptr->y - lp->oy;
-		z = (double) ptr->z - lp->oz;
-		d = Distance(lp->vx, lp->vy, lp->vz, x, y, z);
-		if (lp->vx * (lp->vx - x) + lp->vy * (lp->vy - y) +
-		    lp->vz * (lp->vz - z) > 0 && d > 1.5)
-			ptr->visible = 1;
-		else
-			ptr->visible = 0;
-
-		ptr->dist = (short) d;
-		dist = (short) (d * BUCKETSIZE);
-		if (dist > NBUCKETS - 1)
-			dist = NBUCKETS - 1;
-
-		if (lp->buckethead[dist] == NULL) {
-			lp->buckethead[dist] = lp->bucketend[dist] = ptr;
-			ptr->priority = NULL;
-		} else {
-			lp->bucketend[dist]->priority = ptr;
-			lp->bucketend[dist] = ptr;
-			lp->bucketend[dist]->priority = NULL;
-		}
-		ptr = ptr->next;
-	}
-
-	/* Check for invisibility */
-	rsize = 0.47 * lp->width / ((double) HalfScreenD * 2);
-	i = lp->azm;
-	if (i < 0)
-		i = -i;
-	i = i % RT_ANGLE;
-	if (i > HALFRT_ANGLE)
-		i = RT_ANGLE - i;
-	rsize /= cos(i * IP);
-
-	lp->visible = 0;
 	for (i = 0; i < NBUCKETS; ++i)
 		lp->buckethead[i] = lp->bucketend[i] = NULL;
 
@@ -2006,7 +1979,7 @@ DrawScreen(ModeInfo * mi)
 #endif
 }
 
-static void
+static Bool
 shooter(life3dstruct * lp)
 {
 	int         hsp, vsp, asp, hoff = 1, voff = 1, aoff = 1, r, c2,
@@ -2119,13 +2092,14 @@ shooter(life3dstruct * lp)
 			SetList3D(hsp + 2 * hoff, vsp + 1 * voff, asp + 2 * aoff);
 		}
 	}
+	return True;
 }
 
 void
 init_life3d(ModeInfo * mi)
 {
-	life3dstruct *lp;
 	int         i, npats;
+	life3dstruct *lp;
 
 	if (life3ds == NULL) {
 		if ((life3ds = (life3dstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -2152,7 +2126,7 @@ init_life3d(ModeInfo * mi)
 		lp->param.survival = input_param.survival;
 		lp->param.birth = input_param.birth;
 	}
-	if (!lp->eraserhead.next) {
+	if (lp->eraserhead.next == NULL) {
 		lp->dist = 50.0 /*30.0 */ ;
 		lp->alt = 20 /*30 */ ;
 		lp->azm = 10 /*30 */ ;
@@ -2164,8 +2138,9 @@ init_life3d(ModeInfo * mi)
 		lp->oz = lp->nstacks / 2;
 
 		Init3D(lp);
-	} else
+	} else {
 		End3D(lp);
+	}
 	lp->color[0] = MI_BLACK_PIXEL(mi);
 	if (MI_NPIXELS(mi) > 2) {
 		i = NRAND(3);
@@ -2210,10 +2185,19 @@ init_life3d(ModeInfo * mi)
 	else
 		npats = 0;
 	lp->pattern = NRAND(npats + 2);
-	if (lp->pattern >= npats && !filePattern)
-		RandomSoup(mi, 30, 10);
-	else
-		GetPattern(mi, lp->patterned_rule, lp->pattern);
+	if (lp->pattern >= npats && !filePattern) {
+		if (!RandomSoup(mi, 30, 10)) {
+			if (lp->eraserhead.next != NULL)
+				End3D(lp);
+			return;
+		}
+	} else {
+		if (!GetPattern(mi, lp->patterned_rule, lp->pattern)) {
+			if (lp->eraserhead.next != NULL)
+				End3D(lp);
+			return;
+		}
+	}
 
 	DrawScreen(mi);
 }
@@ -2221,9 +2205,19 @@ init_life3d(ModeInfo * mi)
 void
 draw_life3d(ModeInfo * mi)
 {
-	life3dstruct *lp = &life3ds[MI_SCREEN(mi)];
+	life3dstruct *lp;
 
-	RunLife3D(lp);
+	if (life3ds == NULL)
+		return;
+	lp = &life3ds[MI_SCREEN(mi)];
+	if (lp->eraserhead.next == NULL)
+		return;
+
+	if (!RunLife3D(lp)) {
+		if (lp->eraserhead.next != NULL)
+			End3D(lp);
+		return;
+	}
 	DrawScreen(mi);
 
 	MI_IS_DRAWN(mi) = True;
@@ -2241,7 +2235,10 @@ draw_life3d(ModeInfo * mi)
 
 	if (lp->generation && lp->generation %
 	    ((MI_COUNT(mi) < 0) ? 1 : MI_COUNT(mi)) == 0)
-		shooter(lp);
+		if (!shooter(lp)) {
+			if (lp->eraserhead.next != NULL)
+				End3D(lp);
+		}
 }
 
 void
@@ -2253,7 +2250,7 @@ release_life3d(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			life3dstruct *lp = &life3ds[screen];
 
-			if (lp->eraserhead.next)
+			if (lp->eraserhead.next != NULL)
 				End3D(lp);
 		}
 		(void) free((void *) life3ds);
@@ -2264,7 +2261,11 @@ release_life3d(ModeInfo * mi)
 void
 refresh_life3d(ModeInfo * mi)
 {
-	life3dstruct *lp = &life3ds[MI_SCREEN(mi)];
+	life3dstruct *lp;
+
+	if (life3ds == NULL)
+		return;
+	lp = &life3ds[MI_SCREEN(mi)];
 
 	if (lp->painted) {
 		MI_CLEARWINDOW(mi);
@@ -2274,12 +2275,16 @@ refresh_life3d(ModeInfo * mi)
 void
 change_life3d(ModeInfo * mi)
 {
-	life3dstruct *lp = &life3ds[MI_SCREEN(mi)];
 	int         npats;
+	life3dstruct *lp;
+
+	if (life3ds == NULL)
+		return;
+	lp = &life3ds[MI_SCREEN(mi)];
 
 	lp->generation = 0;
 
-	if (lp->eraserhead.next)
+	if (lp->eraserhead.next != NULL)
 		End3D(lp);
 	/*lp->tablesMade = 0; */
 
@@ -2309,10 +2314,19 @@ change_life3d(ModeInfo * mi)
 				printRule(lp->param);
 		}
 	}
-	if (lp->pattern >= npats)
-		RandomSoup(mi, 30, 10);
-	else
-		GetPattern(mi, lp->patterned_rule, lp->pattern);
+	if (lp->pattern >= npats) {
+		if (!RandomSoup(mi, 30, 10)) {
+			if (lp->eraserhead.next != NULL)
+				End3D(lp);
+			return;
+		}
+	} else {
+		if (!GetPattern(mi, lp->patterned_rule, lp->pattern)) {
+			if (lp->eraserhead.next != NULL)
+				End3D(lp);
+			return;
+		}
+	}
 
 	DrawScreen(mi);
 }

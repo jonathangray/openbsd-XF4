@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)vtlock_proc.c	1.1	98/10/08 xlockmore";
+static const char sccsid[] = "@(#)vtlock_proc.c	1.2 00/08/30 xlockmore";
 #endif
 
 /* Copyright (c) R. Cohen-Scali, 1998. */
@@ -18,6 +18,7 @@ static const char sccsid[] = "@(#)vtlock_proc.c	1.1	98/10/08 xlockmore";
  * other special, indirect and consequential damages.
  *
  * <remi.cohenscali@pobox.com>
+ *       00/08/30: Eric Lassauge - updates for assorted compilation warnings
  *       98/10/08: Eric Lassauge - vtlock_proc renamed from lockvt_proc.
  *				   misc corrections.
  */
@@ -35,10 +36,14 @@ static const char sccsid[] = "@(#)vtlock_proc.c	1.1	98/10/08 xlockmore";
 #include <linux/fs.h>
 #include <linux/tty.h>
 #include <linux/vt.h>
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>	/* for readlink() */
+#endif
 #endif
 
 /* Misc definitions to modify if not applicable on the current system */
 #if defined( __linux__ ) && HAVE_DIRENT_H
+#include <dirent.h>	/* for alphasort() */
 #define PROCDIR 	"/proc"
 #define DEVDIR 		"/dev"
 #define TTY		DEVDIR "/tty%c"
@@ -79,7 +84,7 @@ static int scan_x_fds(struct inode_ref *, int, pid_t);
 /* use scan_dir from iostuff.c */
 extern int  scan_dir(const char *directoryname, struct dirent ***namelist,
                      int         (*specify) (const struct dirent *),
-                     int         (*compare) (const struct dirent * const *, const struct dirent * const *));
+                     int         (*compare) (const void *, const void *));
 
 extern int is_x_vt_active(int display_nr);
 extern int set_x_vt_active(int display_nr);
@@ -99,18 +104,15 @@ get_active_vt(void)
     int fd = -1;
 
     fd = open( CONSOLE, O_RDONLY );
-    if ( fd == -1 ) return( -1 );
+    if ( fd == -1 ) return( (unsigned short)  -1 );
     if ( ioctl( fd, VT_GETSTATE,(void *)&vtstat ) == -1 )
     {
         close( fd );
-        return( -1 );
+        return((unsigned short) -1 );
     }
     close( fd );
     return vtstat.v_active;
 }
-
-extern int readlink(const char *path, char *buf, size_t len);
-/* extern int alphasort(const void *a, const void *b); */
 
 /*
  * find_x
@@ -187,7 +189,7 @@ find_x_proc(int disp_nr, dev_t lxdev, ino_t lxino)
     /* These are the display string searched in X cmd running (e.g.: :1) */
     /* and the searched  value of the link (e.g.: "[0301]:286753") */
     (void) sprintf( xdisp, ":%d", disp_nr );
-    (void) sprintf( xcmd_ref, "[%04x]:%ld", lxdev, lxino );
+    (void) sprintf( xcmd_ref, "[%04x]:%ld", (int)lxdev, (long)lxino );
     lencmd = strlen(xcmd_ref);
     if ( stat( PROCDIR, &stbuf ) == -1 ) return( (pid_t)-1 );
     namelist = (struct dirent **) malloc(sizeof (struct dirent *));
@@ -283,7 +285,7 @@ find_tty_inodes( struct inode_ref *inotab )
         if ( stat( name, &stbuf ) == -1 )
           continue;
         inotab[ln_ttys].n = ix;
-        (void) sprintf( inotab[ln_ttys].ref, "[%04x]:%ld", stbuf.st_dev, stbuf.st_ino );
+        (void) sprintf( inotab[ln_ttys].ref, "[%04x]:%ld", (int)stbuf.st_dev, stbuf.st_ino );
         ln_ttys++;
     }
     return ln_ttys;

@@ -8,148 +8,168 @@ typedef struct LockStruct_s
 
 static LockStruct LockProcs[] =
 {
-{"ant","Shows Langton's and Turk's generalized ants"},
+{(char *) "ant", (char *) "Shows Langton's and Turk's generalized ants"},
 #ifdef USE_GL
-{"atlantis","Shows moving sharks/whales/dolphin"},
+{(char *) "atlantis", (char *) "Shows moving sharks/whales/dolphin"},
 #endif
-{"ball","Shows bouncing balls"},
-{"bat","Shows bouncing flying bats"},
-{"blot","Shows Rorschach's ink blot test"},
-{"bouboule","Shows Mimi's bouboule of moving stars"},
-{"bounce","Shows bouncing footballs"},
-{"braid","Shows random braids and knots"},
-{"bubble","Shows popping bubbles"},
+{(char *) "ball", (char *) "Shows bouncing balls"},
+{(char *) "bat", (char *) "Shows bouncing flying bats"},
+{(char *) "blot", (char *) "Shows Rorschach's ink blot test"},
+{(char *) "bouboule", (char *) "Shows Mimi's bouboule of moving stars"},
+{(char *) "bounce", (char *) "Shows bouncing footballs"},
+{(char *) "braid", (char *) "Shows random braids and knots"},
+{(char *) "bubble", (char *) "Shows popping bubbles"},
 #if defined( USE_GL ) && defined( HAVE_CXX )
-{"bubble3d","Richard Jones's GL bubbles"},
+{(char *) "bubble3d", (char *) "Richard Jones's GL bubbles"},
 #endif
-{"bug","Shows Palmiter's bug evolution and garden of Eden"},
+{(char *) "bug", (char *) "Shows Palmiter's bug evolution and garden of Eden"},
 #ifdef USE_GL
-{"cage","Shows the Impossible Cage, an Escher-like GL scene"},
+{(char *) "cage", (char *) "Shows the Impossible Cage, an Escher-like GL scene"},
 #endif
-#if defined( USE_XPM ) || defined( USE_XPMINC )
-{"cartoon","Shows bouncing cartoons"},
-#endif
-{"clock","Shows Packard's clock"},
-{"coral","Shows a coral reef"},
-{"crystal","Shows polygons in 2D plane groups"},
-{"daisy","Shows a meadow of daisies"},
-{"dclock","Shows a floating digital clock or message"},
-{"decay","Shows a decaying screen"},
-{"deco","Shows art as ugly as sin"},
-{"demon","Shows Griffeath's cellular automata"},
-{"dilemma","Shows Lloyd's Prisoner's Dilemma simulation"},
-{"discrete","Shows various discrete maps"},
-{"drift","Shows cosmic drifting flame fractals"},
-{"eyes","Shows eyes following a bouncing grelb"},
-{"fadeplot","Shows a fading plot of sine squared"},
-{"flag","Shows a waving flag image"},
-{"flame","Shows cosmic flame fractals"},
-{"flow","Shows dynamic strange attractors"},
-{"forest","Shows binary trees of a fractal forest"},
-{"galaxy","Shows crashing spiral galaxies"},
+{(char *) "clock", (char *) "Shows Packard's clock"},
+{(char *) "coral", (char *) "Shows a coral reef"},
+{(char *) "crystal", (char *) "Shows polygons in 2D plane groups"},
+{(char *) "daisy", (char *) "Shows a meadow of daisies"},
+{(char *) "dclock", (char *) "Shows a floating digital clock or message"},
+{(char *) "decay", (char *) "Shows a decaying screen"},
+{(char *) "deco", (char *) "Shows art as ugly as sin"},
+{(char *) "demon", (char *) "Shows Griffeath's cellular automata"},
+{(char *) "dilemma", (char *) "Shows Lloyd's Prisoner's Dilemma simulation"},
+{(char *) "dragon", (char *) "Shows Deventer's Hexagonal Dragons Maze"},
+{(char *) "discrete", (char *) "Shows various discrete maps"},
+{(char *) "drift", (char *) "Shows cosmic drifting flame fractals"},
+{(char *) "euler2d", (char *) "Shows a simulation of 2D incompressible inviscid fluid"},
+{(char *) "eyes", (char *) "Shows eyes following a bouncing grelb"},
+{(char *) "fadeplot", (char *) "Shows a fading plot of sine squared"},
 #ifdef USE_GL
-{"gears","Shows GL's gears"},
+{(char *) "fire", (char *) "Shows a 3D fire-like image"},
 #endif
-{"goop","Shows goop from a lava lamp"},
-{"grav","Shows orbiting planets"},
-{"helix","Shows string art"},
-{"hop","Shows real plane iterated fractals"},
-{"hyper","Shows spinning n-dimensional hypercubes"},
-{"ico","Shows a bouncing polyhedron"},
-{"ifs","Shows a modified iterated function system"},
-{"image","Shows randomly appearing logos"},
+{(char *) "flag", (char *) "Shows a waving flag image"},
+{(char *) "flame", (char *) "Shows cosmic flame fractals"},
+{(char *) "flow", (char *) "Shows dynamic strange attractors"},
+{(char *) "forest", (char *) "Shows binary trees of a fractal forest"},
+{(char *) "galaxy", (char *) "Shows crashing spiral galaxies"},
+#ifdef USE_GL
+{(char *) "gears", (char *) "Shows GL's gears"},
+#endif
+#ifdef USE_GL
+{(char *) "glplanet", (char *) "Animates texture mapped sphere (planet)"},
+#endif
+{(char *) "goop", (char *) "Shows goop from a lava lamp"},
+{(char *) "grav", (char *) "Shows orbiting planets"},
+{(char *) "helix", (char *) "Shows string art"},
+{(char *) "hop", (char *) "Shows real plane iterated fractals"},
+{(char *) "hyper", (char *) "Shows spinning n-dimensional hypercubes"},
+{(char *) "ico", (char *) "Shows a bouncing polyhedron"},
+{(char *) "ifs", (char *) "Shows a modified iterated function system"},
+{(char *) "image", (char *) "Shows randomly appearing logos"},
 #if defined( USE_GL ) && defined( HAVE_CXX )
-{"invert","Shows a sphere inverted without wrinkles"},
+{(char *) "invert", (char *) "Shows a sphere inverted without wrinkles"},
 #endif
-{"juggle","Shows a Juggler, juggling"},
-{"julia","Shows the Julia set"},
-{"kaleid","Shows a kaleidoscope"},
-{"kumppa","Shows kumppa"},
-#if defined( USE_GL ) && ( defined( USE_XPM ) || defined( USE_XPMINC ))
-{"lament","Shows Lemarchand's Box"},
-#endif
-{"laser","Shows spinning lasers"},
-{"life","Shows Conway's game of Life"},
-{"life1d","Shows Wolfram's game of 1D Life"},
-{"life3d","Shows Bays' game of 3D Life"},
-{"lightning","Shows Keith's fractal lightning bolts"},
-{"lisa","Shows animated lisajous loops"},
-{"lissie","Shows lissajous worms"},
-{"loop","Shows Langton's self-producing loops"},
-{"lyapunov","Shows lyapunov space"},
-{"mandelbrot","Shows mandelbrot sets"},
-{"marquee","Shows messages"},
-{"matrix","Shows the matrix"},
-{"maze","Shows a random maze and a depth first search solution"},
+{(char *) "juggle", (char *) "Shows a Juggler, juggling"},
+{(char *) "julia", (char *) "Shows the Julia set"},
+{(char *) "kaleid", (char *) "Shows a kaleidoscope"},
+{(char *) "kumppa", (char *) "Shows kumppa"},
 #ifdef USE_GL
-{"moebius","Shows Moebius Strip II, an Escher-like GL scene with ants"},
+{(char *) "lament", (char *) "Shows Lemarchand's Box"},
+#endif
+{(char *) "laser", (char *) "Shows spinning lasers"},
+{(char *) "life", (char *) "Shows Conway's game of Life"},
+{(char *) "life1d", (char *) "Shows Wolfram's game of 1D Life"},
+{(char *) "life3d", (char *) "Shows Bays' game of 3D Life"},
+{(char *) "lightning", (char *) "Shows Keith's fractal lightning bolts"},
+{(char *) "lisa", (char *) "Shows animated lisajous loops"},
+{(char *) "lissie", (char *) "Shows lissajous worms"},
+{(char *) "loop", (char *) "Shows Langton's self-producing loops"},
+{(char *) "lyapunov", (char *) "Shows lyapunov space"},
+{(char *) "mandelbrot", (char *) "Shows mandelbrot sets"},
+{(char *) "marquee", (char *) "Shows messages"},
+{(char *) "matrix", (char *) "Shows the matrix"},
+{(char *) "maze", (char *) "Shows a random maze and a depth first search solution"},
+#ifdef USE_GL
+{(char *) "moebius", (char *) "Shows Moebius Strip II, an Escher-like GL scene with ants"},
 #endif
 #ifdef USE_GL
-{"morph3d","Shows GL morphing polyhedra"},
+{(char *) "morph3d", (char *) "Shows GL morphing polyhedra"},
 #endif
-{"mountain","Shows Papo's mountain range"},
-{"munch","Shows munching squares"},
-{"nose","Shows a man with a big nose runs around spewing out messages"},
-{"pacman","Shows Pacman(tm)"},
-{"penrose","Shows Penrose's quasiperiodic tilings"},
-{"petal","Shows various GCD Flowers"},
+{(char *) "mountain", (char *) "Shows Papo's mountain range"},
+{(char *) "munch", (char *) "Shows munching squares"},
+{(char *) "nose", (char *) "Shows a man with a big nose runs around spewing out messages"},
+{(char *) "pacman", (char *) "Shows Pacman(tm)"},
+{(char *) "penrose", (char *) "Shows Penrose's quasiperiodic tilings"},
+{(char *) "petal", (char *) "Shows various GCD Flowers"},
 #ifdef USE_GL
-{"pipes","Shows a selfbuilding pipe system"},
+{(char *) "pipes", (char *) "Shows a selfbuilding pipe system"},
 #endif
-{"puzzle","Shows a puzzle being scrambled and then solved"},
-{"pyro","Shows fireworks"},
-{"qix","Shows spinning lines a la Qix(tm)"},
-{"roll","Shows a rolling ball"},
-{"rotor","Shows Tom's Roto-Rooter"},
+{(char *) "polyominoes", (char *) "Shows attempts to place polyominoes into a rectangle"},
+{(char *) "puzzle", (char *) "Shows a puzzle being scrambled and then solved"},
+{(char *) "pyro", (char *) "Shows fireworks"},
+{(char *) "qix", (char *) "Shows spinning lines a la Qix(tm)"},
+{(char *) "roll", (char *) "Shows a rolling ball"},
+{(char *) "rotor", (char *) "Shows Tom's Roto-Rooter"},
 #ifdef USE_GL
-{"rubik","Shows an auto-solving Rubik's Cube"},
+{(char *) "rubik", (char *) "Shows an auto-solving Rubik's Cube"},
 #endif
-{"shape","Shows stippled rectangles, ellipses, and triangles"},
-{"sierpinski","Shows Sierpinski's triangle"},
-{"slip","Shows slipping blits"},
+#ifdef USE_GL
+{(char *) "sballs", (char *) "Balls spinning like crazy in GL"},
+#endif
+{(char *) "scooter", (char *) "Shows a journey through space tunnel and stars"},
+{(char *) "shape", (char *) "Shows stippled rectangles, ellipses, and triangles"},
+{(char *) "sierpinski", (char *) "Shows Sierpinski's triangle"},
+#ifdef USE_GL
+{(char *) "sierpinski3d", (char *) "Shows GL's Sierpinski gasket"},
+#endif
+#if defined(USE_GL) && defined( USE_UNSTABLE )
+{(char *) "skewb", (char *) "Shows an auto-solving Skewb"},
+#endif
+{(char *) "slip", (char *) "Shows slipping blits"},
 #ifdef HAVE_CXX
-{"solitare","Shows Klondike's game of solitare"},
+{(char *) "solitare", (char *) "Shows Klondike's game of solitare"},
 #endif
 #ifdef USE_UNSTABLE
-{"space","Shows a journey into deep space"},
+{(char *) "space", (char *) "Shows a journey into deep space"},
 #endif
-{"sphere","Shows a bunch of shaded spheres"},
-{"spiral","Shows a helical locus of points"},
-{"spline","Shows colorful moving splines"},
+{(char *) "sphere", (char *) "Shows a bunch of shaded spheres"},
+{(char *) "spiral", (char *) "Shows a helical locus of points"},
+{(char *) "spline", (char *) "Shows colorful moving splines"},
 #ifdef USE_GL
-{"sproingies","Shows Sproingies!  Nontoxic.  Safe for pets and small children"},
+{(char *) "sproingies", (char *) "Shows Sproingies!  Nontoxic.  Safe for pets and small children"},
 #endif
 #ifdef USE_GL
-{"stairs","Shows some Infinite Stairs, an Escher-like scene"},
+{(char *) "stairs", (char *) "Shows some Infinite Stairs, an Escher-like scene"},
 #endif
-{"star","Shows a star field with a twist"},
-{"starfish","Shows starfish"},
-{"strange","Shows strange attractors"},
+{(char *) "star", (char *) "Shows a star field with a twist"},
+{(char *) "starfish", (char *) "Shows starfish"},
+{(char *) "strange", (char *) "Shows strange attractors"},
 #ifdef USE_GL
-{"superquadrics","Shows 3D mathematical shapes"},
+{(char *) "superquadrics", (char *) "Shows 3D mathematical shapes"},
 #endif
-{"swarm","Shows a swarm of bees following a wasp"},
-{"swirl","Shows animated swirling patterns"},
-{"t3d","Shows a Flying Balls Clock Demo"},
-{"tetris","Shows an autoplaying tetris game"},
-{"thornbird","Shows an animated bird in a thorn bush fractal map"},
-{"tik_tak","Shows rotating polygons"},
-{"triangle","Shows a triangle mountain range"},
-{"tube","Shows an animated tube"},
-{"turtle","Shows turtle fractals"},
-{"vines","Shows fractals"},
-{"voters","Shows Dewdney's Voters"},
-{"wator","Shows Dewdney's Water-Torus planet of fish and sharks"},
-{"wire","Shows a random circuit with 2 electrons"},
-{"world","Shows spinning Earths"},
-{"worm","Shows wiggly worms"},
-{"xjack","Shows Jack having one of those days"},
-{"blank","Shows nothing but a black screen"},
+{(char *) "swarm", (char *) "Shows a swarm of bees following a wasp"},
+{(char *) "swirl", (char *) "Shows animated swirling patterns"},
+{(char *) "t3d", (char *) "Shows a Flying Balls Clock Demo"},
+{(char *) "tetris", (char *) "Shows an autoplaying tetris game"},
+#if defined(USE_GL) && defined(HAVE_CXX) && defined( HAVE_TTF ) && defined( HAVE_GLTT ) && defined( USE_UNSTABLE )
+{(char *) "text3d", (char *) "Shows 3D text"},
+#endif
+{(char *) "thornbird", (char *) "Shows an animated bird in a thorn bush fractal map"},
+{(char *) "tik_tak", (char *) "Shows rotating polygons"},
+{(char *) "triangle", (char *) "Shows a triangle mountain range"},
+{(char *) "tube", (char *) "Shows an animated tube"},
+{(char *) "turtle", (char *) "Shows turtle fractals"},
+{(char *) "vines", (char *) "Shows fractals"},
+{(char *) "voters", (char *) "Shows Dewdney's Voters"},
+{(char *) "wator", (char *) "Shows Dewdney's Water-Torus planet of fish and sharks"},
+{(char *) "wire", (char *) "Shows a random circuit with 2 electrons"},
+{(char *) "world", (char *) "Shows spinning Earths"},
+{(char *) "worm", (char *) "Shows wiggly worms"},
+{(char *) "xcl", (char *) "Shows a control line combat model race"},
+{(char *) "xjack", (char *) "Shows Jack having one of those days"},
+{(char *) "blank", (char *) "Shows nothing but a black screen"},
 #ifdef USE_BOMB
-{"bomb", "Shows a bomb and will autologout after a time"},
-{"random", "Shows a random mode (except blank and bomb)"}
+{(char *) "bomb", (char *) "Shows a bomb and will autologout after a time"},
+{(char *) "random", (char *) "Shows a random mode (except blank and bomb)"}
 #else
-{"random", "Shows a random mode (except blank)"}
+{(char *) "random", (char *) "Shows a random mode (except blank)"}
 #endif
 };
 

@@ -2,7 +2,7 @@
 /* lissie --- the Lissajous worm */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)lissie.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)lissie.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -25,9 +25,10 @@ static const char sccsid[] = "@(#)lissie.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: Compatible with xscreensaver
- * 18-Aug-96: added refresh-hook.
- * 01-May-96: written.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: Compatible with xscreensaver
+ * 18-Aug-1996: added refresh-hook.
+ * 01-May-1996: written.
  */
 
 #ifdef STANDALONE
@@ -49,7 +50,7 @@ static const char sccsid[] = "@(#)lissie.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_lissie
 
 ModeSpecOpt lissie_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   lissie_description =
@@ -242,8 +243,10 @@ init_lissie(ModeInfo * mi)
 
 	lp->loopcount = 0;
 
-	if (!lp->lissie)
-		lp->lissie = (lissiestruct *) calloc(lp->nlissies, sizeof (lissiestruct));
+	if (lp->lissie == NULL)
+		if ((lp->lissie = (lissiestruct *) calloc(lp->nlissies,
+				sizeof (lissiestruct))) == NULL)
+			return;
 
 	MI_CLEARWINDOW(mi);
 	lp->painted = False;
@@ -256,8 +259,14 @@ init_lissie(ModeInfo * mi)
 void
 draw_lissie(ModeInfo * mi)
 {
-	lissstruct *lp = &lisses[MI_SCREEN(mi)];
 	register unsigned char ball;
+	lissstruct *lp;
+
+	if (lisses == NULL)
+		return;
+	lp = &lisses[MI_SCREEN(mi)];
+	if (lp->lissie == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -279,9 +288,9 @@ release_lissie(ModeInfo * mi)
 		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
 			lissstruct *lp = &lisses[screen];
 
-			if (lp->lissie) {
+			if (lp->lissie != NULL) {
 				(void) free((void *) lp->lissie);
-				lp->lissie = NULL;
+				/* lp->lissie = NULL; */
 			}
 		}
 		(void) free((void *) lisses);
@@ -292,16 +301,20 @@ release_lissie(ModeInfo * mi)
 void
 refresh_lissie(ModeInfo * mi)
 {
-	if (lisses != NULL) {
-		lissstruct *lp = &lisses[MI_SCREEN(mi)];
-		int         i;
+	int         i;
+	lissstruct *lp;
 
-		if (lp->painted) {
-			MI_CLEARWINDOW(mi);
-			for (i = 0; i < lp->nlissies; i++) {
-				lp->lissie[i].redrawing = 1;
-				lp->lissie[i].redrawpos = 0;
-			}
+	if (lisses == NULL)
+		return;
+	lp = &lisses[MI_SCREEN(mi)];
+	if (lp->lissie == NULL)
+		return;
+
+	if (lp->painted) {
+		MI_CLEARWINDOW(mi);
+		for (i = 0; i < lp->nlissies; i++) {
+			lp->lissie[i].redrawing = 1;
+			lp->lissie[i].redrawpos = 0;
 		}
 	}
 }

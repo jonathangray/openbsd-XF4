@@ -2,7 +2,7 @@
 /* roll --- rolling ball of points */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)roll.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)roll.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -23,7 +23,8 @@ static const char sccsid[] = "@(#)roll.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97:  Compatible with xscreensaver
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997:  Compatible with xscreensaver
  * 1995: Written.
  */
 
@@ -46,7 +47,7 @@ static const char sccsid[] = "@(#)roll.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_roll
 
 ModeSpecOpt roll_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   roll_description =
@@ -141,13 +142,26 @@ project(rollstruct * rp)
 	}
 }
 
+static void
+free_roll(rollstruct *rp)
+{
+	if (rp->pts != NULL) {
+		(void) free((void *) rp->pts);
+		rp->pts = NULL;
+	}
+	if (rp->p != NULL) {
+		(void) free((void *) rp->p);
+		rp->p = NULL;
+	}
+}
+
 void
 init_roll(ModeInfo * mi)
 {
-	rollstruct *rp;
 	int         i;
 	int         size = MI_SIZE(mi);
 	double      ang;
+	rollstruct *rp;
 
 	if (rolls == NULL) {
 		if ((rolls = (rollstruct *) calloc(MI_NUM_SCREENS(mi),
@@ -195,7 +209,11 @@ init_roll(ModeInfo * mi)
 	rp->maxpts *= rp->maxpts;
 	rp->npts = 0;
 	if (rp->pts == NULL)
-		rp->pts = (ptsstruct *) malloc(rp->maxpts * sizeof (ptsstruct));
+		if ((rp->pts = (ptsstruct *) malloc(rp->maxpts *
+				sizeof (ptsstruct))) ==NULL) {
+			free_roll(rp);
+			return;
+		}
 	if (rp->p != NULL) {
 		(void) free((void *) rp->p);
 		rp->p = NULL;
@@ -213,11 +231,16 @@ draw_roll(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	rollstruct *rp = &rolls[MI_SCREEN(mi)];
 	int         i;
+	rollstruct *rp;
+
+	if (rolls == NULL)
+		return;
+	rp = &rolls[MI_SCREEN(mi)];
+	if (rp->pts == NULL)
+		return;
 
 	MI_IS_DRAWN(mi) = True;
-
 	for (i = 0; i < rp->maxpts; i++) {
 		rp->pts[i].t = rp->pts[i].t1;
 		rp->pts[i].u = rp->pts[i].u1;
@@ -239,7 +262,11 @@ draw_roll(ModeInfo * mi)
 	} else {
 		if (rp->p)
 			(void) free((void *) rp->p);
-		rp->p = (XPoint *) malloc(rp->maxpts * sizeof (XPoint));
+		if ((rp->p = (XPoint *) malloc(rp->maxpts *
+				sizeof (XPoint))) == NULL) {
+			free_roll(rp);
+			return;
+		}
 	}
 	rotation3d(rp);
 	project(rp);
@@ -290,14 +317,8 @@ release_roll(ModeInfo * mi)
 	if (rolls != NULL) {
 		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			rollstruct *rp = &rolls[screen];
-
-			if (rp->pts != NULL)
-				(void) free((void *) rp->pts);
-			if (rp->p != NULL)
-				(void) free((void *) rp->p);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
+			free_roll(&rolls[screen]);
 		(void) free((void *) rolls);
 		rolls = NULL;
 	}

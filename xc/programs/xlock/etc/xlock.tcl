@@ -446,6 +446,7 @@ proc Affopts { device } {
   global timeelapsed
   global usefirst
   global wireframe
+  global showfps
   global use3d
   global trackmouse
 
@@ -492,6 +493,7 @@ proc Affopts { device } {
   if { $timeelapsed == 1 } {append linecommand "-timeelapsed "}
   if { $usefirst == 1 } {append linecommand "-usefirst "}
   if { $wireframe == 1 } {append linecommand "-wireframe "}
+  if { $showfps == 1 } {append linecommand "-showfps "}
   if { $use3d == 1 } {append linecommand "-use3d "}
   if { $trackmouse == 1 } {append linecommand "-trackmouse "}
   if { $nolock == 1 } {append linecommand "-nolock "}
@@ -598,6 +600,7 @@ $CHECK add check -label "sound" -variable sound
 $CHECK add check -label "timeelapsed" -variable timeelapsed
 $CHECK add check -label "usefirst" -variable usefirst
 $CHECK add check -label "wireframe" -variable wireframe
+$CHECK add check -label "showfps" -variable showfps
 $CHECK add check -label "use3d" -variable use3d
 $CHECK add check -label "trackmouse" -variable trackmouse
 
@@ -659,7 +662,6 @@ bubble\
 bubble3d\
 bug\
 cage\
-cartoon\
 clock\
 coral\
 crystal\
@@ -669,16 +671,20 @@ decay\
 deco\
 demon\
 dilemma\
+dragon\
 discrete\
 drift\
+euler2d\
 eyes\
 fadeplot\
+fire\
 flag\
 flame\
 flow\
 forest\
 galaxy\
 gears\
+glplanet\
 goop\
 grav\
 helix\
@@ -715,14 +721,19 @@ pacman\
 penrose\
 petal\
 pipes\
+polyominoes\
 puzzle\
 pyro\
 qix\
 roll\
 rotor\
 rubik\
+sballs\
+scooter\
 shape\
 sierpinski\
+sierpinski3d\
+skewb\
 slip\
 solitare\
 space\
@@ -739,6 +750,7 @@ swarm\
 swirl\
 t3d\
 tetris\
+text3d\
 thornbird\
 tik_tak\
 triangle\
@@ -750,6 +762,7 @@ wator\
 wire\
 world\
 worm\
+xcl\
 xjack\
 blank\
 bomb\

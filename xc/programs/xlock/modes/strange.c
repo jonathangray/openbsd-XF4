@@ -2,7 +2,7 @@
 /* strange --- strange attractors */
 
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)strange.c	4.07 97/11/24 xlockmore";
+static const char sccsid[] = "@(#)strange.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -22,9 +22,10 @@ static const char sccsid[] = "@(#)strange.c	4.07 97/11/24 xlockmore";
  * other special, indirect and consequential damages.
  *
  * Revision History:
- * 10-May-97: jwz@jwz.org: turned into a standalone program.
- *            Made it render into an offscreen bitmap and then copy
- *            that onto the screen, to reduce flicker.
+ * 01-Nov-2000: Allocation checks
+ * 10-May-1997: jwz@jwz.org: turned into a standalone program.
+ *              Made it render into an offscreen bitmap and then copy
+ *              that onto the screen, to reduce flicker.
  *
  * strange attractors are not so hard to find...
  */
@@ -45,7 +46,7 @@ static const char sccsid[] = "@(#)strange.c	4.07 97/11/24 xlockmore";
 #ifdef MODE_strange
 
 ModeSpecOpt strange_opts =
-{0, NULL, 0, NULL, NULL};
+{0, (XrmOptionDescRec *) NULL, 0, (argtype *) NULL, (OptionStruct *) NULL};
 
 #ifdef USE_MODULES
 ModStruct   strange_description =
@@ -188,6 +189,31 @@ static void (*Funcs[2]) (ATTRACTOR *, PRM, PRM, PRM *, PRM *) = {
 
 /***************************************************************/
 
+static void
+free_strange(Display *display, ATTRACTOR *A)
+{
+	if (A->Buffer1 != NULL) {
+		(void) free((void *) A->Buffer1);
+		A->Buffer1 = NULL;
+	}
+	if (A->Buffer2 != NULL) {
+		(void) free((void *) A->Buffer2);
+		A->Buffer2 = NULL;
+	}
+	if (A->dbuf) {
+		XFreePixmap(display, A->dbuf);
+		A->dbuf = None;
+	}
+	if (A->dbuf_gc) {
+		XFreeGC(display, A->dbuf_gc);
+		A->dbuf_gc = None;
+	}
+	if (A->Fold != NULL) {
+		(void) free((void *) A->Fold);
+		A->Fold = NULL;
+	}
+}
+
 void
 draw_strange(ModeInfo * mi)
 {
@@ -198,12 +224,16 @@ draw_strange(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	ATTRACTOR  *A = &Root[MI_SCREEN(mi)];
 	DBL         Lx, Ly;
 	void        (*Iterate) (ATTRACTOR *, PRM, PRM, PRM *, PRM *);
 	PRM         xmin, xmax, ymin, ymax;
+	ATTRACTOR  *A;
 
-
+	if (Root == NULL)
+		return;
+	A = &Root[MI_SCREEN(mi)];
+	if (A->Fold == NULL)
+		return;
 
 	Cur_Pt = A->Cur_Pt;
 	Iterate = A->Iterate;
@@ -250,7 +280,7 @@ draw_strange(ModeInfo * mi)
 
 	XSetForeground(display, gc, MI_BLACK_PIXEL(mi));
 
-	if (A->dbuf) {		/* jwz */
+	if (A->dbuf != None) {		/* jwz */
 		XSetForeground(display, A->dbuf_gc, 0);
 /* XDrawPoints(display, A->dbuf, A->dbuf_gc, A->Buffer1,
    Cur_Pt,CoordModeOrigin); */
@@ -263,15 +293,13 @@ draw_strange(ModeInfo * mi)
 	else
 		XSetForeground(display, gc, MI_PIXEL(mi, A->Col % MI_NPIXELS(mi)));
 
-	if (A->dbuf) {
+	if (A->dbuf != None) {
 		XSetForeground(display, A->dbuf_gc, 1);
 		XDrawPoints(display, A->dbuf, A->dbuf_gc, A->Buffer2, A->Cur_Pt,
 			    CoordModeOrigin);
+		XCopyPlane(display, A->dbuf, window, gc, 0, 0, A->Width, A->Height, 0, 0, 1);
 	} else
 		XDrawPoints(display, window, gc, A->Buffer2, A->Cur_Pt, CoordModeOrigin);
-
-	if (A->dbuf)
-		XCopyPlane(display, A->dbuf, window, gc, 0, 0, A->Width, A->Height, 0, 0, 1);
 
 	Buf = A->Buffer1;
 	A->Buffer1 = A->Buffer2;
@@ -302,9 +330,8 @@ init_strange(ModeInfo * mi)
 	ATTRACTOR  *Attractor;
 
 	if (Root == NULL) {
-		Root = (ATTRACTOR *) calloc(
-				     MI_NUM_SCREENS(mi), sizeof (ATTRACTOR));
-		if (Root == NULL)
+		if ((Root = (ATTRACTOR *) calloc(MI_NUM_SCREENS(mi),
+				sizeof (ATTRACTOR))) == NULL)
 			return;
 	}
 	Attractor = &Root[MI_SCREEN(mi)];
@@ -312,9 +339,11 @@ init_strange(ModeInfo * mi)
 	if (Attractor->Fold == NULL) {
 		int         i;
 
-		Attractor->Fold = (PRM *) calloc(UNIT2 + 1, sizeof (PRM));
-		if (Attractor->Fold == NULL)
+		if ((Attractor->Fold = (PRM *) calloc(UNIT2 + 1,
+				sizeof (PRM))) == NULL) {
+			free_strange(display, Attractor);
 			return;
+		}
 		for (i = 0; i <= UNIT2; ++i) {
 			DBL         x;
 
@@ -329,21 +358,17 @@ init_strange(ModeInfo * mi)
 		}
 	}
 	if (Attractor->Buffer1 == NULL)
-		Attractor->Buffer1 = (XPoint *) calloc(MAX_POINTS, sizeof (XPoint));
+		if ((Attractor->Buffer1 = (XPoint *) calloc(MAX_POINTS,
+				sizeof (XPoint))) == NULL) {
+			free_strange(display, Attractor);
+			return;
+		}
 	if (Attractor->Buffer2 == NULL)
-		Attractor->Buffer2 = (XPoint *) calloc(MAX_POINTS, sizeof (XPoint));
-	if (Attractor->Buffer1 == NULL || Attractor->Buffer2 == NULL) {
-		if (Attractor->Buffer1 != NULL) {
-			(void) free((void *) Attractor->Buffer1);
-			Attractor->Buffer1 = NULL;
+		if ((Attractor->Buffer2 = (XPoint *) calloc(MAX_POINTS,
+				sizeof (XPoint))) == NULL) {
+			free_strange(display, Attractor);
+			return;
 		}
-		if (Attractor->Buffer2 != NULL) {
-			(void) free((void *) Attractor->Buffer2);
-			Attractor->Buffer2 = NULL;
-		}
-		Attractor->Cur_Pt = 0;
-		return;
-	}
 	Attractor->Max_Pt = MAX_POINTS;
 
 	Attractor->Width = MI_WIDTH(mi);
@@ -356,36 +381,41 @@ init_strange(ModeInfo * mi)
 	Attractor->Iterate = Funcs[NRAND(2)];
 	Random_Prm(Attractor->Prm1);
 	Random_Prm(Attractor->Prm2);
-
-	if (Attractor->dbuf)
+#ifndef NO_DBUF
+	if (Attractor->dbuf != None)
 		XFreePixmap(display, Attractor->dbuf);
-
 	Attractor->dbuf = XCreatePixmap(display, window,
-				     Attractor->Width, Attractor->Height, 1);
-
-	/* Do not want any exposure events from XCopyPlane */
-	XSetGraphicsExposures(display, MI_GC(mi), False);
-
-	if (Attractor->dbuf) {
+	     Attractor->Width, Attractor->Height, 1);
+	/* Allocation checked */
+	if (Attractor->dbuf != None) {
 		XGCValues   gcv;
 
 		gcv.foreground = 0;
 		gcv.background = 0;
 		gcv.graphics_exposures = False;
 		gcv.function = GXcopy;
-		if (Attractor->dbuf_gc)
+
+		if (Attractor->dbuf_gc != None)
 			XFreeGC(display, Attractor->dbuf_gc);
 
-		Attractor->dbuf_gc = XCreateGC(display, Attractor->dbuf,
-					       GCForeground | GCBackground | GCGraphicsExposures | GCFunction,
-					       &gcv);
-		XFillRectangle(display, Attractor->dbuf,
-			       Attractor->dbuf_gc, 0, 0, Attractor->Width,
-			       Attractor->Height);
-		XSetBackground(display, gc, MI_BLACK_PIXEL(mi));
-		XSetFunction(display, gc, GXcopy);
+		if ((Attractor->dbuf_gc = XCreateGC(display, Attractor->dbuf,
+				GCForeground | GCBackground | GCGraphicsExposures | GCFunction,
+				&gcv)) == None) {
+			XFreePixmap(display, Attractor->dbuf);
+			Attractor->dbuf = None;
+		} else {
+			XFillRectangle(display, Attractor->dbuf, Attractor->dbuf_gc,
+				0, 0, Attractor->Width, Attractor->Height);
+			XSetBackground(display, gc, MI_BLACK_PIXEL(mi));
+			XSetFunction(display, gc, GXcopy);
+		}
 	}
+#endif
+
 	MI_CLEARWINDOW(mi);
+
+	/* Do not want any exposure events from XCopyPlane */
+	XSetGraphicsExposures(display, MI_GC(mi), False);
 }
 
 /***************************************************************/
@@ -393,24 +423,11 @@ init_strange(ModeInfo * mi)
 void
 release_strange(ModeInfo * mi)
 {
-	int         screen;
-
 	if (Root != NULL) {
+		int         screen;
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); ++screen) {
-			ATTRACTOR  *Attractor = &Root[screen];
-
-			if (Attractor->Buffer1 != NULL)
-				(void) free((void *) Attractor->Buffer1);
-			if (Attractor->Buffer2 != NULL)
-				(void) free((void *) Attractor->Buffer2);
-			if (Attractor->dbuf)
-				XFreePixmap(MI_DISPLAY(mi), Attractor->dbuf);
-			if (Attractor->dbuf_gc)
-				XFreeGC(MI_DISPLAY(mi), Attractor->dbuf_gc);
-			if (Attractor->Fold != NULL)
-				(void) free((void *) Attractor->Fold);
-		}
+		for (screen = 0; screen < MI_NUM_SCREENS(mi); ++screen)
+			free_strange(MI_DISPLAY(mi), &Root[screen]);
 		(void) free((void *) Root);
 		Root = NULL;
 	}

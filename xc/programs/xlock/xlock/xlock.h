@@ -81,15 +81,7 @@ ERROR ! Define PROGCLASS, HACK_INIT, and HACK_DRAW before including xlockmore.h
 #include "mode.h"
 
 #ifdef USE_GL
-#include <GL/glx.h>
-#ifdef __cplusplus
-  extern "C" {
-#endif
-extern GLXContext *init_GL(ModeInfo *);
-#ifdef __cplusplus
-  }
-#endif
-
+#include "visgl.h"
 #define FreeAllGL(dpy)		/* */
 #endif
 
@@ -146,6 +138,9 @@ XrmOptionDescRec options[100];
  * The resulting warnings are switched off here    */
 #pragma message disable nosimpint
 #endif
+#ifdef VMS
+#include "vms_x_fix.h"
+#endif
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
@@ -155,16 +150,6 @@ XrmOptionDescRec options[100];
 #endif
 #include <math.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#ifdef USE_MB
-#ifdef __linux__
-#define X_LOCALE
-#endif
-#include <X11/Xlocale.h>
-#endif
-#else /* HAVE_CONFIG_H */
-
 /* I use this for testing SunCplusplus
    I still get this in the link:
    Undefined                       first referenced
@@ -173,13 +158,32 @@ XrmOptionDescRec options[100];
    kill(long, int)                         ../xlock/logout.o
    signal(int, void (*)(int))                   ../xlock/logout.o
 
-   #define SUN_OGL_NO_VERTEX_MACROS 1
-   #define SunCplusplus
  */
+#ifdef SunCplusplus
+#ifndef HAVE_USLEEP
+#define HAVE_USLEEP 1
+#endif
+#ifndef SUN_OGL_NO_VERTEX_MACROS
+#define SUN_OGL_NO_VERTEX_MACROS 1
+#endif
+#endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#ifdef USE_MB
+#ifdef __linux__
+/*#define X_LOCALE*/
+#endif
+#include <X11/Xlocale.h>
+#endif
+#else /* HAVE_CONFIG_H */
 
 /* THIS MAY SOON BE DEFUNCT, SHOULD WORK NOW THOUGH FOR IMAKE */
 #define HAVE_GLBINDTEXTURE 1
 #if !defined(__cplusplus) && !defined(c_plusplus)
+#ifdef inline
+#undef inline
+#endif
 #define inline
 #endif
 #ifdef AIXV3
@@ -232,6 +236,13 @@ XrmOptionDescRec options[100];
 #define TEXTLINES      40
 #endif
 #define PASSLENGTH        120
+
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif
 
 #ifndef DEF_NONE3D
 #define DEF_NONE3D "Black"
@@ -320,6 +331,9 @@ XrmOptionDescRec options[100];
 #ifndef size_t
 #define size_t unsigned
 #endif
+#ifndef caddr_t
+#define caddr_t char *
+#endif
 #endif
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -395,7 +409,7 @@ struct hostent {
 #define CLASS class
 #endif
 
-#if (!defined( AFS ) && defined( HAVE_SHADOW ) && !defined( OSF1_ENH_SEC ) && !defined( HP_PASSWDETC ) && !defined( VMS ) && !defined( PAM ))
+#if (!defined( AFS ) && !defined( SIA ) && defined( HAVE_SHADOW ) && !defined( OSF1_ENH_SEC ) && !defined( HP_PASSWDETC ) && !defined( VMS ) && !defined( PAM ))
 #define FALLBACK_XLOCKRC
 #endif
 
@@ -471,7 +485,13 @@ typedef struct {
 extern char * ProgramName;
 extern void getResources(Display ** displayp, int argc, char **argv);
 extern void finish(Display * display, Bool closeDisplay);
+#ifdef HAS_MMOV
+#define error xlock_error
+#endif
 extern void error(const char *buf);
+#ifndef DECLARED_GETENV
+extern char * getenv(const char *);
+#endif
 #ifdef __cplusplus
   }
 #endif
@@ -497,7 +517,8 @@ extern void error(const char *buf);
 #define SYSLOG_INFO LOG_INFO
 #endif
 
-#if (defined( USE_RPLAY ) || defined( USE_NAS ) || defined( USE_VMSPLAY ) || defined( DEF_PLAY ) || defined( USE_ESOUND ))
+#if (defined( USE_RPLAY ) || defined( USE_NAS ) || defined( USE_VMSPLAY ) || \
+     defined( HAS_MMOV ) || defined( DEF_PLAY ) || defined( USE_ESOUND ))
 #define USE_SOUND
 #endif
 
@@ -528,6 +549,11 @@ extern XFontSet fontset;
 #define GETTIMEOFDAY(t) (void)gettimeofday(t);
 #endif
 #endif
+
+#ifndef CLOCKS_PER_SEC
+#define	CLOCKS_PER_SEC		1000000
+#endif
+
 
 /* There is some overlap so it can be made more efficient */
 #define ERASE_IMAGE(d,w,g,x,y,xl,yl,xs,ys) \
