@@ -2091,7 +2091,7 @@ static char *XF86Config_firstchunk_text =
 "#\n"
 "\n"
 "# **********************************************************************\n"
-"# Refer to the XF86Config(4/5) man page for details about the format of \n"
+"# Refer to the XF86Config-3(4/5) man page for details about the format of \n"
 "# this file.\n"
 "# **********************************************************************\n"
 "\n"

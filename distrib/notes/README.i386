@@ -79,7 +79,7 @@ Conventions used in this document:
 
               /usr/X11R6/lib/X11/doc/XFree86-3.3.6/QuickStart.doc
 
-   For manual configuration information, see XF86Config(4).
+   For manual configuration information, see XF86Config-3(4).
 
 4. Start either xdm(1) or startx(1).
 

@@ -61,7 +61,7 @@ XF86CONFIG = XF86Conf
 all:: $(XF86CONFIG)
 
 #if defined(i386BsdArchitecture) && !defined(FreeBSDArchitecture)
-MANPAGE=Concat(FileManDir,/XF86Config.0)
+MANPAGE=Concat(FileManDir,/XF86Config-3.0)
 #else
 MANPAGE=Concat3(FileManDir,/XF86Config.,FileManSuffix)
 #endif
@@ -146,7 +146,7 @@ CppFileTarget($(XF86CONFIG), XF86Conf.cpp, \
 #endif
 
 InstallManPage(XFree86,$(MANDIR))
-InstallGenManPageLong(XF86Conf,$(FILEMANDIR),XF86Config,$(FILEMANSUFFIX))
+InstallGenManPageLong(XF86Conf,$(FILEMANDIR),XF86Config-3,$(FILEMANSUFFIX))
 InstallManPage(XF86_Mono,$(MANDIR))
 InstallManPage(XF86_VGA16,$(MANDIR))
 InstallManPage(XF86_SVGA,$(MANDIR))
