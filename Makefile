@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.23 2002/04/08 15:36:08 todd Exp $
+#	$OpenBSD: Makefile,v 1.24 2002/04/23 20:33:23 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -124,15 +124,19 @@ release-install:
 .endif
 	@${MAKE} fix-appd
 
+PERMDIRS = / /usr /usr/X11R6 /etc /etc/X11 /usr/local /usr/local/lib
+PERMDIRS+= /usr/local/lib/X11
 perms:
-	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/.
-	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/.
-	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/X11R6/.
-	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/etc/.
-	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/etc/X11/.
-	@find ${DESTDIR}/usr/X11R6/. \
-		${DESTDIR}/etc/. \
+.for _dir in ${PERMDIRS}
+	${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}${_dir}/.
+.endfor
+	find ${DESTDIR}/usr/X11R6/. ${DESTDIR}/etc/. ${DESTDIR}/usr/local/. \
+		-type d \
 		\! -user ${DIROWN} -o \! -group ${DIRGRP} \
+		-ls
+	find ${DESTDIR}/usr/X11R6/. \ ${DESTDIR}/etc/. \
+		-type f \
+		\! -user ${BINOWN} -o \! -group wheel \
 		-ls
 
 dist-rel:
