@@ -46,7 +46,8 @@
     defined(sparc) || \
     defined(__alpha) || defined(__alpha__) || \
     defined(__i386__) || defined(i386) || \
-    defined(__ia64__) || defined(ia64)
+    defined(__ia64__) || defined(ia64) || \
+    defined(__sparc64__)
 #define GetHighWord(x) (((int) (x)) >> 16)
 #else
 #define GetHighWord(x) (((int) (x)) / 65536)
