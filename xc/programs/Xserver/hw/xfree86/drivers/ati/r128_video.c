@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_video.c,v 1.18 2001/03/03 22:26:10 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_video.c,v 1.18.2.1 
+2001/08/09 21:40:50 dawes Exp $ */
 
 #include "r128.h"
 #include "r128_reg.h"
@@ -854,9 +855,24 @@ R128PutImage(
 	}
 
 	nlines = ((((yb + 0xffff) >> 16) + 1) & ~1) - top;
-	R128CopyData420(buf + s1offset, buf + s2offset, buf + s3offset,
-			info->FB+d1offset, info->FB+d2offset, info->FB+d3offset,
-			srcPitch, srcPitch2, dstPitch, nlines, npixels);
+	{
+#if X_BYTE_ORDER == X_BIG_ENDIAN
+	   unsigned char *R128MMIO = info->MMIO;
+	   CARD32 config_cntl;
+
+	   /* We need to disable byte swapping, or the data gets mangled */
+	   config_cntl = INREG(R128_CONFIG_CNTL);
+	   OUTREG(R128_CONFIG_CNTL, config_cntl &
+		 ~(APER_0_BIG_ENDIAN_16BPP_SWAP|APER_0_BIG_ENDIAN_32BPP_SWAP));
+#endif
+	   R128CopyData420(buf + s1offset, buf + s2offset, buf + s3offset,
+			  info->FB+d1offset, info->FB+d2offset, info->FB+d3offset,
+			  srcPitch, srcPitch2, dstPitch, nlines, npixels);
+#if X_BYTE_ORDER == X_BIG_ENDIAN
+	   /* restore byte swapping */
+	   OUTREG(R128_CONFIG_CNTL, config_cntl);
+#endif
+	}
 	break;
     case FOURCC_UYVY:
     case FOURCC_YUY2:
