@@ -367,6 +367,9 @@ install:: fonts.alias							@@\
 #  define BuildXF86VidModeExt   NO
 #  define BuildXF86DGA          NO
 #  define BuildXInputExt                NO
+#  define OptimizedCDebugFlags   -O2
+#  define ServerOSDefines        -DDDXOSINIT
+#  define ServerExtraDefines     GccGasOption -D_XSERVER64 -DXFree86Server
 # endif
 
 /* FreeType2 don't work on 64bit machines */
