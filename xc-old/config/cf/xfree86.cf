@@ -87,7 +87,7 @@ XCOMM $XConsortium: xfree86.cf /main/34 1996/12/06 11:45:18 rws $
  * For Digital Alpha platforms, the default is to build all X servers which
  * are supported on this platform.
  */
-#ifdef AlphaArchitecture
+#if defined(AlphaArchitecture) && !defined(OpenBSDArchitecture)
 #ifndef XF86S3Server
 #define XF86S3Server		YES
 #endif

@@ -454,10 +454,11 @@ XCOMM Digital TGA server for Alpha
 XCOMM
 MFBDIR  = mfb
 CFB8DIR = cfb
+CFB32DIR = cfb32
 DDXDIR1 = hw/dec/tga
 ATGAOBJS = hw/dec/tga/alphaInit.o 
 ATGASUBDIRS = $(STDDIRS) $(MFBDIR) $(CFB8DIR) $(CFB32DIR) $(DDXDIR1) $(DEPDIRS)
-ATGALIBS = hw/dec/tga/libalpha.a CFB8Libs
+ATGALIBS = hw/dec/tga/tga/libalphaTga.a hw/dec/tga/libalpha.a CFB32Libs CFB8Libs
 ATGASYSLIBS = $(CBRT) $(SYSLIBS)
 ServerTarget(Xtga,$(ATGASUBDIRS),$(ATGAOBJS),$(ATGALIBS),$(ATGASYSLIBS))
 #ifndef ServerToInstall
