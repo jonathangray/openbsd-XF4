@@ -1,5 +1,5 @@
 #!/bin/sh -x
-#	$OpenBSD: checkflist,v 1.3 2003/04/07 16:24:06 todd Exp $
+#	$OpenBSD: checkflist,v 1.4 2003/07/02 16:22:01 todd Exp $
 
 if [ "X${DESTDIR}" = "X" ]; then
 	echo DESTDIR must be set
@@ -9,7 +9,7 @@ fi
 Release=$1
 
 
-TMP=`mktemp -d /tmp/_xckr.XXXXXX` || exit 1
+TMP=`mktemp -d /tmp/_xckr.XXXXXXXXXX` || exit 1
 trap 'rm -rf $TMP' 0 1 15
 
 sh makeflist $Release > $TMP/_CHECK
