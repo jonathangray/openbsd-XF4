@@ -157,6 +157,10 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.81 2003/02/18 16:51:45 tsi Exp $
 #  endif
 #  undef mc68000
 # endif
+# if defined(__m88k__) || defined(m88k)
+#  define Mc88000Architecture
+#  undef m88k
+# endif
 # ifdef __powerpc__
 #  define PpcArchitecture
 #  undef __powerpc__
