@@ -1,3 +1,5 @@
+./etc/X11/xserver
+./etc/X11/xserver/SecurityPolicy
 ./usr/X11R6/bin/X
 ./usr/X11R6/bin/XFree86
 ./usr/X11R6/bin/XF86_3DLabs
@@ -40,6 +42,3 @@
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0
-./etc/X11/xserver
-./var/X11/xserver
-./var/X11/xserver/SecurityPolicy

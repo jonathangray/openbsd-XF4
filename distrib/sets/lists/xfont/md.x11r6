@@ -503,6 +503,8 @@
 ./usr/X11R6/lib/X11/fonts/encodings/mulelao-1.enc
 ./usr/X11R6/lib/X11/fonts/encodings/tcvn-0.enc
 ./usr/X11R6/lib/X11/fonts/encodings/viscii1.1-1.enc.gz
+./usr/X11R6/lib/X11/fonts/latin2
+./usr/X11R6/lib/X11/fonts/latin2/100dpi
 ./usr/X11R6/lib/X11/fonts/latin2/100dpi/UTI___10.pcf.gz
 ./usr/X11R6/lib/X11/fonts/latin2/100dpi/UTI___12.pcf.gz
 ./usr/X11R6/lib/X11/fonts/latin2/100dpi/UTI___14.pcf.gz
@@ -1032,7 +1034,6 @@
 ./usr/X11R6/lib/X11/fonts/misc/7x14B-ISO8859-8.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/7x14B-ISO8859-9.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/7x14B.pcf.gz
-./usr/X11R6/lib/X11/fonts/misc/7x14rk.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/8x13-ISO8859-1.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/8x13-ISO8859-10.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/8x13-ISO8859-13.pcf.gz

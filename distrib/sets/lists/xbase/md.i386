@@ -1,3 +1,6 @@
+./etc/X11/app-defaults/Beforelight
+./etc/X11/app-defaults/XF86Cfg
+./etc/X11/app-defaults/Xvidtune
 ./usr/X11R6/bin/SuperProbe
 ./usr/X11R6/bin/XF86Setup
 ./usr/X11R6/bin/Xwrapper
@@ -155,6 +158,7 @@
 ./usr/X11R6/lib/X11/doc/ServersOnly
 ./usr/X11R6/lib/X11/doc/Status
 ./usr/X11R6/lib/X11/doc/VideoBoard98
+./usr/X11R6/lib/X11/doc/html
 ./usr/X11R6/lib/X11/doc/html/XF86Config.5.html
 ./usr/X11R6/lib/X11/doc/html/XF86VidMode.3.html
 ./usr/X11R6/lib/X11/doc/html/XF86VidModeDeleteModeLine.3.html
@@ -232,6 +236,7 @@
 ./usr/X11R6/lib/X11/doc/html/wacom.4.html
 ./usr/X11R6/lib/X11/doc/html/xf86cfg.1.html
 ./usr/X11R6/lib/X11/doc/html/xf86config.1.html
+./usr/X11R6/lib/X11/etc
 ./usr/X11R6/lib/X11/etc/Xinstall.sh
 ./usr/X11R6/lib/X11/etc/sun.termcap
 ./usr/X11R6/lib/X11/etc/sun.terminfo
@@ -477,5 +482,3 @@
 ./usr/X11R6/man/cat4/wacom.0
 ./usr/X11R6/man/cat5
 ./usr/X11R6/man/cat5/XF86Config.0
-./var/X11/app-defaults/Beforelight
-./var/X11/app-defaults/Xvidtune

@@ -1,3 +1,14 @@
+./etc
+./etc/X11
+./etc/X11/rstart
+./etc/X11/rstart/rstartd.real
+./etc/X11/xdm
+./etc/X11/xdm/Xresources
+./etc/X11/xdm/Xservers
+./etc/X11/xdm/chooser
+./etc/X11/xdm/xdm-config
+./etc/X11/xkb
+./etc/X11/xkb/xkbcomp
 ./usr
 ./usr/X11R6
 ./usr/X11R6/README
@@ -13,6 +24,7 @@
 ./usr/X11R6/bin/fslsfonts
 ./usr/X11R6/bin/fstobdf
 ./usr/X11R6/bin/fvwm
+./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/iceauth
 ./usr/X11R6/bin/ico
 ./usr/X11R6/bin/imake
@@ -128,8 +140,7 @@
 ./usr/X11R6/lib/X11/fvwm/FvwmWinList
 ./usr/X11R6/lib/X11/fvwm/quantize_pixmaps
 ./usr/X11R6/lib/X11/rstart
-./usr/X11R6/lib/X11/rstart/rstartd.real
-./usr/X11R6/lib/X11/xkb/xkbcomp
+./usr/X11R6/lib/X11/xkb
 ./usr/X11R6/lib/libFS.a
 ./usr/X11R6/lib/libGL.a
 ./usr/X11R6/lib/libGLw.a
@@ -158,10 +169,3 @@
 ./usr/X11R6/lib/libpsres.a
 ./usr/X11R6/lib/libxkbfile.a
 ./usr/X11R6/man/whatis.db
-./var
-./var/X11
-./var/X11/xdm
-./var/X11/xdm/Xresources
-./var/X11/xdm/Xservers
-./var/X11/xdm/chooser
-./var/X11/xdm/xdm-config
