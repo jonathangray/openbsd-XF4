@@ -5,7 +5,8 @@ Post-installation instructions for XFree86 on OpenBSD/alpha
    beyond package installation.  There are no configuration files for
    X on alpha machines.
 
-   Currently, only TGA video hardware is supported.
+   Currently, only TGA video hardware is supported. See the tga(4) manual 
+   page for instructions on setting the resolution of a TGA card. 
 
 2. Start either xdm(1) or startx(1).
 
