@@ -26,7 +26,7 @@
  * or other dealings in this Software without prior written authorization
  * from the XFree86 Project.
  */
-/* $OpenBSD: bsd_kqueue_apm.c,v 1.3 2001/09/30 16:36:29 matthieu Exp $ */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.4 2002/05/04 18:11:37 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"
@@ -95,7 +95,7 @@ bsdPMGetEventFromOS(int kq, pmEvent *events, int num)
     
     for (i = 0; i < num; i++) {
 	result = kevent(kq, NULL, 0, &ev, 1, &ts);
-	if (result == 0) {
+	if (result == 0 || APM_EVENT_TYPE(ev.data) == APM_NOEVENT) {
 	    /* no event */
 	    break;
 	} else if (result < 0) {
