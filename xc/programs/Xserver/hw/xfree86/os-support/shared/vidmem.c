@@ -171,7 +171,7 @@ xf86MapVidMem(int ScreenNum, int Flags,
 	va_start(ap, Size);
 	if (((Flags & VIDMEM_FRAMEBUFFER) &&
 	     (Flags & (VIDMEM_MMIO | VIDMEM_MMIO_32BIT))))
-	    FatalError("Mapping memory with more than one type\n");
+	    FatalError("Mapping memory with more than one type");
 	    
 	xf86InitVidMem();
 	if (!vidMemInfo.initialised || !vidMemInfo.mapMem)

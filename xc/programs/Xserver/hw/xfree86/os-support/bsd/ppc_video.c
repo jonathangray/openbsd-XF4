@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.2 2002/05/25 18:09:33 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.3 2002/06/11 16:50:59 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -34,6 +34,8 @@
 #include "xf86_OSlib.h"
 #include "xf86OSpriv.h"
 
+#include "bus/Pci.h"
+
 #ifndef MAP_FAILED
 #define MAP_FAILED ((caddr_t)-1)
 #endif
@@ -44,6 +46,7 @@
 /***************************************************************************/
 
 static pointer ppcMapVidMem(int, unsigned long, unsigned long, int);
+static pointer ppcMapVidMemTag(int, unsigned long, unsigned long, int, PCITAG);
 static void ppcUnmapVidMem(int, pointer, unsigned long);
 
 
@@ -52,6 +55,7 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 {
 	pVidMem->linearSupported = TRUE;
 	pVidMem->mapMem = ppcMapVidMem;
+	pVidMem->mapMemTag = ppcMapVidMemTag;
 	pVidMem->unmapMem = ppcUnmapVidMem;
 	pVidMem->initialised = TRUE;
 }
@@ -65,11 +69,30 @@ ppcMapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 	int fd = xf86Info.screenFd;
 	pointer base;
 
-	fprintf(stderr, "mapVidMem %lx, %lx, fd = %d\n", Base, Size, fd);
+	ErrorF("mapVidMem %lx, %lx, fd = %d\n", Base, Size, fd);
 
 	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)\n",
+		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
+			   "xf86MapVidMem", Size, Base, strerror(errno));
+
+	return base;
+}
+
+static pointer
+ppcMapVidMemTag(int ScreenNum, unsigned long Base, 
+		unsigned long Size, int flags, PCITAG tag)
+{
+	int fd = xf86Info.screenFd;
+	pointer base;
+
+	ErrorF("mapVidMemTag %x:%x:%x %lx, %lx, fd = %d\n", 
+	       PCI_BUS_FROM_TAG(tag), PCI_DEV_FROM_TAG(tag),
+	       PCI_FUNC_FROM_TAG(tag), Base, Size, fd);
+
+	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
+	if (base == MAP_FAILED)
+		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
 			   "xf86MapVidMem", Size, Base, strerror(errno));
 
 	return base;
@@ -92,15 +115,15 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
  	kmem = open("/dev/xf86", 2);
  	if (kmem == -1) {
 		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86ReadBIOS: open /dev/xf86\n");
+ 		FatalError("xf86ReadBIOS: open /dev/xf86");
  	}
 
 #ifdef DEBUG
-	fprintf(stderr, "xf86ReadBIOS() %lx %lx, %x\n", Base, Offset, Len);
+	ErrorF("xf86ReadBIOS() %lx %lx, %x\n", Base, Offset, Len);
 #endif
 
 	if (Base < 0x80000000) {
-		fprintf(stderr, "No VGA\n");
+		ErrorF("No VGA\n");
 		close(kmem);
 		return 0;
 	}
@@ -121,11 +144,11 @@ xf86EnableIO(void)
     pointer base = 0x90000400;	/* XXXX */
     unsigned long size = 0x1000; /* XXXX */
 
-    fprintf(stderr, "xf86EnableIO %lx, %lx, fd = %d\n", base, size, fd);
+    ErrorF("xf86EnableIO %lx, %lx, fd = %d\n", base, size, fd);
 
     ioBase = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, base);	
     if (ioBase == MAP_FAILED) 
-	FatalError("xf86EnableIO: could not mmap I/O Registers\n");
+	FatalError("xf86EnableIO: could not mmap I/O Registers");
 }
 
 void 

@@ -646,7 +646,7 @@ static void _xf86checkhndl(XF86FILE_priv* f,const char *func)
 {
 	if (!f || f->magic != XF86FILE_magic ||
 	    !f->filehnd || !f->fname) {
-		FatalError("libc_wrapper error: passed invalid FILE handle to %s\n",
+		FatalError("libc_wrapper error: passed invalid FILE handle to %s",
 			func);
 		exit(42);
 	}
@@ -1079,7 +1079,7 @@ xf86setvbuf(XF86FILE* f, char *buf, int mode, xf86size_t size)
 		vbufmode = _IOLBF;
 		break;
 	default:
-		FatalError("libc_wrapper error: mode in setvbuf incorrect\n");
+		FatalError("libc_wrapper error: mode in setvbuf incorrect");
 		exit(42);
 	}
 
@@ -1289,7 +1289,7 @@ static void
 _xf86checkdirhndl(XF86DIR_priv* f,const char *func)
 {
 	if (!f || f->magic != XF86DIR_magic || !f->dir || !f->dirent) {
-		FatalError("libc_wrapper error: passed invalid DIR handle to %s\n",
+		FatalError("libc_wrapper error: passed invalid DIR handle to %s",
 			func);
 		exit(42);
 	}
@@ -1801,7 +1801,7 @@ xf86getpagesize()
 		pagesize = PAGE_SIZE;
 #endif
 	if (pagesize == -1)
-		FatalError("xf86getpagesize: Cannot determine page size\n");
+		FatalError("xf86getpagesize: Cannot determine page size");
 
 	return pagesize;
 }
