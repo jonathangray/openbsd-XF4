@@ -2843,9 +2843,6 @@ main(int argc, char **argv)
 	(void) signal(SIGUSR1, SigUsr1);
 	(void) signal(SIGUSR2, SigUsr2);
 
-    printf("uid: %d euid %d\n", getuid(), geteuid());
-    printf("ruid: %d\n", ruid);
-
 #if defined( __FreeBSD__ ) && !defined( DEBUG )
 	/* do not exit on FPE */
 	fpsetmask(0);
@@ -2946,7 +2943,6 @@ main(int argc, char **argv)
 #ifdef BAD_PAM
 /* BAD_PAM must have root access to authenticate against shadow passwords */
       (void) seteuid(ruid);
-      printf("seteuid(ruid)\n");
 /* for BAD_PAM to use shadow passwords, must call seteuid() later */
 #else
 
@@ -2961,8 +2957,7 @@ main(int argc, char **argv)
 	if (!vtlock)
 #endif
 		(void) setuid(ruid);
-    printf("uid: %d euid %d\n", getuid(), geteuid());
-    printf("ruid: %d\n", ruid);
+
 #if 0
 	/* synchronize -- so I'm aware of errors immediately */
 	/* Too slow only for debugging */
