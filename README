@@ -17,9 +17,10 @@ The XF4 directory has several sub-directories :
            for the hp300 port.
 - xc-old:  a partial XFree86 3.3.6 source tree, used to build the
            XFree86 3.3.6 servers on i386 and mac68k.
-- xc:      the XFree86 4.3.0 source tree, augmented with some OpenBSD
+- xc:      the XFree86 4.4.0 source tree, augmented with some OpenBSD
            additions (xlock, fvwm, wm2, kerberos apps, the wsfb
-           module, the usb tablet input driver).
+           module, the usb tablet input driver) and minus the files 
+           with the new XFree86 1.1 license).
 
 o Shadow trees
   ------------
@@ -159,9 +160,6 @@ Use the following host.def file:
 #define XnestServer			NO
 #define XVirtualFramebufferServer	NO
 #define XprtServer 			NO
-#define BuildPexExt			NO
-#define BuildXIE			NO
-#define BuildXIElib			NO
 #define BuildGlxExt			NO
 #define BuildGLXLibrary			NO
 #define BuildGLULibrary         	NO
@@ -427,4 +425,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.13 2004/02/28 19:04:43 matthieu Exp $
+$Id: README,v 1.14 2004/05/27 20:23:27 matthieu Exp $
