@@ -129,6 +129,7 @@
 ./usr/X11R6/lib/X11/XKeysymDB
 ./usr/X11R6/lib/X11/XftConfig
 ./usr/X11R6/lib/X11/app-defaults
+./usr/X11R6/lib/X11/etc
 ./usr/X11R6/lib/X11/fonts/local/fonts.dir
 ./usr/X11R6/lib/X11/fs
 ./usr/X11R6/lib/X11/fvwm

@@ -284,6 +284,12 @@
 ./usr/X11R6/lib/X11/Options
 ./usr/X11R6/lib/X11/XF86Config.98
 ./usr/X11R6/lib/X11/XF86Config.eg
+./usr/X11R6/lib/X11/etc/Xinstall.sh
+./usr/X11R6/lib/X11/etc/sun.termcap
+./usr/X11R6/lib/X11/etc/sun.terminfo
+./usr/X11R6/lib/X11/etc/xmodmap.std
+./usr/X11R6/lib/X11/etc/xterm.termcap
+./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/doc
 ./usr/X11R6/lib/X11/doc/BugReport
 ./usr/X11R6/lib/X11/doc/DESIGN
@@ -317,6 +323,7 @@
 ./usr/X11R6/lib/X11/fonts/PEX
 ./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
 ./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
+./usr/X11R6/lib/X11/fonts/Type1
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libPEX5.a
 ./usr/X11R6/lib/libPEX5.so.6.0

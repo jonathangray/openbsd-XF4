@@ -762,7 +762,6 @@
 ./usr/X11R6/lib/X11/config/xf86.tmpl
 ./usr/X11R6/lib/X11/config/xf86site.def
 ./usr/X11R6/lib/X11/config/xfree86.cf
-./usr/X11R6/lib/X11/etc
 ./usr/X11R6/lib/X11/locale
 ./usr/X11R6/lib/X11/locale/C
 ./usr/X11R6/lib/X11/locale/C/XLC_LOCALE
