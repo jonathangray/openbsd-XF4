@@ -43,7 +43,7 @@ XCOMM operating system:  OSName
 
 #define XhpBSDServer YES
 #define BuildXInputExt YES
-#define BuildPexExt YES
+#define BuildPexExt NO
 
 #define SetTtyGroup YES
 

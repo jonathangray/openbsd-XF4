@@ -12,3 +12,21 @@ NormalDepLibraryTarget(font,$(SUBDIRS) $(DONES),$(OBJS))
 ForceSubdirs($(SUBDIRS))
 
 DependSubdirs($(SUBDIRS))
+
+Speedo/DONE:
+	cd Speedo && ${MAKE}
+
+bitmap/DONE:
+	cd bitmap && ${MAKE}
+
+fc/DONE:
+	cd fc && ${MAKE}
+
+fontfile/DONE:
+	cd fontfile && ${MAKE}
+
+include/DONE:
+	cd include && ${MAKE}
+
+util/DONE:
+	cd util && ${MAKE}

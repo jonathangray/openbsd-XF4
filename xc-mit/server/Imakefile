@@ -227,3 +227,16 @@ clean::
 	$(RM) $(ALL)
 
 InstallManPage(Xserver,$(MANDIR))
+
+ddx/hpbsd/init.o:
+	cd ddx/hpbsd && ${MAKE}
+
+dix/libdix.a:
+	cd dix && ${MAKE}
+
+os/libos.a:
+	cd os && ${MAKE}
+
+ddx/mi/libmi.a:
+	cd ddx/mi && ${MAKE}
+

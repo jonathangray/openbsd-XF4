@@ -104,3 +104,27 @@ SpecialObjectRule(hppex.o, $(IRULESRC)/$(MACROFILE), $(EXT_DEFINES))
 #endif
 
 DependSubdirs($(SUBDIRS))
+
+archive/DONE:
+	cd archive && ${MAKE}
+
+c_binding/DONE:
+	cd c_binding && ${MAKE}
+
+cp/DONE:
+	cd cp && ${MAKE}
+
+css/DONE:
+	cd css && ${MAKE}
+
+error/DONE:
+	cd error && ${MAKE}
+
+input/DONE:
+	cd input && ${MAKE}
+
+pex/DONE:
+	cd pex && ${MAKE}
+
+util/DONE:
+	cd util && ${MAKE}
