@@ -132,7 +132,8 @@ FTGetEnglishName(FT_Face face, int nid, char *name_return, int name_len)
         len = name.string_len;
         if(len > name_len)
             len = name_len;
-        memcpy(name_return, name.string, name_len);
+	memset(name_return, 0, name_len);
+	memcpy(name_return, name.string, len);
         return len;
     }
 
