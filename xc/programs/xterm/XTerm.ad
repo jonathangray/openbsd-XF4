@@ -1,5 +1,5 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.8 2002/01/19 15:39:05 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.9 2002/03/28 21:15:06 matthieu Exp $
 !
 !
 !
@@ -168,5 +168,6 @@ XTerm.JoinSession:False
 ! Restore the traditional backarrow/delete key behaviour
 ! The delete key should generate DEL
 *deleteIsDEL: true
-! and the back arrow generates BS
-*backarrowKey: true
+! and the back arrow generates whatever the erase char is set to
+*ptyInitialErase: true
+*backarrowKeyIsErase: true
