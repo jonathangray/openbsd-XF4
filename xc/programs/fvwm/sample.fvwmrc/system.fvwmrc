@@ -87,10 +87,10 @@ Mouse 3	TSIF	A	RaiseLower
 
 ######################## Initialization Functions ############################
 AddToFunc InitFunction 	  "I" Module FvwmPager 0 0
-#+			  "I" exec /usr/X11R6/bin/xpmroot /usr/X11R6/lib/X11/xdm/pixmaps/OpenBSD.xpm
+#+			  "I" exec /usr/X11R6/bin/xsetroot -solid black
 
 AddToFunc RestartFunction "I" Module FvwmPager 0 0
-#+			  "I" exec /usr/X11R6/bin/xpmroot /usr/X11R6/lib/X11/xdm/pixmaps/OpenBSD.xpm
+#+			  "I" exec /usr/X11R6/bin/xsetroot -solid black
 
 
 ######################## Menus ###################
