@@ -3050,14 +3050,14 @@ FREETYPE2DEFINES = -DFREETYPE2
 #endif
           EXPATLIBSRC = $(LIBSRC)/expat
 
-/* Expat 1.95.2 */
+/* Expat 1.95.4 */
 #ifndef ExpatVersion
-#define ExpatVersion 1.95.2
+#define ExpatVersion 1.95.4
 #endif
 
 #if SharedLibExpat
 #ifndef SharedExpatRev
-#define SharedExpatRev 1.0
+#define SharedExpatRev 3.0
 #endif
 SharedLibReferences(EXPAT,expat,$(EXPATLIBSRC),SOEXPATREV,SharedExpatRev)
 #else
