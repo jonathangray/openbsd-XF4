@@ -167,6 +167,7 @@ of the framebuffer):
 		Identifier	"Card0"
 		Driver		"ati"
 		BusID		"PCI:0:19:0"
+		Option		"composite_sync" "True"
 	EndSection
 
 It is also important that you modify the Monitor section and change the
@@ -256,4 +257,4 @@ See XF86Config(5) for more options.
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.6 2002/04/09 16:23:13 jason Exp $
+$OpenBSD: README.sparc64,v 1.7 2002/05/20 17:45:42 matthieu Exp $
