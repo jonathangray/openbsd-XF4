@@ -29,6 +29,7 @@ tseng
 type1
 vga
 vgahw
+vmware
 xaa
 xf1bpp
 xf4bpp
@@ -50,6 +51,7 @@ mga
 neo
 permedia
 tseng
+vmware
 vga
 vgahw
 xaa

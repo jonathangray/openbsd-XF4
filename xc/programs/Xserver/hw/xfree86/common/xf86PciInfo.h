@@ -150,6 +150,7 @@
 #define PCI_VENDOR_TRITECH	0x1292
 #define PCI_VENDOR_NVIDIA_SGS	0x12d2
 #define PCI_VENDOR_NETGEAR	0x1385
+#define PCI_VENDOR_VMWARE	0x15AD
 #define PCI_VENDOR_SYMPHONY	0x1C1C
 #define PCI_VENDOR_TEKRAM_2	0x1DE1
 #define PCI_VENDOR_3DLABS	0x3D3D
@@ -598,6 +599,10 @@
 #define PCI_CHIP_SMI712		0x712
 #define PCI_CHIP_SMI720		0x720
 
+/* VMware */
+#define PCI_CHIP_VMWARE0405		0x0405
+#define PCI_CHIP_VMWARE0710		0x0710
+
 /*
  * first the VendorId - VendorName mapping
  */
@@ -718,6 +723,7 @@ static SymTabRec xf86PCIVendorNameInfoData[] = {
     {PCI_VENDOR_ARK,	"ARK Logic"},
     {PCI_VENDOR_YAMAHA, "Yamaha"},
     {PCI_VENDOR_SMI,	"Silicon Motion Inc."},
+    {PCI_VENDOR_VMWARE,	"VMware"},
     {0,NULL}
 };
 #endif
@@ -1524,6 +1530,10 @@ static pciVendorDeviceInfo xf86PCIVendorInfoData[] = {
 				{PCI_CHIP_SMI712,	"LynxEM+",0},
 				{PCI_CHIP_SMI720,	"Lynx3DM",0},
 				{0x0000,		NULL,0}}},
+    {PCI_VENDOR_VMWARE, {
+    				{PCI_CHIP_VMWARE0405,	"PCI SVGA (FIFO)",0},
+    				{PCI_CHIP_VMWARE0710,	"LEGACY SVGA",0},
+				{0x0000,		NULL,0}}},
     {0x0000, {
 				{0x0000,		NULL,0}}},
 };
@@ -1726,6 +1736,10 @@ static pciVendorCardInfo xf86PCICardInfoData[] = {
 	{ PCI_VENDOR_NETGEAR, {
 			{ 0xf004, "FA310-TX Rev. D2",0, NF },
                         { 0x0000, (char *)NULL,0, NF } } },
+	{ PCI_VENDOR_VMWARE, {
+    			{PCI_CHIP_VMWARE0405,	"PCI SVGA (FIFO)",0, NF },
+    			{PCI_CHIP_VMWARE0710,	"LEGACY SVGA",0, NF },
+			{0x0000,		NULL,0, NF } } },
 #endif
 	{0x0000, {
 	  		{0x0000,  NULL,0, NF } } },
