@@ -683,9 +683,10 @@ char	*argv[];
 	}
 	else if ( strcmp( argv[i], "-co") == 0)
 	{
-	    if(++i < argc)
-	        rgbPath = argv[i];
-	    else
+	    if(++i < argc) {
+		if (strlen(argv[i]) < MAXPATHLEN) 
+		    rgbPath = argv[i];
+	    } else
 		UseMsg();
 	}
 	else if ( strcmp( argv[i], "-core") == 0)
