@@ -1,0 +1,4 @@
+Post-installation instructions for XFree86 on OpenBSD/vax
+-------------------------------------------------------------
+
+There is no X server for vax.  Only userland X.
