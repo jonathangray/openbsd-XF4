@@ -65,15 +65,20 @@ KRB5SRCS = k5auth.c k5encode.c
    LBX_OBJS =
 #endif
 
+#ifdef OpenBSDArchitecture
+PRIVSEP_SRCS=privsep.c
+PRIVSEP_OBJS=privsep.o
+#endif
+
 BOOTSTRAPCFLAGS = 
            SRCS = WaitFor.c access.c connection.c io.c oscolor.c \
                   osinit.c utils.c auth.c mitauth.c secauth.c $(XDMAUTHSRCS) \
                   $(RPCSRCS) $(KRB5SRCS) xdmcp.c decompress.c OtherSources \
-                  transport.c xalloc.c $(LBX_SRCS)
+                  transport.c xalloc.c $(LBX_SRCS) $(PRIVSEP_SRCS)
            OBJS = WaitFor.o access.o connection.o io.o oscolor.o \
                   osinit.o utils.o auth.o mitauth.o secauth.o $(XDMAUTHOBJS) \
                   $(RPCOBJS) $(KRB5OBJS) xdmcp.o decompress.o OtherObjects \
-                  transport.o xalloc.o $(LBX_OBJS)
+                  transport.o xalloc.o $(LBX_OBJS) $(PRIVSEP_OBJS)
 
 #if SpecialMalloc
      MEM_DEFINES = -DSPECIAL_MALLOC

@@ -34,6 +34,8 @@
 #include "xf86_OSlib.h"
 #include "xf86_Config.h"
 
+#include "pwd.h"
+
 #if defined(__NetBSD__) && !defined(MAP_FILE)
 #define MAP_FLAGS MAP_SHARED
 #else
@@ -460,18 +462,26 @@ extern gid_t realGid;
 void
 xf86DropPriv(void)
 {
+	struct passwd *pw;
+
 	xf86OpenConsole();
 	checkDevMem(TRUE);
 	xf86EnableIOPorts(0);
-	/* revoke priviledges */
-	if (realUid != -1) {
-		setuid(realUid);
+
+	/* revoke privileges */
+	if (getuid() == 0) {
+		/* Running as root */
+		pw = getpwnam("_x11");
+		if (!pw)
+			return;
+		/* Start privileged child */
+		if (priv_init(pw->pw_uid, pw->pw_gid) == -1) {
+			FatalError("priv_init");
+		}
 	} else {
-		setuid(getuid());
-	}
-	if (realGid != -1) {
-		setgid(realGid);
-	} else {
-		setgid(getgid());
+		/* Normal user */
+		if (priv_init(getuid(), getgid()) == -1) {
+			FatalError("priv_init");
+		}
 	}
 }

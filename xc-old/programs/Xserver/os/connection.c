@@ -178,6 +178,8 @@ extern __const__ int _nfiles;
 #include <netdnet/dn.h>
 #endif /* DNETCONN */
 
+extern int priv_signal_parent();
+
 /* added by raphael */
 #define ffs mffs
 extern int mffs(long);
@@ -387,7 +389,7 @@ CreateWellKnownSockets()
     ParentProcess = getppid ();
     if (RunFromSmartParent) {
 	if (ParentProcess > 0) {
-	    kill (ParentProcess, SIGUSR1);
+	    priv_signal_parent ();
 	}
     }
 #endif

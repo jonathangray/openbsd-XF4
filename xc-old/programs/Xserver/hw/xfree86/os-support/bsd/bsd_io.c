@@ -36,6 +36,8 @@
 #include "xf86Procs.h"
 #include "xf86_OSlib.h"
 
+extern int priv_open_device(const char *);
+
 void xf86SoundKbdBell(loudness, pitch, duration)
 int loudness;
 int pitch;
@@ -245,7 +247,7 @@ MouseDevPtr mouse;
 int xf86MouseOn(mouse)
 MouseDevPtr mouse;
 {
-	if ((mouse->mseFd = open(mouse->mseDevice, O_RDWR | O_NDELAY)) < 0)
+	if ((mouse->mseFd = priv_open_device(mouse->mseDevice)) < 0)
 	{
 		if (xf86AllowMouseOpenFail) {
 			ErrorF("Cannot open mouse (%s) - Continuing...\n",
