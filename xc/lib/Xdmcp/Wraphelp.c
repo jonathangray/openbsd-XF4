@@ -1,4 +1,6 @@
+#include <sys/types.h>
 #include "Wrap.h"
+
 /* des routines for non-usa - eay 10/9/1991 eay@psych.psy.uq.oz.au
  * These routines were written for speed not size so they are bigger than
  * needed.  I have removed some of the loop unrolling, this will reduce
@@ -10,12 +12,7 @@
  * ftp.psy.uq.oz.au /pub/DES
  */
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
-
-static ulong skb[8][64]={
+static u_int32_t skb[8][64]={
 /* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
 0x00000000,0x00000010,0x20000000,0x20000010,
 0x00010000,0x00010010,0x20010000,0x20010010,
@@ -155,7 +152,7 @@ static ulong skb[8][64]={
 };
 
 
-static unsigned long SPtrans[8][64]={
+static u_int32_t SPtrans[8][64]={
 /* nibble 0 */
 0x00410100, 0x00010000, 0x40400000, 0x40410100,
 0x00400000, 0x40010100, 0x40010000, 0x40400000,
@@ -307,15 +304,15 @@ static unsigned long SPtrans[8][64]={
 #define ITERATIONS 16
 #define HALF_ITERATIONS 8
 
-#define c2l(c,l)	(l =((ulong)(*((c)++)))    , \
-			 l|=((ulong)(*((c)++)))<< 8, \
-			 l|=((ulong)(*((c)++)))<<16, \
-			 l|=((ulong)(*((c)++)))<<24)
+#define c2l(c,l)	(l =((u_int32_t)(*((c)++)))    , \
+			 l|=((u_int32_t)(*((c)++)))<< 8, \
+			 l|=((u_int32_t)(*((c)++)))<<16, \
+			 l|=((u_int32_t)(*((c)++)))<<24)
 
-#define l2c(l,c)	(*((c)++)=(uchar)(((l)    )&0xff), \
-			 *((c)++)=(uchar)(((l)>> 8)&0xff), \
-			 *((c)++)=(uchar)(((l)>>16)&0xff), \
-			 *((c)++)=(uchar)(((l)>>24)&0xff))
+#define l2c(l,c)	(*((c)++)=(u_int8_t)(((l)    )&0xff), \
+			 *((c)++)=(u_int8_t)(((l)>> 8)&0xff), \
+			 *((c)++)=(u_int8_t)(((l)>>16)&0xff), \
+			 *((c)++)=(u_int8_t)(((l)>>24)&0xff))
 
 #define PERM_OP(a,b,t,n,m) ((t)=((((a)>>(n))^(b))&(m)),\
 	(b)^=(t),\
@@ -330,13 +327,13 @@ _XdmcpAuthSetup(key,schedule)
 des_cblock key;
 des_key_schedule schedule;
 	{
-	register ulong c,d,t,s;
-	register uchar *in;
-	register ulong *k;
+	register u_int32_t c,d,t,s;
+	register u_int8_t *in;
+	register u_int32_t *k;
 	register int i;
 
-	k=(ulong *)schedule;
-	in=(uchar *)key;
+	k=(u_int32_t *)schedule;
+	in=(u_int8_t *)key;
 
 	c2l(in,c);
 	c2l(in,d);
@@ -404,13 +401,13 @@ des_cblock *output;
 des_key_schedule ks;
 int encrypt;
 	{
-	register unsigned long l,r,t,u,v;
-	register unsigned long *s;
-	uchar *in,*out;
+	register u_int32_t l,r,t,u,v;
+	register u_int32_t *s;
+	u_int8_t *in,*out;
 	int i;
 
-	in=(uchar *)input;
-	out=(uchar *)output;
+	in=(u_int8_t *)input;
+	out=(u_int8_t *)output;
 	c2l(in,l);
 	c2l(in,r);
 
@@ -425,7 +422,7 @@ int encrypt;
         l=r;
 	r=t;
 
-	s=(ulong *)ks;
+	s=(u_int32_t *)ks;
 
 	if (encrypt)
 		{
