@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.5 2001/02/26 19:01:54 todd Exp $
+#	$OpenBSD: Makefile,v 1.6 2001/02/26 23:18:51 todd Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -56,6 +56,9 @@ compile:
 
 build: compile install fix-appd
 
+release-rel:
+	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest release
+
 release:
 .if ! ( defined(DESTDIR) && defined(RELEASEDIR) )
 	@echo You must set DESTDIR and RELEASEDIR for a release.; exit 255
@@ -97,7 +100,10 @@ perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var/X11
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11
 	@find ${DESTDIR}/usr/X11R6 ${DESTDIR}/var/X11 \
-		${DESTDIR}/etc/X11 \! -user root
+		${DESTDIR}/etc/X11 \! -user root -ls
+
+dist-rel:
+	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist
 
 dist:
 	${MAKE} perms
