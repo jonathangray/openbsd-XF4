@@ -1292,16 +1292,12 @@
 ./etc/X11/xserver/zh_TW.euctw
 ./etc/X11/xserver/zh_TW.utf8
 ./etc/X11/xsm
-./usr/X11R6/bin/Xorg
 ./usr/X11R6/bin/bdftruncate
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/glxgears
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/gtf
 ./usr/X11R6/bin/ucs2any
-./usr/X11R6/bin/xdriinfo
-./usr/X11R6/bin/xorgcfg
-./usr/X11R6/bin/xorgconfig
 ./usr/X11R6/include/GL
 ./usr/X11R6/include/GL/GLwDrawA.h
 ./usr/X11R6/include/GL/GLwDrawAP.h
@@ -1442,6 +1438,8 @@
 ./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/lib/libxkbfile.so.2.0
 ./usr/X11R6/lib/libxkbui.so.2.0
+./usr/X11R6/lib/libxrx.so.6.8
+./usr/X11R6/lib/libxrxnest.so.6.8
 ./usr/X11R6/lib/modules/input/keyboard_drv.o
 ./usr/X11R6/lib/modules/libcw.a
 ./usr/X11R6/lib/modules/libdamage.a

@@ -1,3 +1,8 @@
+./etc/X11/xserver/pt_BR.88591
+./etc/X11/xserver/pt_BR.88591.en
+./etc/X11/xserver/pt_BR.ISO-8859-1
+./etc/X11/xserver/pt_BR.ISO_8859-1
+./etc/X11/xserver/pt_BR.iso885915
 ./usr/X11R6/bin/X
 ./usr/X11R6/bin/Xnest
 ./usr/X11R6/bin/Xorg
@@ -43,9 +48,7 @@
 ./usr/X11R6/lib/modules/fonts
 ./usr/X11R6/lib/modules/fonts/libbitmap.a
 ./usr/X11R6/lib/modules/fonts/libfreetype.a
-./usr/X11R6/lib/modules/fonts/libspeedo.a
 ./usr/X11R6/lib/modules/fonts/libtype1.a
-./usr/X11R6/lib/modules/fonts/libxtt.a
 ./usr/X11R6/lib/modules/input
 ./usr/X11R6/lib/modules/input/acecad_drv.o
 ./usr/X11R6/lib/modules/input/calcomp_drv.o
@@ -69,6 +72,7 @@
 ./usr/X11R6/lib/modules/input/tek4957_drv.o
 ./usr/X11R6/lib/modules/input/void_drv.o
 ./usr/X11R6/lib/modules/input/wacom_drv.o
+./usr/X11R6/lib/modules/input/ws_drv.o
 ./usr/X11R6/lib/modules/libcfb.a
 ./usr/X11R6/lib/modules/libcfb16.a
 ./usr/X11R6/lib/modules/libcfb24.a
@@ -142,5 +146,6 @@
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
+./usr/X11R6/man/cat4/ws.0
 ./usr/X11R6/man/cat4/wsfb.0
 ./usr/X11R6/man/cat5/getconfig.0
