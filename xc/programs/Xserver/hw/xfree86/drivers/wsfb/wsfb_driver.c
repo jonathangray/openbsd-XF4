@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.25 2005/01/22 22:37:00 miod Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.26 2005/01/26 18:34:26 miod Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -449,8 +449,21 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 		return FALSE;
 	}
 
-	/* Handle depth */
-	default_depth = fPtr->info.depth <= 24 ? fPtr->info.depth : 24;
+	/*
+	 * Handle depth
+	 */
+	if (fPtr->info.depth == 8) {
+		/*
+		 * We might run on a byte addressable frame buffer,
+		 * but with less than 8 bits per pixel. We can know this
+		 * from the colormap size.
+		 */
+		default_depth = 1;
+		while ((1 << default_depth) < fPtr->info.cmsize)
+			default_depth++;
+	} else
+		default_depth = fPtr->info.depth <= 24 ? fPtr->info.depth : 24;
+
 	if (!xf86SetDepthBpp(pScrn, default_depth, default_depth,
 		fPtr->info.depth,
 		fPtr->info.depth >= 24 ? Support24bppFb|Support32bppFb : 0))
@@ -648,7 +661,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	WsfbPtr fPtr = WSFBPTR(pScrn);
 	VisualPtr visual;
-	int ret, flags, width, height;
+	int ret, flags, width, height, ncolors;
 	int wsmode = WSDISPLAYIO_MODE_DUMBFB;
 	size_t len;
 
@@ -837,11 +850,22 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	/* software cursor */
 	miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
 
-	/* colormap */
+	/*
+	 * Colormap
+	 *
+	 * Note that, even on less than 8 bit depth frame buffers, we
+	 * expect the colormap to be programmable with 8 bit values.
+	 * As of now, this is indeed the case on all OpenBSD supported
+	 * graphics hardware.
+	 */
 	if (!miCreateDefColormap(pScreen))
 		return FALSE;
 	flags = CMAP_RELOAD_ON_MODE_SWITCH;
-	if(!xf86HandleColormaps(pScreen, 256, 8, WsfbLoadPalette,
+	ncolors = fPtr->info.cmsize;
+	/* on StaticGray visuals, fake a 256 entries colormap */
+	if (ncolors == 0)
+		ncolors = 256;
+	if(!xf86HandleColormaps(pScreen, ncolors, 8, WsfbLoadPalette,
 				NULL, flags))
 		return FALSE;
 
@@ -1078,6 +1102,10 @@ WsfbSave(ScrnInfoPtr pScrn)
 	WsfbPtr fPtr = WSFBPTR(pScrn);
 
 	TRACE_ENTER("WsfbSave");
+
+	if (fPtr->info.cmsize == 0)
+		return;
+
 	fPtr->saved_cmap.index = 0;
 	fPtr->saved_cmap.count = fPtr->info.cmsize;
 	fPtr->saved_cmap.red = fPtr->saved_red;
@@ -1099,16 +1127,19 @@ WsfbRestore(ScrnInfoPtr pScrn)
 
 	TRACE_ENTER("WsfbRestore");
 
-	/* reset colormap for text mode */
-	fPtr->saved_cmap.index = 0;
-	fPtr->saved_cmap.count = fPtr->info.cmsize;
-	fPtr->saved_cmap.red = fPtr->saved_red;
-	fPtr->saved_cmap.green = fPtr->saved_green;
-	fPtr->saved_cmap.blue = fPtr->saved_blue;
-	if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP,
-		  &(fPtr->saved_cmap)) == -1) {
-		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-			   "error restoring colormap %s\n", strerror(errno));
+	if (fPtr->info.cmsize != 0) {
+		/* reset colormap for text mode */
+		fPtr->saved_cmap.index = 0;
+		fPtr->saved_cmap.count = fPtr->info.cmsize;
+		fPtr->saved_cmap.red = fPtr->saved_red;
+		fPtr->saved_cmap.green = fPtr->saved_green;
+		fPtr->saved_cmap.blue = fPtr->saved_blue;
+		if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP,
+			  &(fPtr->saved_cmap)) == -1) {
+			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+				   "error restoring colormap %s\n",
+				   strerror(errno));
+		}
 	}
 
 	/* Clear the screen */
