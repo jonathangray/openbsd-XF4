@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.74 2002/02/13 19:29:30 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.75 2002/02/15 12:48:45 matthieu Exp $
 
 
 
@@ -692,26 +692,11 @@ install:: fonts.alias							@@\
 #  endif
 # endif
 
-# ifndef XmacppcServer
-#   define XmacppcServer	NO
-# endif
 # ifndef XF86Server
 #   define XF86Server		YES
 # endif
 
-/* Definitions for building the Xmacppc server */
-# if XmacppcServer
-#   define ServerOSDefines	-DDDXOSINIT
-#   define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
-#   define BuildXIE		NO
-#   define BuildScreenSaverExt	YES
-#   define BuildXKB		NO
-#   define BuildXKBlib		YES
-#   define BuildDPMS		NO
-#   define BuildXInputExt	NO
-# endif
-
-/* Definitions for building the XFree86 server */
+/* Definitions for building the X server */
 # if XF86Server
 #   define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption XFree86ServerDefines

@@ -511,24 +511,6 @@ ServerTarget(Xhp,$(HPSUBDIRS),$(HPOBJS), \
 #endif
 #endif	/* XhpServer */
 
-#if XmacppcServer
-XCOMM
-XCOMM macppc server from NetBSD
-XCOMM
-MFBDIR   = mfb
-FBDIR = fb
-CFB8DIR  = cfb
-DDXDIR1  = hw/macppc
-PMACDIRS = $(STDDIRS) $(FBDIR) $(DDXDIR1) $(DEPDIRS)
-PMACOBJS = hw/macppc/macppcInit.o
-PMACLIBS = hw/macppc/libmacppc.a FBLibs
-ServerTarget(Xmacppc,$(PMACDIRS),$(PMACOBJS),$(PMACLIBS),$(FONTLIBS) $(SYSLIBS))
-#ifndef ServerToInstall
-#define ServerToInstall Xmacppc
-#endif
-#endif /* XmacppcServer */
-
-
 #if HasParallelMake
 XCOMM
 XCOMM force non-parallel build of XF86 servers to prevent MUTEX overrides
@@ -862,10 +844,10 @@ XCOMM
         MACH64 = $(MACH64DIR)/LibraryTargetName(mach64)
 
         KDDIRS = StdKdDirs
-  
+
    MACH64DIRS = $(STDDIRS) $(KDDIRS) \
 		 $(VESADIR) $(SHADOWDIR) $(LAYERDIR) $(MACH64DIR)
-   
+
    MACH64LIBS = PreFbLibs $(MACH64) $(VESA) $(LAYER) KdLibs FbPostFbLibs
 MACH64SYSLIBS = StdKdSysLibs
 
