@@ -34,7 +34,7 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.134 2001/05/
 # endif
 #endif
 
-#ifdef SparcArchitecture
+#if defined(SparcArchitecture) && !defined(__OpenBSD__)
 	SBUSSRC = xf86sbusBus.c
 	SBUSOBJ = xf86sbusBus.o
 #endif

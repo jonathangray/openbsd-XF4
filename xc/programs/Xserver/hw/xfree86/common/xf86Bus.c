@@ -86,7 +86,7 @@ void
 xf86BusProbe(void)
 {
     xf86PciProbe();
-#ifdef __sparc__
+#if defined(__sparc__) && !defined(__OpenBSD__)
     xf86SbusProbe();
 #endif
 }
@@ -2417,7 +2417,7 @@ xf86PostProbe(void)
 
     if (fbSlotClaimed) {
         if (pciSlotClaimed || isaSlotClaimed 
-#ifdef __sparc__
+#if defined(__sparc__) && !defined(__OpenBSD__)
 	    || sbusSlotClaimed
 #endif
 	    ) { 

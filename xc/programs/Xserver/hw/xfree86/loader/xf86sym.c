@@ -54,7 +54,9 @@
 #include "xf86_ansic.h"
 #include "xisb.h"
 #include "vbe.h"
+#ifndef __OpenBSD__
 #include "xf86sbusBus.h"
+#endif
 #include "compiler.h"
 
 #ifdef __FreeBSD__
@@ -412,7 +414,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMFUNC(xf86AddModuleInfo)
    SYMFUNC(xf86DeleteModuleInfo)
 
-#ifdef __sparc__
+#if defined(__sparc__) && !defined(__OpenBSD__)
    /* xf86sbusBus.c */
    SYMFUNC(xf86MatchSbusInstances)
    SYMFUNC(xf86GetSbusInfoForEntity)
