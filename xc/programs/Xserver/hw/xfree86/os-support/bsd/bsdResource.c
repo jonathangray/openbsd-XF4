@@ -12,7 +12,7 @@
 #include "xf86_OSlib.h"
 
 #ifdef __alpha__
-
+#include <sys/param.h>
 #include <sys/sysctl.h>
 
 resRange PciAvoid[] = {_PCI_AVOID_PC_STYLE, _END};

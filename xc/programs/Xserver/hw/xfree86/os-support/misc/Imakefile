@@ -20,8 +20,10 @@ XOBJS = BUSmemcpy.o IODelay.o SlowBcopy.o
 #endif
 
 #if HasGcc || HasGcc2
+#if !(defined(AlphaArchitecture) && defined(OpenBSDArchitecture))
 ILHACKSRCS = xf86_IlHack.c
 ILHACKOBJS = xf86_IlHack.o
+#endif
 #endif
 
 SRCS = xf86_Util.c Delay.c $(ILHACKSRCS) $(XSRCS)

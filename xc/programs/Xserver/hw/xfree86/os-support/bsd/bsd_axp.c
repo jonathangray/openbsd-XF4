@@ -7,6 +7,7 @@
 #include "xf86Axp.h"
 #include "xf86_OSlib.h"
 #include <stdio.h>
+#include <sys/param.h>
 #include <sys/sysctl.h>
 
 axpDevice bsdGetAXP(void);
@@ -22,9 +23,9 @@ axpDevice bsdGetAXP(void);
 typedef struct {
 	char *name;
 	int type;
-} AXP; 
+} _AXP; 
 
-static AXP axpList[] = {
+static _AXP axpList[] = {
 	{"apecs",APECS},
 	{"pyxis",PYXIS},
 	{"cia",CIA},

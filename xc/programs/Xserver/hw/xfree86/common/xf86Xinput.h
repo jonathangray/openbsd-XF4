@@ -85,7 +85,7 @@ typedef struct _InputDriverRec {
     int			    refCount;
 } InputDriverRec, *InputDriverPtr;
 
-
+#ifdef XINPUT
 /* This is to input devices what the ScrnInfoRec is to screens. */
 
 typedef struct _LocalDeviceRec {
@@ -129,6 +129,7 @@ typedef struct _LocalDeviceRec {
     pointer		    module;
     pointer		    options;
 } LocalDeviceRec, *LocalDevicePtr, InputInfoRec, *InputInfoPtr;
+#endif
 
 typedef struct _DeviceAssocRec 
 {

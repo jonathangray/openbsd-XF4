@@ -75,6 +75,7 @@
 #endif
 
 #ifdef __alpha__
+#include <sys/param.h>
 #include <sys/sysctl.h>
 #include "xf86Axp.h"
 #endif

@@ -1067,7 +1067,7 @@ inl(unsigned short port)
 #define mem_barrier()   /* NOP */
 #define write_mem_barrier()   /* NOP */
 
-#if !defined(FAKEIT) && !defined(__mc68000__)
+#if !defined(FAKEIT) && !defined(__mc68000__) && !defined(__alpha__)
 #ifdef GCCUSESGAS
 
 /*
