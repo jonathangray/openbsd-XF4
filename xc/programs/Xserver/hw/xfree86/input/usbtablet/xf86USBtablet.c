@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-/* $XFree86:  $ */
+/* $OpenBSD: xf86USBtablet.c,v 1.2 2002/01/05 19:22:47 matthieu Exp $ */
 
 /*
  * Driver for USB HID tablet devices.
@@ -360,12 +360,17 @@ UsbTabletReadInput(InputInfoPtr pInfo)
 			       pInfo->fd, comm->reportSize));
 
 		len = xf86ReadSerial(pInfo->fd, p, comm->reportSize);
-
+#ifdef XFree86LOADER
+		/* XXX there's a bug in XFree86 4.1 that requires this magic */
+		/* It's fixed in 4.2 */
+		errno = xf86GetErrno();
+#endif
 		DBG(8, ErrorF("UsbTabletReadInput len=%d\n", len));
 	    
 		if (len <= 0) {
-			if (errno != EAGAIN)
+			if (errno != EAGAIN) {
 				Error("error reading USBT device");
+			}
 			break;
 		}
 	    
