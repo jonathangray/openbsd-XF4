@@ -345,6 +345,9 @@ install:: fonts.alias							@@\
 #     define DoLoadableServer	YES
 #   endif
 #   define DevelDrivers mga ati
+#   ifndef XFree86ConsoleDefines
+#     define XFree86ConsoleDefines -DWSCONS_SUPPORT
+#   endif
 
 # endif /* XF86Server */
 
