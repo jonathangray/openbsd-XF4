@@ -651,12 +651,14 @@ install:: fonts.alias							@@\
 # define UseElfFormat		YES
 # define HasWeakSymbols		NO
 
-# if XFree86Devel
+# ifndef GccWarningOptions
+#  if XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
 			  -Wmissing-prototypes -Wmissing-declarations \
 			  -Wnested-externs
-# else
+#  else
 #   define GccWarningOptions -Wall -Wpointer-arith
+#  endif
 # endif
 
 # ifndef XmacppcServer
@@ -677,32 +679,24 @@ install:: fonts.alias							@@\
 #   define BuildXKBlib		YES
 #   define BuildDPMS		NO
 #   define BuildXInputExt	NO
-#   include <xfree86.cf>
 # endif
 
-/* Definitiion for building the XFree86 server */
+/* Definitions for building the XFree86 server */
 # if XF86Server
 #   define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption XFree86ServerDefines
-#   if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 8)
-#     ifndef DoLoadableServer
-#       define DoLoadableServer	YES
-#     endif
-#     define DevelDrivers cirrus ati
-      /* Support for USB Mices */
-#     define UsbMouseSupport		YES
-#     include <xfree86.cf>
-
-#   else /* 2.7 and earlier */
-#     include <xf86.rules>
-#     ifndef BuildServer
-#       define BuildServer		NO
-#     endif
-
-#     define HasSharedLibraries	NO
-#     define BuildDynamicLoading	NO
+#   ifndef DoLoadableServer
+#     define DoLoadableServer	YES
 #   endif
+#   define DevelDrivers cirrus ati
+    /* Support for USB Mices */
+#   ifndef UsbMouseSupport
+#     define UsbMouseSupport		YES
+#   endif
+
 # endif /* XF86Server */
+
+# include <xfree86.cf>
 
 #endif /* PpcArchitecture */
 
