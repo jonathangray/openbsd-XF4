@@ -1,11 +1,14 @@
 /*
  * Host.def for building OpenBSD bindists
- * $OpenBSD: host.def,v 1.1 2001/02/27 17:30:31 todd Exp $
+ * $OpenBSD: host.def,v 1.2 2001/10/24 15:05:07 todd Exp $
  * $XFree86$
  */
 
 #define InstallEmptyHostDef
 
+#if 0 /* '#if 1' for builds w/out fonts */
+#define BuildFonts		NO
+#endif
 #define ForceNormalLib		YES
 
 /* Enable this to build the docs in xc/programs/Xserver/hw/xfree86/doc/sgml */
