@@ -134,7 +134,7 @@ extern int testinx(unsigned short, unsigned char);
 
 #ifdef __GNUC__
 
-#if (defined(linux) || defined(__FreeBSD__)) && defined(__alpha__)
+#if (defined(linux) || defined(__FreeBSD__) || defined(__OpenBSD__)) && defined(__alpha__)
 
 #ifdef linux
 /* for Linux on Alpha, we use the LIBC _inx/_outx routines */
@@ -199,6 +199,18 @@ extern unsigned short inw(unsigned int port);
 extern unsigned int inl(unsigned int port);
 
 #endif /* __FreeBSD__ && !DO_PROTOTYPES */
+
+#ifdef __OpenBSD__
+/* Code for OpenBSD/alpha */
+/* XXXXX for now assume they're provided by some external lib */
+extern void outb(unsigned int port, unsigned char val);
+extern void outw(unsigned int port, unsigned short val);
+extern void outl(unsigned int port, unsigned int val);
+extern unsigned char inb(unsigned int port);
+extern unsigned short inw(unsigned int port);
+extern unsigned int inl(unsigned int port);
+
+#endif
 
 /*
  * inline functions to do unaligned accesses
@@ -356,7 +368,12 @@ static __inline__ void stw_u(unsigned long r5, unsigned short * r11)
 }
 
 /* to flush the I-cache before jumping to code which just got loaded */
+#ifdef __FreeBSD__
 #define PAL_imb 134
+#endif
+#ifdef __OpenBSD__
+#include <machine/pal.h>
+#endif
 #define istream_mem_barrier() \
 	__asm__ __volatile__("call_pal %0 #imb" : : "i" (PAL_imb) : "memory")
 #define mem_barrier()        __asm__ __volatile__("mb"  : : : "memory")
