@@ -49,12 +49,12 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 	EndSection
    
    The ServerLayout section is also changed to include the second framebuffer
-   and it's logical location relative to the first, eg:
+   and its logical location relative to the first, eg:
 
 	Section "ServerLayout"
 		Identifier	"wsfb"
 		Screen  0       "Screen0"
-		Screen  1       "Screen1" RightOf "Screen1"
+		Screen  1       "Screen1" RightOf "Screen0"
 		InputDevice	"zsmouse0" "CorePointer"
 		InputDevice	"Keyboard0" "CoreKeyboard"
 	EndSection
@@ -75,4 +75,4 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc,v 1.7 2002/08/27 21:06:40 matthieu Exp $
+$OpenBSD: README.sparc,v 1.8 2002/08/29 22:27:01 miod Exp $
