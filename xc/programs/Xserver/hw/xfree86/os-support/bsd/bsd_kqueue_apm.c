@@ -1,4 +1,4 @@
-/* $OpenBSD: bsd_kqueue_apm.c,v 1.1 2001/08/19 21:24:49 matthieu Exp $ */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.2 2001/08/20 22:17:19 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"
@@ -62,16 +62,20 @@ static int
 bsdPMGetEventFromOS(int kq, pmEvent *events, int num)
 {
     struct kevent ev;
-    int i;
+    int i, result;
+    struct timespec ts = { 0, 0 };
     
     for (i = 0; i < num; i++) {
-	if (kevent(kq, NULL, 0, &ev, 1, NULL) < 0) {
-	    xf86Msg(X_WARNING, "bsdPMGetEventFromOS: kevent"
-		    " errono = %d\n", errno);
+	result = kevent(kq, NULL, 0, &ev, 1, &ts);
+	if (result == 0) {
+	    /* no event */
+	    break;
+	} else if (result < 0) {
+	    xf86Msg(X_WARNING, "bsdPMGetEventFromOS: kevent returns"
+		    " errno = %d\n", errno);
+	    break;
 	}
 	events[i] = bsdToXF86(APM_EVENT_TYPE(ev.data));
-	xf86Msg(X_INFO, "bsdPMGetEventFromOS: event %d\n", 
-		APM_EVENT_TYPE(ev.data));
     }
     return i;
 }
@@ -131,8 +135,7 @@ xf86OSPMOpen(void)
     if ((devFd = open(_PATH_APM_DEV, O_RDONLY)) == -1) {
 	return NULL;
     }
-    kq = kqueue();
-    if (kq <= 0) {
+    if ((kq = kqueue()) <= 0) {
 	close(devFd);
 	return NULL;
     }
