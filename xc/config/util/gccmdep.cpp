@@ -9,23 +9,29 @@ XCOMM Based on mdepend.cpp and code supplied by Hongjiu Lu <hjl@nynexst.com>
 XCOMM
 
 TMP=${TMPDIR-/tmp}/mdep$$
+TMPARG=${TMP}arg
 CC=CCCMD
 RM=RMCMD
 LN=LNCMD
 MV=MVCMD
 
 XCOMM Security: if $tmp exists exit immediately
-rm -f ${TMP}
+rm -f ${TMP} ${TMPARG}
 if [ -e ${TMP} ] ; then
     echo "$0: ${TMP} exists already, exit." 1>&2
     exit 1;
 fi
+if [ -e ${TMPARG} ] ; then
+    echo "$0: ${TMPARG} exists already, exit." 1>&2
+    exit 1;
+fi
 if [ -n "`type -p mktemp`" ] ; then
     TMP="`mktemp ${TMP}.XXXXXX`" || exit 1
+    TMPARG="`mktemp ${TMPARG}.XXXXXX`" || exit 1
 fi
 
-trap "$RM ${TMP}*; exit 1" 1 2 15
-trap "$RM ${TMP}*; exit 0" 1 2 13
+trap "$RM ${TMP} ${TMPARG}; exit 1" 1 2 15
+trap "$RM ${TMP} ${TMPARG}; exit 0" 0 1 2 13
 
 files=
 makefile=
@@ -64,9 +70,8 @@ XCOMM ignore these flags
 				makefile="$2"
 				shift
 			    else
-				echo "$1" | sed 's/^\-f//' >${TMP}arg
-				makefile="`cat ${TMP}arg`"
-				rm -f ${TMP}arg
+				echo "$1" | sed 's/^\-f//' >${TMPARG}
+				makefile="`cat ${TMPARG}`"
 			    fi
 			    ;;
 			--*)
@@ -130,5 +135,4 @@ if [ X"$makefile" != X- ]; then
     $MV $TMP $makefile
 fi
 
-$RM ${TMP}*
 exit 0
