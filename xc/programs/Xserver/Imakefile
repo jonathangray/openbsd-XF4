@@ -414,7 +414,7 @@ MFBDIR = mfb
 DDXDIR1 = hw/sun
 SUNMDIRS = $(STDDIRS) $(MFBDIR) $(DDXDIR1) $(DEPDIRS)
 SUNMOBJS = hw/sun/sunInitMono.o hw/sun/sunInExMono.o
-SUNMLIBS = hw/sun/LibraryTargetName(sun) MFBBareLibs $(OTHEREXTS)
+SUNMLIBS = hw/sun/LibraryTargetName(sun) MFBBareLibs $(EXTENSIONS)
 SetUIDServerTarget(XsunMono,$(SUNMDIRS),$(SUNMOBJS),$(SUNMLIBS),$(FONTLIBS) $(SYSLIBS))
 #ifndef ServerToInstall
 #define ServerToInstall XsunMono
