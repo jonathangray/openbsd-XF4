@@ -133,6 +133,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 #define UseGnuMalloc		NO
 
+/* Build a shared version of Xinerama on archs that support it */
+#define SharedLibXinerama	HasSharedLibraries
+
 #define	AdmDir			/var/log
 
 #define HasFlex			YES
