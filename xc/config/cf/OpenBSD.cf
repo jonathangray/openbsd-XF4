@@ -758,6 +758,10 @@ install:: fonts.alias							@@\
 # define UseRgbTxt			YES
 #endif
 
+#ifndef HasXdmAuth
+# define	HasXdmAuth		YES
+#endif
+
 #ifndef OSBinaryType
 # if UseElfFormat
 #  define OSBinaryType			[ELF]
