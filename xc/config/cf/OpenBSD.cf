@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.56 2001/09/13 20:36:23 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.57 2001/09/30 14:53:30 matthieu Exp $
 
 
 
@@ -19,6 +19,7 @@ XCOMM
 #define OSTeenyVersion		DefaultOSTeenyVersion
 #endif
 
+#define XFree86CustomVersion	"for OpenBSD"
 
 #ifndef OSVendor
 #define	OSVendor	/**/
@@ -520,7 +521,6 @@ install:: fonts.alias							@@\
  * Definitions for the mac68k architecture
  */
 #ifdef Mac68kArchitecture
-
 
 # ifndef BuildServer
 #  define BuildServer		NO
