@@ -1,4 +1,4 @@
-/* $XFree86: os.h,v 3.40 2001/12/14 19:59:55 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/os.h,v 3.40 2001/12/14 19:59:55 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -638,8 +638,6 @@ extern int LocalClient(
     ClientPtr /* client */
 #endif
 );
-
-extern int LocalClientCred(ClientPtr, int *, int *);
 
 extern int ChangeAccessControl(
 #if NeedFunctionPrototypes
