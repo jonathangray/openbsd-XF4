@@ -84,7 +84,7 @@ extern FILE *popen();
 
 /* the following is defined in X11R6 but not in previous versions */
 #if defined(__alpha) || defined(__alpha__) || \
-    defined(ia64) || defined(__ia64__)
+    defined(ia64) || defined(__ia64__) || defined(__sparc64__)
 #ifndef LONG64
 #define LONG64
 #endif
