@@ -1,6 +1,8 @@
 #
 # Unaccelerated, single display configuration
 #
+# $OpenBSD: XF86Config,v 1.4 2002/08/29 22:59:07 matthieu Exp $ 
+#
 Section "ServerLayout"
 	Identifier	"wsfb"
 	Screen	0	"Screen0" 0 0
