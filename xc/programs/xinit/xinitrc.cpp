@@ -1,5 +1,6 @@
 XCOMM!/bin/sh
 XCOMM $XConsortium: xinitrc.cpp,v 1.4 91/08/22 11:41:34 rws Exp $
+XCOMM $OpenBSD: xinitrc.cpp,v 1.2 2001/02/26 19:16:51 todd Exp $
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -24,10 +25,23 @@ if [ -f $usermodmap ]; then
     xmodmap $usermodmap
 fi
 
+XCOMM if we have private ssh key(s), start ssh-agent and add the key(s)
+id1=$HOME/.ssh/identity
+id2=$HOME/.ssh/id_dsa
+if [ -e /usr/bin/ssh-agent ] && [ -f $id1 -o -f $id2 ]; then
+	eval `ssh-agent -s`
+	[ -f $id1 ] && ssh-add $id1 < /dev/null
+	[ -f $id2 ] && ssh-add $id2 < /dev/null
+fi
+
 XCOMM start some nice programs
 
-twm &
 xclock -geometry 50x50-1+1 &
-xterm -geometry 80x50+494+51 &
-xterm -geometry 80x20+494-0 &
-exec xterm -geometry 80x66+0+0 -name login
+xconsole &
+xterm -geometry 80x24 &
+fvwm || xterm
+
+if [ "$SSH_AGENT_PID" ]; then
+	ssh-add -D < /dev/null
+	eval `ssh-agent -s -k`
+fi
