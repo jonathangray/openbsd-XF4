@@ -372,7 +372,11 @@ FindDevice(InputInfoPtr pInfo, const char *protocol, int flags)
     const char **pdev;
 
     for (pdev = mouseDevs; *pdev; pdev++) {
+#ifndef X_PRIVSEP
 	SYSCALL(fd = open(*pdev, O_RDWR | O_NONBLOCK));
+#else
+	fd = priv_open_device(*pdev);
+#endif
 	if (fd != -1) {
 	    /* Set the Device option. */
 	    pInfo->conf_idev->commonOptions =
