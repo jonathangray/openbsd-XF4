@@ -1,0 +1,25 @@
+Post-installation instructions for XFree86 on OpenBSD/powerpc
+-------------------------------------------------------------
+
+The Xmacppc server is an unaccelerated, 8 bits only server, based on
+the Xsun code.  It doesn't require any special configuration file. 
+
+To select the mode it will be using, you have to use MacOS 
+or the OpenFirmware. 
+
+SUPPORTED HARDWARE
+
+This server has been tested on iMac, and G4 hardware, with resolutions 
+of 1024x768 and 1280x1024. 
+
+All 8 bits capable PCI VGA display adapters supported by OpenFirmare 
+should work.
+
+Only US keyboards are supported by default. To use other keymaps, define
+them using xmodmap(1).
+
+FUTURE WORK
+
+There is ongoing work to get XFree86 4 working on OpenBSD/powerpc on 
+PCI VGA boards. This will should higher color depths, acceleration 
+and more.
