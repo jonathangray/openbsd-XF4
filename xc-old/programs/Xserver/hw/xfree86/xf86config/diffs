@@ -1,0 +1,833 @@
+Index: xf86config.c
+===================================================================
+RCS file: /cvs/xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v
+retrieving revision 3.37
+retrieving revision 3.37.2.11
+diff -u -r3.37 -r3.37.2.11
+--- xf86config.c	1996/12/23 07:04:46	3.37
++++ xf86config.c	1999/06/21 09:45:22	3.37.2.11
+@@ -1,4 +1,4 @@
+-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.37 1996/12/23 07:04:46 dawes Exp $ */
++/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.37.2.11 1999/06/21 09:45:22 hohndel Exp $ */
+ 
+ /*
+  * This is a configuration program that will create a base XF86Config
+@@ -87,16 +87,20 @@
+ /*
+  * Define the following to 310 to remove references to XFree86 features that
+  * have been added since XFree86 3.1 (e.g. DoubleScan modes).
++ * or to 311 to remove certain new modelines
+  */
+-#define XFREE86_VERSION 313
++#define XFREE86_VERSION 330
+ 
++#ifndef __EMX__
++#define TEMPORARY_XF86CONFIG_DIR_PREFIX "/tmp/.xf86config"
++#endif
+ /*
+  * This is the filename of the temporary XF86Config file that is written
+  * when the program is told to probe clocks (which can only happen for
+  * root).
+  */
+ #ifndef __EMX__
+-#define TEMPORARY_XF86CONFIG_FILENAME "/tmp/XF86Config.tmp"
++#define TEMPORARY_XF86CONFIG_FILENAME "XF86Config.tmp"
+ #else
+ /* put in root dir, would have to find TMP dir first else */
+ #define TEMPORARY_XF86CONFIG_FILENAME "\\XConfig.tmp"
+@@ -127,8 +131,8 @@
+ #define DUMBCONFIG2 "\\dconfig.2"
+ #define DUMBCONFIG3 "\\dconfig.3"
+ #else
+-#define DUMBCONFIG2 "/tmp/dumbconfig.2"
+-#define DUMBCONFIG3 "/tmp/dumbconfig.3"
++#define DUMBCONFIG2 "dumbconfig.2"
++#define DUMBCONFIG3 "dumbconfig.3"
+ #endif
+ 
+ /* some more vars to make path names in texts more flexible. OS/2 users
+@@ -138,13 +142,12 @@
+ #define TREEROOT "/usr/X11R6"
+ #define TREEROOTLX "/usr/X11R6/lib/X11"
+ #define MODULEPATH "/usr/X11R6/lib/modules"
+-#define CONFIGNAME "XF86Config"
+ #else
+ #define TREEROOT "/XFree86"
+ #define TREEROOTLX "/XFree86/lib/X11"
+ #define MODULEPATH "/XFree86/lib/modules"
+-#define CONFIGNAME "XConfig"
+ #endif
++#define CONFIGNAME "XF86Config"
+ 
+ int config_mousetype;		/* Mouse. */
+ int config_emulate3buttons;
+@@ -185,6 +188,7 @@
+ char *config_xkbsymbols;
+ char *config_xkbgeometry;
+ 
++char *temp_dir = "";
+ 
+ 
+ 
+@@ -197,6 +201,7 @@
+ int card_screentype;
+ int card_accelserver;
+ 
++int dont_ask_ramdac_clock;
+ 
+ void write_XF86Config();
+ 
+@@ -243,6 +248,31 @@
+ "\n";
+ 
+ 
++void *Malloc(int i) {
++	void *p;
++
++	p = malloc(i);
++	if (p == NULL) {
++		printf("Fatal malloc error\n");
++		exit(-1);
++	}
++	return p;
++}
++
++void createtmpdir() {
++#ifndef __EMX__
++	/* length of prefix + 20 (digits in 2**64) + 1 (slash) + 1 */
++	temp_dir = Malloc(strlen(TEMPORARY_XF86CONFIG_DIR_PREFIX) + 22);
++	sprintf(temp_dir, "%s%d", TEMPORARY_XF86CONFIG_DIR_PREFIX, getpid());
++	if (mkdir(temp_dir, 0700) != 0) {
++		printf("Cannot create directory %s\n", temp_dir);
++		exit(-1);
++	}
++	/* append a slash */
++	strcat(temp_dir, "/");
++#endif
++}
++
+ void keypress() {
+ 	printf("Press enter to continue, or ctrl-c to abort.");
+ 	getchar();
+@@ -285,7 +315,7 @@
+  * the server will enable a third button automatically if there is one
+  */
+ 
+-static char *mousetype_identifier[9] = {
++static char *mousetype_identifier[11] = {
+ 	"Microsoft",
+ 	"MouseSystems",
+ 	"Busmouse",
+@@ -294,6 +324,8 @@
+ 	"MouseMan",
+ 	"MMSeries",
+ 	"MMHitTab",
++	"IntelliMouse",
++	"acecad",
+ #ifdef __EMX__
+ 	"OSMOUSE"
+ #endif
+@@ -304,7 +336,7 @@
+ "First specify a mouse protocol type. Choose one from the following list:\n"
+ "\n";
+ 
+-static char *mousetype_name[8] = {
++static char *mousetype_name[10] = {
+ 	"Microsoft compatible (2-button protocol)",
+ 	"Mouse Systems (3-button protocol)",
+ 	"Bus Mouse",
+@@ -312,7 +344,9 @@
+ 	"Logitech Mouse (serial, old type, Logitech protocol)",
+ 	"Logitech MouseMan (Microsoft compatible)",
+ 	"MM Series",	/* XXXX These descriptions should be improved. */
+-	"MM HitTablet"
++	"MM HitTablet",
++	"Microsoft IntelliMouse",
++	"Acecad tablet"
+ };
+ 
+ static char *mousedev_text =
+@@ -368,7 +402,7 @@
+ 	char s[80];
+ 	printf("%s", mouseintro_text);
+ 	
+-	for (i = 0; i < 8; i++)
++	for (i = 0; i < 10; i++)
+ 		printf("%2d.  %s\n", i + 1, mousetype_name[i]);
+ 
+ 	printf("\n");
+@@ -430,6 +464,8 @@
+ 			printf("%s", twobuttonmousecomment_text);
+ 		break;
+ 	case 1 : /* Mouse Systems. */
++	case 8 : /* IntelliMouse */
++	case 9 : /* ACECAD */
+ 		printf("%s", threebuttonmousecomment_text);
+ 		break;
+ 	default :
+@@ -454,14 +490,14 @@
+ 	if (strlen(s) == 0)
+ 		config_pointerdevice = "/dev/mouse";
+ 	else {
+-		config_pointerdevice = malloc(strlen(s) + 1);
++		config_pointerdevice = Malloc(strlen(s) + 1);
+ 		strcpy(config_pointerdevice, s);
+        }
+        printf("\n");
+ 
+ #else /* __EMX__ */
+        	/* set some reasonable defaults for OS/2 */
+-       	config_mousetype = 8;
++       	config_mousetype = 10;
+ 	config_chordmiddle = 0;       
+ 	config_cleardtrrts = 0;
+ 	config_emulate3buttons = 0;
+@@ -546,6 +582,7 @@
+ 	char *desc;	/* description */
+ } sympart2[] = {
+ {	"en_US",	"+be",	"Belgium"},
++{	"en_US",	"+br",	"Brazil/ABNT2 layout"},
+ {	"en_US",	"+bg",	"Bulgaria"},
+ {	"en_US",	"+ca",	"Canada"},
+ {	"en_US",	"+cs",	"Czechoslovakia"},
+@@ -565,6 +602,7 @@
+ {	"en_US",	"+de_CH",	"Switzerland/German layout"},
+ {	"en_US",	"+gb",	"United Kingdom"},
+ {	"us",		"",	"USA"},
++{	"us",		"+us_intl",	"US International"},
+ {	"en_US",	"",	"DEFAULT"}
+ };
+ 
+@@ -649,13 +687,13 @@
+ 	      + strlen(sympart1[xkbsym1].symname)
+ 	      + strlen(sympart2[xkbsym2].extend)
+ 	      + 1;
+-	config_xkbsymbols = malloc(i);
++	config_xkbsymbols = Malloc(i);
+ 	sprintf(config_xkbsymbols,"%s(%s)%s",
+ 		sympart2[xkbsym2].prefix,
+ 		sympart1[xkbsym1].symname,
+ 		sympart2[xkbsym2].extend);
+ 
+-	config_xkbgeometry = malloc(strlen(sympart1[xkbsym1].geoname)+1);
++	config_xkbgeometry = Malloc(strlen(sympart1[xkbsym1].geoname)+1);
+ 	sprintf(config_xkbgeometry,"%s",sympart1[xkbsym1].geoname);
+ 
+ 	return;
+@@ -699,6 +737,8 @@
+ {"xfree86(th)",		"Standard 101-key, Thai encoding"},
+ {"xfree86(de_CH)",	"Standard 101-key, Swiss/German encoding"},
+ {"xfree86(fr_CH)",	"Standard 101-key, Swiss/French encoding"},
++{"xfree86(us_intl)",	"Standard 101-key, US international"},
++{"xfree86(br)",		"Brazilian ABNT2"},
+ #ifdef XFREE98_XKB
+ {"xfree98(jp)",		"NEC PC98, Japanese encoding"},
+ #endif
+@@ -880,7 +920,7 @@
+ 		printf("%s", customhsync_text);
+ 		printf("Horizontal sync range: ");
+ 		getstring(s);
+-		config_hsyncrange = malloc(strlen(s) + 1);
++		config_hsyncrange = Malloc(strlen(s) + 1);
+ 		strcpy(config_hsyncrange, s);
+ 		printf("\n");
+ 	}
+@@ -908,7 +948,7 @@
+ 		/* Custom vsync range option selected. */
+ 		printf("Vertical sync range: ");
+ 		getstring(s);
+-		config_vsyncrange = malloc(strlen(s) + 1);
++		config_vsyncrange = Malloc(strlen(s) + 1);
+ 		strcpy(config_vsyncrange, s);
+ 		printf("\n");
+ 		break;
+@@ -920,7 +960,7 @@
+ 	if (strlen(s) == 0)
+ 		config_monitoridentifier = "My Monitor";
+ 	else {
+-		config_monitoridentifier = malloc(strlen(s) + 1);
++		config_monitoridentifier = Malloc(strlen(s) + 1);
+ 		strcpy(config_monitoridentifier, s);
+ 	}
+ 	printf("Enter the vendor name of your monitor: ");
+@@ -928,7 +968,7 @@
+ 	if (strlen(s) == 0)
+ 		config_monitorvendorname = "Unknown";
+ 	else {
+-		config_monitorvendorname = malloc(strlen(s) + 1);
++		config_monitorvendorname = Malloc(strlen(s) + 1);
+ 		strcpy(config_monitorvendorname, s);
+ 	}
+ 	printf("Enter the model name of your monitor: ");
+@@ -936,7 +976,7 @@
+ 	if (strlen(s) == 0)
+ 		config_monitormodelname = "Unknown";
+ 	else {
+-		config_monitormodelname = malloc(strlen(s) + 1);
++		config_monitormodelname = Malloc(strlen(s) + 1);
+ 		strcpy(config_monitormodelname, s);
+ 	}
+ }
+@@ -973,11 +1013,11 @@
+ "this card definition was based on, there's a chance that it is now\n"
+ "supported.\n";
+ 
+-#define NU_ACCELSERVER_IDS 10
++#define NU_ACCELSERVER_IDS 11
+ 
+ static char *accelserver_id[NU_ACCELSERVER_IDS] = {
+ 	"S3", "Mach32", "Mach8", "8514", "P9000", "AGX", "W32", "Mach64",
+-	"I128", "S3V"
++	"I128", "S3V", "3DLabs"
+ };
+ 
+ void carddb_configuration() {
+@@ -985,6 +1025,7 @@
+ 	char s[80];
+ 	card_selected = -1;
+ 	card_screentype = -1;
++	dont_ask_ramdac_clock = 0;
+ 	printf("%s", cardintro_text);
+ 	printf("Do you want to look at the card database? ");
+ 	getstring(s);
+@@ -1046,11 +1087,39 @@
+ 				card_accelserver = i;
+ 				break;
+ 			}
++		if (!strncmp(card[card_selected].server, "XBF_", 4)) {
++			for (i = 0; i < NU_ACCELSERVER_IDS; i++)
++				if (strcmp(card[card_selected].server+4,
++				accelserver_id[i]) == 0) {
++					card_screentype = 4;
++					card_accelserver = i;
++					dont_ask_ramdac_clock = 1;
++					break;
++				}
++			if (card_screentype == -1)
++				card_screentype = 3;
++		}
++		if (!strncmp(card[card_selected].server, "XFCom_", 6)) {
++			for (i = 0; i < NU_ACCELSERVER_IDS; i++)
++				if (strcmp(card[card_selected].server+6,
++				accelserver_id[i]) == 0) {
++					card_screentype = 4;
++					card_accelserver = i;
++					dont_ask_ramdac_clock = 1;
++					break;
++				}
++			if (card_screentype == -1)
++				card_screentype = 3;
++		}
+ 
+ 		printf("\nYour selected card definition:\n\n");
+ 		printf("Identifier: %s\n", card[card_selected].name);
+ 		printf("Chipset:    %s\n", card[card_selected].chipset);
+-		printf("Server:     XF86_%s\n", card[card_selected].server);
++		if (!strncmp(card[card_selected].server, "XBF_", 4) ||
++		    !strncmp(card[card_selected].server, "XFCom_", 6))
++		    printf("Server:     %s\n", card[card_selected].server);
++		else
++		    printf("Server:     XF86_%s\n", card[card_selected].server);
+ 		if (card[card_selected].ramdac != NULL)
+ 			printf("Ramdac:     %s\n", card[card_selected].ramdac);
+ 		if (card[card_selected].dacspeed != NULL)
+@@ -1108,6 +1177,12 @@
+ "preferred location of the symbolic link 'X'. You can select this location\n"
+ "when setting the symbolic link.\n"
+ "\n";
++
++static char *etclink_text =
++"The directory /etc/X11 exists. On many Linux systems this is the\n"
++"preferred location of the symbolic link 'X'. You can select this location\n"
++"when setting the symbolic link.\n"
++"\n";
+ #endif /* !__EMX__ */
+ 
+ static char *deviceintro_text =
+@@ -1227,23 +1302,22 @@
+ };
+ 
+ static char *deviceclockscomment_text =
+-"For most configurations, a Clocks line is useful since it prevents the slow\n"
+-"and nasty sounding clock probing at server start-up. Probed clocks are\n"
+-"displayed at server startup, along with other server and hardware\n"
+-"configuration info. You can save this information in a file by running\n"
+-"'X -probeonly 2>output_file'. Be warned that clock probing is inherently\n"
+-"imprecise; some clocks may be slightly too high (varies per run).\n"
++"For most modern configurations, a Clocks line is neither required or\n"
++"desirable.  However for some older hardware it can be useful since it\n"
++"prevents the slow and nasty sounding clock probing at server start-up.\n"
++"Probed clocks are displayed at server startup, along with other server\n"
++"and hardware configuration info. You can save this information in a file\n"
++"by running 'X -probeonly 2>output_file'. Be warned that clock probing is\n"
++"inherently imprecise; some clocks may be slightly too high (varies per run).\n"
+ "\n";
+ 
+ static char *deviceclocksquestion_text =
+ "At this point I can run X -probeonly, and try to extract the clock information\n"
+-"from the output. It is recommended that you do this yourself and add a clocks\n"
+-"line (note that the list of clocks may be split over multiple Clocks lines) to\n"
+-"your Device section afterwards. Be aware that a clocks line is not\n"
+-"appropriate for drivers that have a fixed set of clocks and don't probe by\n"
+-"default (e.g. Cirrus). Also, for the P9000 server you must simply specify\n"
+-"clocks line that matches the modes you want to use.  For the S3 server with\n"
+-"a programmable clock chip you need a 'ClockChip' line and no Clocks line.\n"
++"from the output. It is recommended that you do this yourself and if a set of\n"
++"clocks is shown then you add a clocks line (note that the list of clocks may\n"
++"be split over multiple Clocks lines) to your Device section afterwards. Be\n"
++"aware that a clocks line is not appropriate for most modern hardware that\n"
++"has programmable clocks.\n"
+ "\n"
+ "You must be root to be able to run X -probeonly now.\n"
+ "\n";
+@@ -1289,22 +1363,27 @@
+ "differently-sized virtual screen\n"
+ "\n";
+ 
+-#define NU_ACCEL_SERVERS 10
++#define NU_ACCEL_SERVERS 11
+ 
+ static char *accelserver_name[NU_ACCEL_SERVERS] = {
+ 	"XF86_S3", "XF86_Mach32", "XF86_Mach8", "XF86_8514", "XF86_P9000",
+-	"XF86_AGX", "XF86_W32" ,"XF86_Mach64", "XF86_I128", "XF86_S3V"
++	"XF86_AGX", "XF86_W32" ,"XF86_Mach64", "XF86_I128", "XF86_S3V",
++	"XF86_3DLabs"
+ };
+ 
+ static int videomemory[5] = {
+ 	256, 512, 1024, 2048, 4096
+ };
+ 
++#if XFREE86_VERSION >= 330
++#define NU_MODESTRINGS 12
++#else
+ #if XFREE86_VERSION >= 311
+ #define NU_MODESTRINGS 8
+ #else
+ #define NU_MODESTRINGS 5
+ #endif
++#endif
+ 
+ static char *modestring[NU_MODESTRINGS] = {
+ 	"\"640x400\"",
+@@ -1317,6 +1396,12 @@
+ 	"\"320x240\"",
+ 	"\"400x300\""
+ #endif
++#if XFREE86_VERSION >= 330
++	,"\"1152x864\"",
++	"\"1600x1200\"",
++	"\"1800x1400\"",
++	"\"512x384\""
++#endif
+ };
+ 
+ #ifdef __EMX__
+@@ -1364,8 +1449,13 @@
+ 	printf("%s", screenintro_text);
+ 
+ 	if (card_screentype != -1)
+-		printf(" 5  Choose the server from the card definition, XF86_%s.\n\n",
+-			card[card_selected].server);
++		if (!strncmp(card[card_selected].server, "XBF_", 4) ||
++		    !strncmp(card[card_selected].server, "XFCom_", 6))
++			printf(" 5  Choose the server from the card definition, %s.\n\n",
++				card[card_selected].server);
++		else
++			printf(" 5  Choose the server from the card definition, XF86_%s.\n\n",
++				card[card_selected].server);
+ 
+ 	printf("Which one of these screen types do you intend to run by default (1-%d)? ",
+ 		4 + (card_screentype != -1 ? 1 : 0));
+@@ -1401,7 +1491,12 @@
+ 			if (!answerisyes(s))
+ 				varlink = 0;
+ 		}
+-		if (config_screentype == 4 && usecardscreentype)
++		if (usecardscreentype &&
++			(!strncmp(card[card_selected].server, "XBF_", 4) ||
++			!strncmp(card[card_selected].server, "XFCom_", 6)))
++			/* Use screen type from card definition. */
++			servername = card[card_selected].server;
++		else if (config_screentype == 4 && usecardscreentype)
+ 			/* Use screen type from card definition. */
+ 			servername = accelserver_name[card_accelserver];
+ 		else
+@@ -1478,7 +1573,7 @@
+ 		else
+ 			config_deviceidentifier = "My Video Card";
+ 	else {
+-		config_deviceidentifier = malloc(strlen(s) + 1);
++		config_deviceidentifier = Malloc(strlen(s) + 1);
+ 		strcpy(config_deviceidentifier, s);
+ 	}
+ 	printf("%s", devicevendornamecomment_text);
+@@ -1488,7 +1583,7 @@
+ 	if (strlen(s) == 0)
+ 		config_devicevendorname = "Unknown";
+ 	else {
+-		config_devicevendorname = malloc(strlen(s) + 1);
++		config_devicevendorname = Malloc(strlen(s) + 1);
+ 		strcpy(config_devicevendorname, s);
+ 	}
+ 	printf("Enter the model (board) name of your video card: ");
+@@ -1496,7 +1591,7 @@
+ 	if (strlen(s) == 0)
+ 		config_deviceboardname = "Unknown";
+ 	else {
+-		config_deviceboardname = malloc(strlen(s) + 1);
++		config_deviceboardname = Malloc(strlen(s) + 1);
+                 strcpy(config_deviceboardname, s);
+ 	}
+ 	printf("\n");
+@@ -1638,7 +1733,7 @@
+ 
+ 	printf("%s", devicesettingscomment_text);
+ 
+-	if (config_screentype < 3)
++	if ((config_screentype != 4) || dont_ask_ramdac_clock)
+ 		goto skipramdacselection;
+ 
+ 	printf("%s", ramdaccomment_text);
+@@ -1684,6 +1779,10 @@
+ 	}
+ 
+ skipramdacselection:
++
++	if ((config_screentype == 5) || dont_ask_ramdac_clock)
++		goto skipclockprobing;
++
+ 	emptylines();
+ 	printf("%s", clockchipcomment_text);
+ 
+@@ -1740,6 +1839,9 @@
+ 		FILE *f;
+ 		char *buf;
+ 		char syscmdline[2*256+100]; /* enough */
++		char *fname = NULL;
++		char *d2name = NULL;
++		char *d3name = NULL;
+ 
+ 		if (getuid() != 0) {
+ 			printf("Sorry, you must be root to do this.\n\n");
+@@ -1747,25 +1849,38 @@
+ 		}
+ 		printf("%s", probeonlywarning_text);
+ 		keypress();
+-		printf("Running X -probeonly -pn -xf86config "
+-			TEMPORARY_XF86CONFIG_FILENAME ".\n");
+-		write_XF86Config(TEMPORARY_XF86CONFIG_FILENAME);
++		fname = Malloc(strlen(temp_dir) +
++				strlen(TEMPORARY_XF86CONFIG_FILENAME) + 1);
++		sprintf(fname, "%s%s", temp_dir,
++			TEMPORARY_XF86CONFIG_FILENAME);
++		d2name = Malloc(strlen(temp_dir) + strlen(DUMBCONFIG2) + 1);
++		sprintf(d2name, "%s%s", temp_dir, DUMBCONFIG2);
++		d3name = Malloc(strlen(temp_dir) + strlen(DUMBCONFIG3) + 1);
++		sprintf(d3name, "%s%s", temp_dir, DUMBCONFIG3);
++		printf("Running X -probeonly -pn -xf86config %s.\n", fname);
++		write_XF86Config(fname);
+ #ifndef __EMX__
+ 		sync();
+ #endif
+ 		/* compose a line with the real path */
+ #ifndef __EMX__
+-		sprintf(syscmdline,
+-		       "X -probeonly -pn -xf86config "
+-		       TEMPORARY_XF86CONFIG_FILENAME " 2>" DUMBCONFIG2);
++		sprintf(syscmdline, "X -probeonly -pn -xf86config %s 2> %s",
++			fname, d2name);
+ #else
+ 		/* OS/2 does not have symlinks, so "X" does not exist,
+ 		 * call the real X server
+ 		 */
+-		sprintf(syscmdline,"%s/XF86_%s -probeonly -pn -xf86config "
+-		       TEMPORARY_XF86CONFIG_FILENAME " 2>" DUMBCONFIG2,
+-		       __XOS2RedirRoot("/XFree86/bin",'\\'),
+-		       card[card_selected].server);
++		if (!strncmp(card[card_selected].server, "XBF_", 4) ||
++		    !strncmp(card[card_selected].server, "XFCom_", 6))
++			sprintf(syscmdline,"%s/%s -probeonly -pn -xf86config "
++			       TEMPORARY_XF86CONFIG_FILENAME " 2>" DUMBCONFIG2,
++			       __XOS2RedirRoot("/XFree86/bin",'\\'),
++			       card[card_selected].server);
++		else
++			sprintf(syscmdline,"%s/XF86_%s -probeonly -pn -xf86config "
++			       TEMPORARY_XF86CONFIG_FILENAME " 2>" DUMBCONFIG2,
++			       __XOS2RedirRoot("/XFree86/bin",'\\'),
++			       card[card_selected].server);
+ #endif
+ 
+ 		if (system(syscmdline)) {
+@@ -1774,13 +1889,14 @@
+ 			goto clocksprobefailed;
+ 		}
+ 		/* Look for 'clocks:' (case sensitive). */		
+-		if (system("grep clocks\\: " DUMBCONFIG2 " >" DUMBCONFIG3)) {
++		sprintf(syscmdline, "grep clocks\\: %s > %s", d2name, d3name);
++		if (system(syscmdline)) {
+ 			printf("grep failed.\n");
+ 			printf("Cannot find clocks in server output.\n");
+ 			goto clocksprobefailed;
+ 		}
+-		f = fopen(DUMBCONFIG3, "r");
+-		buf = malloc(8192);
++		f = fopen(d3name, "r");
++		buf = Malloc(8192);
+ 		/* Parse lines. */
+ 		while (fgets(buf, 8192, f) != NULL) {
+ 			char *clks;
+@@ -1793,7 +1909,7 @@
+ 				continue;
+ 			clks[strlen(clks) - 1] = '\0';	/* Remove '\n'. */
+ 			config_clocksline[config_numberofclockslines] =
+-				malloc(strlen(clks) + 1);
++				Malloc(strlen(clks) + 1);
+ 			strcpy(config_clocksline[config_numberofclockslines],
+ 				clks);
+ 			printf("Clocks %s\n", clks);
+@@ -1801,9 +1917,9 @@
+ 		}
+ 		fclose(f);
+ clocksprobefailed:
+-		unlink(DUMBCONFIG3);
+-		unlink(DUMBCONFIG2);
+-		unlink(TEMPORARY_XF86CONFIG_FILENAME);
++		unlink(d3name);
++		unlink(d2name);
++		unlink(fname);
+ 		printf("\n");
+ 
+ endofprobeonly:
+@@ -1846,7 +1962,9 @@
+ 		printf("Select modes from the following list:\n\n");
+ 
+ 		for (i = 0; i < NU_MODESTRINGS; i++)
+-			printf("%2d  %s\n", i + 1, modestring[i]);
++			printf(" %c  %s\n", i < 9 ? '1' + i :
++			                            'a' + i - 9, 
++			                    modestring[i]);
+ 		printf("\n");
+ 
+ 		printf("%s", modeslist_text);
+@@ -1857,29 +1975,39 @@
+ 
+ 		modes[0] = '\0';
+ 		for (i = 0; i < strlen(s); i++) {
+-			if (s[i] < '1' || s[i] > '0' + NU_MODESTRINGS) {
++		        if ( NU_MODESTRINGS > 9 ) {
++			  if ((s[i] < '1' || s[i] > '9') &&
++			      (s[i] < 'a' || s[i] > 'a' + NU_MODESTRINGS - 10)) {
++				printf("Invalid mode skipped.\n");
++				continue;
++			    }
++			}
++			else {
++			  if (s[i] < '1' || s[i] > '0' + NU_MODESTRINGS) {
+ 				printf("Invalid mode skipped.\n");
+ 				continue;
++			  }
+ 			}
+ 			if (i > 0)
+ 				strcat(modes, " ");
+-			strcat(modes, modestring[s[i] - '1']);
++			strcat(modes, modestring[s[i] <= '9' ? s[i] - '1' :
++			                                       s[i] - 'a' + 9]);
+ 		}
+ 		switch (c) {
+ 		case 0 :
+-			config_modesline8bpp = malloc(strlen(modes) + 1);
++			config_modesline8bpp = Malloc(strlen(modes) + 1);
+ 			strcpy(config_modesline8bpp, modes);
+ 			break;
+ 		case 1 :
+-			config_modesline16bpp = malloc(strlen(modes) + 1);
++			config_modesline16bpp = Malloc(strlen(modes) + 1);
+ 			strcpy(config_modesline16bpp, modes);
+ 			break;
+ 		case 2 :
+-			config_modesline24bpp = malloc(strlen(modes) + 1);
++			config_modesline24bpp = Malloc(strlen(modes) + 1);
+ 			strcpy(config_modesline24bpp, modes);
+ 			break;
+ 		case 3 :
+-			config_modesline32bpp = malloc(strlen(modes) + 1);
++			config_modesline32bpp = Malloc(strlen(modes) + 1);
+ 			strcpy(config_modesline32bpp, modes);
+ 			break;
+ 		}
+@@ -1959,6 +2087,7 @@
+ static char *XF86Config_fontpaths[] = 
+ {
+ /*	"    FontPath	\"" TREEROOTLX "/fonts/75dpi/\"\n"*/
++	"/fonts/local/",
+ 	"/fonts/misc/",
+ 	"/fonts/75dpi/:unscaled",
+ 	"/fonts/100dpi/:unscaled",
+@@ -2129,8 +2258,11 @@
+ "#    Protocol	\"Xqueue\"\n"
+ "\n"
+ "# Baudrate and SampleRate are only for some Logitech mice\n"
+-"\n"
+-"#    BaudRate	9600\n"
++"# or for the AceCad tablets which require 9600 baud\n"
++"\n";
++
++static char *pointersection_text3 =
++"    BaudRate	9600\n"
+ "#    SampleRate	150\n"
+ "\n"
+ "# Emulate3Buttons is an option for 2-button Microsoft mice\n"
+@@ -2257,32 +2389,89 @@
+ "# 1024x768 @ 87 Hz interlaced, 35.5 kHz hsync\n"
+ "Modeline \"1024x768\"    44.9  1024 1048 1208 1264   768  776  784  817 Interlace\n"
+ "\n"
++"# 640x400 @ 85 Hz, 37.86 kHz hsync\n"
++"Modeline \"640x400\"     31.5   640  672 736   832   400  401  404  445 -HSync +VSync\n"
+ "# 640x480 @ 72 Hz, 36.5 kHz hsync\n"
+ "Modeline \"640x480\"     31.5   640  680  720  864   480  488  491  521\n"
++"# 640x480 @ 75 Hz, 37.50 kHz hsync\n"
++"ModeLine  \"640x480\"    31.5   640  656  720  840   480  481  484  500 -HSync -VSync\n"
+ "# 800x600 @ 60 Hz, 37.8 kHz hsync\n"
+ "Modeline \"800x600\"     40     800  840  968 1056   600  601  605  628 +hsync +vsync\n"
+ "\n"
++"# 640x480 @ 85 Hz, 43.27 kHz hsync\n"
++"Modeline \"640x480\"     36     640  696  752  832   480  481  484  509 -HSync -VSync\n"
++"# 1152x864 @ 89 Hz interlaced, 44 kHz hsync\n"
++"ModeLine \"1152x864\"    65    1152 1168 1384 1480   864  865  875  985 Interlace\n"
++"\n"
+ "# 800x600 @ 72 Hz, 48.0 kHz hsync\n"
+ "Modeline \"800x600\"     50     800  856  976 1040   600  637  643  666 +hsync +vsync\n"
+ "# 1024x768 @ 60 Hz, 48.4 kHz hsync\n"
+ "Modeline \"1024x768\"    65    1024 1032 1176 1344   768  771  777  806 -hsync -vsync\n"
+ "\n"
++"# 640x480 @ 100 Hz, 53.01 kHz hsync\n"
++"Modeline \"640x480\"     45.8   640  672  768  864   480  488  494  530 -HSync -VSync\n"
++"# 1152x864 @ 60 Hz, 53.5 kHz hsync\n"
++"Modeline  \"1152x864\"   89.9  1152 1216 1472 1680   864  868  876  892 -HSync -VSync\n"
++"# 800x600 @ 85 Hz, 55.84 kHz hsync\n"
++"Modeline  \"800x600\"    60.75  800  864  928 1088   600  616  621  657 -HSync -VSync\n"
++"\n"
+ "# 1024x768 @ 70 Hz, 56.5 kHz hsync\n"
+ "Modeline \"1024x768\"    75    1024 1048 1184 1328   768  771  777  806 -hsync -vsync\n"
+ "# 1280x1024 @ 87 Hz interlaced, 51 kHz hsync\n"
+ "Modeline \"1280x1024\"   80    1280 1296 1512 1568  1024 1025 1037 1165 Interlace\n"
+ "\n"
++"# 800x600 @ 100 Hz, 64.02 kHz hsync\n"
++"Modeline  \"800x600\"    69.65  800  864  928 1088   600  604  610  640 -HSync -VSync\n"
+ "# 1024x768 @ 76 Hz, 62.5 kHz hsync\n"
+ "Modeline \"1024x768\"    85    1024 1032 1152 1360   768  784  787  823\n"
++"# 1152x864 @ 70 Hz, 62.4 kHz hsync\n"
++"Modeline  \"1152x864\"   92    1152 1208 1368 1474   864  865  875  895\n"
+ "# 1280x1024 @ 61 Hz, 64.2 kHz hsync\n"
+ "Modeline \"1280x1024\"  110    1280 1328 1512 1712  1024 1025 1028 1054\n"
+ "\n"
++"# 1024x768 @ 85 Hz, 70.24 kHz hsync\n"
++"Modeline \"1024x768\"   98.9  1024 1056 1216 1408   768 782 788 822 -HSync -VSync\n"
++"# 1152x864 @ 78 Hz, 70.8 kHz hsync\n"
++"Modeline \"1152x864\"   110   1152 1240 1324 1552   864  864  876  908\n"
++"\n"
++"# 1280x1024 @ 70 Hz, 74.59 kHz hsync\n"
++"Modeline \"1280x1024\"  126.5 1280 1312 1472 1696  1024 1032 1040 1068 -HSync -VSync\n"
++"# 1600x1200 @ 60Hz, 75.00 kHz hsync\n"
++"Modeline \"1600x1200\"  162   1600 1664 1856 2160  1200 1201 1204 1250 +HSync +VSync\n"
++"# 1152x864 @ 84 Hz, 76.0 kHz hsync\n"
++"Modeline \"1152x864\"   135    1152 1464 1592 1776   864  864  876  908\n"
++"\n"
+ "# 1280x1024 @ 74 Hz, 78.85 kHz hsync\n"
+ "Modeline \"1280x1024\"  135    1280 1312 1456 1712  1024 1027 1030 1064\n"
+ "\n"
++"# 1024x768 @ 100Hz, 80.21 kHz hsync\n"
++"Modeline \"1024x768\"   115.5  1024 1056 1248 1440  768  771  781  802 -HSync -VSync\n"
+ "# 1280x1024 @ 76 Hz, 81.13 kHz hsync\n"
+ "Modeline \"1280x1024\"  135    1280 1312 1416 1664  1024 1027 1030 1064\n"
+ "\n"
++"# 1600x1200 @ 70 Hz, 87.50 kHz hsync\n"
++"Modeline \"1600x1200\"  189    1600 1664 1856 2160  1200 1201 1204 1250 -HSync -VSync\n"
++"# 1152x864 @ 100 Hz, 89.62 kHz hsync\n"
++"Modeline \"1152x864\"   137.65 1152 1184 1312 1536   864  866  885  902 -HSync -VSync\n"
++"# 1280x1024 @ 85 Hz, 91.15 kHz hsync\n"
++"Modeline \"1280x1024\"  157.5  1280 1344 1504 1728  1024 1025 1028 1072 +HSync +VSync\n"
++"# 1600x1200 @ 75 Hz, 93.75 kHz hsync\n"
++"Modeline \"1600x1200\"  202.5  1600 1664 1856 2160  1200 1201 1204 1250 +HSync +VSync\n"
++"# 1600x1200 @ 85 Hz, 105.77 kHz hsync\n"
++"Modeline \"1600x1200\"  220    1600 1616 1808 2080  1200 1204 1207 1244 +HSync +VSync\n"
++"# 1280x1024 @ 100 Hz, 107.16 kHz hsync\n"
++"Modeline \"1280x1024\"  181.75 1280 1312 1440 1696  1024 1031 1046 1072 -HSync -VSync\n"
++"\n"
++"# 1800x1440 @ 64Hz, 96.15 kHz hsync \n"
++"ModeLine \"1800X1440\"  230    1800 1896 2088 2392 1440 1441 1444 1490 +HSync +VSync\n"
++"# 1800x1440 @ 70Hz, 104.52 kHz hsync \n"
++"ModeLine \"1800X1440\"  250    1800 1896 2088 2392 1440 1441 1444 1490 +HSync +VSync\n"
++"\n"
++"# 512x384 @ 78 Hz, 31.50 kHz hsync\n"
++"Modeline \"512x384\"    20.160 512  528  592  640   384  385  388  404 -HSync -VSync\n"
++"# 512x384 @ 85 Hz, 34.38 kHz hsync\n"
++"Modeline \"512x384\"    22     512  528  592  640   384  385  388  404 -HSync -VSync\n"
++"\n"
+ #if XFREE86_VERSION >= 311
+ "# Low-res Doublescan modes\n"
+ "# If your chipset does not support doublescan, you get a 'squashed'\n"
+@@ -2295,7 +2484,7 @@
+ "# 320x240 @ 72 Hz, 36.5 kHz hsync\n"
+ "Modeline \"320x240\"     15.750 320  336  384  400   240  244  246  262 Doublescan\n"
+ "# 400x300 @ 56 Hz, 35.2 kHz hsync, 4:3 aspect ratio\n"
+-"ModeLine \"400x300\"     18     400  416  448  512   300  301  602  312 Doublescan\n"
++"ModeLine \"400x300\"     18     400  416  448  512   300  301  302  312 Doublescan\n"
+ "# 400x300 @ 60 Hz, 37.8 kHz hsync\n"
+ "Modeline \"400x300\"     20     400  416  480  528   300  301  303  314 Doublescan\n"
+ "# 400x300 @ 72 Hz, 48.0 kHz hsync\n"
+@@ -2449,6 +2638,10 @@
+ 	fprintf(f, "    Device      \"%s\"\n", config_pointerdevice);
+ #endif
+ 	fprintf(f, "%s", pointersection_text2);
++	/* ACECAD tablets need 9600 baud set */
++	if (config_mousetype != 9)
++		fprintf(f, "#");
++	fprintf(f, "%s", pointersection_text3);
+ 	if (!config_emulate3buttons)
+ 		fprintf(f, "#");
+ 	fprintf(f, "    Emulate3Buttons\n");
+@@ -2781,11 +2974,11 @@
+ #else /* __EMX__ */
+ 	{
+ 		printf("Please answer the following question with either 'y' or 'n'.\n");
+-		printf("Shall I write it to the default location, drive:/XFree86/lib/X11/XConfig? ");
++		printf("Shall I write it to the default location, drive:/XFree86/lib/X11/XF86Config? ");
+ 		getstring(s);
+ 		printf("\n");
+ 		if (answerisyes(s)) {
+-			return __XOS2RedirRoot("/XFree86/lib/X11/XConfig",'/');
++			return __XOS2RedirRoot("/XFree86/lib/X11/XF86Config",'/');
+ 		}
+ #endif /* __EMX__ */
+ 	}
+@@ -2794,16 +2987,12 @@
+ 	getstring(s);
+ 	printf("\n");
+ 	if (answerisyes(s))
+-#ifndef __EMX__
+ 		return "XF86Config";
+-#else
+-		return "XConfig";
+-#endif
+ 
+ 	printf("Please give a filename to write to: ");
+ 	getstring(s);
+ 	printf("\n");
+-	filename = malloc(strlen(s) + 1);
++	filename = Malloc(strlen(s) + 1);
+ 	strcpy(filename, s);
+ 	return filename;
+ }
+@@ -2877,7 +3066,9 @@
+  * Program entry point.
+  */
+ 
+-void main() {
++int main() {
++	createtmpdir();
++
+ 	emptylines();
+ 
+ 	printf("%s", intro_text);

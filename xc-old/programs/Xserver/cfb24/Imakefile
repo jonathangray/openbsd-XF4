@@ -1,0 +1,5 @@
+XCOMM $XFree86$
+#define PixelSize	24
+#define LinkDirectory ../cfb
+
+#include "../cfb/Imakefile"

@@ -1,0 +1,11 @@
+#define BinDir			/usr/local/bin
+#define UsrLibDir		/usr/local/lib
+#define ManDirectoryRoot	/usr/local/man
+#define LdPreLib		-L/usr/X11R6/lib -L/usr/local/lib
+#define XpmLibDir		/usr/X11R6/lib
+#define XpmIncDir		/usr/X11R6/include
+#define ConfigDir		/usr/X11R6/lib/X11/config
+#define IncRoot			/usr/local/include
+#define TopXInclude		-I/usr/X11R6/include
+#define ImakeCmd		imake -DPorts
+#define DocDir			/usr/local/share/doc

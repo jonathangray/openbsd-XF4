@@ -1,0 +1,20 @@
+XCOMM
+XCOMM $XFree86: $
+XCOMM
+
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+ XF86SETUPLIBDIR = $(LIBDIR)/XF86Setup
+      SCRIPTSDIR = $(XF86SETUPLIBDIR)/texts
+
+     SCRIPTFILES = local_text.tcl
+
+         SUBDIRS = generic ja
+   
+all::
+
+InstallMultiple($(SCRIPTFILES),$(SCRIPTSDIR))
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
