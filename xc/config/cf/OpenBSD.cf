@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.63 2001/11/20 07:41:03 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.64 2001/11/28 21:07:42 matthieu Exp $
 
 
 
@@ -494,6 +494,7 @@ install:: fonts.alias							@@\
 # define ServerExtraDefines	-DXFree86Server
 # define UnalignedReferencesAllowed YES
 # define HasWeakSymbols		NO
+# define HasSharedLibraries	NO
 
 #include <xfree86.cf>
 
