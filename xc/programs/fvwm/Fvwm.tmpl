@@ -350,11 +350,9 @@ OPTION_DEFINES += -DENABLE_REMOTE_CHANGEDESKS
 #define AudioLibs /* as nothing */
 #endif
 
-#if HasXpm
     XPM_DEFINES = -DXPM
-   XPM_INCLUDES = XpmIncs
-  XPM_LIBRARIES = XpmLibs -lXpm
-#endif
+   XPM_INCLUDES = 
+  XPM_LIBRARIES = $(XPMLIB)
 
 
 #if HasRPlay
