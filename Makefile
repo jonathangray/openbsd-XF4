@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.11 2001/04/04 19:11:18 todd Exp $
+#	$OpenBSD: Makefile,v 1.12 2001/04/19 14:19:27 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -117,7 +117,7 @@ perms:
 		${DESTDIR}/etc/X11 \! -user root -ls
 
 dist-rel:
-	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist
+	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist 2>&1 | tee distlog
 
 dist:
 	${MAKE} perms
