@@ -329,12 +329,12 @@ xf86OpenConsole()
 	        ErrorF("xf86OpenConsole: VT_WAITACTIVE failed\n");
 	    }
 
-	    signal(SIGUSR1, xf86VTRequest);
+	    signal(SIGUSR2, xf86VTRequest);
 
 	    vtmode.mode = VT_PROCESS;
-	    vtmode.relsig = SIGUSR1;
-	    vtmode.acqsig = SIGUSR1;
-	    vtmode.frsig = SIGUSR1;
+	    vtmode.relsig = SIGUSR2;
+	    vtmode.acqsig = SIGUSR2;
+	    vtmode.frsig = SIGUSR2;
 	    if (ioctl(xf86Info.consoleFd, VT_SETMODE, &vtmode) < 0) 
 	    {
 	        FatalError("xf86OpenConsole: VT_SETMODE VT_PROCESS failed\n");
