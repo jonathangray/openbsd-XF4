@@ -660,8 +660,8 @@
 ./usr/X11R6/man/cat3/XF86VidModeGetGammaRamp.0
 ./usr/X11R6/man/cat3/XF86VidModeGetGammaRampSize.0
 ./usr/X11R6/man/cat3/XF86VidModeGetModeLine.0
-./usr/X11R6/man/cat3/XF86VidModeGetPermissions.0
 ./usr/X11R6/man/cat3/XF86VidModeGetMonitor.0
+./usr/X11R6/man/cat3/XF86VidModeGetPermissions.0
 ./usr/X11R6/man/cat3/XF86VidModeGetViewPort.0
 ./usr/X11R6/man/cat3/XF86VidModeLockModeSwitch.0
 ./usr/X11R6/man/cat3/XF86VidModeModModeLine.0

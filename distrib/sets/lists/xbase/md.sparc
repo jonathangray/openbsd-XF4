@@ -495,8 +495,6 @@
 ./usr/X11R6/include/freetype2/freetype/tttables.h
 ./usr/X11R6/include/freetype2/freetype/tttags.h
 ./usr/X11R6/include/freetype2/ft2build.h
-./usr/X11R6/lib/X11/etc/xterm.termcap
-./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/doc
 ./usr/X11R6/lib/X11/doc/BUILD
 ./usr/X11R6/lib/X11/doc/BugReport
@@ -531,6 +529,8 @@
 ./usr/X11R6/lib/X11/doc/Status
 ./usr/X11R6/lib/X11/doc/Versions
 ./usr/X11R6/lib/X11/doc/VideoBoard98
+./usr/X11R6/lib/X11/etc/xterm.termcap
+./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libFS_pic.a
 ./usr/X11R6/lib/libGL.a

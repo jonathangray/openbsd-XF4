@@ -393,10 +393,10 @@
 ./usr/X11R6/bin/scanpci
 ./usr/X11R6/bin/showrgb
 ./usr/X11R6/bin/ucs2any
+./usr/X11R6/bin/xcursor-config
 ./usr/X11R6/bin/xf86cfg
 ./usr/X11R6/bin/xf86config
 ./usr/X11R6/bin/xf86config3
-./usr/X11R6/bin/xcursor-config
 ./usr/X11R6/bin/xft-config
 ./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xmseconfig
@@ -768,10 +768,10 @@
 ./usr/X11R6/man/cat1/Xwrapper.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/fc-cache.0
-./usr/X11R6/man/cat1/gtf.0
 ./usr/X11R6/man/cat1/fc-list.0
 ./usr/X11R6/man/cat1/glxgears.0
 ./usr/X11R6/man/cat1/glxinfo.0
+./usr/X11R6/man/cat1/gtf.0
 ./usr/X11R6/man/cat1/kbd_mode.0
 ./usr/X11R6/man/cat1/pcitweak.0
 ./usr/X11R6/man/cat1/scanpci.0
