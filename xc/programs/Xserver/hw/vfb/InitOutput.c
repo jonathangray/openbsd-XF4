@@ -706,7 +706,7 @@ vfbAllocateSharedMemoryFramebuffer(vfbScreenInfoPtr pvfb)
 {
     /* create the shared memory segment */
 
-    pvfb->shmid = shmget(IPC_PRIVATE, pvfb->sizeInBytes, IPC_CREAT|0777);
+    pvfb->shmid = shmget(IPC_PRIVATE, pvfb->sizeInBytes, IPC_CREAT|0700);
     if (pvfb->shmid < 0)
     {
 	perror("shmget");

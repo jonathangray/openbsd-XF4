@@ -248,7 +248,7 @@ shmalloc(
 	return (ShmDescPtr) NULL;
 
     size = (size + pagesize-1) & -pagesize;
-    shmid = shmget(IPC_PRIVATE, size, S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
+    shmid = shmget(IPC_PRIVATE, size, S_IWUSR | S_IRUSR);
     if (shmid == -1) {
 	ErrorF(XF86BIGFONTNAME " extension: shmget() failed, size = %u, errno = %d\n",
 	       size, errno);
