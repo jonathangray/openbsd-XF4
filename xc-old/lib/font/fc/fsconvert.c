@@ -105,6 +105,10 @@ _fs_convert_props(pi, po, pd, pfi)
 
     nprops = pfi->nprops = pi->num_offsets;
 
+    if (nprops < 0 
+       || nprops > SIZE_T_MAX/(sizeof(FontPropRec) + sizeof(char))) 
+       return -1;
+
     dprop = (FontPropPtr) xalloc(sizeof(FontPropRec) * nprops);
     is_str = (char *) xalloc(sizeof(char) * nprops);
     if (!dprop || !is_str) {
