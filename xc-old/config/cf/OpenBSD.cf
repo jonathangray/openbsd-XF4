@@ -1,6 +1,6 @@
 XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.1.2.14 1999/12/01 12:49:09 hohndel Exp $
 XCOMM
-XCOMM $OpenBSD: OpenBSD.cf,v 1.9 2003/01/04 11:54:25 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.10 2005/01/10 20:12:55 matthieu Exp $
 XCOMM
 
 #ifdef Ports
@@ -155,7 +155,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define GzipFontCompression	YES
 #define DefaultUserPath		/bin:/usr/bin:/usr/local/bin:$(BINDIR)
 #define DefaultSystemPath	/sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
-
+#define DefaultFontPath		$(FONTDIR)/misc/,$(FONTDIR)/Type1/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/ 
 #define InstUidFlags		-m 4755
 
 #ifdef  InstallCmd
