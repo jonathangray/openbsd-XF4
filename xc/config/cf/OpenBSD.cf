@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.79 2002/03/21 22:28:00 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.80 2002/03/24 16:34:56 matthieu Exp $
 
 
 
@@ -361,10 +361,6 @@ install:: fonts.alias							@@\
 # define UseElfFormat		YES
 
 /* XXX Why ?? */
-# ifdef XnestServer
-#  undef XnestServer
-# endif
-# define XnestServer		NO
 # ifdef XVirtualFramebufferServer
 #  undef XVirtualFramebufferServer
 # endif
