@@ -34,6 +34,10 @@
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 
+#ifdef WSCONS_SUPPORT
+#define KBD_FD(i) ((i).kbdFd != -1 ? (i).kbdFd : (i).consoleFd)
+#endif
+
 void
 xf86SoundKbdBell(int loudness, int pitch, int duration)
 {
@@ -70,7 +74,8 @@ xf86SoundKbdBell(int loudness, int pitch, int duration)
 			wsb.pitch = pitch;
 			wsb.period = duration;
 			wsb.volume = loudness;
-			ioctl(xf86Info.kbdFd, WSKBDIO_COMPLEXBELL, &wsb);
+			ioctl(KBD_FD(xf86Info), WSKBDIO_COMPLEXBELL, 
+				      &wsb);
 			break;
 #endif
 	    	}
@@ -92,7 +97,7 @@ xf86SetKbdLeds(int leds)
 #endif
 #if defined(WSCONS_SUPPORT)
 	case WSCONS:
-		ioctl(xf86Info.kbdFd, WSKBDIO_SETLEDS, &leds);
+		ioctl(KBD_FD(xf86Info), WSKBDIO_SETLEDS, &leds);
 		break;
 #endif
 	}
@@ -112,6 +117,11 @@ xf86GetKbdLeds()
 	case PCVT:
 		ioctl(xf86Info.consoleFd, KDGETLED, &leds);
 		break;
+#endif
+#if defined(WSCONS_SUPPORT)
+	  case WSCONS:
+		  ioctl(KBD_FD(xf86Info), WSKBDIO_GETLEDS, &leds);
+		  break;
 #endif
 	}
 	return(leds);
