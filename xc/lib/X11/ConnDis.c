@@ -289,12 +289,6 @@ _X11TransConnectDisplay (
 #endif
 	    pprotocol = copystring ("tcp", 3);
     }
-#else
-#if defined(AMRPCCONN)
-    if (!pprotocol) {
-            pprotocol = copystring ("amcon", 5);
-    }
-#endif
 #endif
 
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
