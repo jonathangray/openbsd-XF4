@@ -72,7 +72,7 @@ SUBDIRS = $(XSSRCDIR)
 #else
 SUBDIRS = \
 	appres bdftopcf bitmap \
-	$(SCREENSAVESRCDIR) editres fsinfo fslsfonts fstobdf iceauth \
+	$(SCREENSAVESRCDIR) editres fslsfonts fstobdf iceauth \
 	ico listres \
 	$(MAKEPSRESDIR) $(MKCFMSRCDIR) \
 	mkfontdir oclock $(PROXYMGRSRCDIR) $(RGBSRCDIR) $(RSTARTSRCDIR) \
@@ -80,7 +80,7 @@ SUBDIRS = \
 	$(SMPROXYSRCDIR) $(TWMSRCDIR) viewres x11perf xauth xbiff xcalc \
 	xclipboard xclock \
 	xcmsdb $(XCONSOLESRCDIR) xditview $(XDMSRCDIR) xdpyinfo \
-	$(XF86DGASRCDIR) xedit xev xeyes xfd xfontsel $(XFSSRCDIR) \
+	$(XF86DGASRCDIR) xedit xev xeyes xfd xfontsel $(XFSSRCDIR) xfsinfo \
 	$(XFINDPROXYSRCDIR) $(XFWPSRCDIR) $(XGAMMASRCDIR) xgc $(XHOSTSRCDIR) \
 	xieperf $(XINITSRCDIR) $(XKBSRCDIRS) xkill xload xlogo xlsatoms \
 	xlsclients xlsfonts xmag xman xmessage xmodmap xprop xrdb \
