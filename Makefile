@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.36 2003/07/29 22:45:35 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.37 2003/08/14 04:49:03 mickey Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -149,7 +149,7 @@ dist:
 	${MAKE} perms
 	cd distrib/sets && \
 		env MACHINE=${MACHINE} ksh ./maketars ${OSrev} ${OSREV} && \
-		env MACHINE=${MACHINE} ksh ./checkflist ${OSREV}
+		(env MACHINE=${MACHINE} ksh ./checkflist ${OSREV}; true)
 
 install: install-xc install-xc-old install-extra install-distrib
 	/usr/libexec/makewhatis ${DESTDIR}/usr/X11R6/man
