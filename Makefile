@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.16 2001/10/24 13:42:25 todd Exp $
+#	$OpenBSD: Makefile,v 1.17 2001/11/09 15:51:09 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -152,8 +152,6 @@ install-xc-old:
 .endif
 
 install-distrib:
-	${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 444 \
-		distrib/ports.cf ${DESTDIR}/usr/X11R6/lib/X11/config
 	cd distrib/notes; ${MAKE} install
 
 fix-appd:

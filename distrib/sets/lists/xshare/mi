@@ -677,7 +677,6 @@
 ./usr/X11R6/lib/X11/config/osfLib.rules
 ./usr/X11R6/lib/X11/config/osfLib.tmpl
 ./usr/X11R6/lib/X11/config/pegasus.cf
-./usr/X11R6/lib/X11/config/ports.cf
 ./usr/X11R6/lib/X11/config/sco.cf
 ./usr/X11R6/lib/X11/config/sco5.cf
 ./usr/X11R6/lib/X11/config/scoLib.rules
