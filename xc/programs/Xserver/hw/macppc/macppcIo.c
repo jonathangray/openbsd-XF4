@@ -1,6 +1,6 @@
 /* $XConsortium: sunIo.c,v 5.26.1.3 95/01/25 23:02:33 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.1 1995/01/28 15:46:06 dawes Exp $ */
-/* $OpenBSD: macppcIo.c,v 1.2 2001/09/09 13:24:51 matthieu Exp $ */
+/* $OpenBSD: macppcIo.c,v 1.3 2001/09/09 13:54:31 matthieu Exp $ */
 
 /*-
  * sunIo.c --
@@ -52,7 +52,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define NEED_EVENTS
 #include "macppc.h"
-
+#include "mi.h"
 /*-
  *-----------------------------------------------------------------------
  * ProcessInputEvents --
@@ -162,7 +162,6 @@ AbortDDX(void)
 {
     int         i;
     ScreenPtr   pScreen;
-    DevicePtr   devPtr;
     struct wsdisplay_cmap cmap;
     u_char map[2];
 
