@@ -1,4 +1,6 @@
 ./usr/X11R6/bin/X
+./usr/X11R6/bin/Xnest
 ./usr/X11R6/bin/Xtga
 ./usr/X11R6/bin/Xwrapper
+./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
