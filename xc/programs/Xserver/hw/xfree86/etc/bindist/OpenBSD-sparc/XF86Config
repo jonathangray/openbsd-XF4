@@ -1,7 +1,7 @@
 #
 # Unaccelerated, single display configuration
 #
-# $OpenBSD: XF86Config,v 1.4 2002/08/29 22:59:07 matthieu Exp $ 
+# $OpenBSD: XF86Config,v 1.5 2003/08/31 13:45:34 matthieu Exp $ 
 #
 Section "ServerLayout"
 	Identifier	"wsfb"
@@ -19,7 +19,6 @@ Section "Files"
 EndSection
 
 Section "Module"
-    Load        "type1"
     Load        "freetype"
     Load        "glx"
     Load        "extmod"

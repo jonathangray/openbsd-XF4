@@ -1,7 +1,7 @@
 #
 # Unaccelerated, dual-headed display configuration
 #
-# $OpenBSD: XF86Config.2heads,v 1.1 2002/08/29 22:48:32 matthieu Exp $
+# $OpenBSD: XF86Config.2heads,v 1.2 2003/08/31 13:45:34 matthieu Exp $
 #
 Section "ServerLayout"
 	Identifier	"wsfb"
@@ -20,7 +20,6 @@ Section "Files"
 EndSection
 
 Section "Module"
-    Load        "type1"
     Load        "freetype"
     Load        "glx"
     Load        "extmod"

@@ -14,7 +14,6 @@ Section "Files"
 EndSection
 
 Section "Module"
-    Load        "type1"
     Load        "freetype"
     Load        "glx"
     Load        "extmod"
