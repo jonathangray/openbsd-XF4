@@ -343,7 +343,6 @@ install:: fonts.alias							@@\
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
-#   define DevelDrivers mga ati
 #   ifndef XFree86ConsoleDefines
 #     define XFree86ConsoleDefines -DWSCONS_SUPPORT
 #   endif
@@ -659,7 +658,7 @@ install:: fonts.alias							@@\
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
-#   define DevelDrivers cirrus ati
+#   define DevelDrivers nv
     /* Support for USB Mices */
 #   ifndef UsbMouseSupport
 #     define UsbMouseSupport		YES
