@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD: maketars,v 1.9 2004/12/09 01:16:38 todd Exp $
+#	$OpenBSD: maketars,v 1.10 2004/12/09 06:15:41 todd Exp $
 
 # xy
 RELEASE=$1
@@ -26,9 +26,9 @@ pwd=`pwd`
 listsdir=`pwd`/lists
 tardir=$RELEASEDIR
 
-cd $DESTDIR
-
 lists=`sh ./genlists $arch`
+
+cd $DESTDIR
 
 for setname in $lists; do
 	echo -n "${setname}: "
