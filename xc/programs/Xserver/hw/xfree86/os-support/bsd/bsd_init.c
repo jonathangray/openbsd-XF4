@@ -297,8 +297,7 @@ acquire_vt:
 #endif /* SYSCONS_SUPPORT || PCVT_SUPPORT */
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-	    fprintf(stderr, "xf86OpenConsole\n");
-	    /* xf86Info.consoleFd = open("/dev/wskbd0", 0); */
+	    /* Nothing to do... */
    	    break; 
 #endif
         }
