@@ -74,17 +74,18 @@ xlogin*frameWidth: 5
 xlogin*innerFramesWidth: 2
 
 ! top/left border
-xlogin*hiColor: #6d8aa2
+xlogin*hiColor: #6d9df2
 
 ! bottom/right border
-xlogin*shdColor: #012c66
+xlogin*shdColor: #384c70
 
 ! 'Welcome to..' text color
 xlogin*greetColor: #000000
 #endif /* XPM */
 /**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
 ! flood fill
-xlogin*background: #2559a5
+!xlogin*background: #2559a5
+xlogin*background: #5171b5
 /**/#endif
 xlogin*failColor: red
 
