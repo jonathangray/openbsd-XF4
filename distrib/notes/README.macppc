@@ -16,10 +16,9 @@ To use xdm from rc.conf, it is necessary to disable /dev/ttyC0 in
 Accelerated drivers
 -------------------
 
-The 'ati' driver is currently known to work on the G4 Macs with ATI
-Rage 128 cards. The Titanium PowerBook G4 and iBook work with the commented
-settings in the below sample xorg.conf.  The 'nv' driver has problems
-on nVidia cards for now.  Other cards are untested.
+The 'ati' driver is currently known to work on the machines with ATI
+Rage 128 or Radeon cards. The 'nv' driver works for machines with
+nVidia cards, although some modes may experience problems.
 
 Use xorgconfig to build a /etc/X11/xorg.conf file before starting 
 the server for the first time. Or you can use the sample configuration
@@ -77,7 +76,7 @@ Section "Monitor"
 	VertRefresh  50-100
 # 	This mode line can be used on the Ti PBG4
 #	Modeline "1152x768" 64.995 1152 1213 1349 1472  768 771 777 806 -HSync -VSync
-# 	This mode line can be used on the ibook
+# 	This mode line can be used on the ibook 600
 #        ModeLine "1024x768" 75.00 1024 1048 1184 1328 768 771 777 806
 EndSection
 
@@ -89,9 +88,6 @@ Section "Device"
 	BusID       "PCI:0:16:0"
 # 	These options are required for use on the Ti PBG4.
 #	Option      "PanelWidth"  "1152"
-#	Option      "PanelHeight" "768"
-# 	These options are required for use on the ibook.
-#	Option      "PanelWidth"  "1024"
 #	Option      "PanelHeight" "768"
 #	This option may help if your ibook has screen distortion problems
 #	Option      "iBookHacks" "on"
@@ -115,20 +111,17 @@ Section "Screen"
 	SubSection "Display"
 		Depth     8
 # For PBG4 uncomment
-#		Modes     "1152x768"
-#		Modes     "1024x768"
+#		Modes     "1152x768" "1024x768"
 	EndSubSection
 	SubSection "Display"
 		Depth     16
 # For PBG4 uncomment
-#		Modes     "1152x768"
-#		Modes     "1024x768"
+#		Modes     "1152x768" "1024x768"
 	EndSubSection
 	SubSection "Display"
 		Depth     24
 # For PBG4 uncomment
-#		Modes     "1152x768"
-#		Modes     "1024x768"
+#		Modes     "1152x768" "1024x768"
 	EndSubSection
 EndSection
 --- Cut Here ---
@@ -183,4 +176,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.16 2004/11/03 00:27:47 matthieu Exp $
+$OpenBSD: README.macppc,v 1.17 2005/01/15 14:44:54 matthieu Exp $

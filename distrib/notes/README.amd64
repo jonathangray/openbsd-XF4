@@ -31,8 +31,7 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 4. Start either xdm(1) or startx(1).
 
    a. Start xdm(1), the X display manager by activating the xdm_flags option
-      in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You do not need to disable
-      the console getty.
+      in /etc/rc.conf(8) or /etc/rc.conf.local(8).
 
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
@@ -42,4 +41,4 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 
 problem_blurb
 
-$OpenBSD: README.amd64,v 1.3 2004/11/03 00:27:47 matthieu Exp $
+$OpenBSD: README.amd64,v 1.4 2005/01/15 14:44:54 matthieu Exp $

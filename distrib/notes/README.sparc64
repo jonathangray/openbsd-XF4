@@ -1,5 +1,5 @@
-Post-installation instructions for XFree86 on OpenBSD/sparc64
--------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/sparc64
+-----------------------------------------------------------
 
 Contents
 --------
@@ -259,4 +259,4 @@ See xorg.conf(5) for more options.
 
 problem_blurb
 
-$OpenBSD: README.sparc64,v 1.18 2004/11/29 22:28:57 miod Exp $
+$OpenBSD: README.sparc64,v 1.19 2005/01/15 14:44:54 matthieu Exp $
