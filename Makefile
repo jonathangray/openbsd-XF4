@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.1 2001/02/15 08:19:55 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.2 2001/02/18 16:11:11 matthieu Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -12,6 +12,12 @@ XMACH!= ([ "${MACHINE}" = "i386" ] && echo "ix86") || \
 HOSTDEF=xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
 
+.if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == alpha \
+	|| ${MACHINE} == powerpc || ${MACHINE} == mac68k
+NEED_XC_OLD?=yes
+.else
+NEED_XC_OLD?=no
+.endif
 
 CP?= /bin/cp
 MKDIR?= /bin/mkdir
@@ -31,12 +37,16 @@ DESTDIR?=${.CURDIR}/dest
 
 LOCALAPPD=/usr/local/lib/X11/app-defaults
 LOCALAPPX=/usr/local/lib/X11
-REALAPPD=/var/X11/app-defaults
+REALAPPD=/etc/X11/app-defaults
+
 
 all:
 	${RM} -f ${CONFHOSTDEF}
 	${CP} ${HOSTDEF} ${CONFHOSTDEF}
 	cd xc ; ${MAKE} World WORLDOPTS=
+.if (${NEED_XC_OLD:L} == "yes")
+	cd xc-old ; ${MAKE} World WORLDOPTS=
+.endif
 
 build: all
 	${MAKE} install
@@ -89,7 +99,7 @@ dist:
 	${MAKE} perms
 	cd distrib/sets && csh ./maketars ${OSrev} && csh ./checkflist
 
-install: install-xc install-distrib 
+install: install-xc install-xc-old install-distrib
 	/usr/libexec/makewhatis ${DESTDIR}/usr/X11R6/man
 
 install-xc:
@@ -99,6 +109,11 @@ install-xc:
 	chown root.wheel ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 	cd xc/programs/rstart; ${MAKE} install && ${MAKE} install.man
+
+install-xc-old:
+.if (${NEED_XC_OLD:L} == "yes")
+	cd xc-old; ${MAKE} install && ${MAKE} install.man
+.endif
 
 install-distrib:
 	cd distrib/notes; ${MAKE} install
@@ -116,14 +131,20 @@ fix-appd:
 
 clean:
 	cd xc; ${MAKE} clean
+.if (${NEED_XC_OLD:L} == "yes")
+	cd xc-old; ${MAKE} clean
+.endif
 
 distclean:
 	${MAKE} clean
 	rm -f xc/xmakefile
+.if (${NEED_XC_OLD:L} == "yes")
+	rm -f xc-old/xmakefile
+.endif
 
 b-r:
 	@echo ${.CURDIR}/build-release
 	@env DESTDIR=${DESTDIR} RELEASEDIR=${RELEASEDIR} ${.CURDIR}/build-release
 
-.PHONY: all build release dist install install-xc \
+.PHONY: all build release dist install install-xc install-xc-old \
     install-distrib clean distclean fix-appd b-r
