@@ -1,9 +1,6 @@
 
 ./etc/X11/XftConfig
 ./etc/X11/app-defaults/Xvidtune
-./etc/X11/rstart/commands/.opencm-rules
-./etc/X11/rstart/commands/x11r6/.opencm-rules
-./etc/X11/rstart/contexts/.opencm-rules
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/showrgb
