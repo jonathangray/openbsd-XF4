@@ -31,11 +31,14 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
-** $Date: 2001/04/05 22:05:07 $ $Revision: 1.1.1.1 $
+** Date Revision
 */
 /*
-** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/quicksort.cc,v 1.1.1.1 2001/04/05 22:05:07 matthieu Exp $
+** Header: //depot/main/gfx/lib/glu/libnurbs/nurbtess/quicksort.cc#3 
 */
+
+
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/quicksort.cc,v 1.1.1.1.6.1 2002/01/23 19:16:59 dawes Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,7 +61,6 @@ void quicksort(void *v[], int left, int right,
 	       int (*comp) (void *, void *))
 {
   int i, last;
-  void swap(void *v[], int , int);
   if(left >= right) /*do nothing if array contains */
     return;         /*fewer than two elements*/
   
@@ -72,7 +74,7 @@ void quicksort(void *v[], int left, int right,
   quicksort(v, last+1, right, comp);
 }
 
-void swap(void *v[], int i, int j)
+static void swap(void *v[], int i, int j)
 {
   void *temp;
   temp = v[i];

@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.34 2001/12/10 16:22:37 alanh Exp $
+XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.34.2.1 2002/02/02 11:42:42 alanh Exp $
 
 #ifndef OSName
 #define OSName                  Cygwin
@@ -308,10 +308,19 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.34 2001/12/10 16:22:37 ala
 #endif
 
 /* Server build rules */
+#ifndef XnestServer
 #define XnestServer			YES
+#endif
+#ifndef BuildXprint
 #define BuildXprint			YES
+#endif
+#ifndef XprtServer
 #define XprtServer			YES
+#endif
+#ifndef XVirtualFramebufferServer
 #define XVirtualFramebufferServer	YES
+#endif
+
 #define XWinServer			YES
 
 /*

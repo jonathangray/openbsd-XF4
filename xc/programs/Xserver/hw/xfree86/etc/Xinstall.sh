@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.37 2002/01/17 20:54:23 dawes Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.37.2.1 2002/02/05 22:51:04 torrey Exp $
 #
 # Copyright © 2000 by Precision Insight, Inc.
 # Copyright © 2000, 2001 by VA Linux Systems, Inc.
@@ -435,7 +435,7 @@ FindDistName()
 			1.[2-3]*)
 				DistName="Darwin-ppc-1.x"
 				;;
-			1.4.* | 5.*)
+			1.4* | 5.*)
 				DistName="Darwin-ppc-5.x"
 				;;
 			[6-9].*)
@@ -448,7 +448,7 @@ FindDistName()
 			;;
 		x86*)
 			case "$OsVersion" in
-			1.4.* | 5.*)
+			1.4* | 5.*)
 				DistName="Darwin-ix86-5.x"
 				;;
 			[6-9].*)
