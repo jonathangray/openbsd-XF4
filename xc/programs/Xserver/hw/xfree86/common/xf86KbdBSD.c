@@ -37,6 +37,8 @@
 #include "atKeynames.h"
 #include "xf86Keymap.h"
 
+#if (defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT)) && defined(GIO_KEYMAP)
+
 #define KD_GET_ENTRY(i,n) \
   eascii_to_x[((keymap.key[i].spcl << (n+1)) & 0x100) + keymap.key[i].map[n]]
 
@@ -356,6 +358,7 @@ static KeySym latin1_to_x[256] = {
 	XK_oslash,	XK_ugrave,	XK_uacute,	XK_ucircumflex,
 	XK_udiaeresis,	XK_yacute,	XK_thorn, 	XK_ydiaeresis
       };
+#endif
 #endif
 /*
  * LegalModifier --
