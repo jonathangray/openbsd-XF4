@@ -138,6 +138,10 @@ authorization.
 #define OPT_SCO_FUNC_KEYS 1
 #endif
 
+#if defined(__OpenBSD__)
+#define DEFDELETE_DEL TRUE
+#endif
+
 #if defined(SCO) || defined(SVR4) || defined(_POSIX_SOURCE) || defined(__QNX__) || defined(__hpux) || (defined(BSD) && (BSD >= 199103)) || defined(__CYGWIN__)
 #define USE_POSIX_WAIT
 #endif

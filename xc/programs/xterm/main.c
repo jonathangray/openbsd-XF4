@@ -702,8 +702,13 @@ static XtResource application_resources[] =
     Bres("hpFunctionKeys", "HpFunctionKeys", hpFunctionKeys, FALSE),
 #endif
 #if OPT_INITIAL_ERASE
+#ifndef __OpenBSD__
     Bres("ptyInitialErase", "PtyInitialErase", ptyInitialErase, FALSE),
     Bres("backarrowKeyIsErase", "BackarrowKeyIsErase", backarrow_is_erase, FALSE),
+#else
+    Bres("ptyInitialErase", "PtyInitialErase", ptyInitialErase, TRUE),
+    Bres("backarrowKeyIsErase", "BackarrowKeyIsErase", backarrow_is_erase, TRUE),
+#endif
 #endif
     Bres("waitForMap", "WaitForMap", wait_for_map, FALSE),
     Bres("useInsertMode", "UseInsertMode", useInsertMode, FALSE),
