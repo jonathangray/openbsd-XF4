@@ -53,6 +53,7 @@ int MajorVersion, MinorVersion;
 int EventBase, ErrorBase;
 int dot_clock, mode_flags;
 unsigned long    TestTimeout=5000;  /* Default test timeout */
+XtSignalId sigId;
 
 /* Minimum extension version required */
 #define MINMAJOR 0
@@ -158,6 +159,12 @@ CleanUp(Display *dpy)
 
 static void
 CatchSig(int signal)
+{
+    XtNoticeSignal(sigId);
+}
+
+static void
+CatchXtSig(XtPointer closure, XtSignalId *id)
 {
     CleanUp(XtDisplay(Top));
     exit(3);
@@ -1536,6 +1543,7 @@ main (int argc, char** argv)
     signal(SIGQUIT, CatchSig);
     signal(SIGTERM, CatchSig);
     signal(SIGHUP, CatchSig);
+    sigId = XtAppAddSignal(app, CatchXtSig, NULL);
 
     if (!GetModeLine(XtDisplay (top), DefaultScreen (XtDisplay (top)))) {
 	fprintf(stderr, "Unable to get mode info\n");
