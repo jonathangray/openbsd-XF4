@@ -95,7 +95,6 @@ main(int argc, char *argv[])
 
     /* init stuff */
     ProcessCmdLine(argc, argv);
-    InitErrors();
 
     /*
      * Do this first thing, to get any options that only take effect at
@@ -104,6 +103,7 @@ main(int argc, char *argv[])
     if (ReadConfigFile(configfilename) != FSSuccess) {
 	FatalError("couldn't read config file\n");
     }
+    InitErrors();
 
     /* make sure at least world write access is disabled */
     if (((oldumask = umask(022)) & 002) == 002)
