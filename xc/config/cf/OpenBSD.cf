@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.69 2002/01/19 15:45:31 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.70 2002/01/22 14:07:02 matthieu Exp $
 
 
 
@@ -618,10 +618,6 @@ install:: fonts.alias							@@\
 
 #define XkbServerDefines  -DXKB_ALWAYS_USES_SOFT_REPEAT
 
-# ifndef BuildPexExt
-#  define BuildPexExt 		(XsunServer || Xsun24Server)
-# endif
-
 #endif /* Sun3Architecture */
 
 
@@ -708,7 +704,6 @@ install:: fonts.alias							@@\
 #   define ServerOSDefines	-DDDXOSINIT
 #   define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 #   define BuildXIE		NO
-#   define BuildPexExt		NO
 #   define BuildScreenSaverExt	YES
 #   define BuildXKB		NO
 #   define BuildXKBlib		YES
@@ -769,10 +764,6 @@ install:: fonts.alias							@@\
 # endif
 
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
-
-# ifndef BuildPexExt
-#  define BuildPexExt		(XsunServer || Xsun24Server)
-# endif
 
 # define BuildXF86VidModeExt	NO
 # define BuildXF86DGA		NO
