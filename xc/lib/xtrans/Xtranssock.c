@@ -826,11 +826,11 @@ set_sun_path(const char *port, const char *upath, char *path)
     if (*port == '/') { /* a full pathname */
 	if (strlen(port) > maxlen)
 	    return -1;
-	sprintf(path, "%s", port);
+	snprintf(path, maxlen+1, "%s", port);
     } else {
 	if (strlen(port) + strlen(upath) > maxlen)
 	    return -1;
-	sprintf(path, "%s%s", upath, port);
+	snprintf(path, maxlen+1, "%s%s", upath, port);
     }
     return 0;
 }
@@ -951,7 +951,7 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port, unsigned int 
     {
 	/* fixup the server port address */
 	tmpport = X_TCP_PORT + strtol (port, (char**)NULL, 10);
-	sprintf (portbuf,"%lu", tmpport);
+	snprintf (portbuf, sizeof(portbuf), "%lu", tmpport);
 	port = portbuf;
     }
 #endif
@@ -1083,7 +1083,8 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port,
 	    return TRANS_CREATE_LISTENER_FAILED;
 	}
     } else {
-	sprintf (sockname.sun_path, "%s%ld", UNIX_PATH, (long)getpid());
+	    snprintf (sockname.sun_path, sizeof(sockname.sun_path), 
+		"%s%ld", UNIX_PATH, (long)getpid());
     }
 
 #if defined(BSD44SOCKETS) && !defined(Lynx)
@@ -1428,7 +1429,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
     if (is_numeric (port))
     {
 	tmpport = X_TCP_PORT + strtol (port, (char**)NULL, 10);
-	sprintf (portbuf, "%lu", tmpport);
+	snprintf (portbuf, sizeof(portbuf), "%lu", tmpport);
 	port = portbuf;
     }
 #endif
