@@ -39,7 +39,6 @@
 ./etc/X11/fs/config
 ./etc/X11/lbxproxy/AtomControl
 ./etc/X11/proxymngr/pmconfig
-./etc/X11/rc.xprint
 ./etc/X11/rstart/commands/@List
 ./etc/X11/rstart/commands/ListContexts
 ./etc/X11/rstart/commands/ListGenericCommands

@@ -233,6 +233,7 @@
 ./usr/X11R6/lib/pkgconfig/xrender.pc
 ./usr/X11R6/man
 ./usr/X11R6/man/cat1
+./usr/X11R6/man/cat7
 ./usr/X11R6/man/whatis.db
 ./var
 ./var/db
