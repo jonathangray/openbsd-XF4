@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.c,v 1.12 2001/11/08 04:15:33 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.c,v 1.13 2002/03/19 17:58:57 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -195,6 +195,8 @@ xf86CursorSwitchMode(int index, DisplayModePtr mode, int flags)
     ScreenPtr pScreen = screenInfo.screens[index];
     xf86CursorScreenPtr ScreenPriv =
 	pScreen->devPrivates[xf86CursorScreenIndex].ptr;
+    miPointerScreenPtr PointPriv =
+	pScreen->devPrivates[miPointerScreenIndex].ptr;
 
     if (ScreenPriv->isUp) {
 	xf86SetCursor(pScreen, NullCursor, ScreenPriv->x, ScreenPriv->y);
@@ -205,9 +207,11 @@ xf86CursorSwitchMode(int index, DisplayModePtr mode, int flags)
 
     /*
      * Cannot restore cursor here because the new frame[XY][01] haven't been
-     * calculated yet.
+     * calculated yet.  However, because the hardware cursor was removed above,
+     * ensure the cursor is repainted by miPointerWarpCursor().
      */
     ScreenPriv->CursorToRestore = ScreenPriv->CurrentCursor;
+    PointPriv->waitForUpdate = FALSE;	/* Force cursor repaint */
 
     return ret;
 }
@@ -335,7 +339,7 @@ xf86CursorSetCursor(ScreenPtr pScreen, CursorPtr pCurs, int x, int y)
 	xf86SetCursor(pScreen, pCurs, x, y);
 	ScreenPriv->SWCursor = FALSE;
 	ScreenPriv->isUp = TRUE;
-	PointPriv->waitForUpdate = FALSE;
+	PointPriv->waitForUpdate = !infoPtr->pScrn->silkenMouse;
 	return;
     }
 
