@@ -128,7 +128,11 @@ xf86OpenSerial (pointer options)
 	}
 
 #ifndef Lynx
+#ifndef __OpenBSD__
 	SYSCALL (fd = open (dev, O_RDWR | O_NONBLOCK | O_EXCL));
+#else
+	fd = priv_open_device (dev, O_NONBLOCK | O_EXCL);
+#endif
 #else
 	/* O_EXCL yields an EEXIST on LynxOS */
 	SYSCALL (fd = open (dev, O_RDWR | O_NONBLOCK));

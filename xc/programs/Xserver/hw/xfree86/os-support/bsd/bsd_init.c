@@ -731,15 +731,15 @@ xf86UseMsg()
 
 /*
  * Revoke privileges after init.
- * If the X server is started as root (xdm case), then swith to _x11 
+ * If the X server is started as root (xdm case), then switch to _x11 
  * if it exists.
  * Otherwise use the real uid.
  */
+
 void
 xf86DropPriv(char *disp)
 {
 	struct passwd *pw;
-	char *dev;
 
 	/* revoke privileges */
 	if (getuid() == 0) {
@@ -747,19 +747,14 @@ xf86DropPriv(char *disp)
 		pw = getpwnam("_x11");
 		if (!pw)
 			return;
-		dev = malloc(strlen(disp)+2);
-		if (dev == NULL) 
-			return;
-		sprintf(dev, "X%s", disp);
-		login_fbtab(dev, pw->pw_uid, pw->pw_gid);
-		setgroups(1, &pw->pw_gid);
-		setegid(pw->pw_gid);
-		setgid(pw->pw_gid);
-		seteuid(pw->pw_uid);
-		setuid(pw->pw_uid);
+		/* Start privileged child */
+		if (priv_init(pw->pw_uid, pw->pw_gid) == -1) {
+			FatalError("priv_init");
+		}
 	} else {
 		/* Normal user */
-		seteuid(getuid());
-		setuid(getuid());
+		if (priv_init(getuid(), getgid()) == -1) {
+			FatalError("priv_init");
+		}
 	}
 }

@@ -10,6 +10,7 @@ SRCS = \
 	fatalerror.c \
 	getvalidbios.c \
 	pcitestmulti.c \
+	privsep.c \
 	serverGeneration.c \
 	useMsg.c \
 	verrorf.c \
@@ -37,6 +38,7 @@ OBJS = \
 	fatalerror.o \
 	getvalidbios.o \
 	pcitestmulti.o \
+	privsep.o \
 	serverGeneration.o \
 	useMsg.o \
 	verrorf.o \

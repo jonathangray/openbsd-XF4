@@ -1,5 +1,5 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $OpenBSD: connection.c,v 1.4 2002/09/19 20:28:59 matthieu Exp $ */
+/* $OpenBSD: connection.c,v 1.5 2003/02/17 23:04:20 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -401,7 +401,11 @@ CreateWellKnownSockets()
     ParentProcess = getppid ();
     if (RunFromSmartParent) {
 	if (ParentProcess > 1) {
+#if defined(__OpenBSD__)
+	    priv_signal_parent();
+#else
 	    kill (ParentProcess, SIGUSR1);
+#endif
 	}
     }
 #endif
