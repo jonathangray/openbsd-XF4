@@ -10,7 +10,7 @@ XCOMM $XConsortium: Imakefile /main/5 1996/02/21 18:12:46 kaleb $
             OBJS = xf86config.o cards.o
  LOCAL_LIBRARIES =
          DEPLIBS =
-      CARDDBFILE = $(LIBDIR)/Cards
+      CARDDBFILE = $(LIBDIR)/old-Cards
          DEFINES = -DCARD_DATABASE_FILE='"$(CARDDBFILE)"' -DPROJECTROOT='"$(PROJECTROOT)"' \
 			-DUSRLIBDIR='"$(USRLIBDIR)"'
 
@@ -20,5 +20,6 @@ NormalProgramTarget(xf86config3,$(OBJS),$(DEPLIBS),$(LOCAL_LIBRARIES),NullParame
 InstallProgram(xf86config3,$(BINDIR))
 DependTarget()
 
-InstallNonExecFile(Cards,$(LIBDIR))
+LinkFile(old-Cards,Cards)
+InstallNonExecFile(old-Cards,$(LIBDIR))
 InstallManPageLong(xf86conf,$(MANDIR),xf86config3)
