@@ -95,7 +95,7 @@ abort_server(void)
 #ifdef SABER
     saber_stop();
 #else
-    abort();
+    _exit(1);
 #endif
 }
 
