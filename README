@@ -153,7 +153,6 @@ Use the following host.def file:
  */
 /* #define XF86CardDrivers		neomagic */
 
-#define XF86INT10			NO
 #define UsbMouseSupport			NO
 #define DoLoadableServer		NO
 #define XnestServer			NO
@@ -172,6 +171,7 @@ Use the following host.def file:
 #define BuildFreeType			NO
 #define BuildXTT			NO
 #define	BuildFonts			NO
+#define BuildXFree86ConfigTools		NO
 ---Cut here---
 
 The host.def file is supposed to be in xc/config/cf during
@@ -421,4 +421,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.5 2002/05/26 08:19:42 matthieu Exp $
+$Id: README,v 1.6 2002/07/21 21:01:49 matthieu Exp $
