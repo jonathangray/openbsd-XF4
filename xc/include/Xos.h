@@ -156,7 +156,6 @@ extern int sys_nerr;
 #endif /* X_NOT_POSIX else */
 
 #ifdef CSRG_BASED
-#include <stdlib.h>
 #include <unistd.h>
 #endif /* CSRG_BASED */
 
