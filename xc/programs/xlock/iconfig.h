@@ -416,8 +416,8 @@ PIXMAPTYPE = x11
 #else
 #if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture) || defined(OpenBSDArchitecture)
 SLEEPDEF = -DHAVE_USLEEP
-BITMAPTYPE = bsd
-PIXMAPTYPE = bsd
+BITMAPTYPE = x11
+PIXMAPTYPE = x11
 #ifndef OpenBSDArchitecture
 INSTPGMFLAGS = -s -o root -m 4111
 #else
