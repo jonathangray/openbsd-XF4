@@ -297,7 +297,7 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 *FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
 *FvwmPagerHilight #cab3ca
 *FvwmPagerGeometry -1-1
-*FvwmPagerLabel 0 OpenBSD 2.8
+*FvwmPagerLabel 0 OpenBSD 2.9
 *FvwmPagerLabel 1 Page2
 *FvwmPagerLabel 2 Page3
 *FvwmPagerLabel 3 Page4
