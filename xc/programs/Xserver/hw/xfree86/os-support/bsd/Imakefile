@@ -4,7 +4,7 @@ XCOMM $XConsortium: Imakefile /main/12 1996/10/27 11:06:35 kaleb $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/Imakefile,v 3.50 2001/12/31 18:18:49 herrb Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/Imakefile,v 3.47 2001/02/15 19:34:20 eich Exp $
 
 #include <Server.tmpl>
 
@@ -29,11 +29,9 @@ SHARED_CFLAGS = PositionIndependentCFlags
  IOPERMDEFINES = -DUSE_ARC_MMAP
 # elif defined(Arm32Architecture)
  IOPERMDEFINES = -DUSE_ARM32_MMAP
-# elif defined(PpcArchitecture)
-  IOPERM_SRC = ioperm_noop.c
-  IOPERM_OBJ = ioperm_noop.o
-# elif defined(Sparc64Architecture)
-  IOPERMDEFINES =
+# elif (defined(PpcArchitecture) || \
+	defined(AlphaArchitecture) || \
+	defined(Sparc64Architecture)) && defined(OpenBSDArchitecture)
   IOPERM_SRC = ioperm_noop.c
   IOPERM_OBJ = ioperm_noop.o
 # else
@@ -62,10 +60,6 @@ MOUSEOBJ = bsd_mouse.o
 MTRRDEFINES = -DHAS_MTRR_SUPPORT
 #endif
 
-#if defined(NetBSDArchitecture) && defined(HasMTRRBuiltin)
-MTRRDEFINES = -DHAS_MTRR_BUILTIN
-#endif
-
 #if UsbMouseSupport
 USBMOUSEDEFINES1 = -DUSBMOUSE_SUPPORT
 #if !HasLibUsb
@@ -80,14 +74,12 @@ USBMOUSEDEFINES2 = -DHAS_LIB_USB_HID
 #endif
 USBMOUSEDEFINES = $(USBMOUSEDEFINES1) $(USBMOUSEDEFINES2)
 
-#if (defined(OpenBSDArchitecture) || defined(NetBSDArchitecture)) && defined(i386Architecture)
-# if !defined(HasApmKqueue) || !HasApmKqueue
+#if defined(NetBSDArchitecture) && defined(i386Architecture)
 APMSRC = bsd_apm.c
 APMOBJ = bsd_apm.o
-# else
+#elif defined(OpenBSDArchitecture) && defined(i386Architecture)
 APMSRC = bsd_kqueue_apm.c
 APMOBJ = bsd_kqueue_apm.o
-# endif
 #else
 APMSRC = pm_noop.c
 APMOBJ = pm_noop.o
@@ -114,7 +106,7 @@ AXP_SRC=bsd_ev56.c xf86Axp.c bsd_axp.c
 AXP_OBJ=bsd_ev56.o xf86Axp.o bsd_axp.o
 #endif
 
-#if (defined(FreeBSDArchitecture) || defined(NetBSDArchitecture)) && HasAgpGart
+#if defined(FreeBSDArchitecture) && HasAgpGart
 AGP_SRC=lnx_agp.c
 AGP_OBJ=lnx_agp.o
 #else
@@ -187,7 +179,7 @@ LinkSourceFile(stdPci.c,../shared)
 LinkSourceFile(vidmem.c,../shared)
 LinkSourceFile(sigio.c,../shared)
 LinkSourceFile(kmod_noop.c,../shared)
-#if (defined(FreeBSDArchitecture) || defined(NetBSDArchitecture)) && HasAgpGart
+#if defined(FreeBSDArchitecture) && HasAgpGart
 LinkSourceFile(lnx_agp.c,../linux)
 #else
 LinkSourceFile(agp_noop.c,../shared)
