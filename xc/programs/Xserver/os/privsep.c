@@ -1,4 +1,4 @@
-/* $OpenBSD: privsep.c,v 1.3 2003/02/21 23:50:52 matthieu Exp $ */
+/* $OpenBSD: privsep.c,v 1.4 2003/07/20 21:11:50 matthieu Exp $ */
 /*
  * Copyright 2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -70,6 +70,10 @@ static const char * const allowed_devices[] = {
 	"/dev/wsmouse1",
 	"/dev/wsmouse2",
 	"/dev/wsmouse3",
+	"/dev/uhid0",
+	"/dev/uhid1",
+	"/dev/uhid2",
+	"/dev/uhid3",
 	"/dev/tty00",
 	"/dev/tty01",
 	"/dev/tty02",
