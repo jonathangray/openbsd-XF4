@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.144 2005/01/29 15:54:46 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.145 2005/01/30 21:38:27 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -1048,12 +1048,6 @@ install:: fonts.alias							@@\
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
-
-/* For the X11R5 server */
-# define CompressAllFonts	NO
-# define InstallFontAliases	InstallFontAliasesNoComment
-# define UseRgbTxt		NO
-# define UseRgb			YES
 
 # define ServerExtraDefines	-DXFree86Server
 # define UnalignedReferencesAllowed YES
