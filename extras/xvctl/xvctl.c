@@ -48,7 +48,6 @@ reformat(char *name)
 	static char result[BUFSIZ];
 	char *s;
 	char *t;
-	size_t n;
 
 	if (strlcpy(result, name, sizeof result) >= sizeof result)
 		warnx("Name %s was truncated", name);
@@ -83,11 +82,9 @@ printattribute(Display *dpy, XvPortID id, int nflag, XvAttribute *a)
 
 	atom = XInternAtom(dpy, a->name, True);
 	if (atom != None)
-		if (Success == XvGetPortAttribute(dpy, id,
-		    atom, &v)) {
+		if (Success == XvGetPortAttribute(dpy, id, atom, &v)) {
 			if (!nflag)
-				printf("%s = ", 
-				    reformat(a->name));
+				printf("%s = ", reformat(a->name));
 			printf("%d\n", v);
 		}
 }
@@ -134,8 +131,6 @@ showvar(Display *dpy, XvPortID id, int nflag, XvAttribute table[], int nattr,
     const char *name)
 {
 	XvAttribute *at;
-	Atom atom;
-	int v;
 
 	at = findname(table, nattr, name);
 	if (!at)
