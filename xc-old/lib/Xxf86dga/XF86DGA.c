@@ -466,7 +466,6 @@ Bool XF86DGAFillRectangle(dpy, screen, d, gc,
 #endif
 #include <sys/wait.h>
 #include <signal.h>
-extern int errno;
 
 #if defined(SVR4) && !defined(sun) && !defined(SCO325)
 #define DEV_MEM "/dev/pmem"
