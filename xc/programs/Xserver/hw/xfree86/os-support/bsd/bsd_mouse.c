@@ -502,11 +502,11 @@ usbPreInit(InputInfoPtr pInfo, const char *protocol, int flags)
 #ifdef USB_NEW_HID
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_X),
 		   hid_input, &pUsbMse->loc_x, pUsbMse->iid) < 0) {
-	xf86Msg(X_WARNING, "%s: no x locator\n");
+	xf86Msg(X_WARNING, "%s: no x locator\n", pInfo->name);
     }
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_Y),
 		   hid_input, &pUsbMse->loc_y, pUsbMse->iid) < 0) {
-	xf86Msg(X_WARNING, "%s: no y locator\n");
+	xf86Msg(X_WARNING, "%s: no y locator\n", pInfo->name);
     }
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_WHEEL),
 		   hid_input, &pUsbMse->loc_z, pUsbMse->iid) < 0) {
@@ -514,11 +514,11 @@ usbPreInit(InputInfoPtr pInfo, const char *protocol, int flags)
 #else
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_X),
 		   hid_input, &pUsbMse->loc_x) < 0) {
-	xf86Msg(X_WARNING, "%s: no x locator\n");
+	xf86Msg(X_WARNING, "%s: no x locator\n", pInfo->name);
     }
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_Y),
 		   hid_input, &pUsbMse->loc_y) < 0) {
-	xf86Msg(X_WARNING, "%s: no y locator\n");
+	xf86Msg(X_WARNING, "%s: no y locator\n", pInfo->name);
     }
     if (hid_locate(reportDesc, HID_USAGE2(HUP_GENERIC_DESKTOP, HUG_WHEEL),
 		   hid_input, &pUsbMse->loc_z) < 0) {
