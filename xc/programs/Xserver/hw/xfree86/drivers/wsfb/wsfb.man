@@ -1,4 +1,4 @@
-.\" $OpenBSD: wsfb.man,v 1.5 2002/07/20 19:24:14 matthieu Exp $
+.\" $OpenBSD: wsfb.man,v 1.6 2002/09/21 17:03:13 matthieu Exp $
 .\"
 .\" Copyright (c) 2001,2002 Matthieu Herrb
 .\" All rights reserved.
@@ -43,41 +43,47 @@ wsfb \- video driver for wsdisplay framebuffer device
 .SH DESCRIPTION
 .B wsfb
 is an XFree86 driver for the OpenBSD wsdisplay framebuffer devices.
-This is a non-accelerated driver, the following framebuffer depths are
-supported: 1, 8, 16 and 24, given the wsdisplay device underneath supports
-them. 
+This is a non-accelerated driver. 
+The following framebuffer depths are supported: 1, 8, 16 and 24, given
+that the wsdisplay device underneath supports them.
+.br
 A StaticGray monochrome visual is provided for depth 1,
-all visual types are supported for depth  8, and a TrueColor visual is
-supported for the other depths.  Multi-head configurations are supported.
+all visual types are supported for depth  8 and a TrueColor visual is
+supported for the other depths.
+Multi-head configurations are supported.
 .SH SUPPORTED HARDWARE
-The 
+The
 .B wsfb
 driver supports all hardware where a the wsdisplay framebuffer driver
-is available on OpenBSD. Currently this includes OpenBSD/macppc,
-OpenBSD/sparc, OpenBSD/sparc64 and OpenBSD/alpha on TGA graphics cards. 
+is available on OpenBSD.
+Currently this includes OpenBSD/macppc, OpenBSD/sparc, OpenBSD/sparc64
+and OpenBSD/alpha on TGA graphics cards.
 .SH CONFIGURATION DETAILS
 Please refer to XF86Config(__filemansuffix__) for general configuration
-details.  This section only covers configuration details specific to
-this driver.
+details.
+This section only covers configuration details specific to this driver.
 .PP
-For this driver it is not required to specify modes in the screen 
-section of the config file.  The
+For this driver it is not required to specify modes in the 
+.B Screen
+section of the config file.
+The
 .B wsfb
-driver can pick up the currently used video mode from the framebuffer 
-driver and will use it. Video modes specifications in the config file
-will be ignored. 
+driver picks up the currently used video mode from the framebuffer
+driver and uses it.
+Video modes specifications in the config file are ignored.
 .PP
-The following driver 
-.B Options
-are supported:
+The following driver options are supported in the 
+.B Device
+section:
 .TP
 .BI "Option \*qdevice\*q \*q" string \*q
-The framebuffer device to use. Default: /dev/ttyC0
+The wsdisplay framebuffer device to use.
+Default: \fI/dev/ttyC0\fP.
 .TP
 .BI "Option \*qShadowFB\*q \*q" boolean \*q
-Enable or disable use of the shadow framebuffer layer.  See
-shadowfb(__drivermansuffix__) for further information.  Default: on
-for depths were it is supported, off otherwise. 
+Enable or disable use of the shadow framebuffer layer.
+See shadowfb(__drivermansuffix__) for further information.
+Default: on for depths were it is supported, off otherwise.
 .br
 ShadowFB is currently not supported on monochrome displays.
 .SH "SEE ALSO"
