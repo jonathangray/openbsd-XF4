@@ -1,6 +1,11 @@
 Post-installation instructions for XFree86[tm] on OpenBSD/i386
 --------------------------------------------------------------
 
+Conventions used in this document:
+  - somename(1) implies that `somename' is a program, and there is a manual
+    page available in section 1 of the manual pages for further reading,
+    viewed by typing ``man 1 somename''.
+
 1. Make sure your system has support for X enabled:
 
    You must have 'option APERTURE' in your kernel configuration and
@@ -15,44 +20,50 @@ Post-installation instructions for XFree86[tm] on OpenBSD/i386
    in /etc/sysctl.conf.  See xf86(4) for more details about security
    issues related to this.  After changing this variable in sysctl.conf,
    you will need to reboot for the change to take effect. Most drivers for
-   XFree86 4.0.x servers require this value set to 2.
+   XFree86 4.0.x servers require this value to be set to 2.
 
 2. Find out about your hardware:
 
-   Run SuperProbe to find out what chipset is used by your video board.
-   Write this information down. The `dmesg' command output is useful too.
+   Run SuperProbe(1) to find out what chipset is used by your video board.
+   Write this information down. The dmesg(8) command output is useful too.
 
-   You need to decide if you can use the XFree86 4 server (XFree86) or if
-   you have some legacy VGA card supported only by an XFree86 3.3.x server
-   (XF86_*). 
+   You need to decide if you can use the XFree86 4 server, XFree86(1),
+   or if you have some legacy VGA card supported only by an XFree86 3.3.6
+   server:
+        XF86_3DLabs(1) XF86_Mach8(1)  XF86_S3(1)   XF86_VGA16(1)
+        XF86_I128(1)   XF86_Mach32(1) XF86_S3V(1)  XF86_SVGA(1)
+	XF86_8514(1)   XF86_Mach64(1) XF86_W32(1)  XF86_Mono(1)
+	XF86_P9000(1)  XF86_AGX(1)
 
-   What kind of mouse do you have, which port is it connected to? The 2
+   What kind of mouse do you have and which port is it connected to? The 2
    most common cases are a serial mouse, connected to /dev/tty00 (MS
    Windows COM1: port) or /dev/tty01 (COM2: port) and a PS/2 style
-   mouse, for which OpenBSD uses the wsmouse protocol with the
-   /dev/wsmouse0 device
+   mouse, for which OpenBSD uses the wsmouse(4) protocol with the
+   /dev/wsmouse0 device.
 
 
-3. Create the XF86Config file for your server.  You must choose one of the,
-   below options.  If it does not work, try the other.
+3. Create the XF86Config(5) file for your server.  You must choose one of
+   option a or b below.  If one does not work, try the other.
 
-    a. For the XFree86 4.0.x server, run ``xf86cfg''.
+    a. For the XFree86 4.0.x server, run xf86cfg(1) or xf86setup(1).
 
        This will produce the /etc/X11/XF86Config file.  If for some reason
-       xf86cfg doesn't work on your hardware, try the alternate program
-       xf86config.
+       xf86cfg(1) doesn't work on your hardware, try the alternate program
+       xf86config(1).
 
-    b. For the XFree86 3.3.x server, run XF86Setup.
+    b. For the XFree86 3.3.6 server, run XF86Setup(1) or xf86setup3(1).
 
        This will make the /etc/XF86Config file.  If for some reason
-       XF86Setup doesn't work on your hardware, try the alternate program
-       xf86config3.
+       XF86Setup(1) doesn't work on your hardware, try the alternate program
+       xf86config3(1).
 
-       See the XF86Config user's guide in /usr/X11R6/lib/X11/doc/QuickStart.doc
+       See the XF86Config user's guide for XFree86 3.3.6 servers at:
+
+              /usr/X11R6/lib/X11/doc/XFree86-3.3.6/QuickStart.doc
 
    For manual configuration information, see XF86Config(4).
 
-4. Start either xdm or startx.
+4. Start either xdm(1) or startx(1).
 
    a. Start xdm(1), the X display manager by activating the xdm_flags option
       in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You do not need to disable
@@ -62,6 +73,6 @@ Post-installation instructions for XFree86[tm] on OpenBSD/i386
       the X server and a few X applications, including a window manager.
 
 If you encounter a problem, you can browse the entire documentation 
-in /usr/X11R6/lib/X11/doc or at 
-http://www.xfree86.org/4.0.3/ or http://www.xfree86.org/3.3.6/.
-
+in /usr/X11R6/lib/X11/doc.  Alternately, for XFree86 4 documentation,
+you can visit http://www.xfree86.org/4.0.3/.  For XFree86 3 documentation,
+visit http://www.xfree86.org/3.3.6/.
