@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.7 2001/03/06 17:17:08 espie Exp $
+#	$OpenBSD: Makefile,v 1.8 2001/04/03 19:59:58 matthieu Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -20,7 +20,7 @@ HOSTDEFo=xc-old/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.de
 CONFHOSTDEFo=xc-old/config/cf/host.def
 
 .if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == alpha \
-	|| ${MACHINE} == powerpc || ${MACHINE} == mac68k
+	 || ${MACHINE} == mac68k
 NEED_XC_OLD?=yes
 .else
 NEED_XC_OLD?=no
