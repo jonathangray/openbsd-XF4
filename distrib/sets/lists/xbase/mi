@@ -1,6 +1,5 @@
 ./etc
 ./etc/X11
-./etc/X11/XftConfig
 ./etc/X11/xdm
 ./etc/X11/xdm/Xresources
 ./etc/X11/xdm/Xservers
@@ -23,7 +22,6 @@
 ./usr/X11R6/bin/dpsexec
 ./usr/X11R6/bin/dpsinfo
 ./usr/X11R6/bin/editres
-./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/fslsfonts
 ./usr/X11R6/bin/fstobdf
 ./usr/X11R6/bin/fvwm
@@ -79,7 +77,6 @@
 ./usr/X11R6/bin/xfontsel
 ./usr/X11R6/bin/xfs
 ./usr/X11R6/bin/xfsinfo
-./usr/X11R6/bin/xftcache
 ./usr/X11R6/bin/xfwp
 ./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xgc
@@ -129,7 +126,6 @@
 ./usr/X11R6/lib/X11
 ./usr/X11R6/lib/X11/XErrorDB
 ./usr/X11R6/lib/X11/XKeysymDB
-./usr/X11R6/lib/X11/XftConfig
 ./usr/X11R6/lib/X11/app-defaults
 ./usr/X11R6/lib/X11/etc
 ./usr/X11R6/lib/X11/fonts/local/fonts.dir
@@ -192,7 +188,6 @@
 ./usr/X11R6/lib/libXfont.a
 ./usr/X11R6/lib/libXfont.so.1.3
 ./usr/X11R6/lib/libXfontcache.a
-./usr/X11R6/lib/libXft.a
 ./usr/X11R6/lib/libXinerama.a
 ./usr/X11R6/lib/libXinerama.so.1.0
 ./usr/X11R6/lib/libXmu.a
@@ -215,7 +210,6 @@
 ./usr/X11R6/lib/libdpstk.a
 ./usr/X11R6/lib/libdpstk.so.1.0
 ./usr/X11R6/lib/libfntstubs.a
-./usr/X11R6/lib/libfreetype.a
 ./usr/X11R6/lib/libfvwm.a
 ./usr/X11R6/lib/liboldX.a
 ./usr/X11R6/lib/liboldX.so.6.0
