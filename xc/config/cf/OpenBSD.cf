@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.105 2002/08/23 20:53:20 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.106 2002/08/24 17:35:28 matthieu Exp $
 
 
 
@@ -395,6 +395,9 @@ install:: fonts.alias							@@\
 
 /* Definitions for building the XFree86 server */
 # if XF86Server
+#   ifndef HasNetBSDApertureDriver
+#     define HasNetBSDApertureDriver	YES
+#   endif
 #   define XF86OSCardDrivers	wsfb
 #   define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines

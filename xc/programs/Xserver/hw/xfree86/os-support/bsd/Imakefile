@@ -161,9 +161,11 @@ CONSDEFINES = XFree86ConsoleDefines
 RESDEFINES = -DUSESTDRES
 
 #if HasNetBSDApertureDriver
-APDIR = NetBSDApertureDir
 APDEFINES = -DHAS_APERTURE_DRV
+#ifdef NetBSDArchitecture
+APDIR = NetBSDApertureDir
 APINCLUDES = -I$(APDIR)/include
+#endif
 #endif
 
 DEFINES = $(CONSDEFINES) $(APDEFINES) $(IOPERMDEFINES) $(RESDEFINES) \

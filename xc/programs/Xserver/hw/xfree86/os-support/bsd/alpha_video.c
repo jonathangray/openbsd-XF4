@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: alpha_video.c,v 1.5 2002/08/05 19:10:41 matthieu Exp $ */
+/* $OpenBSD: alpha_video.c,v 1.6 2002/08/24 17:35:29 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -53,11 +53,11 @@
 
 
 extern unsigned long dense_base(void);
+extern axpDevice bsdGetAXP(void);
 
 static int axpSystem = -1;
 static unsigned long hae_thresh;
 static unsigned long hae_mask;
-static unsigned long bus_base;
 static unsigned long sparse_size;
 
 static unsigned long
@@ -117,9 +117,18 @@ has_bwx(void)
 /* Video Memory Mapping section                                            */
 /***************************************************************************/
 
+#ifdef __OpenBSD__
+#define SYSCTL_MSG "\tCheck that you have set 'machdep.allowaperture=1'\n"\
+		   "\tin /etc/sysctl.conf and reboot your machine\n" \
+		   "\trefer to xf86(4) for details"
+#endif
+
 static Bool useDevMem = FALSE;
 static int  devMemFd = -1;
 
+#ifdef HAS_APERTURE_DRV
+#define DEV_APERTURE "/dev/xf86"
+#endif
 #define DEV_MEM "/dev/mem"
 
 static pointer mapVidMem(int, unsigned long, unsigned long, int);
@@ -165,6 +174,7 @@ checkDevMem(Bool warn)
 		return;
 	    }
 	}
+#ifndef HAS_APERTURE_DRV
 	if (warn)
 	{ 
 	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s (%s)\n",
@@ -172,7 +182,46 @@ checkDevMem(Bool warn)
 	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
 	} 
 	useDevMem = FALSE;
+#else
+	/* Failed to open /dev/mem, try the aperture driver */
+	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0)
+	{
+	    /* Try to map a page at the VGA address */
+	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
+			     MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
+	
+	    if (base != MAP_FAILED)
+	    {
+		munmap((caddr_t)base, 4096);
+		devMemFd = fd;
+		useDevMem = TRUE;
+		xf86Msg(X_INFO, "checkDevMem: using aperture driver %s\n",
+		        DEV_APERTURE);
+		return;
+	    } else {
+
+		if (warn)
+		{
+		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
+			    DEV_APERTURE, strerror(errno));
+		}
+	    }
+	} else {
+	    if (warn)
+	    {
+		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+			"\t(%s)\n%s", DEV_MEM, DEV_APERTURE, strerror(errno),
+			SYSCTL_MSG);
+	    }
+	}
+	
+	if (warn)
+	{
+	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
+	}
+	useDevMem = FALSE;
 	return;
+#endif
 }
 
 void
@@ -613,8 +662,8 @@ int  (*xf86ReadMmio32)(pointer Base, unsigned long Offset)
 void
 xf86DropPriv(void)
 {
-	checkDevMem(TRUE);
 	xf86EnableIO();
+	checkDevMem(TRUE);
 	pciInit();
 	/* revoke privileges */
 	seteuid(getuid());
