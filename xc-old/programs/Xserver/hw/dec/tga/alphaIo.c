@@ -201,6 +201,10 @@ ddxProcessArgument (argc, argv, i)
 {
     extern void UseMsg();
 
+    if (!strcmp(argv[i], "-accel")) {
+	alphaTgaAccelerate = 1;
+	return 1;
+    }
     if (!strcmp(argv[i], "-noaccel")) {
 	alphaTgaAccelerate = 0;
 	return 1;

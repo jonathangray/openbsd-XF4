@@ -101,7 +101,7 @@ static char *fallbackList[] = {
 #define FALLBACK_LIST_LEN sizeof fallbackList / sizeof fallbackList[0]
 
 fbFd alphaFbs[MAXSCREENS];
-Bool alphaTgaAccelerate = 1;
+Bool alphaTgaAccelerate = 0;
 Bool alphaSfbAccelerate = 1;
 
 static PixmapFormatRec	formats[] = {
