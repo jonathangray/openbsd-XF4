@@ -149,8 +149,8 @@
 ./usr/X11R6/lib/libXext.so.8.0
 ./usr/X11R6/lib/libXfont.so.3.0
 ./usr/X11R6/lib/libXfontcache.so.3.0
-./usr/X11R6/lib/libXft.so.4.0
-./usr/X11R6/lib/libXft1.so.2.0
+./usr/X11R6/lib/libXft.so.5.0
+./usr/X11R6/lib/libXft1.so.3.0
 ./usr/X11R6/lib/libXi.so.8.0
 ./usr/X11R6/lib/libXinerama.so.3.0
 ./usr/X11R6/lib/libXmu.so.8.0
