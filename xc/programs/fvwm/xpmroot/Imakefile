@@ -5,13 +5,10 @@
 FVWM_SRCDIR = ..
 #include "../Fvwm.tmpl"
 
-#if HasXpm
-
 SRCS = xpmroot.c
 OBJS = xpmroot.o
 
 LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
 
 FvwmProgramTarget(xpmroot)
-#endif
 
