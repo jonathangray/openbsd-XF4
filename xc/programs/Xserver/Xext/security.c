@@ -1446,7 +1446,7 @@ SecurityParsePropertyAccessRule(
     char *mustHaveValue = NULL;
     Bool invalid;
     char windowRestriction;
-    int size;
+    size_t buflen;
     int keyword;
 
     /* get property name */
@@ -1505,14 +1505,14 @@ SecurityParsePropertyAccessRule(
     /* We've successfully collected all the information needed for this
      * property access rule.  Now record it in a PropertyAccessRec.
      */
-    size = sizeof(PropertyAccessRec);
 
     /* If there is a property value string, allocate space for it 
      * right after the PropertyAccessRec.
      */
     if (mustHaveValue)
-	size += strlen(mustHaveValue) + 1;
-    pacl = (PropertyAccessPtr)Xalloc(size);
+	buflen = strlen(mustHaveValue) + 1; 
+
+    pacl = (PropertyAccessPtr)Xalloc(sizeof(PropertyAccessRec) + buflen);
     if (!pacl)
 	return FALSE;
 
@@ -1538,7 +1538,7 @@ SecurityParsePropertyAccessRule(
     if (mustHaveValue)
     {
 	pacl->mustHaveValue = (char *)(pacl + 1);
-	strcpy(pacl->mustHaveValue, mustHaveValue);
+	strlcpy(pacl->mustHaveValue, mustHaveValue, buflen);
     }
     else
 	pacl->mustHaveValue = NULL;
@@ -1581,14 +1581,16 @@ SecurityParseSitePolicy(
     char *policyStr = SecurityParseString(&p);
     char *copyPolicyStr;
     char **newStrings;
+    size_t buflen;
 
     if (!policyStr)
 	return FALSE;
 
-    copyPolicyStr = (char *)Xalloc(strlen(policyStr) + 1);
+    buflen = strlen(policyStr) + 1;
+    copyPolicyStr = (char *)Xalloc(buflen);
     if (!copyPolicyStr)
 	return TRUE;
-    strcpy(copyPolicyStr, policyStr);
+    strlcpy(copyPolicyStr, policyStr, buflen);
     newStrings = (char **)Xrealloc(SecurityPolicyStrings,
 			  sizeof (char *) * (nSecurityPolicyStrings + 1));
     if (!newStrings)
