@@ -368,7 +368,7 @@
 #endif /* !NOSTDHDRS */
 
 #if !defined (apollo) && !defined (VMS)
-#include <malloc.h>
+#include <stdlib.h>
 #include <unistd.h>
 #endif /* !apollo && !VMS */
 
@@ -2028,7 +2028,7 @@ Display*  d;  /* display pointer */
 #else /* VMS */
   if (locker_pid)
   {
-#if !defined (UTEKV) && !defined (SYSV) && !defined(SVR4)
+#if !defined (UTEKV) && !defined (SYSV) && !defined(SVR4) && !defined(__OpenBSD__)
     union wait  status;      /* childs process status */
 #else /* !UTEKV && !SYSV && !SVR4 */
     int         status = 0;  /* childs process status */
@@ -2039,7 +2039,7 @@ Display*  d;  /* display pointer */
       (Void) kill (locker_pid, SIGTERM);
     }
 
-#if !defined (UTEKV) && !defined (SYSV) && !defined(SVR4)
+#if !defined (UTEKV) && !defined (SYSV) && !defined(SVR4) && !defined(__OpenBSD__)
     if (wait3 (&status, WNOHANG, (struct rusage*) NULL))
 #else /* !UTEKV && !SYSV && !SVR4 */
     if (waitpid (-1, &status, WNOHANG)) 
