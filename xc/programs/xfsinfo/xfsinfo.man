@@ -40,6 +40,11 @@ examine the
 capabilities of a server, the predefined values for various parameters used
 in communicating between clients and the server, and the font catalogues
 and alternate servers that are available.
+.SH "OPTIONS"
+.PP
+.TP
+.B \-server \fIhost\fP:\fIport\fP
+This option specifies the X font server to contact.
 .SH HISTORY
 .I Xfsinfo
 was originally called
