@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.134 2004/04/06 18:26:35 miod Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.135 2004/06/07 20:40:30 mickey Exp $
 
 
 
@@ -508,10 +508,18 @@ install:: fonts.alias							@@\
 
 # define XF86Server		YES
 # define HasWeakSymbols		YES
-# define HasSharedLibraries     NO
-# define HasDlopen              NO
 # define BuildGlxExt            NO
 # define BuildGLXLibrary        NO
+
+# if OSMajorVersion < 3 || (OSMajorVersion == 3 && OSMinorVersion < 5)
+#  define HasSharedLibraries	NO
+#  define SharedLibXThrStub	NO
+#  define HasDlopen		NO
+# else
+#  define HasSharedLibraries	YES
+#  define SharedLibXThrStub	YES
+#  define HasDlopen		YES
+# endif
 
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 
