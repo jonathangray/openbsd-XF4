@@ -1,6 +1,6 @@
 STARTFONT 2.1
 COMMENT Changes 2000 by Serge Winitzki.
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/screen8x16b.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Screen-Fixed-Bold-R-Normal--16-120-100-100-C-80-KOI8-R
 SIZE 12 100 100
 FONTBOUNDINGBOX 8 16 0 -2

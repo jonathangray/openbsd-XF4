@@ -1,6 +1,8 @@
-XCOMM $XFree86: xc/fonts/encodings/large/Imakefile,v 1.6 2003/12/07 18:20:10 dawes Exp $
+XCOMM $XdotOrg: xc/fonts/encodings/large/Imakefile,v 1.2 2004/04/23 18:43:02 eich Exp $
+XCOMM $XFree86: xc/fonts/encodings/large/Imakefile,v 1.5 2003/10/19 18:34:43 dawes Exp $
 
 OBJS = EncObjComp(big5.eten-0) 	EncObjComp(big5hkscs-0) \
+	EncObjComp(cns11643-1) EncObjComp(cns11643-2) EncObjComp(cns11643-3) \
 	EncObjComp(gb2312.1980-0) EncObjComp(gbk-0) \
 	EncObjComp(gb18030.2000-0) EncObjComp(gb18030.2000-1) \
 	EncObjComp(jisx0201.1976-0) \
@@ -12,6 +14,9 @@ SubdirLibraryRule($(OBJS))
 
 CompEncodingTarget(big5.eten-0)
 CompEncodingTarget(big5hkscs-0)
+CompEncodingTarget(cns11643-1)
+CompEncodingTarget(cns11643-2)
+CompEncodingTarget(cns11643-3)
 CompEncodingTarget(gb2312.1980-0)
 CompEncodingTarget(gb18030.2000-0)
 CompEncodingTarget(gb18030.2000-1)

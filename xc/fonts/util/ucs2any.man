@@ -1,4 +1,4 @@
-.TH ucs2any 1 __vendorversion__ XFree86
+.TH ucs2any __appmansuffix__ __vendorversion__
 .SH NAME
 ucs2any \- generate BDF fonts containing subsets of ISO 10646-1 codepoints
 .SH SYNOPSIS
@@ -60,7 +60,7 @@ will generate the files
 and
 .IR 6x13-iso8859-2.bdf .
 .SH FUTURE DIRECTIONS
-Hopefully a future XFree86 release will have a facility similar to
+Hopefully a future release will have a facility similar to
 .B ucs2any
 built into the server, and reencode ISO 10646-1 on the fly, because
 storing the same fonts in many different encodings is clearly a waste of

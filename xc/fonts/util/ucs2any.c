@@ -33,7 +33,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-/* $XFree86: xc/fonts/util/ucs2any.c,v 1.1 2003/09/21 10:54:14 herrb Exp $ */
+/* $XFree86$ */
 /*
  * This utility allows you to generate from an ISO10646-1 encoded
  * BDF font other BDF fonts in any possible encoding. This way, you can
@@ -48,7 +48,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifndef NEED_BASENAME
+#if !defined(NEED_BASENAME) && !defined(Lynx)
 #include <libgen.h>
 #endif
 #include <limits.h>

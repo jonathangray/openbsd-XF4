@@ -1,7 +1,7 @@
 STARTFONT 2.1
 COMMENT Created by Serge Winitzki, 1999. Based on standard 8x16 console font.
 COMMENT May be distributed and modified without restriction.
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/koi8x16b.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Misc-Fixed-Bold-R-Normal--16-160-75-75-C-80-KOI8-R
 SIZE 16 75 75
 FONTBOUNDINGBOX 8 16 0 -4

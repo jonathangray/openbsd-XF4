@@ -1,6 +1,6 @@
 STARTFONT 2.1
 COMMENT "Created by Serge Winitzki, 1999. Free distribution."
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/koi9x15b.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Misc-Fixed-Bold-R-Normal--15-140-75-75-C-90-KOI8-R
 SIZE 11 75 75
 FONTBOUNDINGBOX 9 15 0 -3

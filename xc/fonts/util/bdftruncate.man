@@ -1,4 +1,4 @@
-.TH bdftruncate 1 __vendorversion__ XFree86
+.TH bdftruncate __appmansuffix__ __vendorversion__
 .SH NAME
 bdftruncate \- generate truncated BDF font from ISO 10646-1-encoded BDF font
 .SH SYNOPSIS

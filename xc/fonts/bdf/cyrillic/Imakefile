@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/fonts/bdf/cyrillic/Imakefile,v 3.3 2002/12/15 01:48:56 dawes Exp $
+XCOMM $XFree86$
 
 OBJS = FontObj(crox1c) FontObj(crox1cb) FontObj(crox1cbo) FontObj(crox1co) \
 	FontObj(crox1h) FontObj(crox1hb) FontObj(crox1hbo) FontObj(crox1ho) \

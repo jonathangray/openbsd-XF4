@@ -1,5 +1,5 @@
 STARTENCODING jisx0201.1976-0
-# $XFree86: xc/fonts/encodings/large/jisx0201.1976-0.enc,v 1.2 2003/10/19 18:34:44 dawes Exp $
+# $XFree86$
 SIZE 0xE0
 STARTMAPPING cmap 3 1
 0x00A1  0xFF61

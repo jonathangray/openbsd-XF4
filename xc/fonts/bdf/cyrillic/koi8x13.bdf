@@ -5,7 +5,7 @@ COMMENT from an ISO10646-1 encoded source BDF font.
 COMMENT ucs2any.pl by Markus Kuhn <mkuhn@acm.org>, 1999.
 COMMENT "Id: 8x13.bdf,v 1.46 1999-11-13 20:49:01+00 mgk25 Exp mgk25 $"
 COMMENT "Send bug reports to Markus Kuhn <mkuhn@acm.org>"
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/koi8x13.bdf,v 3.2 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Misc-Fixed-Medium-R-Normal--13-120-75-75-C-80-KOI8-R
 SIZE 13 75 75
 FONTBOUNDINGBOX 8 13 0 -2

@@ -5,7 +5,7 @@ COMMENT ucs2any.pl by Markus Kuhn <mkuhn@acm.org>, 1999.
 COMMENT "Id: 6x13B.bdf,v 1.21 1999-12-13 10:23:03+00 mgk25 Exp mgk25 $"
 COMMENT "Send bug reports to Markus Kuhn <mkuhn@acm.org>"
 COMMENT Changes 1999 by Serge Winitzki.
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/koi6x13b.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Misc-Fixed-Bold-R-SemiCondensed--13-120-75-75-C-60-KOI8-R
 SIZE 13 75 75
 FONTBOUNDINGBOX 6 13 0 -2

@@ -6,7 +6,7 @@ COMMENT ucs2any.pl by Markus Kuhn <mkuhn@acm.org>, 1999.
 COMMENT "Id: 9x18.bdf,v 1.40 1999-11-20 11:52:26+00 mgk25 Rel mgk25 $"
 COMMENT "Send bug reports to Markus Kuhn <mkuhn@acm.org>"
 COMMENT Changes 1999 by Serge Winitzki.
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/koi9x18.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -Misc-Fixed-Medium-R-Normal--18-120-100-100-C-90-KOI8-R
 SIZE 12 100 100
 FONTBOUNDINGBOX 9 18 0 -4

@@ -2,7 +2,7 @@ STARTFONT 2.1
 COMMENT Font converted from VGA/EGA to BDF.
 COMMENT VGA and BDF created by Serge Winitzki.
 COMMENT Public domain. February 2000.
-COMMENT $XFree86: xc/fonts/bdf/cyrillic/proof9x16.bdf,v 1.1 2002/12/15 01:49:07 dawes Exp $
+COMMENT $XFree86$
 FONT -winitzki-proof-Medium-R-Normal--16-160-75-75-C-0-KOI8-R
 SIZE 16 75 75
 FONTBOUNDINGBOX 9 16 0 -4

@@ -1,4 +1,5 @@
-XCOMM $XFree86: xc/fonts/encodings/Imakefile,v 1.11 2003/11/22 05:08:15 dawes Exp $
+XCOMM $XdotOrg: xc/fonts/encodings/Imakefile,v 1.2 2004/04/23 18:43:02 eich Exp $
+XCOMM $XFree86: xc/fonts/encodings/Imakefile,v 1.10 2003/06/26 10:19:41 eich Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
@@ -15,6 +16,7 @@ OBJS = EncObjComp(adobe-dingbats) EncObjComp(adobe-standard) \
 	EncObj(iso8859-6.16) EncObj(iso8859-6.8x) \
 	EncObj(iso8859-11) EncObj(iso8859-13) \
 	EncObj(iso8859-16) \
+        EncObj(suneu-greek) \
 	EncObj(microsoft-cp1250) EncObj(microsoft-cp1251) \
 	EncObj(microsoft-cp1252) EncObj(microsoft-cp1253) \
 	EncObj(microsoft-cp1254) EncObj(microsoft-cp1255) \
