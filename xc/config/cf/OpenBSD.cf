@@ -87,26 +87,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 
 /*
- * Multi-thread safe libs 
- */	
-#if !defined(PpcArchitecture) && (OSMajorVersion == 2 && OSMinorVersion >= 6 || OSMajorVersion >= 3)
-# define HasPosixThreads	YES
-# define ThreadedX		YES
-# define SystemMTDefines	-D_REENTRANT
-# if HasLibPthread
-#  define ThreadsLibraries	-lpthread
-# else
-#  define BuildThreadStubLibrary  YES 
-#  define NeedUIThrStubs          YES 
-#  define ThreadsCompileFlags	-pthread
-#  define ThreadsLibraries	-lc_r
-# endif
-#endif
-
-/* Set this to YES when getpwuid_r is added to libc_r */
-# define HasThreadSafeAPI      NO
-
-/*
  * Compiler Features
  */
 #define GccUsesGas		YES
@@ -387,6 +367,7 @@ install:: fonts.alias							@@\
  */
 #ifdef AlphaArchitecture
 
+# define HasWeakSymbols		NO
 /*
  * The code for an Alpha XF86_TGA server compiles, but it DOES NOT work
  */
@@ -475,6 +456,7 @@ install:: fonts.alias							@@\
  */
 
 # define PositionIndependentCFlags -fpic -fno-function-cse
+# define HasWeakSymbols		NO
  
 #endif /* Mc68020Architecture */
 
@@ -626,6 +608,7 @@ install:: fonts.alias							@@\
 #ifdef PpcArchitecture
 
 # define UseElfFormat		YES
+# define HasWeakSymbols		NO
 
 #  if XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
@@ -685,13 +668,37 @@ install:: fonts.alias							@@\
 
 #endif /* SparcArchitecture */
 
-
 /* End or architecture specific section */
 
 /*
  * Generic settings for all architectures
  * which can be overridden by architecture specific sections above
  */
+
+#ifndef HasWeakSymbols
+#define HasWeakSymbols YES
+#endif
+
+/*
+ * Multi-thread safe libs 
+ */	
+#if HasWeakSymbols == YES && (OSMajorVersion == 2 && OSMinorVersion >= 6 || OSMajorVersion >= 3)
+# define HasPosixThreads	YES
+# define ThreadedX		YES
+# define SystemMTDefines	-D_REENTRANT
+# if HasLibPthread
+#  define ThreadsLibraries	-lpthread
+# else
+#  define BuildThreadStubLibrary  YES 
+#  define NeedUIThrStubs          YES 
+#  define ThreadsCompileFlags	-pthread
+#  define ThreadsLibraries	-lc_r
+# endif
+#endif
+
+/* Set this to YES when getpwuid_r is added to libc_r */
+#define HasThreadSafeAPI      NO
+
 
 #ifndef DoLoadableServer
 #define DoLoadableServer		NO
