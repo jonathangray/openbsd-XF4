@@ -116,9 +116,9 @@ int	n;
 		str++;
 		n -= 2;	/* one for EOL, one for end quote */
 	}
-	if ((yylval.cval = (char *)malloc(n)) != NULL)
+	if ((yylval.cval = (char *)malloc(n + 1)) != NULL)
 	{
-		strncpy(yylval.cval, str, n);
+		strlcpy(yylval.cval, str, n + 1);
 		return STRING;
 	}
 	else
