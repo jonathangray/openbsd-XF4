@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.100 2002/07/27 22:36:12 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.101 2002/08/06 22:50:35 todd Exp $
 
 
 
@@ -25,6 +25,10 @@ XCOMM
 #define	OSVendor	/**/
 #endif
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
+
+#ifndef OverrideShlibRevs
+# define OverrideShlibRevs NO
+#endif
 
 #ifdef Ports
 
@@ -150,6 +154,16 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define GccGasOption 		-DGCCUSESGAS
 #define AsmDefines 		-DUSE_GAS
+
+/* UseElfFormat defaults to YES if __ELF__ set */
+#ifndef UseElfFormat
+# ifdef __ELF__
+#  undef __ELF__			/* other imake files shouldn't care */
+#  define UseElfFormat YES
+# else
+#  define UseElfFormat NO
+# endif
+#endif
 
 #ifndef DefaultCCOptions
 # if defined(UseInstalled)
@@ -370,9 +384,7 @@ install:: fonts.alias							@@\
 # endif
 # define XVirtualFramebufferServer	NO
 
-# if (OSMajorVersion >= 3)
-#  define UseElfFormat		YES
-# else
+# if (OSMajorVersion < 3)
 #  define HasSharedLibraries	NO
 #  define SharedLibXThrStub	NO
 # endif
@@ -682,7 +694,6 @@ install:: fonts.alias							@@\
 #   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
 # endif
 
-# define UseElfFormat		YES
 # if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
 #  define HasWeakSymbols	YES
 # endif
@@ -778,7 +789,6 @@ install:: fonts.alias							@@\
 # if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
 #  define HasWeakSymbols	YES
 # endif
-# define UseElfFormat		YES
 
 # ifndef XF86Server
 #  define XF86Server		YES
