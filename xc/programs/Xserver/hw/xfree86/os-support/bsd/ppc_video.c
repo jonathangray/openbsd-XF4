@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.5 2002/07/30 22:16:13 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.6 2002/09/28 15:50:02 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -69,7 +69,9 @@ ppcMapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 	int fd = xf86Info.screenFd;
 	pointer base;
 
+#ifdef DEBUG
 	ErrorF("mapVidMem %lx, %lx, fd = %d\n", Base, Size, fd);
+#endif
 
 	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
@@ -86,9 +88,11 @@ ppcMapVidMemTag(int ScreenNum, unsigned long Base,
 	int fd = xf86Info.screenFd;
 	pointer base;
 
+#ifdef DEBUG
 	ErrorF("mapVidMemTag %x:%x:%x %lx, %lx, fd = %d\n", 
 	       PCI_BUS_FROM_TAG(tag), PCI_DEV_FROM_TAG(tag),
 	       PCI_FUNC_FROM_TAG(tag), Base, Size, fd);
+#endif
 
 	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
@@ -118,7 +122,7 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 #endif
 
 	if (Base < 0x80000000) {
-		ErrorF("No VGA\n");
+		xf86Msg(X_WARNING, "No VGA Base=%#lx\n", Base);
 		close(kmem);
 		return 0;
 	}
@@ -150,11 +154,10 @@ xf86EnableInterrupts()
 }
 
 /*
- * Do all things that need root privileges early 
- * and revoke those privileges 
+ * Do all initialisation that need root privileges 
  */
 void
-xf86DropPriv(void)
+xf86PrivilegedInit(void)
 {
  	kmem = open("/dev/xf86", 2);
  	if (kmem == -1) {
@@ -162,7 +165,5 @@ xf86DropPriv(void)
  		FatalError("xf86DropPriv: open /dev/xf86");
  	}
 	pciInit();
-	/* revoke privileges */
-	seteuid(getuid());
-	setuid(getuid());
+	xf86OpenConsole();
 }

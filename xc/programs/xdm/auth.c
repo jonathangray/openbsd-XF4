@@ -40,6 +40,9 @@ from The Open Group.
 #include <X11/X.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __OpenBSD__
+#include <pwd.h>
+#endif
 
 #include "dm.h"
 #include "dm_auth.h"
@@ -266,8 +269,9 @@ CleanUpFileName (char *src, char *dst, int len)
 static char authdir1[] = "authdir";
 static char authdir2[] = "authfiles";
 
+
 static int
-MakeServerAuthFile (struct display *d)
+MakeServerAuthFile (struct display *d, uid_t uid, gid_t gid)
 {
     int len;
 #ifdef SYSV
@@ -299,8 +303,8 @@ MakeServerAuthFile (struct display *d)
 	sprintf (d->authFile, "%s/%s", authDir, authdir1);
 	r = stat(d->authFile, &statb);
 	if (r == 0) {
-	    if (statb.st_uid != 0)
-		(void) chown(d->authFile, 0, statb.st_gid);
+	    if (statb.st_uid != uid)
+		(void) chown(d->authFile, uid, statb.st_gid);
 	    if ((statb.st_mode & 0077) != 0)
 		(void) chmod(d->authFile, statb.st_mode & 0700);
 	} else {
@@ -310,6 +314,8 @@ MakeServerAuthFile (struct display *d)
 		free (d->authFile);
 		d->authFile = NULL;
 		return FALSE;
+	    } else {
+		(void) chown(d->authFile, uid, gid);
 	    }
 	}
 	sprintf (d->authFile, "%s/%s/%s", authDir, authdir1, authdir2);
@@ -318,10 +324,13 @@ MakeServerAuthFile (struct display *d)
 	    free (d->authFile);
 	    d->authFile = NULL;
 	    return FALSE;
+	} else {
+	    (void) chown(d->authFile, uid, gid);
 	}
     	sprintf (d->authFile, "%s/%s/%s/A%s-XXXXXX",
 		 authDir, authdir1, authdir2, cleanname);
     	(void) mktemp (d->authFile);
+	(void) chown(d->authFile, uid, gid);
     }
     return TRUE;
 }
@@ -336,12 +345,35 @@ SaveServerAuthorizations (
     int		mask;
     int		ret;
     int		i;
+    uid_t	uid;
+    gid_t	gid;
+#ifdef __OpenBSD__
+    struct passwd *x11;
+#endif
 
+#ifdef __OpenBSD__
+    /* Give read capability to group _x11 */
+    x11 = getpwnam("_x11");
+    if (x11 == NULL) {
+	LogError("Can't find _x11 user\n");
+	uid = getuid();
+	gid = getgid();
+    } else {
+	uid = x11->pw_uid;
+	gid = x11->pw_gid;
+    }
+#else
+    uid = getuid();
+    gid = getgid();
+#endif
     mask = umask (0077);
-    if (!d->authFile && !MakeServerAuthFile (d))
+
+    if (!d->authFile && !MakeServerAuthFile (d, uid, gid))
 	return FALSE;
+
     (void) unlink (d->authFile);
     auth_file = fopen (d->authFile, "w");
+    fchown(fileno(auth_file), uid, gid);
     umask (mask);
     if (!auth_file) {
 	Debug ("Can't creat auth file %s\n", d->authFile);

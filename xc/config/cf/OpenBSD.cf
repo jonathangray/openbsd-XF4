@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.110 2002/09/15 11:07:52 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.111 2002/09/28 15:50:02 matthieu Exp $
 
 
 
@@ -407,7 +407,7 @@ install:: fonts.alias							@@\
 #   define XF86OSCardDrivers	wsfb
 #   define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
-#   define ServerExtraSysLibs	-lalpha
+#   define ServerExtraSysLibs	-lutil -lalpha
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
@@ -460,7 +460,7 @@ install:: fonts.alias							@@\
 # endif
 # define OptimizedCDebugFlags	DefaultGcc2i386Opt
 # define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME
-# define ServerExtraSysLibs	-li386
+# define ServerExtraSysLibs	-lutil -li386
 # define LdPostLib		/**/
 # define ServerExtraDefines GccGasOption XFree86ServerDefines
 # ifndef XFree86ConsoleDefines
@@ -864,6 +864,10 @@ install:: fonts.alias							@@\
 
 #ifndef ServerExtraDefines
 #  define ServerExtraDefines GccGasOption
+#endif
+
+#ifndef ServerExtraSysLibs
+#  define ServerExtraSysLibs -lutil
 #endif
 
 #ifndef HasWeakSymbols

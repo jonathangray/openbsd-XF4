@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.7 2002/08/03 17:37:21 matthieu Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.8 2002/09/28 15:50:02 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -185,10 +185,8 @@ xf86EnableInterrupts()
  * and revoke those privileges 
  */
 void
-xf86DropPriv(void)
+xf86PrivilegedInit(void)
 {
 	pciInit();
-	/* revoke privileges */
-	seteuid(getuid());
-	setuid(getuid());
+	xf86OpenConsole();
 }

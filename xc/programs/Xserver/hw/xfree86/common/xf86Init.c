@@ -109,6 +109,10 @@ InputDriverRec xf86KEYBOARD = {
 	0
 };
 
+#ifdef __OpenBSD__
+static Bool xf86KeepPriv = FALSE;
+#endif 
+
 static Bool
 xf86CreateRootWindow(WindowPtr pWin)
 {
@@ -1022,7 +1026,8 @@ InitInput(argc, argv)
  */
  
 #ifdef __OpenBSD__
-extern void xf86DropPriv(void);
+extern void xf86DropPriv(char *);
+extern void xf86PrivilegedInit(void);
 #endif
 
 void
@@ -1070,8 +1075,9 @@ OsVendorInit(void)
 #endif
 
 #if defined(__OpenBSD__)
-  if (!beenHere) {
-	  xf86DropPriv();
+  if (!beenHere && !xf86KeepPriv) {
+	  xf86PrivilegedInit();
+	  xf86DropPriv(display);
   }
 #endif
 
@@ -1523,8 +1529,22 @@ ddxProcessArgument(int argc, char **argv, int i)
     }
     xf86DoConfigure = TRUE;
     xf86AllowMouseOpenFail = TRUE;
+#ifdef __OpenBSD__
+    xf86KeepPriv = TRUE;
+#endif
     return 1;
   }
+#ifdef __OpenBSD__
+  if (!strcmp(argv[i], "-keepPriv")) 
+  {
+	  if (getuid() != 0) {
+		  ErrorF("The '-keepPriv' option can only be used by root.\n");
+		  exit(1);
+	  }
+	  xf86KeepPriv = TRUE;
+	  return 1;
+  }
+#endif
   /* OS-specific processing */
   return xf86ProcessArgument(argc, argv, i);
 }
@@ -1585,6 +1605,9 @@ ddxUseMsg()
 #endif
   ErrorF("-bestRefresh           choose modes with the best refresh rate\n");
   ErrorF("-ignoreABI             make module ABI mismatches non-fatal\n");
+#ifdef __OpenBSD__
+  ErrorF("-keepPriv		 don't revoque privs when running as root\n");
+#endif
   ErrorF("-version               show the server version\n");
   /* OS-specific usage */
   xf86UseMsg();
