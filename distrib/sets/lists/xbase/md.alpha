@@ -1,5 +1,9 @@
 ./usr/X11R6/bin/Xwrapper
 ./usr/X11R6/include/X11/extensions/XKBui.h
+./usr/X11R6/lib/X11/doc/README.fonts
+./usr/X11R6/lib/X11/fonts/PEX
+./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
+./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
 ./usr/X11R6/lib/X11/xkb/compat
 ./usr/X11R6/lib/X11/xkb/compat.dir
 ./usr/X11R6/lib/X11/xkb/compat/accessx
@@ -230,3 +234,8 @@
 ./usr/X11R6/lib/X11/xkb/types/pc
 ./usr/X11R6/lib/X11/xkb/xkbcomp
 ./usr/X11R6/lib/libxkbui.a
+./usr/X11R6/lib/modules/fonts/libbitmap.a
+./usr/X11R6/lib/modules/fonts/libfreetype.a
+./usr/X11R6/lib/modules/fonts/libspeedo.a
+./usr/X11R6/lib/modules/fonts/libtype1.a
+./usr/X11R6/lib/modules/fonts/libxtt.a

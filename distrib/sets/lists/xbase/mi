@@ -111,6 +111,7 @@
 ./usr/X11R6/include/X11
 ./usr/X11R6/include/X11/bitmaps
 ./usr/X11R6/include/X11/extensions
+./usr/X11R6/include/X11/fonts/codeconv
 ./usr/X11R6/include/X11/pixmaps
 ./usr/X11R6/lib
 ./usr/X11R6/lib/X11
