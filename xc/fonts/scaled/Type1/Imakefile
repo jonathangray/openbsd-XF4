@@ -26,12 +26,16 @@ OBJS = $(FONTS) $(BHFONTS) $(AFMS) $(BHAFMS)
 FONTINSTDIR = $(FONTDIR)/Type1
 
 MakeFontsDir(fonts.scale)
+#if UseFreeType2
 MakeXftCache($(FONTS))
+#endif
 
 InstallFonts($(FONTINSTDIR))
 InstallFontScale($(FONTINSTDIR))
 InstallEncodingsDir($(ENCODINGSSRC),$(FONTINSTDIR))
+#if UseFreeType2
 InstallXftCache($(FONTINSTDIR))
+#endif
 
 #ifdef IHaveSubdirs
 MakeSubdirs($(SUBDIRS))
