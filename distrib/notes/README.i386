@@ -44,7 +44,7 @@ Conventions used in this document:
    most common cases are a serial mouse, connected to /dev/tty00 (MS
    Windows COM1: port) or /dev/tty01 (COM2: port) and a PS/2 style
    mouse, for which OpenBSD uses the wsmouse(4) protocol with the
-   /dev/wsmouse0 device.
+   /dev/wsmouse device.
 
 
 3. Create the XF86Config(5) file for your server.
