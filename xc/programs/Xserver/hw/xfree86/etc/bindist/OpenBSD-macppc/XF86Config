@@ -26,7 +26,6 @@ Section "InputDevice"
 	Option	    "Protocol" 	  "wskbd"
 	Option	    "Device" 	  "/dev/wskbd0"
 	Option	    "XkbRules" 	  "xfree86"
-	Option	    "XkbKeycodes" "wscons(ppc)"
 	Option	    "XkbModel" 	  "macintosh"
 	Option	    "XkbLayout"   "us"
 EndSection
