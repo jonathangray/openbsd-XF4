@@ -79,7 +79,6 @@ extern int gettimeofday();
  * Server specific headers
  */
 #include "misc.h"
-#undef abs /* don't munge function prototypes in headers, sigh */
 #include "scrnintstr.h"
 #ifdef NEED_EVENTS
 # include "inputstr.h"
