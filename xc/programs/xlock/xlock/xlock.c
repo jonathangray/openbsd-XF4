@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)xlock.c	4.16 2000/01/28 xlockmore";
+static const char sccsid[] = "@(#)xlock.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -24,6 +24,8 @@ static const char sccsid[] = "@(#)xlock.c	4.16 2000/01/28 xlockmore";
  * Revision History:
  *
  * Changes maintained by David Bagley <bagleyd@tux.org>
+ * 09-Mar-01: showfps stuff corrected
+ * 01-Nov-00: Allocation checks
  * 08-Apr-98: A way for users to unlock each others display.  Kind of defeats
  *            the lock but the unlocked user is mailed and and entry is
  *            written to syslogd.  Thanks to Mark Kirk <mkirk@pdi.com> for
@@ -228,9 +230,11 @@ pre_merge_options(void)
 			new->option = old->option;
 		else {
 			/* Convert "+foo" to "-no-foo". */
-			new->option = (char *) malloc(strlen(old->option) + 5);
-			(void) strcpy(new->option, "-no-");
-			(void) strcat(new->option, old->option + 1);
+			if ((new->option = (char *) malloc(strlen(old->option) +
+					5)) != NULL) {
+				(void) strcpy(new->option, "-no-");
+				(void) strcat(new->option, old->option + 1);
+			}
 		}
 
 		new->specifier = strrchr(old->specifier, '.');
@@ -295,15 +299,17 @@ pre_merge_options(void)
 	i = 0;
 
 	/* Put on the PROGCLASS.background/foreground resources. */
-	s = (char *) malloc(50);
-	(void) strlcpy(s, progclass, 50);
-	(void) strlcat(s, ".background: black", 50);
-	defaults[i++] = s;
+	if ((s = (char *) malloc(50)) != NULL) {
+		(void) strlcpy(s, progclass, 50);
+		(void) strlcat(s, ".background: black", 50);
+		defaults[i++] = s;
+	}
 
-	s = (char *) malloc(50);
-	(void) strlcpy(s, progclass, 50);
-	(void) strlcat(s, ".foreground: white", 50);
-	defaults[i++] = s;
+	if ((s = (char *) malloc(50)) != NULL) {
+		(void) strlcpy(s, progclass, 50);
+		(void) strlcat(s, ".foreground: white", 50);
+		defaults[i++] = s;
+	}
 
 	/* Copy the lines out of the `app_defaults' var and into this array. */
 	s = strdup(app_defaults);
@@ -322,13 +328,14 @@ pre_merge_options(void)
 			def = "False";
 		if (def == ((char *) 1))
 			def = "True";
-		s = (char *) malloc(strlen(xlockmore_opts->vars[j].name) +
-				    strlen(def) + 10);
-		(void) strcpy(s, "*");
-		(void) strcat(s, xlockmore_opts->vars[j].name);
-		(void) strcat(s, ": ");
-		(void) strcat(s, def);
-		defaults[i++] = s;
+		if ((s = (char *) malloc(strlen(xlockmore_opts->vars[j].name) +
+				    strlen(def) + 10)) != NULL) {
+			(void) strcpy(s, "*");
+			(void) strcat(s, xlockmore_opts->vars[j].name);
+			(void) strcat(s, ": ");
+			(void) strcat(s, def);
+			defaults[i++] = s;
+		}
 	}
 
 	defaults[i] = 0;
@@ -424,33 +431,35 @@ xlockmore_screenhack(Display * dpy, Window window,
 		else if (mi.npixels > 256)
 			mi.npixels = 256;
 
-		mi.colors = (XColor *) calloc(mi.npixels, sizeof (*mi.colors));
-
 		mi.writable_p = want_writable_colors;
+		if ((mi.colors = (XColor *) calloc(mi.npixels,
+			sizeof (*mi.colors))) != NULL) {
 
-		if (want_uniform_colors)
-			make_uniform_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
+			if (want_uniform_colors)
+				make_uniform_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
 					      mi.colors, &mi.npixels,
 					      True, &mi.writable_p, True);
-		else if (want_smooth_colors)
-			make_smooth_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
+			else if (want_smooth_colors)
+				make_smooth_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
 					     mi.colors, &mi.npixels,
 					     True, &mi.writable_p, True);
-		else
-			make_random_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
+			else
+				make_random_colormap(dpy, mi.xgwa.visual, mi.xgwa.colormap,
 					     mi.colors, &mi.npixels,
 					     want_bright_colors,
 					     True, &mi.writable_p, True);
+		}
 
 		if (mi.npixels <= 2)
 			goto MONO;
 		else {
-			int         i;
+			if ((mi.pixels = (unsigned long *)
+				calloc(mi.npixels, sizeof (*mi.pixels))) != NULL) {
+				int         i;
 
-			mi.pixels = (unsigned long *)
-				calloc(mi.npixels, sizeof (*mi.pixels));
-			for (i = 0; i < mi.npixels; i++)
-				mi.pixels[i] = mi.colors[i].pixel;
+				for (i = 0; i < mi.npixels; i++)
+					mi.pixels[i] = mi.colors[i].pixel;
+			}
 		}
 	}
 
@@ -514,6 +523,7 @@ xlockmore_screenhack(Display * dpy, Window window,
 						  mi.xgwa.colormap);
 
 	mi.wireframe_p = get_boolean_resource("wireframe", "Boolean");
+        mi.fps_p = get_boolean_resource("showfps", "Boolean");
 	mi.verbose = get_boolean_resource("verbose", "Boolean");
 
 	mi.root_p = (window == RootWindowOfScreen(mi.xgwa.screen));
@@ -538,7 +548,7 @@ xlockmore_screenhack(Display * dpy, Window window,
 		hack_draw(&mi);
 		XSync(dpy, False);
 		if (mi.pause)
-			usleep(mi.pause);
+			(void) usleep(mi.pause);
 		mi.pause = orig_pause;
 
 		if (hack_free) {
@@ -591,10 +601,23 @@ extern int  XHPEnableReset(Display * dsp);
 #endif
 #ifdef USE_DPMS
 #define MIN_DPMS 30		/* 30 second minimum */
+#if 1
+#include <X11/Xmd.h>
+#include <X11/Xdmcp.h>
+#include <X11/extensions/dpms.h>
+#ifdef SunCplusplus 
+extern unsigned char DPMSQueryExtension(Display *, int *, int *);
+extern int  DPMSGetTimeouts(Display *, unsigned short *, unsigned short *, unsigned short *);
+extern int  DPMSSetTimeouts(Display *, unsigned short, unsigned short, unsigned short);
+extern int  DPMSCapable(Display *);
+extern int  DPMSInfo(Display *, CARD16 *, BOOL *);
+#endif
+#else /* XFree86 < 4.x */
 #include <X11/extensions/dpms.h>
 extern unsigned char DPMSQueryExtension(Display *, int *, int *);
 extern int  DPMSGetTimeouts(Display *, unsigned short *, unsigned short *, unsigned short *);
 extern int  DPMSSetTimeouts(Display *, unsigned short, unsigned short, unsigned short);
+#endif
 extern int  dpmsstandby;
 extern int  dpmssuspend;
 extern int  dpmsoff;
@@ -627,7 +650,6 @@ struct itmlst_3 {
 #include <floatingpoint.h>
 #endif
 
-extern char *getenv(const char *);
 extern void checkResources(void);
 extern void defaultVisualInfo(Display * display, int screen);
 
@@ -637,7 +659,11 @@ extern int  usleep(unsigned int);
 #endif
 
 #if defined( USE_AUTO_LOGOUT ) || defined( USE_BUTTON_LOGOUT )
-extern void logoutUser(Display * display);
+extern void logoutUser(Display * display
+#ifdef CLOSEDOWN_LOGOUT
+ , int screens
+#endif
+);
 
 #endif
 
@@ -722,6 +748,10 @@ extern int  nicelevel;
 extern int  lockdelay;
 extern int  timeout;
 extern Bool wireframe;
+#ifdef USE_GL
+extern Bool showfps;
+extern Bool fpsTop;
+#endif
 extern Bool use3d;
 
 extern char *fontname;
@@ -761,7 +791,7 @@ extern char *invalidsound;
 extern char *welcomesound;
 extern char *shutdownsound;
 #endif
-extern void play_sound(char *string);
+extern void play_sound(char *string, Bool verbose);
 #ifdef USE_ESOUND
 extern int init_sound(void);
 extern void shutdown_sound(void);
@@ -827,7 +857,7 @@ static char *plantext[TEXTLINES + 1];	/* Message is stored here */
 /* GEOMETRY STUFF */
 static int  sizeconfiguremask;
 static XWindowChanges minisizeconfigure;
-static int  fullscreen = False;
+static Bool fullscreen = False;
 
 #if defined( USE_AUTO_LOGOUT ) || defined( USE_BUTTON_LOGOUT )
 static int  tried_logout = 0;
@@ -890,7 +920,7 @@ extern void dovtunlock(void);	/* & undo it functions */
 
 static int  signalUSR1 = 0;
 static int  signalUSR2 = 0;
-char        old_default_mode[20] = "";
+char * old_default_mode = NULL;
 
 #define AllPointerEventMask \
 	(ButtonPressMask | ButtonReleaseMask | \
@@ -956,6 +986,9 @@ syslogStop(char *displayName)
 }
 
 #endif
+
+#define ERROR_BUF 2048
+char error_buf[ERROR_BUF];
 
 void
 error(const char *buf)
@@ -1025,7 +1058,49 @@ SetDPMS(Display * display, int nstandby, int nsuspend, int noff)
 					(noff <= 0 ? 0 : (noff > MIN_DPMS ? noff : MIN_DPMS)));
 	}
 }
+
+static int
+monitor_powered_on_p(Display *dpy)
+{
+  int result;
+  int event_number, error_number;
+  BOOL onoff = False;
+  CARD16 state;
+
+  if (!DPMSQueryExtension(dpy, &event_number, &error_number))
+    /* DPMS extention is not supported */
+    result = True;
+
+  else if (!DPMSCapable(dpy))
+    /* Monitor is incapable of DPMS */
+    result = True;
+
+  else
+    {
+      DPMSInfo(dpy, &state, &onoff);
+      if (!onoff)
+	/*  DPMS is disabled */
+	result = True;
+      else {
+	switch (state) {
+	case DPMSModeOn:      result = True;  break;
+	case DPMSModeStandby: result = False; break;
+	case DPMSModeSuspend: result = False; break;
+	case DPMSModeOff:     result = False; break;
+	default:	      result = True;  break;
+	}
+      }
+    }
+  return result;
+}
+#else
+static int
+monitor_powered_on_p(Display *dpy)
+{
+  return 1;
+}
 #endif
+
 
 /*-
  * Simple wrapper to get an asynchronous grab on the keyboard and mouse. If
@@ -1038,7 +1113,6 @@ static void
 GrabKeyboardAndMouse(Display * display, Window window)
 {
 	Status      status;
-	char       *buf = NULL;
 
 	status = XGrabKeyboard(display, window, True,
 			       GrabModeAsync, GrabModeAsync, CurrentTime);
@@ -1048,28 +1122,28 @@ GrabKeyboardAndMouse(Display * display, Window window)
 				  GrabModeAsync, GrabModeAsync, CurrentTime);
 
 		if (status != GrabSuccess) {
-			buf = (char *) malloc(strlen(ProgramName) + 80);
-			(void) sprintf(buf, "%s, could not grab keyboard! (%d)\n",
-				       ProgramName, status);
-			error(buf);
-			(void) free((void *) buf);	/* Should never get here */
+			(void) sprintf(error_buf,
+				"%s, could not grab keyboard! (%d)\n",
+				(strlen(ProgramName) < ERROR_BUF - 80) ?
+				ProgramName : "xlock", status);
+			error(error_buf);
 		}
 	}
-	status = XGrabPointer(display, window, True, (unsigned int) AllPointerEventMask,
-			      GrabModeAsync, GrabModeAsync, None, mycursor,
-			      CurrentTime);
+	status = XGrabPointer(display, window, True,
+		(unsigned int) AllPointerEventMask, GrabModeAsync,
+		GrabModeAsync, None, mycursor, CurrentTime);
 	if (status != GrabSuccess) {
 		(void) sleep(1);
-		status = XGrabPointer(display, window, True, (unsigned int) AllPointerEventMask,
-				GrabModeAsync, GrabModeAsync, None, mycursor,
-				      CurrentTime);
+		status = XGrabPointer(display, window, True,
+			(unsigned int) AllPointerEventMask, GrabModeAsync,
+			GrabModeAsync, None, mycursor, CurrentTime);
 
 		if (status != GrabSuccess) {
-			buf = (char *) malloc(strlen(ProgramName) + 80);
-			(void) sprintf(buf, "%s, could not grab pointer! (%d)\n",
-				       ProgramName, status);
-			error(buf);
-			(void) free((void *) buf);	/* Should never get here */
+			(void) sprintf(error_buf,
+				"%s, could not grab pointer! (%d)\n",
+				(strlen(ProgramName) < ERROR_BUF - 80) ?
+				ProgramName : "xlock", status);
+			error(error_buf);
 		}
 	}
 }
@@ -1080,8 +1154,9 @@ static void
 ChangeGrabbedCursor(Display * display, Window window, Cursor cursor)
 {
 	if (!debug && grabmouse && !inwindow && !inroot)
-		(void) XGrabPointer(display, window, True, (unsigned int) AllPointerEventMask,
-		    GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
+		(void) XGrabPointer(display, window, True,
+			(unsigned int) AllPointerEventMask, GrabModeAsync,
+			GrabModeAsync, None, cursor, CurrentTime);
 }
 
 /*-
@@ -1198,6 +1273,9 @@ mode_info(Display * display, int scrn, Window window, int iconic)
 		MI_SET_FLAG_STATE(mi, WI_FLAG_VERBOSE, verbose);
 		MI_SET_FLAG_STATE(mi, WI_FLAG_FULLRANDOM, False);
 		MI_SET_FLAG_STATE(mi, WI_FLAG_WIREFRAME, wireframe);
+#ifdef USE_GL
+		MI_SET_FLAG_STATE(mi, WI_FLAG_FPS, showfps);
+#endif
 		MI_SET_FLAG_STATE(mi, WI_FLAG_INFO_INITTED, True);
 		MI_IS_DRAWN(mi) = False;
 	}
@@ -1327,6 +1405,8 @@ finish(Display * display, Bool closeDisplay)
 		XSetScreenSaver(display, sstimeout, ssinterval, ssblanking, ssexposures);
 	}
 	XFlush(display);
+#if 0
+/* Report that this gives "bad file descriptor" on XFree86 4.x */
 #ifndef __sgi
   /*-
    * The following line seems to cause a core dump on the SGI.
@@ -1335,13 +1415,20 @@ finish(Display * display, Bool closeDisplay)
 	if (closeDisplay)
 		(void) XCloseDisplay(display);
 #endif
+#endif
+#ifdef VMS
 	(void) nice(0);
+#endif
 #ifdef USE_VTLOCK
 	/* EL - RCS : Unlock VT switching */
 	if (vtlock && vtlocked)
 		dovtunlock();
 #endif
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static int
 xio_error(Display * d)
@@ -1352,9 +1439,17 @@ xio_error(Display * d)
 		exit(0);
 	}
 #endif
-	error("xio_error\n");
+	(void) sprintf(error_buf,
+		"%s, xio_error\n",
+		(strlen(ProgramName) < ERROR_BUF - 80) ?
+		ProgramName : "xlock");
+	error(error_buf);
 	return ((debug) ? 0 : 1);	/* suppress message unless debugging */
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 /* Convenience function for drawing text */
 static void
@@ -1404,6 +1499,10 @@ putText(Display * display, Window window, GC gc,
 	*py = y;
 }
 
+#ifdef JP
+#include "xlock-msg-jp.h"
+#endif
+
 static void
 statusUpdate(int isnew, int scr)
 {
@@ -1447,19 +1546,18 @@ statusUpdate(int isnew, int scr)
 #ifdef DE
 				       "Seit %d Minute%s gesperrt.                                  \n",
 				       len, len <= 1 ? "" : "n"
-#else
-#ifdef FR
+#elif defined FR
 				       "%d minute%s écoulée%s depuis verrouillage.                      \n",
 				len, len <= 1 ? "" : "s", len <= 1 ? "" : "s"
-#else
-#ifdef NL
+#elif defined NL
 				       "%d minute%s op slot.                                        \n",
 				       len, len <= 1 ? "" : "n"
+#elif defined JP
+				       JP_TIME_ELAPSSED_MINUTES,
+				       len
 #else
 				       "%d minute%s elapsed since locked.                           \n",
 				       len, len <= 1 ? "" : "s"
-#endif
-#endif
 #endif
 				);
 		else
@@ -1467,19 +1565,18 @@ statusUpdate(int isnew, int scr)
 #ifdef DE
 				       "Seit %d:%02d Stunden gesperrt.                                 \n",
 				       len / 60, len % 60
-#else
-#ifdef FR
+#elif defined FR
 				       "%d:%02d heures écoulée%s depuis verouillage.                        \n",
 			       len / 60, len % 60, (len / 60) <= 1 ? "" : "s"
-#else
-#ifdef NL
+#elif defined NL
 				       "%d:%02d uur op slot.                                           \n",
+				       len / 60, len % 60
+#elif defined JP
+				       JP_TIME_ELAPSSED_HOURS,
 				       len / 60, len % 60
 #else
 				       "%d:%02d hours elapsed since locked.                            \n",
 				       len / 60, len % 60
-#endif
-#endif
 #endif
 				);
 		putText(dsp, Scr[scr].window, Scr[scr].textgc, buf, False, left, &x, &y);
@@ -1494,53 +1591,39 @@ statusUpdate(int isnew, int scr)
 #ifdef DE
 					       "In %d Minute%s erscheint der Auslogger.                       \n",
 					       tmp, (tmp <= 1) ? "" : "n"
-#else
-#ifdef FR
+#elif defined FR
 					       "%d minute%s jusqu'à apparition du bouton lougout.             \n",
 					       tmp, (tmp <= 1) ? "" : "s"
-#else
-#ifdef NL
+#elif defined NL
 					       "Over %d minute%s verschijnt de logout knop.                   \n",
 					       tmp, (tmp <= 1) ? "" : "n"
+#elif defined JP
+					       JP_BUTTON_MINUTES,
+					       tmp
 #else
 					       "%d minute%s until the public logout button appears.           \n",
 					       tmp, (tmp <= 1) ? "" : "s"
-#endif
-#endif
 #endif
 					);
 			else
 				(void) sprintf(buf,
 #ifdef DE
 					       "In %d:%02d Stunden erscheint der Auslogger.                 \n",
-#else
-#ifdef FR
+#elif defined FR
 					       "%d:%02d heures jusqu'à apparition du bouton lougout         \n",
-#else
-#ifdef NL
+#elif defined NL
 					       "Over %d:%02d uur verschijnt de logout knop.                 \n",
+#elif defined JP
+					       JP_BUTTON_HOURS,
 #else
 					       "%d:%02d hours until the public logout button appears.       \n",
-#endif
-#endif
 #endif
 					       tmp / 60, tmp % 60);
 			putText(dsp, Scr[scr].window, Scr[scr].textgc, buf, False, left, &x, &y);
 		} else {
+			/* Erase previous logout button message */
 			putText(dsp, Scr[scr].window, Scr[scr].textgc,
-#ifdef DE
-				"Werft mich raus                                              \n",
-#else
-#ifdef FR
-				"Jettes moi                                                   \n",
-#else
-#ifdef NL
-				"Schop me eruit                                               \n",
-#else
-				"Kick me out                                                  \n",
-#endif
-#endif
-#endif
+				"                                                             \n",
 				False, left, &x, &y);
 			if (!made_button || (isnew && tried_logout)) {
 				made_button = 1;
@@ -1583,16 +1666,24 @@ statusUpdate(int isnew, int scr)
 		if (tmp < 60)
 			(void) sprintf(buf,
 #ifdef FR
-				  "%d minute%s jusqu'à l'auto-logout.    \n",
+				       "%d minute%s jusqu'à l'auto-logout.    \n",
+				       tmp, (tmp <= 1) ? "" : "s"
+#elif defined JP
+				       JP_AUTOLOGOUT_MINUTES,
+				       tmp
 #else
 				       "%d minute%s until auto-logout.    \n",
+				       tmp, (tmp <= 1) ? "" : "s"
 #endif
-				       tmp, (tmp <= 1) ? "" : "s");
+				);
 		else
 			(void) sprintf(buf,
 #ifdef FR
-				  "%d:%02d heure%s jusqu'à auto-logout.  \n",
-			       tmp / 60, tmp % 60, (tmp / 60) <= 1 ? "" : "s"
+				       "%d:%02d heure%s jusqu'à auto-logout.  \n",
+				       tmp / 60, tmp % 60, (tmp / 60) <= 1 ? "" : "s"
+#elif defined JP
+				       JP_AUTOLOGOUT_HOURS,
+				       tmp / 60, tmp % 60
 #else
 				       "%d:%02d hours until auto-logout.  \n",
 				       tmp / 60, tmp % 60
@@ -1612,7 +1703,11 @@ checkLogout(Display * display)
 	if (logoutAuto * 60 < (int) (seconds() - start_time)) {
 		tried_logout = 1;
 		logoutAuto = 0;
-		logoutUser(display);
+		logoutUser(display
+#ifdef CLOSEDOWN_LOGOUT
+ , screens
+#endif
+		);
 	}
 }
 
@@ -1656,6 +1751,7 @@ runMainLoop(int maxtime, int iconscreen)
 {
 	static int  lastdelay = -1, lastmaxtime = -1;
 	int         fd = ConnectionNumber(dsp), r;
+        int         poweron=True;
 	struct timeval sleep_time, first, repeat, elapsed, tmp;
 	fd_set      reads;
 	unsigned long started;
@@ -1677,6 +1773,9 @@ runMainLoop(int maxtime, int iconscreen)
 	started = seconds();
 
 	for (;;) {
+	        poweron= monitor_powered_on_p(dsp);
+                if(!poweron) usleep(100000);
+
 		if (signalUSR1 || signalUSR2) {
 			int         i;
 
@@ -1728,7 +1827,7 @@ runMainLoop(int maxtime, int iconscreen)
 		/* subtract time spent doing last loop iteration */
 		sub_timers(&sleep_time, &elapsed, &sleep_time);
 
-		FD_ZERO(&reads);
+		/* (void) */ FD_ZERO(&reads);
 		FD_SET(fd, &reads);
 #ifdef VMS
 		/* Seems to work for UNIX to but... */
@@ -1787,13 +1886,14 @@ runMainLoop(int maxtime, int iconscreen)
 					cbwin = Scr[screen].window;
 					iconic = False;
 				}
-				if (cbwin != None) {
+				if (cbwin != None && poweron) {
 					mi = mode_info(dsp, screen, cbwin, iconic);
 					call_callback_hook((LockStruct *) NULL, mi);
 				}
 			}
-
-			XSync(dsp, False);
+			
+			if(poweron) XSync(dsp, False);
+			else usleep(100000);
 
 			/* check for events received during the XSync() */
 			if (QLength(dsp)) {
@@ -1958,7 +2058,11 @@ ReadXString(char *s, int slen
 						       0, 0, 500, 100);
 					XSync(dsp, False);
 					tried_logout = 1;
-					logoutUser(dsp);
+					logoutUser(dsp
+#ifdef CLOSEDOWN_LOGOUT
+ , screens
+#endif
+					);
 					XSetFunction(dsp, Scr[screen].gc, GXcopy);
 				}
 #endif
@@ -1989,7 +2093,7 @@ ReadXString(char *s, int slen
 				/* window config changed */
 				if (!debug && !inwindow) {
 					XRaiseWindow(dsp, event.xconfigure.window);
-					fixColormap(dsp, Scr[screen].window, screen, ncolors,
+					fixColormap(mode_info(dsp, screen, Scr[screen].window, False), ncolors,
 						saturation, mono, install, inroot, inwindow, verbose);
 				}
 				if (window_size_changed(screen, Scr[screen].window)) {
@@ -2074,7 +2178,9 @@ getPassword(void)
 			unsetenv("MESA_GLX_FX");
 		}
 #endif
+#ifdef VMS
 	(void) nice(0);
+#endif
 	if (!fullscreen)
 		XConfigureWindow(dsp, Scr[screen].window, sizeconfiguremask,
 				 &(Scr[screen].fullsizeconfigure));
@@ -2095,7 +2201,8 @@ getPassword(void)
 	x = left = Scr[screen].iconpos.x + iconwidth + font->max_bounds.width;
 	y = Scr[screen].iconpos.y + font->ascent;
 
-	if ((hostbuf = (char *) malloc(strlen(user) + strlen(hostname) + 2)) != NULL) {
+	if ((hostbuf = (char *) malloc(strlen(user) + strlen(hostname) +
+			2)) != NULL) {
 		(void) sprintf(hostbuf, "%s@%s", user, hostname);
 
 		putText(dsp, Scr[screen].window, Scr[screen].textgc, text_user, True, left, &x, &y);
@@ -2263,7 +2370,7 @@ getPassword(void)
 	while (!done) {
 #ifdef USE_SOUND
 		if (sound && !got_invalid) {
-			play_sound(infosound);
+			play_sound(infosound, verbose);
 		}
 		got_invalid = 0;
 #endif
@@ -2364,7 +2471,7 @@ getPassword(void)
 		if (done) {
 #ifdef USE_SOUND
 			if (sound)
-				play_sound(validsound);
+				play_sound(validsound, verbose);
 #endif
 			XFillRectangle(dsp, Scr[screen].window, Scr[screen].gc,
 				     Scr[screen].iconpos.x, y - font->ascent,
@@ -2401,7 +2508,7 @@ getPassword(void)
 				       font->ascent + font->descent + 2);
 #ifdef USE_SOUND
 			if (sound)
-				play_sound(invalidsound);
+				play_sound(invalidsound, verbose);
 			got_invalid = 1;
 #endif
 		}
@@ -2414,7 +2521,9 @@ getPassword(void)
 	if (!fullscreen)
 		XConfigureWindow(dsp, Scr[screen].window, sizeconfiguremask,
 				 &minisizeconfigure);
+#ifdef VMS
 	(void) nice(nicelevel);
+#endif
 #ifdef FX
 	if (mesa_3Dfx_fullscreen)
 		setenv("MESA_GLX_FX", "fullscreen", 0);
@@ -2441,7 +2550,7 @@ justDisplay(Display * display)
 	int         timetodie = False;
 	int         not_done = True;
 	XEvent      event;
-
+        
 #ifdef USE_VTLOCK
         /* EL - RCS : lock VT switching */
 	/*
@@ -2479,7 +2588,6 @@ justDisplay(Display * display)
 #endif /* !USE_OLD_EVENT_LOOP */
 		}
 		(void) XNextEvent(display, &event);
-
 		/*
 		 * This event handling code should be unified with the
 		 * similar code in ReadXString().
@@ -2505,10 +2613,10 @@ justDisplay(Display * display)
 				if (!debug && !inwindow) {
 					XRaiseWindow(display, event.xconfigure.window);
 				}
+
 				for (screen = startscreen; screen < screens; screen++) {
 					if (install)
-						fixColormap(display, Scr[screen].window,
-							screen, ncolors, saturation,
+						fixColormap(mode_info(dsp, screen, Scr[screen].window, False), ncolors, saturation,
 							mono, install, inroot, inwindow, verbose);
 					if (window_size_changed(screen, Scr[screen].window)) {
 						call_init_hook((LockStruct *) NULL,
@@ -2565,23 +2673,29 @@ justDisplay(Display * display)
 	return timetodie;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static void
 sigcatch(int signum)
 {
 	ModeInfo   *mi = mode_info(dsp, startscreen, Scr[startscreen].window, False);
 	const char       *name = (mi == NULL) ? "unknown" : MI_NAME(mi);
-	char       *buf;
-
 
 	finish(dsp, True);
-	buf = (char *) malloc(strlen(ProgramName) + strlen(name) + 160);
-	(void) sprintf(buf,
-		       "Access control list restored.\n%s: caught signal %d while running %s mode (uid %ld).\n",
-		       ProgramName, signum, name, (long) getuid());
-	error(buf);
-	(void) free((void *) buf);	/* Should never get here */
+	(void) sprintf(error_buf,
+		"Access control list restored.\n%s: caught signal %d while running %s mode (uid %ld).\n",
+		(strlen(ProgramName) < ERROR_BUF - 120) ?
+		ProgramName: "xlock", signum,
+		(strlen(ProgramName) + strlen(name) < ERROR_BUF - 120) ?
+		name: "?", (long) getuid());
+	error(error_buf);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 static void
 lockDisplay(Display * display, Bool do_display)
@@ -2596,7 +2710,7 @@ lockDisplay(Display * display, Bool do_display)
 #endif
 #ifdef USE_SOUND
 	if (sound && !inwindow && !inroot && !lockdelay)
-		play_sound(locksound);
+		play_sound(locksound, verbose);
 #endif
 	if (!allowaccess) {
 #if defined( SYSV ) || defined( SVR4 ) || ( __VMS_VER >= 70000000 )
@@ -2630,16 +2744,17 @@ lockDisplay(Display * display, Bool do_display)
 #endif
 #endif
 
+		/* (void (*)(int)) sigcatch */
 #ifndef DEBUG
-		(void) signal(SIGHUP, (void (*)(int)) sigcatch);
+		(void) signal(SIGHUP, sigcatch);
 #endif
-		(void) signal(SIGINT, (void (*)(int)) sigcatch);
-		(void) signal(SIGQUIT, (void (*)(int)) sigcatch);
-		(void) signal(SIGTERM, (void (*)(int)) sigcatch);
+		(void) signal(SIGINT, sigcatch);
+		(void) signal(SIGQUIT, sigcatch);
+		(void) signal(SIGTERM, sigcatch);
 		/* we should trap ALL signals, especially the deadly ones */
-		(void) signal(SIGSEGV, (void (*)(int)) sigcatch);
-		(void) signal(SIGBUS, (void (*)(int)) sigcatch);
-		(void) signal(SIGFPE, (void (*)(int)) sigcatch);
+		(void) signal(SIGSEGV, sigcatch);
+		(void) signal(SIGBUS, sigcatch);
+		(void) signal(SIGFPE, sigcatch);
 
 		if (grabserver)
 			XGrabServer(display);
@@ -2677,13 +2792,17 @@ read_plan(void)
 	if (!home)
 		home = "";
 
+	if ((buffer = (char *) malloc(
 #if ( __VMS_VER >= 70000000 )
-	buffer = (char *) malloc(255);
+	255
 
 #else
-	buffer = (char *) malloc(strlen(home) + 32);
+	strlen(home) + 32
 
 #endif
+	)) == NULL) {
+		error("low memory for plan");
+	}
 
 #ifdef VMS
 	(void) sprintf(buffer, "%s%s", home, ".xlocktext");
@@ -2705,12 +2824,15 @@ read_plan(void)
 #else
 #if ( __VMS_VER >= 70000000 )
 /* Get signature file for VMS 7.0 and higher */
-		char       *buffer1 = (char *) malloc(256);
+		char       *buffer1;
 		unsigned int ival;
 		unsigned long int mail_context = 0;
 		unsigned short int buflen, buflen1;
 		struct itmlst_3 item[2], itm_d[1];
 
+		if ((buffer1 = (char *) malloc(256)) == NULL) {
+			error("low memory for signature");
+		}
 		itm_d[0].buflen = 0;
 		itm_d[0].itmcode = 0;
 		item[0].buflen = 255;
@@ -2756,7 +2878,9 @@ read_plan(void)
 					}
 				}
 
-				plantext[i] = (char *) malloc(strlen(buf) + 1);
+				if ((plantext[i] = (char *) malloc(strlen(buf) + 1)) == NULL) {
+					error("low memory for plan");
+				}
 				(void) strcpy(plantext[i], buf);
 			}
 		}
@@ -2788,6 +2912,10 @@ createFontSet(Display * display, char *name)
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void SigUsr2(int sig);
 
 static void
@@ -2816,6 +2944,10 @@ SigUsr2(int sig)
 	(void) signal(SIGUSR2, SigUsr2);
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 int
 main(int argc, char **argv)
 {
@@ -2823,7 +2955,6 @@ main(int argc, char **argv)
 	XGCValues   xgcv;
 	XColor      nullcolor;
 	char      **planp;
-	char       *buf;
 	int         tmp;
 	uid_t       ruid;
 	pid_t       cmd_pid = 0;
@@ -2835,6 +2966,7 @@ main(int argc, char **argv)
 	static int  old_sigmask;
 
 #endif
+
 
 #ifdef USE_MB
 	setlocale(LC_ALL, "");
@@ -2917,8 +3049,9 @@ main(int argc, char **argv)
  * That means other parts will be running setgid as well.
  */
 
-#if 1				/* Change 1 to 0 */
-	UNTESTED    CODE, COMMENT OUT AND SEE IF IT WORKS, PLEASE GET BACK TO ME
+#if 1
+	/* Change 1 to 0 */
+	UNTESTED CODE, COMMENT OUT AND SEE IF IT WORKS, PLEASE GET BACK TO ME
 #endif
 
 #ifdef HAVE_SETEUID
@@ -2959,8 +3092,9 @@ main(int argc, char **argv)
 		(void) setuid(ruid);
 
 #if 0
-	/* synchronize -- so I'm aware of errors immediately */
+	/* synchronize -- so I am aware of errors immediately */
 	/* Too slow only for debugging */
+	(void) printf("DEBUGGING: XSynchronize version\n");
 	XSynchronize(dsp, True);
 #endif
 
@@ -2976,12 +3110,13 @@ main(int argc, char **argv)
 			       ProgramName, fontname, FALLBACK_FONTNAME);
 		font = XLoadQueryFont(dsp, FALLBACK_FONTNAME);
 		if (font == NULL) {
-			buf = (char *) malloc(strlen(ProgramName) +
-					      strlen(FALLBACK_FONTNAME) + 80);
-			(void) sprintf(buf,
-				       "%s: can not even find %s!!!\n", ProgramName, FALLBACK_FONTNAME);
-			error(buf);
-			(void) free((void *) buf);	/* Should never get here */
+			(void) sprintf(error_buf,
+				"%s: can not even find %s!!!\n",
+				(strlen(ProgramName) < ERROR_BUF - 80) ?
+				ProgramName : "xlock",
+				(strlen(ProgramName) + strlen(FALLBACK_FONTNAME) < ERROR_BUF - 80) ?
+				FALLBACK_FONTNAME: "a font");
+			error(error_buf);
 		}
 	} {
 		int         flags, x, y;
@@ -3038,19 +3173,24 @@ main(int argc, char **argv)
 			       ProgramName, planfontname, FALLBACK_FONTNAME);
 		planfont = XLoadQueryFont(dsp, FALLBACK_FONTNAME);
 		if (planfont == NULL) {
-			buf = (char *) malloc(strlen(ProgramName) +
-					      strlen(FALLBACK_FONTNAME) + 80);
-			(void) sprintf(buf,
-				       "%s: can not even find %s!!!\n", ProgramName, FALLBACK_FONTNAME);
-			error(buf);
-			(void) free((void *) buf);	/* Should never get here */
+			(void) sprintf(error_buf,
+				"%s: can not even find %s!!!\n",
+				(strlen(ProgramName) < ERROR_BUF - 80) ?
+				ProgramName : "xlock",
+				(strlen(ProgramName) + strlen(FALLBACK_FONTNAME) < ERROR_BUF - 80) ?
+				FALLBACK_FONTNAME: "a font");
+			error(error_buf);
 		}
 	}
 	read_plan();
 
 	screens = ScreenCount(dsp);
-	modeinfo = (ModeInfo *) calloc(screens, sizeof (ModeInfo));
-	Scr = (ScreenInfo *) calloc(screens, sizeof (ScreenInfo));
+	if (((modeinfo = (ModeInfo *) calloc(screens,
+			sizeof (ModeInfo))) == NULL) ||
+	    ((Scr = (ScreenInfo *) calloc(screens,
+			sizeof (ScreenInfo))) == NULL)) {
+		error("low memory for info");
+	}
 
 #ifdef FORCESINGLE
 	/* Safer to keep this after the calloc in case ScreenCount is used */
@@ -3059,7 +3199,7 @@ main(int argc, char **argv)
 #endif
 
 #if defined( USE_SOUND ) && defined( USE_ESOUND )
-        sound =( init_sound() != -1 );
+        sound = (sound && (init_sound() != -1));
 #endif
 
 #ifdef USE_DTSAVER
@@ -3075,21 +3215,21 @@ main(int argc, char **argv)
 
 		/* Get the list of requested windows */
 		if (!DtSaverGetWindows(dsp, &saver_wins, &num_wins)) {
-			buf = (char *) malloc(strlen(ProgramName) + 80);
-			(void) sprintf(buf,
-				       "%s: Unable to get screen saver info.\n", ProgramName);
-			error(buf);
-			(void) free((void *) buf);	/* Should never get here */
+			(void) sprintf(error_buf,
+				"%s: Unable to get screen saver info.\n",
+				(strlen(ProgramName) < ERROR_BUF - 80) ?
+				ProgramName : "xlock");
+			error(error_buf);
 		}
 		for (this_win = 0; this_win < num_wins; this_win++) {
 			(void) XGetWindowAttributes(dsp, saver_wins[this_win], &xgwa);
 			this_screen = XScreenNumberOfScreen(xgwa.screen);
 			if (Scr[this_screen].window != None) {
-				buf = (char *) malloc(strlen(ProgramName) + 80);
-				(void) sprintf(buf,
-					       "%s: Two windows on screen %d\n", ProgramName, this_screen);
-				error(buf);
-				(void) free((void *) buf);	/* Should never get here */
+				(void) sprintf(error_buf,
+					"%s: Two windows on screen %d\n",
+					(strlen(ProgramName) < ERROR_BUF - 80) ?
+					ProgramName : "xlock", this_screen);
+				error(error_buf);
 			}
 			Scr[this_screen].window = saver_wins[this_win];
 		}
@@ -3302,7 +3442,7 @@ main(int argc, char **argv)
 			}
 
 		}
-		fixColormap(dsp, Scr[screen].window, screen, ncolors, saturation,
+		fixColormap(mode_info(dsp, screen, Scr[screen].window, False), ncolors, saturation,
 			    mono, install, inroot, inwindow, verbose);
 		if (debug || inwindow) {
 			XWMHints    xwmh;
@@ -3368,11 +3508,17 @@ main(int argc, char **argv)
 							 CIMASK, &xswa);
 #ifdef USE_BUTTON_LOGOUT
 			{
-				char        buf[1024];
+				char       *buf;
 				int         w, h;
 
-				(void) sprintf(buf, " %s ", logoutButtonLabel);
-				w = XTextWidth(font, buf, strlen(buf));
+				if ((buf = (char *) malloc(strlen(logoutButtonLabel) +
+						 3)) == NULL) {
+					w = (strlen(logoutButtonLabel) + 5) * 8;
+				} else {
+					(void) sprintf(buf, " %s ", logoutButtonLabel);
+					w = XTextWidth(font, buf, strlen(buf));
+					(void) free((void *) buf);
+				}
 				h = font->ascent + font->descent + 2;
 				Scr[screen].button = XCreateWindow(dsp, Scr[screen].window,
 					 0, 0, w, h, 1, (int) CopyFromParent,
@@ -3551,5 +3697,13 @@ main(int argc, char **argv)
 	return 0;
 #endif
 }
+
+#if defined( __hpux ) || defined( __apollo )
+int
+_main(int argc, char **argv)
+{
+  main(argc, argv);
+}
+#endif
 
 #endif /* STANDALONE */

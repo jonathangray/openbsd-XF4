@@ -1,5 +1,5 @@
 !!!!
-! XLock: Class resource for xlock (xlockmore-4.14)
+! XLock: Class resource for xlock (xlockmore-5.01)
 !!!!
 XLock.mode: random
 !XLock.mode: blank
@@ -54,10 +54,10 @@ XLock.both3d: Magenta
 
 ! For marquee & nose modes
 !XLock.program: fortune -o
-!XLock.program: fortune -s
+XLock.program: fortune -s
 !XLock.program: fortune
 !XLock.program: /usr/games/fortune -o
-XLock.program: /usr/games/fortune -s
+!XLock.program: /usr/games/fortune -s
 !XLock.program: /usr/games/fortune
 !XLock.program: finger
 !XLock.messagesfile: fortune.dat
@@ -69,7 +69,6 @@ XLock.messagefont: -b&h-lucida-medium-r-normal-sans-24-*-*-*-*-*-iso8859-1
 ! For modes with images
 !XLock.*.bitmap: bitmaps/m-xlock.xbm
 !XLock.*.bitmap: pixmaps/m-xlock.xpm
-!XLock.*.bitmap: raster/scream.ras
 
 ! For mailbox check application
 !XLock.mailCmd: /usr/ucb/mail -e
@@ -84,7 +83,10 @@ XLock.logoutAuto: 0
 XLock.logoutButton: 0
 XLock.logoutButtonLabel: Click here to logout
 XLock.logoutButtonHelp: \
-You may log out this session if no terminals are available.
+You may log out this session if no terminals are available.\n\
+WARNING: This will crash any open applications that the user\n\
+has running. You should try to contact the user if possible\n\
+before logging them out.
 XLock.logoutFailedString: \
 Logout attempt FAILED.\n\
 Current user could not be automatically logged out.
@@ -101,7 +103,7 @@ XLock.ant.eyes: off
 XLock.ant.sharpturn: off
 ! ant neighbors (3, 4, 6, 8, 12, all else random)
 XLock.ant.neighbors: 0
-XLock.atlantis.delay: 1000
+XLock.atlantis.delay: 18000
 XLock.atlantis.count: 4
 XLock.atlantis.cycles: 250
 XLock.atlantis.size: 6000
@@ -150,16 +152,11 @@ XLock.bug.saturation: 1.0
 ! bug neighbors (3, 4, 6, 8, 12, all else random)
 XLock.bug.neighbors: 0
 XLock.bug.eyes: off
-XLock.cage.delay: 1000
+XLock.cage.delay: 25000
 !XLock.cage.count: 1
 !XLock.cage.cycles: 1
 !XLock.cage.size: 1
 XLock.cage.saturation: 1.0
-XLock.cartoon.delay: 10000
-!XLock.cartoon.count: 1
-!XLock.cartoon.cycles: 1
-!XLock.cartoon.size: 1
-XLock.cartoon.saturation: 1.0
 XLock.clock.delay: 100000
 XLock.clock.count: -16
 XLock.clock.cycles: 200
@@ -226,6 +223,11 @@ XLock.discrete.count: 4096
 XLock.discrete.cycles: 2500
 !XLock.discrete.size: 1
 XLock.discrete.saturation: 1.0
+XLock.dragon.delay: 2000000
+!XLock.dragon.count: 1
+XLock.dragon.cycles: 16
+XLock.dragon.size: -24
+XLock.dragon.saturation: 1.0
 XLock.drift.delay: 10000
 XLock.drift.count: 30
 !XLock.drift.cycles: 1
@@ -233,6 +235,11 @@ XLock.drift.count: 30
 XLock.drift.saturation: 1.0
 XLock.drift.grow: off
 XLock.drift.liss: off
+XLock.euler2d.delay: 1000
+XLock.euler2d.count: 1024 
+XLock.euler2d.cycles: 3000
+!XLock.euler2d.size: 1
+XLock.euler2d.saturation: 1.0
 XLock.eyes.delay: 20000
 XLock.eyes.count: -8
 XLock.eyes.cycles: 5
@@ -244,6 +251,17 @@ XLock.fadeplot.count: 10
 XLock.fadeplot.cycles: 1500
 !XLock.fadeplot.size: 1
 XLock.fadeplot.saturation: 0.6
+XLock.fire.delay: 10000
+XLock.fire.count: 800
+!XLock.fire.cycles: 1
+XLock.fire.size: 400
+XLock.fire.saturation: 1.0
+XLock.fire.texture: on
+XLock.fire.fog: off
+XLock.fire.shadows: on
+XLock.fire.framerate: off
+XLock.fire.trackmouse: off
+XLock.fire.trees: 5
 XLock.flag.delay: 50000
 !XLock.flag.count: 1
 XLock.flag.cycles: 1000
@@ -274,8 +292,13 @@ XLock.galaxy.tracks: off
 XLock.gears.delay: 1000
 XLock.gears.count: 1
 XLock.gears.cycles: 2
-!XLock.gears.size: 1
+XLock.gears.size: 0
 XLock.gears.saturation: 1.0
+XLock.gears.planetary: on
+XLock.gears.planetsize: 400
+XLock.glplanet.delay:1000
+XLock.glplanet.count: 1
+XLock.glplanet.cycles:2
 XLock.goop.delay: 10000
 XLock.goop.count: -5
 !XLock.goop.cycles: 1
@@ -335,8 +358,8 @@ XLock.image.count: -20
 !XLock.image.cycles: 1
 !XLock.image.size: 1
 XLock.image.saturation: 1.0
-XLock.juggle.delay: 2000
-XLock.juggle.count: 30
+XLock.juggle.delay: 10000
+XLock.juggle.count: 150
 XLock.juggle.cycles: 30
 !XLock.juggle.size: 1
 XLock.juggle.saturation: 1.0
@@ -364,6 +387,11 @@ XLock.kumppa.delay: 10000
 XLock.kumppa.saturation: 1.0
 XLock.kumppa.dbuf: off
 XLock.kumppa.rrandom: on
+XLock.lament.delay: 10000
+!XLock.lament.count: 1
+!XLock.lament.cycles: 1
+!XLock.lament.size: 1 
+XLock.lament.saturation: 1.0
 XLock.laser.delay: 20000
 XLock.laser.count: -10
 XLock.laser.cycles: 200
@@ -422,7 +450,7 @@ XLock.lissie.cycles: 2000
 XLock.lissie.size: -200
 XLock.lissie.saturation: 0.6
 XLock.loop.delay: 100000
-!XLock.loop.count: 1
+XLock.loop.count: -5
 XLock.loop.cycles: 1600
 XLock.loop.size: -12
 XLock.loop.saturation: 1.0
@@ -459,6 +487,12 @@ XLock.moebius.delay: 1000
 XLock.moebius.saturation: 1.0
 XLock.moebius.solidmoebius: off
 XLock.moebius.noants: off
+XLock.molecule.cycles: 20
+XLock.molecule.atoms: on
+XLock.molecule.bbox: off
+XLock.molecule.bonds: on
+XLock.molecule.labels: on
+XLock.molecule.titles: on
 XLock.morph3d.delay: 1000
 XLock.morph3d.count: 0
 !XLock.morph3d.cycles: 1
@@ -503,6 +537,11 @@ XLock.pipes.saturation: 1.0
 XLock.pipes.fisheye: on
 XLock.pipes.tightturns: off
 XLock.pipes.rotatepipes: on
+XLock.polyominoes.delay: 6000
+!XLock.polyominoes.count: 1
+XLock.polyominoes.cycles: 8192
+!XLock.polyominoes.size: 1
+XLock.polyominoes.saturation: 1.0
 XLock.puzzle.delay: 10000
 XLock.puzzle.count: 250
 !XLock.puzzle.cycles: 1
@@ -525,7 +564,7 @@ XLock.roll.count: 25
 !XLock.roll.cycles: 1
 XLock.roll.size: -64
 XLock.roll.saturation: 0.6
-XLock.rotor.delay: 500
+XLock.rotor.delay: 100
 XLock.rotor.count: 4
 XLock.rotor.cycles: 100
 XLock.rotor.size: -6
@@ -535,6 +574,20 @@ XLock.rubik.count: -30
 XLock.rubik.cycles: 5
 XLock.rubik.size: -6
 XLock.rubik.saturation: 1.0
+XLock.sballs.delay: 10000
+XLock.sballs.count: 0
+XLock.sballs.cycles: 10
+XLock.sballs.size: 400
+XLock.sballs.saturation: 1.0
+XLock.sballs.object: 0
+XLock.sballs.texture: on
+XLock.sballs.framerate: off
+XLock.sballs.trackmouse: off
+XLock.scooter.delay: 20000
+XLock.scooter.count: 24
+XLock.scooter.cycles: 3
+XLock.scooter.size: 100
+XLock.scooter.saturation: 1.0
 XLock.shape.delay: 10000
 !XLock.shape.count: 1
 XLock.shape.cycles: 256
@@ -548,6 +601,10 @@ XLock.sierpinski.count: 2000
 XLock.sierpinski.cycles: 100
 !XLock.sierpinski.size: 1
 XLock.sierpinski.saturation: 1.0
+XLock.sierpinski3d.delay: 10000
+XLock.sierpinski3d.maxdepth: 6
+XLock.sierpinski3d.speed: 150
+XLock.sierpinski3d.intensity: 2185
 XLock.slip.delay: 50000
 XLock.slip.count: 35
 XLock.slip.cycles: 50
@@ -558,6 +615,11 @@ XLock.solitare.delay: 2000000
 !XLock.solitare.cycles: 1
 !XLock.solitare.size: 1
 XLock.solitare.saturation: 1.0
+XLock.space.delay: 10000
+XLock.space.count: 100
+!XLock.space.cycles: 1
+!XLock.space.size: 1
+XLock.space.saturation: 1.0
 XLock.sphere.delay: 5000
 !XLock.sphere.count: 1
 !XLock.sphere.cycles: 1
@@ -615,9 +677,9 @@ XLock.superquadrics.cycles: 40
 XLock.superquadrics.saturation: 1.0
 XLock.superquadrics.spinspeed: 5.0
 XLock.swarm.delay: 15000
-XLock.swarm.count: 100
+XLock.swarm.count: -100
 !XLock.swarm.cycles: 1
-!XLock.swarm.size: 1
+XLock.swarm.size: -100
 XLock.swarm.saturation: 1.0
 XLock.swarm.trackmouse: off
 XLock.swirl.delay: 5000
@@ -633,9 +695,12 @@ XLock.t3d.saturation: 1.0
 XLock.tetris.delay: 50000
 !XLock.tetris.count: 1
 !XLock.tetris.cycles: 1
-XLock.tetris.size: 0
+XLock.tetris.size: -100
 XLock.tetris.saturation: 1.0
 XLock.tetris.cycle: on
+XLock.tetris.bonus: off
+XLock.tetris.trackmouse: off
+XLock.tetris.well: off
 XLock.thornbird.delay: 1000
 XLock.thornbird.count: 800
 XLock.thornbird.cycles: 16
@@ -698,6 +763,11 @@ XLock.worm.count: -20
 XLock.worm.cycles: 10
 XLock.worm.size: -3
 XLock.worm.saturation: 1.0
+XLock.xcl.delay: 20000
+XLock.xcl.count: -3
+!XLock.xcl.cycles: 1
+!XLock.xcl.size: 1
+XLock.xcl.saturation: 1.0
 XLock.xjack.delay: 50000
 !XLock.xjack.count: 1
 !XLock.xjack.cycles: 1

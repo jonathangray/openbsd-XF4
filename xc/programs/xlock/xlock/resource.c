@@ -70,39 +70,43 @@ static const char sccsid[] = "@(#)resource.c	4.08 98/08/04 xlockmore";
 #include "iostuff.h"
 #include "version.h"
 #if VMS
-#if ( __VMS_VER < 70000000 )
-#ifdef __DECC
-#define gethostname decc$gethostname
-#define gethostbyname decc$gethostbyname
+# if ( __VMS_VER < 70000000 )
+#  ifdef __DECC
+#   define gethostname decc$gethostname
+#   define gethostbyname decc$gethostbyname
+#  endif
+# else
+#  include <socket.h>
+# endif
 #endif
-#else
-#include <socket.h>
-#endif
+
+#ifdef __sgi
+#undef offsetof
 #endif
 
 #ifndef offsetof
-#define offsetof(s,m) ((char*)(&((s *)0)->m)-(char*)0)
+# define offsetof(s,m) ((char*)(&((s *)0)->m)-(char*)0)
 #endif
 
 #ifdef USE_MODULES
-#ifndef DEF_MODULEPATH
-#define DEF_MODULEPATH "/usr/lib/X11/xlock_modules"
-#endif
+# ifndef DEF_MODULEPATH
+#  define DEF_MODULEPATH "/usr/lib/X11/xlock_modules"
+# endif
 #endif
 
 #ifndef DEF_FILESEARCHPATH
-#ifdef VMS
-#include <descrip>
-#include <iodef>
-#include <ssdef>
-#include <stsdef>
-#include <types.h>
-#include <starlet.h>
+# ifdef VMS
+#  include <descrip>
+#  include <iodef>
+#  include <ssdef>
+#  include <stsdef>
+#  include <types.h>
+#  include <starlet.h>
 
-#define DEF_FILESEARCHPATH "DECW$SYSTEM_DEFAULTS:DECW$%N.DAT%S"
-#define BUFSIZE 132
-#define DECW$C_WS_DSP_TRANSPORT 2	/*  taken from wsdriver.lis */
-#define IO$M_WS_DISPLAY 0x00000040	/* taken from wsdriver */
+#  define DEF_FILESEARCHPATH "DECW$SYSTEM_DEFAULTS:DECW$%N.DAT%S"
+#  define BUFSIZE 132
+#  define DECW$C_WS_DSP_TRANSPORT 2	/*  taken from wsdriver.lis */
+#  define IO$M_WS_DISPLAY 0x00000040	/* taken from wsdriver */
 
 struct descriptor_t {		/* descriptor structure         */
 	unsigned short len;
@@ -114,24 +118,24 @@ typedef struct descriptor_t dsc;
 
 /* $dsc creates a descriptor for a predefined string */
 
-#define $dsc(name,string) dsc name = { sizeof(string)-1,14,1,string}
+#  define $dsc(name,string) dsc name = { sizeof(string)-1,14,1,string}
 
 /* $dscp creates a descriptor pointing to a buffer allocated elsewhere */
 
-#define $dscp(name,size,addr) dsc name = { size,14,1,addr }
+#  define $dscp(name,size,addr) dsc name = { size,14,1,addr }
 
 static int  descr();
 
-#else
-#define DEF_FILESEARCHPATH "/usr/lib/X11/%T/%N%C%S:/usr/lib/X11/%T/%N%S"
-#endif
+# else
+#  define DEF_FILESEARCHPATH "/usr/lib/X11/%T/%N%C%S:/usr/lib/X11/%T/%N%S"
+# endif
 #endif
 #ifndef DEF_MODE
-#if 0
-#define DEF_MODE	"blank"	/* May be safer */
-#else
-#define DEF_MODE	"random"	/* May be more interesting */
-#endif
+# if 0
+#  define DEF_MODE	"blank"	/* May be safer */
+# else
+#  define DEF_MODE	"random"	/* May be more interesting */
+# endif
 #endif
 #define DEF_DELAY	"200000"	/* microseconds between batches */
 #define DEF_COUNT	"100"	/* vectors (or whatever) per batch */
@@ -145,75 +149,79 @@ static int  descr();
 #define DEF_LOCKDELAY	"0"	/* secs until lock */
 #define DEF_TIMEOUT	"30"	/* secs until password entry times out */
 #ifndef DEF_FONT
-#ifdef AIXV3
-#define DEF_FONT	"fixed"
-#else /* !AIXV3 */
-#define DEF_FONT	"-b&h-lucida-medium-r-normal-sans-24-*-*-*-*-*-iso8859-1"
-#endif /* !AIXV3 */
+# ifdef AIXV3
+#  define DEF_FONT	"fixed"
+# else /* !AIXV3 */
+#  define DEF_FONT	"-b&h-lucida-medium-r-normal-sans-24-*-*-*-*-*-iso8859-1"
+# endif /* !AIXV3 */
 #endif
 #define DEF_PLANFONT     "-adobe-courier-medium-r-*-*-14-*-*-*-m-*-iso8859-1"
 #ifdef USE_MB
-#define DEF_FONTSET	DEF_FONT ## ",-*-24-*"
+# define DEF_FONTSET	DEF_FONT ## ",-*-24-*"
 #endif
-#define DEF_BG		"Black"
-#define DEF_FG		"White"
+#define DEF_BG		"White"
+#define DEF_FG		"Black"
 #ifdef FR
-#define DEF_NAME	"Nom: "
-#define DEF_PASS	"Mot de passe: "
-#define DEF_VALID	"Validation ..."
-#define DEF_INVALID	"Mot de passe Invalide."
-#define DEF_INFO	"Entrez le mot de passe ou choisissez l'icone pour verrouiller."
+# define DEF_NAME	"Nom: "
+# define DEF_PASS	"Mot de passe: "
+# define DEF_VALID	"Validation ..."
+# define DEF_INVALID	"Mot de passe Invalide."
+# define DEF_INFO	"Entrez le mot de passe ou choisissez l'icone pour verrouiller."
 #else
-#ifdef NL
-#define DEF_NAME  "Naam: "
-#define DEF_PASS  "Wachtwoord: "
-#define DEF_VALID "Aan het checken ..."
-#define DEF_INVALID "Ongeldig wachtwoord."
-#define DEF_INFO  "Geef wachtwoord om te ontgrendelen ; selecteer het icoon om te vergendelen."
+#if defined NL
+# define DEF_NAME	"Naam: "
+# define DEF_PASS	"Wachtwoord: "
+# define DEF_VALID	"Aan het checken ..."
+# define DEF_INVALID	"Ongeldig wachtwoord."
+# define DEF_INFO	"Geef wachtwoord om te ontgrendelen ; selecteer het icoon om te vergendelen."
 #else
-#define DEF_NAME	"Name: "
-#define DEF_PASS	"Password: "
-#define DEF_VALID	"Validating login..."
-#define DEF_INVALID	"Invalid login."
-#define DEF_INFO	"Enter password to unlock; select icon to lock."
+#if defined JP
+# include "resource-msg-jp.h"
+#else
+# define DEF_NAME	"Name: "
+# define DEF_PASS	"Password: "
+# define DEF_VALID	"Validating login..."
+# define DEF_INVALID	"Invalid login."
+# define DEF_INFO	"Enter password to unlock; select icon to lock."
+#endif
 #endif
 #endif
 #ifdef GLOBAL_UNLOCK
-#define DEF_GUSER "Username: "
+# define DEF_GUSER "Username: "
 #endif
 #ifdef SAFEWORD
-#define DEF_DPASS "Dynamic password: "
-#define DEF_FPASS "Fixed Password: "
-#define DEF_CHALL "Challenge: "
+# define DEF_DPASS "Dynamic password: "
+# define DEF_FPASS "Fixed Password: "
+# define DEF_CHALL "Challenge: "
 #endif
 #define DEF_GEOMETRY	""
 #define DEF_ICONGEOMETRY	""
 #ifdef FX
-#define DEF_GLGEOMETRY ""
+# define DEF_GLGEOMETRY ""
 #endif
 #define DEF_DELTA3D	"1.5"	/* space between things in 3d mode relative to their size */
 #ifndef DEF_MESSAGESFILE
-#define DEF_MESSAGESFILE	""
+# define DEF_MESSAGESFILE	""
 #endif
 #ifndef DEF_MESSAGEFILE
-#define DEF_MESSAGEFILE ""
+# define DEF_MESSAGEFILE ""
 #endif
 #ifndef DEF_MESSAGE
 /* #define DEF_MESSAGE "I am out running around." */
-#define DEF_MESSAGE ""
+# define DEF_MESSAGE ""
 #endif
 #ifndef DEF_BITMAP
-#define DEF_BITMAP ""
+# define DEF_BITMAP ""
 #endif
 #ifndef DEF_MAILAPP
-#define DEF_MAILAPP ""
+# define DEF_MAILAPP ""
 #endif
 #ifdef USE_VTLOCK
-#define VTLOCKMODE_OFF     	"off"
-#define VTLOCKMODE_NOSWITCH     "noswitch"
-#define VTLOCKMODE_SWITCH       "switch"
-#define VTLOCKMODE_RESTORE      "restore"
-#define DEF_VTLOCK              VTLOCKMODE_OFF
+# define VTLOCKMODE_OFF     	"off"
+# define VTLOCKMODE_NOSWITCH     "noswitch"
+# define VTLOCKMODE_SWITCH       "switch"
+# define VTLOCKMODE_RESTORE      "restore"
+# define DEF_VTLOCK              VTLOCKMODE_OFF
 #endif
 #define DEF_CLASSNAME	"XLock"
 #if 0
@@ -224,80 +232,86 @@ static int  descr();
   Hexagon  6
   Triangle 3, 9 or 12     <- 9 is not too mathematically sound...
 */
-#define DEF_NEIGHBORS  "0"	/* automata mode will choose best or random value */
-#define DEF_MOUSE   "False"
+# define DEF_NEIGHBORS  "0"	/* automata mode will choose best or random value */
+# define DEF_MOUSE   "False"
 #endif
 
 #ifdef USE_RPLAY
-#define DEF_LOCKSOUND	"thank-you"
-#define DEF_INFOSOUND	"identify-please"
-#define DEF_VALIDSOUND	"complete"
-#define DEF_INVALIDSOUND	"not-programmed"
+# define DEF_LOCKSOUND	"thank-you"
+# define DEF_INFOSOUND	"identify-please"
+# define DEF_VALIDSOUND	"complete"
+# define DEF_INVALIDSOUND	"not-programmed"
 #else /* !USE_RPLAY */
-#if defined ( DEF_PLAY ) || defined ( USE_NAS )
-#define DEF_LOCKSOUND	"thank-you.au"
-#define DEF_INFOSOUND	"identify-please.au"
-#define DEF_VALIDSOUND	"complete.au"
-#define DEF_INVALIDSOUND	"not-programmed.au"
-#else /* !DEF_PLAY && !USE_NAS */
-#ifdef USE_VMSPLAY
-#define DEF_LOCKSOUND	"[]thank-you.au"
-#define DEF_INFOSOUND	"[]identify-please.au"
-#define DEF_VALIDSOUND	"[]complete.au"
-#define DEF_INVALIDSOUND	"[]not-programmed.au"
-#endif /* !USE_VMSPLAY */
-#ifdef USE_ESOUND
-#define DEFAULT_SOUND_DIR "/usr/lib/sounds/xlockmore"
-#define DEF_LOCKSOUND 	"thank-you.au"
-#define DEF_INFOSOUND	"identify-please.au"
-#define DEF_VALIDSOUND	"complete.au"
-#define DEF_INVALIDSOUND	"not-programmed.au"
-#endif
-#endif /* !DEF_PLAY && !USE_NAS */
+# if defined ( DEF_PLAY ) || defined ( USE_NAS )
+#  define DEF_LOCKSOUND	"thank-you.au"
+#  define DEF_INFOSOUND	"identify-please.au"
+#  define DEF_VALIDSOUND	"complete.au"
+#  define DEF_INVALIDSOUND	"not-programmed.au"
+# else /* !DEF_PLAY && !USE_NAS */
+#  ifdef USE_VMSPLAY
+#   define DEF_LOCKSOUND	"[]thank-you.au"
+#   define DEF_INFOSOUND	"[]identify-please.au"
+#   define DEF_VALIDSOUND	"[]complete.au"
+#   define DEF_INVALIDSOUND	"[]not-programmed.au"
+#  endif /* !USE_VMSPLAY */
+#  ifdef USE_ESOUND
+#   ifndef DEFAULT_SOUND_DIR
+#    define DEFAULT_SOUND_DIR "/usr/share/sounds/xlockmore"
+#   endif
+#   define DEF_LOCKSOUND 	"thank-you.au"
+#   define DEF_INFOSOUND	"identify-please.au"
+#   define DEF_VALIDSOUND	"complete.au"
+#   define DEF_INVALIDSOUND	"not-programmed.au"
+#  endif
+# endif /* !DEF_PLAY && !USE_NAS */
 #endif /* !USE_RPLAY */
 
 #if defined( USE_AUTO_LOGOUT ) && !defined( DEF_AUTO_LOGOUT )
-#if ( USE_AUTO_LOGOUT <= 0 )
-#define DEF_AUTO_LOGOUT "120"	/* User Default, can be overridden */
-#else
-#define DEF_AUTO_LOGOUT "0"	/* User Default, can be overridden */
-#endif
+# if ( USE_AUTO_LOGOUT <= 0 )
+#  define DEF_AUTO_LOGOUT "120"	/* User Default, can be overridden */
+# else
+#  define DEF_AUTO_LOGOUT "0"	/* User Default, can be overridden */
+# endif
 #endif
 
 #ifdef USE_DPMS
-#define DEF_DPMSSTANDBY "-1"
-#define DEF_DPMSSUSPEND "-1"
-#define DEF_DPMSOFF     "-1"
+# define DEF_DPMSSTANDBY "-1"
+# define DEF_DPMSSUSPEND "-1"
+# define DEF_DPMSOFF     "-1"
 #endif
 
 #if defined( USE_BUTTON_LOGOUT )
-#if !defined( DEF_BUTTON_LOGOUT )
-#if ( USE_BUTTON_LOGOUT <= 0 )
-#define DEF_BUTTON_LOGOUT "5"	/* User Default, can be overridden */
-#else
-#define DEF_BUTTON_LOGOUT "0"	/* User Default, can be overridden */
-#endif
-#endif
+# if !defined( DEF_BUTTON_LOGOUT )
+#  if ( USE_BUTTON_LOGOUT <= 0 )
+#   define DEF_BUTTON_LOGOUT "5"	/* User Default, can be overridden */
+#  else
+#   define DEF_BUTTON_LOGOUT "0"	/* User Default, can be overridden */
+#  endif
+# endif
 
-#ifdef FR
-#define DEF_BTN_LABEL	"Logout"
-#define DEF_BTN_HELP	"Cliquer ici pour etre deloger"
-#define DEF_FAIL	"Auto-logout a echoue"
-#else
+# ifdef FR
+#  define DEF_BTN_LABEL	"Logout"
+#  define DEF_BTN_HELP	"Cliquer ici pour etre deloger"
+#  define DEF_FAIL	"Auto-logout a echoue"
+# else
 #ifdef NL
-#define DEF_BTN_LABEL "Loguit"
-#define DEF_BTN_HELP  "klik hier om uit te loggen"
-#define DEF_FAIL  "Auto-loguit mislukt"
-#else
-#define DEF_BTN_LABEL	"Logout"	/* string that appears in logout button */
+#  define DEF_BTN_LABEL "Loguit"
+#  define DEF_BTN_HELP  "klik hier om uit te loggen"
+#  define DEF_FAIL  "Auto-loguit mislukt"
+# else
+#ifdef JP
+#  include "resource-msg-jp.h"
+# else
+#  define DEF_BTN_LABEL	"Logout"	/* string that appears in logout button */
 
 /* this string appears immediately below logout button */
-#define DEF_BTN_HELP	"Click here to logout"
+#  define DEF_BTN_HELP	"Click here to logout"
 
 /* this string appears in place of the logout button if user could not be
    logged out */
-#define DEF_FAIL	"Auto-logout failed"
+#  define DEF_FAIL	"Auto-logout failed"
 
+# endif
 #endif
 #endif
 #endif
@@ -318,7 +332,7 @@ Bool        mouse;
 #endif
 
 char        hostname[MAXHOSTNAMELEN];
-static char *mode;
+static char *mode = NULL;
 char       *displayname = NULL;
 static char *classname;
 static char *modename;
@@ -338,136 +352,144 @@ char        directory_r[DIRBUF];
 
 static XrmOptionDescRec genTable[] =
 {
-	{"-mode", ".mode", XrmoptionSepArg, (caddr_t) NULL},
-	{"-erasemode", ".erasemode", XrmoptionSepArg, (caddr_t) NULL},
-	{"-erasedelay", ".erasedelay", XrmoptionSepArg, (caddr_t) NULL},
-	{"-erasetime", ".erasetime", XrmoptionSepArg, (caddr_t) NULL},
-	{"-nolock", ".nolock", XrmoptionNoArg, (caddr_t) "on"},
-	{"+nolock", ".nolock", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-mode", (char *) ".mode", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-erasemode", (char *) ".erasemode", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-erasedelay", (char *) ".erasedelay", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-erasetime", (char *) ".erasetime", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-nolock", (char *) ".nolock", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+nolock", (char *) ".nolock", XrmoptionNoArg, (caddr_t) "off"},
 #ifdef USE_VTLOCK
-	{"-vtlock", ".vtlock", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-vtlock", (char *) ".vtlock", XrmoptionSepArg, (caddr_t) NULL},
 #endif
-	{"-inwindow", ".inwindow", XrmoptionNoArg, (caddr_t) "on"},
-	{"+inwindow", ".inwindow", XrmoptionNoArg, (caddr_t) "off"},
-	{"-inroot", ".inroot", XrmoptionNoArg, (caddr_t) "on"},
-	{"+inroot", ".inroot", XrmoptionNoArg, (caddr_t) "off"},
-	{"-remote", ".remote", XrmoptionNoArg, (caddr_t) "on"},
-	{"+remote", ".remote", XrmoptionNoArg, (caddr_t) "off"},
-	{"-mono", ".mono", XrmoptionNoArg, (caddr_t) "on"},
-	{"+mono", ".mono", XrmoptionNoArg, (caddr_t) "off"},
-	{"-allowaccess", ".allowaccess", XrmoptionNoArg, (caddr_t) "on"},
-	{"+allowaccess", ".allowaccess", XrmoptionNoArg, (caddr_t) "off"},
-	{"-allowroot", ".allowroot", XrmoptionNoArg, (caddr_t) "on"},
-	{"+allowroot", ".allowroot", XrmoptionNoArg, (caddr_t) "off"},
-	{"-debug", ".debug", XrmoptionNoArg, (caddr_t) "on"},
-	{"+debug", ".debug", XrmoptionNoArg, (caddr_t) "off"},
-	{"-description", ".description", XrmoptionNoArg, (caddr_t) "on"},
-	{"+description", ".description", XrmoptionNoArg, (caddr_t) "off"},
-	{"-echokeys", ".echokeys", XrmoptionNoArg, (caddr_t) "on"},
-	{"+echokeys", ".echokeys", XrmoptionNoArg, (caddr_t) "off"},
-	{"-enablesaver", ".enablesaver", XrmoptionNoArg, (caddr_t) "on"},
-	{"+enablesaver", ".enablesaver", XrmoptionNoArg, (caddr_t) "off"},
-	{"-resetsaver", ".resetsaver", XrmoptionNoArg, (caddr_t) "on"},
-	{"+resetsaver", ".resetsaver", XrmoptionNoArg, (caddr_t) "off"},
-	{"-grabmouse", ".grabmouse", XrmoptionNoArg, (caddr_t) "on"},
-	{"+grabmouse", ".grabmouse", XrmoptionNoArg, (caddr_t) "off"},
-	{"-grabserver", ".grabserver", XrmoptionNoArg, (caddr_t) "on"},
-	{"+grabserver", ".grabserver", XrmoptionNoArg, (caddr_t) "off"},
-	{"-hide", ".hide", XrmoptionNoArg, (caddr_t) "on"},
-	{"+hide", ".hide", XrmoptionNoArg, (caddr_t) "off"},
-	{"-install", ".install", XrmoptionNoArg, (caddr_t) "on"},
-	{"+install", ".install", XrmoptionNoArg, (caddr_t) "off"},
-	{"-mousemotion", ".mousemotion", XrmoptionNoArg, (caddr_t) "on"},
-	{"+mousemotion", ".mousemotion", XrmoptionNoArg, (caddr_t) "off"},
-	{"-sound", ".sound", XrmoptionNoArg, (caddr_t) "on"},
-	{"+sound", ".sound", XrmoptionNoArg, (caddr_t) "off"},
-	{"-timeelapsed", ".timeelapsed", XrmoptionNoArg, (caddr_t) "on"},
-	{"+timeelapsed", ".timeelapsed", XrmoptionNoArg, (caddr_t) "off"},
-	{"-usefirst", ".usefirst", XrmoptionNoArg, (caddr_t) "on"},
-	{"+usefirst", ".usefirst", XrmoptionNoArg, (caddr_t) "off"},
-	{"-verbose", ".verbose", XrmoptionNoArg, (caddr_t) "on"},
-	{"+verbose", ".verbose", XrmoptionNoArg, (caddr_t) "off"},
-	{"-nice", ".nice", XrmoptionSepArg, (caddr_t) NULL},
-	{"-lockdelay", ".lockdelay", XrmoptionSepArg, (caddr_t) NULL},
-	{"-timeout", ".timeout", XrmoptionSepArg, (caddr_t) NULL},
-	{"-font", ".font", XrmoptionSepArg, (caddr_t) NULL},
-	{"-planfont", ".planfont", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-inwindow", (char *) ".inwindow", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+inwindow", (char *) ".inwindow", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-inroot", (char *) ".inroot", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+inroot", (char *) ".inroot", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-remote", (char *) ".remote", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+remote", (char *) ".remote", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-mono", (char *) ".mono", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+mono", (char *) ".mono", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-allowaccess", (char *) ".allowaccess", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+allowaccess", (char *) ".allowaccess", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-allowroot", (char *) ".allowroot", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+allowroot", (char *) ".allowroot", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-debug", (char *) ".debug", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+debug", (char *) ".debug", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-description", (char *) ".description", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+description", (char *) ".description", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-echokeys", (char *) ".echokeys", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+echokeys", (char *) ".echokeys", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-enablesaver", (char *) ".enablesaver", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+enablesaver", (char *) ".enablesaver", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-resetsaver", (char *) ".resetsaver", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+resetsaver", (char *) ".resetsaver", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-grabmouse", (char *) ".grabmouse", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+grabmouse", (char *) ".grabmouse", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-grabserver", (char *) ".grabserver", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+grabserver", (char *) ".grabserver", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-hide", (char *) ".hide", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+hide", (char *) ".hide", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-install", (char *) ".install", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+install", (char *) ".install", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-mousemotion", (char *) ".mousemotion", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+mousemotion", (char *) ".mousemotion", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-sound", (char *) ".sound", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+sound", (char *) ".sound", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-timeelapsed", (char *) ".timeelapsed", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+timeelapsed", (char *) ".timeelapsed", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-usefirst", (char *) ".usefirst", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+usefirst", (char *) ".usefirst", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-verbose", (char *) ".verbose", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+verbose", (char *) ".verbose", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-nice", (char *) ".nice", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-lockdelay", (char *) ".lockdelay", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-timeout", (char *) ".timeout", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-font", (char *) ".font", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-planfont", (char *) ".planfont", XrmoptionSepArg, (caddr_t) NULL},
 #ifdef USE_MB
-	{"-fontset", ".fontset", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-fontset", (char *) ".fontset", XrmoptionSepArg, (caddr_t) NULL},
 #endif
-	{"-bg", ".background", XrmoptionSepArg, (caddr_t) NULL},
-	{"-fg", ".foreground", XrmoptionSepArg, (caddr_t) NULL},
-	{"-background", ".background", XrmoptionSepArg, (caddr_t) NULL},
-	{"-foreground", ".foreground", XrmoptionSepArg, (caddr_t) NULL},
-	{"-username", ".username", XrmoptionSepArg, (caddr_t) NULL},
-	{"-password", ".password", XrmoptionSepArg, (caddr_t) NULL},
-	{"-info", ".info", XrmoptionSepArg, (caddr_t) NULL},
-	{"-validate", ".validate", XrmoptionSepArg, (caddr_t) NULL},
-	{"-invalid", ".invalid", XrmoptionSepArg, (caddr_t) NULL},
-	{"-geometry", ".geometry", XrmoptionSepArg, (caddr_t) NULL},
-	{"-icongeometry", ".icongeometry", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-bg", (char *) ".background", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-fg", (char *) ".foreground", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-background", (char *) ".background", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-foreground", (char *) ".foreground", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-username", (char *) ".username", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-password", (char *) ".password", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-info", (char *) ".info", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-validate", (char *) ".validate", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-invalid", (char *) ".invalid", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-geometry", (char *) ".geometry", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-icongeometry", (char *) ".icongeometry", XrmoptionSepArg, (caddr_t) NULL},
 #ifdef FX
-	{"-glgeometry", ".glgeometry", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-glgeometry", (char *) ".glgeometry", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 
-	{"-wireframe", ".wireframe", XrmoptionNoArg, (caddr_t) "on"},
-	{"+wireframe", ".wireframe", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-wireframe", (char *) ".wireframe", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+wireframe", (char *) ".wireframe", XrmoptionNoArg, (caddr_t) "off"},
 
-	{"-use3d", ".use3d", XrmoptionNoArg, (caddr_t) "on"},
-	{"+use3d", ".use3d", XrmoptionNoArg, (caddr_t) "off"},
-	{"-delta3d", ".delta3d", XrmoptionSepArg, (caddr_t) NULL},
-	{"-none3d", ".none3d", XrmoptionSepArg, (caddr_t) NULL},
-	{"-right3d", ".right3d", XrmoptionSepArg, (caddr_t) NULL},
-	{"-left3d", ".left3d", XrmoptionSepArg, (caddr_t) NULL},
-	{"-both3d", ".both3d", XrmoptionSepArg, (caddr_t) NULL},
+#ifdef USE_GL
+	{(char *) "-showfps", (char *) ".showfps", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+showfps", (char *) ".showfps", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-fpstop", (char *) ".fpstop", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+fpstop", (char *) ".fpstop", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-fpsfont", (char *) ".fpsfont", XrmoptionSepArg, (caddr_t) NULL},
+#endif
+
+	{(char *) "-use3d", (char *) ".use3d", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+use3d", (char *) ".use3d", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-delta3d", (char *) ".delta3d", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-none3d", (char *) ".none3d", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-right3d", (char *) ".right3d", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-left3d", (char *) ".left3d", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-both3d", (char *) ".both3d", XrmoptionSepArg, (caddr_t) NULL},
 
     /* For modes with text, marquee & nose */
-	{"-program", ".program", XrmoptionSepArg, (caddr_t) NULL},
-	{"-messagesfile", ".messagesfile", XrmoptionSepArg, (caddr_t) NULL},
-	{"-messagefile", ".messagefile", XrmoptionSepArg, (caddr_t) NULL},
-	{"-message", ".message", XrmoptionSepArg, (caddr_t) NULL},
-	{"-messagefont", ".messagefont", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-program", (char *) ".program", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-messagesfile", (char *) ".messagesfile", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-messagefile", (char *) ".messagefile", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-message", (char *) ".message", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-messagefont", (char *) ".messagefont", XrmoptionSepArg, (caddr_t) NULL},
 #if 0
     /* For automata modes */
-	{"-neighbors", ".neighbors", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-neighbors", (char *) ".neighbors", XrmoptionSepArg, (caddr_t) NULL},
     /* For eyes, julia, and swarm modes */
-	{"-mouse", ".mouse", XrmoptionNoArg, (caddr_t) "on"},
-	{"+mouse", ".mouse", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-mouse", (char *) ".mouse", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+mouse", (char *) ".mouse", XrmoptionNoArg, (caddr_t) "off"},
 #endif
 
 #if defined( USE_XLOCKRC ) || defined( FALLBACK_XLOCKRC )
-	{"-cpasswd", ".cpasswd", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-cpasswd", (char *) ".cpasswd", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 #ifdef USE_AUTO_LOGOUT
-	{"-logoutAuto", ".logoutAuto", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-logoutAuto", (char *) ".logoutAuto", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 #ifdef USE_BUTTON_LOGOUT
-	{"-logoutButton", ".logoutButton", XrmoptionSepArg, (caddr_t) NULL},
-{"-logoutButtonLabel", ".logoutButtonLabel", XrmoptionSepArg, (caddr_t) NULL},
- {"-logoutButtonHelp", ".logoutButtonHelp", XrmoptionSepArg, (caddr_t) NULL},
-	{"-logoutFailedString", ".logoutFailedString", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-logoutButton", (char *) ".logoutButton", XrmoptionSepArg, (caddr_t) NULL},
+{(char *) "-logoutButtonLabel", (char *) ".logoutButtonLabel", XrmoptionSepArg, (caddr_t) NULL},
+ {(char *) "-logoutButtonHelp", (char *) ".logoutButtonHelp", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-logoutFailedString", (char *) ".logoutFailedString", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 #ifdef USE_DTSAVER
-	{"-dtsaver", ".dtsaver", XrmoptionNoArg, (caddr_t) "on"},
-	{"+dtsaver", ".dtsaver", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-dtsaver", (char *) ".dtsaver", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+dtsaver", (char *) ".dtsaver", XrmoptionNoArg, (caddr_t) "off"},
 #endif
 #ifdef USE_SOUND
-	{"-locksound", ".locksound", XrmoptionSepArg, (caddr_t) NULL},
-	{"-infosound", ".infosound", XrmoptionSepArg, (caddr_t) NULL},
-	{"-validsound", ".validsound", XrmoptionSepArg, (caddr_t) NULL},
-	{"-invalidsound", ".invalidsound", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-locksound", (char *) ".locksound", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-infosound", (char *) ".infosound", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-validsound", (char *) ".validsound", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-invalidsound", (char *) ".invalidsound", XrmoptionSepArg, (caddr_t) NULL},
 #endif
-	{"-startCmd", ".startCmd", XrmoptionSepArg, (caddr_t) NULL},
-	{"-endCmd", ".endCmd", XrmoptionSepArg, (caddr_t) NULL},
-	{"-logoutCmd", ".logoutCmd", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-startCmd", (char *) ".startCmd", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-endCmd", (char *) ".endCmd", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-logoutCmd", (char *) ".logoutCmd", XrmoptionSepArg, (caddr_t) NULL},
 
-	{"-mailCmd", ".mailCmd", XrmoptionSepArg, (caddr_t) ""},
-	{"-mailIcon", ".mailIcon", XrmoptionSepArg, (caddr_t) ""},
-	{"-nomailIcon", ".nomailIcon", XrmoptionSepArg, (caddr_t) ""},
+	{(char *) "-mailCmd", (char *) ".mailCmd", XrmoptionSepArg, (caddr_t) ""},
+	{(char *) "-mailIcon", (char *) ".mailIcon", XrmoptionSepArg, (caddr_t) ""},
+	{(char *) "-nomailIcon", (char *) ".nomailIcon", XrmoptionSepArg, (caddr_t) ""},
 #ifdef USE_DPMS
-	{"-dpmsstandby", ".dpmsstandby", XrmoptionSepArg, (caddr_t) NULL},
-	{"-dpmssuspend", ".dpmssuspend", XrmoptionSepArg, (caddr_t) NULL},
-	{"-dpmsoff", ".dpmsoff", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-dpmsstandby", (char *) ".dpmsstandby", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-dpmssuspend", (char *) ".dpmssuspend", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-dpmsoff", (char *) ".dpmsoff", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 };
 
@@ -475,15 +497,15 @@ static XrmOptionDescRec genTable[] =
 
 static XrmOptionDescRec modeTable[] =
 {
-	{"-delay", "*delay", XrmoptionSepArg, (caddr_t) NULL},
-	{"-batchcount", "*count", XrmoptionSepArg, (caddr_t) NULL},
-	{"-count", "*count", XrmoptionSepArg, (caddr_t) NULL},
-	{"-cycles", "*cycles", XrmoptionSepArg, (caddr_t) NULL},
-	{"-size", "*size", XrmoptionSepArg, (caddr_t) NULL},
-	{"-ncolors", "*ncolors", XrmoptionSepArg, (caddr_t) NULL},
-	{"-saturation", "*saturation", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-delay", (char *) "*delay", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-batchcount", (char *) "*count", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-count", (char *) "*count", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-cycles", (char *) "*cycles", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-size", (char *) "*size", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-ncolors", (char *) "*ncolors", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-saturation", (char *) "*saturation", XrmoptionSepArg, (caddr_t) NULL},
     /* For modes with images, xbm, xpm, & ras */
-	{"-bitmap", "*bitmap", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-bitmap", (char *) "*bitmap", XrmoptionSepArg, (caddr_t) NULL},
 };
 
 #define modeEntries (sizeof modeTable / sizeof modeTable[0])
@@ -499,32 +521,32 @@ static XrmOptionDescRec modeTable[] =
 static XrmOptionDescRec cmdlineTable[] =
 {
 #ifndef CUSTOMIZATION
-	{"-display", ".display", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-display", (char *) ".display", XrmoptionSepArg, (caddr_t) NULL},
 #endif
-	{"-visual", ".visual", XrmoptionSepArg, (caddr_t) NULL},
-	{"-parent", ".parent", XrmoptionSepArg, (caddr_t) NULL},
-	{"-nolock", ".nolock", XrmoptionNoArg, (caddr_t) "on"},
-	{"+nolock", ".nolock", XrmoptionNoArg, (caddr_t) "off"},
-	{"-remote", ".remote", XrmoptionNoArg, (caddr_t) "on"},
-	{"+remote", ".remote", XrmoptionNoArg, (caddr_t) "off"},
-	{"-inwindow", ".inwindow", XrmoptionNoArg, (caddr_t) "on"},
-	{"+inwindow", ".inwindow", XrmoptionNoArg, (caddr_t) "off"},
-	{"-inroot", ".inroot", XrmoptionNoArg, (caddr_t) "on"},
-	{"+inroot", ".inroot", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-visual", (char *) ".visual", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-parent", (char *) ".parent", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-nolock", (char *) ".nolock", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+nolock", (char *) ".nolock", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-remote", (char *) ".remote", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+remote", (char *) ".remote", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-inwindow", (char *) ".inwindow", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+inwindow", (char *) ".inwindow", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-inroot", (char *) ".inroot", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+inroot", (char *) ".inroot", XrmoptionNoArg, (caddr_t) "off"},
 #ifdef USE_DTSAVER
-	{"-dtsaver", ".dtsaver", XrmoptionNoArg, (caddr_t) "on"},
-	{"+dtsaver", ".dtsaver", XrmoptionNoArg, (caddr_t) "off"},
+	{(char *) "-dtsaver", (char *) ".dtsaver", XrmoptionNoArg, (caddr_t) "on"},
+	{(char *) "+dtsaver", (char *) ".dtsaver", XrmoptionNoArg, (caddr_t) "off"},
 #endif
-	{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL}
+	{(char *) "-xrm", NULL, XrmoptionResArg, (caddr_t) NULL}
 };
 
 #define cmdlineEntries (sizeof cmdlineTable / sizeof cmdlineTable[0])
 
 static XrmOptionDescRec earlyCmdlineTable[] =
 {
-	{"-name", ".name", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-name", (char *) ".name", XrmoptionSepArg, (caddr_t) NULL},
 #ifdef CUSTOMIZATION
-	{"-display", ".display", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-display", (char *) ".display", XrmoptionSepArg, (caddr_t) NULL},
 #endif
 };
 
@@ -533,143 +555,148 @@ static XrmOptionDescRec earlyCmdlineTable[] =
 #ifdef USE_MODULES
 static XrmOptionDescRec modulepathTable[] =
 {
-	{"-modulepath", ".modulepath", XrmoptionSepArg, (caddr_t) NULL},
+	{(char *) "-modulepath", (char *) ".modulepath", XrmoptionSepArg, (caddr_t) NULL},
 };
 
 #endif
 
 static OptionStruct opDesc[] =
 {
-	{"-help", "print out this message to standard output"},
-	{"-version", "print version number (if >= 4.00) to standard output"},
-	{"-resources", "print default resource file to standard output"},
-	{"-display displayname", "X server to contact"},
+	{(char *) "-help", (char *) "print out this message to standard output"},
+	{(char *) "-version", (char *) "print version number (if >= 4.00) to standard output"},
+	{(char *) "-resources", (char *) "print default resource file to standard output"},
+	{(char *) "-display displayname", (char *) "X server to contact"},
 #ifdef USE_MODULES
-	{"-modulepath", "directory where screensaver modules are stored"},
+	{(char *) "-modulepath", (char *) "directory where screensaver modules are stored"},
 #endif
-	{"-visual visualname", "X visual to use"},
-	{"-parent", "parent window id (for inwindow)"},
-{"-name resourcename", "class name to use for resources (default is XLock)"},
-	{"-delay usecs", "microsecond delay between screen updates"},
-	{"-batchcount num", "number of things per batch (depreciated)"},
-	{"-count num", "number of things per batch"},
-	{"-cycles num", "number of cycles per batch"},
-	{"-size num", "size of a unit in a mode, default is 0"},
-	{"-ncolors num", "maximum number of colors, default is 64"},
-	{"-saturation value", "saturation of color ramp"},
+	{(char *) "-visual visualname", (char *) "X visual to use"},
+	{(char *) "-parent", (char *) "parent window id (for inwindow)"},
+{(char *) "-name resourcename", (char *) "class name to use for resources (default is XLock)"},
+	{(char *) "-delay usecs", (char *) "microsecond delay between screen updates"},
+	{(char *) "-batchcount num", (char *) "number of things per batch (depreciated)"},
+	{(char *) "-count num", (char *) "number of things per batch"},
+	{(char *) "-cycles num", (char *) "number of cycles per batch"},
+	{(char *) "-size num", (char *) "size of a unit in a mode, default is 0"},
+	{(char *) "-ncolors num", (char *) "maximum number of colors, default is 64"},
+	{(char *) "-saturation value", (char *) "saturation of color ramp"},
   /* For modes with images, xbm, xpm, & ras */
 #if defined( USE_XPM ) || defined( USE_XPMINC )
-	{"-bitmap filename", "bitmap file (sometimes xpm and ras too)"},
+	{(char *) "-bitmap filename", (char *) "bitmap file (sometimes xpm and ras too)"},
 #else
-	{"-bitmap filename", "bitmap file (sometimes ras too)"},
+	{(char *) "-bitmap filename", (char *) "bitmap file (sometimes ras too)"},
 #endif
-	{"-erasemode erase-modename", "Erase mode to use"},
-	{"-erasedelay num", "Erase delay for clear screen modes"},
-	{"-erasetime num", "Maximum time (sec) to be used by erase"},
-	{"-/+nolock", "turn on/off no password required"},
-	{"-/+inwindow", "turn on/off making xlock run in a window"},
-	{"-/+inroot", "turn on/off making xlock run in the root window"},
-	{"-/+remote", "turn on/off remote host access"},
-	{"-/+mono", "turn on/off monochrome override"},
-	{"-/+allowaccess", "turn on/off allow new clients to connect"},
+	{(char *) "-erasemode erase-modename", (char *) "Erase mode to use"},
+	{(char *) "-erasedelay num", (char *) "Erase delay for clear screen modes"},
+	{(char *) "-erasetime num", (char *) "Maximum time (sec) to be used by erase"},
+	{(char *) "-/+nolock", (char *) "turn on/off no password required"},
+	{(char *) "-/+inwindow", (char *) "turn on/off making xlock run in a window"},
+	{(char *) "-/+inroot", (char *) "turn on/off making xlock run in the root window"},
+	{(char *) "-/+remote", (char *) "turn on/off remote host access"},
+	{(char *) "-/+mono", (char *) "turn on/off monochrome override"},
+	{(char *) "-/+allowaccess", (char *) "turn on/off allow new clients to connect"},
 #ifdef USE_VTLOCK
-	{"-vtlock lock-modename", "turn on vt switching in [" VTLOCKMODE_SWITCH "|" VTLOCKMODE_NOSWITCH "|" VTLOCKMODE_RESTORE "] lock-mode"},
+	{(char *) "-vtlock lock-modename", (char *) "turn on vt switching in [" VTLOCKMODE_SWITCH "|" VTLOCKMODE_NOSWITCH "|" VTLOCKMODE_RESTORE "] lock-mode"},
 
 #endif
 #ifndef ALWAYS_ALLOW_ROOT
-	{"-/+allowroot", "turn on/off allow root password to unlock"},
+	{(char *) "-/+allowroot", (char *) "turn on/off allow root password to unlock"},
 #else
- {"-/+allowroot", "turn on/off allow root password to unlock (off ignored)"},
+ {(char *) "-/+allowroot", (char *) "turn on/off allow root password to unlock (off ignored)"},
 #endif
-	{"-/+debug", "whether to use debug xlock (yes/no)"},
-	{"-/+description", "whether to show mode description (yes/no)"},
-	{"-/+echokeys", "turn on/off echo '?' for each password key"},
-	{"-/+enablesaver", "turn on/off enable X server screen saver"},
-	{"-/+resetsaver", "turn on/off enable X server screen saver"},
-	{"-/+grabmouse", "turn on/off grabbing of mouse and keyboard"},
-	{"-/+grabserver", "turn on/off grabbing of server"},
-	{"-/+install", "whether to use private colormap if needed (yes/no)"},
-	{"-/+hide", "turn on/off user background manipulation"},
-	{"-/+mousemotion", "turn on/off sensitivity to mouse"},
-	{"-/+sound", "whether to use sound if configured for it (yes/no)"},
-	{"-/+timeelapsed", "turn on/off clock"},
-	{"-/+usefirst", "turn on/off using the first char typed in password"},
-	{"-/+verbose", "turn on/off verbosity"},
-	{"-nice level", "nice level for xlock process"},
-	{"-lockdelay seconds", "number of seconds until lock"},
-	{"-timeout seconds", "number of seconds before password times out"},
-	{"-font fontname", "font to use for password prompt"},
-	{"-planfont fontname", "font to use for plan message"},
+	{(char *) "-/+debug", (char *) "whether to use debug xlock (yes/no)"},
+	{(char *) "-/+description", (char *) "whether to show mode description (yes/no)"},
+	{(char *) "-/+echokeys", (char *) "turn on/off echo '?' for each password key"},
+	{(char *) "-/+enablesaver", (char *) "turn on/off enable X server screen saver"},
+	{(char *) "-/+resetsaver", (char *) "turn on/off resetting of X server screen saver"},
+	{(char *) "-/+grabmouse", (char *) "turn on/off grabbing of mouse and keyboard"},
+	{(char *) "-/+grabserver", (char *) "turn on/off grabbing of server"},
+	{(char *) "-/+install", (char *) "whether to use private colormap if needed (yes/no)"},
+	{(char *) "-/+hide", (char *) "turn on/off user background manipulation"},
+	{(char *) "-/+mousemotion", (char *) "turn on/off sensitivity to mouse"},
+	{(char *) "-/+sound", (char *) "whether to use sound if configured for it (yes/no)"},
+	{(char *) "-/+timeelapsed", (char *) "turn on/off clock"},
+	{(char *) "-/+usefirst", (char *) "turn on/off using the first char typed in password"},
+	{(char *) "-/+verbose", (char *) "turn on/off verbosity"},
+	{(char *) "-nice level", (char *) "nice level for xlock process"},
+	{(char *) "-lockdelay seconds", (char *) "number of seconds until lock"},
+	{(char *) "-timeout seconds", (char *) "number of seconds before password times out"},
+	{(char *) "-font fontname", (char *) "font to use for password prompt"},
+	{(char *) "-planfont fontname", (char *) "font to use for plan message"},
+#ifdef USE_GL
+	{(char *) "-/+showfps", (char *) "turn on/off display of FPS"},
+	{(char *) "-/+fpstop", (char *) "turn on/off FPS display on top of window"},
+	{(char *) "-fpsfont fontname", (char *) "font to use for FPS display"},
+#endif
 #ifdef USE_MB
-	{"-fontset fontsetname", "fontset to use for Xmb..."},
+	{(char *) "-fontset fontsetname", (char *) "fontset to use for Xmb..."},
 #endif
-	{"-bg color", "background color to use for password prompt"},
-	{"-fg color", "foreground color to use for password prompt"},
-	{"-background color", "background color to use for password prompt"},
-	{"-foreground color", "foreground color to use for password prompt"},
-	{"-username string", "text string to use for Name prompt"},
-	{"-password string", "text string to use for Password prompt"},
-	{"-info string", "text string to use for instructions"},
-  {"-validate string", "text string to use for validating password message"},
-      {"-invalid string", "text string to use for invalid password message"},
-	{"-geometry geom", "geometry for non-full screen lock"},
-   {"-icongeometry geom", "geometry for password window (location ignored)"},
+	{(char *) "-bg color", (char *) "background color to use for password prompt"},
+	{(char *) "-fg color", (char *) "foreground color to use for password prompt"},
+	{(char *) "-background color", (char *) "background color to use for password prompt"},
+	{(char *) "-foreground color", (char *) "foreground color to use for password prompt"},
+	{(char *) "-username string", (char *) "text string to use for Name prompt"},
+	{(char *) "-password string", (char *) "text string to use for Password prompt"},
+	{(char *) "-info string", (char *) "text string to use for instructions"},
+  {(char *) "-validate string", (char *) "text string to use for validating password message"},
+      {(char *) "-invalid string", (char *) "text string to use for invalid password message"},
+	{(char *) "-geometry geom", (char *) "geometry for non-full screen lock"},
+   {(char *) "-icongeometry geom", (char *) "geometry for password window (location ignored)"},
 #ifdef FX
-	{"-glgeometry geom", "geometry for gl modes (location ignored)"},
+	{(char *) "-glgeometry geom", (char *) "geometry for gl modes (location ignored)"},
 #endif
-	{"-/+wireframe", "turn on/off wireframe"},
+	{(char *) "-/+wireframe", (char *) "turn on/off wireframe"},
 
-	{"-/+use3d", "turn on/off 3d view"},
-   {"-delta3d value", "space between the center of your 2 eyes for 3d mode"},
-	{"-none3d color", "color to be used for null in 3d mode"},
-	{"-right3d color", "color to be used for the right eye in 3d mode"},
-	{"-left3d color", "color to be used for the left eye in 3d mode"},
-	{"-both3d color", "color to be used overlap in 3d mode"},
+	{(char *) "-/+use3d", (char *) "turn on/off 3d view"},
+        {(char *) "-delta3d value", (char *) "space between the center of your 2 eyes for 3d mode"},
+	{(char *) "-none3d color", (char *) "color to be used for null in 3d mode"},
+	{(char *) "-right3d color", (char *) "color to be used for the right eye in 3d mode"},
+	{(char *) "-left3d color", (char *) "color to be used for the left eye in 3d mode"},
+	{(char *) "-both3d color", (char *) "color to be used overlap in 3d mode"},
 
     /* For modes with text, marquee & nose */
-   {"-program programname", "program to get messages from, usually fortune"},
-	{"-messagesfile formatted-filename", "formatted file of fortunes"},
-	{"-messagefile filename", "text file for mode"},
-	{"-message string", "text for mode"},
-	{"-messagefont fontname", "font for a specific mode"},
+   {(char *) "-program programname", (char *) "program to get messages from, usually fortune"},
+	{(char *) "-messagesfile formatted-filename", (char *) "formatted file of fortunes"},
+	{(char *) "-messagefile filename", (char *) "text file for mode"},
+	{(char *) "-message string", (char *) "text for mode"},
+	{(char *) "-messagefont fontname", (char *) "font for a specific mode"},
 #if 0
     /* For automata modes */
-      {"-neighbors num", "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"},
+      {(char *) "-neighbors num", (char *) "squares 4 or 8, hexagons 6, triangles 3, 9 or 12"},
     /* For eyes, julia, and swarm modes */
-	{"-/+mouse", "turn on/off the grabbing the mouse"},
+	{(char *) "-/+mouse", (char *) "turn on/off the grabbing the mouse"},
 #endif
 
 #if defined( USE_XLOCKRC ) || defined( FALLBACK_XLOCKRC )
-	{"-cpasswd crypted-password", "text string of encrypted password"},
+	{(char *) "-cpasswd crypted-password", (char *) "text string of encrypted password"},
 #endif
 #ifdef USE_AUTO_LOGOUT
-	{"-logoutAuto minutes", "number of minutes until auto logout (not more than forced auto logout time)"},
+	{(char *) "-logoutAuto minutes", (char *) "number of minutes until auto logout (not more than forced auto logout time)"},
 #endif
 #ifdef USE_BUTTON_LOGOUT
-	{"-logoutButton minutes", "number of minutes until logout button appears (not more than forced button time)"},
-    {"-logoutButtonLabel string", "text string to use inside logout button"},
-   {"-logoutButtonHelp string", "text string to use for logout button help"},
-	{"-logoutFailedString string", "text string to use for failed logout attempts"},
+	{(char *) "-logoutButton minutes", (char *) "number of minutes until logout button appears (not more than forced button time)"},
+    {(char *) "-logoutButtonLabel string", (char *) "text string to use inside logout button"},
+   {(char *) "-logoutButtonHelp string", (char *) "text string to use for logout button help"},
+	{(char *) "-logoutFailedString string", (char *) "text string to use for failed logout attempts"},
 #endif
 #ifdef USE_DTSAVER
-	{"-/+dtsaver", "turn on/off CDE Saver Mode"},
+	{(char *) "-/+dtsaver", (char *) "turn on/off CDE Saver Mode"},
 #endif
 #ifdef USE_SOUND
-	{"-locksound string", "sound to use at locktime"},
-	{"-infosound string", "sound to use for information"},
-	{"-validsound string", "sound to use when password is valid"},
-	{"-invalidsound string", "sound to use when password is invalid"},
+	{(char *) "-locksound string", (char *) "sound to use at locktime"},
+	{(char *) "-infosound string", (char *) "sound to use for information"},
+	{(char *) "-validsound string", (char *) "sound to use when password is valid"},
+	{(char *) "-invalidsound string", (char *) "sound to use when password is invalid"},
 #endif
-	{"-startCmd string", "command to run at locktime"},
-	{"-endCmd string", "command to run when unlocking"},
-      {"-logoutCmd string", "command to run when automatically logging out"},
-	{"-mailCmd string", "command to run to check for mail"},
-	{"-mailIcon string", "Icon to display when there is mail"},
-	{"-nomailIcon string", "Icon to display when there is no mail"},
+	{(char *) "-startCmd string", (char *) "command to run at locktime"},
+	{(char *) "-endCmd string", (char *) "command to run when unlocking"},
+      {(char *) "-logoutCmd string", (char *) "command to run when automatically logging out"},
+	{(char *) "-mailCmd string", (char *) "command to run to check for mail"},
+	{(char *) "-mailIcon string", (char *) "Icon to display when there is mail"},
+	{(char *) "-nomailIcon string", (char *) "Icon to display when there is no mail"},
 #ifdef USE_DPMS
-    {"-dpmsstandby seconds", "seconds to wait before engaging DPMS standby"},
-    {"-dpmssuspend seconds", "seconds to wait before engaging DPMS suspend"},
-	{"-dpmsoff seconds", "seconds to wait before engaging DPMS off"},
+    {(char *) "-dpmsstandby seconds", (char *) "seconds to wait before engaging DPMS standby"},
+    {(char *) "-dpmssuspend seconds", (char *) "seconds to wait before engaging DPMS suspend"},
+	{(char *) "-dpmsoff seconds", (char *) "seconds to wait before engaging DPMS off"},
 #endif
 };
 
@@ -724,6 +751,11 @@ Bool        usefirst;
 Bool        verbose;
 Bool        remote;
 
+#ifdef USE_GL
+Bool        fpsTop;
+Bool        showfps;
+char       *fpsfontname;
+#endif
 static char *visualname;
 int         VisualClassWanted;
 
@@ -827,112 +859,117 @@ Bool        vtlock_restore;
 
 static argtype genvars[] =
 {
-	{(caddr_t *) & erasemodename, "erasemode", "EraseMode", "", t_String},
-	{(caddr_t *) & erasedelay, "erasedelay", "EraseDelay", DEF_ERASEDELAY, t_Int},
-	{(caddr_t *) & erasetime, "erasetime", "EraseTime", DEF_ERASETIME, t_Int},
-	{(caddr_t *) & allowaccess, "allowaccess", "AllowAccess", "off", t_Bool},
+	{(caddr_t *) & erasemodename, (char *) "erasemode", (char *) "EraseMode", (char *) "", t_String},
+	{(caddr_t *) & erasedelay, (char *) "erasedelay", (char *) "EraseDelay", (char *) DEF_ERASEDELAY, t_Int},
+	{(caddr_t *) & erasetime, (char *) "erasetime", (char *) "EraseTime", (char *) DEF_ERASETIME, t_Int},
+	{(caddr_t *) & allowaccess, (char *) "allowaccess", (char *) "AllowAccess", (char *) "off", t_Bool},
 #ifndef ALWAYS_ALLOW_ROOT
-	{(caddr_t *) & allowroot, "allowroot", "AllowRoot", "off", t_Bool},
+	{(caddr_t *) & allowroot, (char *) "allowroot", (char *) "AllowRoot", (char *) "off", t_Bool},
 #endif
-	{(caddr_t *) & debug, "debug", "Debug", "off", t_Bool},
-	{(caddr_t *) & description, "description", "Description", "on", t_Bool},
-	{(caddr_t *) & echokeys, "echokeys", "EchoKeys", "off", t_Bool},
-    {(caddr_t *) & enablesaver, "enablesaver", "EnableSaver", "off", t_Bool},
-	{(caddr_t *) & resetsaver, "resetsaver", "ResetSaver", "on", t_Bool},
-	{(caddr_t *) & grabmouse, "grabmouse", "GrabMouse", "on", t_Bool},
-	{(caddr_t *) & grabserver, "grabserver", "GrabServer", "off", t_Bool},
-	{(caddr_t *) & hide, "hide", "Hide", "on", t_Bool},
-	{(caddr_t *) & install, "install", "Install", "on", t_Bool},
-    {(caddr_t *) & mousemotion, "mousemotion", "MouseMotion", "off", t_Bool},
-	{(caddr_t *) & mono, "mono", "Mono", "off", t_Bool},
-	{(caddr_t *) & sound, "sound", "Sound", "off", t_Bool},
-    {(caddr_t *) & timeelapsed, "timeelapsed", "TimeElapsed", "off", t_Bool},
-	{(caddr_t *) & usefirst, "usefirst", "UseFirst", "on", t_Bool},
-	{(caddr_t *) & verbose, "verbose", "Verbose", "off", t_Bool},
-	{(caddr_t *) & visualname, "visual", "Visual", "", t_String},
-	{(caddr_t *) & nicelevel, "nice", "Nice", DEF_NICE, t_Int},
-   {(caddr_t *) & lockdelay, "lockdelay", "LockDelay", DEF_LOCKDELAY, t_Int},
-	{(caddr_t *) & timeout, "timeout", "Timeout", DEF_TIMEOUT, t_Int},
-	{(caddr_t *) & fontname, "font", "Font", DEF_FONT, t_String},
-{(caddr_t *) & planfontname, "planfont", "PlanFont", DEF_PLANFONT, t_String},
+	{(caddr_t *) & debug, (char *) "debug", (char *) "Debug", (char *) "off", t_Bool},
+	{(caddr_t *) & description, (char *) "description", (char *) "Description", (char *) "on", t_Bool},
+	{(caddr_t *) & echokeys, (char *) "echokeys", (char *) "EchoKeys", (char *) "off", t_Bool},
+    {(caddr_t *) & enablesaver, (char *) "enablesaver", (char *) "EnableSaver", (char *) "off", t_Bool},
+	{(caddr_t *) & resetsaver, (char *) "resetsaver", (char *) "ResetSaver", (char *) "on", t_Bool},
+	{(caddr_t *) & grabmouse, (char *) "grabmouse", (char *) "GrabMouse", (char *) "on", t_Bool},
+	{(caddr_t *) & grabserver, (char *) "grabserver", (char *) "GrabServer", (char *) "off", t_Bool},
+	{(caddr_t *) & hide, (char *) "hide", (char *) "Hide", (char *) "on", t_Bool},
+	{(caddr_t *) & install, (char *) "install", (char *) "Install", (char *) "on", t_Bool},
+    {(caddr_t *) & mousemotion, (char *) "mousemotion", (char *) "MouseMotion", (char *) "off", t_Bool},
+	{(caddr_t *) & mono, (char *) "mono", (char *) "Mono", (char *) "off", t_Bool},
+	{(caddr_t *) & sound, (char *) "sound", (char *) "Sound", (char *) "off", t_Bool},
+#ifdef USE_GL
+	{(caddr_t *) & showfps, (char *) "showfps", (char *) "ShowFps", (char *) "off", t_Bool},
+	{(caddr_t *) & fpsTop, (char *) "fpstop", (char *) "FpsTop", (char *) "on", t_Bool},
+	{(caddr_t *) & fpsfontname, (char *) "fpsfont", (char *) "FpsFont", (char *) DEF_FONT, t_String},
+#endif
+    {(caddr_t *) & timeelapsed, (char *) "timeelapsed", (char *) "TimeElapsed", (char *) "off", t_Bool},
+	{(caddr_t *) & usefirst, (char *) "usefirst", (char *) "UseFirst", (char *) "on", t_Bool},
+	{(caddr_t *) & verbose, (char *) "verbose", (char *) "Verbose", (char *) "off", t_Bool},
+	{(caddr_t *) & visualname, (char *) "visual", (char *) "Visual", (char *) "", t_String},
+	{(caddr_t *) & nicelevel, (char *) "nice", (char *) "Nice", (char *) DEF_NICE, t_Int},
+   {(caddr_t *) & lockdelay, (char *) "lockdelay", (char *) "LockDelay", (char *) DEF_LOCKDELAY, t_Int},
+	{(caddr_t *) & timeout, (char *) "timeout", (char *) "Timeout", (char *) DEF_TIMEOUT, t_Int},
+	{(caddr_t *) & fontname, (char *) "font", (char *) "Font", (char *) DEF_FONT, t_String},
+{(caddr_t *) & planfontname, (char *) "planfont", (char *) "PlanFont", (char *) DEF_PLANFONT, t_String},
 #ifdef USE_MB
-    {(caddr_t *) & fontsetname, "fontset", "FontSet", DEF_FONTSET, t_String},
+    {(caddr_t *) & fontsetname, (char *) "fontset", (char *) "FontSet", (char *) DEF_FONTSET, t_String},
 #endif
-    {(caddr_t *) & background, "background", "Background", DEF_BG, t_String},
-    {(caddr_t *) & foreground, "foreground", "Foreground", DEF_FG, t_String},
-	{(caddr_t *) & text_user, "username", "Username", DEF_NAME, t_String},
-	{(caddr_t *) & text_pass, "password", "Password", DEF_PASS, t_String},
+    {(caddr_t *) & background, (char *) "background", (char *) "Background", (char *) DEF_BG, t_String},
+    {(caddr_t *) & foreground, (char *) "foreground", (char *) "Foreground", (char *) DEF_FG, t_String},
+	{(caddr_t *) & text_user, (char *) "username", (char *) "Username", (char *) DEF_NAME, t_String},
+	{(caddr_t *) & text_pass, (char *) "password", (char *) "Password", (char *) DEF_PASS, t_String},
 #ifdef GLOBAL_UNLOCK
-	{(caddr_t *) & text_guser, "globaluser", "GlobalUser", DEF_GUSER, t_String},
+	{(caddr_t *) & text_guser, (char *) "globaluser", (char *) "GlobalUser", (char *) DEF_GUSER, t_String},
 #endif
 
 #ifdef SAFEWORD
-	{(caddr_t *) & text_dpass, "dynpass", "Dynpass", DEF_DPASS, t_String},
-	{(caddr_t *) & text_fpass, "fixpass", "Fixpass", DEF_FPASS, t_String},
-   {(caddr_t *) & text_chall, "challenge", "Challenge", DEF_CHALL, t_String},
+	{(caddr_t *) & text_dpass, (char *) "dynpass", (char *) "Dynpass", (char *) DEF_DPASS, t_String},
+	{(caddr_t *) & text_fpass, (char *) "fixpass", (char *) "Fixpass", (char *) DEF_FPASS, t_String},
+   {(caddr_t *) & text_chall, (char *) "challenge", (char *) "Challenge", (char *) DEF_CHALL, t_String},
 #endif
-	{(caddr_t *) & text_info, "info", "Info", DEF_INFO, t_String},
-     {(caddr_t *) & text_valid, "validate", "Validate", DEF_VALID, t_String},
-   {(caddr_t *) & text_invalid, "invalid", "Invalid", DEF_INVALID, t_String},
-    {(caddr_t *) & geometry, "geometry", "Geometry", DEF_GEOMETRY, t_String},
-	{(caddr_t *) & icongeometry, "icongeometry", "IconGeometry", DEF_ICONGEOMETRY, t_String},
+	{(caddr_t *) & text_info, (char *) "info", (char *) "Info", (char *) DEF_INFO, t_String},
+     {(caddr_t *) & text_valid, (char *) "validate", (char *) "Validate", (char *) DEF_VALID, t_String},
+   {(caddr_t *) & text_invalid, (char *) "invalid", (char *) "Invalid", (char *) DEF_INVALID, t_String},
+    {(caddr_t *) & geometry, (char *) "geometry", (char *) "Geometry", (char *) DEF_GEOMETRY, t_String},
+	{(caddr_t *) & icongeometry, (char *) "icongeometry", (char *) "IconGeometry", (char *) DEF_ICONGEOMETRY, t_String},
 #ifdef FX
-	{(caddr_t *) & glgeometry, "glgeometry", "GLGeometry", DEF_GLGEOMETRY, t_String},
+	{(caddr_t *) & glgeometry, (char *) "glgeometry", (char *) "GLGeometry", (char *) DEF_GLGEOMETRY, t_String},
 #endif
-	{(caddr_t *) & wireframe, "wireframe", "WireFrame", "off", t_Bool},
+	{(caddr_t *) & wireframe, (char *) "wireframe", (char *) "WireFrame", (char *) "off", t_Bool},
 
-	{(caddr_t *) & use3d, "use3d", "Use3D", "off", t_Bool},
-	{(caddr_t *) & delta3d, "delta3d", "Delta3D", DEF_DELTA3D, t_Float},
-	{(caddr_t *) & none3d, "none3d", "None3D", DEF_NONE3D, t_String},
-	{(caddr_t *) & right3d, "right3d", "Right3D", DEF_RIGHT3D, t_String},
-	{(caddr_t *) & left3d, "left3d", "Left3D", DEF_LEFT3D, t_String},
-	{(caddr_t *) & both3d, "both3d", "Both3D", DEF_BOTH3D, t_String},
+	{(caddr_t *) & use3d, (char *) "use3d", (char *) "Use3D", (char *) "off", t_Bool},
+	{(caddr_t *) & delta3d, (char *) "delta3d", (char *) "Delta3D", (char *) DEF_DELTA3D, t_Float},
+	{(caddr_t *) & none3d, (char *) "none3d", (char *) "None3D", (char *) DEF_NONE3D, t_String},
+	{(caddr_t *) & right3d, (char *) "right3d", (char *) "Right3D", (char *) DEF_RIGHT3D, t_String},
+	{(caddr_t *) & left3d, (char *) "left3d", (char *) "Left3D", (char *) DEF_LEFT3D, t_String},
+	{(caddr_t *) & both3d, (char *) "both3d", (char *) "Both3D", (char *) DEF_BOTH3D, t_String},
 
-	{(caddr_t *) & program, "program", "Program", DEF_PROGRAM, t_String},
-	{(caddr_t *) & messagesfile, "messagesfile", "Messagesfile", DEF_MESSAGESFILE, t_String},
-	{(caddr_t *) & messagefile, "messagefile", "Messagefile", DEF_MESSAGEFILE, t_String},
-	{(caddr_t *) & message, "message", "Message", DEF_MESSAGE, t_String},
-	{(caddr_t *) & messagefontname, "messagefont", "MessageFont", DEF_MESSAGEFONT, t_String},
+	{(caddr_t *) & program, (char *) "program", (char *) "Program", (char *) DEF_PROGRAM, t_String},
+	{(caddr_t *) & messagesfile, (char *) "messagesfile", (char *) "Messagesfile", (char *) DEF_MESSAGESFILE, t_String},
+	{(caddr_t *) & messagefile, (char *) "messagefile", (char *) "Messagefile", (char *) DEF_MESSAGEFILE, t_String},
+	{(caddr_t *) & message, (char *) "message", (char *) "Message", (char *) DEF_MESSAGE, t_String},
+	{(caddr_t *) & messagefontname, (char *) "messagefont", (char *) "MessageFont", (char *) DEF_MESSAGEFONT, t_String},
 #if 0
-   {(caddr_t *) & neighbors, "neighbors", "Neighbors", DEF_NEIGHBORS, t_Int},
-	{(caddr_t *) & mouse, "mouse", "Mouse", DEF_MOUSE, t_Bool},
+   {(caddr_t *) & neighbors, (char *) "neighbors", (char *) "Neighbors", (char *) DEF_NEIGHBORS, t_Int},
+	{(caddr_t *) & mouse, (char *) "mouse", (char *) "Mouse", (char *) DEF_MOUSE, t_Bool},
 #endif
 
 #if defined( USE_XLOCKRC ) || defined( FALLBACK_XLOCKRC )
-	{(caddr_t *) & cpasswd, "cpasswd", "cpasswd", "", t_String},
+	{(caddr_t *) & cpasswd, (char *) "cpasswd", (char *) "cpasswd", (char *) "", t_String},
 #endif
 #ifdef USE_AUTO_LOGOUT
-	{(caddr_t *) & logoutAuto, "logoutAuto", "logoutAuto", DEF_AUTO_LOGOUT, t_Int},
+	{(caddr_t *) & logoutAuto, (char *) "logoutAuto", (char *) "logoutAuto", (char *) DEF_AUTO_LOGOUT, t_Int},
 #endif
 #ifdef USE_BUTTON_LOGOUT
-	{(caddr_t *) & logoutButton, "logoutButton", "LogoutButton", DEF_BUTTON_LOGOUT, t_Int},
-	{(caddr_t *) & logoutButtonLabel, "logoutButtonLabel",
-	 "LogoutButtonLabel", DEF_BTN_LABEL, t_String},
-	{(caddr_t *) & logoutButtonHelp, "logoutButtonHelp",
-	 "LogoutButtonHelp", DEF_BTN_HELP, t_String},
-	{(caddr_t *) & logoutFailedString, "logoutFailedString",
-	 "LogoutFailedString", DEF_FAIL, t_String},
+	{(caddr_t *) & logoutButton, (char *) "logoutButton", (char *) "LogoutButton", (char *) DEF_BUTTON_LOGOUT, t_Int},
+	{(caddr_t *) & logoutButtonLabel, (char *) "logoutButtonLabel",
+	 "LogoutButtonLabel", (char *) DEF_BTN_LABEL, t_String},
+	{(caddr_t *) & logoutButtonHelp, (char *) "logoutButtonHelp",
+	 "LogoutButtonHelp", (char *) DEF_BTN_HELP, t_String},
+	{(caddr_t *) & logoutFailedString, (char *) "logoutFailedString",
+	 "LogoutFailedString", (char *) DEF_FAIL, t_String},
 #endif
 #ifdef USE_SOUND
-	{(caddr_t *) & locksound, "locksound", "LockSound", DEF_LOCKSOUND, t_String},
-	{(caddr_t *) & infosound, "infosound", "InfoSound", DEF_INFOSOUND, t_String},
-	{(caddr_t *) & validsound, "validsound", "ValidSound", DEF_VALIDSOUND, t_String},
-	{(caddr_t *) & invalidsound, "invalidsound", "InvalidSound", DEF_INVALIDSOUND, t_String},
+	{(caddr_t *) & locksound, (char *) "locksound", (char *) "LockSound", (char *) DEF_LOCKSOUND, t_String},
+	{(caddr_t *) & infosound, (char *) "infosound", (char *) "InfoSound", (char *) DEF_INFOSOUND, t_String},
+	{(caddr_t *) & validsound, (char *) "validsound", (char *) "ValidSound", (char *) DEF_VALIDSOUND, t_String},
+	{(caddr_t *) & invalidsound, (char *) "invalidsound", (char *) "InvalidSound", (char *) DEF_INVALIDSOUND, t_String},
 #endif
-	{(caddr_t *) & startCmd, "startCmd", "StartCmd", "", t_String},
-	{(caddr_t *) & endCmd, "endCmd", "EndCmd", "", t_String},
-	{(caddr_t *) & logoutCmd, "logoutCmd", "LogoutCmd", "", t_String},
+	{(caddr_t *) & startCmd, (char *) "startCmd", (char *) "StartCmd", (char *) "", t_String},
+	{(caddr_t *) & endCmd, (char *) "endCmd", (char *) "EndCmd", (char *) "", t_String},
+	{(caddr_t *) & logoutCmd, (char *) "logoutCmd", (char *) "LogoutCmd", (char *) "", t_String},
 #ifdef USE_DPMS
-	{(caddr_t *) & dpmsstandby, "dpmsstandby", "DPMSStandby", DEF_DPMSSTANDBY, t_Int},
-	{(caddr_t *) & dpmssuspend, "dpmssuspend", "DPMSSuspend", DEF_DPMSSUSPEND, t_Int},
-	{(caddr_t *) & dpmsoff, "dpmsoff", "DPMSOff", DEF_DPMSOFF, t_Int},
+	{(caddr_t *) & dpmsstandby, (char *) "dpmsstandby", (char *) "DPMSStandby", (char *) DEF_DPMSSTANDBY, t_Int},
+	{(caddr_t *) & dpmssuspend, (char *) "dpmssuspend", (char *) "DPMSSuspend", (char *) DEF_DPMSSUSPEND, t_Int},
+	{(caddr_t *) & dpmsoff, (char *) "dpmsoff", (char *) "DPMSOff", (char *) DEF_DPMSOFF, t_Int},
 #endif
 
-	{(caddr_t *) & mailCmd, "mailCmd", "MailCmd", DEF_MAILAPP, t_String},
-     	{(caddr_t *) & mailIcon, "mailIcon", "MailIcon", DEF_MAILAPP, t_String},
-	{(caddr_t *) & nomailIcon, "nomailIcon", "NomailIcon", DEF_MAILAPP, t_String},
+	{(caddr_t *) & mailCmd, (char *) "mailCmd", (char *) "MailCmd", (char *) DEF_MAILAPP, t_String},
+     	{(caddr_t *) & mailIcon, (char *) "mailIcon", (char *) "MailIcon", (char *) DEF_MAILAPP, t_String},
+	{(caddr_t *) & nomailIcon, (char *) "nomailIcon", (char *) "NomailIcon", (char *) DEF_MAILAPP, t_String},
 #ifdef USE_VTLOCK
-	{(caddr_t *) & vtlockres, "vtlock", "VtLock", DEF_VTLOCK, t_String},
+	{(caddr_t *) & vtlockres, (char *) "vtlock", (char *) "VtLock", DEF_VTLOCK, t_String},
 #endif
 #if 0
     /* These resources require special handling.  They must be examined
@@ -940,10 +977,10 @@ static argtype genvars[] =
      * calls to GetResource(), so they should not be evaluated again here.
      * For example, X-terminals need this special treatment.
      */
-	{(caddr_t *) & nolock, "nolock", "NoLock", "off", t_Bool},
-	{(caddr_t *) & inwindow, "inwindow", "InWindow", "off", t_Bool},
-	{(caddr_t *) & inroot, "inroot", "InRoot", "off", t_Bool},
-	{(caddr_t *) & remote, "remote", "Remote", "off", t_Bool},
+	{(caddr_t *) & nolock, (char *) "nolock", (char *) "NoLock", (char *) "off", t_Bool},
+	{(caddr_t *) & inwindow, (char *) "inwindow", (char *) "InWindow", (char *) "off", t_Bool},
+	{(caddr_t *) & inroot, (char *) "inroot", (char *) "InRoot", (char *) "off", t_Bool},
+	{(caddr_t *) & remote, (char *) "remote", (char *) "Remote", (char *) "off", t_Bool},
 #endif
 };
 
@@ -951,13 +988,13 @@ static argtype genvars[] =
 
 static argtype modevars[] =
 {
-	{(caddr_t *) & delay, "delay", "Delay", DEF_DELAY, t_Int},
-	{(caddr_t *) & count, "count", "Count", DEF_COUNT, t_Int},
-	{(caddr_t *) & cycles, "cycles", "Cycles", DEF_CYCLES, t_Int},
-	{(caddr_t *) & size, "size", "Size", DEF_SIZE, t_Int},
-	{(caddr_t *) & ncolors, "ncolors", "NColors", DEF_NCOLORS, t_Int},
-	{(caddr_t *) & saturation, "saturation", "Saturation", DEF_SATURATION, t_Float},
-	{(caddr_t *) & bitmap, "bitmap", "Bitmap", DEF_BITMAP, t_String}
+	{(caddr_t *) & delay, (char *) "delay", (char *) "Delay", (char *) DEF_DELAY, t_Int},
+	{(caddr_t *) & count, (char *) "count", (char *) "Count", (char *) DEF_COUNT, t_Int},
+	{(caddr_t *) & cycles, (char *) "cycles", (char *) "Cycles", (char *) DEF_CYCLES, t_Int},
+	{(caddr_t *) & size, (char *) "size", (char *) "Size", (char *) DEF_SIZE, t_Int},
+	{(caddr_t *) & ncolors, (char *) "ncolors", (char *) "NColors", (char *) DEF_NCOLORS, t_Int},
+	{(caddr_t *) & saturation, (char *) "saturation", (char *) "Saturation", (char *) DEF_SATURATION, t_Float},
+	{(caddr_t *) & bitmap, (char *) "bitmap", (char *) "Bitmap", (char *) DEF_BITMAP, t_String}
 };
 
 #define NMODEARGS (sizeof modevars / sizeof modevars[0])
@@ -1081,9 +1118,13 @@ checkSpecialArgs(int argc, char **argv)
 #ifdef CHECK_OLD_ARGS
 		{
 			static char *depreciated_args[] =
-			{"-v", "-imagefile", "-mfont", "-rule3d", "-life3dfile", "-mouse", "-shift", "-tshift"};
+	{(char *) "-v", (char *) "-imagefile", (char *) "-mfont",
+	 (char *) "-rule3d", (char *) "-life3dfile", (char *) "-mouse",
+	 (char *) "-shift", (char *) "-tshift"};
 			static char *current_args[] =
-			{"-verbose", "-bitmap", "-messagefont", "-rule", "-lifefile", "-trackmouse", "-cycle", "-cycle"};
+	{(char *) "-verbose", (char *) "-bitmap", (char *) "-messagefont",
+	 (char *) "-rule", (char *) "-lifefile", (char *) "-trackmouse",
+	 (char *) "-cycle", (char *) "-cycle"};
 			int         j;
 
 			for (j = 0; j < (int) ((sizeof current_args) / sizeof (*current_args)); j++)
@@ -1152,7 +1193,7 @@ GetResource(XrmDatabase database,
 	char       *type;
 	XrmValue    value;
 	char       *string;
-	char        buffer[1024];
+	char       *buffer;
 	char       *fullName;
 	char       *fullClassName;
 	int         len, temp;
@@ -1179,8 +1220,8 @@ GetResource(XrmDatabase database,
 		len = strlen(string);
 	}
 
-	(void) strncpy(buffer, string, sizeof (buffer));
-	buffer[sizeof (buffer) - 1] = '\0';
+	buffer = (char *) malloc(strlen(string) + 1);
+	(void) strcpy(buffer, string);
 
 	switch (valueType) {
 		case t_String:
@@ -1217,6 +1258,7 @@ GetResource(XrmDatabase database,
 				      !strcmp(buffer, "yes")) ? True : False;
 			break;
 	}
+	(void) free((void *) buffer);
 }
 
 static      XrmDatabase
@@ -1435,19 +1477,22 @@ checkDisplay(void)
 
 #if defined(__cplusplus) || defined(c_plusplus)		/* !__bsdi__ */
 /* #include <netdb.h> */
-#if HAVE_GETHOSTNAME
 #ifdef SunCplusplus
 	extern struct hostent *gethostbyname(const char *);
-
 #else
+#if !HAVE_GETHOSTNAME
 #if 0
 	extern int  gethostname(char *, size_t);
 	extern struct hostent *gethostbyname(const char *);
 
 #endif
-#endif
+#else
+#if 1
+extern int  gethostname(char *, size_t);
 #else
 #define gethostname(name,namelen) sysinfo(SI_HOSTNAME,name,namelen)
+#endif
+#endif
 #endif
 #endif
 
@@ -1627,10 +1672,9 @@ getAppResources(char *homeenv, char **custom, XrmDatabase * RDB,
 	XrmDatabase cmdlineDB = NULL;
 	XrmDatabase userDB = NULL;
 	XrmDatabase applicationDB = NULL;
-	extern char *getenv(const char *);
 
 	env = getenv("XFILESEARCHPATH");
-	applicationDB = parsefilepath(env ? env : DEF_FILESEARCHPATH,
+	applicationDB = parsefilepath(env ? env : (char *) DEF_FILESEARCHPATH,
 				      "app-defaults", classname, *custom);
 
 	XrmParseCommand(&cmdlineDB, cmdlineTable, cmdlineEntries, ProgramName,
@@ -1677,25 +1721,25 @@ getAppResources(char *homeenv, char **custom, XrmDatabase * RDB,
 		(void) XrmMergeDatabases(*serverDB, RDB);
 #else
 	GetResource(*RDB, ProgramName, classname, "display", "Display", t_String,
-		    "", &displayname);
+		    (char *) "", &displayname);
 #endif
 	GetResource(*RDB, ProgramName, classname, "parent", "Parent", t_String,
-		    "", &parentname);
+		    (char *) "", &parentname);
 	if (parentname && *parentname) {
 		if (sscanf(parentname, "%ld", &parent))
 			parentSet = True;
 	}
 	GetResource(*RDB, ProgramName, classname, "nolock", "NoLock", t_Bool,
-		    "off", (caddr_t *) & nolock);
+		    (char *) "off", (caddr_t *) & nolock);
 	GetResource(*RDB, ProgramName, classname, "inwindow", "InWindow", t_Bool,
-		    "off", (caddr_t *) & inwindow);
+		    (char *) "off", (caddr_t *) & inwindow);
 	GetResource(*RDB, ProgramName, classname, "inroot", "InRoot", t_Bool,
-		    "off", (caddr_t *) & inroot);
+		    (char *) "off", (caddr_t *) & inroot);
 	GetResource(*RDB, ProgramName, classname, "remote", "Remote", t_Bool,
-		    "off", (caddr_t *) & remote);
+		    (char *) "off", (caddr_t *) & remote);
 #ifdef USE_DTSAVER
 	GetResource(*RDB, ProgramName, classname, "dtsaver", "DtSaver", t_Bool,
-		    "off", (caddr_t *) & dtsaver);
+		    (char *) "off", (caddr_t *) & dtsaver);
 	if (dtsaver) {
 		inroot = False;
 		inwindow = True;
@@ -1721,7 +1765,6 @@ getResources(Display ** displayp, int argc, char **argv)
 	char       *homeenv = NULL;
 	int         i, j;
 	int         max_length;
-	extern char *getenv(const char *);
 extern void XlockrmParseCommand(
     XrmDatabase		*pdb,		/* data base */
     register XrmOptionDescList options, /* pointer to table of valid options */
@@ -1746,7 +1789,7 @@ extern void XlockrmParseCommand(
 #endif
 
 	/* Application Class is fixed */
-	classname = DEF_CLASSNAME;
+	classname = (char*) DEF_CLASSNAME;
 	/*
 	 * Application Name may be modified by -name arg from command
 	 * line so you can have different resource files for different
@@ -1766,7 +1809,7 @@ extern void XlockrmParseCommand(
 #endif
 	homeenv = getenv("HOME");
 	if (!homeenv)
-		homeenv = "";
+		homeenv = (char *) "";
 
 #ifdef CUSTOMIZATION
 	openDisplay(displayp);
@@ -1774,7 +1817,7 @@ extern void XlockrmParseCommand(
 	getAppResources(homeenv, &custom, &RDB, &serverDB, &argc, argv);
 	checkDisplay();
 #else
-	custom = "";
+	custom = (char *) "";
 	getAppResources(homeenv, &custom, &RDB, &argc, argv);
 	openDisplay(displayp);
 	checkDisplay();
@@ -1808,7 +1851,7 @@ extern void XlockrmParseCommand(
 	(void) XrmMergeDatabases(generalDB, &RDB);
 
 	GetResource(RDB, ProgramName, classname, "mode", "Mode", t_String,
-		    DEF_MODE, (caddr_t *) & mode);
+		    (char *) DEF_MODE, (caddr_t *) & mode);
 
 	XrmParseCommand(&modeDB, modeTable, modeEntries, ProgramName, &argc, argv);
 	(void) XrmMergeDatabases(modeDB, &RDB);
@@ -1954,6 +1997,10 @@ extern void XlockrmParseCommand(
    * line.  PURIFY 4.0.1 on SunOS4 reports this also when using X11R5, but not
    * with OpenWindow 3.0 (X11R4 based). */
 	(void) XrmDestroyDatabase(RDB);
+	if (!strcmp(mode, "run")) {
+		geometry = (char *) malloc(4);
+		(void) strcpy(geometry, "1x1");
+	}
 
 	/* Parse the rest of the command line */
 	for (argc--, argv++; argc > 0; argc--, argv++) {
@@ -2013,7 +2060,7 @@ extern void XlockrmParseCommand(
 		grabserver = False;
 		install = False;
 		lockdelay = 0;
-		geometry = DEF_GEOMETRY;
+		geometry = (char *) DEF_GEOMETRY;
 	}
 #endif
 
@@ -2087,16 +2134,16 @@ extern void XlockrmParseCommand(
 void
 checkResources(void)
 {
-	extern char old_default_mode[];
+	extern char * old_default_mode;
 	int         i;
 
 	/* in case they have a 'xlock*mode: ' empty resource */
-	if (!mode || *mode == '\0')
-		mode = DEF_MODE;
+	if (!mode || !*mode)
+		mode = (char *) DEF_MODE;
 
-	if (!strcmp(old_default_mode, "")) {
-		(void) strncpy(old_default_mode, mode, 20-1);
-		old_default_mode[20-1] = '\0';
+	if (!old_default_mode || !*old_default_mode) {
+		 old_default_mode = (char *) malloc(strlen(mode) + 1);
+		(void) strcpy(old_default_mode, mode);
 	}
 	for (i = 0; i < numprocs; i++) {
 		if (!strcmp(LockProcs[i].cmdline_arg, mode)) {

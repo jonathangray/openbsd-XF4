@@ -13,12 +13,15 @@
 XCOMM !!!WARNING!!! Known security hole with MesaGL < 3.0 if setuid root
 XCOMM Define these now or down further below, see below for explaination.
 XCOMM  #define CPPCompiler
-XCOMM  #define XpmLibrary /* On OpenBSD this is HasXpm */
+#define XpmLibrary	
 XCOMM  #define XmLibrary
-XCOMM  #define XawLibrary
-XCOMM  #define GLLibrary
+#ifdef HasPosixThreads
+#define GLLibrary
+#endif
+XCOMM  #define TtfLibrary
+XCOMM  #define GlttLibrary
 XCOMM  #define DtSaverLibrary
-XCOMM  #define DPMSLibrary
+#define DPMSLibrary
 XCOMM  #define RplayLibrary
 XCOMM  #define NasLibrary
 XCOMM  #define Modules
@@ -43,12 +46,14 @@ XCOMM  CC = acc
 XCOMM  CC = CC
 XCOMM  CC = gcc -Wall
 XCOMM  CC = g++ -Wall
+XCOMM  CXX = g++ -Wall
+XCOMM  CXX = CC
 
 LN_S = $(LN)
 
 XCOMM   *** BEGIN C++ CONFIG SECTION ***
 
-XCOMM Only the invert.c and text3d.cc modes use this.
+XCOMM Only the solitare, invert.c, and text3d.cc modes use this.
 XCOMM modes use this.
 XCOMM If your system has libXpm, remove the 'XCOMM  ' from the next line.
 XCOMM  #define CPPCompiler
@@ -57,32 +62,44 @@ XCOMM If your system has C++, remove the 'XCOMM  ' from the next line.
 #ifdef CPPCompiler
 CPPDEF = -DHAVE_CXX
 XCOMM Need this to get text3d.cc to work.
-XCOMM CPPDEF += -DHAVE_TTF -DHAVE_GLTT
+XCOMM If your system has these 2 remove the 'XCOMM  ' from the next 2 lines.
+XCOMM  #define TtfLibrary
+XCOMM  #define GlttLibrary
+
+#ifdef TtfLibrary
+#ifdef GlttLibrary
+CPPDEF += -DHAVE_TTF -DHAVE_GLTT
+GLTTLIB = -L/usr/local/lib -lgltt
+TTFLIB = -L/usr/local/lib -lttf
+#endif
+#endif
 #endif
 
 XCOMM   *** END C++ CONFIG SECTION ***
 
 XCOMM   *** BEGIN XPM CONFIG SECTION ***
 
-XCOMM Only the bat.c, cartoon.c, flag.c, image.c, maze.c, and puzzle.c
+XCOMM Only the bat.c, flag.c, image.c, maze.c, and puzzle.c
 XCOMM modes use this.
 XCOMM If your system has libXpm, remove the 'XCOMM  ' from the next line.
 XCOMM  #define XpmLibrary
 
+#ifdef XpmLibrary
 XPMDEF = -DUSE_XPM
 XCOMM Use the following if your xpm.h file is not in an X11 directory
 XCOMM  XPMDEF = -DUSE_XPMINC
 
 XCOMM If you get an error "Cannot find xpm.h" while compiling, set
 XCOMM XPMINC to the directory X11/xpm.h is in.  Below is a guess.
-XCOMM XPMINC = -I/usr/local/include
+XPMINC = -I/usr/local/include
 XCOMM SGI's ViewKit (use with -DUSE_XPMINC)
 XCOMM  XPMINC = -I/usr/include/Vk
 
 XCOMM If you get an error "Cannot find libXpm" while linking, set XPMLIBPATH
 XCOMM to the directory libXpm.* is in.  Below is a guess.
-XCOMM XPMLIB = XpmLibrary
+XPMLIB = -L/usr/local/lib -lXpm
 
+#endif
 
 XCOMM   *** END XPM CONFIG SECTION ***
 
@@ -113,53 +130,34 @@ XCOMM  EDITRESLIB = -lXmu
 
 XCOMM   *** END XM CONFIG SECTION ***
 
-XCOMM   *** BEGIN XAW CONFIG SECTION ***
-
-XCOMM Only options.c and xalock.c uses Athena.
-XCOMM If your system has libsx, libXaw, and libXmu,
-XCOMM remove the 'XCOMM  ' from the next line.
-XCOMM  #define XawLibrary
-
-#ifdef XawLibrary
-XCOMM If its not with your X11 stuff you should set the following
-XCOMM  ATHENAHOME = /usr/local
-
-XCOMM Below is a guess.
-XCOMM  XAWINC = -I$(ATHENAHOME)/include
-
-XCOMM Below is a guess.
-XCOMM  XAWLIB = -L$(ATHENAHOME)/lib -lsx -lXaw -lXmu
-XAWLIB = -lsx -lXaw -lXmu
-
-#endif
-
-XCOMM   *** END XAW CONFIG SECTION ***
-
 XCOMM   *** BEGIN MESAGL AND OPENGL CONFIG SECTION ***
 
-XCOMM escher, gears, morph3d, pipes, superquadrics, sproingies modes use this.
+XCOMM Modes in modes/glx use this.
 XCOMM If your system has libMesaGL & widgets,
 XCOMM remove the 'XCOMM  ' from the next line.
 XCOMM  #define GLLibrary
 
 #ifdef GLLibrary
+#include <Threads.tmpl>
 GLDEF = -DUSE_GL
 
 XCOMM If you get an error "Cannot find GL/gl.h" while compiling, set
 XCOMM GLINC to the directory GL/gl.h is in.
-GLINC = -I/usr/local/include
+XCOMM GLINC = -I/usr/local/include
 
 XCOMM If you get an error "Cannot find libMesaGL" while linking, set GLLIBPATH
 XCOMM to the directory libMesaGL.* is in.  Below is a guess.
 XCOMM !!!WARNING!!! Known security hole with MesaGL < 3.0 if setuid root
-GLLIB = -L/usr/local/lib -lMesaGL -lMesaGLU
+GLLIB = -lGL -lGLU
+XCOMM   GLLIB = -L/usr/local/lib -lMesaGL -lMesaGLU
 
-XCOMM On SGI
-XCOMM  GLLIB = -lGL -lGLU -lgl
-XCOMM On other OpenGL
-XCOMM  GLLIB = -lGL -lGLU
-XCOMM On Sun with OGL1.1
-XCOMM  GLDEF += -DSUN_OGL_NO_VERTEX_MACROS
+#if SGIArchitecture
+GLLIB = -lGL -lGLU -lgl
+#endif
+#if SunArchitecture
+XCOMM with OGL1.1
+GLDEF += -DSUN_OGL_NO_VERTEX_MACROS
+#endif
 XCOMM 3Dfx card
 XCOMM  GLDEF += -DFX
 XCOMM Threads
@@ -191,7 +189,7 @@ XCOMM  #define DPMSLibrary
 #ifdef DPMSLibrary
 DTSAVERDEF = -DUSE_DPMS
 XCOMM DPMSINC =
-DPMSLIB = -lXdpms
+XCOMM DPMSLIB = -lXdpms
 #endif
 
 XCOMM   *** END DPMS CONFIG SECTION ***
@@ -236,8 +234,8 @@ XCOMM Uncomment to use your system's Random Number Generator
 XCOMM They usually come in 3 types
 
 XCOMM Uncomment to use high-precision (but expensive) RNG
-XCOMM  SRANDDEF = -DSRAND=srand48
-XCOMM  LRANDDEF = -DLRAND=lrand48
+SRANDDEF = -DSRAND=srand48
+LRANDDEF = -DLRAND=lrand48
 
 XCOMM  SRANDDEF = -DSRAND=srandom
 XCOMM  LRANDDEF = -DLRAND=random
@@ -276,9 +274,11 @@ XCOMM This is the default directory to look in for modules. It can be
 XCOMM a colon separated list of directories.
 DEF_MODULEPATH = $(USRLIBDIR)/X11/xlock_modules
 
+#ifdef LinuxArchitecture
 XCOMM Flag to compile the main program so that global variables will be
-XCOMM available to modules
+XCOMM available to modules (gives errors on Sun).
 MODULEFLAGS = -rdynamic
+#endif
 
 MODULEDEF = -DDEF_MODULEPATH=\"$(DEF_MODULEPATH)\" -DUSE_MODULES
 
@@ -300,6 +300,15 @@ CHECKDEF = -DDEBUG
 
 XCOMM      *** END DEBUG CHECK SECTION ***
 
+XCOMM      *** BEGIN INTERACTIVE CHECK SECTION ***
+
+#define DisableInteractive
+
+#ifdef DisableInteractive
+XCOMM Can disable interactive modes for production environments
+INTERACTIVEDEF = -DDISABLE_INTERACTIVE
+#endif
+
 XCOMM      *** BEGIN UNSTABLE CHECK SECTION ***
 
 XCOMM #define Unstable
@@ -311,10 +320,6 @@ UNSTABLEDEF = -DUSE_UNSTABLE
 
 XCOMM      *** END DEBUG CHECK SECTION ***
 
-XCOMM      *** DEFINE THIS TO USE A SEPARATE PROCESS (SAFER) ***
-XCOMM      *** TO VALIDATE PASSWORDS                         ***
-XCOMM PIPEDEF = -DUSE_A_DAMN_PIPE
-
 #ifndef __QNX__
 #ifndef MathLibrary
 #define MathLibrary -lm
@@ -325,13 +330,10 @@ PASSWDDEF = -DHAVE_SHADOW -Dlinux
 PASSWDLIB = -l/src/util/Lib/util
 #endif
 
-#if HasKrbIV
 XCOMM KERBEROS Ver. 4
-PASSWDDEF = -DHAVE_KRB4
+XCOMM  PASSWDDEF = -DHAVE_KRB4
 XCOMM  PASSWDINC = -I/usr/athena/include
 XCOMM  PASSWDLIB = -L/usr/athena/lib -lkrb -ldes -lresolv
-PASSWDLIB = -lkrb -ldes
-#endif
 XCOMM
 XCOMM KERBEROS Ver. 5
 XCOMM  PASSWDDEF = -DHAVE_KRB5
@@ -370,7 +372,11 @@ PASSWDDEF = -DHAVE_SHADOW
 XCOMM Problems finding libXext.so.0 when sticky bit is set
 EXTRA_LDOPTIONS = -R/usr/lib:/usr/openwin/lib:/usr/dt/lib:/usr/local/lib
 
+#if OSMajorVersion == 2 && OSMinorVersion < 7
 PIXMAPTYPE = sol
+#else
+PIXMAPTYPE = solaris
+#endif
 #else
 SYSTEMDEF = -DSUNOS4 -DUSE_MATHERR
 SLEEPDEF = -DHAVE_USLEEP
@@ -409,10 +415,15 @@ PASSWDDEF = -DHAVE_SHADOW
 BITMAPTYPE = x11
 PIXMAPTYPE = x11
 #else
-#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(OpenBSDArchitecture) || defined(i386BsdArchitecture)
+#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture)
 SLEEPDEF = -DHAVE_USLEEP
 BITMAPTYPE = bsd
 PIXMAPTYPE = bsd
+#ifndef OpenBSDArchitecture
+INSTPGMFLAGS = -s -o root -m 4111
+#else
+INSTPGMFLAGS = -s -g auth -m 2755
+#endif
 #else
 #ifdef LinuxArchitecture
 SLEEPDEF = -DHAVE_USLEEP
@@ -446,12 +457,14 @@ XCOMM  PASSWDLIB += /usr/afsws/domestic/lib/librxkad.a usr/lib/libsocket.so.1 /u
 XCOMM You may need this one too.
 XCOMM  EXTRA_LIBRARIES = -laudit
 
-
 #else
 #ifdef UltrixArchitecture
 BITMAPTYPE = dec
 PIXMAPTYPE = dec
 EXTRA_LIBRARIES = -lauth
+XCOMM Use this if your site is using SIA:
+XCOMM  PASSWDDEF = -DSIA
+XCOMM  PASSWDLIB = -lsecurity 
 #else
 
 #ifdef SCOArchitecture
@@ -497,7 +510,9 @@ XCOMM -DUSE_BUTTON_LOGOUT=10    Enable logout button and set appear time (min)
 XCOMM -DDEF_BUTTON_LOGOUT=\"5\" Set default logout button (minutes)
 XCOMM -DUSE_BOMB                Enable automatic logout mode (does not come up
 XCOMM                           in random mode)
-XCOMM -DUSE_UNSTABLE            Enable unstable bubble3d GL mode
+XCOMM -DDISABLE_INTERACTIVE     Disable interactive modes (useful for production
+XCOMM                           enviroments)
+XCOMM -DUSE_UNSTABLE            Enable unstable (alpha) modes
 XCOMM -DCLOSEDOWN_LOGOUT        Use with USE_AUTO_LOGOUT, USE_BUTTON_LOGOUT,
 XCOMM                           USE_BOMB if using xdm
 XCOMM -DSESSION_LOGOUT          Alternate of above
@@ -505,7 +520,8 @@ XCOMM -DSTAFF_FILE=\"/etc/xlock.staff\"  File of staff who are exempt
 XCOMM -DSTAFF_NETGROUP=\"/etc/xlock.netgroup\"  Netgroup that is exempt
 
 XCOMM May have to combine in one long line if "+=" does not work
-OPTDEF = -DUSE_VROOT -DALWAYS_ALLOW_ROOT -DUSE_BOMB -DCOMPLIANT_COLORMAP
+OPTDEF = -DUSE_VROOT -DALWAYS_ALLOW_ROOT -DUSE_BOMB
+XCOMM  OPTDEF += -DDISABLE_INTERACTIVE
 XCOMM  OPTDEF += -DUSE_UNSTABLE
 XCOMM  OPTDEF += -DUSE_SYSLOG -DSYSLOG_FACILITY=LOG_AUTH
 XCOMM  OPTDEF += -DSYSLOG_WARNING=LOG_WARNING
@@ -524,17 +540,20 @@ XCOMM  OPTDEF += -DSTAFF_FILE=\"/etc/xlock.staff\"
 XCOMM  OPTDEF += -DSTAFF_NETGROUP=\"/etc/xlock.netgroup\"
 
 DEFINES = -DDEF_FILESEARCHPATH=\"$(LIBDIR)/%T/%N%S\" \
-$(PIPEDEF) $(SYSTEMDEF) $(EDITRESDEF) $(SLEEPDEF) $(OPTDEF) $(RANDDEF) \
-$(MODULEDEF) $(CHECKDEF) $(UNSTABLEDEF) $(PASSWDDEF) $(XMINC) $(XAWINC) \
-$(CPPDEF) $(XPMDEF) $(GLDEF) $(DTSAVERDEF) $(DPMSDEF) \
+$(SYSTEMDEF) $(EDITRESDEF) $(SLEEPDEF) $(OPTDEF) $(RANDDEF) \
+$(MODULEDEF) $(CHECKDEF) $(INTERACTIVEDEF) $(UNSTABLEDEF) $(PASSWDDEF) \
+$(XMINC) $(XAWINC) $(CPPDEF) $(XPMDEF) $(GLDEF) $(DTSAVERDEF) $(DPMSDEF) \
 $(SOUNDDEF) $(PASSWDINC) $(XPMINC) $(GLINC) $(DTSAVERINC) $(DPMSINC) \
 $(SOUNDINC) $(XLOCKINC)
 
 DEPLIBS = $(DEPXLIB)
-LOCAL_LIBRARIES = $(MODULELIB) $(XPMLIB) $(GLLIB) $(DTSAVERLIB) \
-$(DPMSLIB) $(XLIB) $(SOUNDLIB)
-MLIBS = $(XPMLIB) $(XMLIB) $(EDITRESLIB) -lXt $(XLIB) $(SMLIB) $(ICELIB)
-ALIBS = $(XAWLIB) -lXt $(XLIB) $(SMLIB) $(ICELIB)
+#if SGIArchitecture
+FIRSTLIB = -L/usr/lib32
+#endif
+LOCAL_LIBRARIES = $(FIRSTLIB) $(MODULELIB) $(XLIB) \
+$(XPMLIB) $(GLLIB) $(TTFLIB) $(GLTTLIB) $(DTSAVERLIB) $(DPMSLIB) $(SOUNDLIB)
+MLIBS = $(FIRSTLIB) $(XPMLIB) $(XMLIB) $(EDITRESLIB) -lXt \
+$(XLIB) $(SMLIB) $(ICELIB)
 LINTLIBS = $(LINTXLIB)
 #if HasLibCrypt
        CRYPTLIB = -lcrypt

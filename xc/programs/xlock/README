@@ -1,31 +1,69 @@
-xlockmore-4.16.1: the maintained version of xlock
+xlockmore-5.01.2: the maintained version of xlock
 see docs/Revisions for more version stuff
 see docs/TODO for stuff to do :)
-
-I have significantly less time to maintain this but I try.
-If someone has some free time and wants to take over... let me know.
-(Help is always appreciated too ;) ).
+Help is always appreciated too ;) .
 
 Primary site: ftp://ftp.tux.org/pub/people/david-bagley/xlockmore
 Secondary site: ftp://ftp.x.org/contrib/applications
 Web page: http://www.tux.org/~bagleyd/xlockmore.html
 Maintainer: David A. Bagley <bagleyd@tux.org>
 
-Majordomos: Mail to majordomo@tux.org with just
-subscribe [choice] [your-email-address]
-  in the body.
-    choice                  brief description
-    ------                  -----------------
-    xlock-beta              Xlock beta and production announcements
-    xlock-alpha             Xlock alpha ("daily") release announcements
-    xlock                   Xlock/Xlockmore development discussion
-  If there is trailing signature junk, just put "end" as the last line to
-  be read.  If you need help just put "help" in the body.
+Mailman lists: http://www.tux.org/mailman/listinfo
+If you are interested in contributing to XLock development and/or maintenance
+or just want to be notified when the latest stable version comes out.
+
+    choices                 brief description
+    -------                 -----------------
+    xlock-announce          Xlock beta and production announcements
+    xlock-develop           Xlock alpha ("daily") release announcements
+    xlock-discuss           Xlock/Xlockmore development discussion
 
 SECURITY WARNING:
 -----------------
 xlock using the MesaGL Libraries (<= 2.6) setuid root has a known method for
 users to obtain root privledges!
+
+LEAK
+----
+If using Mesa 3.4.1 and earlier you may want to fix a leak for glXUseXFont()
+*** src/X/xfonts.c.orig	Fri Feb  9 09:42:36 2001
+--- src/X/xfonts.c	Thu May  3 09:24:21 2001
+***************
+*** 260,266 ****
+    bm = (GLubyte *) MALLOC((max_bm_width * max_bm_height) * sizeof 
+  (GLubyte));
+    if (!bm) {
+!       XFreeFontInfo( NULL, fs, 0 );
+        gl_error(NULL, GL_OUT_OF_MEMORY,
+                  "Couldn't allocate bitmap in glXUseXFont()");
+        return;
+--- 260,266 ----
+    bm = (GLubyte *) MALLOC((max_bm_width * max_bm_height) * sizeof 
+  (GLubyte));
+    if (!bm) {
+!       XFreeFontInfo( NULL, fs, 1 );
+        gl_error(NULL, GL_OUT_OF_MEMORY,
+                  "Couldn't allocate bitmap in glXUseXFont()");
+        return;
+***************
+*** 375,381 ****
+      }
+  
+    FREE(bm);
+!   XFreeFontInfo( NULL, fs, 0 );
+    XFreeGC (dpy, gc);
+  
+    /* Restore saved packing modes.  */
+--- 375,381 ----
+      }
+  
+    FREE(bm);
+!   XFreeFontInfo( NULL, fs, 1 );
+    XFreeGC (dpy, gc);
+  
+    /* Restore saved packing modes.  */
+
+
 
 Please send all bug reports to bagleyd@tux.org .
 Alpha versions may be available through web page or primary ftp site.
@@ -37,7 +75,6 @@ How to build?
 -------------
   An ANSI C compiler is required for build.
   motif (and editres) are used to build xmlock and are not used in xlock.
-  athena and sxlib are used to build xalock and are not used in xlock.
 
   Check below to see if your machine is one mentioned that causes
   problems, otherwise it should be easy.  Just to be safe after installing
@@ -60,7 +97,7 @@ How to build?
     configure --prefix=/usr/openwin ; make ; make install
 
   imake:
-    Sometimes this is not setup correctly by the distributer ... i.e. not
+    Sometimes this is not setup correctly by the distributor ... i.e. not
     my fault.  You may want to do these quick edits to the iconfig.h so you
     have more capabilities:
 
@@ -81,7 +118,7 @@ How to build?
     See VMS below.
 
 
-Note to binary redistributers:
+Note to binary redistributors:
 -----------------------------
   Probably should not distribute with any library requirements
   (except possibly XPM, unless you statically link them in
@@ -176,7 +213,7 @@ XCOMM #define DtSaverLibrary
         DTSCREENSAVERLIST stuff in etc/dtprofile
       cp etc/dtscreen.dt /usr/dt/appconfig/types/C/dtscreen.dt
 
-    The disadvantage to the above is some features of xlock are abscent,
+    The disadvantage to the above is some features of xlock are absent,
       in particular, the logout lab feature.  This version of xlock does not
       hava a drop in replacement for the Screen Style Manager.  Here is a
       work around on Solaris in 3 patches:
@@ -253,6 +290,124 @@ XCOMM #define DtSaverLibrary
   dtsession*saverList: StartDtscreenBlank
 
 
+  Using xlock from the dtwm front panel
+  (from Sun Infodoc ID 13527 available from http://sunsolve.sun.com)
+--------------------------------------------------------------------
+First the easy way (This is to overwrite the default CDE action)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Run dtcreate
+2. Create an action called LockDisplay
+3. Set the "Command when action is opened" field to:
+		 /usr/openwin/bin/xlock
+4. Set the "Window Type" field to No Output.
+5. Save the file ==> this creates a LockDisplay.dt in ~/.dt/types
+6. Reload the action.
+
+This will help you to bring up xlock when you are using lock in the
+front panel.
+
+			
+
+
+Second way (another way to use action)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Create a new action for your desktop.  We'll call it Xlock.
+2. Tell the desktop about the new action and then test it.
+3. Modify the front panel so that it will call your new
+           action, Xlock, instead of the old action, LockDisplay.
+
+1. CREATING A NEW ACTION:
+
+        - cd to ~/.dt/types and create a file called Xlock.dt.
+        - Add the following action definition to this file.
+
+ACTION Xlock
+{
+        LABEL           Xlock
+        ARG_COUNT       0
+        TYPE            COMMAND
+        WINDOW_TYPE     NO_STDIO
+        EXEC_STRING     /usr/openwin/bin/xlock
+        DESCRIPTION     xlock
+}
+
+        - This action definition defines an action called "Xlock".
+          When the action is called, it will execute xlock by
+          calling /usr/openwin/bin/xlock.
+
+2. TELLING THE DESKTOP ABOUT THE NEW ACTION AND TESTING IT:
+
+        - Now that we have defined the new Xlock action, we need to
+          first tell the desktop about it and then test it.
+        - To tell the desktop about the new action bring up
+          the "Application Manager".  You can do this by selecting
+          it from the front panel.
+        - From the Application Manager, select "Desktop_Tools"
+        - Now, select "Reload Actions". 
+
+        - At this point, the desktop knows about the new Xlock action.
+          To test it, type "dtaction Xlock".  Xlock should start up.
+
+
+3. ADDING THE NEW ACTION TO THE FRONT PANEL:
+          
+        - copy the dtwm front panel configuration file, dtwm.fp, from 
+          /opt/CDE/appconfig/types/C directory to your personal dt 
+          directory "~/.dt/types" directory.
+        - cd to ~/.dt/types
+        - From here, edit the dtwm.fp
+        - Search for Lock.  You should see something like:
+
+CONTROL Lock
+{
+  TYPE                  icon
+  CONTAINER_NAME        Switch
+  CONTAINER_TYPE        SWITCH
+  POSITION_HINTS        1
+  ICON                  Fplock
+  LABEL                 Lock
+  PUSH_ACTION           LockDisplay
+  HELP_TOPIC            FPOnItemLock
+  HELP_VOLUME           FPanel
+}
+
+        - When you press the lock icon on the front panel, it calls
+          the action LockDisplay.  The above paragraph is the definition
+          for that front panel lock icon.
+
+        - To get the front panel lock icon to call the action we
+          just defined, Xlock, instead of the LockDisplay action, all 
+          you need do is change the PUSH_ACTION line from 
+          "LockDisplay" to "Xlock".  
+          
+CONTROL Lock
+{
+  TYPE                  icon
+  CONTAINER_NAME        Switch
+  CONTAINER_TYPE        SWITCH
+  POSITION_HINTS        1
+  ICON                  Fplock
+  LABEL                 Lock
+  PUSH_ACTION           Xlock
+  HELP_TOPIC            FPOnItemLock
+  HELP_VOLUME           FPanel
+}
+
+        - Note:  You might change the Label field to Xlock and you 
+          might remove the HELP_TOPIC and HELP_VOLUME fields, but this
+          modification is not necessary.
+
+        - Now tell the window manger to reread the configuration
+          files.  You do this by selecting "Restart Workspace Manager..."
+          from your workspace menu.
+
+        - Press the lock icon on the front panel...xlock should be 
+          called.  If not, make sure your DTDATABASESEARCHPATH 
+          environment variable contains $HOME/.dt/types.
+--------------------------------------------------------------------
+
   DCE authentication (tested only on HP's)
     See iconfig.h (xmkmf) or modes/Makefile.in (configure).
 
@@ -289,22 +444,22 @@ XCOMM #define DtSaverLibrary
     HP-UX with Passwd Etc:
       Compile with -DHP_PASSWDETC .
       Link with -lrgy -lnck -lndbm .
+      This is insecure so make sure you know this by having you go to the
+      code to enable it.
     Calls to XSetScreenSaver when using CDE (i.e. not called with -dtsaver)
-      is not supported.  This can cause a disruption in the rpc ttdbserver
+      are not supported.  This can cause a disruption in the rpc ttdbserver
       system resulting in the CDE lock and exit buttons to fail, 5 to 50%
       of the time.  I am told this will not be fixed by HP, only documented.
       The only supported method of doing this stuff is via dtstyle.
     configure --without-editres   if configure gets tripped up
     I found on my system -g -O trips up on life.c and shape.c ... so just
-      have one or the other.  Also had to link with cc not CC or got
-CC: error: could not find _main symbol.  You must use CC to link.
-If your main is not in C++, a call to _main() is required. (740)
+      have one or the other.
 
   IRIX (SGI)
     OpenGL works but may be a little flaky.
 
   KERBEROS
-    See iconfig.h (xmkmf) or modes/Makefile.in (configure).
+    See iconfig.h (xmkmf) or configure --help .
 
   Linux (Intel 80386, 80486, & Pentium)
     Red Hat and PAM ... may not work ... #define BAD_PAM in config.h after
@@ -328,9 +483,9 @@ If your main is not in C++, a call to _main() is required. (740)
         chown root.root /etc/shadow   (or root.shadow if it exists)
         chmod 400 /etc/shadow
         (chmod 440 /etc/shadow may be better).
-    So far, Slackware (a major Linux distribution) does NOT come with shadow
-      passwords standard.  If you want to install shadow passwords (be
-      careful, it can be tricky) it's on sunsite.unc.edu in
+    If you want to install shadow passwords on a system that doesn't
+     already have them  (be careful, it can be tricky),  see
+     http://sunsite.unc.edu/linux/HOWTO/Shadow-Password-HOWTO.html
 
     Also see "XFree86" if applicable.
 
@@ -435,6 +590,21 @@ xlock.c:1584: `sigset_t' undeclared (first use this function)
          You need some UNIX utilities installed (XVMSUTILS).  See where to get
          it below.
          Look at the make.com and xvmsutil stuff.
+    Latest on VMS sound
+      first it tests if the SO: device is present
+      Then if it could be compiled in (license problems) MMOV (Multimedia
+      services for OpenVMS) is used. Probably you'll need the Developer
+      license to get it compiled.
+      limitations :
+         -currently the SYSNAM privilige is needed to play sounds
+          (limitation of MMOV)
+         -some compilation warnings/informationals in the routines which
+          are taken from the users system disk. (problem in MMOV)
+         -One warning due to multiple defined symbols in the libraries
+          issued by Compaq should be ignored.
+         -Presently A developer license for MMOV is needed. Probably by
+          slightly modifying DEF_PLAY the Run-time license could also
+          be usable.
 
   X11
     If your using g++-2.95 or later and have old X11 includes you may have
@@ -455,22 +625,6 @@ xlock.c:1584: `sigset_t' undeclared (first use this function)
     Try configuring with --enable-vtlock .  This is experimental and requires
       xlock being setuid to root so there are security concerns with it.
       See man pages for its runtime options.
-    4.x
-      1) Removed the -lXdpms from XLOCKLIBS in modes/Makefile
-      2) changed xlock/xlock.c as follows:
-new: {38} diff -u xlock/xlock.c.orig xlock/xlock.c
---- xlock/xlock.c.orig        Thu Mar 16 04:04:15 2000
-+++ xlock/xlock.c     Thu Mar 16 04:04:30 2000
-@@ -591,8 +591,8 @@
- #endif
- #ifdef USE_DPMS
- #define MIN_DPMS 30            /* 30 second minimum */
-+#include <X11/Xproto.h>
- #include <X11/extensions/dpms.h>
--extern unsigned char DPMSQueryExtension(Display *, int *, int *);
- extern int  DPMSGetTimeouts(Display *, unsigned short *, unsigned short *, unsigned short *);
- extern int  DPMSSetTimeouts(Display *, unsigned short, unsigned short, unsigned short);
- extern int  dpmsstandby;
 
   XPM
     Full color pixmap package.  See below on availability.  Follow its
@@ -507,6 +661,8 @@ XCOMM #define XpmLibrary
      XInstallColormap(dpy,last_cmap);
    }
     make sure this does not happen.
+    (fvwm does this because its following the X11 docs which say that
+    window managers should not allow an application to install colormaps).
 
   swirl (and tube) mode
     Use with -install to see colormap change.
@@ -519,6 +675,10 @@ XCOMM #define XpmLibrary
     I hear it LOCKS UP on i386BsdArchitecture and tvtwm.
     With twm (and fvwm see above) the colormap does not change.
 
+  transparent mode
+     Try this fudge:
+       xlock -mode blank -geometry 1x1 -enablesaver
+
   SafeWord
     Edit config.h.in ... uncomment SAFEWORD line near bottom.
     In modes/Makefile.in make sure SAFEWORD is linked in, comment out
@@ -528,25 +688,43 @@ XCOMM #define XpmLibrary
     Get back to me if it works or does not work.
 
   Dynamic Linking
-    Using xmkmf -a (MODULE_PATH set in iconfig.h).
-    Using configure --enable-modules (MODULE_PATH set in modes/Makefile(.in)
-      and xlock/Makefile(.in) .
-    GL modes should work but colormap seems to be wrong.  The multiple
-      files per mode modes are temporarily excluded.
-    How to use elf on the Linux and Sun (with gcc and Gnu's make).
-    Uncomment this in iconfig.h
-#define Modules
+    Dynamic Linking using elf on the Linux and Sun.  This is kind of fragile
+      and will break other systems.  GL modes using Mesa on a PseudoColor
+      display seem to run short of colors.
+    Linux:
+      Not all distributions of Linux have "dlfcn.h" which is needed.
+      Using configure --enable-modules (MODULE_PATH set in modes/Makefile(.in)
+        and xlock/Makefile(.in) then build as normal. This is not recomended
+        since random mode seems to act very strangely.
+      Uncomment at least "#define Modules" in iconfig.h, run "xmkmf -a"
+        and run make install as normal.
+    Sun:
+      Need Gnu's make
+      Can use gcc (recommended) or cc 
+        cc and CC problem with C++ modes (solitare and text3d)
+          xlock: LoadModule: modes/solitare.xlk: ld.so.1: xlock/xlock: fatal:
+          relocation error: file modes/solitare.xlk: symbol __0OnwUi:
+          referenced symbol not found unrecognized mode "solitare").
+      configure will not work.
+      Uncomment at least "#define Modules" in iconfig.h.
+      If you have more than one C++ compiler set CXX in iconfig.h
+        (seems to default to g++ for me)
       xmkmf -a # Ignore errors on Sun (should not get errors on Linux)
-      Edit Makefile(s) (Sun only, the first 3 MAY be ok if you are using SunC)
-        edit out all "-z text -M mapfile"
-        edit out all "-Xc -xF -xcg92"
-        edit out all "-Kpic"
-        edit out change "/usr/ccs/bin/make" to "/usr/local/make"
-          so that the "make" path is to Gnu's "make".
-      make # Ignore error about -rdynamic
+      Edit generated Makefiles like this:
+for i in Makefile xlock/Makefile modes/Makefile modes/glx/Makefile ; do
+  # both cc (& CC) and gcc (& g++)
+  sed -e "s#/usr/ccs/bin/make#/usr/local/bin/make#g" $i > $i.tmp ; mv $i.tmp $i
+  sed -e "s# -z text -M mapfile##g" $i > $i.tmp ; mv $i.tmp $i
+  sed -e "s# -Xc -xF -xcg92##g" $i > $i.tmp ; mv $i.tmp $i
+  #following seds for gcc and g++ only
+  sed -e "s#= cc\$#= gcc#g" $i > $i.tmp ; mv $i.tmp $i
+  sed -e "s#= cc #= gcc #g" $i > $i.tmp ; mv $i.tmp $i
+  sed -e "s# -Kpic##g" $i > $i.tmp ; mv $i.tmp $i
+done
+         For g++ and Sun edit modes/Makefile and modes/glx/Makefile for
+            -isystem change (use grep on isystem to find it).
+         Also, if you have more than one C++ compiler set CXX in Makefile.
       make install
-    This patch was originally written for Linux.  Not all distributions
-    have "dlfcn.h" which is needed.
 
 Personal Use
 ------------
@@ -582,7 +760,7 @@ Lab Environment
   of exemptions (e.g. username or group). See the iconfig.h file or
   `configure --help` for an example.  Edit your /etc/xlock.staff
   file to reflect your policy.  If using xdm, you may just want to use
-  -DCLOSEDOWN_LOGOUT (or -DSESSION_LOGOUT <- old way) in conjuction
+  -DCLOSEDOWN_LOGOUT (or -DSESSION_LOGOUT <- old way) in conjunction
   with -DUSE_AUTO_LOGOUT or -DUSE_BUTTON_LOGOUT.  That way all
   backgrounded processes owned by a user do not have to be killed.
 
@@ -594,6 +772,17 @@ Lab Environment
   if he/she wants the logout button enabled (not enabled if
   XLock.buttonLogout=0).
 
+  blank mode only
+    Change xlock/XLock.ad from
+XLock.mode: random
+!XLock.mode: blank
+    to
+!XLock.mode: random
+XLock.mode: blank
+
+    Do a configure with these options, since they would useless now...
+    configure  --without-opengl --without-mesagl --without-xpm
+    Edit the generated config.h, add "#define BLANK_ONLY", then to a make.
 
 xlock still does not work:  :-(
 -------------------------------
@@ -698,6 +887,20 @@ Other related stuff (all not maintained by me):
     ftp://ftp.sterling.com/usenet/alt.sources/index (grep for cookie)
     Please note that my format is slightly different.  The number at the
       top of the file should match `grep -c "^%%$" fortune.dat`
+  freetype and gltt for text3d
+    http://freetype.sourceforge.net/ is the official site for freetype
+      (need 1.3.1)
+    http://gltt.sourceforge.net/ is the official site for gltt (2.5)
+      To get this to compile with CC on Sun (mainly for xlock maintainer's
+        reference in case he ever has to do it again; if this is built using
+        g++ then xlock must be built using g++ if you want text3d to work).
+          configure --with-ttf-includes=/usr/openwin/include/freetype --with-ttf-libraries=/usr/openwin/lib
+          change g++ reference in generated Makefile to CC
+          change .la references to .a in Makefile to produce a libgltt.a
+          remove -Wall to get rid of warnings in Makefile
+          change compiler_o_lo="no" for libtool
+          remove -fPIC to get rid of warnings in libtool
+    http://perso.libertysurf.fr/lassauge/en_xlock.htm  another link.
   imake
     ftp://hpux.csc.liv.ac.uk/hpux/X11/Core/imake-5.06/imake-5.06-ss-9.03.tar.gz
     I had to worry about FIXUP_CPP_WHITESPACE.
@@ -706,17 +909,17 @@ Other related stuff (all not maintained by me):
     Lesstif Library (just like Motif)
   Man2HTML
     ftp://sunsite.unc.edu/pub/Linux/system/Manual-pagers/vh-man2html-1.4.tar.gz
-  MesaGL
+  Mesa (similar to OpenGL)
     ftp://iris.ssec.wisc.edu/pub/Mesa
-    Mesa 3-D Graphics Library (like GL) Mesa-2.3 or greater required.
-    Mesa-2.2 and below has some memory leaks.
+    Mesa 3-D Graphics Library (like OpenGL) Mesa-3.0 or greater required.
+    Mesa-2.2 and below has some memory leaks and 2.6 and below has some
+      security concerns.
   NAS (audio package)
     ftp://ftp.x.org/contrib/audio/nas
+  OpenGL (for Sun)
+    http://www.sun.com/software/graphics/OpenGL/
   rplay (audio package)
     ftp://ftp.x.org/contrib/audio/rplay
-  sx
-    Use with Athena.
-    ftp://sunsite.unc.edu/pub/Linux/X11/devel/librairies/clibs/libsx.tar.gz
   UNIX/VMS
     Unix-like routines XVMSUTILS can be found at
       http://axp616.gsi.de:8080/www/vms/mzsw.html

@@ -1,5 +1,5 @@
 #if !defined( lint ) && !defined( SABER )
-static const char sccsid[] = "@(#)passwd.c	4.02 97/04/01 xlockmore";
+static const char sccsid[] = "@(#)passwd.c	5.00 2000/11/01 xlockmore";
 
 #endif
 
@@ -11,26 +11,27 @@ static const char sccsid[] = "@(#)passwd.c	4.02 97/04/01 xlockmore";
  * Revision History:
  *
  * Changes maintained by David Bagley <bagleyd@tux.org>
- * 18-Feb-99: allowroot option no longer ignored for PAM authentication.
- *            Sven Paas <Sven.Paas@t-online.de>
- * 24-Jan-98: Updated PAM support and made it configure-able.
- *            Marc Ewing <marc@redhat.com>  Original PAM support from
- *            25-Jul-96 Michael K. Johnson <johnsonm@redhat.com>
- * 18-Jan-98: Kerberos corrections by RLS <sinkr@cbl.umces.edu>
- * 25-May-96: When xlock is compiled with shadow passwords it will still
- *            work on non shadowed systems.  Marek Michalkiewicz
- *            <marekm@i17linuxb.ists.pwr.wroc.pl>
- * 25-Feb-96: Lewis Muhlenkamp
- *            Added in ability for any of the root accounts to unlock
- *            screen.  Message now gets sent to syslog if root does the
- *            unlocking.
- * 23-Dec-95: Ron Hitchens <ron@idiom.com> reorganized.
- * 10-Dec-95: More context handling stuff for DCE thanks to
- *            Terje Marthinussen <terjem@cc.uit.no>.
- * 01-Sep-95: DCE code added thanks to Heath A. Kehoe
- *            <hakehoe@icaen.uiowa.edu>.
- * 24-Jun-95: Extracted from xlock.c, encrypted passwords are now fetched
- *            on start-up to ensure correct operation (except Ultrix).
+ * 01-Nov-2000: SIA passwording for Tru64 added
+ * 18-Feb-1999: allowroot option no longer ignored for PAM authentication.
+ *              Sven Paas <Sven.Paas@t-online.de>
+ * 24-Jan-1998: Updated PAM support and made it configure-able.
+ *              Marc Ewing <marc@redhat.com>  Original PAM support from
+ *              25-Jul-96 Michael K. Johnson <johnsonm@redhat.com>
+ * 18-Jan-1998: Kerberos corrections by RLS <sinkr@cbl.umces.edu>
+ * 25-May-1996: When xlock is compiled with shadow passwords it will still
+ *              work on non shadowed systems.  Marek Michalkiewicz
+ *              <marekm@i17linuxb.ists.pwr.wroc.pl>
+ * 25-Feb-1996: Lewis Muhlenkamp
+ *              Added in ability for any of the root accounts to unlock
+ *              screen.  Message now gets sent to syslog if root does the
+ *              unlocking.
+ * 23-Dec-1995: Ron Hitchens <ron@idiom.com> reorganized.
+ * 10-Dec-1995: More context handling stuff for DCE thanks to
+ *              Terje Marthinussen <terjem@cc.uit.no>.
+ * 01-Sep-1995: DCE code added thanks to Heath A. Kehoe
+ *              <hakehoe@icaen.uiowa.edu>.
+ * 24-Jun-1995: Extracted from xlock.c, encrypted passwords are now fetched
+ *              on start-up to ensure correct operation (except Ultrix).
  */
 
 #include "xlock.h"
@@ -64,21 +65,15 @@ extern char *cpasswd;
 #include <sys/param.h>
 #endif
 
-#ifdef USE_A_DAMN_PIPE
-#include <limits.h>
 
-int passwd_rpipe = -1;
-int passwd_wpipe = -1;
-pid_t passwd_pid;
-#endif
-
-#if (defined( __bsdi__ ) && _BSDI_VERSION >= 199608) || defined(__OpenBSD__)
+#if defined( __bsdi__ ) && _BSDI_VERSION >= 199608 || defined(__OpenBSD__) 
 #define       BSD_AUTH
 #endif
 
 #ifdef        BSD_AUTH
 #include <login_cap.h>
 #include <bsd_auth.h>
+
 #endif
 
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
@@ -100,7 +95,7 @@ void        set_multiple(int uid);
    screen. */
 struct pwln {
 	char       *pw_name;
-#ifndef	BSD_AUTH
+#ifndef        BSD_AUTH
 	char       *pw_passwd;
 #endif
 	struct pwln *next;
@@ -238,12 +233,28 @@ struct itmlst {
 
 #ifdef HP_PASSWDETC		/* HAVE_SYS_WAIT_H */
 #include <sys/wait.h>
+
+/*-
+ * Potential security problem on HP with PasswdEtc
+ * This hack is totally crazy and has security holes.
+ */
+
+#if 1
+        /* Change 1 to 0 */
+        Hackers can probably get at the encrypted passwd file
+#endif
+
 #endif /* HP_PASSWDETC */
 
 #ifdef AFS
 #include <afs/kauth.h>
 #include <afs/kautils.h>
 #endif /* AFS */
+
+#ifdef SIA
+#include<sia.h>
+#include<siad.h>
+#endif /* SIA */
 
 char        user[PASSLENGTH];
 #ifdef GLOBAL_UNLOCK
@@ -337,7 +348,7 @@ static int  check_dce_net_passwd(char *, char *);
 
 #if defined( HAVE_KRB4 ) || defined( HAVE_KRB5 )
 #ifdef HAVE_KRB4
-#include <kerberosIV/krb.h>
+#include <krb.h>
 #else /* HAVE_KRB5 */
 #include <krb5.h>
 #endif
@@ -376,13 +387,13 @@ my_passwd_entry(void)
 	uid = (int) getuid();
 #ifndef SUNOS_ADJUNCT_PASSWD
 	{
-		char       *logname = NULL;
+		char       *logname;
 
 		pw = 0;
 		logname = getenv("LOGNAME");
-		if (!logname)
+		if (logname == NULL)
 			logname = getenv("USER");
-		if (logname) {
+		if (logname != NULL) {
 			pw = getpwnam(logname);
 			if (pw && (pw->pw_uid != uid))
 				pw = 0;
@@ -512,7 +523,6 @@ getUserName(void)
 		(void) free((void *) buf);	/* Should never get here */
 	}
 	(void) strcpy(user, pw->ufld.fd_name);
-
 #else /* !OSF1_ENH_SEC */
 
 	struct passwd *pw;
@@ -644,7 +654,7 @@ gpass(void)
 #if !defined( ultrix ) && !defined( DCE_PASSWD ) && !defined( BSD_AUTH )  && !defined ( PAM )
 #ifndef USE_XLOCKRC
 
-#if defined( HAVE_SHADOW ) && !defined( AFS )
+#if defined( HAVE_SHADOW ) && !defined( AFS ) && !defined( SIA )
 static int
 passwd_invalid(char *passwd)
 {
@@ -652,6 +662,10 @@ passwd_invalid(char *passwd)
 
 	return (i == 1 || i == 2);
 }
+#endif
+
+#ifdef OSF1_ENH_SEC
+static int user_oldcrypt, root_oldcrypt;
 #endif
 
 static void
@@ -748,6 +762,8 @@ getCryptedUserPasswd(void)
 		(void) free((void *) buf);	/* Should never get here */
 	}
 	(void) strcpy(userpass, pw->ufld.fd_encrypt);
+	/* also save encryption algorithm associated with encrypted password */
+	user_oldcrypt = pw->ufld.fd_oldcrypt;
 #else /* !OSF1_ENH_SEC */
 
 	struct passwd *pw;
@@ -765,7 +781,7 @@ getCryptedUserPasswd(void)
 	/* Program probably needs to be setuid to root.  */
 	(void) strcpy(userpass, pw->pw_passwd);
 #ifdef HAVE_SHADOW
-#ifndef AFS
+#if !defined ( AFS ) && !defined ( SIA )
 	if (passwd_invalid(pw->pw_passwd)) {
 		extern Bool verbose, debug;
 
@@ -785,7 +801,7 @@ getCryptedUserPasswd(void)
 		gpass();
 #endif
 	}
-#endif /* !AFS */
+#endif /* !AFS && !SIA */
 #endif /* HAVE_SHADOW */
 #if ( HAVE_FCNTL_H && defined( USE_MULTIPLE_USER ))
 	set_multiple(getuid());
@@ -890,7 +906,8 @@ getCryptedRootPasswd(void)
 		(void) free((void *) buf);	/* Should never get here */
 	}
 	(void) strcpy(rootpass, pw->ufld.fd_encrypt);
-
+	/* also save encryption algorithm associated with encrypted password */
+	root_oldcrypt = pw->ufld.fd_oldcrypt;
 #else /* !OSF1_ENH_SEC */
 	struct passwd *pw;
 	char       *buf;
@@ -1088,9 +1105,21 @@ checkPasswd(char *buffer)
 #endif
 #endif
 	done = ((authenticate_user((struct passwd *) getpwnam(user),
-				   buffer, NULL) >= 0) || (allowroot &&
-			 (authenticate_user((struct passwd *) getpwnam(ROOT),
-					    buffer, NULL) >= 0)));
+				   buffer, NULL) >= 0);
+	if (!done && allowroot &&
+		 (authenticate_user((struct passwd *) getpwnam(ROOT),
+					    buffer, NULL) >= 0))) {
+		done = True;
+		if (!*buffer)
+			/*
+			 * root has no password, don't let him in...
+			 */
+			done = False;
+#if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
+		else
+			syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName, ROOT);
+#endif
+	}
 #ifdef HAVE_SETEUID
 	(void) setegid(rgid);
 #else
@@ -1105,9 +1134,9 @@ checkPasswd(char *buffer)
 	char       *pass;
 	char       *style;
 	char       *name;
-	extern gid_t egid, rgid;
+	extern	gid_t egid, rgid;
 
-	(void) setegid(egid);
+	(void)setegid(egid);
 
 #if ( HAVE_FCNTL_H && (defined( USE_MULTIPLE_ROOT ) || defined( USE_MULTIPLE_USER )))
 	/* Scan through the linked list until you match a password.  Print
@@ -1116,44 +1145,49 @@ checkPasswd(char *buffer)
 	 * This should be changed to allow the user name to be typed in also
 	 * to make this more secure.
 	 */
-	for (pwll = pwllh; done == 0 && pwll->next; pwll = pwll->next)
+	for (pwll = pwllh; done == 0 && pwll->next; pwll = pwll->next) {
 		name = pwll->pw_name;
 #else
 	name = user;
 #endif
-
-	/* The buffer may be of the form "style:password" so pull
-	 * out the style (which may or may not exist).
-	 */
 	if ((pass = strchr(buffer, ':')) != NULL) {
 		*pass++ = '\0';
 		style = buffer;
-	} else {
-		pass = buffer;
-		style = NULL;
+	}else{
+	    pass = buffer;
+	    style = NULL;
 	}
-	if (auth_userokay(name, style, "auth-xlock", pass) ||
-	    auth_userokay(ROOT, style, "auth-xlock", pass))
-		done = True;
-
+	if (auth_userokay(name,style,"auth-xlock",pass)||
+	    auth_userokay(ROOT,style,"auth-xlock",pass)) {
+	    done = True;
+#if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
+	    syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName, ROOT);
+#endif
+	}
+	
 #if ( HAVE_FCNTL_H && (defined( USE_MULTIPLE_ROOT ) || defined( USE_MULTIPLE_USER )))
 }
 #endif
-
-	(void) setegid(rgid);
+	(void)setegid(rgid);
 
 #else /* !BSD_AUTH */
 
+	/* check AFS & SIA passwd first, then local, then root */
 #ifdef AFS
 	{
 		char       *reason;
 
-		/* check afs passwd first, then local, then root */
 		if (!ka_UserAuthenticate(user, "", 0, buffer, 0, &reason))
 			return True;
-
 	}
-#endif /* !AFS */
+#endif /* AFS */
+#ifdef SIA
+	{
+		if ((sia_validate_user(NULL, "xlock", 1, NULL, user, NULL,
+				0, NULL, buffer)) == SIASUCCESS)
+			return True;
+	}
+#endif /* SIA */
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
 	{
 		/* Somehow, buffer gets 'erased' after either doing a krb pw check
@@ -1187,11 +1221,12 @@ checkPasswd(char *buffer)
 			}
 	}
 #endif
-#ifdef USE_A_DAMN_PIPE
-	done = passwd_do_check(buffer);
-#else
 	if (!done) {
+#ifdef OSF1_ENH_SEC
+		done = (!strcmp((char *) dispcrypt(buffer, userpass, user_oldcrypt), userpass));
+#else
 		done = (!strcmp((char *) crypt(buffer, userpass), userpass));
+#endif
 		/* userpass is used */
 		if (!*userpass && *buffer)
 			/*
@@ -1204,20 +1239,24 @@ checkPasswd(char *buffer)
 	(void) printf("buffer=%s, encrypt=%s, userpass=%s\n", buffer,
 		      (char *) crypt(buffer, userpass), userpass);
 #endif
-	if (!done) {
-		done = (allowroot &&
-			!strcmp((char *) crypt(buffer, rootpass), rootpass));
-		if (allowroot && !*rootpass && !*buffer)
+	if (!done && allowroot &&
+#ifdef OSF1_ENH_SEC
+		!strcmp((char *) dispcrypt(buffer, rootpass, root_oldcrypt), rootpass)
+#else
+		!strcmp((char *) crypt(buffer, rootpass), rootpass)
+#endif
+	) {
+		done = True;	
+		if (!rootpass || !*buffer)
 			/*
 			 * root has no password, don't let him in...
 			 */
 			done = False;
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
-		if (done)
+		else
 			syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName, ROOT);
 #endif
 	}
-#endif /* !USE_A_DAMN_PIPE */
 #endif /* !BSD_AUTH */
 #endif /* !ultrix */
 #endif /* !PAM */
@@ -1515,8 +1554,12 @@ krb_check_password(struct passwd *pwd, char *pass)
 
 	/* find local realm */
 	if (krb_get_lrealm(realm, 1) != KSUCCESS)
-		return False;
-
+#ifdef KRB_REALM
+		/* krb_get_default_realm() may not work well on Solaris */
+		(void) strncpy(realm, KRB_REALM, sizeof (realm));
+#else
+		(void) strncpy(realm, krb_get_default_realm(), sizeof (realm));
+#endif
 	/* Construct a ticket file */
 	(void) sprintf(tkfile, "/tmp/tkt_%d", pwd->pw_uid);
 
@@ -1540,7 +1583,7 @@ krb_check_password(struct passwd *pwd, char *pass)
  * that if someone is locked for a long time, their credentials could expire,
  * so xlock must be able to get a new ticket.  -- dah <rodmur@ecst.csuchico.edu>
  */
-#define KRB5_DEFAULT_OPTIONS 0
+#define KRB5_DEFAULT_OPTIONS 		0
 #define KRB5_DEFAULT_LIFE 60*60*10	/* 10 hours */
 static int
 krb_check_password(struct passwd *pwd, char *pass)
@@ -1557,6 +1600,8 @@ krb_check_password(struct passwd *pwd, char *pass)
 	char       *client_name;
 	krb5_address **addrs = (krb5_address **) 0;
 	krb5_preauthtype *preauth = NULL;
+
+        krb5_deltat rlife = 0;
 
 	krb5_data   tgtname =
 	{
@@ -1590,7 +1635,6 @@ krb_check_password(struct passwd *pwd, char *pass)
 	}
 	(void) memset((char *) &my_creds, 0, sizeof (my_creds));
 
-	my_creds.client = me;
 
 	if ((code = krb5_build_principal_ext(kcontext, &server,
 				      krb5_princ_realm(kcontext, me)->length,
@@ -1602,11 +1646,49 @@ krb_check_password(struct passwd *pwd, char *pass)
 		com_err(ProgramName, code, "while building server name");
 		return False;
 	}
+
+
+	my_creds.client = me;
 	my_creds.server = server;
 
 	my_creds.times.starttime = 0;
-	my_creds.times.endtime = now + lifetime;
+
 	my_creds.times.renew_till = 0;
+
+	/*
+        ** find our default ticket, and copy out renewable, forwardable info.
+        */
+	{
+	krb5_cc_cursor cur;
+	krb5_creds creds;
+
+	if ((code = krb5_cc_start_seq_get(kcontext, ccache, &cur))) {
+	    com_err(ProgramName, code, "while starting to retrieve tickets");
+	} else {
+
+	    while (!(code = krb5_cc_next_cred(kcontext, ccache, &cur, &creds))) {
+		if (creds.server->length == 2 &&
+		        strcmp(creds.server->realm.data, me->realm.data) == 0 &&
+		        strcmp((char *)creds.server->data[0].data, "krbtgt") == 0 &&
+		        strcmp((char *)creds.server->data[1].data, me->realm.data) == 0 &&
+		        creds.times.endtime > now) {
+		    /*
+                    ** this is the krbtgt token to steal options from...
+		    */
+	    
+		    if (creds.times.renew_till) {
+		       options |= KDC_OPT_RENEWABLE;
+		       my_creds.times.renew_till = creds.times.renew_till;
+		    }
+		    if (creds.ticket_flags & TKT_FLG_FORWARDABLE) {
+		       options |= KDC_OPT_FORWARDABLE;
+		    }
+		}
+		krb5_free_cred_contents(kcontext, &creds);
+	    }
+        }
+
+	}
 
 	if (strlen(pass) == 0)
 		(void) strcpy(pass, "*");
@@ -1902,7 +1984,7 @@ void
 initPasswd(void)
 {
 	getUserName();
-#if !defined( ultrix ) && !defined( DCE_PASSWD ) && !defined( PAM ) && !defined( BSD_AUTH )
+#if !defined( ultrix ) && !defined( DCE_PASSWD ) && !defined( PAM ) && !defined(BSD_AUTH)
 	if (!nolock && !inroot && !inwindow && grabmouse) {
 #ifdef USE_XLOCKRC
 		gpass();
@@ -1913,109 +1995,14 @@ initPasswd(void)
 		else
 			gpass();
 #else
-#ifdef USE_A_DAMN_PIPE
-		{
-			int pipes1[2];
-			int pipes2[2];
-
-			if (pipe(pipes1) == -1)
-				return;
-			if (pipe(pipes2) == -1) {
-				close(pipes1[0]);
-				close(pipes1[1]);
-				return;
-			}
-			passwd_pid = fork();
-			switch (passwd_pid) {
-			case -1:
-				close(pipes1[0]);
-				close(pipes1[1]);
-				close(pipes2[0]);
-				close(pipes2[1]);
-				return;
-			default:
-				/* parent */
-				close(pipes1[0]);
-				passwd_wpipe = pipes1[1];
-				close(pipes2[1]);
-				passwd_rpipe = pipes2[0];
-				return;
-
-			case 0:
-				/* child */
-				close(pipes1[1]);
-				passwd_rpipe = pipes1[0];
-				close(pipes2[0]);
-				passwd_wpipe = pipes2[1];
-
-				passwd_run_checks();
-				_exit(1);
-			}
-		}
-#else
 		getCryptedUserPasswd();
-#endif
 #endif
 #endif
 		if (allowroot)
 			getCryptedRootPasswd();
 	}
-#endif /* !ultrix && !DCE_PASSWD && !PAM && !BSD_AUTH */
+#endif /* !ultrix && !DCE_PASSWD && !PAM */
 #ifdef DCE_PASSWD
 	initDCE();
 #endif
 }
-
-#ifdef USE_A_DAMN_PIPE
-
-int
-passwd_do_check(user)
-	char *user;
-{
-	char buf[PIPE_BUF];
-
-	strlcpy(buf, user, sizeof buf);
-	if (atomicio(write, passwd_wpipe, buf, sizeof buf) != sizeof buf)
-		return 0;	/* what to do? */
-	buf[0] = '\0';
-	read(passwd_rpipe, buf, 1);
-	if (buf[0])
-		return 1;
-	else
-		return 0;
-}
-
-passwd_run_checks()
-{
-	char buf[PIPE_BUF];
-	struct passwd *pw = NULL;
-	int off, len;
-	u_char ack;
-
-	while (1) {
-		memset(buf, 0, sizeof buf);
-		ack = 0;
-
-		if (atomicio(read, passwd_rpipe, buf, sizeof buf) != sizeof buf)
-			_exit(1);
-
-		buf[sizeof(buf)-1] = '\0';
-
-		pw = getpwnam(user);
-		if (pw && strcmp(crypt(buf, pw->pw_passwd), pw->pw_passwd) == 0)
-			ack = 1;
-#if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-		if (ack == 0)
-			ack = krb_check_password(pw, buf);
-#endif
-		if (ack == 0) {
-			pw = getpwnam("root");
-			if (pw && strcmp(crypt(buf, pw->pw_passwd),
-			    pw->pw_passwd) == 0)
-				ack = 1;
-		}
-		endpwent();
-		(void) write(passwd_wpipe, &ack, 1);
-	}
-}
-#endif

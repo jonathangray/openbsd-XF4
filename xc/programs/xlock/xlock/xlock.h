@@ -186,6 +186,9 @@ XrmOptionDescRec options[100];
 #endif
 #define inline
 #endif
+#if defined(__OpenBSD__)
+#define HAVE_SYS_PARAM_H 1
+#endif
 #ifdef AIXV3
 #define HAVE_SYS_SELECT_H 1
 #else
