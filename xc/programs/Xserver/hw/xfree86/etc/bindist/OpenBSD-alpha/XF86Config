@@ -39,9 +39,6 @@ EndSection
 Section "Monitor"
 	Identifier   "Monitor"
 	VendorName   "Generic"
-# These are not used by the wsfb driver
-	HorizSync    31.5-90
-	VertRefresh  50-100
 EndSection
 
 Section "Device"
@@ -54,8 +51,6 @@ Section "Screen"
 	Identifier "Screen0"
 	Device     "Card0"
 	Monitor    "Monitor"
-# Change to 24 if you have a 24bit capable TGA
-	DefaultDepth 8
 	SubSection "Display"
 		Depth     8
 	EndSubSection
