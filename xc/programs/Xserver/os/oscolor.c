@@ -201,7 +201,7 @@ lookup(char *name, int len, Bool create)
     {
       *prev = entry;
       entry->link = NULL;
-      strlcpy( entry->name, name, len );
+      strlcpy( entry->name, name, len + 1 );
     }
 
   DEALLOCATE_LOCAL(name);
