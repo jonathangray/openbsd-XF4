@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.8 2002/05/19 12:12:32 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.9 2002/05/22 21:54:55 jason Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -375,7 +375,7 @@ static Bool
 WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 {
 	WsfbPtr fPtr;
-	int default_depth;
+	int default_depth, wstype;
 	char *dev;
 	Gamma zeros = {0.0, 0.0, 0.0};
 	DisplayModePtr mode;
@@ -408,6 +408,12 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 			   strerror(errno));
 		return FALSE;
 	}
+	if (ioctl(fPtr->fd, WSDISPLAYIO_GTYPE, &wstype) == -1) {
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			   "ioctl WSDISPLAY_GTYPE: %s\n",
+			   strerror(errno));
+		return FALSE;
+	}
 	if (ioctl(fPtr->fd, WSDISPLAYIO_LINEBYTES, &fPtr->linebytes) == -1) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 			   "ioctl WSDISPLAYIO_LINEBYTES: %s\n",
@@ -428,8 +434,19 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 
 	/* color weight */
 	if (pScrn->depth > 8) {
-		rgb zeros = { 0, 0, 0 };
-		if (!xf86SetWeight(pScrn, zeros, zeros))
+		rgb zeros = { 0, 0, 0 }, masks;
+
+		if (wstype == WSDISPLAY_TYPE_SUNFFB) {
+			masks.red = 0x0000ff;
+			masks.green = 0x00ff00;
+			masks.blue = 0xff0000;
+		} else {
+			masks.red = 0;
+			masks.green = 0;
+			masks.blue = 0;
+		}
+
+		if (!xf86SetWeight(pScrn, zeros, masks))
 			return FALSE;
 	}
 
