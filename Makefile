@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.35 2003/06/11 06:18:56 miod Exp $
+#	$OpenBSD: Makefile,v 1.36 2003/07/29 22:45:35 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -137,7 +137,7 @@ perms:
 		-type d \
 		\! -user ${DIROWN} -o \! -group ${DIRGRP} \
 		-ls
-	find ${DESTDIR}/usr/X11R6/. \ ${DESTDIR}/etc/. \
+	find ${DESTDIR}/usr/X11R6/. ${DESTDIR}/etc/. \
 		-type f \
 		\! -user ${BINOWN} -o \! -group wheel \
 		-ls
