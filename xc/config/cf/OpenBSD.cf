@@ -551,7 +551,8 @@ install:: fonts.alias							@@\
 # define BootstrapCFlags       -Dsun3
 # define UnalignedReferencesAllowed	YES /* changes _XtCopyArgs() */
 /* Note: -ansi turns off -Dmc68000 */
-# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020 -DXFree86Server
+# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020 \
+				-DXFree86Server -DINCLUDE_CG2_HEADER
 
 # ifndef Xsun24Server
 #  define Xsun24Server		NO
@@ -700,7 +701,7 @@ install:: fonts.alias							@@\
 # define ServerOSDefines 	-DDDXOSINIT
 # define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
 				ServerSnprintfDefines DebugDefines \
-				-DX_BYTE_ORDER=ByteOrder
+				-DX_BYTE_ORDER=ByteOrder -DINCLUDE_CG2_HEADER
 # define BuildXF86MiscExt	NO
 # define BuildMITMiscExt	NO
 
