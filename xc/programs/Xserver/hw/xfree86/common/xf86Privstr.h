@@ -59,6 +59,9 @@ typedef struct {
 #if defined(SVR4) && defined(i386)
     Bool		panix106;
 #endif  /* SVR4 && i386 */
+#if defined(__OpenBSD__)
+    int                 wsKbdType;
+#endif
 
     /* mouse part */
     DeviceIntPtr	pMouse;

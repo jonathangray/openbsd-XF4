@@ -1393,6 +1393,8 @@ XTestGenerateEvent(int dev_type, int keycode, int keystate, int mousex,
 
 /* XXX Currently XKB is mandatory. */
 
+extern int WSKbdToKeycode(int);
+
 void
 xf86PostWSKbdEvent(struct wscons_event *event)
 {
@@ -1407,7 +1409,7 @@ xf86PostWSKbdEvent(struct wscons_event *event)
   /*
    * Now map the scancodes to real X-keycodes ...
    */
-  keycode = value + MIN_KEYCODE;
+  keycode = WSKbdToKeycode(value);
   keysym = keyc->curKeySyms.map +
 	keyc->curKeySyms.mapWidth * (keycode - keyc->curKeySyms.minKeyCode);
 	    

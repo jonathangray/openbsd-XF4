@@ -1020,6 +1020,31 @@ configInputKbd(IDevPtr inputp)
        return FALSE;
      }
      xfree(s);
+     /* Find out keyboard type */
+     if (ioctl(xf86Info.kbdFd, WSKBDIO_GTYPE, &xf86Info.wsKbdType) == -1) {
+	     xf86ConfigError("cannot get keyboard type");
+	     close(xf86Info.kbdFd);
+	     return FALSE;
+     }
+     switch (xf86Info.wsKbdType) {
+     case WSKBD_TYPE_PC_XT:
+	     xf86Msg(X_PROBED, "Keyboard type: XT\n");
+	     break;
+     case WSKBD_TYPE_PC_AT:
+	     xf86Msg(X_PROBED, "Keyboard type: AT\n");
+	     break;
+     case WSKBD_TYPE_USB:
+	     xf86Msg(X_PROBED, "Keyboard type: USB\n");
+	     break;
+     case WSKBD_TYPE_ADB:
+	     xf86Msg(X_PROBED, "Keyboard type: ADB\n");
+	     break;
+     default:
+	     xf86ConfigError("Unsupported wskbd type \"%d\"", 
+			     xf86Info.wsKbdType);
+	     close(xf86Info.kbdFd);
+	     return FALSE;
+     }
 #endif
   } else {
     xf86ConfigError("\"%s\" is not a valid keyboard protocol name", s);
