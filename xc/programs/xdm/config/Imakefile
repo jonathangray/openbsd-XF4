@@ -8,14 +8,21 @@ all:: Xservers.ws xdm-config Xservers Xresources
 #if defined(i386Architecture) && (defined(NetBSDArchitecture) || defined(OpenBSDArchitecture))
 DEFAULTVT=vt05
 #endif
+#if defined(OpenBSDArchitecture) && defined(PmaxArchitecture)
+#undef HasXdmAuth
+#define HasXdmAuth NO
+#endif
+HAS_DES_AUTH=HasXdmAuth
 
 #ifndef XdmPixmap
 # define XdmPixmap XFree86.xpm
 # define XdmbwPixmap XFree86bw.xpm
 #endif
 
-XPM_DEFINES=-DXPM -DBITMAPDIR=$(XDMDIR)/pixmaps -DXDM_PIXMAP=XdmPixmap\ @@\
-	-DXDM_BWPIXMAP=XdmbwPixmap
+XPM_DEFINES=-DXPM -DBITMAPDIR=$(XDMDIR)/pixmaps 
+#ifdef Hp300Architecture
+XPM_DEFINES+=-DHp300Architecture
+#endif
 
 XDMLOGDIR = $(LOGDIRECTORY)
 #ifdef VarRunDirectory
@@ -25,7 +32,7 @@ XDMPIDDIR = $(XDMDIR)
 #endif
 
 CppFileTarget(Xservers.ws,Xserv.ws.cpp,-DBINDIR=$(BINDIR) -DDEFAULTVT=$(DEFAULTVT),NullParameter)
-CppFileTarget(xdm-config,xdm-conf.cpp,-DXDMDIR=$(XDMDIR) -DXDMLOGDIR=$(XDMLOGDIR) -DXDMPIDDIR=$(XDMPIDDIR),NullParameter)
+CppFileTarget(xdm-config,xdm-conf.cpp,-DXDMDIR=$(XDMDIR) -DXDMLOGDIR=$(XDMLOGDIR) -DXDMPIDDIR=$(XDMPIDDIR) -DHAS_DES_AUTH=$(HAS_DES_AUTH),NullParameter)
 CppFileTarget(Xresources,Xres.cpp,$(XPM_DEFINES),NullParameter)
 
 LinkFile(Xservers,Xservers.$(SERVERSTYPE))
@@ -37,6 +44,7 @@ InstallNonExecFile(Xservers,$(XDMDIR))
 InstallNonExecFile(Xaccess,$(XDMDIR))
 InstallNamedProg(Xsession,Xsession,$(XDMDIR))
 InstallNamedProg(GiveConsole,GiveConsole,$(XDMDIR))
+InstallNamedProg(Startup_0,Startup_0,$(XDMDIR))
 InstallNamedProg(TakeConsole,TakeConsole,$(XDMDIR))
 InstallNamedProg(Xsetup_0,Xsetup_0,$(XDMDIR))
 InstallNamedProg(Xwilling,Xwilling,$(XDMDIR))
@@ -47,6 +55,7 @@ InstallNonExecFileNoClobber(Xservers,$(XDMDIR))
 InstallNonExecFileNoClobber(Xaccess,$(XDMDIR))
 InstallNamedProgNoClobber(Xsession,Xsession,$(XDMDIR))
 InstallNamedProgNoClobber(GiveConsole,GiveConsole,$(XDMDIR))
+InstallNamedProgNoClobber(Startup_0,Startup_0,$(XDMDIR))
 InstallNamedProgNoClobber(TakeConsole,TakeConsole,$(XDMDIR))
 InstallNamedProgNoClobber(Xsetup_0,Xsetup_0,$(XDMDIR))
 InstallNamedProgNoClobber(Xwilling,Xwilling,$(XDMDIR))
@@ -59,3 +68,22 @@ InstallNonExecFile(XdmbwPixmap,$(XDMDIR)/pixmaps)
 InstallNonExecFileNoClobber(XdmPixmap,$(XDMDIR)/pixmaps)
 InstallNonExecFileNoClobber(XdmbwPixmap,$(XDMDIR)/pixmaps)
 #endif
+
+# if InstallXdmConfig
+#  define PixmapInstall InstallNonExecFile
+# else
+#  define PixmapInstall InstallNonExecFileNoClobber
+# endif
+
+# ifdef Xdm_15bpp_Pixmap
+PixmapInstall(Xdm_15bpp_Pixmap,$(XDMDIR)/pixmaps)
+# endif
+# ifdef Xdm_8bpp_Pixmap
+PixmapInstall(Xdm_8bpp_Pixmap,$(XDMDIR)/pixmaps)
+# endif
+# ifdef Xdm_1bpp_Pixmap
+PixmapInstall(Xdm_1bpp_Pixmap,$(XDMDIR)/pixmaps)
+# endif
+# ifdef Xdm_4bpp_Pixmap
+PixmapInstall(Xdm_4bpp_Pixmap,$(XDMDIR)/pixmaps)
+# endif
