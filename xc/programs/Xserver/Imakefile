@@ -265,7 +265,7 @@ XPFBLIBS = dix/LibraryTargetName(xpstubs)
 #if !HasLibUsb
             USB = $(XF86OSSRC)/bsd/libusb/LibraryTargetName(usb)
 #else
-            USB = -lusb
+            USB = -lusbhid
 #endif
 #endif
 #ifdef ServerExtraSysLibs
