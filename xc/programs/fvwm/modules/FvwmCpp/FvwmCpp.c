@@ -124,8 +124,8 @@ int main(int argc, char **argv)
          will get passed on to cpp anyway */
       if(strcasecmp(argv[i],"-cppopt") == 0)
 	{
-	  strcat(cpp_options, argv[++i]);
-	  strcat(cpp_options, " ");
+	  strlcat(cpp_options, argv[++i], sizeof(cpp_options));
+	  strlcat(cpp_options, " ", sizeof(cpp_options));
 	}
       else if (strcasecmp(argv[i], "-cppprog") == 0)
 	{
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	}
       else if(strcasecmp(argv[i], "-outfile") == 0)
       {
-        strcpy(cpp_outfile,argv[++i]);
+        strlcpy(cpp_outfile,argv[++i],sizeof(cpp_outfile));
       }
       else if(strcasecmp(argv[i], "-debug") == 0)
 	{
@@ -142,8 +142,8 @@ int main(int argc, char **argv)
       else if (strncasecmp(argv[i],"-",1) == 0)
       {
         /* pass on any other arguments starting with '-' to cpp */
-        strcat(cpp_options, argv[i]);
-        strcat(cpp_options, " ");
+        strlcat(cpp_options, argv[i],sizeof(cpp_options));
+        strlcat(cpp_options, " ",sizeof(cpp_options));
       }
       else
 	filename = argv[i];
@@ -203,14 +203,14 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
   if (strlen(cpp_outfile) == 0) {
     if ((vc=getenv("TMPDIR"))) {
-      strcpy(tmp_name, vc);
+      strlcpy(tmp_name, vc, sizeof(tmp_name));
     } else {
-      strcpy(tmp_name, "/tmp");
+      strlcpy(tmp_name, "/tmp", sizeof(tmp_name));
     }
-    strcat(tmp_name, "/fvwmrcXXXXXX");
+    strlcat(tmp_name, "/fvwmrcXXXXXX", sizeof(tmp_name));
     mktemp(tmp_name);
   } else {
-    strcpy(tmp_name,cpp_outfile);
+    strlcpy(tmp_name,cpp_outfile, sizeof(temp_name));
   }
 
   if (*tmp_name == '\0')
@@ -234,9 +234,12 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
      * open a pipe to the command.
      */
 
-  sprintf(options, "%s %s >%s\n",
-	  cpp_prog,
-	  cpp_options, tmp_name);
+  strlcpy(options, cpp_prog, sizeof(options));
+  strlcat(options, " ", sizeof(options));
+  strlcat(options, cpp_options, sizeof(options));
+  strlcat(options, " >", sizeof(options));
+  strlcat(options, tmp_name, sizeof(options));
+
   tmpf = popen(options, "w");
   if (tmpf == NULL) {
     perror("Cannot open pipe to cpp");
@@ -248,11 +251,11 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   getostype  (ostype, sizeof ostype);
 
   hostname = gethostbyname(client);
-  strcpy(server, XDisplayName(host));
+  strlcpy(server, XDisplayName(host), sizeof(server));
   colon = strchr(server, ':');
   if (colon != NULL) *colon = '\0';
   if ((server[0] == '\0') || (!strcmp(server, "unix")))
-    strcpy(server, client);	/* must be connected to :0 or unix:0 */
+    strlcpy(server, client, sizeof(server));	/* must be connected to :0 or unix:0 */
 
   /* TWM_TYPE is fvwm, for completeness */
 
