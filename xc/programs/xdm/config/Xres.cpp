@@ -42,10 +42,9 @@ xlogin*greetColor: CadetBlue
 xlogin*borderWidth: 1
 xlogin*frameWidth: 5
 xlogin*innerFramesWidth: 2
-xlogin*shdColor: grey30
-xlogin*hiColor: grey90
-xlogin*background: grey
-!xlogin*foreground: darkgreen
+xlogin*shdColor: #005b66
+xlogin*hiColor: #00d7ef
+xlogin*background: #00a5bd
 xlogin*greetColor: Blue3
 #endif /* XPM */
 xlogin*failColor: red
@@ -64,19 +63,37 @@ xlogin*Foreground: black
 xlogin*Background: white
 #endif /* XPM */
 /**/#endif
-#ifdef XPM
-/**/#if PLANES >= 8
-xlogin*logoFileName: BITMAPDIR/**//XDM_PIXMAP
+#if defined(XPM)
+/**/#if PLANES < 4 || defined(Hp300Architecture)
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_1bpp.xpm
 /**/#else
-xlogin*logoFileName: BITMAPDIR/**//XDM_BWPIXMAP
-/**/#endif
+/**/#if PLANES > 4
+/**/#if PLANES > 8
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
+/**/#else/* PLANES > 8 */
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
+/**/#endif/* PLANES > 8 */
+/**/#else /* PLANES > 4 */
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
+/**/#endif /* PLANES > 4 */
+/**/#endif /* PLANES < 4 */
+#if ! defined(Hp300Architecture)
 xlogin*useShape: true
 xlogin*logoPadding: 10
+#endif /* Hp300Architecture */
 #endif /* XPM */
+! comment out to disable root logins
+xlogin.Login.allowRootLogin:	true
 
 XConsole.text.geometry:	480x130
 XConsole.verbose:	true
 XConsole*iconic:	true
+#ifdef XPM
+XConsole*background:	black
+XConsole*foreground:	white
+XConsole*borderWidth:	2
+XConsole*borderColor:   grey
+#endif /* XPM */
 XConsole*font:		fixed
 
 Chooser*geometry:		700x500+300+200

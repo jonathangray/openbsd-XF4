@@ -1,5 +1,6 @@
 ! $XConsortium: xdm-conf.cpp /main/3 1996/01/15 15:17:26 gildea $
 ! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.6 2000/01/31 19:33:43 dawes Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.2 2001/02/17 23:32:51 matthieu Exp $
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm-errors
 DisplayManager.pidFile:		XDMPIDDIR/xdm-pid
 DisplayManager.keyFile:		XDMDIR/xdm-keys
@@ -13,12 +14,15 @@ DisplayManager._0.authorize:	true
 DisplayManager._1.authorize:	true
 ! The following three resources set up display :0 as the console.
 DisplayManager._0.setup:	XDMDIR/Xsetup_0
-DisplayManager._0.startup:	XDMDIR/GiveConsole
+DisplayManager._0.startup:	XDMDIR/Startup_0
 DisplayManager._0.reset:	XDMDIR/TakeConsole
 !
 DisplayManager*resources:	XDMDIR/Xresources
 DisplayManager*session:		XDMDIR/Xsession
 DisplayManager*authComplain:	false
+#if HAS_DES_AUTH == YES
+DisplayManager._0.authName:     MIT-MAGIC-COOKIE-1
+#endif
 #ifdef XPM
 ! this is a new line Caolan, 9312811@ul.ie
 DisplayManager*loginmoveInterval:      10
