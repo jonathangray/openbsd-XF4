@@ -87,6 +87,7 @@ AddExtension(char *name, int NumEvents, int NumErrors,
 {
     int i;
     register ExtensionEntry *ext, **newexts;
+    size_t buflen;
 
     if (!MainProc || !SwappedMainProc || !CloseDownProc || !MinorOpcodeProc)
         return((ExtensionEntry *) NULL);
@@ -97,7 +98,8 @@ AddExtension(char *name, int NumEvents, int NumErrors,
     ext = (ExtensionEntry *) xalloc(sizeof(ExtensionEntry));
     if (!ext)
 	return((ExtensionEntry *) NULL);
-    ext->name = (char *)xalloc(strlen(name) + 1);
+    buflen = strlen(name) + 1;
+    ext->name = (char *)xalloc(buflen);
     ext->num_aliases = 0;
     ext->aliases = (char **)NULL;
     if (!ext->name)
@@ -105,7 +107,7 @@ AddExtension(char *name, int NumEvents, int NumErrors,
 	xfree(ext);
 	return((ExtensionEntry *) NULL);
     }
-    strcpy(ext->name,  name);
+    strlcpy(ext->name,  name, buflen);
     i = NumExtensions;
     newexts = (ExtensionEntry **) xrealloc(extensions,
 					   (i + 1) * sizeof(ExtensionEntry *));
@@ -162,16 +164,18 @@ Bool AddExtensionAlias(alias, ext)
 {
     char *name;
     char **aliases;
+    size_t buflen;
 
     aliases = (char **)xrealloc(ext->aliases,
 				(ext->num_aliases + 1) * sizeof(char *));
     if (!aliases)
 	return FALSE;
     ext->aliases = aliases;
-    name = (char *)xalloc(strlen(alias) + 1);
+    buflen = strlen(alias) + 1;
+    name = (char *)xalloc(buflen);
     if (!name)
 	return FALSE;
-    strcpy(name,  alias);
+    strlcpy(name,  alias, buflen);
     ext->aliases[ext->num_aliases] = name;
     ext->num_aliases++;
 #ifdef LBX
@@ -447,6 +451,7 @@ RegisterScreenProc(name, pScreen, proc)
     register ScreenProcEntry *spentry;
     register ProcEntryPtr procEntry = (ProcEntryPtr)NULL;
     char *newname;
+    size_t buflen;
     int i;
 
     spentry = &AuxillaryScreenProcs[pScreen->myNum];
@@ -464,7 +469,8 @@ RegisterScreenProc(name, pScreen, proc)
         procEntry->proc = proc;
     else
     {
-	newname = (char *)xalloc(strlen(name)+1);
+	buflen = strlen(name)+1;
+	newname = (char *)xalloc(buflen);
 	if (!newname)
 	    return FALSE;
 	procEntry = (ProcEntryPtr)
@@ -478,7 +484,7 @@ RegisterScreenProc(name, pScreen, proc)
 	spentry->procList = procEntry;
         procEntry += spentry->num;
         procEntry->name = newname;
-        strcpy(newname, name);
+        strlcpy(newname, name, buflen);
         procEntry->proc = proc;
         spentry->num++;        
     }
