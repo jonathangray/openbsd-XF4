@@ -16,7 +16,7 @@ configuration.
 VGA cards support is available only on BWX based machines.
 The following cards have been successfully tested for now:
 
-* 3DLabs Permedia 2 (8 bits depth) 
+* 3DLabs Permedia 2 (8, 15, 16 and 24 bits depth) 
 * ATI Rage Pro (works with 'Option "NoAccel"')
 * Cirrus Logic CL5430 (works with 'Option "NoAccel"')
 * Cirrus Logic GD5446 (8, 16 and 24 bits depth)
@@ -45,4 +45,4 @@ Start either xdm(1) or startx(1).
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
 
-$OpenBSD: README.alpha,v 1.9 2002/09/29 08:10:33 matthieu Exp $
+$OpenBSD: README.alpha,v 1.10 2002/10/01 19:33:23 matthieu Exp $
