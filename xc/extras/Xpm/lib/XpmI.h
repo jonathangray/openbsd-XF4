@@ -49,8 +49,10 @@
  * lets try to solve include files
  */
 
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 /* stdio.h doesn't declare popen on a Sequent DYNIX OS */
 #ifdef sequent
 extern FILE *popen();
@@ -90,13 +92,6 @@ extern FILE *popen();
 #include <stdint.h>	/* For SIZE_MAX */
 #endif
 #include <limits.h>
-#ifndef SIZE_MAX
-# ifdef ULONG_MAX
-#  define SIZE_MAX ULONG_MAX
-# else 
-#  define SIZE_MAX UINT_MAX
-# endif
-#endif
 
 #define XPMMAXCMTLEN BUFSIZ
 typedef struct {
