@@ -63,11 +63,14 @@ static Display	*dpy;
 static SIGVAL
 CatchUsr1 (int n)
 {
+    int olderrno = errno;
+
 #ifdef SIGNALS_RESET_WHEN_CAUGHT
     (void) Signal (SIGUSR1, CatchUsr1);
 #endif
     Debug ("display manager caught SIGUSR1\n");
     ++receivedUsr1;
+    errno = olderrno;
 }
 
 char *_SysErrorMsg (int n)
