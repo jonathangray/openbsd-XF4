@@ -248,9 +248,6 @@
 ./usr/X11R6/bin/xmseconfig
 ./usr/X11R6/bin/xvidtune
 ./usr/X11R6/bin/xvinfo
-./usr/X11R6/include/GL/glu.h
-./usr/X11R6/include/GL/glxmd.h
-./usr/X11R6/include/GL/glxproto.h
 ./usr/X11R6/include/X11/bitmaps/card.xbm
 ./usr/X11R6/include/X11/bitmaps/down.xbm
 ./usr/X11R6/include/X11/bitmaps/keyboard.xbm
