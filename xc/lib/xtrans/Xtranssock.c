@@ -281,9 +281,6 @@ static int TRANS(SocketINETClose) (XtransConnInfo ciptr);
 #if defined(IPv6) && defined(AF_INET6)
 static const struct in6_addr local_in6addr_any = IN6ADDR_ANY_INIT;
 #pragma weak in6addr_any = local_in6addr_any
-#ifndef __USLC__
-#pragma weak getaddrinfo
-#endif
 static int haveIPv6 = 1;
 #endif
 
@@ -452,9 +449,6 @@ TRANS(SocketOpen) (int i, int type)
     PRMSG (3,"SocketOpen(%d,%d)\n", i, type, 0);
 
 #if defined(IPv6) && defined(AF_INET6)
-    if (getaddrinfo == NULL)
-	haveIPv6 = 0;
-
     if (!haveIPv6 && Sockettrans2devtab[i].family == AF_INET6)
 	return NULL;
 #endif
@@ -1781,11 +1775,6 @@ UnixHostReallyLocal (char *host)
 
 {
     char hostnamebuf[256];
-
-#if defined(IPv6) && defined(AF_INET6)
-    if (getaddrinfo == NULL)
-	haveIPv6 = 0;
-#endif
 
     TRANS(GetHostname) (hostnamebuf, sizeof (hostnamebuf));
 
