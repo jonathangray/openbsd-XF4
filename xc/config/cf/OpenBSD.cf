@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.130 2004/02/14 17:03:55 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.131 2004/02/22 23:38:31 matthieu Exp $
 
 
 
@@ -453,6 +453,21 @@ install:: fonts.alias							@@\
 # include <xfree86.cf>
 
 #endif /* AlphaArchitecture */
+
+/*
+ * Definitions for the AMD64 architecture
+ */
+#ifdef AMD64Architecture
+
+# define HasWeakSymbols		NO /* XXX */
+# define HasSharedLibraries	YES
+# define HasDlopen		YES
+
+# define XF86Server		NO
+
+# include <xfree86.cf>
+
+#endif /* AMD64Architecture */
 
 /*
  * Definitions for the hppa architecture

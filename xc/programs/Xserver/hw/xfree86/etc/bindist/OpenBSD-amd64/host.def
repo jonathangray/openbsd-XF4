@@ -1,0 +1,10 @@
+/*
+ * Host.def for building OpenBSD bindists
+ * $OpenBSD: host.def,v 1.1 2004/02/22 23:38:31 matthieu Exp $
+ * $XFree86$
+ */
+
+#define InstallEmptyHostDef
+
+/* XXX bdftopcf is currently broken */
+#define BuildFonts		NO

@@ -1,0 +1,8 @@
+Post-installation instructions for XFree86 on OpenBSD/amd64
+-----------------------------------------------------------
+
+For now, there is no X server for amd64.  Only userland X.
+
+problem_blurb
+
+$OpenBSD: README.amd64,v 1.1 2004/02/22 23:38:31 matthieu Exp $
