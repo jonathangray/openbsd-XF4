@@ -52,6 +52,9 @@ static Bool MouseConfigCheck(void);
  * Initialization
  */
 static char *protocols[] = {
+#if defined(__OpenBSD__) || defined(__NetBSD__)
+    "wsmouse",
+#endif
     "Auto",
     "BusMouse",
     "GlidePoint",
@@ -302,6 +305,9 @@ MouseDeviceAndProtocol(XF86SetupInfo *info)
     static Widget mouse_dp, listD, listP, emul3, apply;
     static char **devices;
     static char *patterns[] = {
+#if defined(__OpenBSD__) || defined(__NetBSD__)
+	"wsmouse",
+#endif
 	"cua",
 	"mouse",
 	"ps",
