@@ -16,8 +16,10 @@ configuration.
 VGA cards support is available only on BWX based machines.
 The following cards have been successfully tested for now:
 
+* 3DFX Interactive Banshee
 * 3DLabs Permedia 2 (8, 15, 16 and 24 bits depth) 
 * ATI Rage Pro (works with 'Option "NoAccel"')
+* ATI Rage 128
 * Cirrus Logic CL5430 (works with 'Option "NoAccel"')
 * Cirrus Logic GD5446 (8, 16 and 24 bits depth)
 * Matrox MGA 2064 (8, 16 and 24 bits depth)
@@ -47,4 +49,4 @@ Start either xdm(1) or startx(1).
 
 problem_blurb
 
-$OpenBSD: README.alpha,v 1.11 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.alpha,v 1.12 2002/11/19 06:16:23 matthieu Exp $
