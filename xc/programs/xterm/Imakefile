@@ -57,7 +57,8 @@ module.o: ; $(CC) -c defines $(CFLAGS) module.c
          PTYLIB = -lpucc
 #endif
 
-#if ((LinuxCLibMajorVersion == 6) && (LinuxCLibMinorVersion < 1))
+#if ((LinuxCLibMajorVersion == 6) && (LinuxCLibMinorVersion < 1)) || \
+	defined(OpenBSDArchitecture)
          PTYLIB = -lutil
 #endif
 

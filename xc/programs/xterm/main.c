@@ -377,6 +377,10 @@ extern struct utmp *getutid __((struct utmp *_Id));
 #include <local/openpty.h>
 #endif /* PUCC_PTYD */
 
+#ifdef __OpenBSD__
+#include <util.h>
+#endif
+
 #if !defined(UTMP_FILENAME)
 #if defined(UTMP_FILE)
 #define UTMP_FILENAME UTMP_FILE
@@ -453,6 +457,8 @@ static int pty_search (int *pty);
 
 static void get_terminal (void);
 static void resize (TScreen *s, char *oldtc, char *newtc);
+static int get_pty (int *pty);
+static void set_owner(char *device, int uid, int gid, int mode);
 
 static Bool added_utmp_entry = False;
 
@@ -1457,6 +1463,32 @@ main (int argc, char *argv[])
 	int mode;
 	char *my_class = DEFCLASS;
 
+#ifndef AMOEBA
+	/* extra length in case longer tty name like /dev/ttyq255 */
+	ttydev = (char *) malloc (sizeof(TTYDEV) + 80);
+#ifdef USE_PTY_DEVICE
+	ptydev = (char *) malloc (sizeof(PTYDEV) + 80);
+	if (!ttydev || !ptydev)
+#else
+	if (!ttydev)
+#endif
+	{
+	    fprintf (stderr,
+		     "%s:  unable to allocate memory for ttydev or ptydev\n",
+		     ProgramName);
+	    exit (1);
+	}
+	strcpy (ttydev, TTYDEV);
+#ifdef USE_PTY_DEVICE
+	strcpy (ptydev, PTYDEV);
+#endif
+
+#ifdef __OpenBSD__
+	get_pty(NULL);
+	seteuid(getuid());
+	setuid(getuid());
+#endif /* __OpenBSD__ */
+
 	/* Do these first, since we may not be able to open the display */
 	ProgramName = argv[0];
 	TRACE_OPTS(options, optionDescList, XtNumber(optionDescList));
@@ -1491,26 +1523,6 @@ main (int argc, char *argv[])
 	/* This dumps core on HP-UX 9.05 with X11R5 */
 #if OPT_I18N_SUPPORT
 	XtSetLanguageProc (NULL, NULL, NULL);
-#endif
-
-#ifndef AMOEBA
-	/* extra length in case longer tty name like /dev/ttyq255 */
-	ttydev = (char *) malloc (sizeof(TTYDEV) + 80);
-#ifdef USE_PTY_DEVICE
-	ptydev = (char *) malloc (sizeof(PTYDEV) + 80);
-	if (!ttydev || !ptydev)
-#else
-	if (!ttydev)
-#endif
-	{
-	    fprintf (stderr,
-		     "%s:  unable to allocate memory for ttydev or ptydev\n",
-		     ProgramName);
-	    exit (1);
-	}
-	strcpy (ttydev, TTYDEV);
-#ifdef USE_PTY_DEVICE
-	strcpy (ptydev, PTYDEV);
 #endif
 
 #ifdef MINIX
@@ -2174,9 +2186,37 @@ main (int argc, char *argv[])
  * has problems, we can re-enter this function and get another one.
  */
 static int
-get_pty (int *pty, char *from GCC_UNUSED)
+get_pty (int *pty)
 {
 	int result = 1;
+
+#ifdef __OpenBSD__
+	static int m_tty = -1;
+	static int m_pty = -1;
+	struct group *ttygrp;
+
+	if (pty == NULL) {
+		result = openpty(&m_pty, &m_tty, ttydev, NULL, NULL);
+
+		seteuid(0);
+		if ((ttygrp = getgrnam(TTY_GROUP_NAME)) != 0) {
+			set_owner(ttydev, getuid(), ttygrp->gr_gid,
+			    0600);
+		} else {
+			set_owner(ttydev, getuid(), getgid(),
+			    0600);
+		}
+		seteuid(getuid());
+		return result;
+	} else if (m_pty != -1) {
+		*pty = m_pty;
+		return (0);
+	} else {
+		return (-1);
+	}
+#endif /* __OpenBSD__ */
+
+
 #ifdef PUCC_PTYD
 
 	result = ((*pty = openrpty(ttydev, ptydev,
@@ -2601,8 +2641,10 @@ spawn (void)
 	struct utmpx utmp,
 		    *utret;
 #else
-	struct utmp utmp,
-		   *utret;
+	struct utmp utmp;
+#ifdef USE_SYSV_UTMP
+	struct utmp *utret;
+#endif
 #endif
 #ifdef USE_LASTLOG
 	struct lastlog lastlog;
@@ -2760,7 +2802,7 @@ spawn (void)
 			tty = -1;
 		}
 
-		if (get_pty (&screen->respond, XDisplayString(screen->display)))
+		if (get_pty (&screen->respond))
 		{
 			/*  no ptys! */
 			(void) fprintf(stderr, "%s: no available ptys: %s\n",
@@ -3063,7 +3105,7 @@ spawn (void)
 				break;
 #endif	/* USE_SYSV_PGRP */
 			}
-
+			perror("open ttydev");
 #ifdef TIOCSCTTY
 			ioctl(tty, TIOCSCTTY, 0);
 #endif
@@ -3399,7 +3441,6 @@ spawn (void)
 		    }
 #endif	/* TIOCCONS */
 		}
-
 		signal (SIGCHLD, SIG_DFL);
 #ifdef USE_SYSV_SIGHUP
 		/* watch out for extra shells (I don't understand either) */
@@ -3969,7 +4010,7 @@ spawn (void)
 			 * another one.
 			 */
 			(void) close(screen->respond);
-			if (get_pty(&screen->respond, XDisplayString(screen->display))) {
+			if (get_pty(&screen->respond)) {
 			    /* no more ptys! */
 			    fprintf(stderr,
 				    "%s: child process can find no available ptys: %s\n",
