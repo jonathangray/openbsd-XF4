@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.137 2004/07/20 21:32:46 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.138 2004/08/09 18:16:30 mickey Exp $
 
 
 
@@ -516,7 +516,7 @@ install:: fonts.alias							@@\
 # define BuildGlxExt            NO
 # define BuildGLXLibrary        NO
 
-# if OSMajorVersion < 3 || (OSMajorVersion == 3 && OSMinorVersion < 5)
+# if OSMajorVersion < 3 || (OSMajorVersion == 3 && OSMinorVersion <= 5)
 #  define HasSharedLibraries	NO
 #  define SharedLibXThrStub	NO
 #  define HasDlopen		NO
