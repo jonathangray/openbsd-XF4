@@ -2000,8 +2000,6 @@
 ./usr/local/lib
 ./usr/local/lib/X11
 ./usr/local/lib/X11/app-defaults
-./var
-./var/db
 ./var/db/xdm
 ./var/db/xkb
 ./var/db/xkb/README

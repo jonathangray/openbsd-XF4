@@ -215,3 +215,6 @@
 ./usr/X11R6/man
 ./usr/X11R6/man/cat1
 ./usr/X11R6/man/whatis.db
+./var
+./var/db
+./var/db/pkg
