@@ -29,7 +29,7 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.138 2001/10/
 # endif
 #endif
 
-#if defined(SparcArchitecture) && !defined(__OpenBSD__)
+#if defined(SparcArchitecture) && !defined(OpenBSDArchitecture)
         SBUSSRC = xf86sbusBus.c
         SBUSOBJ = xf86sbusBus.o
 #endif
@@ -47,6 +47,11 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.138 2001/10/
 #if BuildXInputExt
  XF86_XINPUT_SRC = xf86Xinput.c xisb.c
  XF86_XINPUT_OBJ = xf86Xinput.o xisb.o
+#endif
+
+#if BuildXF86DGA
+  XF86_DGA_SRC = xf86DGA.c
+  XF86_DGA_OBJ = xf86DGA.o
 #endif
 
 MODPATHDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
@@ -86,7 +91,7 @@ SRCS =	\
 	xf86IniExt.c \
 	xf86Config.c \
 	xf86Cursor.c \
-	xf86DGA.c \
+	$(XF86_DGA_SRC) \
 	xf86DPMS.c \
 	xf86DefModeSet.c \
 	xf86DoProbe.c \
@@ -122,7 +127,7 @@ OBJS = \
 	xf86fbBus.o \
 	xf86Config.o \
 	xf86Cursor.o \
-	xf86DGA.o \
+	$(XF86_DGA_OBJ) \
 	xf86DPMS.o \
 	xf86DefModeSet.o \
 	xf86DoProbe.o \
