@@ -81,8 +81,8 @@ SUBDIRS = \
 	$(MAKEPSRESDIR) $(MKCFMSRCDIR) \
 	mkfontdir oclock $(PROXYMGRSRCDIR) $(RGBSRCDIR) $(RSTARTSRCDIR) \
 	setxkbmap showfont \
-	$(SMPROXYSRCDIR) ssh-askpass $(TWMSRCDIR) viewres x11perf xauth \
-	xbiff xcalc xclipboard xclock \
+	$(SMPROXYSRCDIR) ssh-askpass $(TWMSRCDIR) viewres wm2 x11perf \
+	xauth xbiff xcalc xclipboard xclock \
 	xcmsdb $(XCONSOLESRCDIR) xditview $(XDMSRCDIR) xdpyinfo \
 	$(XF86DGASRCDIR) xedit xev xeyes xfd xfontsel $(XFSSRCDIR) xfsinfo \
 	$(XFINDPROXYSRCDIR) $(XFWPSRCDIR) $(XGAMMASRCDIR) xgc $(XHOSTSRCDIR) \
