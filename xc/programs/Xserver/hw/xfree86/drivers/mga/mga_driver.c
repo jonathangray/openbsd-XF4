@@ -1341,7 +1341,13 @@ MGAPreInit(ScrnInfoPtr pScrn, int flags)
     /* Prefer 24bpp fb unless the Overlay option is set, or DRI is
      * supported.
      */
+#ifndef __alpha__
     flags24 = Support24bppFb | Support32bppFb | SupportConvert32to24;
+#else
+    /* 24bpp gives bus errors on alpha */
+    flags24 = Support32bppFb | SupportConvert32to24;
+#endif
+
     s = xf86TokenToOptName(MGAOptions, OPTION_OVERLAY);
 #ifndef XF86DRI
     if (!(xf86FindOption(pScrn->confScreen->options, s) ||
