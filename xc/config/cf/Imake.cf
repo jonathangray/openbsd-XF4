@@ -169,6 +169,12 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.74 2001/11/16 16:47:50 dawes Exp $
 #  undef __vax__
 #  define VaxArchitecture
 # endif
+# ifdef __hppa__
+#  ifndef HPArchitecture
+#   define HPArchitecture
+#  endif
+#  undef __hppa__
+# endif /* __hppa__ */
 #endif /* OpenBSD */
 
 #ifdef __NetBSD__

@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.111 2002/09/28 15:50:02 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.112 2002/10/22 21:31:56 todd Exp $
 
 
 
@@ -584,6 +584,25 @@ install:: fonts.alias							@@\
 
 #endif /* Hp300Architecture */
 
+/*
+ * Definitions for the hppa architecture
+ */
+#ifdef HPArchitecture
+
+# ifndef BuildServer
+#  define BuildServer		NO
+# endif
+# define InstallFontAliases	InstallFontAliasesNoComment
+# define UseRgbTxt		NO
+# define UseRgb			YES
+# define HasSharedLibraries     NO
+# define HasDlopen              NO
+# define BuildGlxExt            NO
+# define BuildGLXLibrary        NO
+
+#include <xfree86.cf>
+
+#endif /* HPArchitecture */
 
 /*
  * Definitions for the mac68k architecture
@@ -971,6 +990,10 @@ install:: fonts.alias							@@\
 # else
 #  define DlLibrary /**/
 # endif
+#endif
+
+#ifndef GccWarningOptions
+# define GccWarningOptions -Wall -Wpointer-arith
 #endif
 
 /* This must come last */
