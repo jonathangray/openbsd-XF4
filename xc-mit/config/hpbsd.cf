@@ -1,0 +1,51 @@
+XCOMM platform:  $XConsortium: hpbsd.cf,v 1.1 91/09/27 12:10:52 mark Exp $
+
+#define OSName            BSD 4.4
+XCOMM operating system:  OSName
+#define OSMajorVersion    4
+#define OSMinorVersion    4
+
+#ifdef hp800
+#undef hp800
+#define HP800Architecture
+#endif
+#if defined(hp300) || (defined(__OpenBSD__) && defined(__m68k__))
+#ifdef hp300
+#undef hp300
+#endif
+#define HP300Architecture
+#define BuildFonts NO
+#endif
+
+#define DirFailPrefix -
+#define HasGcc YES
+#define HasNdbm YES    /* for ndbm or db */
+#define HasSaberC YES
+#define InstKmemFlags -g kmem -m 2755
+
+#define HasVoidSignalReturn YES
+#define CppCmd /usr/bin/cpp
+#define StandardCppDefines -traditional StandardDefines
+#define CcCmd cc
+#define DefaultCCOptions -pipe
+#define ServerCCOptions -pipe -Dhp9000 -Dhp300 -Dm68k
+#define OptimizedCDebugFlags -O2 -g
+#define HasDB YES  /* for Berkeley DB routines */
+#define HasBsearch YES
+#define HasPutenv YES
+#define BSD44 YES
+#define DefaultUserPath :/bin:/usr/bin:$(BINDIR)
+#define DefaultSystemPath /sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
+#define BuildServer YES
+#ifdef HP300Architecture
+#define HasShm YES
+#endif
+
+#define XhpBSDServer YES
+#define BuildXInputExt YES
+#define BuildPexExt YES
+
+#define SetTtyGroup YES
+
+#define ServerOnly YES
+#define BuildServer YES
