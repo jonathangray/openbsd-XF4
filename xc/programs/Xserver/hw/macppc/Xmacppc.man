@@ -1,0 +1,97 @@
+.\" $XConsortium: Xmacppc.man /main/27 1996/12/09 17:32:41 kaleb $
+.\" Copyright 1988 Sun Microsystems, Inc.
+.\" Copyright (c) 1993, 1994  X Consortium
+.\" 
+.\" Permission is hereby granted, free of charge, to any person obtaining
+.\" a copy of this software and associated documentation files (the
+.\" "Software"), to deal in the Software without restriction, including
+.\" without limitation the rights to use, copy, modify, merge, publish,
+.\" distribute, sublicense, and/or sell copies of the Software, and to
+.\" permit persons to whom the Software is furnished to do so, subject to
+.\" the following conditions:
+.\" 
+.\" The above copyright notice and this permission notice shall be included
+.\" in all copies or substantial portions of the Software.
+.\" 
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+.\" OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+.\" IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR
+.\" OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+.\" ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+.\" OTHER DEALINGS IN THE SOFTWARE.
+.\" 
+.\" Except as contained in this notice, the name of the X Consortium shall
+.\" not be used in advertising or otherwise to promote the sale, use or
+.\" other dealings in this Software without prior written authorization
+.\" from the X Consortium.
+.TH XMACPPC 1 "Release 6.3" "X Version 11"
+.SH NAME
+Xmacppc \- Power Macintosh server for X Version 11
+.SH SYNOPSIS
+.B Xmacppc
+[ option ] ...
+.SH DESCRIPTION
+.I Xmacppc
+is a server for Version 11 of the X window system on Apple PowerPC Mac hardware.
+It will normally be started by the \fIxdm(1)\fP daemon or by a script
+that runs the program \fIxinit(1)\fP.
+.SH CONFIGURATIONS
+.PP
+.I Xmacppc
+supports the framebuffer in Power Mac in 8 bits mode, at resolutions
+from 1024x768 to 1280x1024. 
+.I Xmacppc
+supports.
+.PP
+Xmacppc uses the \fIwscons(4)\fP console driver to access the keyboard and
+framebuffer. Normally it uses the /dev/ttyE0 device. 
+.PP
+.SH KEYBOARDS
+.PP
+Xmacppc supports USB and ADB keyboards with US layout only. Other
+layouts must be programmed with \fIxmodmap(1)\fP.
+.SH OPTIONS
+.PP
+In addition to the normal server options described in the \fIXserver(1)\fP
+manual page, \fIXmacppc\fP accepts the following command line
+switches:
+.TP 8
+.B \-debug
+This option indicates that the server is being run from a debugger, and 
+that it should \fBnot\fP put its standard input, output and error files 
+into non-blocking mode.
+.TP 8
+.B "\-dev \fIfilename[:filename]...\fP"
+This option specifies the colon separated names of the framebuffer device 
+files to be used.
+.SH ENVIRONMENT
+.TP 8
+\fBXDEVICE\fP
+If present,  and if no explicit \fB-dev\fP options are given, specifies 
+the (colon separated) list of display devices to use.
+.SH "SEE ALSO"
+.PP
+X(1), Xserver(1), xdm(1), xinit(1)
+.SH BUGS AND LIMITATIONS
+This server doesn't have support to set the video mode. The video mode 
+should be set from MacOS or from the OpenFirmare.
+.PP
+This server only supports 8 bit depth (PseudoColor visuals). 
+.PP
+The colormap is not restored correctly on exit. 
+.PP
+.SH AUTHORS
+This server was written for NetBSD by Tsubai Masanari, based on the
+Xsun code by:
+.TP 8
+U. C. Berkeley
+Adam de Boor.
+.TP 8
+Sun Microsystems
+David Rosenthal,  Stuart Marks,  Robin Schaufler,  Mike Schwartz,
+Frances Ho,  Geoff Lee,  and Mark Opperman.
+.TP 8
+MIT Laboratory for Computer Science
+.br
+Bob Scheifler, Keith Packard, Kaleb Keithley
