@@ -89,7 +89,8 @@ static int		autoRepeatFirst;
 static struct timeval	autoRepeatLastKeyDownTv;
 static struct timeval	autoRepeatDeltaTv;
 
-void sunKbdWait()
+void 
+sunKbdWait(void)
 {
     static struct timeval lastChngKbdTransTv;
     struct timeval tv;
@@ -114,9 +115,8 @@ void sunKbdWait()
     lastChngKbdTransTv = tv;
 }
 
-static void SetLights (ctrl, fd)
-    KeybdCtrl*	ctrl;
-    int fd;
+static void 
+SetLights (KeybdCtrl *ctrl, int fd)
 {
 #ifdef KIOCSLED
     static unsigned char led_tab[16] = {
@@ -143,10 +143,8 @@ static void SetLights (ctrl, fd)
 }
 
 
-static void ModLight (device, on, led)
-    DeviceIntPtr device;
-    Bool	on;
-    int		led;
+static void 
+ModLight (DeviceIntPtr device, Bool on, int led)
 {
     KeybdCtrl*	ctrl = &device->kbdfeed->ctrl;
     sunKbdPrivPtr pPriv = (sunKbdPrivPtr) device->public.devicePrivate;
@@ -177,19 +175,11 @@ static void ModLight (device, on, led)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-static void macppcBell (
-    int		    percent,
-    DeviceIntPtr    device,
-    pointer	    ctrl,
-    int		    unused)
-#else
-static void macppcBell (percent, device, ctrl, unused)
-    int		    percent;	    /* Percentage of full volume */
-    DeviceIntPtr    device;	    /* Keyboard to ring */
-    pointer	    ctrl;
-    int		    unused;
-#endif
+static void 
+macppcBell (int		    percent,
+	    DeviceIntPtr    device,
+	    pointer	    ctrl,
+	    int		    unused)
 {
 #if 0
     KeybdCtrl*      kctrl = (KeybdCtrl*) ctrl;
@@ -213,28 +203,15 @@ static void macppcBell (percent, device, ctrl, unused)
 }
 
 #if 0	/* XXX */
-static void localEnqueueEvent (xEp, dip, count)
-    xEventPtr xEp;
-    DeviceIntPtr dip;
-    int count;
+static void 
+localEnqueueEvent (xEventPtr xEp, DeviceIntPtr dip, int count)
 {
-#ifndef i386
     sigset_t holdmask;
 
-#ifdef SVR4
-    (void) sigaddset (&holdmask, SIGPOLL);
-#else
     (void) sigaddset (&holdmask, SIGIO);
-#endif
     (void) sigprocmask (SIG_BLOCK, &holdmask, (sigset_t*)NULL);
     mieqEnqueue (xEp);
     (void) sigprocmask (SIG_UNBLOCK, &holdmask, (sigset_t*)NULL);
-#else
-    int oldmask = sigblock (sigmask (SIGIO));
-
-    mieqEnqueue (xEp);
-    sigsetmask (oldmask);
-#endif
 }
 #endif
 
@@ -244,9 +221,8 @@ static void localEnqueueEvent (xEp, dip, count)
 #define XLED_SCROLL_LOCK 0x2
 #define XLED_CAPS_LOCK   0x8
 
-static KeyCode LookupKeyCode (keysym, keysymsrec)
-    KeySym keysym;
-    KeySymsPtr keysymsrec;
+static KeyCode 
+LookupKeyCode (KeySym keysym, KeySymsPtr keysymsrec)
 {
     KeyCode i;
     int ii, index = 0;
@@ -257,10 +233,8 @@ static KeyCode LookupKeyCode (keysym, keysymsrec)
 		return i;
 }
 
-static void pseudoKey(device, down, keycode)
-    DeviceIntPtr device;
-    Bool down;
-    KeyCode keycode;
+static void 
+pseudoKey(DeviceIntPtr device, Bool down, Keycode keycode)
 {
     int bit;
     CARD8 modifiers;
@@ -299,10 +273,8 @@ static void pseudoKey(device, down, keycode)
     }
 }
 
-static void DoLEDs(device, ctrl, pPriv)
-    DeviceIntPtr    device;	    /* Keyboard to alter */
-    KeybdCtrl* ctrl;
-    sunKbdPrivPtr pPriv;
+static void 
+DoLEDs(DeviceIntPtr device, KeybdCtrl *ctrl, sunKbdPrivPtr pPriv)
 {
 #ifdef XKB
     if (noXkbExtension) {
@@ -360,15 +332,8 @@ static void DoLEDs(device, ctrl, pPriv)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-static void macppcKbdCtrl (
-    DeviceIntPtr    device,
-    KeybdCtrl*	    ctrl)
-#else
-static void macppcKbdCtrl (device, ctrl)
-    DeviceIntPtr    device;	    /* Keyboard to alter */
-    KeybdCtrl*	    ctrl;
-#endif
+static void 
+macppcKbdCtrl (DeviceIntPtr device, KeybdCtrl* ctrl)
 {
     macppcKbdPrivPtr pPriv = (macppcKbdPrivPtr) device->public.devicePrivate;
 
@@ -401,15 +366,8 @@ static void macppcKbdCtrl (device, ctrl)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-int macppcKbdProc (
-    DeviceIntPtr  device,
-    int	    	  what)
-#else
-int macppcKbdProc (device, what)
-    DeviceIntPtr  device;	/* Keyboard to manipulate */
-    int	    	  what;	    	/* What to do to it */
-#endif
+int 
+macppcKbdProc (DeviceIntPtr device, int what)
 {
     int i;
     DevicePtr pKeyboard = (DevicePtr) device;
@@ -519,17 +477,10 @@ int macppcKbdProc (device, what)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-Firm_event* macppcKbdGetEvents (
-    int		fd,
-    int*	pNumEvents,
-    Bool*	pAgain)
-#else
-Firm_event* macppcKbdGetEvents (fd, pNumEvents, pAgain)
-    int		fd;
-    int*	pNumEvents;
-    Bool*	pAgain;
-#endif
+Firm_event* 
+macppcKbdGetEvents (int		fd,
+		    int*	pNumEvents,
+		    Bool*	pAgain)
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static Firm_event	evBuf[MAXEVENTS];   /* Buffer for Firm_events */
@@ -559,10 +510,8 @@ Firm_event* macppcKbdGetEvents (fd, pNumEvents, pAgain)
 static xEvent	autoRepeatEvent;
 static int	composeCount;
 
-static Bool DoSpecialKeys(device, xE, fe)
-    DeviceIntPtr  device;
-    xEvent*       xE;
-    Firm_event* fe;
+static Bool 
+DoSpecialKeys(DeviceIntPtr device, xEvent *xE, Firm_event *fe)
 {
     int	shift_index, map_index, bit;
     KeySym ksym;
@@ -640,15 +589,8 @@ static Bool DoSpecialKeys(device, xE, fe)
 }
 #endif /* 0 XXX */
 
-#if NeedFunctionPrototypes
-void macppcKbdEnqueueEvent (
-    DeviceIntPtr  device,
-    Firm_event	  *fe)
-#else
-void macppcKbdEnqueueEvent (device, fe)
-    DeviceIntPtr  device;
-    Firm_event	  *fe;
-#endif
+void
+macppcKbdEnqueueEvent (DeviceIntPtr device, Firm_event *fe)
 {
     xEvent		xE;
     BYTE		keycode;
@@ -689,7 +631,8 @@ void macppcKbdEnqueueEvent (device, fe)
 }
 
 #if 0 /* XXX */
-void sunEnqueueAutoRepeat ()
+void 
+sunEnqueueAutoRepeat (void)
 {
     int	delta;
     int	i, mask;
@@ -748,32 +691,16 @@ void sunEnqueueAutoRepeat ()
  *
  *-----------------------------------------------------------------------
  */
-#if NeedFunctionPrototypes
-int sunChangeKbdTranslation(
-    int fd,
-    Bool makeTranslated)
-
-#else
-int sunChangeKbdTranslation(fd, makeTranslated)
-    int fd;
-    Bool makeTranslated;
-#endif
+int 
+sunChangeKbdTranslation(int fd, Bool makeTranslated)
 {
     int 	tmp;
-#ifndef i386 /* { */
     sigset_t	hold_mask, old_mask;
-#else /* }{ */
-    int		old_mask;
-#endif /* } */
     int		toread;
     char	junk[8192];
 
-#ifndef i386 /* { */
     (void) sigfillset(&hold_mask);
     (void) sigprocmask(SIG_BLOCK, &hold_mask, &old_mask);
-#else /* }{ */
-    old_mask = sigblock (~0);
-#endif /* } */
     sunKbdWait();
     if (makeTranslated) {
         /*
@@ -811,30 +738,23 @@ int sunChangeKbdTranslation(fd, makeTranslated)
 	    toread -= tmp;
 	}
     }
-#ifndef i386 /* { */
     (void) sigprocmask(SIG_SETMASK, &old_mask, (sigset_t *)NULL);
-#else /* }{ */
-    sigsetmask (old_mask);
-#endif /* } */
     return 0;
 }
 #endif /* 0 XXX */
 
 /*ARGSUSED*/
-Bool LegalModifier(key, pDev)
-    unsigned int key;
-    DevicePtr	pDev;
+Bool 
+LegalModifier(unsigned int key, DevicePtr pDev)
 {
     return TRUE;
 }
 
 #if 0 /* XXX */
 /*ARGSUSED*/
-void sunBlockHandler(nscreen, pbdata, pptv, pReadmask)
-    int nscreen;
-    pointer pbdata;
-    struct timeval **pptv;
-    pointer pReadmask;
+void 
+sunBlockHandler(int nscreen, pointer pbdata, 
+		struct timeval **pptv, pointer pReadmask)
 {
     KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
     static struct timeval artv = { 0, 0 };	/* autorepeat timeval */
@@ -854,11 +774,9 @@ void sunBlockHandler(nscreen, pbdata, pptv, pReadmask)
 }
 
 /*ARGSUSED*/
-void sunWakeupHandler(nscreen, pbdata, err, pReadmask)
-    int nscreen;
-    pointer pbdata;
-    unsigned long err;
-    pointer pReadmask;
+void 
+sunWakeupHandler(int nscreen, pointer pbdata, 
+		 unsigned long err, pointer pReadmask)
 {
     KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
     struct timeval tv;
