@@ -1,6 +1,5 @@
-/*
-Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
-See the file COPYING for copying permission.
+/* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+   See the file COPYING for copying permission.
 */
 
 #include <sys/types.h>
@@ -27,9 +26,12 @@ See the file COPYING for copying permission.
 #endif
 #endif
 
-int filemap(const char *name,
-	    void (*processor)(const void *, size_t, const char *, void *arg),
-	    void *arg)
+#include "filemap.h"
+
+int
+filemap(const char *name,
+        void (*processor)(const void *, size_t, const char *, void *arg),
+        void *arg)
 {
   size_t nbytes;
   int fd;
