@@ -270,7 +270,7 @@
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libPEX5.a
 ./usr/X11R6/lib/libPEX5.so.6.0
-./usr/X11R6/lib/libXThrStub.so.6.0
+./usr/X11R6/lib/libXThrStub.so.6.1
 ./usr/X11R6/lib/libXft.so.1.1
 ./usr/X11R6/lib/libXmuu.so.1.0
 ./usr/X11R6/lib/libXxf86misc.a
