@@ -164,7 +164,6 @@ xf86KbdOn()
 #endif
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-		ioctl(xf86Info.kbdFd, WSKBDIO_SETMODE, &mode);
 		return xf86Info.kbdFd;
 #endif
 	}
@@ -193,7 +192,6 @@ xf86KbdOff()
 #endif
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-		ioctl(xf86Info.kbdFd, WSKBDIO_SETMODE, &mode);
 		return xf86Info.kbdFd;
 #endif
 	}	
