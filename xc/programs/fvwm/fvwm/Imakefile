@@ -1,4 +1,4 @@
-XCOMM	$OpenBSD: Imakefile,v 1.5 2002/08/26 09:44:20 matthieu Exp $
+XCOMM	$OpenBSD: Imakefile,v 1.6 2002/09/18 10:53:17 matthieu Exp $
 
 FVWMTOP= ..
 #include "../Fvwm.tmpl"
@@ -31,8 +31,4 @@ ComplexProgramTarget(fvwm)
 SpecialObjectRule(builtins.o, builtins.c, $(PATH_DEFINES))
 SpecialObjectRule(read.o, read.c, $(PATH_DEFINES))
 SpecialObjectRule(fvwm.o, fvwm.c, $(PATH_DEFINES))
-#if defined(OpenBSDArchitecture) && (defined(Sparc64Architecture) || defined(SparcArchitecture))
-/* Work around gcc 2.95.5 bug on sparc64 */
-SpecialCObjectRule(complex, NullParameter, -O0)
-#endif
 LinkFile(fvwm.man,fvwm2.1)
