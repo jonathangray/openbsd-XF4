@@ -3,7 +3,7 @@ Post-installation instructions for XFree86 on OpenBSD/macppc
 
 OpenBSD 3.0 and later uses the XFree86 X server on macppc. 
 
-A special driver reproduces the functionnality of Xmacppc in previous 
+A special driver reproduces the functionality of Xmacppc in previous 
 releases: wsfb. It uses whatever graphics mode the console is set to 
 (by Mac OS 9) as a dumb unaccelerated framebuffer in 8 bits per pixel. 
 A default /etc/X11/XF86Config is installed that uses this driver.
@@ -13,8 +13,8 @@ configuration.
 To use xdm from rc.conf, it is necessary to disable /dev/ttyC0 in
 /etc/ttys, change the 'status' of /dev/ttyC0 to 'off'.
 
-Accellerated drivers
---------------------
+Accelerated drivers
+-------------------
 
 The 'ati' driver is currently known to work on the G4 Macs with ATI
 Rage 128 cards. The Titanium PowerBook G4 and iBook work with the commented
@@ -73,7 +73,7 @@ Section "Monitor"
 	Identifier   "Monitor"
 	VendorName   "Generic"
 	ModelName    "TwentyOneInches"
-# Adujst those to your monitor or it will be destroyed !!
+# Adjust those to your monitor or it will be destroyed !!
 	HorizSync    31.5-90
 	VertRefresh  50-100
 # 	This mode line can be used on the Ti PBG4
@@ -182,4 +182,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.12 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.macppc,v 1.13 2002/12/08 17:08:52 matthieu Exp $
