@@ -341,6 +341,7 @@
 ./usr/X11R6/lib/X11/xkb/symbols/sony/us
 ./usr/X11R6/lib/X11/xkb/symbols/sr
 ./usr/X11R6/lib/X11/xkb/symbols/sun
+./usr/X11R6/lib/X11/xkb/symbols/sun/lkeys
 ./usr/X11R6/lib/X11/xkb/symbols/sun/se
 ./usr/X11R6/lib/X11/xkb/symbols/sun/us
 ./usr/X11R6/lib/X11/xkb/symbols/th
