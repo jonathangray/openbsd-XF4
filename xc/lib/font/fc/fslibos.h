@@ -48,13 +48,20 @@ from The Open Group.
 #ifndef FONT_OPEN_MAX
 
 #ifndef X_NOT_POSIX
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
+# ifdef _POSIX_SOURCE
+#  include <limits.h>
+# else
+#  define _POSIX_SOURCE
+#  include <limits.h>
+#  undef _POSIX_SOURCE
+# endif
 #endif
+#ifndef SIZE_MAX
+# ifdef ULONG_MAX
+#  define SIZE_MAX ULONG_MAX
+# else
+#  define SIZE_MAX UINT_MAX
+# endif
 #endif
 #ifndef OPEN_MAX
 #if defined(SVR4) || defined(__UNIXOS2__)

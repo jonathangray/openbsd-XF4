@@ -76,6 +76,13 @@ in this Software without prior written authorization from The Open Group.
 #undef _POSIX_SOURCE
 #endif
 #endif
+#ifndef SIZE_MAX
+# ifdef ULONG_MAX
+#  define SIZE_MAX ULONG_MAX
+# else 
+#  define SIZE_MAX UINT_MAX
+# endif
+#endif
 #ifndef OPEN_MAX
 #ifdef SVR4
 #define OPEN_MAX 256
