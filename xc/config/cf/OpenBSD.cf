@@ -312,6 +312,7 @@ install:: fonts.alias							@@\
  * The code for an Alpha XF86_TGA server compiles, but it DOES NOT work
  */
 # define BuildAlphaXF86		NO
+# define BuildGlxExt		YES
 
 # if BuildAlphaXF86
 #  include <xf86.rules>
@@ -327,8 +328,8 @@ install:: fonts.alias							@@\
 # endif
 
 # define BuildServer		NO
-# define XnestServer		YES
-# define XVirtualFramebufferServer	YES
+# define XnestServer		NO
+# define XVirtualFramebufferServer	NO
 
 # define BuildDPMSLibrary	NO
 # define BuildDPMSExt		NO
