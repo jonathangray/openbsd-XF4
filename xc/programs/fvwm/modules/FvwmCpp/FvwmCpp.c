@@ -210,7 +210,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
     strlcat(tmp_name, "/fvwmrcXXXXXX", sizeof(tmp_name));
     mktemp(tmp_name);
   } else {
-    strlcpy(tmp_name,cpp_outfile, sizeof(temp_name));
+    strlcpy(tmp_name,cpp_outfile, sizeof(tmp_name));
   }
 
   if (*tmp_name == '\0')
