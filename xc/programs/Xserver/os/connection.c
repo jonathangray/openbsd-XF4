@@ -1,4 +1,5 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* $OpenBSD: connection.c,v 1.4 2002/09/19 20:28:59 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -317,6 +318,7 @@ CreateWellKnownSockets()
     int		i;
     int		partial;
     char 	port[20];
+    OsSigHandlerPtr handler;
 
     FD_ZERO(&AllSockets);
     FD_ZERO(&AllClients);
@@ -392,8 +394,10 @@ CreateWellKnownSockets()
      * useful
      */
 #if !defined(WIN32)
-    if (OsSignal (SIGUSR1, SIG_IGN) == SIG_IGN)
+    handler = OsSignal (SIGUSR1, SIG_IGN);
+    if ( handler == SIG_IGN)
 	RunFromSmartParent = TRUE;
+    OsSignal(SIGUSR1, handler);
     ParentProcess = getppid ();
     if (RunFromSmartParent) {
 	if (ParentProcess > 1) {
