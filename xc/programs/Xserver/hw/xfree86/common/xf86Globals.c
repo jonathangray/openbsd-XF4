@@ -92,6 +92,9 @@ xf86InfoRec xf86Info = {
 #if defined(SVR4) && defined(i386)
 	FALSE,		/* panix106 */
 #endif
+#if defined(__OpenBSD__)
+	0,		/* wsKbdType */
+#endif
 	NULL,		/* pMouse */
 #ifdef XINPUT
 	NULL,		/* mouseLocal */
