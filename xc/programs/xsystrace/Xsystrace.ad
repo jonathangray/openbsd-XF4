@@ -1,4 +1,4 @@
-! $OpenBSD: Xsystrace.ad,v 1.1 2002/06/04 21:23:41 matthieu Exp $
+! $OpenBSD: Xsystrace.ad,v 1.2 2002/06/09 16:15:59 matthieu Exp $
 !
 ! Copyright (c) 2002 Matthieu Herrb and Niels Provos
 ! All rights reserved.
@@ -91,12 +91,18 @@ lines           -1,0,0,0,0,-1
 !
 *date-label.fromHoriz: title-label
 *processInfo-form.fromVert: title-form
+*processInfo-form.vertDistance: 0
 *syscallInfo-form.fromVert: processInfo-form
+*syscallInfo-form.vertDistance: 0
 *status-form.fromVert: syscallInfo-form
+*status-form.vertDistance: 0
 *errorCode-form.fromVert: status-form
+*errorCode-form.vertDistance: 0
 *specialProc-form.fromHoriz: errorCode-form
 *specialProc-form.fromVert: status-form
+*specialProc-form.vertDistance: 0
 *buttons-form.fromVert: specialProc-form
+*buttons-form.vertDistance: 0
 !
 *processName-label.fromVert: processInfo-label
 *processName-value.fromHoriz: processName-label
