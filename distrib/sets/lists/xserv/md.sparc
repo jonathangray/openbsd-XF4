@@ -71,6 +71,7 @@
 ./usr/X11R6/lib/X11/etc/sun.terminfo
 ./usr/X11R6/lib/X11/etc/xmodmap.std
 ./usr/X11R6/lib/X11/xserver
+./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/codeconv
 ./usr/X11R6/lib/modules/codeconv/libARABIC.a
@@ -158,7 +159,6 @@
 ./usr/X11R6/lib/modules/libxf4bpp.a
 ./usr/X11R6/lib/modules/libxf8_16bpp.a
 ./usr/X11R6/lib/modules/libxf8_32bpp.a
-./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0

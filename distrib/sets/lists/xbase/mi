@@ -12,7 +12,6 @@
 ./usr/X11R6/bin/appres
 ./usr/X11R6/bin/atobm
 ./usr/X11R6/bin/bdftopcf
-./usr/X11R6/bin/bdftruncate.pl
 ./usr/X11R6/bin/beforelight
 ./usr/X11R6/bin/bitmap
 ./usr/X11R6/bin/bmtoa
@@ -25,8 +24,6 @@
 ./usr/X11R6/bin/fslsfonts
 ./usr/X11R6/bin/fstobdf
 ./usr/X11R6/bin/fvwm
-./usr/X11R6/bin/glxgears
-./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/iceauth
 ./usr/X11R6/bin/ico
 ./usr/X11R6/bin/imake
@@ -54,7 +51,6 @@
 ./usr/X11R6/bin/sxpm
 ./usr/X11R6/bin/texteroids
 ./usr/X11R6/bin/twm
-./usr/X11R6/bin/ucs2any.pl
 ./usr/X11R6/bin/uxterm
 ./usr/X11R6/bin/viewres
 ./usr/X11R6/bin/wm2
@@ -109,8 +105,8 @@
 ./usr/X11R6/bin/xsetroot
 ./usr/X11R6/bin/xsm
 ./usr/X11R6/bin/xstdcmap
-./usr/X11R6/bin/xterm
 ./usr/X11R6/bin/xsystrace
+./usr/X11R6/bin/xterm
 ./usr/X11R6/bin/xvctl
 ./usr/X11R6/bin/xvidtune
 ./usr/X11R6/bin/xvinfo
@@ -130,7 +126,6 @@
 ./usr/X11R6/lib/X11/XKeysymDB
 ./usr/X11R6/lib/X11/app-defaults
 ./usr/X11R6/lib/X11/etc
-./usr/X11R6/lib/X11/fonts/local/fonts.dir
 ./usr/X11R6/lib/X11/fs
 ./usr/X11R6/lib/X11/fvwm
 ./usr/X11R6/lib/X11/fvwm/.fvwmrc
@@ -170,9 +165,6 @@
 ./usr/X11R6/lib/X11/xman.help
 ./usr/X11R6/lib/X11/xsm
 ./usr/X11R6/lib/libFS.a
-./usr/X11R6/lib/libGL.a
-./usr/X11R6/lib/libGLU.a
-./usr/X11R6/lib/libGLw.a
 ./usr/X11R6/lib/libICE.a
 ./usr/X11R6/lib/libSM.a
 ./usr/X11R6/lib/libX11.a
