@@ -156,6 +156,7 @@
 ./usr/X11R6/lib/X11/xsm
 ./usr/X11R6/lib/libFS.a
 ./usr/X11R6/lib/libGL.a
+./usr/X11R6/lib/libGLU.a
 ./usr/X11R6/lib/libGLw.a
 ./usr/X11R6/lib/libICE.a
 ./usr/X11R6/lib/libPEX5.a
