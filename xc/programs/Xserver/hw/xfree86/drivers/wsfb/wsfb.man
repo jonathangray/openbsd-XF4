@@ -1,0 +1,55 @@
+.\" $OpenBSD: wsfb.man,v 1.1 2001/09/09 20:10:29 matthieu Exp $
+.\" shorthand for double quote that works everywhere.
+.ds q \N'34'
+.TH WSFB __drivermansuffix__ __vendorversion__
+.SH NAME
+wsfb \- video driver for wsdisplay framebuffer device
+.SH SYNOPSIS
+.nf
+.B "Section \*qDevice\*q"
+.BI "  Identifier \*q"  devname \*q
+.B  "  Driver \*qwsfb\*q"
+\ \ ...
+.B EndSection
+.fi
+.SH DESCRIPTION
+.B wsfb
+is an XFree86 driver for the OpenBSD wsdisplay framebuffer devices.
+This is a non-accelerated driver, the following framebuffer depths are
+supported: 8, 16, 24, given the wsdisplay device underneath supports
+them. 
+All visual types are supported for depth 8, and TrueColor visual is
+supported for the other depths.  Multi-head configurations are supported.
+.SH SUPPORTED HARDWARE
+The 
+.B wsfb
+driver supports all hardware where a the wsdisplay framebuffer driver
+is available on OpenBSD. Currently this includes OpenBSD/macppc only. 
+
+.SH CONFIGURATION DETAILS
+Please refer to XF86Config(__filemansuffix__) for general configuration
+details.  This section only covers configuration details specific to
+this driver.
+.PP
+For this driver it is not required to specify modes in the screen 
+section of the config file.  The
+.B wsfb
+driver can pick up the currently used video mode from the framebuffer 
+driver and will use it. Video modes specifications in the config file
+will be ignored. 
+.PP
+The following driver 
+.B Options
+are supported:
+.TP
+.BI "Option \*qdevice\*q \*q" string \*q
+The framebuffer device to use. Default: /dev/ttyC0
+.TP
+.BI "Option \*qShadowFB\*q \*q" boolean \*q
+Enable or disable use of the shadow framebuffer layer.  See
+shadowfb(__drivermansuffix__) for further information.  Default: on.
+.SH "SEE ALSO"
+XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1),
+X(__miscmansuffix__), fbdev(__drivermansuffix__)
+.SH AUTHORS
+Authors include: Matthieu Herrb, Gerd Knorr, Michel Dänzer, Geert Uytterhoeven
