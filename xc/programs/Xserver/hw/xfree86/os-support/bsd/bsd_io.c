@@ -77,6 +77,11 @@ xf86SetKbdLeds(int leds)
 		ioctl(xf86Info.consoleFd, KDSETLED, leds);
 		break;
 #endif
+#if defined(WSCONS_SUPPORT)
+	case WSCONS:
+		ioctl(xf86Info.kbdFd, WSKBDIO_SETLEDS, &leds);
+		break;
+#endif
 	}
 }
 
