@@ -198,6 +198,16 @@ set ConfigFile [xf86config_findfile]
 set StartServer 1
 set ReConfig 0
 set UseConfigFile 0
+set proceed [mesg [format "%s\n\n%s" \
+		       [parafmt 65 \
+			    "This tool is for configuring XFRee86 3.3.6 \
+			     servers only. If you want to configure \
+			     XFree86 4.0.3 on your system, use xf86cfg or \
+			     the text-only tool xf86config."] \
+		       "Do you want to continue?"] yesno]
+if !$proceed {
+    exit 1
+}
 if { [string length $ConfigFile] > 0 } {
 	if [info exists env(DISPLAY)] {
 		set msg [format "%s\n \n%s\n \n%s" \

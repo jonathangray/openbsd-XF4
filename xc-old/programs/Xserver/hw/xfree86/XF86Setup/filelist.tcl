@@ -56,7 +56,7 @@ array set FilePermsDB {
 	lib/X11/XErrorDB			444
 	lib/X11/XKeysymDB			444
 	lib/X11/rgb.txt				444
-	lib/X11/Cards				444
+	lib/X11/old-Cards			444
 	lib/X11/locale/locale.dir		444
 	lib/X11/locale/C/XLC_LOCALE		444
 }
