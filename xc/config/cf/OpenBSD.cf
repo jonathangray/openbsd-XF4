@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.120 2003/04/03 21:13:21 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.121 2003/05/08 21:05:08 matthieu Exp $
 
 
 
@@ -79,10 +79,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define VarLibDir		VarDbDirectory
 
 #define InstallXloadSetGID	NO
-
-#ifndef HasLibPthread
-#define HasLibPthread		NO
-#endif
 
 #ifndef HasIssetugid
 # if (OSMajorVersion >= 2)
@@ -494,6 +490,18 @@ install:: fonts.alias							@@\
 #  endif 
 # endif 
  
+/* Direct rendering (OpenBSD 3.3 and up). */ 
+# if OSMajorVersion > 3 || (OSMajorVersion == 3 && OSMinorVersion > 2)
+#  ifndef BuildXF86DRI
+#   define BuildXF86DRI			NO
+#  endif 
+#  ifndef BuildXF86DRM
+#   define BuildXF86DRM			NO
+#  endif 
+#  ifndef BuildXF86OldDRMCompat
+#   define BuildXF86OldDRMCompat	NO
+#  endif
+# endif 
 
 # ifndef DefaultGcc2i386Opt
 #   if (OSMajorVersion == 2 && OSMinorVersion >= 3) || OSMajorVersion > 2
@@ -532,8 +540,13 @@ install:: fonts.alias							@@\
 # endif
 
 /* No MMX support in OpenBSD/a.out gas */
-# if !UseElfFormat
-#   define HasMMXSupport	NO
+# ifndef HasMMXSupport
+#   define HasMMXSupport	UseElfFormat
+# endif
+
+/* for DRI */
+# ifndef HasX86Support
+#  define HasX86Support		UseElfFormat
 # endif
 
 /* Build configuration tools on the i386 */
@@ -952,6 +965,8 @@ install:: fonts.alias							@@\
 #  define NeedUIThrStubs		YES 
 #  define ThreadsCompileFlag		-pthread
 #  define ThreadsLibraries		-pthread
+#else
+#  define ThreadedX			NO
 #endif
 
 /* Set this to YES when getpwuid_r is added to libc_r */
