@@ -500,6 +500,21 @@ WaitForChild (void)
 		    StopDisplay(d);
 		else
 		    RestartDisplay (d, TRUE);
+		{
+		  Time_t Time;
+		  time(&Time);
+		  Debug("time %i %i\n",Time,d->lastCrash);
+		  if (d->lastCrash && 
+		      ((Time - d->lastCrash) < XDM_BROKEN_INTERVAL)) {
+		    Debug("Server crash frequency too high:"
+			  " removing display %s\n",d->name);
+		    LogError("Server crash rate too high:"
+			     " removing display %s %d %d\n",d->name,
+			d->lastCrash, Time);
+		    RemoveDisplay (d);
+		  } else 
+		    d->lastCrash = Time;
+		}
 		break;
 	    case waitCompose (SIGTERM,0,0):
 		d->startTries = 0;
@@ -538,13 +553,14 @@ WaitForChild (void)
 		d->status = notRunning;
 		break;
 	    case running:
-		Debug ("Server for display %s terminated unexpectedly, status %d\n", d->name, waitVal (status));
+		Debug ("Server for display %s terminated unexpectedly, status %d %d\n", d->name, waitVal (status), status);
 		LogError ("Server for display %s terminated unexpectedly: %d\n", d->name, waitVal (status));
 		if (d->pid != -1)
 		{
 		    Debug ("Terminating session pid %d\n", d->pid);
 		    TerminateProcess (d->pid, SIGTERM);
 		}
+#if 0
 		{
 		  Time_t Time;
 		  time(&Time);
@@ -554,11 +570,13 @@ WaitForChild (void)
 		    Debug("Server crash frequency too high:"
 			  " removing display %s\n",d->name);
 		    LogError("Server crash rate too high:"
-			     " removing display %s\n",d->name);
+			     " removing display %s %d %d\n",d->name,
+			d->lastCrash, Time);
 		    RemoveDisplay (d);
 		  } else 
 		    d->lastCrash = Time;
 		}
+#endif
 		break;
 	    case notRunning:
 		Debug ("Server exited for notRunning session on display %s\n", d->name);
