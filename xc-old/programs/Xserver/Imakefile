@@ -1750,4 +1750,3 @@ LintSubdirs($(SUBDIRS))
 
 ForceSubdirs($(DEPDIRS) $(SUBDIRS))
 
-InstallManPage(Xserver,$(MANDIR))

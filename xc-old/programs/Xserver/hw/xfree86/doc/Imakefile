@@ -19,7 +19,7 @@ SGMLDIR = sgml
 JAPANESEDIR = Japanese
 #endif
 
-SUBDIRS = $(SGMLDIR) $(JAPANESEDIR) man
+SUBDIRS = $(SGMLDIR) $(JAPANESEDIR)
 
 #if !BuildLinuxDocText
 /* FreeBSD's README is handled separately because of name length limits */

@@ -145,7 +145,6 @@ CppFileTarget($(XF86CONFIG), XF86Conf.cpp, \
     $(ICONFIGFILES))
 #endif
 
-InstallManPage(XFree86,$(MANDIR))
 InstallGenManPageLong(XF86Conf,$(FILEMANDIR),XF86Config-3,$(FILEMANSUFFIX))
 InstallManPage(XF86_Mono,$(MANDIR))
 InstallManPage(XF86_VGA16,$(MANDIR))
