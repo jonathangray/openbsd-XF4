@@ -1,4 +1,4 @@
-XCOMM	$OpenBSD: Imakefile,v 1.4 2001/06/28 23:00:46 matthieu Exp $
+XCOMM	$OpenBSD: Imakefile,v 1.5 2001/07/03 12:26:42 matthieu Exp $
 
 #define DoNormalLib	YES
 #define LibName		fvwm
@@ -16,3 +16,5 @@ OBJS= ClientMsg.o GetFont.o Grab.o ModParse.o ModParse.h \
         lang-strings.h XResource.o debug.o ColorUtils.o
 
 #include <Library.tmpl>
+
+DependTarget()
