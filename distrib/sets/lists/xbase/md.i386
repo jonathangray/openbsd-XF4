@@ -17,7 +17,6 @@
 ./usr/X11R6/bin/xsetmode
 ./usr/X11R6/bin/xsetpointer
 ./usr/X11R6/bin/xvidtune
-./usr/X11R6/include/X11/bitmaps
 ./usr/X11R6/include/X11/bitmaps/card.xbm
 ./usr/X11R6/include/X11/bitmaps/down.xbm
 ./usr/X11R6/include/X11/bitmaps/keyboard.xbm
@@ -43,7 +42,6 @@
 ./usr/X11R6/include/X11/extensions/xf86mscstr.h
 ./usr/X11R6/include/X11/extensions/xf86vmode.h
 ./usr/X11R6/include/X11/extensions/xf86vmstr.h
-./usr/X11R6/include/X11/pixmaps
 ./usr/X11R6/include/X11/pixmaps/card.xpm
 ./usr/X11R6/include/X11/pixmaps/computer.xpm
 ./usr/X11R6/include/X11/pixmaps/keyboard.xpm
