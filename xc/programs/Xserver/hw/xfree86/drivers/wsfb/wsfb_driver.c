@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.1 2001/09/09 20:10:29 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.2 2002/02/07 14:30:31 jason Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -316,7 +316,6 @@ static Bool
 WsfbProbe(DriverPtr drv, int flags)
 {
 	int i, fd, entity;
-	ScrnInfoPtr pScrn = NULL;
        	GDevPtr *devSections;
 	int numDevSections;
 	char *dev;
@@ -333,29 +332,31 @@ WsfbProbe(DriverPtr drv, int flags)
 		return FALSE;
 	
 	for (i = 0; i < numDevSections; i++) {
+		ScrnInfoPtr pScrn = NULL;
+
 		dev = xf86FindOptionValue(devSections[i]->options, "device");
-		if ((fd = wsfb_open(dev)) > 0) {
+		if ((fd = wsfb_open(dev)) >= 0) {
 			entity = xf86ClaimFbSlot(drv, 0, devSections[i], TRUE);
-			pScrn = xf86ConfigFbEntity(pScrn,0,entity,
+			pScrn = xf86ConfigFbEntity(NULL,0,entity,
 						   NULL,NULL,NULL,NULL);
-		}
-		if (pScrn != NULL) {
-			foundScreen = TRUE;
-			pScrn->driverVersion = VERSION;
-			pScrn->driverName = WSFB_DRIVER_NAME;
-			pScrn->name = WSFB_NAME;
-			pScrn->Probe = WsfbProbe;
-			pScrn->PreInit = WsfbPreInit;
-			pScrn->ScreenInit = WsfbScreenInit;
-			pScrn->SwitchMode = WsfbSwitchMode;
-			pScrn->AdjustFrame = NULL;
-			pScrn->EnterVT = WsfbEnterVT;
-			pScrn->LeaveVT = WsfbLeaveVT;
-			pScrn->ValidMode = WsfbValidMode;
+			if (pScrn != NULL) {
+				foundScreen = TRUE;
+				pScrn->driverVersion = VERSION;
+				pScrn->driverName = WSFB_DRIVER_NAME;
+				pScrn->name = WSFB_NAME;
+				pScrn->Probe = WsfbProbe;
+				pScrn->PreInit = WsfbPreInit;
+				pScrn->ScreenInit = WsfbScreenInit;
+				pScrn->SwitchMode = WsfbSwitchMode;
+				pScrn->AdjustFrame = NULL;
+				pScrn->EnterVT = WsfbEnterVT;
+				pScrn->LeaveVT = WsfbLeaveVT;
+				pScrn->ValidMode = WsfbValidMode;
 			
-			xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-				   "using %s\n", dev != NULL ? dev : 
-				   "default device");
+				xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+				    "using %s\n", dev != NULL ? dev : 
+				    "default device");
+			}
 		}
 	}
 	xfree(devSections);
