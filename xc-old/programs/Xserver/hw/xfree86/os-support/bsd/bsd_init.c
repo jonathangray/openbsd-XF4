@@ -205,6 +205,9 @@ xf86OpenConsole()
     vtmode_t vtmode;
 #endif
     
+    if (xf86Info.consoleFd != -1) {
+	    return;
+    }
     if (serverGeneration == 1)
     {
 #ifndef __OpenBSD__
@@ -862,6 +865,8 @@ xf86CloseConsole()
 	}
     }
     close(xf86Info.consoleFd);
+    xf86Info.consoleFd = -1;
+
     if (devConsoleFd >= 0)
 	close(devConsoleFd);
     return;

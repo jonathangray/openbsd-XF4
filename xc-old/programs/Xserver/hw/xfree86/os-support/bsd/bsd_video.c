@@ -460,7 +460,7 @@ extern gid_t realGid;
 void
 xf86DropPriv(void)
 {
-	ErrorF("xf86DropPriv\n");
+	xf86OpenConsole();
 	checkDevMem(TRUE);
 	xf86EnableIOPorts(0);
 	/* revoke priviledges */

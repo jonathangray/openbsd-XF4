@@ -131,7 +131,7 @@ extern void xf86UnlockServer();
 extern void os2ServerVideoAccess();
 #endif
 
-xf86InfoRec xf86Info;
+xf86InfoRec xf86Info = { NULL, NULL, NULL, -1 };
 int         xf86ScreenIndex;
 
 /*
@@ -441,7 +441,7 @@ extern void xf86DropPriv(void);
 void
 OsVendorInit()
 {
-#if 0
+#ifdef __OpenBSD__
 	static Bool been_here = FALSE;
 	if (!been_here) {
 		xf86DropPriv();
