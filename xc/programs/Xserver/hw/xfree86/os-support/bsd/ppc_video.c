@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.4 2002/07/27 21:41:41 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.5 2002/07/30 22:16:13 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -130,29 +130,6 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 
 	return rv;
 }
-
-#if defined(USE_PPC_MMAP)
-void
-xf86EnableIO(void)
-{
-    int fd = xf86Info.screenFd;
-    pointer base = 0x90000400;	/* XXXX */
-    unsigned long size = 0x1000; /* XXXX */
-
-    ErrorF("xf86EnableIO %lx, %lx, fd = %d\n", base, size, fd);
-
-    ioBase = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, base);	
-    if (ioBase == MAP_FAILED) 
-	FatalError("xf86EnableIO: could not mmap I/O Registers");
-}
-
-void 
-xf86DisableIO(void)
-{
-	munmap(ioBase, 0x20000);
-	ioBase = MAP_FAILED;
-}
-#endif
 
 /***************************************************************************/
 /* Interrupt Handling section                                              */
