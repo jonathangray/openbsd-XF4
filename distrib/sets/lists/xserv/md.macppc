@@ -1,3 +1,4 @@
+./etc/X11/XF86Config
 ./etc/X11/xserver
 ./etc/X11/xserver/SecurityPolicy
 ./usr/X11R6/bin/X
