@@ -902,6 +902,7 @@
 ./usr/X11R6/lib/modules/old
 ./usr/X11R6/lib/modules/v10002d.uc
 ./usr/X11R6/lib/modules/v20002d.uc
+./usr/X11R6/lib/old-Cards
 ./usr/X11R6/man/cat1/SuperProbe.0
 ./usr/X11R6/man/cat1/XF86Setup.0
 ./usr/X11R6/man/cat1/XFree86.0
