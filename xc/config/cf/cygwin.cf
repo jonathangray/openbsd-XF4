@@ -1,15 +1,17 @@
 /* Cygwin/X vendor strings and version */
+#include  "xorgversion.def"
+
 #ifndef CygxVersionMajor
-# define CygxVersionMajor	6
+# define CygxVersionMajor	XORG_VERSION_MAJOR
 #endif
 #ifndef CygxVersionMinor
-# define CygxVersionMinor	8
+# define CygxVersionMinor	XORG_VERSION_MINOR
 #endif
 #ifndef CygxVersionPatch
-# define CygxVersionPatch	1
+# define CygxVersionPatch	XORG_VERSION_PATCH
 #endif
 #ifndef CygxVersionSnap
-# define CygxVersionSnap	0
+# define CygxVersionSnap	XORG_VERSION_SNAP
 #endif
 #ifndef CygxVersionServer
 # define CygxVersionServer	0

@@ -40,11 +40,14 @@ typedef unsigned short uint16;
 #ifndef _UINT32
 typedef unsigned int uint32;
 #endif
+
+#if !(defined(_AIX) && defined(_H_INTTYPES) && defined(_ALL_SOURCE))
 #ifndef _INT16
 typedef short int16;
 #endif
 #ifndef _INT32
 typedef int int32;
+#endif
 #endif
 
 #ifndef FALSE

@@ -1,13 +1,14 @@
-<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" '/usr/share/sgml/docbook_4.2/docbook.dtd'>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" 'http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd'>
 
 <!-- Process this file with DocBook tools to generate the output format
 (such as manual pages or HTML documents).
 
-Note that strings like __mansuffix__, __filemansuffix__, __libmansuffix__,
+Note that strings like __appmansuffix__, __filemansuffix__, __libmansuffix__,
 __miscmansuffix__ etc. have to be replaced first (in theory that's the
 job of ENTITIES but some XML tools are highly allergic to such stuff... ;-().
 A quick way to do that is to filter this document via
-/usr/bin/sed "s/__mansuffix__/${MANSUFFIX}/g;s/__filemansuffix__/${FILEMANSUFFIX}/g;s/__libmansuffix__/${LIBMANSUFFIX}/g;s/__miscmansuffix__/${MISCMANSUFFIX}/g"
+/usr/bin/sed "s/__appmansuffix__/${MANSUFFIX}/g;s/__filemansuffix__/${FILEMANSUFFIX}/g;s/__libmansuffix__/${LIBMANSUFFIX}/g;s/__misc
+mansuffix__/${MISCMANSUFFIX}/g"
 assuming that env vars like MANSUFFIX etc. have been set to the matching
 manual volume numbers.
   -->
@@ -15,7 +16,7 @@ manual volume numbers.
 <refentry>
   <refmeta>
     <refentrytitle>xmore</refentrytitle>
-    <manvolnum>__mansuffix__</manvolnum>
+    <manvolnum>__appmansuffix__</manvolnum>
   </refmeta>
   <refnamediv>
     <refname>xmore</refname>
@@ -72,7 +73,7 @@ manual volume numbers.
         
         <!-- Xprint general references -->
         <member><citerefentry><refentrytitle>X11</refentrytitle><manvolnum>__miscmansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xman</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xman</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
       </simplelist>
     </para>
   </refsect1>

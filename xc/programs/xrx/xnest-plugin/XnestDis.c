@@ -28,8 +28,8 @@ The Open Group.
 */
 /* $XFree86$ */
 
-#include <sys/stat.h>
 #include "RxPlugin.h"
+#include <sys/stat.h>
 
 /***********************************************************************
  * Utility functions and global variable to manage display numbers

@@ -1,3 +1,105 @@
+2005-02-02 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgversion.def
+	Bugzilla #2456 (https://bugs.freedesktop.org/show_bug.cgi?id=2456)
+	attachment #1823 (https://bugs.freedesktop.org/attachment.cgi?id=1823):
+	Bump version number for upcoming X11R6.8.2rc4 (release canidate 4) to
+	X11R6.8.1.904.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/xf86config/xorgconfig.c
+	Backout of Bugzilla #2206 (https://bugs.freedesktop.org/show_bug.cgi?id=2206)
+	attachment #1622 (https://bugs.freedesktop.org/attachment.cgi?id=1622)
+	as this patch does not work for the branch and causes build failure.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/sis/sis.h
+	Bugzilla #2438 (https://bugs.freedesktop.org/show_bug.cgi?id=2438)
+	attachment #1806 (https://bugs.freedesktop.org/attachment.cgi?id=1806):
+	Fix sis driver to work correctly on AMD64.
+	Patch by Thomas Winischhofer <thomas@winischhofer.net>.
+	Vouchers for commit into X11R6.8.x stable branch are Kevin E.
+	Martin <kem@freedesktop.org> and Roland Mainz
+	<roland.mainz@nrubsig.org>.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/sis/init301.c
+	Bugzilla #2437 (https://bugs.freedesktop.org/show_bug.cgi?id=2437)
+	attachment #1805 (https://bugs.freedesktop.org/attachment.cgi?id=1805):
+	Fix sis driver which was reading wrong data from BIOS image.
+	Patch by Thomas Winischhofer <thomas@winischhofer.net>.
+	Vouchers for commit into X11R6.8.x stable branch are Kevin E.
+	Martin <kem@freedesktop.org> and Roland Mainz
+	<roland.mainz@nrubsig.org>.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bus/xf86Sbus.h
+	* xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_io.c
+	* xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_kbd.c
+	Bugzilla #825 (https://bugs.freedesktop.org/show_bug.cgi?id=825)
+	attachment #956 (https://bugs.freedesktop.org/attachment.cgi?id=956):
+	Fix build problems on Linux/SPARC.
+	Patch by Jeremy Huddleston <eradicator@gentoo.org>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
+2005-02-01 Alexander Gottwald <ago@freedesktop.org>
+	* xc/config/cf/cygwin.cf
+	Bugzilla #1393 (https://bugs.freedesktop.org/show_bug.cgi?id=1393)
+	attachment #1801 (https://bugs.freedesktop.org/attachment.cgi?id=1801):
+	Move xorg version numbers to separate config file (committing the
+	missing parts from attachment #1188, the diff was approved but the
+	changes were accidently never commited to "cygwin.cf"... ;-().
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xmore/xmore.man
+	* xc/programs/xmore/xmore.sgml
+	Bugzilla #2415 (https://bugs.freedesktop.org/show_bug.cgi?id=2415)
+	attachment #1786 (https://bugs.freedesktop.org/attachment.cgi?id=1786):
+	Fix formatting problem in the xmore(1x) manual page.
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr> and Roland Mainz
+	<roland.mainz@nrubsig.org>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call (the
+	xmore.man diff is an automatic update from the DocBook--->man
+	conversion).
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xrx/plugin/include/npapi.h
+        * xc/programs/xrx/xnest-plugin/XnestDis.c
+	Bugzilla #2386 (https://bugs.freedesktop.org/show_bug.cgi?id=2386)
+	attachment #1766 (https://bugs.freedesktop.org/attachment.cgi?id=1766):
+	Fix build bustage on MacOSX/*BSD and AIX platforms (1:1 port of the
+        build bustage fixes from trunk).
+	Patch by Dan McNichol <mcnichol@austin.ibm.com> and Torrey T.
+        Lyons <torrey@mrcla.com>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/X11.tmpl
+	Bugzilla #2410 (https://bugs.freedesktop.org/show_bug.cgi?id=2410)
+	attachment #1782 (https://bugs.freedesktop.org/attachment.cgi?id=1782):
+	Build the XRX plugin only if the system supports shared libraries
+	(which is a requirement for this plugin).
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c
+	Bugzilla #2252 (https://bugs.freedesktop.org/show_bug.cgi?id=2252)
+	attachment #1791 (https://bugs.freedesktop.org/attachment.cgi?id=1791):
+	Fix option dontVTSwitch under *BSD, when XKB is disabled.
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
+2005-02-01 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/nls/Compose/pt_BR.UTF-8
+	* xc/nls/XLC_LOCALE/pt_BR.UTF-8
+	Bugzilla #2400 (https://bugs.freedesktop.org/show_bug.cgi?id=2400)
+	attachment #1762 (https://bugs.freedesktop.org/attachment.cgi?id=1762):
+	Fix build bustage caused by broken patch for brazillian locale support
+	(see Bugzilla #1896).
+	Patch by Kevin E. Martin <kem@freedesktop.org>.
+	Approved in the 2005-01-31 Xorg release-wranglers phone call.
+
 2005-01-25 Roland Mainz <roland.mainz@nrubsig.org>
 	* xc/config/cf/xorgversion.def
 	Bugzilla #2378 (https://bugs.freedesktop.org/show_bug.cgi?id=2378)
@@ -7957,4 +8059,4 @@ Tue Jul 20 18:23:32 2004  Soeren Sandmann  <sandmann@daimi.au.dk>
        so i18n libs from build tree get used instead of installed ones
        (Egbert Eich).
 
-$XdotOrg: xc/ChangeLog,v 1.365.2.138 2005/01/25 16:26:56 gisburn Exp $
+$XdotOrg: xc/ChangeLog,v 1.365.2.149 2005/02/03 00:32:28 gisburn Exp $
