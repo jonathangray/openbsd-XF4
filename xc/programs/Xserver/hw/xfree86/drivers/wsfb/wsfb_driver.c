@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.11 2002/07/20 17:46:04 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.12 2002/07/20 19:24:14 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -54,6 +54,8 @@
 #include "dgaproc.h"
 
 /* for visuals */
+#include "xf1bpp.h"
+#include "xf4bpp.h"
 #include "fb.h"
 
 #include "xf86Resources.h"
@@ -85,7 +87,7 @@
 
 /* Prototypes */
 #ifdef XFree86LOADER
-pointer WsfbSetup(pointer, pointer, int *, int *);
+static pointer WsfbSetup(pointer, pointer, int *, int *);
 #endif
 static Bool WsfbGetRec(ScrnInfoPtr);
 static void WsfbFreeRec(ScrnInfoPtr);
@@ -155,6 +157,7 @@ static const OptionInfoRec WsfbOptions[] = {
 	{ -1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
+/* Symbols needed from other modules */
 static const char *fbSymbols[] = {
 	"fbPictureInit",
 	"fbScreenInit",
@@ -183,7 +186,7 @@ static XF86ModuleVersionInfo WsfbVersRec = {
 
 XF86ModuleData wsfbModuleData = { &WsfbVersRec, WsfbSetup, NULL };
 
-pointer
+static pointer
 WsfbSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	static Bool setupDone = FALSE;
@@ -378,6 +381,8 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	WsfbPtr fPtr;
 	int default_depth, wstype;
 	char *dev;
+	char *mod = NULL;
+	const char *reqSym = NULL;
 	Gamma zeros = {0.0, 0.0, 0.0};
 	DisplayModePtr mode;
 
@@ -481,9 +486,17 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	memcpy(fPtr->Options, WsfbOptions, sizeof(WsfbOptions));
 	xf86ProcessOptions(pScrn->scrnIndex, fPtr->pEnt->device->options, fPtr->Options);
 
-	/* use shadow framebuffer by default */
-	fPtr->shadowFB = xf86ReturnOptValBool(fPtr->Options, OPTION_SHADOW_FB, TRUE);
-
+	/* use shadow framebuffer by default, on dpeth >= 8 */
+	if (pScrn->depth >= 8) 
+		fPtr->shadowFB = xf86ReturnOptValBool(fPtr->Options, 
+						      OPTION_SHADOW_FB, TRUE);
+	else 
+		if (xf86ReturnOptValBool(fPtr->Options, 
+					 OPTION_SHADOW_FB, FALSE)) {
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+				   "Shadow FB option ignored on depth 1");
+		}
+	
 	/* fake video mode struct */
 	mode = (DisplayModePtr)xalloc(sizeof(DisplayModeRec));
 	mode->prev = mode;
@@ -510,23 +523,26 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	pScrn->currentMode = pScrn->modes = mode;
 	pScrn->virtualX = fPtr->info.width;
 	pScrn->virtualY = fPtr->info.height;
-	if (fPtr->shadowFB) 
-		pScrn->displayWidth = pScrn->virtualX;
-	else 
-		/* FIXME */
-		pScrn->displayWidth = fPtr->linebytes / (pScrn->depth >> 3);
-	
+	pScrn->displayWidth = pScrn->virtualX;
+		
 	/* Set the display resolution */
 	xf86SetDpi(pScrn, 0, 0);
 	
 	/* Load bpp-specific modules */
-	xf86LoaderReqSymbols("fbPictureInit", NULL);
-	
-	if (xf86LoadSubModule(pScrn, "fb") == NULL) {
-		WsfbFreeRec(pScrn);
-		return FALSE;
+	switch(pScrn->bitsPerPixel) {
+	case 1:
+		mod = "xf1bpp";
+		reqSym = "xf1bppScreenInit";
+		break;
+	case 4:
+		mod = "xf4bpp";
+		reqSym = "xf4bppScreenInit";
+		break;
+	default:
+		mod = "fb";
+		break;
 	}
-	xf86LoaderReqSymLists(fbSymbols, NULL);
+
 	
 	/* Load shadow if needed */
 	if (fPtr->shadowFB) {
@@ -538,7 +554,17 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 		}
 		xf86LoaderReqSymLists(shadowSymbols, NULL);
 	}
-
+	if (mod && xf86LoadSubModule(pScrn, mod) == NULL) {
+		WsfbFreeRec(pScrn);
+		return FALSE;
+	}
+	if (mod) {
+		if (reqSym) {
+			xf86LoaderReqSymbols(reqSym, NULL);
+		} else {
+			xf86LoaderReqSymLists(fbSymbols, NULL);
+		}
+	}
 	TRACE_EXIT("PreInit");
 	return TRUE;
 }
@@ -564,6 +590,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	       pScrn->offset.red,pScrn->offset.green,pScrn->offset.blue);
 #endif
 	switch (fPtr->info.depth) {
+	case 1:
 	case 8:
 		len = fPtr->linebytes*fPtr->info.height;
 		break;
@@ -634,14 +661,35 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		fPtr->shadowmem = NULL;
 		fPtr->fbstart   = fPtr->fbmem;
 	}
-	ret = fbScreenInit(pScreen, fPtr->fbstart, width, height,
-			   pScrn->xDpi, pScrn->yDpi, pScrn->displayWidth, 
-			   pScrn->bitsPerPixel);
-	if (pScrn->bitsPerPixel > 8) {
-		if (ret && !fbPictureInit(pScreen, NULL, 0))
-			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			   "RENDER extension initialisation failed.\n");	
-	}
+	switch (pScrn->bitsPerPixel) {
+	case 1:
+		ret = xf1bppScreenInit(pScreen, fPtr->fbstart,
+				       width, height,
+				       pScrn->xDpi, pScrn->yDpi,
+				       pScrn->displayWidth);
+		break;
+	case 4:
+		ret = xf4bppScreenInit(pScreen, fPtr->fbstart,
+				       width, height,
+				       pScrn->xDpi, pScrn->yDpi,
+				       pScrn->displayWidth);
+		break;
+	case 8:
+	case 16:
+	case 32:
+		ret = fbScreenInit(pScreen,
+				   fPtr->fbstart, 
+				   width, height, 
+				   pScrn->xDpi, pScrn->yDpi,
+				   pScrn->displayWidth,
+				   pScrn->bitsPerPixel);
+		break;
+	default:
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			   "Unsupported bpp: %d", pScrn->bitsPerPixel);
+		return FALSE;
+	} /* case */
+		
 	if (!ret)
 		return FALSE;
 	
@@ -660,10 +708,21 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		}
 	}
 
-	if (fPtr->shadowFB && 
-	    !shadowInit(pScreen, shadowUpdatePacked,	
-			WsfbWindowLinear))
-		return FALSE;
+	if (pScrn->bitsPerPixel > 8) {
+		if (!fbPictureInit(pScreen, NULL, 0))
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+				   "RENDER extension initialisation failed.");
+	}
+	if (fPtr->shadowFB) {
+		if (pScrn->bitsPerPixel < 8) {
+			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+				   "Shadow FB not available on < 8 depth");
+		} else {
+			if (!shadowInit(pScreen, shadowUpdatePacked, 
+					WsfbWindowLinear))
+			return FALSE;
+		}
+	}
 
 	WsfbDGAInit(pScrn, pScreen);
 
@@ -747,7 +806,7 @@ WsfbWindowLinear(ScreenPtr pScreen, CARD32 row, CARD32 offset, int mode,
 	}
 	return ((CARD8 *)fPtr->fbmem + row *fPtr->linebytes + offset);
 }
-
+	
 static Bool
 WsfbEnterVT(int scrnIndex, int flags)
 {
