@@ -639,7 +639,7 @@ startClient(char *client[])
 		fprintf (stderr,
 "is in your path.\r\n");
 		fprintf (stderr, "\n");
-		exit (ERR_EXIT);
+		_exit (ERR_EXIT);
 	}
 	return (clientpid);
 }
