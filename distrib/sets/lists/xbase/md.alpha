@@ -40,7 +40,6 @@
 ./etc/X11/xkb/symbols/xfree68
 ./etc/X11/xkb/types
 ./etc/X11/xserver
-./etc/X11/xserver
 ./etc/X11/xserver/C
 ./etc/X11/xserver/C/print
 ./etc/X11/xserver/C/print/attributes
@@ -157,7 +156,7 @@
 ./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/lib/libFS.so.8.0
 ./usr/X11R6/lib/libGL.a
-./usr/X11R6/lib/libGL.so.3.0
+./usr/X11R6/lib/libGL.so.3.1
 ./usr/X11R6/lib/libGLU.a
 ./usr/X11R6/lib/libGLU.so.3.0
 ./usr/X11R6/lib/libGLw.a

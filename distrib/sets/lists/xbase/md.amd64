@@ -126,8 +126,8 @@
 ./usr/X11R6/lib/X11/doc/README.NetBSD
 ./usr/X11R6/lib/X11/doc/README.OpenBSD
 ./usr/X11R6/lib/X11/doc/README.SCO
-./usr/X11R6/lib/X11/doc/README.Solaris
 ./usr/X11R6/lib/X11/doc/README.SiS
+./usr/X11R6/lib/X11/doc/README.Solaris
 ./usr/X11R6/lib/X11/doc/README.XKB-Config
 ./usr/X11R6/lib/X11/doc/README.XKB-Enhancing
 ./usr/X11R6/lib/X11/doc/README.apm

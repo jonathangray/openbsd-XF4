@@ -870,8 +870,8 @@
 ./etc/X11/xserver/zh_TW.euctw
 ./etc/X11/xserver/zh_TW.utf8
 ./usr/X11R6/bin/X
-./usr/X11R6/bin/Xorg
 ./usr/X11R6/bin/Xnest
+./usr/X11R6/bin/Xorg
 ./usr/X11R6/bin/Xprt
 ./usr/X11R6/bin/Xvfb
 ./usr/X11R6/bin/getconfig
