@@ -1,4 +1,4 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -18,20 +18,14 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
+#include "fvwmlib.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/time.h>
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 
 extern char *Module;
 
@@ -54,9 +48,12 @@ char *newptr;
 
 void UpdateString(char **string,char *value)
 {
-  if (value==NULL) return;
-  if (*string==NULL) *string=(char *)safemalloc(strlen(value)+1);
-  else *string=(char *)realloc(*string,strlen(value)+1);
+  if (value==NULL)
+    return;
+  if (*string==NULL)
+    *string=(char *)safemalloc(strlen(value)+1);
+  else
+    *string=(char *)realloc(*string,strlen(value)+1);
   strcpy(*string,value);
 }
 

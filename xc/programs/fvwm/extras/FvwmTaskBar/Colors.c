@@ -16,15 +16,10 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include "Colors.h"
-
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
 
 extern Display *dpy;
 extern Window Root;

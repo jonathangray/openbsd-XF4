@@ -1,11 +1,11 @@
 /****************************************************************************
  * This module is all new
- * by Rob Nation 
+ * by Rob Nation
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -41,7 +41,7 @@ Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
         (y - ycurrent < 3)&&(y - ycurrent > -3)&&
 	((lastTimestamp - t0) < Scr.ClickTime))
     {
-      sleep_a_little(20000);
+      usleep(20000);
       total+=20;
       if(XCheckMaskEvent (dpy,EndMask, d))
 	{
@@ -93,43 +93,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(junk);
   for(i=0;i<10;i++)
     action = GetNextToken(action,&arguments[i]);
-  /* These built-ins require a selected window 
-   * The function code is >= 100 and < 1000
-   * F_RESIZE
-   * F_MOVE
-   * F_ICONIFY
-   * F_RAISE
-   * F_LOWER
-   * F_DESTROY
-   * F_DELETE
-   * F_STICK
-   * F_RAISELOWER
-   * F_MAXIMIZE
-   * F_FOCUS
-   *
-   * These do not:
-   * The function code is < 100
-   * F_NOP
-   * F_TITLE
-   * F_BEEP
-   * F_SCROLL
-   * F_MOVECURSOR
-   * F_RESTART
-   * F_EXEC
-   * F_REFRESH
-   * F_GOTO_PAGE
-   * F_TOGGLE_PAGE
-   * F_CIRCULATE_UP
-   * F_CIRCULATE_DOWN
-   * F_WARP
-   * F_DESK
-   * F_MODULE
-   * F_POPUP
-   * F_QUIT
-   * F_WINDOWLIST
-   * F_FUNCTION
-   * F_SEND_WINDOW_LIST
-   */
+  /* see functions.c to find out which functions need a window to operate on */
   ev = eventp;
   /* In case we want to perform an action on a button press, we
    * need to fool other routines */
@@ -140,8 +104,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       /* make lower case */
       c = *(mi->item);
-      if((mi->func_type  >= 100)&&(mi->func_type < 1000))
-	NeedsTarget = True;
+      NeedsTarget = mi->func_needs_window;
       if(isupper(c))
 	c=tolower(c);
       if(c==DOUBLE_CLICK)
@@ -186,7 +149,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(!GrabEm(SELECT))
     {
-      XBell(dpy,Scr.screen);
+      XBell(dpy, 0);
       for(i=0;i<10;i++)
 	  if(arguments[i] != NULL)free(arguments[i]);
       return;
@@ -216,7 +179,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       type = DOUBLE_CLICK;
       ev = &d;
     }
-  /* some functions operate on button release instead of 
+  /* some functions operate on button release instead of
    * presses. These gets really weird for complex functions ... */
   if(ev->type == ButtonPress)
     ev->type = ButtonRelease;
@@ -234,7 +197,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(mi->action,arguments,tmp_win);	  	
+	  taction = expand(mi->action,arguments,tmp_win);
 	  ExecuteFunction(taction,tmp_win,ev,context,-2);
 	  free(taction);
 	}
@@ -251,10 +214,15 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 {
   int l,i,l2,n,k,j;
   char *out;
-  
-  l = strlen(input);
-  l2 = strlen(input);
+  int addto = 0; /*special cas if doing addtofunc */
 
+  l = strlen(input);
+  l2 = l;
+
+  if(strncasecmp(input, "AddToFunc", 9) == 0 || input[0] == '+')
+  {     
+    addto = 1;
+  } 
   i=0;
   while(i<l)
     {
@@ -266,12 +234,11 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 	      l2 += strlen(arguments[n])-2;
 	      i++;
 	    }
-	  else if(input[i+1]=='w')
+	  else if(input[i+1]=='w' || input[i+1] == 'd')
 	    {
 	      l2 += 16;
 	      i++;
 	    }
-
 	}
       i++;
     }
@@ -284,19 +251,36 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
       if(input[i] == '$')
 	{
 	  n = input[i+1] - '0';
-	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
+         if((n >= 0)&&(n <= 9))
+           {
+          if (arguments[n] != NULL)
 	    {
 	      for(k=0;k<strlen(arguments[n]);k++)
 		out[j++] = arguments[n][k];
 	      i++;
+          } else if (addto == 1)
+          {
+            out[j++] = '$';
+          } else
+          {
+            i++;
+            if (isspace(input[i+1]))
+              i++; /*eliminates extra white space*/
+          }
 	    }
 	  else if(input[i+1] == 'w')
 	    {
 	      if(tmp_win)
-		sprintf(&out[j],"0x%x",tmp_win->w);
+		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
 	      else
 		sprintf(&out[j],"$w");
-	      j = strlen(out);
+	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'd')
+	    {
+	      sprintf(&out[j], "%d", Scr.CurrentDesk);
+	      j += strlen(&out[j]);
 	      i++;
 	    }
 	  else if(input[i+1] == '$')
@@ -310,7 +294,7 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
       else
 	out[j++] = input[i];
       i++;
-    } 
+    }
   out[j] = 0;
   return out;
 }

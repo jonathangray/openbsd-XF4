@@ -1,14 +1,14 @@
+#include "config.h"
+
 #include "FvwmIconMan.h"
 #include "x.h"
 #include "xmanager.h"
 
-#ifdef COMPILE_STANDALONE
-#include "fvwm.h"
-#include "module.h"
-#else
-#include "../../fvwm/fvwm.h"
-#include "../../fvwm/module.h"
-#endif
+#include "../fvwm/fvwm.h"
+#include "../fvwm/module.h"
+
+static char const rcsid[] =
+  "$Id: fvwm.c,v 1.1.1.2 2001/06/28 22:05:34 matthieu Exp $";
 
 typedef struct {
   Ulong paging_enabled;
@@ -42,7 +42,7 @@ typedef struct {
   Ulong icon_pixmap_id;
   Ulong window_gravity;
 } m_add_config_data;
-  
+
 typedef struct {
   Ulong x, y, desknum;
 } m_new_page_data;
@@ -65,6 +65,7 @@ typedef struct {
 } m_name_data;
 
 #ifdef MINI_ICONS
+
 typedef struct {
   Ulong app_id, frame_id, dbase_entry;
   Ulong width, height, depth, picture, mask;
@@ -73,6 +74,7 @@ typedef struct {
     Uchar name[4];
   } name;
 } m_mini_icon_data;
+
 #endif
 
 typedef struct {
@@ -118,7 +120,8 @@ static void set_draw_mode (WinManager *man, int flag)
   else if (man->we_are_drawing && !flag) {
     the_manager = man;
     num = accumulate_walk_hashtab (count_nonsticky_in_hashtab);
-    ConsoleDebug (FVWM, "SetDrawMode on 0x%x, num = %d\n", man, num);
+    ConsoleDebug (FVWM, "SetDrawMode on 0x%lx, num = %d\n", 
+		  (unsigned long)man, num);
 
     if (num == 0)
       return;
@@ -139,9 +142,9 @@ static void got_configure (WinManager *man)
 {
   if (man && !man->we_are_drawing) {
     man->configures_expected--;
-    ConsoleDebug (FVWM, "got_configure on 0x%x, num_expected now = %d\n",
-		  man, man->configures_expected);
-    if (man->configures_expected <= 0) 
+    ConsoleDebug (FVWM, "got_configure on 0x%lx, num_expected now = %d\n",
+		  (unsigned long) man, man->configures_expected);
+    if (man->configures_expected <= 0)
       set_draw_mode (man, 1);
   }
 }
@@ -150,7 +153,7 @@ int win_in_viewport (WinData *win)
 {
   WinManager *manager = win->manager;
   int flag = 0;
-  
+
   assert (manager);
 
   switch (manager->res) {
@@ -199,13 +202,13 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   win->height = body->add_config_data.height;
   win->geometry_set = 1;
   win->fvwm_flags = body->add_config_data.windows_flags;
-}  
+}
 
 static void configure_window (FvwmPacketBody *body)
 {
   Ulong app_id = body->add_config_data.app_id;
   WinData *win;
-  ConsoleDebug (FVWM, "configure_window: %d\n", app_id);
+  ConsoleDebug (FVWM, "configure_window: %ld\n", app_id);
 
   win = id_to_win (app_id);
 
@@ -217,16 +220,16 @@ static void configure_window (FvwmPacketBody *body)
 }
 
 static void focus_change (FvwmPacketBody *body)
-{ 
+{
   Ulong app_id = body->minimal_data.app_id;
   WinData *win = id_to_win (app_id);
 
   ConsoleDebug (FVWM, "Focus Change\n");
-  ConsoleDebug (FVWM, "\tID: %d\n", app_id);
+  ConsoleDebug (FVWM, "\tID: %ld\n", app_id);
 
   if (globals.focus_win) {
     del_win_state (globals.focus_win, FOCUS_CONTEXT);
-    if (globals.focus_win->manager)
+    if (globals.focus_win->manager && globals.focus_win->manager->focus_button)
       globals.focus_win->manager->focus_button = NULL;
     globals.focus_win = NULL;
   }
@@ -257,7 +260,7 @@ static void res_name (FvwmPacketBody *body)
 
   copy_string (&win->resname, (char *)name);
   change_windows_manager (win);
-  
+
   ConsoleDebug (FVWM, "Exiting res_name\n");
 }
 
@@ -273,7 +276,7 @@ static void class_name (FvwmPacketBody *body)
 
   copy_string (&win->classname, (char *)name);
   change_windows_manager (win);
-  
+
   ConsoleDebug (FVWM, "Exiting class_name\n");
 }
 
@@ -327,7 +330,7 @@ static void window_name (FvwmPacketBody *body)
 
   copy_string (&win->titlename, (char *)name);
   if (change_windows_manager (win) == 0 && win->button &&
-      (win->manager->format_depend & ICON_NAME)) {
+      (win->manager->format_depend & TITLE_NAME)) {
     if (win->manager->sort) {
       resort_windows_button (win);
     }
@@ -358,12 +361,11 @@ static void destroy_window (FvwmPacketBody *body)
 
   app_id = body->minimal_data.app_id;
   win = id_to_win (app_id);
-  delete_win_hashtab (win);
-  if (globals.focus_win == win)
+  if (win == globals.focus_win)
     globals.focus_win = NULL;
-  if (globals.select_win == win)
-    globals.select_win = NULL;
+  delete_win_hashtab (win);
   if (win->button) {
+    ConsoleDebug (FVWM, "destroy_window: deleting windows_button\n");
     delete_windows_button (win);
   }
   free_windata (win);
@@ -374,16 +376,17 @@ static void mini_icon (FvwmPacketBody *body)
 {
   Ulong app_id = body->mini_icon_data.app_id;
   WinData *win;
-  
-  win = id_to_win (app_id);
-  set_win_picture (win, body->mini_icon_data.picture, 
-		   body->mini_icon_data.mask, body->mini_icon_data.depth, 
-		   body->mini_icon_data.width, body->mini_icon_data.height);
-		   
 
-  ConsoleDebug (FVWM, "mini_icon: 0x%x 0x%x %dx%dx%d\n", win->pic.picture,
-		win->pic.mask, win->pic.width, win->pic.height,
-		win->pic.depth);
+  win = id_to_win (app_id);
+  set_win_picture (win, body->mini_icon_data.picture,
+		   body->mini_icon_data.mask, body->mini_icon_data.depth,
+		   body->mini_icon_data.width, body->mini_icon_data.height);
+
+
+  ConsoleDebug (FVWM, "mini_icon: 0x%lx 0x%lx %dx%dx%d\n", 
+		(unsigned long) win->pic.picture,
+		(unsigned long) win->pic.mask, 
+		win->pic.width, win->pic.height, win->pic.depth);
 }
 #endif
 
@@ -391,11 +394,11 @@ static void iconify (FvwmPacketBody *body, int dir)
 {
   Ulong app_id = body->minimal_data.app_id;
   WinData *win;
-  
+
   win = id_to_win (app_id);
 
   set_win_iconified (win, dir);
-  
+
   check_win_complete (win);
   check_in_window (win);
 }
@@ -430,7 +433,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 {
   int i;
 
-  ConsoleDebug (FVWM, "FVWM Message type: %d\n", type); 
+  ConsoleDebug (FVWM, "FVWM Message type: %ld\n", type);
 
   switch(type) {
   case M_CONFIGURE_WINDOW:
@@ -496,7 +499,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 
   case M_END_WINDOWLIST:
     ConsoleDebug (FVWM, "DEBUG::M_END_WINDOWLIST\n");
-    ConsoleDebug (FVWM, 
+    ConsoleDebug (FVWM,
 		  ">>>>>>>>>>>>>>>>>>>>>>>End window list<<<<<<<<<<<<<<<\n");
     if (globals.focus_win && globals.focus_win->button) {
 	globals.focus_win->manager->focus_button = globals.focus_win->button;
@@ -536,11 +539,11 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   default:
     break;
   }
-  
+
   check_managers_consistency();
 
   for (i = 0; i < globals.num_managers; i++) {
-    if (drawing (&globals.managers[i])) 
+    if (drawing (&globals.managers[i]))
       draw_manager (&globals.managers[i]);
   }
 
@@ -570,4 +573,3 @@ void ReadFvwmPipe (void)
   }
   ConsoleDebug(FVWM, "DEBUG: leaving ReadFvwmPipe\n");
 }
-

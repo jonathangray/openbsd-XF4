@@ -12,7 +12,7 @@
  *
  ***********************************************************************/
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -26,7 +26,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#ifdef NeXT
+#ifdef HAVE_FNCTL_H
 #include <fcntl.h>
 #endif
 

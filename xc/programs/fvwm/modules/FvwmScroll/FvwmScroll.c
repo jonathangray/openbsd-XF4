@@ -11,7 +11,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -19,9 +19,11 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -31,11 +33,9 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
-#include <X11/Xmu/WinUtil.h>        
 
 #include "../../fvwm/module.h"
 #include "FvwmScroll.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width;
@@ -61,20 +61,19 @@ Window app_win;
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
-  FILE *file;
   char *display_name = NULL;
   int Clength;
   char *tline;
-  
+
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
-  
+
   MyName = safemalloc(strlen(temp)+2);
   strcpy(MyName,"*");
   strcat(MyName, temp);
@@ -98,9 +97,9 @@ void main(int argc, char **argv)
       extern int Reduction_V;
       Reduction_V = atoi(argv[7]);
     }
-  
+
   /* Dead pipe == dead fvwm */
-  signal (SIGPIPE, DeadPipe);  
+  signal (SIGPIPE, DeadPipe);
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -109,7 +108,7 @@ void main(int argc, char **argv)
   sscanf(argv[4],"%x",(unsigned int *)&app_win);
 
   /* Open the Display */
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -131,15 +130,15 @@ void main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
-	  if(mystrncasecmp(tline,CatString3(MyName, "Back",""),
+	  if(strncasecmp(tline,CatString3(MyName, "Back",""),
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
-	    }	
+	    }
 	}
       GetConfigLine(fd,&tline);
     }
-  
+
   /* sever our connection with fvwm */
   close(fd[0]);
   close(fd[1]);
@@ -147,25 +146,27 @@ void main(int argc, char **argv)
     GetTargetWindow(&app_win);
 
   if(app_win == 0)
-    return;
+    return 0;
 
   fd_width = GetFdWidth();
 
   GrabWindow(app_win);
   Loop(app_win);
+  return 0;
 }
+
 
 
 /***********************************************************************
  *
- * Detected a broken pipe - time to exit 
+ * Detected a broken pipe - time to exit
  *
  **********************************************************************/
 void DeadPipe(int nonsense)
 {
   extern Atom wm_del_win;
 
-  XReparentWindow(dpy,app_win,Root,0,0);  
+  XReparentWindow(dpy,app_win,Root,0,0);
   send_clientmessage (dpy, app_win, wm_del_win, CurrentTime);
   XSync(dpy,0);
   exit(0);
@@ -175,7 +176,7 @@ void DeadPipe(int nonsense)
 /**********************************************************************
  *
  * If no application window was indicated on the command line, prompt
- * the user to select one 
+ * the user to select one
  *
  *********************************************************************/
 void GetTargetWindow(Window *app_win)
@@ -194,7 +195,7 @@ void GetTargetWindow(Window *app_win)
 		       CurrentTime);
       if(val != GrabSuccess)
 	{
-	  sleep_a_little(1000);
+	  usleep(1000);
 	}
       trials++;
     }
@@ -204,12 +205,12 @@ void GetTargetWindow(Window *app_win)
       exit(1);
     }
   XMaskEvent(dpy, ButtonReleaseMask,&eventp);
-  XUngrabPointer(dpy,CurrentTime);  
+  XUngrabPointer(dpy,CurrentTime);
   XSync(dpy,0);
   *app_win = eventp.xany.window;
   if(eventp.xbutton.subwindow != None)
     *app_win = eventp.xbutton.subwindow;
-  
+
   target_win = ClientWindow(*app_win);
   if(target_win != None)
     *app_win = target_win;
@@ -225,12 +226,12 @@ void nocolor(char *a, char *b)
 
 /****************************************************************************
  *
- * Find the actual application 
- * 
+ * Find the actual application
+ *
  ***************************************************************************/
 Window ClientWindow(Window input)
 {
-  Atom _XA_WM_STATE;   
+  Atom _XA_WM_STATE;
   unsigned int nchildren;
   Window root, parent, *children,target;
   unsigned long nitems, bytesafter;
@@ -240,7 +241,7 @@ Window ClientWindow(Window input)
   int i;
 
   _XA_WM_STATE = XInternAtom (dpy, "WM_STATE", False);
-  
+
   if (XGetWindowProperty (dpy,input, _XA_WM_STATE , 0L,
 			  3L , False, _XA_WM_STATE,&atype,
 			  &aformat, &nitems, &bytesafter,
@@ -255,7 +256,7 @@ Window ClientWindow(Window input)
 
   if(!XQueryTree(dpy, input, &root, &parent, &children, &nchildren))
     return None;
-  
+
   for (i = 0; i < nchildren; i++)
     {
       target = ClientWindow(children[i]);

@@ -1,22 +1,10 @@
-July 16 1997
----------------
+June 17, 1998
+-------------
 
-This is version 1.0 of FvwmIconMan, an icon manager modeled roughly on TWM's
-icon manager. The file CHANGES lists what's new with this version, and the
-included man page gives some examples of how to configure FvwmIconMan, and a
-description of what it is, so I won't repeat it here. 
-
-FvwmIconMan is contained in the fvwm distribution, but I do occasionally
-release preliminary and bugfix versions on my web and ftp sites. This is such
-a release. Fvwm2.0.45 was the current version of fvwm when I wrote this, so if
-you have fvwm 2.0.46 (or later), then you shouldn't download this version of
-FvwmIconMan. However, since FvwmIconMan is usually released with fvwm, the
-Imakefile assumes that it is in it's usual place in the fvwm source tree.
-Therefore, you need the fvwm2.0.45 sources to compile this. If you desperately
-don't want to do this, email me and I'll send you what you need to compile it
-standalone (you don't think I keep the fvwm source around all the time, do
-you?). Most likely, this version has bugs, and it's quite likely that somebody
-reading this file will find some. If so, please email me.
+This is version 1.3 of FvwmIconMan, an icon manager modeled roughly on TWM's
+icon manager. The file CHANGES lists what's new with this version; and the
+included man page gives a description of the program and how to configure it,
+so I won't repeat it here.
 
 This version of FvwmIconMan can use MiniIcons and the Shape extension. If you
 want to use these features, you should have the appropriate defines set in 
@@ -32,7 +20,7 @@ I have discontinued support for fvwm 1. If you need to compile it for that
 version of fvwm, send me mail, and I'll tell you how. The version of
 FvwmIconMan included in the fvwm 2.0 distribution WILL NOT run under fvwm 1.
 
-To get FvwmIconMan or any other fvwm stuff:
+To get FvwmIconMan:
 
 http://www.cs.arizona.edu/people/bradym/software/
 	or

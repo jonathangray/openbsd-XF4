@@ -1,4 +1,3 @@
-
 typedef enum {
   READ_LINE = 1,
   READ_OPTION = 2,

@@ -1,11 +1,14 @@
-/* 
-   FvwmPipe v0.1 copyright 1996 Matthias Ettrich
+/*
+   FvwmPipe v0.1 Copyright 1996 Matthias Ettrich
    (ettrich@informatik.uni-tuebingen.de)
+   Permission is granted to distribute this software freely
+   for any purpose as long as the copyright and this
+   copyright notice remain intact.
 
    Simple hacked module to control fvwm from outside.
    When invoked this module creates a pipe "$HOME/.fvwmpipe.in".
    Whatever you write to this pipe will be passed through to fvwm.
-   For example: 
+   For example:
          echo "restart" > $HOME/.fvwmpipe.in
 	 (restarts fvwm)
    or
@@ -19,7 +22,7 @@
    in any language, for example TCL/TK.
 
    The code is somewhat based on the FvwmTalk module.
-   */ 
+   */
 
 /* This module, and the entire NoClutter program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -32,16 +35,17 @@
 
 
 #define TRUE 1
-#define FALSE 
+#define FALSE
 
 #define UPDATE_ONLY 1
 #define ALL 2
 #define PROP_SIZE 1024
 
-#include "../../configure.h"
-#ifdef ISC
+#include "config.h"
+
+#if HAVE_SYS_BSDTYPES
 #include <sys/bsdtypes.h> /* Saul */
-#endif 
+#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -50,7 +54,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -58,9 +62,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "../../libs/fvwmlib.h"     
+#include "fvwmlib.h"
 #include "../../fvwm/module.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width;
@@ -99,11 +102,11 @@ void Loop(int *fvwmfd){
 
   fd = open(inpipename, O_RDWR|O_NONBLOCK);
   if (fd){
-    /* send an empty message to end elder FvwmPipes */ 
+    /* send an empty message to end elder FvwmPipes */
     write (fd, "\n", 1);
     close(fd);
   }
-    
+
   mkfifo(inpipename, 0600);
   fd = open(inpipename, O_RDONLY|O_NONBLOCK);
   if (fd<0){
@@ -114,13 +117,9 @@ void Loop(int *fvwmfd){
   FD_SET(fd, &fdset);
   FD_SET(fvwmfd[1], &fdset);
   while (1){
-#ifdef __hpux
-    select(fd_width,(int *)&fdset, 0, 0, NULL);
-#else
-    select(fd_width,&fdset, 0, 0, NULL);
-#endif  
+    select(fd_width,SELECT_TYPE_ARG234 &fdset, 0, 0, NULL);
     if (FD_ISSET(fd, &fdset)){
-      /* read from the fvwmpipe.in and send the stuff to fvwm */ 
+      /* read from the fvwmpipe.in and send the stuff to fvwm */
       res = read(fd, s, 255);
       if(res>=0) {
 	s[res] = '\0';
@@ -134,7 +133,7 @@ void Loop(int *fvwmfd){
       }
     }
     else {
-      /* ignore what comes from fvwm but empty the pipe */ 
+      /* ignore what comes from fvwm but empty the pipe */
       do {
 	res = read(fvwmfd[1], s, 99);
       } while (res >= 0);
@@ -143,11 +142,10 @@ void Loop(int *fvwmfd){
 }
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
-  FILE *file;
-  
+
   /* Save the program name - its used for error messages and option parsing */
   temp = argv[0];
 
@@ -178,13 +176,12 @@ void main(int argc, char **argv)
   strcat(MyName, temp);
 
   /* Dead pipes mean fvwm died */
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
   fd_width = GetFdWidth();
   Loop(fd);
+  return 0;
 }
-
-

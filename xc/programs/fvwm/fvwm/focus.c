@@ -12,7 +12,7 @@
  *
  ***********************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -35,26 +35,55 @@
 void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 {
   int i;
+  Boolean       OnThisPage    =  False;
   extern Time lastTimestamp;
 
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */
-  if ((FocusByMouse)&&(Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot))
+  /* Watch out: Fw may not be on the windowlist and the windowlist may be empty */
+  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot) {
+    if (FocusByMouse) /* pluck window from list and deposit at top */
     {
-      FvwmWindow *tmp_win1, *tmp_win2;
+      /* remove Fw from list */
+      if (Fw->prev) Fw->prev->next = Fw->next;
+      if (Fw->next) Fw->next->prev = Fw->prev;
       
-      tmp_win1 = Fw->prev;
-      tmp_win2 = Fw->next;
-      
-      if (tmp_win1) tmp_win1->next = tmp_win2;
-      if (tmp_win2) tmp_win2->prev = tmp_win1;
-      
+      /* insert Fw at start */
       Fw->next = Scr.FvwmRoot.next;
-      if(Scr.FvwmRoot.next)Scr.FvwmRoot.next->prev = Fw;
+      if (Scr.FvwmRoot.next) Scr.FvwmRoot.next->prev = Fw;
       Scr.FvwmRoot.next = Fw;
       Fw->prev = &Scr.FvwmRoot;
-    }                                 
+    }
+    else
+    {
+      /* move the windowlist around so that Fw is at the top */
+      
+      FvwmWindow *tmp_win;
+      
+      /* find the window on the windowlist */
+      tmp_win = &Scr.FvwmRoot; 
+      while (tmp_win && tmp_win != Fw)
+        tmp_win = tmp_win->next;
+        
+      if (tmp_win) /* the window is on the (non-zero length) windowlist */
+      {
+        /* make tmp_win point to the last window on the list */
+        while (tmp_win->next)
+          tmp_win = tmp_win->next;
 
+        /* close the ends of the windowlist */
+        tmp_win->next = Scr.FvwmRoot.next;
+        Scr.FvwmRoot.next->prev = tmp_win;
+
+        /* make Fw the new start of the list */
+        Scr.FvwmRoot.next = Fw;
+        /* open the closed loop windowlist */
+        Fw->prev->next = NULL;
+        Fw->prev = &Scr.FvwmRoot;
+      }
+    }
+  }
+  
   if(Scr.NumberOfScreens > 1)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -83,7 +112,25 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 	}
     }
 
-  if((Fw != NULL)&&(Fw->Desk != Scr.CurrentDesk))
+  if (Fw != NULL)
+    {
+      /*  
+          Make sure at least part of window is on this page  
+          before giving it focus...
+      */
+      if ( (Fw->Desk == Scr.CurrentDesk) &&
+           ( ((Fw->frame_x + Fw->frame_width) >= 0 && 
+              Fw->frame_x < Scr.MyDisplayWidth) &&
+             ((Fw->frame_y + Fw->frame_height) >= 0 && 
+              Fw->frame_y < Scr.MyDisplayHeight) 
+           )
+         )
+        {
+          OnThisPage  =  True;
+        }
+    }
+
+  if((Fw != NULL)&&(! OnThisPage))
     {
       Fw = NULL;
       w = Scr.NoFocusWin;
@@ -115,8 +162,22 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 	  }
       Scr.Ungrabbed = Fw;
     }
+/*  RBW - allow focus to go to a NoIconTitle icon window so
+    auto-raise will work on it...
   if((Fw)&&(Fw->flags & ICONIFIED)&&(Fw->icon_w))
     w= Fw->icon_w;
+*/
+  if((Fw)&&(Fw->flags & ICONIFIED))
+    {
+      if (Fw->icon_w)
+        {
+          w = Fw->icon_w;
+        }
+      else if (Fw->icon_pixmap_w)
+        {
+          w = Fw->icon_pixmap_w;
+        }
+    }
   
   if((Fw)&&(Fw->flags & Lenience))
     {

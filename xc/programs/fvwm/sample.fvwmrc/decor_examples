@@ -45,9 +45,9 @@ AddToDecor	Win95
 			ActiveDown (Solid Navy -- flat) \
 			Inactive (Solid grey51 -- flat)
 +	ButtonStyle 1	MiniIcon -- UseTitleStyle flat
-+	ButtonStyle 2	Pixmap win95-close-full.xpm -- UseTitleStyle flat
-+	ButtonStyle 4	Pixmap win95-maximize-full.xpm -- UseTitleStyle flat
-+	ButtonStyle 6	Pixmap win95-minimize-full.xpm -- UseTitleStyle flat
++       ButtonStyle 2   Pixmap mini.winXX-close.xpm -- UseTitleStyle flat
++       ButtonStyle 4   Pixmap mini.winXX-maximize.xpm -- UseTitleStyle flat
++       ButtonStyle 6   Pixmap mini.winXX-minimize.xpm -- UseTitleStyle flat
 +	BorderStyle	Active -- HiddenHandles NoInset
 +	BorderStyle	Inactive -- HiddenHandles NoInset
 +	WindowFont	-adobe-helvetica-bold-r-*-120-*

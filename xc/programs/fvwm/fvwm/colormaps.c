@@ -1,6 +1,6 @@
 /****************************************************************************
  * This module is all new
- * by Rob Nation 
+ * by Rob Nation
  *
  * This code handles colormaps for fvwm.
  *
@@ -9,13 +9,12 @@
  * warrantees of any sort whatsoever are given or implied or anything.
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
 #include "fvwm.h"
 #include <X11/Xatom.h>
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -58,12 +57,12 @@ void HandleColormapNotify(void)
       /* Some window installed its colormap, change it back */
       ReInstall = True;
     }
-  
+
   while(XCheckTypedEvent(dpy,ColormapNotify,&Event))
     {
-      if (XFindContext (dpy, cevent->window, 
+      if (XFindContext (dpy, cevent->window,
 			FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
-	Tmp_win = NULL;    
+	Tmp_win = NULL;
       if((Tmp_win)&&(cevent->new))
 	{
 	  XGetWindowAttributes(dpy,Tmp_win->w,&(Tmp_win->attr));
@@ -82,7 +81,7 @@ void HandleColormapNotify(void)
 	      (cevent->state == ColormapInstalled)&&
 	      (last_cmap == cevent->colormap))
 	{
-	  /* The last color map installed was the correct one. Don't 
+	  /* The last color map installed was the correct one. Don't
 	   * change anything */
 	  ReInstall = False;
 	}
@@ -93,13 +92,13 @@ void HandleColormapNotify(void)
    * an override-redirect window that has its own colormap. */
   if((ReInstall)&&(Scr.UnknownWinFocused == None))
     {
-      XInstallColormap(dpy,last_cmap);    
+      XInstallColormap(dpy,last_cmap);
     }
 }
 
 /************************************************************************
  *
- * Re-Install the active colormap 
+ * Re-Install the active colormap
  *
  *************************************************************************/
 void ReInstallActiveColormap(void)
@@ -152,21 +151,34 @@ void InstallWindowColormaps (FvwmWindow *tmp)
 	  if(w == tmp->w)
 	    ThisWinInstalled = True;
 	  XGetWindowAttributes(dpy,w,&attributes);
-	  
-	  if(last_cmap != attributes.colormap)
+
+          /*
+           * On Sun X servers, don't install 24 bit TrueColor colourmaps.
+           * Despite what the server says, these colourmaps are always
+           * installed.
+           */
+	  if(last_cmap != attributes.colormap
+#if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
+             && !(attributes.depth == 24 && attributes.visual->class == TrueColor)
+#endif
+             )
 	    {
 	      last_cmap = attributes.colormap;
-	      XInstallColormap(dpy,attributes.colormap);    
+	      XInstallColormap(dpy,attributes.colormap);
 	    }
 	}
     }
 
   if(!ThisWinInstalled)
     {
-      if(last_cmap != tmp->attr.colormap)
+      if(last_cmap != tmp->attr.colormap
+#if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
+         && !(tmp->attr.depth == 24 && tmp->attr.visual->class == TrueColor)
+#endif
+        )
 	{
 	  last_cmap = tmp->attr.colormap;
-	  XInstallColormap(dpy,tmp->attr.colormap);    
+	  XInstallColormap(dpy,tmp->attr.colormap);
 	}
     }
 }
@@ -192,7 +204,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
 void InstallRootColormap()
 {
   FvwmWindow *tmp;
-  if (Scr.root_pushes == 0) 
+  if (Scr.root_pushes == 0)
     {
       tmp = Scr.pushed_window;
       InstallWindowColormaps(&Scr.FvwmRoot);
@@ -203,21 +215,21 @@ void InstallRootColormap()
 }
 
 /***************************************************************************
- * 
- * Unstacks one layer of root colormap pushing 
+ *
+ * Unstacks one layer of root colormap pushing
  * If we peel off the last layer, re-install th e application colormap
- * 
+ *
  ***************************************************************************/
 void UninstallRootColormap()
 {
   if (Scr.root_pushes)
     Scr.root_pushes--;
-  
-  if (!Scr.root_pushes) 
+
+  if (!Scr.root_pushes)
     {
       InstallWindowColormaps(Scr.pushed_window);
     }
-  
+
   return;
 }
 

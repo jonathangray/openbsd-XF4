@@ -1,4 +1,4 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -18,12 +18,13 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#ifdef NONONO
-#include <fvwm/fvwmlib.h>
-#endif
-#include "../../fvwm/fvwm.h"
+#ifndef _H_FvwmTaskBar
+#define _H_FvwmTaskBar
 
-#define F_SWALLOWED      1 
+#include "config.h"
+#include "fvwm/fvwm.h"
+
+#define F_SWALLOWED      1
 #define F_NOT_SWALLOWED  2
 
 /* Motif  window hints */
@@ -48,13 +49,13 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_FUNC_MOVE           (1L << 2)
 #define MWM_FUNC_MINIMIZE       (1L << 3)
 #define MWM_FUNC_MAXIMIZE       (1L << 4)
-#define MWM_FUNC_CLOSE          (1L << 5)       
+#define MWM_FUNC_CLOSE          (1L << 5)
 
 /* values for MwmHints.input_mode */
 #define MWM_INPUT_MODELESS                      0
 #define MWM_INPUT_PRIMARY_APPLICATION_MODAL     1
 #define MWM_INPUT_SYSTEM_MODAL                  2
-#define MWM_INPUT_FULL_APPLICATION_MODAL        3         
+#define MWM_INPUT_FULL_APPLICATION_MODAL        3
 
 /* bit definitions for MwmHints.decorations */
 #define MWM_DECOR_ALL                 (1L << 0)
@@ -92,7 +93,8 @@ void StartMeUp(void);
 void ShutMeDown(int exitstat);
 void ConsoleMessage(char *fmt,...);
 int OpenConsole(void);
-void ParseConfig(char *file);
+void ConsoleMessage(char *fmt,...);
+static void ParseConfig();
 void LoopOnEvents(void);
 void AdjustWindow(int width, int height);
 char *makename(char *string,long flags);
@@ -113,10 +115,4 @@ void Swallow(unsigned long *body);
 
 XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
 #endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */

@@ -16,7 +16,7 @@
  *
  ***********************************************************************/
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -32,7 +32,7 @@
 
 #include "../../fvwm/module.h"
 
-#ifdef NeXT
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -41,9 +41,12 @@
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
+
+extern int save_color_limit;
 
 #define ICON_EVENTS (ExposureMask |\
 ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
@@ -235,23 +238,35 @@ void GetXPMFile(struct icon_info *item)
   XWindowAttributes root_attr;
   XpmAttributes xpm_attributes;
   char *path = NULL;
+  int rc;
+  XpmImage	my_image;
 
   path = findIconFile(item->icon_file, pixmapPath,R_OK);
   if(path == NULL)return;  
 
   XGetWindowAttributes(dpy,Root,&root_attr);
   xpm_attributes.colormap = root_attr.colormap;
-  xpm_attributes.closeness = 20000;    /* tight? */
+  xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */
   xpm_attributes.valuemask = XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
-  if(XpmReadFileToPixmap(dpy, Root, path,
-			 &item->iconPixmap,
-			 &item->icon_maskPixmap, 
-			 &xpm_attributes) == XpmSuccess) 
-    { 
-      item->icon_w = min(max_icon_width, xpm_attributes.width);
-      item->icon_h = min(max_icon_height, xpm_attributes.height);
-      item->icon_depth = d_depth;
-    } 
+  rc = XpmReadFileToXpmImage(path, &my_image, NULL);
+  if (rc != XpmSuccess) {
+    fprintf(stderr, "Problem reading pixmap %s, rc %d\n", path, rc);
+    free(path);
+    return;
+  }
+  color_reduce_pixmap(&my_image,save_color_limit);
+  rc = XpmCreatePixmapFromXpmImage(dpy,Root, &my_image,
+                                    &item->iconPixmap,
+                                    &item->icon_maskPixmap, 
+                                    &xpm_attributes);
+  if (rc != XpmSuccess) {
+    fprintf(stderr, "Problem creating pixmap from image, rc %d\n", rc);
+    free(path);
+    return;
+  }
+  item->icon_w = min(max_icon_width, my_image.width);
+  item->icon_h = min(max_icon_height, my_image.height);
+  item->icon_depth = d_depth;
   free(path);
 #endif /* XPM */
 }
@@ -340,10 +355,11 @@ Bool GetBackPixmap(void)
   XWindowAttributes root_attr;
 #ifdef XPM
   XpmAttributes xpm_attributes;
+  XpmImage my_image;
 #endif
   char *path = NULL;
   Pixmap tmp_bitmap, maskPixmap;
-  int x, y, w=0, h=0;
+  int x, y, w=0, h=0, rc;
 
   if (IconwinPixmapFile == NULL)
     return False;
@@ -368,13 +384,27 @@ Bool GetBackPixmap(void)
     { 
       XGetWindowAttributes(dpy,Root,&root_attr);
       xpm_attributes.colormap = root_attr.colormap;
-      xpm_attributes.valuemask = XpmSize|XpmReturnPixels|XpmColormap;
-      if (XpmReadFileToPixmap(dpy, Root, path, &IconwinPixmap,
-			      &maskPixmap, &xpm_attributes) ==
-	  XpmSuccess){ 
-	w = xpm_attributes.width;
-	h = xpm_attributes.height;
+      xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */
+      xpm_attributes.valuemask = XpmSize|XpmReturnPixels|XpmColormap|
+        XpmCloseness;
+      rc = XpmReadFileToXpmImage(path, &my_image, NULL);
+      if (rc != XpmSuccess) {
+        fprintf(stderr, "Problem reading pixmap %s, rc %d\n", path, rc);
+        free(path);
+        return False;
       }
+      color_reduce_pixmap(&my_image,save_color_limit);
+      rc = XpmCreatePixmapFromXpmImage(dpy,Root, &my_image,
+                                       &IconwinPixmap,
+                                       &maskPixmap,
+                                       &xpm_attributes);
+      if (rc != XpmSuccess) {
+        fprintf(stderr, "Problem creating pixmap from image, rc %d\n", rc);
+        free(path);
+        return False;
+      }
+      w = my_image.width;
+      h = my_image.height;
       free(path);
     }
 #endif

@@ -1,4 +1,4 @@
-/* FvwmWinList Module for Fvwm. 
+/* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -18,7 +18,7 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,38 +27,31 @@
 #include <sys/time.h>
 #include "../../libs/fvwmlib.h"
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
-
 extern char *Module;
 
 /******************************************************************************
   saferealloc - safely reallocate memory or exit if fails. (Doesn't work right)
+  (No kidding! Try it now ...)
 ******************************************************************************/
-char *saferealloc(char *ptr, int length)
+char *saferealloc(char *ptr, size_t length)
 {
 char *newptr;
 
   if(length <=0) length=1;
 
+  /* If ptr is NULL then realloc does a malloc */
   newptr=realloc(ptr,length);
-    if (ptr == (char *)0) {
+    if (newptr == (char *)0) {
       fprintf(stderr,"%s:realloc failed",Module);
       exit(1);
     }
-  return ptr;
+  return newptr;
 }
 
-void UpdateString(char **string,char *value)
+void UpdateString(char **string,const char *value)
 {
   if (value==NULL) return;
-  if (*string==NULL) *string=safemalloc(strlen(value)+1);
-  else *string=(char *)realloc(*string,strlen(value)+1);
+  *string = saferealloc(*string,strlen(value)+1);
   strcpy(*string,value);
 }
 

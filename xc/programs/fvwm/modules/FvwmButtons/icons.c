@@ -17,7 +17,7 @@
  *
  ***********************************************************************/
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -31,7 +31,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#ifdef NeXT
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -41,6 +41,7 @@
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
@@ -61,8 +62,8 @@ void CreateIconWindow(button_info *b)
 
   if(b->IconWin != None)
     {
-      fprintf(stderr,"%s: BUG: Iconwindow already created for 0x%06x!\n",
-	      MyName,(ushort)b);
+      fprintf(stderr,"%s: BUG: Iconwindow already created for 0x%lx!\n",
+	      MyName,(unsigned long)b);
       exit(2);
     }
 

@@ -1,8 +1,8 @@
 /****************************************************************************
- * 
- * This is all original code by Robert Nation 
+ *
+ * This is all original code by Robert Nation
  * which reads motif mwm window manager
- * hints from a window, and makes necessary adjustments for fvwm. 
+ * hints from a window, and makes necessary adjustments for fvwm.
  *
  * Definitions of the hint structure and the constants are courtesy of
  * mitnits@bgumail.bgu.ac.il (Roman Mitnitski ), who sent this note,
@@ -23,17 +23,17 @@
  *> of the decorations to the mwm). Call it another name, if you are
  *> THAT MUCH concerned.
  *>
- *> You can even use the little piece of code I've passed to you - 
+ *> You can even use the little piece of code I've passed to you -
  *> we are talking about 10M distribution against two pages of code.
  *> Don't be silly.
- *> 
- *> Best wishes. 
+ *>
+ *> Best wishes.
  *> Eli.
  *
  *
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +45,8 @@
 #include "screen.h"
 #include "parse.h"
 #include "menus.h"
+#include "lang-strings.h"
+
 
 extern Atom _XA_MwmAtom;
 
@@ -69,7 +71,7 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_FUNC_MOVE           (1L << 2)
 #define MWM_FUNC_MINIMIZE       (1L << 3)
 #define MWM_FUNC_MAXIMIZE       (1L << 4)
-#define MWM_FUNC_CLOSE          (1L << 5)       
+#define MWM_FUNC_CLOSE          (1L << 5)
 
 /* bit definitions for MwmHints.decorations */
 #define MWM_DECOR_ALL                 (1L << 0)
@@ -85,16 +87,16 @@ typedef PropMotifWmHints        PropMwmHints;
 
 /* bit definitions for OL hints; I just
  *  made these up, OL stores hints as atoms */
-#define OL_DECOR_CLOSE                (1L << 0)  
-#define OL_DECOR_RESIZEH              (1L << 1)  
-#define OL_DECOR_HEADER               (1L << 2)  
-#define OL_DECOR_ICON_NAME            (1L << 3)  
+#define OL_DECOR_CLOSE                (1L << 0)
+#define OL_DECOR_RESIZEH              (1L << 1)
+#define OL_DECOR_HEADER               (1L << 2)
+#define OL_DECOR_ICON_NAME            (1L << 3)
 #define OL_DECOR_ALL                  (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
 
 extern FvwmWindow *Tmp_win;
 
 /****************************************************************************
- * 
+ *
  * Reads the property MOTIF_WM_HINTS
  *
  *****************************************************************************/
@@ -118,7 +120,7 @@ void GetMwmHints(FvwmWindow *t)
 }
 
 /****************************************************************************
- * 
+ *
  * Reads the openlook properties _OL_WIN_ATTR, _OL_DECOR_ADD, _OL_DECOR_DEL
  *
  * _OL_WIN_ATTR - the win_type field is the either the first atom if the
@@ -134,11 +136,11 @@ void GetMwmHints(FvwmWindow *t)
  * In addition, if the _OL_WIN_ATTR property is in the three atom format
  * or if the type is _OL_WT_OTHER, then the icon name is not displayed
  * (same behavior as olvwm).
- * 
+ *
  * _OL_DECOR_ADD or _OL_DECOR_DEL - indivdually add or remove minimize
  * button (_OL_DECOR_CLOSE), resize handles (_OL_DECOR_RESIZE), title bar
  * (_OL_DECOR_HEADER), or icon name (_OL_DECOR_ICON_NAME).
- * 
+ *
  * The documentation for the Open Look hints was taken from "Advanced X
  * Window Application Programming", Eric F. Johnson and Kevin Reichard
  * (M&T Books), and the olvwm source code (available at ftp.x.org in
@@ -186,7 +188,8 @@ void GetOlHints(FvwmWindow *t)
 	    t->ol_hints &= ~OL_DECOR_ICON_NAME;
 	}
 
-      XFree (hints);
+      if (hints)
+        XFree (hints);
     }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_ADD, 0L, 20L, False,
@@ -203,7 +206,8 @@ void GetOlHints(FvwmWindow *t)
 	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
             t->ol_hints |= OL_DECOR_ICON_NAME;
       }
-      XFree (hints);
+      if (hints)
+        XFree (hints);
     }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_DEL, 0L, 20L, False,
@@ -220,19 +224,20 @@ void GetOlHints(FvwmWindow *t)
 	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
             t->ol_hints &= ~OL_DECOR_ICON_NAME;
       }
-      XFree (hints);
+      if (hints)
+        XFree (hints);
     }
 
 }
 
 
 /****************************************************************************
- * 
+ *
  * Interprets the property MOTIF_WM_HINTS, sets decoration and functions
  * accordingly
  *
  *****************************************************************************/
-void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width, 
+void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 		 int resize_width)
 {
   int decor,i;
@@ -278,14 +283,14 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     {
       t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
     }
-  
+
   if(decor & MWM_DECOR_ALL)
     {
       /* If we get ALL + some other things, that means to use
        * ALL except the other things... */
       decor &= ~MWM_DECOR_ALL;
       decor = (MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | MWM_DECOR_TITLE |
-	       MWM_DECOR_MENU | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE) 
+	       MWM_DECOR_MENU | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE)
 	& (~decor);
     }
 
@@ -328,7 +333,7 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 
   if ((tflags & NOBORDER_FLAG)||
       ((!(tflags&DECORATE_TRANSIENT_FLAG)) && (t->flags & TRANSIENT)))
-    decor &= ~MWM_DECOR_RESIZEH;      
+    decor &= ~MWM_DECOR_RESIZEH;
 
   if((tflags & MWM_DECOR_FLAG) && (t->flags & TRANSIENT))
     {
@@ -373,11 +378,11 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
        * (10 pixels - 2 relief, 2 shadow) */
       t->flags |= BORDER;
       t->boundary_width = resize_width;
-      t->corner_width = GetDecor(t,TitleHeight) + t->boundary_width; 
+      t->corner_width = GetDecor(t,TitleHeight) + t->boundary_width;
     }
   if(!(decor & MWM_DECOR_MENU))
     {
-      /*  title-bar menu button omitted 
+      /*  title-bar menu button omitted
        * window gets 1 pixel wide black border */
       /* disable any buttons with the MWMDecorMenu flag */
       int i;
@@ -455,108 +460,121 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     t->flags &= ~BORDER;
 }
 
+/*
+** seemed kind of silly to have check_allowed_function and
+** check_allowed_function2 partially overlapping in their checks, so I
+** combined them here and made them wrapper functions instead.
+*/
+static int check_if_function_allowed(int function,
+                                     FvwmWindow *t,
+                                     MenuItem *mi)
+{
+  if (t) /* should always be ok */
+  {
+    if (!mi) /* no menu item, must be exec check, so allow overrides */
+    {
+      if(t->flags & HintOverride)
+        return 1;
+    }
+
+    switch(function)
+    {
+      case F_DELETE:
+        if (!(t->flags & DoesWmDeleteWindow))
+          return 0;
+        /* fall through to close clause */
+      case F_CLOSE:
+        if (!(t->functions & MWM_FUNC_CLOSE))
+          return 0;
+        break;
+      case F_DESTROY: /* shouldn't destroy always be allowed??? */
+        if (!(t->functions & MWM_FUNC_CLOSE))
+          return 0;
+        break;
+      case F_RESIZE:
+        if (!(t->functions & MWM_FUNC_RESIZE))
+          return 0;
+        break;
+      case F_ICONIFY:
+        if ((!(t->flags & ICONIFIED))&&
+            (!(t->functions & MWM_FUNC_MINIMIZE)))
+          return 0;
+        break;
+      case F_MAXIMIZE:
+        if (!(t->functions & MWM_FUNC_MAXIMIZE))
+          return 0;
+        break;
+      case F_MOVE:
+        /* Move is a funny hint. Keeps it out of the menu, but you're
+         * still allowed to move. */
+        if((!(t->functions & MWM_FUNC_MOVE))&&mi)
+          return 0;
+        break;
+      case F_FUNCTION:
+        /* Hard part! What to do now? */
+        /* Hate to do it, but for lack of a better idea,
+         * check based on the menu entry name */
+        /* Complex functions are a little tricky, ignore them if no menu item*/
+        if (mi && mi->item)
+        {
+          if((!(t->functions & MWM_FUNC_MOVE))&&
+             (StrEquals(mi->item,MOVE_STRING)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_RESIZE))&&
+             (StrEquals(mi->item,RESIZE_STRING1)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_RESIZE))&&
+             (StrEquals(mi->item,RESIZE_STRING2)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_MINIMIZE))&&
+             (!(t->flags & ICONIFIED))&&
+             (StrEquals(mi->item,MINIMIZE_STRING)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_MINIMIZE))&&
+             (StrEquals(mi->item,MINIMIZE_STRING2)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_MAXIMIZE))&&
+             (StrEquals(mi->item,MAXIMIZE_STRING)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_CLOSE))&&
+             (StrEquals(mi->item,CLOSE_STRING1)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_CLOSE))&&
+             (StrEquals(mi->item,CLOSE_STRING2)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_CLOSE))&&
+             (StrEquals(mi->item,CLOSE_STRING3)))
+            return 0;
+          if((!(t->functions & MWM_FUNC_CLOSE))&&
+             (StrEquals(mi->item,CLOSE_STRING4)))
+            return 0;
+        }
+        break;
+      default:
+        break;
+    } /* end of switch */
+  } /* end of if */
+
+  /* if we fell through, just return a 1 */
+  return 1;
+}
+
 /****************************************************************************
- * 
+ *
  * Checks the function described in menuItem mi, and sees if it
  * is an allowed function for window Tmp_Win,
  * according to the motif way of life.
- * 
+ *
  * This routine is used to determine whether or not to grey out menu items.
  *
  ****************************************************************************/
 int check_allowed_function(MenuItem *mi)
 {
-  /* Complex functions are a little tricky... ignore them for now */
-
-  if ((Tmp_win)&&
-      (!(Tmp_win->flags & DoesWmDeleteWindow))&&(mi->func_type == F_DELETE))
-    return 0;
-
-  /* Move is a funny hint. Keeps it out of the menu, but you're still allowed
-   * to move. */
-  if((mi->func_type == F_MOVE)&&(Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_MOVE)))
-    return 0;
-
-  if((mi->func_type == F_RESIZE)&&(Tmp_win)&&
-     (!(Tmp_win->functions & MWM_FUNC_RESIZE)))
-    return 0;
-
-  if((mi->func_type == F_ICONIFY)&&(Tmp_win)&&
-     (!(Tmp_win->flags & ICONIFIED))&&
-     (!(Tmp_win->functions & MWM_FUNC_MINIMIZE)))
-    return 0;
-
-  if((mi->func_type == F_MAXIMIZE)&&(Tmp_win)&&
-     (!(Tmp_win->functions & MWM_FUNC_MAXIMIZE)))
-    return 0;
-
-  if((mi->func_type == F_DELETE)&&(Tmp_win)&&
-     (!(Tmp_win->functions & MWM_FUNC_CLOSE)))
-    return 0;
-
-  if((mi->func_type == F_CLOSE)&&(Tmp_win)&&
-     (!(Tmp_win->functions & MWM_FUNC_CLOSE)))
-    return 0;
-
-  if((mi->func_type == F_DESTROY)&&(Tmp_win)&&
-     (!(Tmp_win->functions & MWM_FUNC_CLOSE)))
-    return 0;
-
-  if(mi->func_type == F_FUNCTION)
-    {
-      /* Hard part! What to do now? */
-      /* Hate to do it, but for lack of a better idea,
-       * check based on the menu entry name */
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_MOVE))&&
-	 (mystrncasecmp(mi->item,MOVE_STRING,strlen(MOVE_STRING))==0))
-	return 0;
-      
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_RESIZE))&&
-	 (mystrncasecmp(mi->item,RESIZE_STRING1,strlen(RESIZE_STRING1))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_RESIZE))&&
-	 (mystrncasecmp(mi->item,RESIZE_STRING2,strlen(RESIZE_STRING2))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_MINIMIZE))&&
-	 (!(Tmp_win->flags & ICONIFIED))&&
-	 (mystrncasecmp(mi->item,MINIMIZE_STRING,strlen(MINIMIZE_STRING))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_MINIMIZE))&&
-	 (mystrncasecmp(mi->item,MINIMIZE_STRING2,strlen(MINIMIZE_STRING2))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_MAXIMIZE))&&
-	 (mystrncasecmp(mi->item,MAXIMIZE_STRING,strlen(MAXIMIZE_STRING))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_CLOSE))&&
-	 (mystrncasecmp(mi->item,CLOSE_STRING1,strlen(CLOSE_STRING1))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_CLOSE))&&
-	 (mystrncasecmp(mi->item,CLOSE_STRING2,strlen(CLOSE_STRING2))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_CLOSE))&&
-	 (mystrncasecmp(mi->item,CLOSE_STRING3,strlen(CLOSE_STRING3))==0))
-	return 0;
-
-      if((Tmp_win)&&(!(Tmp_win->functions & MWM_FUNC_CLOSE))&&
-	 (mystrncasecmp(mi->item,CLOSE_STRING4,strlen(CLOSE_STRING4))==0))
-	return 0;
-
-    }
-
-
-  return 1;
+  return check_if_function_allowed(mi->func_type,Tmp_win,mi);
 }
 
-
 /****************************************************************************
- * 
+ *
  * Checks the function "function", and sees if it
  * is an allowed function for window t,  according to the motif way of life.
  * This routine is used to decide if we should refuse to perform a function.
@@ -564,36 +582,7 @@ int check_allowed_function(MenuItem *mi)
  ****************************************************************************/
 int check_allowed_function2(int function, FvwmWindow *t)
 {
-
-  if(t->flags & HintOverride)
-    return 1;
-
-
-  if ((t)&&(!(t->flags & DoesWmDeleteWindow))&&(function == F_DELETE))
-    return 0;
-
-  if((function == F_RESIZE)&&(t)&&
-     (!(t->functions & MWM_FUNC_RESIZE)))
-    return 0;
-
-  if((function == F_ICONIFY)&&(t)&&
-     (!(t->flags & ICONIFIED))&&
-     (!(t->functions & MWM_FUNC_MINIMIZE)))
-    return 0;
-
-  if((function == F_MAXIMIZE)&&(t)&&
-     (!(t->functions & MWM_FUNC_MAXIMIZE)))
-    return 0;
-
-  if((function == F_DELETE)&&(t)&&
-     (!(t->functions & MWM_FUNC_CLOSE)))
-    return 0;
-
-  if((function == F_DESTROY)&&(t)&&
-     (!(t->functions & MWM_FUNC_CLOSE)))
-    return 0;
-
-  return 1;
+  return check_if_function_allowed(function,t,NULL);
 }
 
 

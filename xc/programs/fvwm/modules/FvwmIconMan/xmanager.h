@@ -2,7 +2,7 @@
 #define IN_XMANAGER_H
 
 #define FONT_STRING "8x13"
-#define DEFAULT_BUTTON_WIDTH 100
+#define DEFAULT_BUTTON_WIDTH 200
 #define DEFAULT_BUTTON_HEIGHT 17
 #define DEFAULT_NUM_COLS  1
 #define DEFAULT_NUM_ROWS 0
@@ -14,7 +14,6 @@ extern int which_box (WinManager *man, int x, int y);
 extern Button *xy_to_button (WinManager *man, int x, int y);
 
 extern void delete_windows_button (WinData *win);
-extern void insert_windows_button (WinData *win);
 extern void resort_windows_button (WinData *win);
 
 extern void size_manager (WinManager *man);

@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <stdio.h>
 #include <iostream.h>
 #include <stdlib.h>
@@ -9,11 +11,10 @@
 #include "WinButton.h"
 #include "WinInput.h"
 #include "WinColorSelector.h"
+
 extern "C" {
-#include "../../libs/fvwmlib.h"
+#include "fvwmlib.h"
 }
-#include "../../version.h"
-#include "../../configure.h"
 #include "../../fvwm/module.h"
 
 #define ClickToFocus (1<<10)
@@ -571,7 +572,3 @@ int main(int argc, char **argv)
     }
   return 0;
 }
-
-
-
-  

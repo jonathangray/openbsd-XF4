@@ -1,11 +1,28 @@
-/****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+      /****************************************************************************
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
-
+/*
+  Changed 02/12/97 by Dan Espen:
+  - added routines to determine color closeness, for color use reduction.
+  Some of the logic comes from pixy2, so the copyright is below.
+  */
+/*
+ * $Id: Picture.c,v 1.1.1.2 2001/06/28 22:03:16 matthieu Exp $
+ * Copyright 1996, Romano Giannetti. No guarantees or warantees or anything
+ * are provided or implied in any way whatsoever. Use this program at your
+ * own risk. Permission to use this program for any purpose is given,
+ * as long as the copyright is kept intact.
+ *
+ * Romano Giannetti - Dipartimento di Ingegneria dell'Informazione
+ *                    via Diotisalvi, 2  PISA
+ * mailto:romano@iet.unipi.it
+ * http://www.iet.unipi.it/~romano
+ *
+ */
 
 /****************************************************************************
  *
@@ -14,7 +31,7 @@
  *
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -30,30 +47,38 @@
 #include <X11/Xutil.h>
 
 #ifdef XPM
-#include <X11/xpm.h>
+/* static function prototypes */
+static void c100_init_base_table ();    /* prototype */
+static void c200_substitute_color(char **,int); /* prototype */
+static void c300_color_to_rgb(char *, XColor *); /* prototype */
+static double c400_distance(XColor *, XColor *); /* prototype */
 #endif
 
 #include "fvwmlib.h"
 
 
 static Picture *PictureList=NULL;
-static Colormap PictureCMap;
+Colormap PictureCMap;
+Display *PictureSaveDisplay;            /* Save area for display pointer */
 
-
+/* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy,Window Root)
 {
   XWindowAttributes root_attr;
+  PictureSaveDisplay = dpy;                       /* save for latter */
   XGetWindowAttributes(dpy,Root,&root_attr);
   PictureCMap=root_attr.colormap;
 }
 
 
-Picture *LoadPicture(Display *dpy,Window Root,char *path)
+Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 {
-  int i,l;
+  int l;
   Picture *p;
 #ifdef XPM
   XpmAttributes xpm_attributes;
+  int rc;
+  XpmImage	my_image = {0};
 #endif
 
   p=(Picture*)safemalloc(sizeof(Picture));
@@ -67,15 +92,22 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path)
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask=
     XpmSize | XpmReturnPixels | XpmColormap | XpmCloseness;
-  
-  if(XpmReadFileToPixmap(dpy,Root,path,&p->picture,&p->mask,&xpm_attributes)
-     == XpmSuccess) 
-    { 
-      p->width = xpm_attributes.width;
-      p->height = xpm_attributes.height;
+
+  rc =XpmReadFileToXpmImage(path, &my_image, NULL);
+  if (rc == XpmSuccess) {
+    color_reduce_pixmap(&my_image, color_limit);
+    rc = XpmCreatePixmapFromXpmImage(dpy, Root, &my_image,
+                                     &p->picture,&p->mask,
+                                     &xpm_attributes);
+    if (rc == XpmSuccess) {
+      p->width = my_image.width;
+      p->height = my_image.height;
+      XpmFreeXpmImage(&my_image);
       p->depth = DefaultDepthOfScreen(DefaultScreenOfDisplay(dpy));
       return p;
     }
+    XpmFreeXpmImage(&my_image);
+  }
 #endif
 
   /* If no XPM support, or XPM loading failed, try bitmap */
@@ -87,61 +119,69 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path)
       return p;
     }
 
-  free(path);
   free(p);
   return NULL;
 }
 
-
 Picture *GetPicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
-		    char *name)
+		    char *name, int color_limit)
 {
   char *path;
+  Picture *p;
+
   if(!(path=findIconFile(name,PixmapPath,R_OK)))
     if(!(path=findIconFile(name,IconPath,R_OK)))
       return NULL;
-  return LoadPicture(dpy,Root,path);
+  p = LoadPicture(dpy,Root,path, color_limit);
+  if (!p)
+    free(path);
+  return p;
 }
 
-
 Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
-		    char *name)
+		      char *name, int color_limit)
 {
   char *path;
   Picture *p=PictureList;
-  int i,l;
 
   /* First find the full pathname */
+#ifdef XPM
   if(!(path=findIconFile(name,PixmapPath,R_OK)))
     if(!(path=findIconFile(name,IconPath,R_OK)))
       return NULL;
-
-  l=strlen(path);
+#else
+  /* Ignore the given pixmap path when compiled without XPM support */
+  if(!(path=findIconFile(name,IconPath,R_OK)))
+    return NULL;
+#endif
 
   /* See if the picture is already cached */
   while(p)
     {
-      i=l; /* Check for matching name; backwards compare will probably find
-	      differences fastest, but is a little 'unclean' (Doesn't check
-	      length of pl->name, compares beyond end, should do no harm... */
+      register char *p1, *p2;
 
-      while(i>=0 && path[i]==p->name[i])
-	i--;
-      if(i<0) /* We have found a picture with the wanted name */
+      for (p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
+	if (*p1 != *p2)
+          break;
+
+      if(!*p1 && !*p2) /* We have found a picture with the wanted name */
 	{
 	  p->count++; /* Put another weight on the picture */
+	  free(path);
 	  return p;
 	}
       p=p->next;
     }
 
   /* Not previously cached, have to load it ourself. Put it first in list */
-  p=LoadPicture(dpy,Root,path);
+  p=LoadPicture(dpy,Root,path, color_limit);
   if(p)
     {
       p->next=PictureList;
       PictureList=p;
     }
+  else
+    free(path);
   return p;
 }
 
@@ -189,52 +229,41 @@ char *findIconFile(char *icon, char *pathlist, int type)
 {
   char *path;
   char *dir_end;
-  int l1,l2;
+  int l;
 
-  if(icon != NULL)
-    l1 = strlen(icon);
-  else 
-    l1 = 0;
+  if (!icon)
+    return NULL;
 
-  if(pathlist != NULL)
-    l2 = strlen(pathlist);
-  else
-    l2 = 0;
+  l = (pathlist) ? strlen(pathlist) : 0;
 
-  path = safemalloc(l1 + l2 + 10);
+  path = safemalloc(strlen(icon) + l + 10);
   *path = '\0';
-  if (*icon == '/') 
+  if (*icon == '/' || pathlist == NULL || *pathlist == '\0')
     {
       /* No search if icon begins with a slash */
-      strcpy(path, icon);
-      return path;
-    }
-     
-  if ((pathlist == NULL) || (*pathlist == '\0')) 
-    {
       /* No search if pathlist is empty */
       strcpy(path, icon);
       return path;
     }
- 
+
   /* Search each element of the pathlist for the icon file */
   while ((pathlist)&&(*pathlist))
-    { 
+    {
       dir_end = strchr(pathlist, ':');
       if (dir_end != NULL)
 	{
 	  strncpy(path, pathlist, dir_end - pathlist);
 	  path[dir_end - pathlist] = 0;
 	}
-      else 
+      else
 	strcpy(path, pathlist);
 
       strcat(path, "/");
       strcat(path, icon);
-      if (access(path, type) == 0) 
+      if (access(path, type) == 0)
 	return path;
       strcat(path, ".gz");
-      if (access(path, type) == 0) 
+      if (access(path, type) == 0)
 	return path;
 
       /* Point to next element of the path */
@@ -247,5 +276,205 @@ char *findIconFile(char *icon, char *pathlist, int type)
   free(path);
   return NULL;
 }
- 
 
+
+#ifdef XPM
+/* This structure is used to quickly access the RGB values of the colors */
+/* without repeatedly having to transform them.   */
+typedef struct {
+  char * c_color;	/* Pointer to the name of the color */
+  XColor rgb_space;                     /* rgb color info */
+} Color_Info;
+
+/* First thing in base array are colors probably already in the color map
+   because they have familiar names.
+   I pasted them into a xpm and spread them out so that similar colors are
+   spread out.
+   Toward the end are some colors to fill in the gaps.
+   Currently 61 colors in this list.
+   */
+static Color_Info base_array[] = {
+  {"white"},
+  {"black"},
+  {"grey"},
+  {"green"},
+  {"blue"},
+  {"red"},
+  {"cyan"},
+  {"yellow"},
+  {"magenta"},
+  {"DodgerBlue"},
+  {"SteelBlue"},
+  {"chartreuse"},
+  {"wheat"},
+  {"turquoise"},
+  {"CadetBlue"},
+  {"gray87"},
+  {"CornflowerBlue"},
+  {"YellowGreen"},
+  {"NavyBlue"},
+  {"MediumBlue"},
+  {"plum"},
+  {"aquamarine"},
+  {"orchid"},
+  {"ForestGreen"},
+  {"lightyellow"},
+  {"brown"},
+  {"orange"},
+  {"red3"},
+  {"HotPink"},
+  {"LightBlue"},
+  {"gray47"},
+  {"pink"},
+  {"red4"},
+  {"violet"},
+  {"purple"},
+  {"gray63"},
+  {"gray94"},
+  {"plum1"},
+  {"PeachPuff"},
+  {"maroon"},
+  {"lavender"},
+  {"salmon"},                           /* for peachpuff, orange gap */
+  {"blue4"},                            /* for navyblue/mediumblue gap */
+  {"PaleGreen4"},                       /* for forestgreen, yellowgreen gap */
+  {"#AA7700"},                          /* brick, no close named color */
+  {"#11EE88"},                          /* light green, no close named color */
+  {"#884466"},                          /* dark brown, no close named color */
+  {"#CC8888"},                          /* light brick, no close named color */
+  {"#EECC44"},                          /* gold, no close named color */
+  {"#AAAA44"},                          /* dull green, no close named color */
+  {"#FF1188"},                          /* pinkish red */
+  {"#992299"},                          /* purple */
+  {"#CCFFAA"},                          /* light green */
+  {"#664400"},                          /* dark brown*/
+  {"#AADD99"},                          /* light green */
+  {"#66CCFF"},                          /* light blue */
+  {"#CC2299"},                          /* dark red */
+  {"#FF11CC"},                          /* bright pink */
+  {"#11CC99"},                          /* grey/green */
+  {"#AA77AA"},                          /* purple/red */
+  {"#EEBB77"}                           /* orange/yellow */
+};
+
+#define NColors (sizeof(base_array) / sizeof(Color_Info))
+
+/* if c_color isn't set, copy it from one of the other colours */
+Bool xpmcolor_require_c_color(XpmColor *p)
+{
+  if (p->c_color != NULL)
+    return False;
+  else if (p->g_color != NULL)
+    p->c_color = strdup(p->g_color);
+  else if (p->g4_color != NULL)
+    p->c_color = strdup(p->g4_color);
+  else if (p->m_color != NULL)
+    p->c_color = strdup(p->m_color);
+  else
+    p->c_color = strdup("none");
+
+  return True;
+}
+
+/* given an xpm, change colors to colors close to the
+   subset above. */
+void
+color_reduce_pixmap(XpmImage *image,int color_limit) {
+  int i;
+  XpmColor *color_table_ptr;
+  static char base_init = 'n';
+  Bool do_free;
+
+  if (color_limit > 0) {                /* If colors to be limited */
+    if (base_init == 'n') {             /* if base table not created yet */
+      c100_init_base_table();           /* init the base table */
+      base_init = 'y';                  /* remember that its set now. */
+    }                                   /* end base table init */
+    color_table_ptr = image->colorTable; /* start of xpm color table */
+    for(i=0; i<image->ncolors; i++) {   /* all colors in the xpm */
+      /* Theres an array for this in the xpm library, but it doesn't
+         appear to be part of the API.  Too bad. dje 01/09/00 */
+      char **visual_color = 0;
+      if (color_table_ptr->c_color) {
+        visual_color = &color_table_ptr->c_color;
+      } else if (color_table_ptr->g_color) {
+        visual_color = &color_table_ptr->g_color;
+      } else if (color_table_ptr->g4_color) {
+        visual_color = &color_table_ptr->g4_color;
+      } else {                          /* its got to be one of these */
+        visual_color = &color_table_ptr->m_color;
+      }
+      c200_substitute_color(visual_color,color_limit);
+      color_table_ptr +=1;              /* counter for loop */
+    }                                   /* end all colors in xpm */
+  }                                     /* end colors limited */
+  return;                               /* return, no rc! */
+}
+
+/* from the color names in the base table, calc rgbs */
+static void
+c100_init_base_table () {
+  int i;
+  for (i=0; i<NColors; i++) {           /* change all base colors to numbers */
+    c300_color_to_rgb(base_array[i].c_color, &base_array[i].rgb_space);
+  }
+}
+
+
+/* Replace the color in my_color by the closest matching color
+   from base_table */
+void c200_substitute_color(char **my_color, int color_limit) {
+  int i, limit, minind;
+  double mindst=1e20;
+  double dst;
+  XColor rgb;          /* place to calc rgb for each color in xpm */
+
+  if (!strcasecmp(*my_color,"none")) {
+    return ;                        /* do not substitute the "none" color */
+  }
+
+  c300_color_to_rgb(*my_color, &rgb);  /* get rgb for a color in xpm */
+  /* Loop over all base_array colors; find out which one is closest
+     to my_color */
+  minind = 0;                           /* Its going to find something... */
+  limit = NColors;                      /* init to max */
+  if (color_limit < NColors) {          /* can't do more than I have */
+    limit = color_limit;                /* Do reduction using subset */
+  }                                     /* end reducing limit */
+  for(i=0; i < limit; i++) {            /* loop over base array */
+    dst = c400_distance (&rgb, &base_array[i].rgb_space); /* distance */
+    if (dst < mindst ) {              /* less than min and better than last */
+      mindst=dst;                     /* new minimum */
+      minind=i;                       /* save loc of new winner */
+      if (dst <= 100) {               /* if close enough */
+        break;                        /* done */
+      }                               /* end close enough */
+    }                                 /* end new low distance */
+  }                                   /* end all base colors */
+  /* Finally: replace the color string by the newly determined color string */
+  free(*my_color);                      /* free old color */
+  *my_color = safemalloc(strlen(base_array[minind].c_color) + 1); /* area for new color */
+  strcpy(*my_color,base_array[minind].c_color); /* put it there */
+  return;                             /* all done */
+ }
+
+static void c300_color_to_rgb(char *c_color, XColor *rgb_space) {
+  int rc;
+  rc=XParseColor(PictureSaveDisplay, PictureCMap, c_color, rgb_space);
+  if (rc==0) {
+    fprintf(stderr,"color_to_rgb: can't parse color %s, rc %d\n", c_color, rc);
+    return;
+  }
+}
+
+/* A macro for squaring things */
+#define SQUARE(X) ((X)*(X))
+/* RGB Color distance sum of square of differences */
+double c400_distance(XColor *target_ptr, XColor *base_ptr) {
+  register double dst;
+  dst = SQUARE((double)(base_ptr->red   - target_ptr->red  )/655.35)
+    +   SQUARE((double)(base_ptr->green - target_ptr->green)/655.35)
+    +   SQUARE((double)(base_ptr->blue  - target_ptr->blue )/655.35);
+  return dst;
+}
+#endif /* XPM */

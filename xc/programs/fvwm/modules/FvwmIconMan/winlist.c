@@ -1,6 +1,8 @@
 #include <limits.h>
 #include "FvwmIconMan.h"
 
+static char const rcsid[] =
+  "$Id: winlist.c,v 1.1.1.2 2001/06/28 22:05:37 matthieu Exp $";
 
 #define HASHTAB_SIZE 257
 
@@ -242,15 +244,21 @@ int check_win_complete (WinData *p)
     return 1;
 
   ConsoleDebug (WINLIST, "Checking completeness:\n");
-  ConsoleDebug (WINLIST, "\ttitlename: %s\n", p->titlename);
-  ConsoleDebug (WINLIST, "\ticonname: %s\n", p->iconname);
-  ConsoleDebug (WINLIST, "\tres: %s\n", p->resname);
-  ConsoleDebug (WINLIST, "\tclass: %s\n", p->classname);
-  ConsoleDebug (WINLIST, "\tdisplaystring: %s\n", p->display_string);
+  ConsoleDebug (WINLIST, "\ttitlename: %s\n",
+                (p->titlename ? p->titlename : "No Title name"));
+  ConsoleDebug (WINLIST, "\ticonname: %s\n",
+                (p->iconname ? p->iconname : "No Icon name"));
+  ConsoleDebug (WINLIST, "\tres: %s\n",
+                (p->resname ? p->resname : "No p->resname"));
+  ConsoleDebug (WINLIST, "\tclass: %s\n",
+                (p->classname ? p->classname : "No p->classname"));
+  ConsoleDebug (WINLIST, "\tdisplaystring: %s\n",
+                (p->display_string ? p->display_string :
+                 "No p->display_string"));
   ConsoleDebug (WINLIST, "\t(x, y): (%d, %d)\n", p->x, p->y);
   ConsoleDebug (WINLIST, "\tapp_id: 0x%x %d\n", p->app_id, p->app_id_set);
   ConsoleDebug (WINLIST, "\tdesknum: %d\n", p->desknum);
-  ConsoleDebug (WINLIST, "\tmanager: 0x%x\n", (int)p->manager);
+  ConsoleDebug (WINLIST, "\tmanager: 0x%lx\n", (unsigned long)p->manager);
 
   if (p->geometry_set &&
       p->resname &&

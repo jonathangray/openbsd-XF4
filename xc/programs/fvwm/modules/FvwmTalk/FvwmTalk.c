@@ -8,16 +8,17 @@
  * as long as the copyright is kept intact. */
 
 #define TRUE 1
-#define FALSE 
+#define FALSE
 
 #define UPDATE_ONLY 1
 #define ALL 2
 #define PROP_SIZE 1024
 
-#include "../../configure.h"
-#ifdef ISC
+#include "config.h"
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
-#endif 
+#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -26,7 +27,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -34,17 +35,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
-#include <X11/keysym.h>  
+#include <X11/keysym.h>
 
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
-#include <X11/Intrinsic.h>                 
+#include <X11/Intrinsic.h>
 
 #include "../../fvwm/module.h"
 
 #include "FvwmTalk.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width,screen, d_depth;
@@ -97,14 +97,13 @@ void request_selection(int time);
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
-  FILE *file;
   XWMHints        wm_hints;
   XClassHint      class_hints;
   XTextProperty   window_name;
-  
+
   /* Save the program name - its used for error messages and option parsing */
   temp = argv[0];
 
@@ -124,8 +123,8 @@ void main(int argc, char **argv)
     }
 
   /* Dead pipes mean fvwm died */
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
@@ -137,7 +136,7 @@ void main(int argc, char **argv)
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
-  
+
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
   if(Root == None)
@@ -145,12 +144,12 @@ void main(int argc, char **argv)
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, (int)screen);
       exit(1);
     }
-  d_depth = DefaultDepth(dpy, screen);                   
-  
+  d_depth = DefaultDepth(dpy, screen);
+
   fd_width = GetFdWidth();
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
-   
+
   /* load the font */
   if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
     {
@@ -159,18 +158,18 @@ void main(int argc, char **argv)
 	  fprintf(stderr,"%s: No fonts available\n",MyName);
 	  exit(1);
 	}
-    };             
-  
+    };
+
 
   fore_pix = GetColor(ForeColor);
   back_pix = GetColor(BackColor);
-   
+
   valuemask = (CWBackPixel | CWBorderPixel | CWEventMask);
   attributes.background_pixel = back_pix;
   attributes.border_pixel = fore_pix;
   attributes.event_mask = KeyPressMask | ExposureMask | ButtonPressMask;
 
-  sizehints.width = 8*XTextWidth(font,"MMMMMMMMMM",10);  
+  sizehints.width = 8*XTextWidth(font,"MMMMMMMMMM",10);
   sizehints.height = 3*(font->ascent+font->descent+2)+2;
   sizehints.x = 0;
   sizehints.y = 0;
@@ -181,20 +180,20 @@ void main(int argc, char **argv)
   sizehints.min_width = 1;
   sizehints.min_height = 3*(font->ascent+font->descent+2)+2;
   sizehints.max_height = 3*(font->ascent+font->descent+2)+2;
-  sizehints.max_width = 26*XTextWidth(font,"MMMMMMMMMM",10);  
+  sizehints.max_width = 26*XTextWidth(font,"MMMMMMMMMM",10);
 
   window = XCreateWindow (dpy, Root, 0, 0, sizehints.width,sizehints.height,
 			  (unsigned int) 1,
 			  CopyFromParent, InputOutput,
 			  (Visual *) CopyFromParent,
-			  valuemask, &attributes);                      
+			  valuemask, &attributes);
 
   class_hints.res_name = "FvwmTalk";
   class_hints.res_class =  "FvwmTalk";
 
   wm_hints.flags = InputHint;
   wm_hints.input = True;;
-  
+
   XSetWMProtocols(dpy,window,&wm_del_win,1);
   XSetWMNormalHints(dpy,window,&sizehints);
   /* XStringListToTextProperty(&(argv[0]), 1, &window_name); */
@@ -212,7 +211,9 @@ void main(int argc, char **argv)
   last_error[0] = 0;
   XMapWindow(dpy,window);
   Loop(fd);
+  return 0;
 }
+
 
 
 /***********************************************************************
@@ -227,7 +228,7 @@ void Loop(int *fd)
   static XComposeStatus compose = {NULL,0};
   XEvent event;
   char kbuf[100];
-  int count,w;
+  int count;
 
   pos = 0;
   Text[0] = 0;
@@ -308,10 +309,10 @@ void DeadPipe(int nonsense)
 
 
 /****************************************************************************
- * 
+ *
  * Loads a single color
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
@@ -319,11 +320,11 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy, Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
      {
        nocolor("alloc",name);
      }
@@ -347,29 +348,22 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int body_length;
-  int count,count2 = 0;
+  int count;
   static int miss_counter = 0;
   unsigned long *body;
-  int total;
-  char *cbody;
 
   if(XPending(dpy))
     {
       XNextEvent(dpy,event);
       return 1;
     }
-  
+
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
-  
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif  
-  
+
+  select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL);
+
   if(FD_ISSET(x_fd, &in_fdset))
     {
       if(XPending(dpy))
@@ -383,10 +377,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
+      if((count = ReadFvwmPacket(fd[1],header,&body)) > 0)
 	 {
 	   if(header[1] == M_ERROR || header[1] == M_STRING)
 	     {
@@ -408,8 +402,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 void request_selection(int time)
 {
   Atom sel_property;
-  
-  if (XGetSelectionOwner(dpy,XA_PRIMARY) == None) 
+
+  if (XGetSelectionOwner(dpy,XA_PRIMARY) == None)
     {
       /*  No primary selection so use the cut buffer.
        */
@@ -480,7 +474,7 @@ void DrawWindow(int mode)
     }
   XDrawImageString(dpy,window,myGC,2,2*(font->ascent+font->descent+2)+
 		   font->ascent+2,Text,pos);
-  w=XTextWidth(font,Text,pos);  
+  w=XTextWidth(font,Text,pos);
   XDrawLine(dpy,window,myGC,4+w,2*(font->ascent+font->descent+2)+2,
 	    4+w,2*(font->ascent+font->descent+2)+
 	    font->ascent+font->descent);

@@ -1,28 +1,38 @@
-Welcome to FVWM version 2.xx.  FVWM is a multiple large virtual
-desktop window manager originally derived from twm.  FVWM is intended
-to have a small memory footprint and a rich feature set, be extremely
-customizable and extendable and have a high degree of Motif mwm
-compatibility.
+Welcome to FVWM version 2.2.5.  FVWM is a multiple large virtual desktop
+window manager, originally (a looooong time ago!) derived from twm.
 
-For old users of FVWM 1.xx, version 2.xx has a lot of differences.
+FVWM is intended to have a smaller memory footprint but a rich feature
+set, be extremely customizable and extendible, and have a high degree of
+Motif mwm compatibility.
 
-FVWM's origninal author Rob Nation (THANKS ROB!) has "retired" from
-work on it, so please don't bother him with silly little things like
-bug reports or enhancement requests.  Care and feeding of FVWM is now
-done by Charles Hines (chuck_hines@vnet.ibm.com), with help from
-everyone who subscribes to the FVWM mailing list and various other
-people all over the world.
+For users of the old FVWM 1.xx, please be aware that version 2.2 has a
+lot of differences.
 
-If you have any questions, concerns, bug reports, enhancement
-requests, etc, *PLEASE* read the FAQ, BUGS, TO-DO and man files first,
-otherwise known as RTFM, then try the FVWM mailing list.  You could
-also check the official WWW page (see the FAQ for its URL) and the
-mailing list archives found there.
+For users of the FVWM 2.0.x betas, please be aware that version 2.2 uses
+GNU autoconf/automake rather than Imake, so things will install in
+different places by default.
 
-(RTFM -> Read The Fine Manuals or Read The F!@#$%^ Manuals, depending
-on the situation)
+FVWM's original author, Rob Nation (THANKS ROB!), has "retired" from
+work on it, so please don't bother him with silly little things like bug
+reports or enhancement requests.  Care and feeding of FVWM is now
+handled by a group of people on the fvwm-workers mailing list, with many
+contributions by fans everywhere.
 
-For info on compiling, check out the INSTALL file.
+If you have any questions, concerns, bug reports, enhancement requests,
+etc., please read the files in the docs/ subdirectory first.  In
+particular the FAQ, BUGS, and TODO lists.  Also, check the FVWM man page
+carefully.  Next, try the FVWM mailing list.  Another excellent resource
+is the official WWW page http://www.fvwm.org and the mailing list archives
+found there.
 
-For known bugs, check out the BUGS, FAQ and TO-DO files.
+For information on compiling and installing FVWM, see the INSTALL and
+INSTALL.fvwm files (INSTALL is the boilerplate autoconf instruction
+file; INSTALL.fvwm contains FVWM-specific details).
 
+For known bugs, check out the BUGS, FAQ and TODO files.
+
+For more information, see the official FVWM homepage http://www.fvwm.org/.
+
+Have fun!
+
+ -- The fvwm-workers
