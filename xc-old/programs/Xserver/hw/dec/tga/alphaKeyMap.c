@@ -1,4 +1,5 @@
 /* $XConsortium: sunKeyMap.c,v 4.22 94/05/18 11:16:07 kaleb Exp $ */
+/* $OpenBSD: alphaKeyMap.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 

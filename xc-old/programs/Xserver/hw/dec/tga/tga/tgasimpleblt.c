@@ -1,4 +1,5 @@
 /* $NetBSD: tgasimpleblt.c,v 1.3 2000/07/03 21:06:32 elric Exp $ */
+/* $OpenBSD: tgasimpleblt.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 
 /*
  * tga simple rops

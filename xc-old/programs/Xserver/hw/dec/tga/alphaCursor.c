@@ -1,4 +1,5 @@
 /* $XConsortium: sunCursor.c,v 5.19 94/04/17 20:29:35 gildea Exp $ */
+/* $OpenBSD: alphaCursor.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 /*
 
 Copyright (c) 1988  Sun Microsystems, Inc.
@@ -49,9 +50,7 @@ from the X Consortium.
 static void alphaLoadCursor();
 
 static Bool
-alphaRealizeCursor (pScreen, pCursor)
-    ScreenPtr	pScreen;
-    CursorPtr	pCursor;
+alphaRealizeCursor(ScreenPtre pScreen, CursorPtr pCursor)
 {
     SetupCursor(pScreen);
     int	    x, y;
@@ -66,20 +65,17 @@ alphaRealizeCursor (pScreen, pCursor)
 }
 
 static Bool
-alphaUnrealizeCursor (pScreen, pCursor)
-    ScreenPtr	pScreen;
-    CursorPtr	pCursor;
+alphaUnrealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
 {
     return TRUE;
 }
 
 static void
-alphaCursorRepad (pScreen, bits, src_bits, dst_bits, ptSrc, w, h)
-    ScreenPtr	    pScreen;
-    CursorBitsPtr   bits;
-    unsigned char   *src_bits, *dst_bits;
-    DDXPointPtr	    ptSrc;
-    int		    w, h;
+alphaCursorRepad(ScreenPtr pScreen,
+		 CursorBitsPtr bits,
+		 unsigned char *src_bits, unsigned char *dst_bits,
+		 DDXPointPtr ptSrc,
+		 int w, int h)
 {
     SetupCursor(pScreen);
     PixmapPtr	src, dst;
@@ -109,10 +105,9 @@ alphaCursorRepad (pScreen, bits, src_bits, dst_bits, ptSrc, w, h)
 }
 
 static void
-alphaLoadCursor (pScreen, pCursor, x, y)
-    ScreenPtr	pScreen;
-    CursorPtr	pCursor;
-    int		x, y;
+alphaLoadCursor(ScreenPtr pScreen,
+		CursorPtr pCursor,
+		int x, int y)
 {
     SetupCursor(pScreen);
     struct fbcursor fbcursor;
@@ -162,10 +157,9 @@ alphaLoadCursor (pScreen, pCursor, x, y)
 }
 
 static void
-alphaSetCursor (pScreen, pCursor, x, y)
-    ScreenPtr	pScreen;
-    CursorPtr	pCursor;
-    int		x, y;
+alphaSetCursor(ScreenPtr pScreen,
+	       CursorPtr pCursor,
+	       int x, int y)
 {
     SetupCursor(pScreen);
 
@@ -177,9 +171,8 @@ alphaSetCursor (pScreen, pCursor, x, y)
 }
 
 static void
-alphaMoveCursor (pScreen, x, y)
-    ScreenPtr	pScreen;
-    int		x, y;
+alphaMoveCursor(ScreenPtr pScreen,
+		int x, int y)
 {
     SetupCursor(pScreen);
     struct fbcurpos pos;
@@ -197,10 +190,9 @@ miPointerSpriteFuncRec alphaPointerSpriteFuncs = {
 };
 
 static void
-alphaQueryBestSize (class, pwidth, pheight, pScreen)
-    int	class;
-    unsigned short   *pwidth, *pheight;
-    ScreenPtr	pScreen;
+alphaQueryBestSize(int	class,
+		   unsigned short *pwidth, unsigned short *pheight,
+		   ScreenPtr pScreen)
 {
     SetupCursor (pScreen);
 
@@ -226,13 +218,8 @@ extern miPointerScreenFuncRec	alphaPointerScreenFuncs;
 
 #endif
 
-#if NeedFunctionPrototypes
-Bool alphaCursorInitialize (
-    ScreenPtr	pScreen)
-#else
-Bool alphaCursorInitialize (pScreen)
-    ScreenPtr	pScreen;
-#endif
+Bool 
+alphaCursorInitialize(ScreenPtr	pScreen)
 {
 #ifdef FBIOGCURMAX
     SetupCursor (pScreen);
@@ -256,13 +243,8 @@ Bool alphaCursorInitialize (pScreen)
 #endif
 }
 
-#if NeedFunctionPrototypes
-void alphaDisableCursor (
-    ScreenPtr	pScreen)
-#else
-void alphaDisableCursor (pScreen)
-    ScreenPtr	pScreen;
-#endif
+void 
+alphaDisableCursor (ScreenPtr pScreen)
 {
 #ifdef FBIOGCURMAX
     SetupCursor (pScreen);

@@ -1,4 +1,5 @@
 /* $NetBSD: alphaTGA.c,v 1.4 2000/12/19 01:34:05 perseant Exp $ */
+/* $OpenBSD: alphaTGA.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 
 /* $XConsortium: sunCfb.c,v 1.15.1.2 95/01/12 18:54:42 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.2 1995/02/12 02:36:22 dawes Exp $ */
@@ -90,13 +91,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "cfb.h"
 #include <dev/pci/tgareg.h>
 
-/* XXX */
-#include <stdio.h>
-
-static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
-    ScreenPtr	pScreen;
-    int		dex, count;
-    u_char	*rmap, *gmap, *bmap;
+static void 
+CGUpdateColormap(ScreenPtr pScreen, int dex, int count,
+		 u_char	*rmap, u_char *gmap, u_char *bmap)
 {
 #ifdef USE_WSCONS
     struct wsdisplay_cmap alphaCmap;
@@ -111,7 +108,9 @@ static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
     alphaCmap.blue = &bmap[dex];
 
 #ifdef USE_WSCONS
-    if (ioctl(alphaFbs[pScreen->myNum].fd, WSDISPLAYIO_PUTCMAP, &alphaCmap) < 0) {
+    ErrorF("UpdateColormap(%d %d)\n", dex, count);
+    if (ioctl(alphaFbs[pScreen->myNum].fd, 
+	      WSDISPLAYIO_PUTCMAP, &alphaCmap) < 0) {
 	Error("CGUpdateColormap");
 	FatalError( "CGUpdateColormap: FBIOPUTCMAP failed\n" );
     }
@@ -123,8 +122,8 @@ static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
 #endif
 }
 
-void alphaTgaInstallColormap(cmap)
-    ColormapPtr	cmap;
+void 
+alphaTgaInstallColormap(ColormapPtr cmap)
 {
     SetupScreen(cmap->pScreen);
     register int i;
@@ -177,8 +176,8 @@ void alphaTgaInstallColormap(cmap)
     WalkTree(cmap->pScreen, TellGainedMap, (pointer) &(cmap->mid));
 }
 
-void alphaTgaUninstallColormap(cmap)
-    ColormapPtr	cmap;
+void 
+alphaTgaUninstallColormap(ColormapPtr cmap)
 {
     SetupScreen(cmap->pScreen);
     if (cmap == pPrivate->installedMap) {
@@ -196,19 +195,19 @@ void alphaTgaUninstallColormap(cmap)
     }
 }
 
-int alphaTgaListInstalledColormaps(pScreen, pCmapList)
-    ScreenPtr	pScreen;
-    Colormap	*pCmapList;
+int 
+alphaTgaListInstalledColormaps(ScreenPtr	pScreen,
+			       Colormap	*pCmapList)
 {
     SetupScreen(pScreen);
     *pCmapList = pPrivate->installedMap->mid;
     return (1);
 }
 
-static void CGStoreColors(pmap, ndef, pdefs)
-    ColormapPtr	pmap;
-    int		ndef;
-    xColorItem	*pdefs;
+static void 
+CGStoreColors(ColormapPtr	pmap,
+	      int		ndef,
+	      xColorItem	*pdefs)
 {
     SetupScreen(pmap->pScreen);
     u_char	rmap[256], gmap[256], bmap[256];
@@ -231,8 +230,8 @@ static void CGStoreColors(pmap, ndef, pdefs)
     }
 }
 
-static void CGScreenInit (pScreen)
-    ScreenPtr	pScreen;
+static void 
+CGScreenInit(ScreenPtr	pScreen)
 {
 #ifndef STATIC_COLOR /* { */
     SetupScreen (pScreen);
@@ -249,11 +248,11 @@ static void CGScreenInit (pScreen)
 #endif /* } */
 }
 
-Bool alphaTGAInit (screen, pScreen, argc, argv)
-    int	    	  screen;    	/* what screen am I going to be */
-    ScreenPtr	  pScreen;  	/* The Screen to initialize */
-    int	    	  argc;	    	/* The number of the Server's arguments. */
-    char    	  **argv;   	/* The arguments themselves. Don't change! */
+Bool 
+alphaTGAInit (int screen,    	/* what screen am I going to be */
+    ScreenPtr	  pScreen,  	/* The Screen to initialize */
+    int	    	  argc,	    	/* The number of the Server's arguments. */
+    char    	  *argv[])   	/* The arguments themselves. Don't change! */
 {
 	unsigned char *fb = fb = alphaFbs[screen].fb;
 	unsigned char *fbr;
@@ -328,13 +327,13 @@ Bool alphaTGAInit (screen, pScreen, argc, argv)
 	    monitorResolution, monitorResolution,
 	    realwidth,
 	    alphaFbs[screen].info.fb_depth)) {
-fprintf(stderr, "alphaTgaScreenInit failed\n");
+		ErrorF("alphaTgaScreenInit failed\n");
             return FALSE;
 	}
 
 	CGScreenInit(pScreen);
 	if (!alphaScreenInit(pScreen)) {
-fprintf(stderr, "alphaScreenInit failed\n");
+		ErrorF("alphaScreenInit failed\n");
 		return FALSE;
 	}
 	(void) alphaSaveScreen(pScreen, SCREEN_SAVER_OFF);
@@ -342,13 +341,12 @@ fprintf(stderr, "alphaScreenInit failed\n");
 }
 
 Bool
-alphaTgaSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int	bpp;			/* bits per pixel of root */
+alphaTgaSetupScreen(ScreenPtr pScreen,
+    pointer pbits,		/* pointer to screen bitmap */
+    int xsize, int ysize,	/* in pixels */
+    int dpix, int dpiy,		/* dots per inch */
+    int width,			/* pixel width of frame buffer */
+    int	bpp)			/* bits per pixel of root */
 {
     switch (bpp) {
     case 32:
@@ -366,19 +364,18 @@ alphaTgaSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
 	}
 	return TRUE;
     default:
-	fprintf(stderr, "alphaTgaSetupScreen:  unsupported bpp = %d\n", bpp);
+	ErrorF("alphaTgaSetupScreen:  unsupported bpp = %d\n", bpp);
 	return FALSE;
     }
 }
 
 Bool
-alphaTgaFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int bpp;			/* bits per pixel of root */
+alphaTgaFinishScreenInit(ScreenPtr pScreen,
+    pointer pbits,		/* pointer to screen bitmap */
+    int xsize, int ysize,	/* in pixels */
+    int dpix, int dpiy,		/* dots per inch */
+    int width,			/* pixel width of frame buffer */
+    int bpp)			/* bits per pixel of root */
 {
     Bool retval;
 
@@ -409,13 +406,12 @@ alphaTgaFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
 }
 
 Bool
-alphaTgaScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
-    register ScreenPtr pScreen;
-    pointer pbits;		/* pointer to screen bitmap */
-    int xsize, ysize;		/* in pixels */
-    int dpix, dpiy;		/* dots per inch */
-    int width;			/* pixel width of frame buffer */
-    int bpp;			/* bits per pixel of root */
+alphaTgaScreenInit(ScreenPtr pScreen,
+		   pointer pbits,	      /* pointer to screen bitmap */
+		   int xsize, int ysize,      /* in pixels */
+		   int dpix, int dpiy,	      /* dots per inch */
+		   int width,		      /* pixel width of frame buffer */
+		   int bpp)		      /* bits per pixel of root */
 {
     if (!alphaTgaSetupScreen(pScreen, pbits, xsize, ysize, dpix,
 	dpiy, width, bpp))

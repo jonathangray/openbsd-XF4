@@ -1,5 +1,6 @@
 /* $XConsortium: sunIo.c,v 5.26.1.3 95/01/25 23:02:33 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.1 1995/01/28 15:46:06 dawes Exp $ */
+/* $OpenBSD: alphaIo.c,v 1.3 2002/04/01 19:58:12 matthieu Exp $ */
 /*-
  * sunIo.c --
  *	Functions to handle input from the keyboard and mouse.
@@ -65,7 +66,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *-----------------------------------------------------------------------
  */
 void
-ProcessInputEvents ()
+ProcessInputEvents(void)
 {
     (void) mieqProcessInputEvents ();
     miPointerUpdate ();
@@ -78,11 +79,8 @@ ProcessInputEvents ()
  *	enqueue them using the mi event queue
  */
 
-void alphaEnqueueEvents (
-#if NeedFunctionPrototypes
-    void
-#endif
-)
+void 
+alphaEnqueueEvents(void)
 {
 #ifdef USE_WSCONS
     struct wscons_event *ptrEvents,
@@ -165,19 +163,14 @@ void alphaEnqueueEvents (
 /*
  * DDX - specific abort routine.  Called by AbortServer().
  */
-void AbortDDX()
+void 
+AbortDDX(void)
 {
     int		i;
     ScreenPtr	pScreen;
     DevicePtr	devPtr;
 
     (void) OsSignal (SIGIO, SIG_IGN);
-#if 0 /* XXX */
-    devPtr = LookupKeyboardDevice();
-    if (devPtr)
-	(void) sunChangeKbdTranslation (((sunKbdPrivPtr)(devPtr->devicePrivate))->fd, FALSE);
-    sunNonBlockConsoleOff ();
-#endif
     for (i = 0; i < screenInfo.numScreens; i++)
     {
 	pScreen = screenInfo.screens[i];
@@ -188,16 +181,13 @@ void AbortDDX()
 
 /* Called by GiveUp(). */
 void
-ddxGiveUp()
+ddxGiveUp(void)
 {
     AbortDDX ();
 }
 
 int
-ddxProcessArgument (argc, argv, i)
-    int	argc;
-    char *argv[];
-    int	i;
+ddxProcessArgument(int argc, char *argv[], int i)
 {
     extern void UseMsg();
 
@@ -209,28 +199,6 @@ ddxProcessArgument (argc, argv, i)
 	alphaTgaAccelerate = 0;
 	return 1;
     }
-#if 0 /* XXX */
-#ifndef XKB
-    if (strcmp (argv[i], "-ar1") == 0) {	/* -ar1 int */
-	if (++i >= argc) UseMsg ();
-	sunAutoRepeatInitiate = 1000 * (long)atoi(argv[i]);
-	if (sunAutoRepeatInitiate > 1000000)
-	    sunAutoRepeatInitiate =  999000;
-	return 2;
-    }
-    if (strcmp (argv[i], "-ar2") == 0) {	/* -ar2 int */
-	if (++i >= argc) UseMsg ();
-	sunAutoRepeatDelay = 1000 * (long)atoi(argv[i]);
-	if (sunAutoRepeatDelay > 1000000)
-	    sunAutoRepeatDelay =  999000;
-	return 2;
-    }
-#endif
-    if (strcmp (argv[i], "-swapLkeys") == 0) {	/* -swapLkeys */
-	sunSwapLkeys = TRUE;
-	return 1;
-    }
-#endif /* 0 XXX */
     if (strcmp (argv[i], "-debug") == 0) {	/* -debug */
 	return 1;
     }
@@ -238,61 +206,12 @@ ddxProcessArgument (argc, argv, i)
 	if (++i >= argc) UseMsg ();
 	return 2;
     }
-#if 0 /* XXX */
-    if (strcmp (argv[i], "-mono") == 0) {	/* -mono */
-	return 1;
-    }
-    if (strcmp (argv[i], "-zaphod") == 0) {	/* -zaphod */
-	sunActiveZaphod = FALSE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-flipPixels") == 0) {	/* -flipPixels */
-	sunFlipPixels = TRUE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-fbinfo") == 0) {	/* -fbinfo */
-	sunFbInfo = TRUE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-kbd") == 0) {	/* -kbd */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-    if (strcmp (argv[i], "-protect") == 0) {	/* -protect */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-    if (strcmp (argv[i], "-cg4frob") == 0) {
-	sunCG4Frob = TRUE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-noGX") == 0) {
-	sunNoGX = TRUE;
-	return 1;
-    }
-#endif /* 0 XXX */
     return 0;
 }
 
 void
-ddxUseMsg()
+ddxUseMsg(void)
 {
-#if 0 /* XXX */
-#ifndef XKB
-    ErrorF("-ar1 int            set autorepeat initiate time\n");
-    ErrorF("-ar2 int            set autorepeat interval time\n");
-#endif
-    ErrorF("-swapLkeys          swap keysyms on L1..L10\n");
-#endif /* 0 XXX */
     ErrorF("-debug              disable non-blocking console mode\n");
     ErrorF("-dev fn[:fn][:fn]   name of device[s] to open\n");
-#if 0 /* XXX */
-    ErrorF("-mono               force monochrome-only screen\n");
-    ErrorF("-zaphod             disable active Zaphod mode\n");
-    ErrorF("-fbinfo             tell more about the found frame buffer(s)\n");
-#ifdef UNDOCUMENTED
-    ErrorF("-cg4frob            don't use the mono plane of the cgfour\n");
-    ErrorF("-noGX               treat the GX as a dumb frame buffer\n");
-#endif
-#endif /* 0 XXX */
 }

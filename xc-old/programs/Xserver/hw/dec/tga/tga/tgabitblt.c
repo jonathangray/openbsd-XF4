@@ -1,4 +1,5 @@
 /* $NetBSD: tgabitblt.c,v 1.3 2000/07/03 21:06:31 elric Exp $ */
+/* $OpenBSD: tgabitblt.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 
 /*
  * cfb copy area
@@ -68,12 +69,11 @@ alphaTgaDoBitbltCopy(
 );
 
 void
-alphaTgaDoBitblt (pSrc, pDst, alu, prgnDst, pptSrc, planemask)
-    DrawablePtr	    pSrc, pDst;
-    int		    alu;
-    RegionPtr	    prgnDst;
-    DDXPointPtr	    pptSrc;
-    unsigned long   planemask;
+alphaTgaDoBitblt(DrawablePtr pSrc, DrawablePtr pDst,
+		 int alu,
+		 RegionPtr prgnDst,
+		 DDXPointPtr pptSrc,
+		 unsigned long planemask)
 {
     void (*blt)() = cfbDoBitbltGeneral;
     if ((planemask & PMSK) == PMSK) {
@@ -83,14 +83,12 @@ alphaTgaDoBitblt (pSrc, pDst, alu, prgnDst, pptSrc, planemask)
 }
 
 RegionPtr
-alphaTgaCopyArea(pSrcDrawable, pDstDrawable,
-            pGC, srcx, srcy, width, height, dstx, dsty)
-    register DrawablePtr pSrcDrawable;
-    register DrawablePtr pDstDrawable;
-    GCPtr pGC;
-    int srcx, srcy;
-    int width, height;
-    int dstx, dsty;
+alphaTgaCopyArea(DrawablePtr pSrcDrawable,
+		 DrawablePtr pDstDrawable,
+		 GCPtr pGC,
+		 int srcx, int srcy,
+		 int width, int height,
+		 int dstx, int dsty)
 {
     void (*blt)() = cfbDoBitblt;
     if (pSrcDrawable->type == DRAWABLE_WINDOW &&

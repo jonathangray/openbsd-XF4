@@ -1,64 +1,33 @@
 /* $NetBSD: alphaInit.c,v 1.14 2000/12/19 01:33:53 perseant Exp $ */
+/* $OpenBSD: alphaInit.c,v 1.3 2002/04/01 19:58:12 matthieu Exp $ */
 
 #include    "alpha.h"
 #include    "gcstruct.h"
-/* #include    "mi.h" */
 #include    "mibstore.h"
 #include    "cfb.h"
 
-#include <stdio.h>
-
-#define TGASUPPORT
-#ifndef __OpenBSD__
-#define SFBSUPPORT
-#endif
 
 #ifdef TGASUPPORT
-extern Bool alphaTGAInit(
-#if NeedFunctionPrototypes
-    int /* screen */,
-    ScreenPtr /* pScreen */,
-    int /* argc */,
-    char** /* argv */
-#endif
-);
+extern Bool alphaTGAInit(int /* screen */,
+			 ScreenPtr /* pScreen */,
+			 int /* argc */,
+			 char** /* argv */);
 #define TGAI alphaTGAInit
 #else /* }{ */
 #define TGAI NULL
 #endif /* } */
 
 #ifdef SFBSUPPORT
-extern Bool alphaSFBInit(
-#if NeedFunctionPrototypes
-    int /* screen */,
-    ScreenPtr /* pScreen */,
-    int /* argc */,
-    char** /* argv */
-#endif
-);
+extern Bool alphaSFBInit(int /* screen */,
+			 ScreenPtr /* pScreen */,
+			 int /* argc */,
+			 char** /* argv */);
 #define SFBI alphaSFBInit
 #else /* }{ */
 #define SFBI NULL
 #endif /* } */
 
-#if 0 /* XXX */
-extern KeySymsRec sunKeySyms[];
-extern SunModmapRec *sunModMaps[];
-extern int sunMaxLayout;
-extern KeySym* sunType4KeyMaps[];
-extern SunModmapRec* sunType4ModMaps[];
-#endif
-
 static Bool	alphaDevsInited = FALSE;
-
-#if 0
-Bool sunAutoRepeatHandlersInstalled;	/* FALSE each time InitOutput called */
-Bool sunSwapLkeys = FALSE;
-Bool sunFlipPixels = FALSE;
-Bool sunFbInfo = FALSE;
-Bool sunCG4Frob = FALSE;
-Bool sunNoGX = FALSE;
-#endif
 
 alphaKbdPrivRec alphaKbdPriv = {
     -1,		/* fd */
@@ -126,9 +95,9 @@ static PixmapFormatRec	formats32[] = {
  * Results:
  *	The fd of the framebuffer.
  */
-static int OpenFrameBuffer(device, screen)
-    char		*device;	/* e.g. "/dev/ttyE0" */
-    int			screen;    	/* what screen am I going to be */
+static int 
+OpenFrameBuffer(char *device,	/* e.g. "/dev/ttyE0" */
+		int screen)	/* what screen am I going to be */
 {
     int			ret = TRUE;
 #ifdef USE_WSCONS
@@ -143,7 +112,6 @@ static int OpenFrameBuffer(device, screen)
 	ret = FALSE;
     else {
 #ifdef USE_WSCONS
-	fprintf(stderr, "fd = %d, ioctl = %d\n", alphaFbs[screen].fd, WSDISPLAYIO_GTYPE);
 	if (ioctl(alphaFbs[screen].fd, WSDISPLAYIO_GTYPE, &type) == -1) {
 		Error("unable to get frame buffer type1");
 		(void) close(alphaFbs[screen].fd);
@@ -167,7 +135,7 @@ static int OpenFrameBuffer(device, screen)
 	else
 		alphaFbs[screen].info.fb_size = 4*1024*1024;
 #else
-	fprintf(stderr, "USE_WSCONS not defined!!!\n");
+	ErrorF(stderr, "USE_WSCONS not defined!!!\n");
 	if (ioctl(alphaFbs[screen].fd, FBIOGTYPE,
 	    &alphaFbs[screen].info) == -1) {
 		Error("unable to get frame buffer type2");
@@ -205,17 +173,16 @@ static int OpenFrameBuffer(device, screen)
  *-----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static void SigIOHandler(sig)
-    int		sig;
+static void 
+SigIOHandler(int sig)
 {
     int olderrno = errno;
     alphaEnqueueEvents ();
     errno = olderrno;
 }
 
-static char** GetDeviceList (argc, argv)
-    int		argc;
-    char	**argv;
+static char** 
+GetDeviceList (int argc, char *argv[])
 {
     int		i;
     char	*envList = NULL;
@@ -257,11 +224,8 @@ static char** GetDeviceList (argc, argv)
     return deviceList;
 }
 
-void OsVendorInit(
-#if NeedFunctionPrototypes
-    void
-#endif
-)
+void 
+OsVendorInit(void)
 {
     static int inited;
     char *kbd = "/dev/wskbd0";
@@ -310,10 +274,8 @@ void OsVendorInit(
  *-----------------------------------------------------------------------
  */
 
-void InitOutput(pScreenInfo, argc, argv)
-    ScreenInfo 	  *pScreenInfo;
-    int     	  argc;
-    char    	  **argv;
+void 
+InitOutput(ScreenInfo *pScreenInfo, int argc, char *argv[])
 {
     int     	i, scr;
     int		nonBlockConsole = 0;
@@ -378,9 +340,8 @@ void InitOutput(pScreenInfo, argc, argv)
  *
  *-----------------------------------------------------------------------
  */
-void InitInput(argc, argv)
-    int     	  argc;
-    char    	  **argv;
+void 
+InitInput(int argc, char *argv[])
 {
     DeviceIntPtr	p, k;
     extern Bool mieqInit();

@@ -1,4 +1,5 @@
 /* $NetBSD: tgawindow.c,v 1.2 2000/07/03 21:06:32 elric Exp $ */
+/* $OpenBSD: tgawindow.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 
 /* $XConsortium: cfbwindow.c,v 5.22 94/04/17 20:29:07 dpw Exp $ */
 /***********************************************************
@@ -80,10 +81,9 @@ visible in the source.
 
 
 void 
-alphaTgaCopyWindow(pWin, ptOldOrg, prgnSrc)
-    WindowPtr pWin;
-    DDXPointRec ptOldOrg;
-    RegionPtr prgnSrc;
+alphaTgaCopyWindow(WindowPtr pWin,
+		   DDXPointRec ptOldOrg,
+		   RegionPtr prgnSrc)
 {
     DDXPointPtr pptSrc;
     register DDXPointPtr ppt;

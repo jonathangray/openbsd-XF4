@@ -1,4 +1,5 @@
 /* $NetBSD: tgablt.c,v 1.3 2000/12/19 01:34:06 perseant Exp $ */
+/* $OpenBSD: tgablt.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 
 /*
  * tga copy area
@@ -66,12 +67,11 @@ Author: Keith Packard
 #include <dev/pci/tgareg.h>
 
 void
-MROP_NAME(alphaTgaDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
-    DrawablePtr	    pSrc, pDst;
-    int		    alu;
-    RegionPtr	    prgnDst;
-    DDXPointPtr	    pptSrc;
-    unsigned long   planemask;
+MROP_NAME(alphaTgaDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst,
+			    int alu,
+			    RegionPtr prgnDst,
+			    DDXPointPtr pptSrc,
+			    unsigned long planemask)
 {
     unsigned int *psrcBase, *pdstBase;	
 				/* start of src and dst bitmaps */

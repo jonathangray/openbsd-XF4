@@ -1,4 +1,4 @@
-
+/* $OpenBSD: alphaFbs.c,v 1.2 2002/04/01 19:58:12 matthieu Exp $ */
 /* $XConsortium: sunFbs.c,v 1.8 94/08/16 13:45:30 dpw Exp $ */
 
 /*
@@ -80,17 +80,11 @@ int alphaScreenIndex;
 
 static unsigned long generation = 0;
 
-#if NeedFunctionPrototypes
-pointer alphaMemoryMap (
+pointer 
+alphaMemoryMap (
     size_t	len,
     off_t	off,
     int		fd)
-#else
-pointer alphaMemoryMap (len, off, fd)
-    size_t	len;
-    off_t	off;
-    int		fd;
-#endif
 {
     int		pagemask, mapsize;
     caddr_t	addr;
@@ -122,13 +116,8 @@ pointer alphaMemoryMap (len, off, fd)
     return mapaddr;
 }
 
-#if NeedFunctionPrototypes
-Bool alphaScreenAllocate (
-    ScreenPtr	pScreen)
-#else
-Bool alphaScreenAllocate (pScreen)
-    ScreenPtr	pScreen;
-#endif
+Bool 
+alphaScreenAllocate (ScreenPtr	pScreen)
 {
     alphaScreenPtr    pPrivate;
     extern int AllocateScreenPrivateIndex();
@@ -148,15 +137,9 @@ Bool alphaScreenAllocate (pScreen)
     return TRUE;
 }
 
-#if NeedFunctionPrototypes
-Bool alphaSaveScreen (
-    ScreenPtr	pScreen,
-    int		on)
-#else
-Bool alphaSaveScreen (pScreen, on)
-    ScreenPtr	pScreen;
-    int		on;
-#endif
+Bool 
+alphaSaveScreen (ScreenPtr	pScreen,
+		 int		on)
 {
     int		state;
 
@@ -194,13 +177,8 @@ alphaCloseScreen (i, pScreen)
     return ret;
 }
 
-#if NeedFunctionPrototypes
-Bool alphaScreenInit (
-    ScreenPtr	pScreen)
-#else
-Bool alphaScreenInit (pScreen)
-    ScreenPtr	pScreen;
-#endif
+Bool 
+alphaScreenInit (ScreenPtr	pScreen)
 {
     SetupScreen(pScreen);
     extern void   alphaBlockHandler();
@@ -235,55 +213,5 @@ Bool alphaScreenInit (pScreen)
     if (!alphaCursorInitialize (pScreen))
 	miDCInitialize (pScreen, &alphaPointerScreenFuncs);
     return TRUE;
-}
-
-#if NeedFunctionPrototypes
-Bool alphaInitCommon (
-    int		scrn,
-    ScreenPtr	pScrn,
-    off_t	offset,
-    Bool	(*init1)(),
-    void	(*init2)(),
-    Bool	(*cr_cm)(),
-    Bool	(*save)(),
-    int		fb_off)
-#else
-Bool alphaInitCommon (scrn, pScrn, offset, init1, init2, cr_cm, save, fb_off)
-    int		scrn;
-    ScreenPtr	pScrn;
-    off_t	offset;
-    Bool	(*init1)();
-    void	(*init2)();
-    Bool	(*cr_cm)();
-    Bool	(*save)();
-    int		fb_off;
-#endif
-{
-    unsigned char*	fb = alphaFbs[scrn].fb;
-
-    if (!alphaScreenAllocate (pScrn))
-	return FALSE;
-    if (!fb) {
-	if ((fb = alphaMemoryMap ((size_t) alphaFbs[scrn].info.fb_size, 
-			     offset, 
-			     alphaFbs[scrn].fd)) == NULL)
-	    return FALSE;
-	alphaFbs[scrn].fb = fb;
-    }
-    /* mfbScreenInit() or cfbScreenInit() */
-    if (!(*init1)(pScrn, fb + fb_off,
-	    alphaFbs[scrn].info.fb_width,
-	    alphaFbs[scrn].info.fb_height,
-	    monitorResolution, monitorResolution,
-	    alphaFbs[scrn].info.fb_width,
-	    alphaFbs[scrn].info.fb_depth))
-	    return FALSE;
-    /* alphaCGScreenInit() if cfb... */
-    if (init2)
-	(*init2)(pScrn);
-    if (!alphaScreenInit(pScrn))
-	return FALSE;
-    (void) (*save) (pScrn, SCREEN_SAVER_OFF);
-    return (*cr_cm)(pScrn);
 }
 
