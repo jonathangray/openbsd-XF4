@@ -1507,7 +1507,8 @@ static void NVBacklightEnable(NVPtr pNv,  Bool on)
        define the ones we know for sure. */
 
 #if defined(__powerpc__)
-    if((pNv->Chipset == 0x10DE0179) || 
+    if((pNv->Chipset == 0x10DE0110) || 
+       (pNv->Chipset == 0x10DE0179) || 
        (pNv->Chipset == 0x10DE0189) || 
        (pNv->Chipset == 0x10DE0329))
     {
