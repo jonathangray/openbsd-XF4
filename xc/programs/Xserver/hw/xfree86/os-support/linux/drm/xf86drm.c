@@ -84,6 +84,10 @@ extern unsigned long _bus_base(void);
 
 #include "xf86drm.h"
 
+# ifdef __OpenBSD__
+#  define DRM_MAJOR 81
+# endif
+
 #ifndef DRM_MAJOR
 #define DRM_MAJOR 226		/* Linux */
 #endif
@@ -275,8 +279,11 @@ int drmAvailable(void)
     int           fd;
 
     if ((fd = drmOpenMinor(0, 1)) < 0) {
+#ifdef __linux__
 				/* Try proc for backward Linux compatibility */
 	if (!access("/proc/dri/0", R_OK)) return 1;
+#endif
+        drmMsg("drmAvailable: open failed\n");
 	return 0;
     }
     
@@ -439,7 +446,7 @@ static void drmCopyVersion(drmVersionPtr d, const drm_version_t *s)
 }
 
 /* drmGet Version obtains the driver version information via an ioctl.  Similar
- * information is available via /proc/dri. */
+ * information is available via /proc/dri on linux. */
 
 drmVersionPtr drmGetVersion(int fd)
 {

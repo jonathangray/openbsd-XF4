@@ -46,7 +46,7 @@ SubdirLibraryRule($(PROFOBJ))
 NormalLintTarget($(PROFSRC))
 #endif
 
-#if BuildXF86DRI && defined(i386Architecture)
+#if BuildXF86DRI && defined(i386Architecture) && MesaUseX86Asm
     GLAPI_OBJ = $(GLXLIBSRC)/glx/glapi_x86.o
 #endif
 

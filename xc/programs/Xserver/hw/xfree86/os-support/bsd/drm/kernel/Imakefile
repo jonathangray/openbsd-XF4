@@ -11,13 +11,16 @@ all::
 
 install::
 	$(MAKE) -f Makefile.bsd install
-#else
-all::
-	@echo 'Use "make -f Makefile.bsd" to manually build the modules'
-#endif
 
 clean::
 	$(MAKE) -f Makefile.bsd clean
+#else
+all::
+	@echo 'Use "make -f Makefile.bsd" to manually build the modules'
+
+clean::
+#endif
+
 
 LinkSourceFile(drm_sarea.h,$(XF86OSSRC)/shared/drm/kernel)
 LinkSourceFile(mga.h,$(XF86OSSRC)/shared/drm/kernel)

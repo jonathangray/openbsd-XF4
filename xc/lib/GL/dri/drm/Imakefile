@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/dri/drm/Imakefile,v 1.20 2002/10/30 12:51:25 alanh Exp $
+XCOMM $XFree86: Imakefile,v 1.20 2002/10/30 12:51:25 alanh Exp $
 
 #if GlxUseBuiltInDRIDriver
 #define DoNormalLib (NormalLibGlx || SharedLibGlxWithoutPIC)
@@ -31,7 +31,7 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 OS_SUBDIR = linux
 OS_SUBDIR2 = linux
 #endif
-#if defined(FreeBSDArchitecture) || defined(BSDOSArchitecture)
+#if defined(FreeBSDArchitecture) || defined(BSDOSArchitecture) || defined(OpenBSDArchitecture)
 OS_SUBDIR = bsd
 OS_SUBDIR2 = linux
 #endif

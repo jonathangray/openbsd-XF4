@@ -391,6 +391,9 @@ void *__driCreateScreen(Display *dpy, int scrn, __DRIscreen *psc,
    return (void *) psp;
 }
 
+#ifndef RTLD_GLOBAL
+#define RTLD_GLOBAL 0
+#endif
 
 /* This function is called by libGL.so as soon as libGL.so is loaded.
  * This is where we'd register new extension functions with the dispatcher.

@@ -698,6 +698,9 @@ static void debug_grTexDownloadMipMapLevel( GrChipID_t        tmu,
 
 #endif
 
+#ifndef RTLD_NOW
+#define RTLD_NOW 0
+#endif
 
 /*
  * Examine the context's deviceID to determine what kind of 3dfx hardware

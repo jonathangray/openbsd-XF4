@@ -1,4 +1,4 @@
-XCOMM $OpenBSD: OpenBSDLib.rules,v 1.3 2003/04/01 22:36:03 matthieu Exp $
+XCOMM $OpenBSD: OpenBSDLib.rules,v 1.4 2003/05/08 19:59:25 matthieu Exp $
 
 
 
@@ -138,6 +138,22 @@ clean::									@@\
 	$(RM) name
 
 #endif /* SharedDepModuleTarget */
+
+#ifndef SharedDriModuleTarget
+#define SharedDriModuleTarget(name,deps,solist)				@@\
+AllTarget(name)								@@\
+									@@\
+name: deps								@@\
+	$(RM) $@~ $@.map						@@\
+	$(CC) -o $@~  $(SHLIBLDFLAGS) solist $(REQUIREDLIBS) BaseShLibReqs @@\
+	$(RM) $@ $@.map							@@\
+	$(MV) $@~ $@							@@\
+									@@\
+clean::									@@\
+	$(RM) name							@@\
+	$(RM) name.map
+
+#endif /* SharedDriModuleTarget */
 
 /*
  * SharedLibraryDataTarget - generate rules to create shlib data file;

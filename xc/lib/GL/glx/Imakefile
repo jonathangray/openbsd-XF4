@@ -35,10 +35,10 @@ XCOMM 	glw
 
 LinkSourceFile(glapi.c, $(MESASRCDIR)/src)
 LinkSourceFile(glthread.c, $(MESASRCDIR)/src)
-#ifdef i386Architecture
+#if defined(i386Architecture)
 LinkSourceFile(glapi_x86.S, $(MESASRCDIR)/src/X86)
 #endif
-#ifdef SparcArchitecture
+#if defined(SparcArchitecture) && !defined(OpenBSDArchitecture)
 LinkSourceFile(glapi_sparc.S, $(MESASRCDIR)/src/SPARC)
 #endif
 
@@ -137,7 +137,7 @@ LinkSourceFile(glapi_sparc.S, $(MESASRCDIR)/src/SPARC)
 
 LibraryObjectRule()
 
-#if BuildXF86DRI && defined(i386Architecture)
+#if BuildXF86DRI && defined(i386Architecture) && MesaUseX86Asm
 ObjectFromAsmSource(glapi_x86, NullParameter)
 #endif
 #if BuildXF86DRI && defined(SparcArchitecture)

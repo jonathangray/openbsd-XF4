@@ -1227,6 +1227,10 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 #  endif
 #endif
 
+#ifndef BuildXF86OldDRMCompat
+#  define BuildXF86OldDRMCompat	YES
+#endif
+
 /*
  * One and ONLY one of the GlxBuiltIn* drivers can be defined to be YES.
  * If more than one are defined, the compilation will fail with multiply
