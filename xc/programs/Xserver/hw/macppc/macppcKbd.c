@@ -1,3 +1,8 @@
+/* $OpenBSD: macppcKbd.c,v 1.3 2001/09/09 14:04:30 matthieu Exp $ */
+
+
+
+
 /* $XConsortium: sunKbd.c,v 5.47 94/08/16 13:45:30 dpw Exp $ */
 /*-
  * Copyright (c) 1987 by the Regents of the University of California
@@ -43,6 +48,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define NEED_EVENTS
 #include "macppc.h"
 #include "keysym.h"
+#include "mi.h"
 #include <stdio.h>
 #if 0 /* XXX */
 #include "Sunkeysym.h"
@@ -372,8 +378,9 @@ macppcKbdProc (DeviceIntPtr device, int what)
     int i;
     DevicePtr pKeyboard = (DevicePtr) device;
     macppcKbdPrivPtr pPriv;
-    KeybdCtrl*	ctrl = &device->kbdfeed->ctrl;
+#if 0
     extern int XkbDfltRepeatDelay, XkbDfltRepeatInterval;
+#endif
 
     static CARD8 *workingModMap = NULL;
     static KeySymsRec *workingKeySyms;
