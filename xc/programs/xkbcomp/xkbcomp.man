@@ -3,7 +3,7 @@
 .\"
 .\"
 .\"
-.\" $XFree86: xc/programs/xkbcomp/xkbcomp.man,v 1.10 2002/11/15 03:14:12 dawes Exp $
+.\" $XFree86: xc/programs/xkbcomp/xkbcomp.man,v 1.11 2003/07/28 21:57:02 herrb Exp $
 .\"
 .TH XKBCOMP 1 __xorgversion__
 .SH NAME
@@ -38,7 +38,7 @@ is updated with the compiled keymap.
 .PP
 The name of the \fIdestination\fP is usually computed from the name
 of the source, with the extension replaced as appropriate.  When compiling
-a single map from a file which contains several maps, \fIxkbcom\fP constructs
+a single map from a file which contains several maps, \fIxkbcomp\fP constructs
 the destination file name by appending an appropriate extension to the
 name of the map to be used.
 .SH OPTIONS
