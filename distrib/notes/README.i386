@@ -89,6 +89,13 @@ Conventions used in this document:
 
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
+ 
+      To use startx with a 3.3.6 server, you need to create a 
+      /usr/X11R6/lib/X11/xinit/xserverrc file containing the following 
+      line:
+
+      exec /usr/X11R6/bin/Xwrapper $*
+
 
 If you encounter a problem, you can browse the entire documentation 
 in /usr/X11R6/lib/X11/doc.  Alternately, for XFree86 4 documentation,
