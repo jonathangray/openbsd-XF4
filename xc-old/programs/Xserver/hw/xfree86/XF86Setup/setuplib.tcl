@@ -69,7 +69,7 @@ proc initconfig {xwinhome} {
 		set Pointer(Emulate3Buttons)	1
 	}
 
-	set Pointer(Device)		/dev/mouse
+	set Pointer(Device)		/dev/wsmouse
 	set Pointer(BaudRate)		""
 	set Pointer(Emulate3Timeout)	""
 	set Pointer(ChordMiddle)	""
