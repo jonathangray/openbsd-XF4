@@ -406,7 +406,7 @@ CreateWellKnownSockets()
 	RunFromSmartParent = TRUE;
     ParentProcess = getppid ();
     if (RunFromSmartParent) {
-	if (ParentProcess > 0) {
+	if (ParentProcess > 1) {
 	    kill (ParentProcess, SIGUSR1);
 	}
     }
@@ -464,7 +464,7 @@ ResetWellKnownSockets ()
      */
 #if !defined(WIN32)
     if (RunFromSmartParent) {
-	if (ParentProcess > 0) {
+	if (ParentProcess > 1) {
 	    kill (ParentProcess, SIGUSR1);
 	}
     }
