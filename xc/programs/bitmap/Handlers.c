@@ -39,9 +39,6 @@ from The Open Group.
 #include <stdio.h>
 #include <math.h>
 
-#ifndef abs
-#define abs(x)                        (((int)(x) > 0) ? (x) : -(x))
-#endif
 #define min(x, y)                     (((int)(x) < (int)(y)) ? (x) : (y))
 #define max(x, y)                     (((int)(x) > (int)(y)) ? (x) : (y))
 

@@ -40,12 +40,7 @@ from The Open Group.
 #include <stdio.h>
 #include <math.h>
 
-#ifndef abs
-#define abs(x)                        (((x) > 0) ? (x) : -(x))
-#endif
 #define min(x, y)                     (((x) < (y)) ? (x) : (y))
-#define max(x, y)                     (((x) > (y)) ? (x) : (y))
-
 
 extern Boolean DEBUG;
 
