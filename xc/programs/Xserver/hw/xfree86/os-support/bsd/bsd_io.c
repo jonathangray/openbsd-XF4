@@ -161,9 +161,7 @@ xf86KbdInit()
 #endif
 #if defined WSCONS_SUPPORT
 	case WSCONS:
-		if (xf86Info.kbdFd != -1) 
-			xf86FlushInput(xf86Info.kbdFd);
-		else
+	        if (xf86Info.kbdFd == -1) 
 			tcgetattr(xf86Info.consoleFd, &kbdtty);
 		break;
 #endif
