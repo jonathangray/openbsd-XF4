@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.10 2003/07/02 21:18:05 todd Exp $
+# $OpenBSD: Makefile,v 1.11 2004/06/21 21:24:29 matthieu Exp $
 
 # Various list maintenance functions
 
@@ -18,8 +18,9 @@ sort:
 		cat $$f.tmp > $$f && rm $$f.tmp; \
 	done;
 
-archs  = alpha amiga hp300 i386 mac68k macppc mvme68k sparc sparc64 vax
-		
+archs  = alpha amd64 cats hp300 hppa i386 mac68k macppc \
+	mvme68k mvme88k sparc sparc64 vax
+
 mdtomi:
 	@echo "Checking for common md file lines for migration to mi files:"
 	@dir=$$(mktemp -d /tmp/mdtomi.XXXXXXXXXX); \
@@ -30,7 +31,7 @@ mdtomi:
 			i1=$$dir/$$a; \
 		} || { \
 			cat $$i1 $$dir/$$a | sort | uniq -d >> $$dir/mi.tmp; \
- 			echo "===> ($$(echo $$(cat $$dir/mi.tmp|wc -c)))\c"; \
+			echo "===> ($$(echo $$(cat $$dir/mi.tmp|wc -c)))\c"; \
 			echo " $$i1 vs $$dir/$$a"; \
 			mv $$dir/mi.tmp $$dir/mi; \
 			i1=$$dir/mi; \
