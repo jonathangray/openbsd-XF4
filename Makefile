@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.3 2001/02/19 17:50:16 todd Exp $
+#	$OpenBSD: Makefile,v 1.4 2001/02/26 18:48:57 todd Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -65,6 +65,7 @@ release:
 .endif
 	${RM} -rf ${DESTDIR}/usr/X11R6/*
 	${RM} -rf ${DESTDIR}/var/X11/*
+	${RM} -rf ${DESTDIR}/etc/X11/*
 	@if [ "`cd ${DESTDIR}/usr/X11R6;ls`" ]; then \
 		echo "Files found in ${DESTDIR}/usr/X11R6." \
 		echo "Cleanup before proceeding."; \
@@ -72,6 +73,7 @@ release:
 	fi
 	@${MKDIR} -p ${DESTDIR}/usr/X11R6
 	@${MKDIR} -p ${DESTDIR}/var/X11
+	@${MKDIR} -p ${DESTDIR}/etc/X11
 	@${MKDIR} -p ${DESTDIR}/usr/local/lib/X11
 	@${MAKE} perms
 	@${MAKE} install
@@ -90,7 +92,9 @@ perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var/X11
-	@find ${DESTDIR}/usr/X11R6 ${DESTDIR}/var/X11 \! -user root
+	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11
+	@find ${DESTDIR}/usr/X11R6 ${DESTDIR}/var/X11 \
+		${DESTDIR}/etc/X11 \! -user root
 
 dist:
 	${MAKE} perms
