@@ -449,7 +449,8 @@ install:: fonts.alias							@@\
 
 # define PositionIndependentCFlags -fpic -fno-function-cse
 # define HasWeakSymbols		NO
-# define BuildGlxExt		YES
+# define BuildGlxExt		NO
+# define BuildGLXLibrary	YES
  
 #endif /* Mc68020Architecture */
 
