@@ -340,7 +340,6 @@ extern int errno;
 # define POSIX_TTY
 
 # include <errno.h>
-extern int errno;
 
 # if !defined(LINKKIT)
   /* Don't need this stuff for the Link Kit */

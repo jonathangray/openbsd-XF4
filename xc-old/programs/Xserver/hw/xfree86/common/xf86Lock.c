@@ -41,7 +41,6 @@
 #endif
 
 #include <errno.h>
-extern int errno;
 
 #ifdef USE_XF86_SERVERLOCK
 static Bool StillLocking = FALSE;

@@ -205,7 +205,6 @@ gid_t realGid = -1;
 #endif
 
 #include <errno.h>
-extern int errno;
 
 #ifdef SERVER_LOCK
 /*
