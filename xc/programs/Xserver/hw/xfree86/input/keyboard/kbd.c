@@ -723,10 +723,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
   if (down) {
       int num = keycode >> 3;
       int bit = 1 << (keycode & 7);
-      if ((keyc->down[num] & bit) &&
-          ((kbdfeed->ctrl.autoRepeat != AutoRepeatModeOn) ||
-            keyc->modifierMap[keycode] ||
-            !(kbdfeed->ctrl.autoRepeats[num] & bit)))
+      if ((keyc->down[num] & bit))
           return;
   }
 
