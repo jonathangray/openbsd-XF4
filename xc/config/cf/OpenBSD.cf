@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.70 2002/01/22 14:07:02 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.71 2002/01/28 20:16:51 matthieu Exp $
 
 
 
@@ -784,7 +784,7 @@ install:: fonts.alias							@@\
 # define UseElfFormat		YES
 
 # ifndef XF86Server
-#  define XF86Server		NO
+#  define XF86Server		YES
 # endif
 
 # define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
@@ -802,7 +802,12 @@ install:: fonts.alias							@@\
 #   ifndef XF86CardDrivers
 #    define XF86CardDrivers	ati XF86OSCardDrivers
 #   endif
+#   define XFree86ConsoleDefines -DWSCONS_SUPPORT
 
+    /* Support for USB Mices */
+#   ifndef UsbMouseSupport
+#     define UsbMouseSupport		YES
+#   endif
 # endif
 
 # include <xfree86.cf>
