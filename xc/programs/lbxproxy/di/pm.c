@@ -1,4 +1,5 @@
 /* $Xorg: pm.c,v 1.5 2001/02/09 02:05:31 xorgcvs Exp $ */
+/* $OpenBSD: pm.c,v 1.5 2003/05/07 21:43:06 avsm Exp $ */
 
 /*
 Copyright 1996, 1998  The Open Group
@@ -190,7 +191,7 @@ _ConnectToProxyManager (pmAddr, errorString)
     if ((PM_iceConn = IceOpenConnection (
 	pmAddr,	NULL, 0, 0, sizeof(iceError), iceError)) == NULL)
     {
-	snprintf (errorString, sizeof(errorString),
+	snprintf (errorString, ERROR_STRING_SIZE,
 	    "Could not open ICE connection to proxy manager: %s", iceError);
 	return 0;
     }
@@ -203,7 +204,7 @@ _ConnectToProxyManager (pmAddr, errorString)
     if (setupstat != IceProtocolSetupSuccess)
     {
 	IceCloseConnection (PM_iceConn);
-	snprintf (errorString,sizeof(errorString),
+	snprintf (errorString, ERROR_STRING_SIZE,
 	    "Could not initialize proxy management protocol: %s",
 	    iceError);
 	return 0;
