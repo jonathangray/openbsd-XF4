@@ -155,10 +155,6 @@ extern int sys_nerr;
 #endif
 #endif /* X_NOT_POSIX else */
 
-#ifdef CSRG_BASED
-#include <unistd.h>
-#endif /* CSRG_BASED */
-
 /*
  * Get struct timeval and struct tm
  */
