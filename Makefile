@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.37 2003/08/14 04:49:03 mickey Exp $
+#	$OpenBSD: Makefile,v 1.38 2003/08/18 21:32:24 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -69,6 +69,9 @@ compile:
 .endif
 	${RM} -f ${CONFHOSTDEF}
 	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
+.ifdef NOFONTS
+	@echo "#define BuildFonts NO" >> ${CONFHOSTDEF}
+.endif
 	cd xc && exec ${MAKE} World WORLDOPTS=
 .if (${NEED_XC_OLD:L} == "yes")
 	${INSTALL} ${HOSTDEFo} ${CONFHOSTDEFo}
