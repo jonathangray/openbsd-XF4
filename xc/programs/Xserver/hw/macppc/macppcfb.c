@@ -1,7 +1,7 @@
 
 /* $XConsortium: sunCfb.c,v 1.15.1.2 95/01/12 18:54:42 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.2 1995/02/12 02:36:22 dawes Exp $ */
-/* $OpenBSD: macppcfb.c,v 1.1 2001/04/03 19:49:30 matthieu Exp $ */
+/* $OpenBSD: macppcfb.c,v 1.2 2001/04/04 20:23:34 drahn Exp $ */
 
 /*
 Copyright (c) 1990  X Consortium
@@ -265,18 +265,30 @@ Bool macppcFBInit (screen, pScreen, argc, argv)
 		size_t len;
 		switch (wf->depth) {
 		  case 8:
-		    len = (size_t)wf->height * wf->width;
+		    len = (size_t)wf->height * macppcFbs[screen].linebytes;
 		    break;
 		  case 15:
 		  case 16:
-		    len = (size_t)wf->height * wf->width 
-			  * sizeof(unsigned short);
+		    if (macppcFbs[screen].linebytes == wf->width) {
+		         len = (size_t)wf->height * wf->width 
+			       * sizeof(unsigned short);
+		    } else {
+		        len = (size_t)wf->height * macppcFbs[screen].linebytes;
+		    }
 		    break;
 		  case 24:
-		    len = (size_t)wf->height * wf->width * 3;
+		    if (macppcFbs[screen].linebytes == wf->width) {
+		        len = (size_t)wf->height * wf->width * 3;
+		    } else {
+		        len = (size_t)wf->height * macppcFbs[screen].linebytes;
+		    }
 		    break;
 		  case 32:
-		    len = (size_t)wf->height * wf->width * 4;
+		    if (macppcFbs[screen].linebytes == wf->width) {
+		        len = (size_t)wf->height * wf->width * 4;
+		    } else {
+		        len = (size_t)wf->height * macppcFbs[screen].linebytes;
+		    }
 		    break;
 		  default:
 		    ErrorF("unknown depth %d\n", wf->depth);
@@ -293,14 +305,14 @@ Bool macppcFBInit (screen, pScreen, argc, argv)
 	    macppcFbs[screen].info.width,
 	    macppcFbs[screen].info.height,
 	    monitorResolution, monitorResolution,
-	    macppcFbs[screen].info.width))
+	    macppcFbs[screen].linebytes))
             return FALSE;
 #else
 	if (!fbScreenInit(pScreen, fb,
 			 macppcFbs[screen].info.width,
 			 macppcFbs[screen].info.height,
 			 monitorResolution, monitorResolution,
-			 macppcFbs[screen].info.width,
+			 macppcFbs[screen].linebytes,
 			 macppcFbs[screen].info.depth))
 	    return FALSE;
 #ifdef RENDER

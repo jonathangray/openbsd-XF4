@@ -115,6 +115,11 @@ static int OpenFrameBuffer(device, screen)
 		macppcFbs[screen].fd = -1;
 		ret = FALSE;
 	}
+	if (ioctl(macppcFbs[screen].fd, WSDISPLAYIO_LINEBYTES,
+	    &macppcFbs[screen].linebytes) == -1) {
+		macppcFbs[screen].linebytes = macppcFbs[screen].info.width;
+	}
+
 #if 0
 	if (ret) {
 	    if (macppcFbs[screen].info.fb_type >= FBTYPE_LASTPLUSONE ||

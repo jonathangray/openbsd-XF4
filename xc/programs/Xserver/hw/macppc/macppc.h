@@ -133,6 +133,7 @@ typedef struct {
     unsigned char*  fb;		/* Frame buffer itself */
     int		    fd;		/* frame buffer for ioctl()s, */
     struct wsdisplay_fbinfo   info;	/* Frame buffer characteristics */
+    int		    linebytes;	/* number of bytes per row */
     void	    (*EnterLeave)();/* screen switch */
 } fbFd;
 
