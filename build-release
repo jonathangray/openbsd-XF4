@@ -13,16 +13,19 @@
 	exit 1
 }
 
-log=`/bin/pwd`/snap.log
-if [ -f $log ]
+ext=log
+log=`/bin/pwd`/snap
+if [ -f $log.$ext ]
 then
 
 	i=0
-	while [	 -f $log.$i ]
+	while [	 -f $log.$i.$ext ]
 	do
 		let i=i+1
 	done
-	log=$log.$i
+	log=$log.$i.$ext
+else
+	log=$log.$ext
 fi
 nohup sh -c "(echo \$\$ > ${log}.lock ; echo START: \$(date); make build && env RELEASEDIR=$RELEASEDIR DESTDIR=$DESTDIR make release; rm ${log}.lock; echo STOP: \$(date) ) > $log 2>&1 &"
 sleep 10
