@@ -1001,10 +1001,8 @@
 ./usr/X11R6/lib/modules/drivers/i128_drv.o
 ./usr/X11R6/lib/modules/drivers/i740_drv.o
 ./usr/X11R6/lib/modules/drivers/i810_drv.o
-./usr/X11R6/lib/modules/drivers/imstt_drv.o
 ./usr/X11R6/lib/modules/drivers/mga_drv.o
 ./usr/X11R6/lib/modules/drivers/neomagic_drv.o
-./usr/X11R6/lib/modules/drivers/newport_drv.o
 ./usr/X11R6/lib/modules/drivers/nsc_drv.o
 ./usr/X11R6/lib/modules/drivers/nv_drv.o
 ./usr/X11R6/lib/modules/drivers/r128_drv.o
@@ -1144,7 +1142,6 @@
 ./usr/X11R6/man/cat4/i128.0
 ./usr/X11R6/man/cat4/i740.0
 ./usr/X11R6/man/cat4/i810.0
-./usr/X11R6/man/cat4/imstt.0
 ./usr/X11R6/man/cat4/js_x.0
 ./usr/X11R6/man/cat4/kbd.0
 ./usr/X11R6/man/cat4/keyboard.0
