@@ -31,6 +31,7 @@
 ./etc/X11/app-defaults/Xmag
 ./etc/X11/app-defaults/Xman
 ./etc/X11/app-defaults/Xmessage
+./etc/X11/app-defaults/Xmessage-color
 ./etc/X11/app-defaults/Xmh
 ./etc/X11/app-defaults/Xsystrace
 ./etc/X11/fs
@@ -393,6 +394,8 @@
 ./usr/X11R6/include/X11/extensions/XKM.h
 ./usr/X11R6/include/X11/extensions/XKMformat.h
 ./usr/X11R6/include/X11/extensions/XLbx.h
+./usr/X11R6/include/X11/extensions/XRes.h
+./usr/X11R6/include/X11/extensions/XResproto.h
 ./usr/X11R6/include/X11/extensions/XShm.h
 ./usr/X11R6/include/X11/extensions/XTest.h
 ./usr/X11R6/include/X11/extensions/Xag.h
@@ -412,8 +415,10 @@
 ./usr/X11R6/include/X11/extensions/XvMCproto.h
 ./usr/X11R6/include/X11/extensions/Xvlib.h
 ./usr/X11R6/include/X11/extensions/Xvproto.h
+./usr/X11R6/include/X11/extensions/bigreqstr.h
 ./usr/X11R6/include/X11/extensions/dpms.h
 ./usr/X11R6/include/X11/extensions/dpmsstr.h
+./usr/X11R6/include/X11/extensions/extutil.h
 ./usr/X11R6/include/X11/extensions/fontcache.h
 ./usr/X11R6/include/X11/extensions/fontcacheP.h
 ./usr/X11R6/include/X11/extensions/fontcachstr.h
@@ -424,7 +429,9 @@
 ./usr/X11R6/include/X11/extensions/lbxopts.h
 ./usr/X11R6/include/X11/extensions/lbxstr.h
 ./usr/X11R6/include/X11/extensions/lbxzlib.h
+./usr/X11R6/include/X11/extensions/mitmiscstr.h
 ./usr/X11R6/include/X11/extensions/multibuf.h
+./usr/X11R6/include/X11/extensions/multibufst.h
 ./usr/X11R6/include/X11/extensions/panoramiXext.h
 ./usr/X11R6/include/X11/extensions/panoramiXproto.h
 ./usr/X11R6/include/X11/extensions/randr.h
@@ -439,10 +446,15 @@
 ./usr/X11R6/include/X11/extensions/security.h
 ./usr/X11R6/include/X11/extensions/securstr.h
 ./usr/X11R6/include/X11/extensions/shape.h
+./usr/X11R6/include/X11/extensions/shapestr.h
+./usr/X11R6/include/X11/extensions/shmstr.h
 ./usr/X11R6/include/X11/extensions/sync.h
+./usr/X11R6/include/X11/extensions/syncstr.h
+./usr/X11R6/include/X11/extensions/xcmiscstr.h
 ./usr/X11R6/include/X11/extensions/xf86bigfont.h
 ./usr/X11R6/include/X11/extensions/xf86bigfstr.h
 ./usr/X11R6/include/X11/extensions/xtestext1.h
+./usr/X11R6/include/X11/extensions/xteststr.h
 ./usr/X11R6/include/X11/extensions/xtrapbits.h
 ./usr/X11R6/include/X11/extensions/xtrapddmi.h
 ./usr/X11R6/include/X11/extensions/xtrapdi.h
@@ -644,6 +656,7 @@
 ./usr/X11R6/lib/X11/config/darwin.cf
 ./usr/X11R6/lib/X11/config/darwinLib.rules
 ./usr/X11R6/lib/X11/config/darwinLib.tmpl
+./usr/X11R6/lib/X11/config/date.def
 ./usr/X11R6/lib/X11/config/fujitsu.cf
 ./usr/X11R6/lib/X11/config/generic.cf
 ./usr/X11R6/lib/X11/config/gnu.cf
@@ -717,6 +730,8 @@
 ./usr/X11R6/lib/X11/locale/armscii-8/Compose
 ./usr/X11R6/lib/X11/locale/armscii-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/compose.dir
+./usr/X11R6/lib/X11/locale/el_GR.UTF-8
+./usr/X11R6/lib/X11/locale/el_GR.UTF-8/Compose
 ./usr/X11R6/lib/X11/locale/en_US.UTF-8
 ./usr/X11R6/lib/X11/locale/en_US.UTF-8/Compose
 ./usr/X11R6/lib/X11/locale/en_US.UTF-8/XLC_LOCALE
@@ -739,6 +754,8 @@
 ./usr/X11R6/lib/X11/locale/iso8859-10
 ./usr/X11R6/lib/X11/locale/iso8859-10/Compose
 ./usr/X11R6/lib/X11/locale/iso8859-10/XLC_LOCALE
+./usr/X11R6/lib/X11/locale/iso8859-11
+./usr/X11R6/lib/X11/locale/iso8859-11/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/iso8859-13
 ./usr/X11R6/lib/X11/locale/iso8859-13/Compose
 ./usr/X11R6/lib/X11/locale/iso8859-13/XLC_LOCALE
@@ -784,9 +801,13 @@
 ./usr/X11R6/lib/X11/locale/ja.SJIS/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/ja/Compose
 ./usr/X11R6/lib/X11/locale/ja/XLC_LOCALE
+./usr/X11R6/lib/X11/locale/ja_JP.UTF-8
+./usr/X11R6/lib/X11/locale/ja_JP.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/ko
 ./usr/X11R6/lib/X11/locale/ko/Compose
 ./usr/X11R6/lib/X11/locale/ko/XLC_LOCALE
+./usr/X11R6/lib/X11/locale/ko_KR.UTF-8
+./usr/X11R6/lib/X11/locale/ko_KR.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/koi8-c
 ./usr/X11R6/lib/X11/locale/koi8-c/Compose
 ./usr/X11R6/lib/X11/locale/koi8-c/XLC_LOCALE
@@ -812,6 +833,8 @@
 ./usr/X11R6/lib/X11/locale/tatar-cyr
 ./usr/X11R6/lib/X11/locale/tatar-cyr/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/th_TH
+./usr/X11R6/lib/X11/locale/th_TH.UTF-8
+./usr/X11R6/lib/X11/locale/th_TH.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/th_TH/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/tscii-0
 ./usr/X11R6/lib/X11/locale/tscii-0/XLC_LOCALE
@@ -832,6 +855,8 @@
 ./usr/X11R6/lib/X11/locale/zh_HK.big5hkscs
 ./usr/X11R6/lib/X11/locale/zh_HK.big5hkscs/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/zh_TW
+./usr/X11R6/lib/X11/locale/zh_TW.UTF-8
+./usr/X11R6/lib/X11/locale/zh_TW.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/zh_TW.big5
 ./usr/X11R6/lib/X11/locale/zh_TW.big5/Compose
 ./usr/X11R6/lib/X11/locale/zh_TW.big5/XLC_LOCALE
@@ -863,9 +888,12 @@
 ./usr/X11R6/man/cat1/appres.0
 ./usr/X11R6/man/cat1/atobm.0
 ./usr/X11R6/man/cat1/bdftopcf.0
+./usr/X11R6/man/cat1/bdftruncate.0
 ./usr/X11R6/man/cat1/beforelight.0
 ./usr/X11R6/man/cat1/bitmap.0
 ./usr/X11R6/man/cat1/bmtoa.0
+./usr/X11R6/man/cat1/ccmakedep.0
+./usr/X11R6/man/cat1/cleanlinks.0
 ./usr/X11R6/man/cat1/cxpm.0
 ./usr/X11R6/man/cat1/dpsexec.0
 ./usr/X11R6/man/cat1/dpsinfo.0
@@ -873,6 +901,7 @@
 ./usr/X11R6/man/cat1/fslsfonts.0
 ./usr/X11R6/man/cat1/fstobdf.0
 ./usr/X11R6/man/cat1/fvwm.0
+./usr/X11R6/man/cat1/gccmakedep.0
 ./usr/X11R6/man/cat1/iceauth.0
 ./usr/X11R6/man/cat1/ico.0
 ./usr/X11R6/man/cat1/imake.0
@@ -885,9 +914,12 @@
 ./usr/X11R6/man/cat1/makeg.0
 ./usr/X11R6/man/cat1/makepsres.0
 ./usr/X11R6/man/cat1/makestrs.0
+./usr/X11R6/man/cat1/mergelib.0
 ./usr/X11R6/man/cat1/mkcfm.0
 ./usr/X11R6/man/cat1/mkdirhier.0
 ./usr/X11R6/man/cat1/mkfontdir.0
+./usr/X11R6/man/cat1/mkfontscale.0
+./usr/X11R6/man/cat1/mkhtmlindex.0
 ./usr/X11R6/man/cat1/oclock.0
 ./usr/X11R6/man/cat1/proxymngr.0
 ./usr/X11R6/man/cat1/pswrap.0
@@ -907,6 +939,7 @@
 ./usr/X11R6/man/cat1/tenletxr.0
 ./usr/X11R6/man/cat1/texteroids.0
 ./usr/X11R6/man/cat1/twm.0
+./usr/X11R6/man/cat1/ucs2any.0
 ./usr/X11R6/man/cat1/viewres.0
 ./usr/X11R6/man/cat1/wm2.0
 ./usr/X11R6/man/cat1/x11perf.0
@@ -1362,7 +1395,7 @@
 ./usr/X11R6/man/cat3/XRaiseWindow.0
 ./usr/X11R6/man/cat3/XReadBitmapFile.0
 ./usr/X11R6/man/cat3/XReadBitmapFileData.0
-./usr/X11R6/man/cat3/XRebindKeySym.0
+./usr/X11R6/man/cat3/XRebindKeysym.0
 ./usr/X11R6/man/cat3/XRecolorCursor.0
 ./usr/X11R6/man/cat3/XReconfigureWMWindow.0
 ./usr/X11R6/man/cat3/XRectInRegion.0
@@ -1581,6 +1614,7 @@
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMaxVC.0
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMaxVSamples.0
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMinV.0
+./usr/X11R6/man/cat3/Xcursor.0
 ./usr/X11R6/man/cat3/XdbeAllocateBackBufferName.0
 ./usr/X11R6/man/cat3/XdbeBeginIdiom.0
 ./usr/X11R6/man/cat3/XdbeDeallocateBackBufferName.0
@@ -1615,6 +1649,7 @@
 ./usr/X11R6/man/cat3/XmbufGetVersion.0
 ./usr/X11R6/man/cat3/XmbufGetWindowAttributes.0
 ./usr/X11R6/man/cat3/XmbufQueryExtension.0
+./usr/X11R6/man/cat3/Xrandr.0
 ./usr/X11R6/man/cat3/XrmCombineDatabase.0
 ./usr/X11R6/man/cat3/XrmCombineFileDatabase.0
 ./usr/X11R6/man/cat3/XrmDestroyDatabase.0
