@@ -136,6 +136,9 @@ int
 xf86KbdOn()
 {
 	struct termios nTty;
+#if defined(WSCONS_SUPPORT)
+	int mode = WSKBD_RAW;
+#endif
 
 	switch (xf86Info.consType) {
 
@@ -161,6 +164,7 @@ xf86KbdOn()
 #endif
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
+		ioctl(xf86Info.kbdFd, WSCONSIO_SETMODE, &mode);
 		return xf86Info.kbdFd;
 #endif
 	}
@@ -170,6 +174,10 @@ xf86KbdOn()
 int
 xf86KbdOff()
 {
+#if defined(WSCONS_SUPPORT)
+	int mode = WSKBD_TRANLATED;
+#endif
+
 	switch (xf86Info.consType) {
 
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
@@ -183,7 +191,12 @@ xf86KbdOff()
 		tcsetattr(xf86Info.consoleFd, TCSANOW, &kbdtty);
 		break;
 #endif
-	}
+#ifdef WSCONS_SUPPORT
+	case WSCONS:
+		ioctl(xf86Info.kbdFd, WSCONSIO_SETMODE, &mode);
+		return xf86Info.kbdFd;
+#endif
+	}	
 	return(xf86Info.consoleFd);
 }
 
