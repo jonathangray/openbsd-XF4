@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.19 2001/11/28 15:11:05 danh Exp $
+#	$OpenBSD: Makefile,v 1.20 2002/03/25 18:58:33 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -99,7 +99,9 @@ release-clean:
 release-mkdir:
 	@${INSTALL} -d -o ${DIROWN} -g ${DIRGRP} -m ${DIRMODE} \
 		${DESTDIR}/usr/X11R6 ${DESTDIR}/etc/X11 \
-		${DESTDIR}/usr/local/lib/X11
+		${DESTDIR}/usr/local/lib/X11 \
+		${DESTDIR}/usr/X11R6/man \
+		${DESTDIR}/usr/X11R6/man/cat1
 	@${MAKE} perms
 
 release-install:
