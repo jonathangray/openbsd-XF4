@@ -503,7 +503,7 @@ static _signal_t die (sig)
     int sig;
 {
     dieing = True;
-    exit (auth_finalize ());
+    _exit (auth_finalize ());
     /* NOTREACHED */
 #ifdef SIGNALRETURNSINT
     return -1;				/* for picky compilers */
@@ -516,7 +516,7 @@ static _signal_t catchsig (sig)
 #ifdef SYSV
     if (sig > 0) signal (sig, die);	/* re-establish signal handler */
 #endif
-    if (verbose && iceauth_modified) printf ("\r\n");
+    if (verbose && iceauth_modified) write (STDOUT_FILENO, "\r\n", 2);
     die (sig);
     /* NOTREACHED */
 #ifdef SIGNALRETURNSINT
@@ -672,8 +672,10 @@ int auth_finalize ()
     if (iceauth_modified) {
 	if (dieing) {
 	    if (verbose) {
-		printf ("Aborting changes to authority file %s\n",
-			iceauth_filename);
+		snprintf (temp_name, sizeof temp_name,
+			  "Aborting changes to authority file %s\n",
+			  iceauth_filename);
+		write(STDERR_FILENO, temp_name, strlen(temp_name));
 	    }
 	} else if (!iceauth_allowed) {
 	    fprintf (stderr, 
