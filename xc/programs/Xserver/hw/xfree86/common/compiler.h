@@ -467,7 +467,7 @@ __ustw (unsigned long r5, unsigned short * r11)
 #define outw(a,b)	_outw(b,a)
 #define outl(a,b)	_outl(b,a) 
 
-#elif (defined(linux) || defined(Lynx) || defined(sun)) && defined(__sparc__)
+#elif (defined(linux) || defined(Lynx) || defined(sun)  || defined(__OpenBSD__)) && defined(__sparc__)
 
 #if !defined(Lynx)
 #ifndef ASI_PL
