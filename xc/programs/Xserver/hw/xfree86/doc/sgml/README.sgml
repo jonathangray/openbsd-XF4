@@ -13,10 +13,10 @@
 
 <title>README for XFree86&tm; &relvers;
 <author>The XFree86 Project, Inc
-<date>26 February 2003
+<date>18 December 2003
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml,v 3.134 2003/02/27 01:19:32 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml,v 3.138 2003/12/19 04:26:12 dawes Exp $
 </ident>
 
 <abstract>
@@ -61,10 +61,12 @@ Pre-release snapshots are provided for beta testing.  You should only install
 snapshots if you're comfortable dealing with possibly unstable beta-level
 software.  If you find problems with this snapshot, you are encouraged
 to report your findings to the public XFree86 mailing list:
-<email>XFree86@XFree86.org</email>.
+<email>devel@XFree86.org</email>.
 
+<![ %relcandidate [
 XFree86 &relvers; is a feature-complete snapshot of XFree86
 &nextfullrelvers;.
+]]>
 ]]> 
 
 <p>
@@ -80,17 +82,15 @@ Specific release enhancements can be viewed in the
 
 Most modern PC video hardware is supported in XFree86 &relvers;, and
 most PC video hardware that isn't supported explicitly can be used with
-the "vesa" driver.  The <htmlurl name="Driver Status document"
-url="Status.html"> has a summary of what hardware is supported in
-&relvers; compared with the old 3.3.x (&legacyvers;) series.  It is a
-good idea to check there before upgrading if you are currently running
-&legacyvers; with older hardware.
+the "vesa" driver.  The <htmlurl name="Releaes Notes" url="RELNOTES3.html">
+has a table showing the drivers provided with XFree86 &relvers;, and links
+to related documentation.
 
 XFree86 is produced by The XFree86 Project, Inc, which is a group of
 mostly volunteer independent developers.  XFree86 is a non-commercial
 organisation, and would not be viable without the invaluable development
-contributions of volunteers.  This release is dedicated to all who have
-supported and contributed to XFree86 over the last eleven years.
+contributions of volunteers.  This release is dedicated to the greater
+XFree86 community.
 
 <![ %snapshot [
 <sect>Redistribution of Snapshots
@@ -100,6 +100,22 @@ While the XFree86 <htmlurl name="License" url="LICENSE.html"> doesn't
 prohibit vendors and others redistributing binaries of this snapshot
 release, we don't recommend including them in production releases.
 ]]>
+
+<sect>Licensing
+<p>
+
+XFree86 source code is covered by many licenses.  All of these licenses
+have in common the fact that they do not impose conditions on the
+modification or redistribution or either source code or binaries other
+than requiring that the copyright and/or license notices are left intact,
+and in some cases, that attributions are included with documentation
+accompanying binaries.  Most of these licenses are based on the MIT or
+BSD licenses, and all of them are consistent with the <htmlurl name="Open
+Source definition" url="http://www.opensource.org/docs/definition.php">.
+
+Copyright and Licensing information for XFree86, including the attributions
+required by some of the licenses for binary distributions, can be found
+in the <htmlurl name="License Document" url="LICENSE.html">.
 
 <sect>Pointers to additional information
 <p>
@@ -116,10 +132,6 @@ Information about binary distributions and the attendant installation
 instructions can be found in the <htmlurl name="Installation Document"
 url="Install.html">.
 
-Copyright and Licensing information for this release and all XFree86
-releases can be found in the <htmlurl name="License Document"
-url="LICENSE.html">.
-
 The XFree86 version numbering system (including historical information)
 can be found in the <htmlurl name="Versions Document" url="Versions.html">.
 
@@ -129,6 +141,10 @@ other information are available at the <url name="XFree86 support page"
 url="http://www.xfree86.org/support.html">.
 
 <sect>The Public Mailing Lists
+<p>
+Current information about the XFree86 public mailing lists can be found
+at our <url name="web site" url="http://www.xfree86.org/lists.html">.
+
 <sect1>CVS Commit
 <p>
 For those who want to see what has been committed recently to our CVS
@@ -148,16 +164,21 @@ This list is available for any discussions and questions related to XFree86.
 Support related questions should be sent here.  Many experienced XFree86
 developers monitor this list.
 
-</sect1>
-</sect>
+<sect1>Forum
+<p>
+This list is available for high level discussions about XFree86 and related
+technologies, their future, and for inter-project communication.
 
 <sect>Contributing to XFree86
 <p>
 If you have any new work or enhancements/bug fixes for existing work,
-please submit them to <email>fixes@XFree86.org</email>.  This will ensure
-that they are included in future releases.  For new work, it's usually
-a good idea to discuss it first on the <email>devel@XFree86.org</email>
-list.
+please submit them to <email>patch@XFree86.org</email> or to our <url
+name="bug tracking system" url="http://bugs.xfree86.org/">.  This will
+ensure that they are included in future releases.  New works should be
+discussed on our <email>devel@XFree86.org</email> list prior to submission.
+
+Current information about the XFree86 development process can be found
+at our <url name="web site" url="http://www.xfree86.org/developer.html">.
 
 <sect>How to get XFree86 &relvers;
 <p>

@@ -1,18 +1,66 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/osdef.h,v 1.2 2003/02/10 01:14:16 tsi Exp $ */
-
-/* OS depending defines */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/osdef.h,v 1.8 2004/01/23 22:29:03 twini Exp $ */
+/*
+ * OS depending defines
+ *
+ * Copyright (C) 2001-2004 by Thomas Winischhofer, Vienna, Austria
+ *
+ * If distributed as part of the Linux kernel, the following license terms
+ * apply:
+ *
+ * * This program is free software; you can redistribute it and/or modify
+ * * it under the terms of the GNU General Public License as published by
+ * * the Free Software Foundation; either version 2 of the named License,
+ * * or any later version.
+ * *
+ * * This program is distributed in the hope that it will be useful,
+ * * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * * GNU General Public License for more details.
+ * *
+ * * You should have received a copy of the GNU General Public License
+ * * along with this program; if not, write to the Free Software
+ * * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
+ *
+ * Otherwise, the following license terms apply:
+ *
+ * * Redistribution and use in source and binary forms, with or without
+ * * modification, are permitted provided that the following conditions
+ * * are met:
+ * * 1) Redistributions of source code must retain the above copyright
+ * *    notice, this list of conditions and the following disclaimer.
+ * * 2) Redistributions in binary form must reproduce the above copyright
+ * *    notice, this list of conditions and the following disclaimer in the
+ * *    documentation and/or other materials provided with the distribution.
+ * * 3) All advertising materials mentioning features or use of this software
+ * *    must display the following acknowledgement: "This product includes
+ * *    software developed by Thomas Winischhofer, Vienna, Austria."
+ * * 4) The name of the author may not be used to endorse or promote products
+ * *    derived from this software without specific prior written permission.
+ * *
+ * * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESSED OR
+ * * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Author: 	Thomas Winischhofer <thomas@winischhofer.net>
+ *		Silicon Integrated Systems, Inc. (used by permission)
+ *
+ */
 
 /* The choices are: */
-/* #define WINCE_HEADER */      /* Incomplete! */
-/* #define WIN2000 */           /* Incomplete! */
-/* #define TC */                /* Incomplete! */
 /* #define LINUX_KERNEL	 */  	/* Kernel framebuffer */
 #define LINUX_XF86    		/* XFree86 */
 
 /**********************************************************************/
 #ifdef LINUX_KERNEL /* ----------------------------*/
-
 #include <linux/config.h>
+
 #ifdef CONFIG_FB_SIS_300
 #define SIS300
 #endif
@@ -21,62 +69,25 @@
 #define SIS315H
 #endif
 
-#else	/* if not LINUX_KERNEL --------------------- */
-/*	#define SIS300*/
-#define SIS315H
+#if 1
+#define SISFBACCEL	/* Include 2D acceleration */
+#endif
 
-#endif  /* if LINUX_KERNEL ------------------------ */
+#endif
 
-#ifdef LINUX_XF86 /* Linux Xfree86 ---------------- */
-
+#ifdef LINUX_XF86 /* ----------------------------- */
 #define SIS300
-/* #define SIS315H */ /* TW: done above */
+#define SIS315H
 #endif
 
 /**********************************************************************/
-#ifdef TC
-#endif
-#ifdef WIN2000
-#endif
-#ifdef WINCE_HEADER
-#endif
-#ifdef LINUX_XF86
-#endif
-#ifdef LINUX_KERNEL
-#endif
-/**********************************************************************/
-#ifdef TC
-#define SiS_SetMemory(MemoryAddress,MemorySize,value) memset(MemoryAddress, value, MemorySize);
-#endif
-#ifdef WIN2000
-#define SiS_SetMemory(MemoryAddress,MemorySize,value) MemFill((PVOID) MemoryAddress,(ULONG) MemorySize,(UCHAR) value);
-#endif
-#ifdef WINCE_HEADER
-#define SiS_SetMemory(MemoryAddress,MemorySize,value) memset(MemoryAddress, value, MemorySize);
-#endif
-#ifdef LINUX_XF86
-#define SiS_SetMemory(MemoryAddress,MemorySize,value) memset(MemoryAddress, value, MemorySize)
-#endif
 #ifdef LINUX_KERNEL
 #define SiS_SetMemory(MemoryAddress,MemorySize,value) memset(MemoryAddress, value, MemorySize)
-#endif
-/**********************************************************************/
-
-/**********************************************************************/
-
-#ifdef TC
-#define SiS_MemoryCopy(Destination,Soruce,Length) memmove(Destination, Soruce, Length);
-#endif
-#ifdef WIN2000
-#define SiS_MemoryCopy(Destination,Soruce,Length)  /*VideoPortMoveMemory((PUCHAR)Destination , Soruce,length);*/
-#endif
-#ifdef WINCE_HEADER
-#define SiS_MemoryCopy(Destination,Soruce,Length) memmove(Destination, Soruce, Length);
-#endif
-#ifdef LINUX_XF86
 #define SiS_MemoryCopy(Destination,Soruce,Length) memcpy(Destination,Soruce,Length)
 #endif
-#ifdef LINUX_KERNEL
+
+#ifdef LINUX_XF86
+#define SiS_SetMemory(MemoryAddress,MemorySize,value) memset(MemoryAddress, value, MemorySize)
 #define SiS_MemoryCopy(Destination,Soruce,Length) memcpy(Destination,Soruce,Length)
 #endif
 
@@ -107,30 +118,8 @@
 #endif /* InPortLong */
 
 /**********************************************************************/
-/*  TC                                                                */
+/*  LINUX KERNEL                                                      */
 /**********************************************************************/
-
-#ifdef TC
-#define OutPortByte(p,v) outp((unsigned short)(p),(unsigned char)(v))
-#define OutPortWord(p,v) outp((unsigned short)(p),(unsigned short)(v))
-#define OutPortLong(p,v) outp((unsigned short)(p),(unsigned long)(v))
-#define InPortByte(p)    inp((unsigned short)(p))
-#define InPortWord(p)    inp((unsigned short)(p))
-#define InPortLong(p)    ((inp((unsigned short)(p+2))<<16) | inp((unsigned short)(p)))
-#endif
-
-/**********************************************************************/
-/*  LINUX XF86                                                        */
-/**********************************************************************/
-
-#ifdef LINUX_XF86
-#define OutPortByte(p,v) outb((CARD16)(p),(CARD8)(v))
-#define OutPortWord(p,v) outw((CARD16)(p),(CARD16)(v))
-#define OutPortLong(p,v) outl((CARD16)(p),(CARD32)(v))
-#define InPortByte(p)    inb((CARD16)(p))
-#define InPortWord(p)    inw((CARD16)(p))
-#define InPortLong(p)    inl((CARD16)(p))
-#endif
 
 #ifdef LINUX_KERNEL
 #define OutPortByte(p,v) outb((u8)(v),(u16)(p))
@@ -142,28 +131,15 @@
 #endif
 
 /**********************************************************************/
-/*  WIN 2000                                                          */
+/*  LINUX XF86                                                        */
 /**********************************************************************/
 
-#ifdef WIN2000
-#define OutPortByte(p,v) VideoPortWritePortUchar ((PUCHAR) (p), (UCHAR) (v))
-#define OutPortWord(p,v) VideoPortWritePortUshort((PUSHORT) (p), (USHORT) (v))
-#define OutPortLong(p,v) VideoPortWritePortUlong ((PULONG) (p), (ULONG) (v))
-#define InPortByte(p)    VideoPortReadPortUchar  ((PUCHAR) (p))
-#define InPortWord(p)    VideoPortReadPortUshort ((PUSHORT) (p))
-#define InPortLong(p)    VideoPortReadPortUlong  ((PULONG) (p))
+#ifdef LINUX_XF86
+#define OutPortByte(p,v) outb((IOADDRESS)(p),(CARD8)(v))
+#define OutPortWord(p,v) outw((IOADDRESS)(p),(CARD16)(v))
+#define OutPortLong(p,v) outl((IOADDRESS)(p),(CARD32)(v))
+#define InPortByte(p)    inb((IOADDRESS)(p))
+#define InPortWord(p)    inw((IOADDRESS)(p))
+#define InPortLong(p)    inl((IOADDRESS)(p))
 #endif
 
-
-/**********************************************************************/
-/*  WIN CE                                                          */
-/**********************************************************************/
-
-#ifdef WINCE_HEADER
-#define OutPortByte(p,v) WRITE_PORT_UCHAR ((PUCHAR) (p), (UCHAR) (v))
-#define OutPortWord(p,v) WRITE_PORT_USHORT((PUSHORT) (p), (USHORT) (v))
-#define OutPortLong(p,v) WRITE_PORT_ULONG ((PULONG) (p), (ULONG) (v))
-#define InPortByte(p)    READ_PORT_UCHAR  ((PUCHAR) (p))
-#define InPortWord(p)    READ_PORT_USHORT ((PUSHORT) (p))
-#define InPortLong(p)    READ_PORT_ULONG  ((PULONG) (p))
-#endif

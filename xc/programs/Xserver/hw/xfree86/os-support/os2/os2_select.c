@@ -3,7 +3,7 @@
 
 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_select.c,v 3.8 2000/04/05 18:13:53 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_select.c,v 3.9 2003/03/25 04:18:24 dawes Exp $ */
 
 /*
  * (c) Copyright 1996 by Sebastien Marineau
@@ -416,6 +416,7 @@ fd_set *readfds,*writefds;
 /* consumes proportionally quite a bit of cpu and 12 ms seems quite good*/
 
 #define HRT_DELAY 12
+ULONG hrt_delay;
 
 void os2HighResTimerThread(void* arg)
 {
@@ -424,9 +425,18 @@ void os2HighResTimerThread(void* arg)
 	APIRET rc;
 	char *fmt;
 
+	if ((hrt_delay > 0) && (hrt_delay < 21)) {
+		ulDelay = hrt_delay;
+		}
+	else {
 	ulDelay = HRT_DELAY;
+	}
+		
 	ulSize=sizeof(ulDelay);
 
+#if 0
+	xf86Msg(X_INFO,"hrt_delay = %d\n", ulDelay);
+#endif
 	rc = DosOpen("TIMER0$",&hTimer,&ulAction,
 		0,0,OPEN_ACTION_OPEN_IF_EXISTS,
 		OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE, 

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.57 2003/02/24 21:29:36 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.59 2004/02/11 22:06:22 tsi Exp $ */
 
 /*
  *
@@ -221,14 +221,12 @@ stdWriteFCR(vgaHWPtr hwp, CARD8 value)
 static void
 stdWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 {
-    CARD8 tmp;
-
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    tmp = inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
+    (void) inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
     outb(hwp->PIOOffset + VGA_ATTR_INDEX, index);
     outb(hwp->PIOOffset + VGA_ATTR_DATA_W, value);
 }
@@ -236,14 +234,12 @@ stdWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 static CARD8
 stdReadAttr(vgaHWPtr hwp, CARD8 index)
 {
-    CARD8 tmp;
-
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    tmp = inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
+    (void) inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
     outb(hwp->PIOOffset + VGA_ATTR_INDEX, index);
     return inb(hwp->PIOOffset + VGA_ATTR_DATA_R);
 }
@@ -263,9 +259,7 @@ stdReadMiscOut(vgaHWPtr hwp)
 static void
 stdEnablePalette(vgaHWPtr hwp)
 {
-    CARD8 tmp;
-
-    tmp = inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
+    (void) inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
     outb(hwp->PIOOffset + VGA_ATTR_INDEX, 0x00);
     hwp->paletteEnabled = TRUE;
 }
@@ -273,9 +267,7 @@ stdEnablePalette(vgaHWPtr hwp)
 static void
 stdDisablePalette(vgaHWPtr hwp)
 {
-    CARD8 tmp;
-
-    tmp = inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
+    (void) inb(hwp->IOBase + hwp->PIOOffset + VGA_IN_STAT_1_OFFSET);
     outb(hwp->PIOOffset + VGA_ATTR_INDEX, 0x20);
     hwp->paletteEnabled = FALSE;
 }
@@ -436,14 +428,12 @@ mmioWriteFCR(vgaHWPtr hwp, CARD8 value)
 static void
 mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 {
-    CARD8 tmp;
-
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, index);
     moutb(VGA_ATTR_DATA_W, value);
 }
@@ -451,14 +441,12 @@ mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 static CARD8
 mmioReadAttr(vgaHWPtr hwp, CARD8 index)
 {
-    CARD8 tmp;
-
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, index);
     return minb(VGA_ATTR_DATA_R);
 }
@@ -478,9 +466,7 @@ mmioReadMiscOut(vgaHWPtr hwp)
 static void
 mmioEnablePalette(vgaHWPtr hwp)
 {
-    CARD8 tmp;
-
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, 0x00);
     hwp->paletteEnabled = TRUE;
 }
@@ -488,9 +474,7 @@ mmioEnablePalette(vgaHWPtr hwp)
 static void
 mmioDisablePalette(vgaHWPtr hwp)
 {
-    CARD8 tmp;
-
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, 0x20);
     hwp->paletteEnabled = FALSE;
 }
@@ -780,6 +764,11 @@ vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 #if 0
     hwp->writeAttr(hwp, 0x10, 0x01);	/* graphics mode */
 #endif
+
+    hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
+    hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
+    hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
+
     if (scrninfp->depth == 4) {
 	/* GJA */
 	hwp->writeGr(hwp, 0x03, 0x00);	/* don't rotate, write unmodified */
@@ -790,10 +779,7 @@ vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 #ifdef SAVE_FONT1
     if (hwp->FontInfo1) {
 	hwp->writeSeq(hwp, 0x02, 0x04);	/* write to plane 2 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x02);	/* read plane 2 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_tobus(hwp->FontInfo1, hwp->Base, FONT_AMOUNT);
     }
 #endif
@@ -801,10 +787,7 @@ vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 #ifdef SAVE_FONT2
     if (hwp->FontInfo2) {
 	hwp->writeSeq(hwp, 0x02, 0x08);	/* write to plane 3 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x03);	/* read plane 3 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_tobus(hwp->FontInfo2, hwp->Base, FONT_AMOUNT);
     }
 #endif
@@ -812,16 +795,10 @@ vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 #ifdef SAVE_TEXT
     if (hwp->TextInfo) {
 	hwp->writeSeq(hwp, 0x02, 0x01);	/* write to plane 0 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x00);	/* read plane 0 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_tobus(hwp->TextInfo, hwp->Base, TEXT_AMOUNT);
 	hwp->writeSeq(hwp, 0x02, 0x02);	/* write to plane 1 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x01);	/* read plane 1 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_tobus((unsigned char *)hwp->TextInfo + TEXT_AMOUNT,
 			hwp->Base, TEXT_AMOUNT);
     }
@@ -865,8 +842,7 @@ vgaHWRestoreMode(ScrnInfoPtr scrninfp, vgaRegPtr restore)
     for (i = 1; i < restore->numSequencer; i++)
 	hwp->writeSeq(hwp, i, restore->Sequencer[i]);
   
-    /* Ensure CRTC registers 0-7 are unlocked by clearing bit 7 or CRTC[17] */
-
+    /* Ensure CRTC registers 0-7 are unlocked by clearing bit 7 of CRTC[17] */
     hwp->writeCrtc(hwp, 17, restore->CRTC[17] & ~0x80);
 
     for (i = 0; i < restore->numCRTC; i++)
@@ -974,39 +950,32 @@ vgaHWSaveFonts(ScrnInfoPtr scrninfp, vgaRegPtr save)
 #if 0
     hwp->writeAttr(hwp, 0x10, 0x01);	/* graphics mode */
 #endif
+
+    hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
+    hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
+    hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
+
 #ifdef SAVE_FONT1
     if (hwp->FontInfo1 || (hwp->FontInfo1 = xalloc(FONT_AMOUNT))) {
 	hwp->writeSeq(hwp, 0x02, 0x04);	/* write to plane 2 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x02);	/* read plane 2 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_frombus(hwp->Base, hwp->FontInfo1, FONT_AMOUNT);
     }
 #endif /* SAVE_FONT1 */
 #ifdef SAVE_FONT2
     if (hwp->FontInfo2 || (hwp->FontInfo2 = xalloc(FONT_AMOUNT))) {
 	hwp->writeSeq(hwp, 0x02, 0x08);	/* write to plane 3 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x03);	/* read plane 3 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_frombus(hwp->Base, hwp->FontInfo2, FONT_AMOUNT);
     }
 #endif /* SAVE_FONT2 */
 #ifdef SAVE_TEXT
     if (hwp->TextInfo || (hwp->TextInfo = xalloc(2 * TEXT_AMOUNT))) {
 	hwp->writeSeq(hwp, 0x02, 0x01);	/* write to plane 0 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x00);	/* read plane 0 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_frombus(hwp->Base, hwp->TextInfo, TEXT_AMOUNT);
 	hwp->writeSeq(hwp, 0x02, 0x02);	/* write to plane 1 */
-	hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
 	hwp->writeGr(hwp, 0x04, 0x01);	/* read plane 1 */
-	hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
-	hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
 	slowbcopy_frombus(hwp->Base,
 		(unsigned char *)hwp->TextInfo + TEXT_AMOUNT, TEXT_AMOUNT);
     }
@@ -1492,7 +1461,7 @@ vgaHWVBlankKGA(DisplayModePtr mode, vgaRegPtr regp, int nBits,
 	regp->CRTC[22] = i & 0xFF;
 	ExtBits = i & 0xFF00;
     }
-	return ExtBits >> 8;
+    return ExtBits >> 8;
 }
 
 /*

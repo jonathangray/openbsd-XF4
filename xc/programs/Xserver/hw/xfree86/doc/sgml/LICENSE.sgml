@@ -4,17 +4,25 @@
 
 <article>
 <title>Licenses</title>
-<author>The XFree86 Project</author>
-<date>February 2003</date>
+<author>Compiled by The XFree86 Project</author>
+<date>December 2003</date>
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.12 2003/02/24 03:41:16 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.23
+2004/02/08 00:30:56 dawes Exp $
+$OpenBSD: LICENSE.sgml,v 1.1.1.6 2004/02/13 21:44:54 matthieu Exp $
 </ident>
+
+<sect>Introduction
+<p>
+XFree86&trade; code without an explicit copyright is covered by the
+XFree86 copyright/license as shown in the next section.  Portions of
+code are covered by other licenses/copyrights, as shown in subsequent
+sections.  In all cases, see individual source files for specific details,
+copyright owner information, and copyright dates.
 
 <sect>XFree86 License
 <p>
-XFree86 code without an explicit copyright is covered by the following
-copyright/license:
 
 <p>
 Copyright (C) 1994-2003 The XFree86 Project, Inc.  All Rights Reserved.
@@ -42,14 +50,33 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from the
 XFree86 Project.
 
-<sect>Other Licenses
+<sect>X/MIT Licenses
 <p>
-Portions of code are covered by the following licenses/copyrights.  See
-individual files for the copyright dates.
+<sect1>MIT
+<p>
 
-<sect1>X/MIT Copyrights
-<p>
-<sect2>X Consortium
+Copyright <it>&lt;date&gt;</it> <it>&lt;Copyright Holder&gt;</it>
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted, provided
+that the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of <it>&lt;Copyright Holder&gt;</it>
+not be used in advertising or publicity pertaining to distribution of
+the software without specific, written prior permission.  <it>&lt;Copyright
+Holder&gt;</it> makes no representations about the suitability of this
+software for any purpose.  It is provided "as is" without express or
+implied warranty.
+
+<it>&lt;COPYRIGHT HOLDER&gt;</it> DISCLAIMS ALL WARRANTIES WITH REGARD
+TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL <it>&lt;COPYRIGHT HOLDER&gt;</it>  BE
+LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+<sect1>X Consortium
 <p>
 Copyright (C) <it>&lt;date&gt;</it> X Consortium
 
@@ -78,7 +105,7 @@ the X Consortium.
 
 X Window System is a trademark of X Consortium, Inc.
 
-<sect2>The Open Group
+<sect1>The Open Group
 <p>
 Copyright <it>&lt;date&gt;</it>  The Open Group
 
@@ -103,9 +130,14 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 
-<sect1>Berkeley-based copyrights:
+<sect>Berkeley-style Licenses
 <p>
-<sect2>General
+The Berkeley-style licenses are similar to the X/MIT-style licenses,
+except that they include conditions requiring attributions accompany
+binary distributions and/or are included with end user documetation
+and/or advertising material.
+
+<sect1>General
 <p>
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -132,7 +164,7 @@ are met:
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-<sect2>UCB/LBL
+<sect1>UCB/LBL
 <p>
  Copyright (c) 1993
       The Regents of the University of California.  All rights reserved.
@@ -177,7 +209,498 @@ are met:
  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  SUCH DAMAGE.
 
-<sect1>NVIDIA Corp
+<sect1>Lennart Augustsson.
+<p>
+
+Copyright (c) 1999 Lennart Augustsson &lt;augustss@netbsd.org&gt;<newline>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<enum>
+<item>Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+<sect1>Chris Costello.
+<p>
+Copyright (c) 1999 Chris Costello<newline>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<enum>
+<item>Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+<sect1>Christopher G. Demetriou.
+<p>
+
+Copyright (c) 1993, 1994 Christopher G. Demetriou<newline>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<enum>
+<item>Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+<item>All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+     This product includes software developed by Christopher G. Demetriou.
+<item>The name of the author may not be used to endorse or promote products
+   derived from this software without specific prior written permission
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+<sect1>Todd C. Miller
+<p>
+Copyright (c) 1998 Todd C. Miller &lt;Todd.Miller@courtesan.com&gt;
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND TODD C. MILLER DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL TODD C. MILLER BE LIABLE
+FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+<sect1>The NetBSD Foundation, Inc.
+<p>
+Copyright (c) 2003 The NetBSD Foundation, Inc.
+All rights reserved.
+
+This code is derived from software contributed to The NetBSD Foundation
+by Ben Collver &lt;collver1@attbi.com&gt;
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+<enum>
+<item> Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+<item> Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+<item> All advertising materials mentioning features or use of this software
+    must display the following acknowledgement:
+        This product includes software developed by the NetBSD
+        Foundation, Inc. and its contributors.
+<item> Neither the name of The NetBSD Foundation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+</enum>
+
+ THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+<sect1>Keith Packard
+<p>
+Copyright &copy; 2001 Keith Packard, member of The XFree86 Project, Inc.
+
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of Keith Packard not be used in
+advertising or publicity pertaining to distribution of the software without
+specific, written prior permission.  Keith Packard makes no
+representations about the suitability of this software for any purpose.  It
+is provided "as is" without express or implied warranty.
+
+KEITH PACKARD DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+EVENT SHALL KEITH PACKARD BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+<sect1>Theo de Raadt and Damien Miller
+<p>
+Copyright (c) 1995,1999 Theo de Raadt.  All rights reserved.
+Copyright (c) 2001-2002 Damien Miller.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+<enum>
+<item> Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+<item> Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+<sect1>Andy Ritger/NVIDIA.
+<p>
+
+Copyright (c) 2001, Andy Ritger  aritger@nvidia.com<newline>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<itemize>
+<item>Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer
+  in the documentation and/or other materials provided with the
+  distribution.
+<item>Neither the name of NVIDIA nor the names of its contributors
+  may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+</itemize>
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGE.
+
+<sect1>Eric Sunshine.
+<p>
+Copyright (C) 1999,2000 by Eric Sunshine &lt;sunshine@sunshineco.com&gt;
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+<enum>
+  <item>Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  <item>Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  <item>The name of the author may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
+NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+<sect1>Theodore Ts'o.
+<p>
+Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
+rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+<enum>
+<item>Redistributions of source code must retain the above copyright
+   notice, and the entire permission notice in its entirety,
+   including the disclaimer of warranties.
+<item>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+<item>The name of the author may not be used to endorse or promote
+   products derived from this software without specific prior
+   written permission.
+</enum>
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+
+<sect1>Paul Vojta.
+<p>
+
+Copyright (c) 1994 Paul Vojta.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<enum>
+<item>Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+<sect1>Thomas Winischhofer
+<p>
+
+Copyright (C) 2001-2004 Thomas Winischhofer
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+<enum>
+<item>Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+<item>Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+<item>All advertising materials mentioning features or use of this software
+must display the following acknowledgement: This product includes
+software developed by Thomas Winischhofer.
+<item>The name of the author may not be used to endorse or promote products
+derived from this software without specific prior written permission.
+</enum>
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+<sect1>X-Oz Technologies
+<p>
+
+Copyright 2003 by David H. Dawes.<newline>
+Copyright 2003 by X-Oz Technologies.<newline>
+All rights reserved.<newline>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of the copyright holder(s)
+and author(s) shall not be used in advertising or otherwise to promote
+the sale, use or other dealings in this Software without prior written
+authorization from the copyright holder(s) and author(s).
+
+
+<sect1>X-TrueType Server Project, After X-TT Project, and contributors.
+<p>
+
+   Copyright (c) 1998 X-TrueType Server Project, All rights reserved.<newline>
+   Copyright (c) 2003 After X-TT Project, All rights reserved.<newline>
+
+Contributors include:
+
+   Copyright (c) 1998 Takuya SHIOZAKI, All Rights reserved.<newline>
+   Copyright (c) 1998-1999 Shunsuke Akiyama &lt;akiyama@jp.FreeBSD.org&gt;.
+   All rights reserved.<newline>
+   Copyright (c) 1998,1999 Pablo Saratxaga
+   &lt;srtxg@chanae.alphanet.ch&gt;<newline>
+   Copyright (c) 1998 Go Watanabe, All rights reserved.<newline>
+   Copyright (c) 2001 Roger So, All rights reserved.<newline>
+   Copyright (c) 1998,1999 Chen Xiangyang, All Rights reserved.<newline>
+   Copyright (c) 1997 Jyunji Takagi, All rights reserved.<newline>
+   Copyright (c) 1998 Kazushi (Jam) Marukawa, All rights reserved.<newline>
+   Copyright (c) 1999 Mutsumi ISHIKAWA, All rights reserved.<newline>
+   Copyright (c) 1999 Nozomi YTOW, All rights reserved.
+
+===Notice
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+<enum>
+   <item> Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   <item> Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+</enum>
+
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+
+Notice===
+
+<sect>BSD-style license with export notice
+<p>
+
+<sect1>National Semiconductor Corporation Open Source License for Durango
+<p>
+
+(BSD License with Export Notice)
+
+Copyright (c) 1999-2001<newline>
+National Semiconductor Corporation.<newline>
+All rights reserved.<newline>
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+<itemize>
+<item>Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+<item>Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+<item>Neither the name of the National Semiconductor Corporation nor
+      the names of its contributors may be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+</itemize>
+ 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+NATIONAL SEMICONDUCTOR CORPORATION OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE,
+INTELLECTUAL PROPERTY INFRINGEMENT, OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGE.
+
+EXPORT LAWS: THIS LICENSE ADDS NO RESTRICTIONS TO THE EXPORT LAWS OF
+YOUR JURISDICTION. It is licensee's responsibility to comply with
+any export regulations applicable in licensee's jurisdiction. Under
+CURRENT (2001) U.S. export regulations this software
+is eligible for export from the U.S. and can be downloaded by or
+otherwise exported or reexported worldwide EXCEPT to U.S. embargoed
+destinations which include Cuba, Iraq, Libya, North Korea, Iran,
+Syria, Sudan, Afghanistan and any other country to which the U.S.
+has embargoed goods and services.
+
+
+<sect>NVIDIA Corp
 <p>
          Copyright (c) 1996 NVIDIA, Corp.  All rights reserved.        
                                                                       
@@ -208,7 +731,7 @@ are met:
     TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOURCE CODE.
 
-<sect1>GLX Public License
+<sect>GLX Public License
 <p>
 GLX PUBLIC LICENSE (Version 1.0 (2/11/99)) ("License")
 
@@ -424,7 +947,7 @@ The Original Software is GLX version 1.2 source code, released February,
 Those portions of the Subject Software created by Silicon Graphics, Inc.
 are Copyright (c) 1991-9 Silicon Graphics, Inc. All Rights Reserved.
 
-<sect1>CID Font Code Public License
+<sect>CID Font Code Public License
 <p>
 CID FONT CODE PUBLIC LICENSE (Version 1.0 (3/31/99))("License")
 
@@ -639,7 +1162,7 @@ Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
 solely in object code form, Recipient may replace the words "this file" with
 "this software" in both the first and second sentences.]
 
-<sect1>Bigelow &amp; Holmes Inc and URW++ GmbH Luxi font license
+<sect>Bigelow &amp; Holmes Inc and URW++ GmbH Luxi font license
 <p>
 
 Luxi fonts copyright (c) 2001 by Bigelow &amp; Holmes Inc. Luxi font 
@@ -684,5 +1207,172 @@ For further information, contact:
 info@urwpp.de
 or
 design@bigelowandholmes.com
+
+<sect>FreeType License
+<p>
+
+<bf>0. Definitions</bf>
+
+Throughout this license, the terms `package', `FreeType Project',
+and  `FreeType  archive' refer  to  the  set  of files  originally
+distributed by the authors (David Turner, Robert Wilhelm, and
+Werner Lemberg) as the `FreeType Project', be they named as alpha,
+beta or final release.
+
+`You' refers to the licensee, or person using the project, where
+`using' is a generic term including compiling the project's source
+code as well as linking it to form a `program' or `executable'.
+This program is referred to as `a program using the FreeType
+ engine'.
+
+This license applies to all files distributed in the original
+FreeType Project, including all source code, binaries and
+documentation, unless otherwise stated in the file in its
+original, unmodified form as distributed in the original archive.
+If you are unsure whether or not a particular file is covered by
+this license, you must contact us to verify this.
+
+The FreeType Project is copyright (C) 1996-2000 by David Turner,
+Robert Wilhelm, and Werner Lemberg.  All rights reserved except as
+specified below.
+
+<bf>1. No Warranty</bf>
+
+THE FREETYPE PROJECT IS PROVIDED `AS IS' WITHOUT WARRANTY OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  IN NO EVENT WILL ANY OF THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY DAMAGES CAUSED BY THE USE OR THE INABILITY TO
+USE, OF THE FREETYPE PROJECT.
+
+<bf>2. Redistribution</bf>
+
+This license grants a worldwide, royalty-free, perpetual and
+irrevocable right and license to use, execute, perform, compile,
+display, copy, create derivative works of, distribute and
+sublicense the FreeType Project (in both source and object code
+forms) and derivative works thereof for any purpose; and to
+authorize others to exercise some or all of the rights granted
+herein, subject to the following conditions:
+
+<itemize>
+   <item>Redistribution of source code must retain the license file
+      (`FTL.TXT') unaltered; any additions, deletions or changes to
+      the original files must be clearly indicated in accompanying
+      documentation.  The copyright notices of the unaltered,
+      original files must be preserved in all copies of source
+      files.
+
+    <item>Redistribution in binary form must provide a disclaimer that
+      states that the software is based in part of the work of the
+      FreeType Team, in the distribution documentation.  We also
+      encourage you to put an URL to the FreeType web page in your
+      documentation, though this isn't mandatory.
+</itemize>
+
+These conditions apply to any software derived from or based on
+the FreeType Project, not just the unmodified files.  If you use
+our work, you must acknowledge us.  However, no fee need be paid
+to us.
+
+<bf>3. Advertising</bf>
+
+Neither the FreeType authors and contributors nor you shall use
+the name of the other for commercial, advertising, or promotional
+purposes without specific prior written permission.
+
+We suggest, but do not require, that you use one or more of the
+following phrases to refer to this software in your documentation
+or advertising materials: `FreeType Project', `FreeType Engine',
+`FreeType library', or `FreeType Distribution'.
+
+As you have not signed this license, you are not required to
+accept it.  However, as the FreeType Project is copyrighted
+material, only this license, or another one contracted with the
+authors, grants you the right to use, distribute, and modify it.
+Therefore, by using, distributing, or modifying the FreeType
+Project, you indicate that you understand and accept all the terms
+of this license.
+
+<bf>4. Contacts</bf>
+
+There are two mailing lists related to FreeType:
+
+<itemize>
+    <item>freetype@freetype.org
+
+      Discusses general use and applications of FreeType, as well as
+      future and  wanted additions to the  library and distribution.
+      If  you are looking  for support,  start in  this list  if you
+      haven't found anything to help you in the documentation.
+
+    <item>devel@freetype.org
+
+      Discusses bugs,  as well  as engine internals,  design issues,
+      specific licenses, porting, etc.
+
+    <item>http://www.freetype.org
+
+      Holds the current  FreeType web page, which will  allow you to
+      download  our  latest  development  version  and  read  online
+      documentation.
+</itemize>
+
+You can also contact us individually at:
+
+    David Turner &lt;david.turner@freetype.org&gt;<newline>
+    Robert Wilhelm &lt;robert.wilhelm@freetype.org&gt;<newline>
+    Werner Lemberg &lt;werner.lemberg@freetype.org&gt;
+
+
+<sect>Bitstream Vera Fonts Copyright
+<p>
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream<newline>
+Vera is a trademark of Bitstream, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the fonts accompanying this license ("Fonts") and associated
+documentation files (the "Font Software"), to reproduce and distribute
+the Font Software, including without limitation the rights to use,
+copy, merge, publish, distribute, and/or sell copies of the Font
+Software, and to permit persons to whom the Font Software is furnished
+to do so, subject to the following conditions:
+
+The above copyright and trademark notices and this permission notice
+shall be included in all copies of one or more of the Font Software
+typefaces.
+
+The Font Software may be modified, altered, or added to, and in
+particular the designs of glyphs or characters in the Fonts may be
+modified and additional glyphs or characters may be added to the
+Fonts, only if the fonts are renamed to names not containing either
+the words "Bitstream" or the word "Vera".
+
+This License becomes null and void to the extent applicable to Fonts
+or Font Software that has been modified and is distributed under the
+"Bitstream Vera" names.
+
+The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL
+BITSTREAM OR THE GNOME FOUNDATION BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT
+SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Except as contained in this notice, the names of Gnome, the Gnome
+Foundation, and Bitstream Inc., shall not be used in advertising or
+otherwise to promote the sale, use or other dealings in this Font
+Software without prior written authorization from the Gnome Foundation
+or Bitstream Inc., respectively. For further information, contact:
+fonts at gnome dot org.
+
+
 
 </article>

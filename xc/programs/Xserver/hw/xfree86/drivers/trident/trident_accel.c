@@ -1,5 +1,5 @@
 /*
- * Copyright 1992-2000 by Alan Hourihane, Wigan, England.
+ * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -23,7 +23,7 @@
  * 
  * Trident accelerated options.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_accel.c,v 1.26 2003/02/12 21:46:42 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_accel.c,v 1.29 2004/01/21 22:57:34 alanh Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -117,17 +117,6 @@ TridentAccelInit(ScreenPtr pScreen)
     XAAInfoRecPtr infoPtr;
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
-    BoxRec AvailFBArea;
-
-    AvailFBArea.x1 = 0;
-    AvailFBArea.y1 = 0;
-    AvailFBArea.x2 = pScrn->displayWidth;
-    AvailFBArea.y2 = (pTrident->FbMapSize - 4096) / (pScrn->displayWidth *
-					    pScrn->bitsPerPixel / 8);
-
-    if (AvailFBArea.y2 > 2047) AvailFBArea.y2 = 2047;
-
-    xf86InitFBManager(pScreen, &AvailFBArea);
 
     if (pTrident->NoAccel)
 	return FALSE;
@@ -287,6 +276,8 @@ TridentSetupForScreenToScreenCopy(ScrnInfoPtr pScrn,
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     int dst = 0;
 
+    TridentSync(pScrn);
+
     pTrident->BltScanDirection = 0;
     if (xdir < 0) pTrident->BltScanDirection |= XNEG;
     if (ydir < 0) pTrident->BltScanDirection |= YNEG;
@@ -332,6 +323,8 @@ TridentSetupForSolidLine(ScrnInfoPtr pScrn, int color,
 					 int rop, unsigned int planemask)
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
+
+    TridentSync(pScrn);
 
     pTrident->BltScanDirection = 0;
     REPLICATE(color);
@@ -394,6 +387,8 @@ TridentSetupForDashedLine(
     CARD32 *DashPattern = (CARD32*)pattern;
     CARD32 NiceDashPattern = DashPattern[0];
 
+    TridentSync(pScrn);
+
     NiceDashPattern = *((CARD16 *)pattern) & ((1<<length) - 1);
     switch(length) {
 	case 2:	NiceDashPattern |= NiceDashPattern << 2;
@@ -454,6 +449,8 @@ TridentSetupForFillRectSolid(ScrnInfoPtr pScrn, int color,
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     int drawflag = 0;
+
+    TridentSync(pScrn);
 
     REPLICATE(color);
     TGUI_FMIX(XAAPatternROP[rop]);
@@ -517,6 +514,8 @@ TridentSetupForMono8x8PatternFill(ScrnInfoPtr pScrn,
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     int drawflag = 0;
 
+    TridentSync(pScrn);
+
     REPLICATE(fg);
     if (pTrident->Chipset == PROVIDIA9685 ||
         pTrident->Chipset == CYBER9388)
@@ -575,6 +574,8 @@ TridentSetupForColor8x8PatternFill(ScrnInfoPtr pScrn,
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     int drawflag = 0;
 
+    TridentSync(pScrn);
+
     REPLICATE(transparency_color);
     if (transparency_color != -1) {
     	if (pTrident->Chipset == PROVIDIA9685 ||
@@ -617,6 +618,8 @@ TridentSetupForScanlineCPUToScreenColorExpandFill(
 ){
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     int drawflag = SRCMONO;
+
+    TridentSync(pScrn);
 
     REPLICATE(fg);
     TGUI_FCOLOUR(fg);

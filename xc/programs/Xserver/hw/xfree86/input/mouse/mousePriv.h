@@ -1,10 +1,15 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mousePriv.h,v 1.8 2002/09/16 18:06:08 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mousePriv.h,v 1.11 2003/11/03 05:11:49 tsi Exp $ */
 /*
  * Copyright (c) 1997-1999 by The XFree86 Project, Inc.
  */
 
 #ifndef _X_MOUSEPRIV_H
 #define _X_MOUSEPRIV_H
+
+#if 0
+# define MOUSEINITDEBUG
+# define MOUSEDATADEBUG
+#endif
 
 #include "mouse.h"
 #include "xf86Xinput.h"                                                                                              
@@ -52,7 +57,7 @@ typedef struct {
     int		count;
     char	data[NUM_MSE_AUTOPROBE_TOTAL];
     mseAutoProbeStates autoState;
-    int		protoList[NUM_AUTOPROBE_PROTOS];
+    MouseProtocolID protoList[NUM_AUTOPROBE_PROTOS];
     int		serialDefaultsNum;
     int		prevDx, prevDy;
     int		accDx, accDy;
@@ -66,9 +71,10 @@ typedef struct {
 #define MPF_SAFE		0x01
 
 /* pnp.c */
-int MouseGetPnpProtocol(InputInfoPtr pInfo);
+MouseProtocolID MouseGetPnpProtocol(InputInfoPtr pInfo);
 Bool ps2Reset(InputInfoPtr pInfo);
 Bool ps2EnableDataReporting(InputInfoPtr pInfo);
 Bool ps2SendPacket(InputInfoPtr pInfo, unsigned char *bytes, int len);
+int ps2GetDeviceID(InputInfoPtr pInfo);
 
 #endif /* _X_MOUSE_H */

@@ -1,5 +1,6 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_ansic.h,v 3.53 2003/10/28 18:36:37 tsi Exp $ */
 /*
- * Copyright 1997-2000 by The XFree86 Project, Inc
+ * Copyright 1997-2003 by The XFree86 Project, Inc
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -21,8 +22,6 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_ansic.h,v 3.49 2003/02/22 06:00:39 dawes Exp $ */
 
 #ifndef _XF86_ANSIC_H
 #define _XF86_ANSIC_H
@@ -240,6 +239,8 @@ extern int xf86strcasecmp(const char*,const char*);
 extern char* xf86strcpy(char*,const char*);
 extern xf86size_t xf86strcspn(const char*,const char*);
 extern char* xf86strerror(int);
+extern xf86size_t xf86strlcat(char*,const char*,xf86size_t);
+extern xf86size_t xf86strlcpy(char*,const char*,xf86size_t);
 extern xf86size_t xf86strlen(const char*);
 extern char* xf86strncat(char *, const char *, xf86size_t);
 extern int xf86strncmp(const char*,const char*,xf86size_t);
@@ -307,13 +308,14 @@ extern int xf86shmdt(char *addr);
 extern int xf86shmctl(int id, int xf86cmd, pointer buf);
 
 extern int xf86setjmp(xf86jmp_buf env);
+extern int xf86setjmp0(xf86jmp_buf env);
 extern int xf86setjmp1(xf86jmp_buf env, int);
 extern int xf86setjmp1_arg2(void);
 extern int xf86setjmperror(xf86jmp_buf env);
 extern int xf86getjmptype(void);
 extern void xf86longjmp(xf86jmp_buf env, int val);
 #define xf86setjmp_macro(env) \
-	(xf86getjmptype() == 0 ? xf86setjmp((env)) : \
+	(xf86getjmptype() == 0 ? xf86setjmp0((env)) : \
 	(xf86getjmptype() == 1 ? xf86setjmp1((env), xf86setjmp1_arg2()) : \
 		xf86setjmperror((env))))
 

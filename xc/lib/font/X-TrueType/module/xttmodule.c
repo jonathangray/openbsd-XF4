@@ -1,6 +1,6 @@
 /* xttmodule.c -*- Mode: C; tab-width:4; c-basic-offset: 4; -*-
    Copyright (c) 1999 X-TrueType Server Project, All rights reserved.
-  
+
 ===Notice
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -27,11 +27,14 @@
 
 Notice===
 */
+/* $XFree86: xc/lib/font/X-TrueType/module/xttmodule.c,v 1.3 2003/10/24 16:11:07 tsi Exp $ */
 
 #include "xttversion.h"
 
+#if 0
 static char const * const releaseID =
     _XTT_RELEASE_NAME;
+#endif
 
 
 /*
@@ -92,7 +95,7 @@ static XF86ModuleVersionInfo VersRec =
 
 
 XF86ModuleData xttModuleData = {
-    &VersRec, 
+    &VersRec,
     xttSetup,
 #ifdef CCONV_USE_SYMBOLIC_ENTRY_POINT
     xttTearDown

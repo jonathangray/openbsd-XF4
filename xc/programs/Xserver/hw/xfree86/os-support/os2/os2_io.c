@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_io.c,v 3.17 2003/02/17 15:11:58 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_io.c,v 3.19 2003/11/17 22:20:41 dawes Exp $ */
 /*
  * (c) Copyright 1994,1999 by Holger Veit
  *			<Holger.Veit@gmd.de>
@@ -84,12 +84,7 @@ int xf86GetKbdLeds()
 	return rc ? 0 : kinfo.fsState & 0x70;
 }
 
-#if NeedFunctionPrototypes
 void xf86SetKbdRepeat(char rad)
-#else
-void xf86SetKbdRepeat(rad)
-char rad;
-#endif
 {
 	/*notyet*/
 }
@@ -220,11 +215,3 @@ Bool xf86SupportedMouseTypes[] =
 int xf86NumMouseTypes = sizeof(xf86SupportedMouseTypes) /
 			sizeof(xf86SupportedMouseTypes[0]);
 #endif
-
-#include "xf86OSKbd.h"
-
-Bool
-xf86OSKbdPreInit(InputInfoPtr pInfo)
-{
-    return FALSE;
-}

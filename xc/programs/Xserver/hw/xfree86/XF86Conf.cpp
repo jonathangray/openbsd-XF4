@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/XF86Conf.cpp,v 3.45 2003/02/20 04:05:12 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/XF86Conf.cpp,v 3.46 2003/05/27 16:11:04 tsi Exp $
 XCOMM
 XCOMM Copyright (c) 1994-1998 by The XFree86 Project, Inc.
 XCOMM
@@ -263,7 +263,7 @@ XCOMM protocol setting can be used when using a newer PnP mouse:
 
 XCOMM    Option	"Protocol"	"Auto"
 
-XCOMM When using mouse connected to a PS/2 port (aka "MousePort), set the
+XCOMM When using mouse connected to a PS/2 port (aka "MousePort"), set the
 XCOMM the protocol as follows.  On some platforms some other settings may
 XCOMM be available.
 

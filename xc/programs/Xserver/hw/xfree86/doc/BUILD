@@ -17,54 +17,19 @@
 We highly recommend using gcc to build XFree86, but it generally also builds
 with the native compiler for each platform;
 
-1.  How to get the XFree86 4.3.0 source
+1.  How to get the XFree86 4.3.99.903 source
 
-The recommended way of getting the XFree86 4.3.0 source is to get it directly
-from the XFree86 CVS repository.  There are several ways of doing that, and
-they are described at our CVS web page <URL:http://www.xfree86.org/cvs/>  The
-CVS tag for this release is "xf-4_3_0", and the tag for the maintenance
-branch for this release is "xf-4_3-branch".
+The recommended way of getting the XFree86 4.3.99.903 source is to get it
+directly from the XFree86 CVS repository.  There are several ways of doing
+that, and they are described at our CVS web page
+<URL:http://www.xfree86.org/cvs/>  The CVS tag for this release is
+"xf-4_3_99_903".
 
-Another method of getting the XFree86 4.3.0 source is to either download the
-4.3.0 source tarballs from the XFree86 ftp site.  The procedure for this is
-as follows:
+Alternatively you can download the source for the XFree86 4.3.99.903 snapshot
+as a tarball from ftp://ftp.xfree86.org/pub/XFree86/devel-
+snaps/XFree86-4.3.99.903.tar.bz2.  This can be extracted by running:
 
-   o The XFree86 4.3.0 source is contained in the files X430src-1.tgz,
-     X430src-2.tgz, X430src-3.tgz, X430src-4.tgz, X430src-5.tgz,
-     X430src-6.tgz and X430src-7.tgz.  These can be found at
-     ftp://ftp.xfree86.org/pub/XFree86/4.3.0/source/ and similar locations on
-     XFree86 mirror sites.  X430src-4.tgz and X430src-5.tgz contains the
-     fonts.  X430src-6.tgz contains the documentation source.  X430src-7.tgz
-     contains the hardcopy documentation.  X430src-1.tgz, X430src-2.tgz and
-     X430src-3.tgz contains everything else.  If you don't need the docs or
-     fonts you can get by with only X430src-1.tgz, X430src-2.tgz and
-     X430src-3.tgz.
-
-   o Extract each of these files by running the following from a directory on
-     a filesystem containing enough space (the full source requires around
-     305MB, and a similar amount is required in addition to this for the com-
-     piled binaries):
-
-          gzip -d < X430src-1.tgz | tar vxf -
-
-          gzip -d < X430src-2.tgz | tar vxf -
-
-          gzip -d < X430src-3.tgz | tar vxf -
-
-          gzip -d < X430src-4.tgz | tar vxf -
-
-          gzip -d < X430src-5.tgz | tar vxf -
-
-          gzip -d < X430src-6.tgz | tar vxf -
-
-          gzip -d < X430src-7.tgz | tar vxf -
-
-Alternatively, if you already have a pristine copy of the XFree86 4.2.0
-source, you can download patches from
-ftp://ftp.xfree86.org/pub/XFree86/4.3.0/patches/ that will allow you to con-
-vert it to 4.3.0.  Information about which patch files to download and how to
-apply them can be found in the "How to get XFree86" section of the README for
-this release.
+     bzip2 -d < XFree86-4.3.99.903.tar.bz2 | tar vxf -
 
 All methods will produce one main source directory called xc.
 
@@ -84,9 +49,6 @@ A general rule to follow is to only change things that you understand and
 have a good reason to change.  It is easy to create build problems by chang-
 ing the default configuration.  Many of the configuration parameters are doc-
 umented in xc/config/cf/README.
-
-If you are using just the X430src-1.tgz, X430src-2.tgz and X430src-3.tgz
-parts of the source dist, you will need to define BuildFonts to NO.
 
 3.  Using a shadow directory of symbolic links for the build
 
@@ -213,7 +175,7 @@ drivers installed:
 
 6.  Other useful make targets
 
-There are some other useful targets defined in the top level Makefileof
+There are some other useful targets defined in the top level Makefile of
 XFree86:
 
    o Everything after a make World, make Everything does everything a make
@@ -248,7 +210,7 @@ XFree86:
      shown do not match your system, you probably need to set them manually
      in host.def and report the problem to <XFree86@XFree86.org>.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.11 2003/02/27 01:17:36 dawes Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.13 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 3.16 2003/02/27 01:44:03 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 3.24 2004/01/28 02:13:10 dawes Exp $

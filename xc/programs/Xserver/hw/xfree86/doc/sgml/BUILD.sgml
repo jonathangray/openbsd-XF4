@@ -8,7 +8,7 @@
 <Date>26 February 2003
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.11 2003/02/27 01:17:36 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.13 2003/12/05 15:51:44 dawes Exp $
 </ident>
 
 <abstract>
@@ -37,8 +37,8 @@ The recommended way of getting the XFree86 &relvers; source is to
 get it directly from the XFree86 CVS repository.  There are several
 ways of doing that, and they are described at our <url name="CVS web page"
 url="http://www.xfree86.org/cvs/">  The CVS tag for this release is
-"<tt>&reltag;</tt>", and the tag for the maintenance branch for this
-release is "<tt>&relbranchtag;</tt>".
+"<tt>&reltag;</tt>".  <![ %fullrel; [ The tag for the maintenance branch
+for this release is "<tt>&relbranchtag;</tt>".]]>
 
 <![ %notsnapshot; [
 Another method of getting the XFree86 &relvers; source is to
@@ -108,18 +108,23 @@ you to convert it to &relvers;.  Information about which patch files to
 download and how to apply them can be found in the "How to get XFree86"
 section of the <htmlurl name="README" url="README.html"> for this release.
 ]]>
-
-All methods will produce one main source directory called <tt>xc</tt>. 
 ]]>
 
 <![ %snapshot; [
 <p>
-The source for the XFree86 &relvers; snapshot is available from the XFree86
-CVS repository.  See See <htmlurl name="http://www.xfree86.org/cvs/"
-url="http://www.xfree86.org/cvs/"> for details.  The tag for this snapshot
-is "&reltag;".  To get the current development version, don't specify any
-tag.
+Alternatively you can download the source for the XFree86 &relvers;
+snapshot as a tarball from <htmlurl
+name="ftp://ftp.xfree86.org/pub/XFree86/develsnaps/XFree86-&relvers;.tar.bz2"
+url="ftp://ftp.xfree86.org/pub/XFree86/develsnaps/XFree86-&relvers;.tar.bz2">.
+This can be extracted by running:
+
+	<quote><tt>
+	bzip2 -d &lt; XFree86-&relvers;.tar.bz2 | tar vxf -<newline>
+	</tt></quote>
+
 ]]>
+
+All methods will produce one main source directory called <tt>xc</tt>. 
 
 
 <sect>Configuring the source before building
@@ -289,7 +294,7 @@ wish to build.  Also, change the driver lists to suit your needs.
 
 <sect>Other useful make targets
 <p>There are some other useful targets defined in the top level
-<tt>Makefile</tt>of XFree86: 
+<tt>Makefile</tt> of XFree86: 
 <itemize>
 <item><bf/Everything/ after a <tt>make World</tt>, <tt>make
 Everything</tt> does everything a <tt>make World</tt> does, except the

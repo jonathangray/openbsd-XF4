@@ -1,5 +1,5 @@
 /*
- * Copyright 1997,1998 by Alan Hourihane, Wigan, England.
+ * Copyright 1997-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -23,7 +23,7 @@
  * 
  * Trident Blade3D accelerated options.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/blade_accel.c,v 1.18 2002/10/08 22:14:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/blade_accel.c,v 1.22 2004/01/21 22:31:54 alanh Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -151,16 +151,6 @@ BladeAccelInit(ScreenPtr pScreen)
     XAAInfoRecPtr infoPtr;
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
-    BoxRec AvailFBArea;
-
-    AvailFBArea.x1 = 0;
-    AvailFBArea.y1 = 0;
-    AvailFBArea.x2 = pScrn->displayWidth;
-    AvailFBArea.y2 = (pTrident->FbMapSize - 4096) / (pScrn->displayWidth *
-					    pScrn->bitsPerPixel / 8);
-    if (AvailFBArea.y2 > 2047) AvailFBArea.y2 = 2047;
-
-    xf86InitFBManager(pScreen, &AvailFBArea);
 
     if (pTrident->NoAccel)
 	return FALSE;
@@ -287,6 +277,8 @@ BladeSetupForScreenToScreenCopy(ScrnInfoPtr pScrn,
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
 
+    BladeSync(pScrn);
+
     pTrident->BltScanDirection = 0;
     if ((xdir < 0) || (ydir < 0)) pTrident->BltScanDirection |= 1<<1;
 
@@ -295,13 +287,13 @@ BladeSetupForScreenToScreenCopy(ScrnInfoPtr pScrn,
 	BLADE_OUT(0x2168, transparency_color & 0xffffff);
 	pTrident->BltScanDirection |= 1<<6;
     }
-#endif
  
     REPLICATE(planemask);
-    if (planemask != -1) {
+    if (planemask != (unsigned int)-1) {
 	BLADE_OUT(0x2184, ~planemask);
 	pTrident->BltScanDirection |= 1<<5;
     }
+#endif
     BLADE_OUT(0x2148, XAACopyROP[rop]);
 }
 
@@ -479,15 +471,19 @@ BladeSetupForFillRectSolid(ScrnInfoPtr pScrn, int color,
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
 
+    BladeSync(pScrn);
+
     REPLICATE(color);
     BLADE_OUT(0x2160, color);
     BLADE_OUT(0x2148, XAACopyROP[rop]);
     pTrident->BltScanDirection = 0;
+#if 0
     REPLICATE(planemask);
     if (planemask != -1) {
 	BLADE_OUT(0x2184, ~planemask);
 	pTrident->BltScanDirection |= 1<<5;
     }
+#endif
 }
 
 static void
@@ -545,6 +541,8 @@ BladeSetupForCPUToScreenColorExpand(ScrnInfoPtr pScrn,
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
 
+    BladeSync(pScrn);
+
     pTrident->BltScanDirection = 0;
     BLADE_OUT(0x2148, XAACopyROP[rop]);
     if (bg == -1) {
@@ -559,11 +557,13 @@ BladeSetupForCPUToScreenColorExpand(ScrnInfoPtr pScrn,
     	BLADE_OUT(0x2160, fg);
     	BLADE_OUT(0x2164, bg);
     }
+#if 0
     REPLICATE(planemask);
     if (planemask != -1) {
 	BLADE_OUT(0x2184, ~planemask);
 	pTrident->BltScanDirection |= 1<<5;
     }
+#endif
 }
 
 static void
@@ -610,11 +610,13 @@ BladeSetupForMono8x8PatternFill(ScrnInfoPtr pScrn,
     BLADE_OUT(0x2178, bg);
     }
     pTrident->BltScanDirection = 0;
+#if 0
     REPLICATE(planemask);
     if (planemask != -1) {
 	BLADE_OUT(0x2184, ~planemask);
 	pTrident->BltScanDirection |= 1<<5;
     }
+#endif
 }
 
 static void 
@@ -681,13 +683,17 @@ static void BladeSetupForImageWrite(
 ){
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
 
+    BladeSync(pScrn);
+
     BLADE_OUT(0x2148, XAACopyROP[rop]);
     pTrident->BltScanDirection = 0;
+#if 0
     REPLICATE(planemask);
     if (planemask != -1) {
 	BLADE_OUT(0x2184, ~planemask);
 	pTrident->BltScanDirection |= 1<<5;
     }
+#endif
 }
 
 static void BladeSubsequentImageWriteRect(
