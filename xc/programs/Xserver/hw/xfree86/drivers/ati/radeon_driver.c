@@ -6920,7 +6920,7 @@ static Bool RADEONInit(ScrnInfoPtr pScrn, DisplayModePtr mode,
             return FALSE;
         dot_clock = (((RADEONMergedDisplayModePtr)mode->Private)->CRT1)->Clock / 1000.0;
         if (dot_clock) {
-            RADEONInitPLLRegisters(save, &info, dot_clock);
+            RADEONInitPLLRegisters(save, info, dot_clock);
         } else {
             save->ppll_ref_div = info->SavedReg.ppll_ref_div;
             save->ppll_div_3   = info->SavedReg.ppll_div_3;
@@ -6941,7 +6941,7 @@ static Bool RADEONInit(ScrnInfoPtr pScrn, DisplayModePtr mode,
                 save->htotal_cntl  = 0;
             }
             else
-		RADEONInitPLLRegisters(save, &info->pll, dot_clock);
+		RADEONInitPLLRegisters(save, info, dot_clock);
 	} else {
 	    save->ppll_ref_div = info->SavedReg.ppll_ref_div;
 	    save->ppll_div_3   = info->SavedReg.ppll_div_3;
