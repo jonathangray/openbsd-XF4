@@ -248,7 +248,7 @@ static char *finalcomment_text =
 "alt and backspace simultaneously immediately exits the server (use if\n"
 "the monitor doesn't sync for a particular mode).\n"
 "\n"
-"For further configuration, refer to " TREEROOTLX "/doc/README.Config.\n"
+"For further configuration, refer to the XF86Config(5) manual page.\n"
 "\n";
 
 static void *
@@ -335,7 +335,10 @@ static char *mousetype_identifier[] = {
 	"MMHitTab",
 	"IntelliMouse",
 #if defined(__EMX__) || defined(QNX4)
-	"OSMOUSE"
+	"OSMOUSE",
+#endif
+#ifdef WSCONS_SUPPORT
+    	"wsmouse",
 #endif
 };
 
@@ -353,12 +356,18 @@ static char *mousetype_name[] = {
 	"Logitech MouseMan (Microsoft compatible)",
 	"MM Series",	/* XXXX These descriptions should be improved. */
 	"MM HitTablet",
-	"Microsoft IntelliMouse"
+	"Microsoft IntelliMouse",
+#ifdef WSCONS_SUPPORT
+        "wsmouse protocol",
+#endif
 };
 
 static char *mousedev_text =
 "Now give the full device name that the mouse is connected to, for example\n"
 "/dev/tty00. Just pressing enter will use the default, /dev/mouse.\n"
+#ifdef WSCONS_SUPPORT
+"On systems with wscons, the default is /dev/wsmouse.\n"
+#endif
 "\n";
 
 static char *mousecomment_text =
@@ -368,6 +377,11 @@ static char *mousecomment_text =
 "protocol, and mice that default to 1 and require a button to be held at\n"
 "boot-time to select protocol 2. Some mice can be convinced to do 2 by sending\n"
 "a special sequence to the serial port (see the ClearDTR/ClearRTS options).\n"
+#ifdef WSCONS_SUPPORT
+"\n"
+"If your system uses the wscons console driver, with a PS/2 type mouse, select\n"
+"10.\n"
+#endif
 "\n";
 
 static char *twobuttonmousecomment_text =
@@ -410,7 +424,7 @@ mouse_configuration(void) {
 	char s[80];
 	printf("%s", mouseintro_text);
 	
-	for (i = 0; i < 9; i++)
+	for (i = 0; i < sizeof(mousetype_name)/sizeof(char *); i++)
 		printf("%2d.  %s\n", i + 1, mousetype_name[i]);
 
 	printf("\n");
@@ -497,7 +511,11 @@ mouse_configuration(void) {
 	printf("Mouse device: ");
 	getstring(s);
 	if (strlen(s) == 0)
+#ifndef WSCONS_SUPPORT
 		config_pointerdevice = "/dev/mouse";
+#else
+		config_pointerdevice = "/dev/wsmouse";
+#endif
 	else {
 		config_pointerdevice = Malloc(strlen(s) + 1);
 		strcpy(config_pointerdevice, s);

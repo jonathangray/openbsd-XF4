@@ -12,7 +12,8 @@ XCOMM $XConsortium: Imakefile /main/5 1996/02/21 18:12:46 kaleb $
          DEPLIBS =
       CARDDBFILE = $(LIBDIR)/Cards
          DEFINES = -DCARD_DATABASE_FILE='"$(CARDDBFILE)"' \
-                   -DXKB_RULES_DIR=\"$(LIBDIR)/xkb/rules\"
+                   -DXKB_RULES_DIR=\"$(LIBDIR)/xkb/rules\" \
+		  XFree86ConsoleDefines
 
 #if !defined(OS2Architecture)
 AllTarget(ProgramTargetName(xf86config))
