@@ -1,6 +1,6 @@
 /* $XConsortium: sunIo.c,v 5.26.1.3 95/01/25 23:02:33 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.1 1995/01/28 15:46:06 dawes Exp $ */
-/* $OpenBSD: macppcIo.c,v 1.1 2001/04/03 19:49:30 matthieu Exp $ */
+/* $OpenBSD: macppcIo.c,v 1.2 2001/09/09 13:24:51 matthieu Exp $ */
 
 /*-
  * sunIo.c --
@@ -69,7 +69,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *-----------------------------------------------------------------------
  */
 void
-ProcessInputEvents ()
+ProcessInputEvents (void)
 {
     (void) mieqProcessInputEvents ();
     miPointerUpdate ();
@@ -82,11 +82,8 @@ ProcessInputEvents ()
  *	enqueue them using the mi event queue
  */
 
-void macppcEnqueueEvents (
-#if NeedFunctionPrototypes
-    void
-#endif
-)
+void 
+macppcEnqueueEvents (void)
 {
     Firm_event	*ptrEvents,    	/* Current pointer event */
 		*kbdEvents;    	/* Current keyboard event */
@@ -161,7 +158,7 @@ void macppcEnqueueEvents (
  * DDX - specific abort routine.  Called by AbortServer().
  */
 void 
-AbortDDX()
+AbortDDX(void)
 {
     int         i;
     ScreenPtr   pScreen;
@@ -195,16 +192,13 @@ AbortDDX()
 
 /* Called by GiveUp(). */
 void
-ddxGiveUp()
+ddxGiveUp(void)
 {
     /* Nothing to do */
 }
 
 int
-ddxProcessArgument (argc, argv, i)
-    int	argc;
-    char *argv[];
-    int	i;
+ddxProcessArgument (int argc, char *argv[], int i)
 {
     extern void UseMsg();
 
@@ -233,36 +227,11 @@ ddxProcessArgument (argc, argv, i)
 	if (++i >= argc) UseMsg ();
 	return 2;
     }
-#if 0 /* XXX */
-    if (strcmp (argv[i], "-mono") == 0) {	/* -mono */
-	return 1;
-    }
-    if (strcmp (argv[i], "-zaphod") == 0) {	/* -zaphod */
-	sunActiveZaphod = FALSE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-flipPixels") == 0) {	/* -flipPixels */
-	sunFlipPixels = TRUE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-fbinfo") == 0) {	/* -fbinfo */
-	sunFbInfo = TRUE;
-	return 1;
-    }
-    if (strcmp (argv[i], "-kbd") == 0) {	/* -kbd */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-    if (strcmp (argv[i], "-protect") == 0) {	/* -protect */
-	if (++i >= argc) UseMsg();
-	return 2;
-    }
-#endif /* 0 XXX */
     return 0;
 }
 
 void
-ddxUseMsg()
+ddxUseMsg(void)
 {
 #if 0 /* XXX */
 #ifndef XKB
@@ -272,9 +241,4 @@ ddxUseMsg()
 #endif /* 0 XXX */
     ErrorF("-debug              disable non-blocking console mode\n");
     ErrorF("-dev fn[:fn][:fn]   name of device[s] to open\n");
-#if 0 /* XXX */
-    ErrorF("-mono               force monochrome-only screen\n");
-    ErrorF("-zaphod             disable active Zaphod mode\n");
-    ErrorF("-fbinfo             tell more about the found frame buffer(s)\n");
-#endif /* 0 XXX */
 }
