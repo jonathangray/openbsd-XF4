@@ -643,6 +643,8 @@
 ./usr/X11R6/lib/X11/config/cygwin.rules
 ./usr/X11R6/lib/X11/config/cygwin.tmpl
 ./usr/X11R6/lib/X11/config/darwin.cf
+./usr/X11R6/lib/X11/config/darwinLib.rules
+./usr/X11R6/lib/X11/config/darwinLib.tmpl
 ./usr/X11R6/lib/X11/config/fujitsu.cf
 ./usr/X11R6/lib/X11/config/generic.cf
 ./usr/X11R6/lib/X11/config/gnu.cf
