@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: alpha_video.c,v 1.2 2002/05/25 18:09:33 matthieu Exp $ */
+/* $OpenBSD: alpha_video.c,v 1.3 2002/07/07 21:11:34 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -61,9 +61,7 @@
 		"\trefer to xf86(4) for details\n"
 #endif
 
-#ifndef __OpenBSD__
 extern unsigned long dense_base(void);
-#endif
 
 static int axpSystem = -1;
 static unsigned long hae_thresh;
@@ -96,29 +94,6 @@ memory_base(void)
 
     return base;
 }
-
-#ifdef __OpenBSD__
-static unsigned long
-dense_base(void)
-{
-    static unsigned long base = 0;
-
-    if (base == 0) {
-	size_t len = sizeof(base);
-	int error;
-	int mib[3];
-
-	mib[0] = CTL_MACHDEP;
-	mib[1] = CPU_CHIPSET;
-	mib[2] = CPU_CHIPSET_DENSE;
-
-	if ((error = sysctl(mib, 3, &base, &len, NULL, 0)) < 0)
-	    FatalError("xf86MapVidMem: can't find dense memory\n");
-    }
-
-    return base;
-}
-#endif
 
 static int
 has_bwx(void)
@@ -381,7 +356,7 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	return(Len);
 }
 
-#if defined(__FreeBSD__) 
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
 
 extern int ioperm(unsigned long from, unsigned long num, int on);
 
@@ -399,6 +374,7 @@ xf86DisableIO()
 }
 
 #endif /* __FreeBSD__  */
+
 
 /***************************************************************************/
 /* Interrupt Handling section                                              */
@@ -479,7 +455,8 @@ sethae(u_int64_t hae)
 static int
 sethae(u_int64_t hae)
 {
-    /* TBD */
+	/* TBD */
+	return -1;
 }
 
 #endif
@@ -689,39 +666,3 @@ int  (*xf86ReadMmio16)(pointer Base, unsigned long Offset)
 int  (*xf86ReadMmio32)(pointer Base, unsigned long Offset)
      = readDense32;
 
-#if defined(__OpenBSD__)
-
-/* XXXX */
-__inline__ void outb(unsigned int port, unsigned char val)
-{
-    /* TBD */
-}
-__inline__ void outw(unsigned int port, unsigned short val)
-{
-    /* TBD */
-}
-
-__inline__ void outl(unsigned int port, unsigned int val)
-{
-    /* TBD */
-}
-
-__inline__ unsigned char inb(unsigned int port)
-{
-    /* TBD */
-    return 0;
-}
-
-__inline__ unsigned short inw(unsigned int port)
-{
-    /* TBD */
-    return 0;
-}
-
-__inline__ unsigned int inl(unsigned int port)
-{
-    /* TBD */
-    return 0;
-}
-
-#endif
