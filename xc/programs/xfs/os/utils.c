@@ -59,6 +59,7 @@ in this Software without prior written authorization from The Open Group.
 #include	<unistd.h>
 #include	<pwd.h>
 #include	<grp.h>
+#include	<errno.h>
 #include	<sys/types.h>
 
 #ifndef X_NOT_POSIX
@@ -106,13 +107,20 @@ Bool        portFromCmdline = FALSE;
 OldListenRec *OldListen = NULL;
 int 	     OldListenCount = 0;
 
+#ifdef STDERR_FILENO
+# define WRITES write(STDERR_FILENO, s, strlen(s))
+#else
+# define WRITES write(fileno(stderr), s, strlen(s))
+#endif
+
 /* ARGSUSED */
 SIGVAL
 AutoResetServer(int n)
 {
+    int olderrno = errno;
 
 #ifdef DEBUG
-    fprintf(stderr, "got a reset signal\n");
+    WRITES("got a reset signal\n");
 #endif
 
     dispatchException |= DE_RESET;
@@ -121,28 +129,31 @@ AutoResetServer(int n)
 #ifdef SIGNALS_RESET_WHEN_CAUGHT
     signal(SIGHUP, AutoResetServer);
 #endif
+    errno = olderrno;
 }
 
 /* ARGSUSED */
 SIGVAL
 GiveUp(int n)
 {
-
+    int olderrno = errno;
 #ifdef DEBUG
-    fprintf(stderr, "got a TERM signal\n");
+    WRITES("got a TERM signal\n");
 #endif
 
     dispatchException |= DE_TERMINATE;
     isItTimeToYield = TRUE;
+    errno = olderrno;
 }
 
 /* ARGSUSED */
 SIGVAL
 ServerReconfig(int n)
 {
+    int olderrno = errno;
 
 #ifdef DEBUG
-    fprintf(stderr, "got a re-config signal\n");
+    WRITES("got a re-config signal\n");
 #endif
 
     dispatchException |= DE_RECONFIG;
@@ -151,15 +162,17 @@ ServerReconfig(int n)
 #ifdef SIGNALS_RESET_WHEN_CAUGHT
     signal(SIGUSR1, ServerReconfig);
 #endif
+    errno = olderrno;
 }
 
 /* ARGSUSED */
 SIGVAL
 ServerCacheFlush(int n)
 {
+    int olderrno = errno;
 
 #ifdef DEBUG
-    fprintf(stderr, "got a flush signal\n");
+    WRITES("got a flush signal\n");
 #endif
 
     dispatchException |= DE_FLUSH;
@@ -168,15 +181,17 @@ ServerCacheFlush(int n)
 #ifdef SIGNALS_RESET_WHEN_CAUGHT
     signal(SIGUSR2, ServerCacheFlush);
 #endif
+    errno = olderrno;
 }
 
 /* ARGSUSED */
 SIGVAL
 CleanupChild(int n)
 {
+    int olderrno = errno;
 
 #ifdef DEBUG
-    fprintf(stderr, "got a child signal\n");
+    WRITES("got a child signal\n");
 #endif
 
     wait(NULL);
@@ -184,6 +199,7 @@ CleanupChild(int n)
 #ifdef SIGNALS_RESET_WHEN_CAUGHT
     signal(SIGCHLD, CleanupChild);
 #endif
+    errno = olderrno;
 }
 
 long
