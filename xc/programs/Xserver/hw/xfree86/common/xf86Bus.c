@@ -1710,7 +1710,7 @@ convertRange2Host(int entityIndex, resRange *pRange)
  */
 
 resPtr
-xf86RegisterResources(int entityIndex, resList list, int access)
+xf86RegisterResources(int entityIndex, resList list, unsigned long access)
 {
     resPtr res = NULL;
     resRange range;

@@ -114,7 +114,7 @@ int xf86GetPciEntity(int bus, int dev, int func);
 Bool xf86SetEntityFuncs(int entityIndex, EntityProc init,
 			EntityProc enter, EntityProc leave, pointer);
 void xf86DeallocateResourcesForEntity(int entityIndex, unsigned long type);
-resPtr xf86RegisterResources(int entityIndex, resList list, int Access);
+resPtr xf86RegisterResources(int entityIndex, resList list, unsigned long Access);
 Bool xf86CheckPciMemBase(pciVideoPtr pPci, memType base);
 void xf86SetAccessFuncs(EntityInfoPtr pEnt, xf86SetAccessFuncPtr funcs,
 			xf86SetAccessFuncPtr oldFuncs);
