@@ -1,4 +1,4 @@
-.\" $OpenBSD: fvwm2.1,v 1.5 2004/07/10 20:56:32 matthieu Exp $
+.\" $OpenBSD: fvwm2.1,v 1.6 2005/01/26 06:51:30 matthieu Exp $
 .\" t
 .\" @(#)fvwm2.1 8/11/1998
 .de EX		\"Begin example
@@ -188,7 +188,7 @@ During initialization, \fIfvwm\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
 format of these files will be described later.  First, \fIfvwm\fP will
 search for a file named .fvwmrc in the user's home directory, then in
-${sysconfdir} (typically /usr/local/etc).
+${sysconfdir} (typically __projectroot__/lib/X11/fvwm).
 Failing that, it will look for system.fvwmrc in ${sysconfdir} for
 system-wide defaults.  If that file is not found, \fIfvwm\fP will be
 basically useless.
@@ -1074,7 +1074,7 @@ used in the bottom right corner of a window
 And the cursornum is the numeric value of the cursor as defined in the
 include file X11/cursorfont.h.  An example:
 .EX
-# make the kill cursor be XC_gumby:
+\&# make the kill cursor be XC_gumby:
 CursorStyle DESTROY 56
 .EE
 The defaults are shown in parenthesis above.
@@ -1442,7 +1442,7 @@ value of the path, allowing easy appending or prepending to the path.
 
 For example:
 .EX
-ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
+ImagePath $HOME/icons:+:__projectroot__/include/bitmaps
 .EE
 
 
@@ -1451,7 +1451,7 @@ Binds a keyboard key to a specified \fIfvwm\fP built-in function, or
 removes the binding if \fIFunction\fP is '-'.  Definition is the same
 as for a mouse binding except that the mouse button number is replaced
 with a key name.  The \fIkeyname\fP is one of the entries from
-/usr/include/X11/keysymdef.h, with the leading XK_ omitted.  The
+__projectroot__/include/X11/keysymdef.h, with the leading XK_ omitted.  The
 \fIContext\fP and \fIModifiers\fP fields are defined as in the Mouse
 binding. However, when you press a key the context window is the
 window that has the keyboard focus. That is not necessarily the
@@ -1617,26 +1617,26 @@ simpler than this description). The default is 'o0'. The prefix
 A prefix of 'c' is equivalent of 'o50'.  Examples:
 
 .EX
-# window list in the middle of the screen
+\&# window list in the middle of the screen
 WindowList Root c c
 
-# menu to the left of a window
+\&# menu to the left of a window
 Menu name window -100m c+0
 
-# popup menu 8 pixels above the mouse pointer
+\&# popup menu 8 pixels above the mouse pointer
 Popup name mouse c -100m-8p
 
-# somewhere on the screen
+\&# somewhere on the screen
 Menu name rectangle 512x384+1+1 +0 +0
 
-# centered vertially around a menu item
+\&# centered vertially around a menu item
 AddToMenu foobar-menu
  + "first item" Nop
  + "special item" Popup "another menu" item \\
                   +100 c
  + "last item" Nop
 
-# above the first menu item
+\&# above the first menu item
 AddToMenu foobar-menu
  + "first item" Popup "another menu" item +0 -100m
 .EE
@@ -2008,27 +2008,27 @@ interpreted as a percentage of the screen width (height), but a trailing
 
 Simple Examples:
 .EX
-# Interactive move
+\&# Interactive move
 Mouse 1 T A Move
-# Move window so top left is at (10%,10%)
+\&# Move window so top left is at (10%,10%)
 Mouse 2 T A Move 10 10
-# Move top left to (10pixels,10pixels)
+\&# Move top left to (10pixels,10pixels)
 Mouse 3 T A Move 10p 10p
 .EE
 
 More complex examples (these can be bound as actions to keystrokes,
 etc.; only the command is shown, though):
 .EX
-# Move window so bottom right is at bottom
-# right of screen
+\&# Move window so bottom right is at bottom
+\&# right of screen
 Move -0 -0
 
-# Move window 5% to the right, and to the
-# middle vertically
+\&# Move window 5% to the right, and to the
+\&# middle vertically
 Move w+5 50
 
-# Move window up 10 pixels, and so left edge
-# is at x=40 pixels
+\&# Move window up 10 pixels, and so left edge
+\&# is at x=40 pixels
 Move 40p w-10p
 .EE
 
@@ -2569,14 +2569,14 @@ possible worlds use both RandomPlacement and SmartPlacement.
 
 An example:
 .EX
-# Change default fvwm behavior to no title-
-# bars on windows! Also define a default icon.
+\&# Change default fvwm behavior to no title-
+\&# bars on windows! Also define a default icon.
 Style "*"           NoTitle,                 \\
                     Icon unknown1.xpm,       \\
                     BorderWidth 4,           \\
                     HandleWidth 5
 
-# now, window specific changes:
+\&# now, window specific changes:
 Style "Fvwm*"       NoHandles, Sticky,       \\
                     WindowListSkip,          \\
                     BorderWidth 0
@@ -2589,7 +2589,7 @@ Style "FvwmButtons" NoHandles, Sticky,       \\
 Style "sxpm"        NoHandles
 Style "makerkit"
 
-# Put title-bars back on xterms only!
+\&# Put title-bars back on xterms only!
 Style "xterm"     Title, Color black/grey
 
 Style "rxvt"        Icon term.xpm
@@ -2607,9 +2607,9 @@ Style "FvwmButtons" Icon toolbox.xpm
 Style "Maker"       StartsOnDesk 1
 Style "signal"      StartsOnDesk 3
 
-# Fire up Netscape on the second desk, in the
-# middle of my 3x3 virtual desktop, and don't
-# bother me with it...
+\&# Fire up Netscape on the second desk, in the
+\&# middle of my 3x3 virtual desktop, and don't
+\&# bother me with it...
 Style "Netscape*" SkipMapping,              \\
                   StartsOnPage 1 1 1
 .EE
