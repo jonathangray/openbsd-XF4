@@ -1,0 +1,48 @@
+#!/bin/csh -f
+
+set RELEASE=$1
+
+if ( "X${RELEASE}" == "X" ) then
+	echo "Usage: `basename $0` <OSREVISION>"
+	exit 1
+endif
+
+if (! $?RELEASEDIR) then
+	echo RELEASEDIR must be set
+	exit 1
+endif
+
+if (! $?DESTDIR) then
+	echo DESTDIR must be set
+	exit 1
+endif
+
+set arch=`machine`
+set listsdir=`pwd`/lists
+set tardir=$RELEASEDIR
+set fsdir=$DESTDIR
+
+cd $fsdir
+
+set lists=(xbase xserv xshare)
+
+foreach setname ($lists)
+	echo -n "${setname}: "
+	cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} | sort | \
+	    pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
+	echo    "done."
+end
+
+if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
+    set xvers=x11r5
+else
+    set xvers=x11r6
+endif
+set setname=xfont
+echo -n "${setname}: "
+cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} | sort | \
+    pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
+echo    "done."
+
+
+
