@@ -24,7 +24,7 @@
 .\" dealing in this Software without prior written authorization from the 
 .\" The Open Group.
 .\"
-.\" $XFree86: xc/programs/xcmsdb/xcmsdb.man,v 1.7 2001/12/14 20:01:18 dawes Exp $
+.\" $XFree86: xc/programs/xcmsdb/xcmsdb.man,v 1.6 2001/01/27 18:21:09 dawes Exp $
 .\"
 .TH XCMSDB 1 __xorgversion__
 .SH NAME

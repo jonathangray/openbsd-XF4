@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xcursorgen/Imakefile,v 1.7 2002/12/23 11:05:23 herrb Exp $
+XCOMM $XFree86: xc/programs/xcursorgen/Imakefile,v 1.6 2002/12/07 20:43:43 herrb Exp $
 #define IHaveSubdirs
 #define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 

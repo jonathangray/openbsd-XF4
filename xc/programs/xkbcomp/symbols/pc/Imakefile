@@ -1,5 +1,5 @@
 XCOMM
-XCOMM $XFree86: xc/programs/xkbcomp/symbols/pc/Imakefile,v 1.15 2004/01/17 14:59:37 pascal Exp $
+XCOMM $XFree86: xc/programs/xkbcomp/symbols/pc/Imakefile,v 1.14 2003/12/09 00:10:39 dawes Exp $
 XCOMM
 
      DATAFILES = al am ar \

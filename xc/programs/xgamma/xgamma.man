@@ -18,11 +18,11 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The XFree86 Project.
 .\"
-.\" $XFree86: xc/programs/xgamma/xgamma.man,v 1.7 2001/01/27 18:21:14 dawes Exp $
+.\" $XFree86: xc/programs/xgamma/xgamma.man,v 1.6 2001/01/24 00:06:45 dawes Exp $
 .\"
 .TH xgamma 1 __vendorversion__
 .SH NAME
-xgamma - Alter a monitor's gamma correction for XFree86
+xgamma - Alter a monitor's gamma correction through the X server
 .SH SYNOPSIS
 .B "xgamma"
 [-display \fIdisplay\fP] [-screen \fIscreen\fP] [-quiet]
@@ -31,7 +31,7 @@ xgamma - Alter a monitor's gamma correction for XFree86
 .PP
 .B xgamma
 allows X users to query and alter the gamma correction of a monitor via
-the XFree86 X server video mode extension (XFree86-VidModeExtension).
+the X video mode extension (XFree86-VidModeExtension).
 .SH OPTIONS
 .PP
 .TP 8

@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xmessage/readfile.c,v 1.3 2003/04/14 23:03:13 herrb Exp $ */
+/* $XFree86: xc/programs/xmessage/readfile.c,v 1.2 2000/02/14 19:21:04 dawes Exp $ */
 
 #include <X11/Xos.h>			/* for types.h */
 #include <sys/stat.h>

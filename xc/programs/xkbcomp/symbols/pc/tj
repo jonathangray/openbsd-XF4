@@ -14,7 +14,7 @@
 // AEN <aen@logic.ru> (for the Russian layout)
 // Pablo Saratxaga <pablo@mandrakesoft> (for the dead keys changes)
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/tj,v 1.2 2002/11/22 04:03:28 dawes Exp $
+// $XFree86$
 
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

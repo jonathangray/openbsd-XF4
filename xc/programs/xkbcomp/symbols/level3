@@ -1,7 +1,7 @@
 // using the level(switch) map, the right Control key temporarily
 // chooses the third group level (until it is released).
 //
-// $XFree86: xc/programs/xkbcomp/symbols/level3,v 1.7 2003/09/08 14:25:32 eich Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/level3,v 1.5 2003/05/15 13:31:59 pascal Exp $
 //
 
 partial modifier_keys

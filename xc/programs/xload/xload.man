@@ -1,6 +1,6 @@
 .\" $XConsortium: xload.man,v 1.29 94/04/17 20:43:44 matt Exp $
 .\"
-.\" $XFree86: xc/programs/xload/xload.man,v 1.5 2002/10/12 16:06:48 herrb Exp $
+.\" $XFree86: xc/programs/xload/xload.man,v 1.4 2001/08/13 19:35:01 dawes Exp $
 .\"
 .TH XLOAD 1 __xorgversion__
 .SH NAME

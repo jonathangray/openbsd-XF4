@@ -47,7 +47,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xfontsel/ULabel.c,v 1.4 2003/10/24 20:38:18 tsi Exp $ */
+/* $XFree86: xc/programs/xfontsel/ULabel.c,v 1.3tsi Exp $ */
 
 /*
  * ULabel.c - UCSLabel widget

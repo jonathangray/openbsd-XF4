@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbevd/cfgparse.y,v 1.5 2002/10/16 04:53:17 tsi Exp $ */
+/* $XFree86: xc/programs/xkbevd/cfgparse.y,v 1.4tsi Exp $ */
 
 %token
 	END_OF_FILE	0

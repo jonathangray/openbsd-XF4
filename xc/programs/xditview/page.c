@@ -1,5 +1,5 @@
 /* $XConsortium: page.c,v 1.5 91/07/26 00:40:20 keith Exp $ */
-/* $XFree86: xc/programs/xditview/page.c,v 1.4 2001/08/27 23:35:12 dawes Exp $ */
+/* $XFree86: xc/programs/xditview/page.c,v 1.3 2001/08/01 00:45:03 tsi Exp $ */
 
 /*
  * page.c

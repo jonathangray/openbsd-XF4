@@ -1,6 +1,6 @@
 .\" $XConsortium: xditview.man,v 1.10 94/04/17 20:43:37 gildea Exp $
 .\"
-.\" $XFree86: xc/programs/xditview/xditview.man,v 1.5 2003/05/29 21:48:11 herrb Exp $
+.\" $XFree86: xc/programs/xditview/xditview.man,v 1.4 2003/03/19 01:49:28 dawes Exp $
 .\"
 .TH XDITVIEW 1 __xorgversion__
 .SH NAME

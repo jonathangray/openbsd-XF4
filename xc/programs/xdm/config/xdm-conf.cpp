@@ -1,10 +1,10 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.9 2004/02/13 22:41:24 matthieu Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.10 2004/11/03 00:22:22 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.11 2004/01/09 00:25:25 dawes Exp $
+! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.10 2002/11/30 19:11:32 herrb Exp $
 !
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm.log
 DisplayManager.pidFile:		XDMPIDDIR/xdm.pid

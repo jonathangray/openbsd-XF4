@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/misc.h,v 1.5 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef MISC_H
 #define MISC_H 1

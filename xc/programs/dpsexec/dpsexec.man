@@ -1,5 +1,5 @@
 .\" Id: dpsexec.man,v 6.1 1994/05/18 23:21:36 asente Exp $
-.\" $XFree86: xc/programs/dpsexec/dpsexec.man,v 1.1 2001/03/01 01:23:58 dawes Exp $
+.\" $XFree86$
 .TH DPSEXEC 1 __vendorversion__
 .SH NAME
 dpsexec \- Display PostScript Executive

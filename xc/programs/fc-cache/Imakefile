@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/fc-cache/Imakefile,v 1.1 2003/06/09 15:11:16 dawes Exp $
+XCOMM $XFree86$
 
 FONTCONFIGDIR = $(TOP)/extras/fontconfig
 
@@ -10,13 +10,22 @@ LOCAL_LIBRARIES=FontconfigClientLibs
 SRCS=fc-cache.c
 OBJS=fc-cache.o
 
+#if !InstallFontconfigLibrary
+#undef InstallProgram
+#define InstallProgram(x,y)
+#undef InstallManPage
+#define InstallManPage(x,y)
+#endif
+
 ComplexProgramTarget(fc-cache)
 LinkBuildBinary(ProgramTargetName(fc-cache))
 
+#if InstallFontconfigLibrary
 install::
 	if [ x$${DESTDIR} = x ]; then \
 		$(FCCACHE) -v -f;\
 	fi
+#endif
 
 LinkSourceFile(fc-cache.c,$(FONTCONFIGDIR)/fc-cache)
 LinkSourceFile(fc-cache.man,$(FONTCONFIGDIR)/fc-cache)

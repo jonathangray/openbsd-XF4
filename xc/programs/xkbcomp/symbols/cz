@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/symbols/cz,v 1.4 2002/09/16 18:06:21 eich Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/cz,v 1.1 2001/05/18 23:35:35 dawes Exp $
 
 partial alphanumeric_keys 
 xkb_symbols "basic" {

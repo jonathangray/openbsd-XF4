@@ -3,7 +3,7 @@
 //
 //
 //
-// $XFree86: xc/programs/xkbcomp/types/default,v 1.2 2001/05/18 23:35:35 dawes Exp $
+// $XFree86$
 
 default xkb_types "default" {
     include "basic"

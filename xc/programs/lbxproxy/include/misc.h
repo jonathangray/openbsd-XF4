@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/lbxproxy/include/misc.h,v 1.7 2001/12/14 20:00:55 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/include/misc.h,v 1.6 2001/08/01 00:45:01 tsi Exp $ */
 
 #ifndef MISC_H
 #define MISC_H 1

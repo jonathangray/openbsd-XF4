@@ -44,17 +44,21 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/include/servermd.h,v 1.5 2001/12/19 21:37:35 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/servermd.h,v 1.4 2001/12/14 20:01:38 dawes Exp $ */
 
 #ifndef _SERVERMD_H_
 #define _SERVERMD_H_
 
 #ifndef VENDOR_RELEASE
-#define VENDOR_RELEASE 6600
+#define VENDOR_RELEASE 6700
 #endif
 
 #ifndef VENDOR_STRING
-#define VENDOR_STRING "The XFree86 Project (experimental version)"
+# if defined VENDORNAME
+#  define VENDOR_STRING VENDORNAME
+# else
+#  define VENDOR_STRING "X.Org Foundation"
+# endif
 #endif
 
 #ifndef DEFAULT_FS_PORT

@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.4 2001/02/20 15:51:17 pookie Exp $
 
 
 
-XCOMM $XFree86: xc/programs/xrx/plugin/Imakefile,v 1.13 2002/11/22 22:56:06 tsi Exp $
+XCOMM $XFree86: xc/programs/xrx/plugin/Imakefile,v 1.12tsi Exp $
 
 #if HasSharedLibraries
 

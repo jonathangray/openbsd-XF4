@@ -30,7 +30,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xfsinfo/xfsinfo.c,v 1.4 2001/12/14 20:01:42 dawes Exp $ */
+/* $XFree86: xc/programs/xfsinfo/xfsinfo.c,v 1.3 2001/08/27 17:41:02 dawes Exp $ */
 
 /*
  * Copyright 1990 Network Computing Devices;
@@ -59,6 +59,7 @@ from The Open Group.
  */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<X11/Xos.h>
 #include	<X11/fonts/FSlib.h>
 

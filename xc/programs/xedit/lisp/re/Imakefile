@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xedit/lisp/re/Imakefile,v 1.2 2002/11/08 08:01:00 paulo Exp $
+XCOMM $XFree86$
 
 #define DoNormalLib	YES
 #define DoSharedLib	NO

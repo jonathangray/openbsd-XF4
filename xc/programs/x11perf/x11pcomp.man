@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/x11perf/x11pcomp.man,v 1.8 2001/12/14 20:01:14 dawes Exp $
+.\" $XFree86: xc/programs/x11perf/x11pcomp.man,v 1.7 2001/01/27 18:21:07 dawes Exp $
 .\"
 .TH X11PERFCOMP 1 __xorgversion__
 .SH NAME

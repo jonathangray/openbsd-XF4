@@ -1,29 +1,37 @@
 .\" $Xorg: xhost.man,v 1.4 2001/02/09 02:05:46 xorgcvs Exp $
+.\" $XdotOrg: xc/programs/xhost/xhost.man,v 1.2 2004/04/23 19:54:49 eich Exp $
+.\"
 .\" Copyright 1988, 1998  The Open Group
+.\" Copyright 2004 Sun Microsystems, Inc.
 .\" 
-.\" Permission to use, copy, modify, distribute, and sell this software and its
-.\" documentation for any purpose is hereby granted without fee, provided that
-.\" the above copyright notice appear in all copies and that both that
-.\" copyright notice and this permission notice appear in supporting
-.\" documentation.
-.\" 
-.\" The above copyright notice and this permission notice shall be included
-.\" in all copies or substantial portions of the Software.
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the
+.\" "Software"), to deal in the Software without restriction, including
+.\" without limitation the rights to use, copy, modify, merge, publish,
+.\" distribute, and/or sell copies of the Software, and to permit persons
+.\" to whom the Software is furnished to do so, provided that the above
+.\" copyright notice(s) and this permission notice appear in all copies of
+.\" the Software and that both the above copyright notice(s) and this
+.\" permission notice appear in supporting documentation.
 .\" 
 .\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 .\" OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-.\" IN NO EVENT SHALL THE OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR
-.\" OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-.\" ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-.\" OTHER DEALINGS IN THE SOFTWARE.
+.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+.\" OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+.\" HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+.\" INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
+.\" FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+.\" NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+.\" WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\" 
-.\" Except as contained in this notice, the name of The Open Group shall
-.\" not be used in advertising or otherwise to promote the sale, use or
-.\" other dealings in this Software without prior written authorization
-.\" from The Open Group.
+.\" Except as contained in this notice, the name of a copyright holder
+.\" shall not be used in advertising or otherwise to promote the sale, use
+.\" or other dealings in this Software without prior written authorization
+.\" of the copyright holder.
+.\" 
+.\" X Window System is a trademark of The Open Group.
 .\"
-.\" $XFree86: xc/programs/xhost/xhost.man,v 1.9 2003/07/09 15:27:41 tsi Exp $
+.\" $XFree86: xc/programs/xhost/xhost.man,v 1.8tsi Exp $
 .\"
 .TH XHOST 1 __xorgversion__
 .SH NAME
@@ -91,6 +99,7 @@ dnet	DECnet host
 nis	Secure RPC network name
 krb	Kerberos V5 principal
 local	contains only one name, the empty string
+si	Server Interpreted
 .fi
 .PP
 The family is case insensitive.
@@ -106,6 +115,11 @@ names that contain an at-sign (@) are assumed to be in the nis family.
 Otherwise they are assumed to be Internet addresses. If compiled to support
 IPv6, then all IPv4 and IPv6 addresses returned by getaddrinfo(3) are added to
 the access list in the appropriate inet or inet6 family.
+.PP
+Server interpreted addresses consist of a case-sensitive type tag and a
+string representing a given value, separated by a colon.  For example,
+"si:hostname:almas" is a server interpreted address of type \fIhostname\fP,
+with a value of \fIalmas\fP.
 .SH DIAGNOSTICS
 For each name added to the access control list,
 a line of the form "\fIname\fP being added to access control list"
@@ -116,7 +130,7 @@ is printed.
 .SH FILES
 /etc/X*.hosts
 .SH "SEE ALSO"
-X(__miscmansuffix__), Xsecurity(__miscmansuffix__), Xserver(1), xdm(1), getaddrinfo(3)
+X(__miscmansuffix__), Xsecurity(__miscmansuffix__), Xserver(1), xdm(1), xauth(1), getaddrinfo(3)
 .SH ENVIRONMENT
 .TP 8
 .B DISPLAY
@@ -130,10 +144,11 @@ to remove the machine named
 .I ``display''
 from the access list).
 .PP
-The X server stores network addresses, not host names.  This is not
-really a bug.  If somehow you change a host's network address while
-the server is still running, \fIxhost\fP must be used to add the new
-address and/or remove the old address.
+The X server stores network addresses, not host names, unless you use
+the server-interpreted hostname type address.  If somehow you change a
+host's network address while the server is still running, and you are
+using a network-address based form of authentication, \fIxhost\fP must
+be used to add the new address and/or remove the old address.
 .SH AUTHORS
 Bob Scheifler, MIT Laboratory for Computer Science,
 .br

@@ -23,7 +23,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/info.h,v 3.5 2001/12/14 20:02:25 dawes Exp $ */
+/* $XFree86: xc/programs/xsm/info.h,v 3.4 2001/08/01 00:45:07 tsi Exp $ */
 
 #ifndef _INFO_H_
 #define _INFO_H_

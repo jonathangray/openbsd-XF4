@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/bitmap/Bitmap.h,v 1.5 2001/12/14 20:00:40 dawes Exp $ */
+/* $XFree86: xc/programs/bitmap/Bitmap.h,v 1.4 2001/06/12 09:45:53 alanh Exp $ */
 
 /*
  * Author:  Davor Matic, MIT X Consortium

@@ -1,32 +1,41 @@
 /* $Xorg: xhost.c,v 1.4 2001/02/09 02:05:46 xorgcvs Exp $ */
+/* $XdotOrg: xc/programs/xhost/xhost.c,v 1.3 2004/07/27 06:06:06 herrb Exp $ */
 /*
 
 Copyright 1985, 1986, 1987, 1998  The Open Group
+Copyright 2004 Sun Microsystems, Inc.
 
-Permission to use, copy, modify, distribute, and sell this software and its
-documentation for any purpose is hereby granted without fee, provided that
-the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation.
+All rights reserved.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, provided that the above
+copyright notice(s) and this permission notice appear in all copies of
+the Software and that both the above copyright notice(s) and this
+permission notice appear in supporting documentation.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-Except as contained in this notice, the name of The Open Group shall
-not be used in advertising or otherwise to promote the sale, use or
-other dealings in this Software without prior written authorization
-from The Open Group.
+Except as contained in this notice, the name of a copyright holder
+shall not be used in advertising or otherwise to promote the sale, use
+or other dealings in this Software without prior written authorization
+of the copyright holder.
+
+X Window System is a trademark of The Open Group.
 
 */
-/* $XFree86: xc/programs/xhost/xhost.c,v 3.27 2003/07/29 07:23:27 herrb Exp $ */
+/* $XFree86: xc/programs/xhost/xhost.c,v 3.26 2003/07/27 14:05:45 herrb Exp $ */
 
 #if defined(TCPCONN) || defined(STREAMSCONN)
 #define NEEDSOCKETS
@@ -221,6 +230,12 @@ main(int argc, char *argv[])
 		    case FamilyLocalHost:
 			printf("LOCAL:");
 			break;
+		    case FamilyServerInterpreted:
+			printf("SI:");
+			break;
+		    default:
+			printf("<unknown family type %d>:", list[i].family);
+			break;
 		    }
 		    printf ("%s", hostname);
 		} else {
@@ -345,6 +360,19 @@ change_host(Display *dpy, char *name, Bool add)
 	return 0;
 #endif
     }
+#ifdef ACCEPT_INETV6 /* Allow inetv6 as an alias for inet6 for compatibility
+			with original X11 over IPv6 draft. */
+    else if (!strncmp("inetv6:", lname, 7)) {
+#if (defined(TCPCONN) || defined(STREAMSCONN)) && \
+    defined(IPv6) && defined(AF_INET6)
+	family = FamilyInternet6;
+	name += 7;
+#else
+	fprintf (stderr, "%s: not compiled for IPv6\n", ProgramName);
+	return 0;
+#endif
+    }
+#endif /* ACCEPT_INETV6 */
     else if (!strncmp("dnet:", lname, 5)) {
 #ifdef DNETCONN
 	family = FamilyDECnet;
@@ -375,6 +403,10 @@ change_host(Display *dpy, char *name, Bool add)
     else if (!strncmp("local:", lname, 6)) {
 	family = FamilyLocalHost;
     }
+    else if (!strncmp("si:", lname, 3)) {
+	family = FamilyServerInterpreted;
+	name += 3;
+    }
     if (family == FamilyWild && (cp = strchr(lname, ':'))) {
 	*cp = '\0';
 	fprintf (stderr, "%s: unknown address family \"%s\"\n",
@@ -383,10 +415,42 @@ change_host(Display *dpy, char *name, Bool add)
     }
     free(lname);
 
+    if (family == FamilyServerInterpreted) {
+	XServerInterpretedAddress siaddr;
+	int namelen;
+
+	cp = strchr(name, ':');
+	if (cp == NULL || cp == name) {
+	    fprintf(stderr, 
+	   "%s: type must be specified for server interpreted family \"%s\"\n",
+	      ProgramName, name);
+	    return 0;
+	}
+	ha.family = FamilyServerInterpreted;
+	ha.address = (char *) &siaddr;
+	namelen = strlen(name);
+	siaddr.type = malloc(namelen);
+	if (siaddr.type == NULL) {
+	    return 0;
+	}
+	memcpy(siaddr.type, name, namelen);
+	siaddr.typelength = cp - name;
+	siaddr.type[siaddr.typelength] = '\0';
+	siaddr.value = siaddr.type + siaddr.typelength + 1;
+	siaddr.valuelength = namelen - (siaddr.typelength + 1);
+	if (add)
+	    XAddHost(dpy, &ha);
+	else
+	    XRemoveHost(dpy, &ha);
+	free(siaddr.type);
+	printf( "%s %s\n", name, add ? add_msg : remove_msg);
+	return 1;
+    }
+
 #ifdef DNETCONN
-    if (family == FamilyDECnet ||
+    if (family == FamilyDECnet || ((family == FamilyWild) &&
 	(cp = strchr(name, ':')) && (*(cp + 1) == ':') &&
-	!(*cp = '\0')) {
+	!(*cp = '\0'))) {
 	ha.family = FamilyDECnet;
 	if (dnaddrp = dnet_addr(name)) {
 	    dnaddr = *dnaddrp;
@@ -636,7 +700,7 @@ jmp_buf env;
 static char *
 get_hostname(XHostAddress *ha)
 {
-#if (defined(TCPCONN) || defined(STREAMSCONN)) && \
+#if (defined(TCPCONN) || defined(STREAMSCONN)) &&	\
      (!defined(IPv6) || !defined(AF_INET6))
     static struct hostent *hp = NULL;
 #endif
@@ -801,6 +865,34 @@ get_hostname(XHostAddress *ha)
 #endif
     if (ha->family == FamilyLocalHost) {
 	return "";
+    }
+    if (ha->family == FamilyServerInterpreted) {
+	XServerInterpretedAddress *sip;
+	static char *addressString;
+	static size_t addressStringSize;
+	size_t neededSize;
+
+	sip = (XServerInterpretedAddress *) ha->address;
+	neededSize = sip->typelength + sip->valuelength + 2;
+
+	if (addressStringSize < neededSize) {
+	    if (addressString != NULL) {
+		free(addressString);
+	    }
+	    addressStringSize = neededSize;
+	    addressString = malloc(addressStringSize);
+	}
+	if (addressString != NULL) {
+	    char *cp = addressString;
+
+	    memcpy(cp, sip->type, sip->typelength);
+	    cp += sip->typelength;
+	    *cp++ = ':';
+	    memcpy(cp, sip->value, sip->valuelength);
+	    cp += sip->valuelength;
+	    *cp = '\0';
+	}
+	return addressString;
     }
     return (NULL);
 }

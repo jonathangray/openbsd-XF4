@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/keycodes.c,v 3.5 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #include "xkbcomp.h"
 #include "tokens.h"

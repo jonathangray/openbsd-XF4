@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/geometry.c,v 1.6 2003/12/22 17:48:13 tsi Exp $ */
+/* $XFree86: xc/programs/xkbcomp/geometry.c,v 1.5tsi Exp $ */
 
 #include "xkbcomp.h"
 #include "tokens.h"

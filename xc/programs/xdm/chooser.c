@@ -1,4 +1,5 @@
 /*
+ * $XdotOrg: xc/programs/xdm/chooser.c,v 1.2 2004/04/23 19:54:42 eich Exp $
  * $Xorg: chooser.c,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
@@ -26,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xdm/chooser.c,v 3.27 2003/11/23 22:57:31 herrb Exp $ */
+/* $XFree86: xc/programs/xdm/chooser.c,v 3.26 2003/07/18 15:53:28 tsi Exp $ */
 
 /*
  * Chooser - display a menu of names and let the user select one
@@ -852,6 +853,7 @@ InitXDMCP (char **argv)
 	perror ("setsockopt");
 #endif
 #endif
+    
     XtAddInput (socketFD, (XtPointer) XtInputReadMask, ReceivePacket,
 		(XtPointer) &socketFD);
 #if defined(IPv6) && defined(AF_INET6)

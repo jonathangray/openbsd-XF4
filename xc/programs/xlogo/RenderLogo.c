@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlogo/RenderLogo.c,v 1.4 2003/05/29 15:20:57 tsi Exp $ */
+/* $XFree86: xc/programs/xlogo/RenderLogo.c,v 1.3tsi Exp $ */
 
 #include <stdio.h>
 

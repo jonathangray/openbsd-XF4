@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbevd/evargs.c,v 1.4 2001/01/17 23:46:08 dawes Exp $ */
+/* $XFree86: xc/programs/xkbevd/evargs.c,v 1.3 1999/03/02 11:49:59 dawes Exp $ */
 
 #define	DEBUG_VAR evargsDebug
 #include "xkbevd.h"

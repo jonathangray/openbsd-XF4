@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/pathname.c,v 1.18 2003/04/27 18:17:34 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/pathname.c,v 1.17tsi Exp $ */
 
 #include <stdio.h>	/* including dirent.h first may cause problems */
 #include <sys/types.h>

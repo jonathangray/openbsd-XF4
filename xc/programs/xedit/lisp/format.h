@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/format.h,v 1.4 2003/04/27 18:17:32 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/format.h,v 1.3tsi Exp $ */
 
 #ifndef Lisp_format_h
 #define Lisp_format_h

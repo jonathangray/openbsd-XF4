@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/vmod.c,v 3.4 2002/06/05 00:00:37 dawes Exp $ */
+/* $XFree86: xc/programs/xkbcomp/vmod.c,v 3.3 2001/01/17 23:45:45 dawes Exp $ */
 
 #define	DEBUG_VAR_NOT_LOCAL
 #define	DEBUG_VAR debugFlags

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/chparse.h,v 1.1 2001/11/02 23:29:34 dawes Exp $ */
+/* $XFree86$ */
 
 extern int chparse(int max_delay, int rest_delay, int *state, int *private,
 		   int param[], int *nparam, int inter[], int *ninter,

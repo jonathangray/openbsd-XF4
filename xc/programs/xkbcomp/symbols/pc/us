@@ -1,5 +1,6 @@
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/us,v 1.7 2003/12/18 14:14:39 pascal Exp $
+// $XdotOrg: xc/programs/xkbcomp/symbols/pc/us,v 1.2 2004/04/23 19:54:56 eich Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/us,v 1.6 2003/10/31 14:32:05 pascal Exp $
 
 default
 partial hidden alphanumeric_keys modifier_keys 

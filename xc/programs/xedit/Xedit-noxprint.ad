@@ -1,10 +1,11 @@
-! $XFree86: xc/programs/xedit/Xedit.ad,v 1.24 2002/11/10 23:21:56 paulo Exp $
+! $XFree86: xc/programs/xedit/Xedit.ad,v 1.23 2002/09/22 07:09:05 paulo Exp $
 
 *geometry:				590x440
 *input:					TRUE
 *enableBackups:				True
 *backupNameSuffix:			~
 *changedBitmap:				xlogo11
+*international:                         True
 
 *hints:\
 Use Control-S and Control-R to Search.\n\
@@ -457,3 +458,5 @@ c<Key>G:	set-columns(cancel)\n\
 
 *columns.translations:	#override \
 <Message>WM_PROTOCOLS:	set-columns(cancel)
+
+! EOF.

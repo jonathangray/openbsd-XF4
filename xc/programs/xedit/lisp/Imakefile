@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xedit/lisp/Imakefile,v 1.26 2003/05/20 21:44:48 tsi Exp $
+XCOMM $XFree86: xc/programs/xedit/lisp/Imakefile,v 1.25 2003/04/27 18:17:31 tsi Exp $
 
 #include "lisp.cf"
 #include "lisp.rules"
@@ -23,7 +23,7 @@ LinkSourceFile(snprintf.c, $(LIBSRC)/misc)
 #if defined(LynxOSArchitecture) || defined(SVR3Architecture) || defined(LinuxArchitecture)
 #ifndef UseInstalled
 LinkSourceFile(realpath.c, $(TOP)/programs/xedit)
-#endif
+#endif /* !UseInstalled */
         RP_SRCS = realpath.c
         RP_OBJS = realpath.o
      RP_DEFINES = -DNEED_REALPATH
@@ -31,7 +31,7 @@ LinkSourceFile(realpath.c, $(TOP)/programs/xedit)
 #if !HasStrcasecmp
 #ifndef UseInstalled
 LinkSourceFile(strcasecmp.c, $(TOP)/programs/xedit)
-#endif
+#endif /* !UseInstalled */
    STRCCMP_SRCS = strcasecmp.c
    STRCCMP_OBJS = strcasecmp.o
 STRCCMP_DEFINES = -DNEED_STRCASECMP

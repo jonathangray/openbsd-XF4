@@ -3,9 +3,13 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:59 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/proxymngr/Imakefile,v 1.14 2003/07/09 15:27:36 tsi Exp $
+XCOMM $XFree86: xc/programs/proxymngr/Imakefile,v 1.13tsi Exp $
 
-         DEFINES = StrcasecmpDefines
+         XORGREL = XOrgReleaseString
+     XORGREL_DEF = -DXORG_RELEASE="\"$(XORGREL)\""
+
+
+         DEFINES = StrcasecmpDefines $(XORGREL_DEF) $(VENDOR_DEFINES)
 
          DEPLIBS = $(DEPXTOOLLIB) $(DEPXONLYLIB)
  LOCAL_LIBRARIES = $(XTOOLLIB) $(XONLYLIB)

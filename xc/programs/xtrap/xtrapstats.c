@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/xtrapstats.c,v 1.2 2002/09/18 17:11:57 tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapstats.c,v 1.1tsi Exp $ */
 /*
  * @DEC_COPYRIGHT@
  */

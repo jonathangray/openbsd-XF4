@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/oclock/transform.c,v 3.5 2001/12/14 20:01:00 dawes Exp $ */
+/* $XFree86: xc/programs/oclock/transform.c,v 3.4 2001/07/25 15:05:15 dawes Exp $ */
 
 
 /*

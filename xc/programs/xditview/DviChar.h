@@ -9,7 +9,7 @@
  * case insensitive, a dash seperating the
  * CharSetRegistry from the CharSetEncoding
  */
-/* $XFree86: xc/programs/xditview/DviChar.h,v 1.2 2001/08/01 00:45:03 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _DVICHAR_H_
 #define _DVICHAR_H_

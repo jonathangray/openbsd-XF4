@@ -1,5 +1,5 @@
 /* OS/2 REXX */
-/* $XFree86: xc/programs/xinit/startx.cmd,v 3.4 2003/11/12 00:10:31 dawes Exp $
+/* $XFree86: xc/programs/xinit/startx.cmd,v 3.3 1996/10/17 15:23:47 dawes Exp $
  * 
  * This is just a sample implementation of a slightly less primitive 
  * interface than xinit.  It looks for user xinitrc.cmd and xservrc.cmd
@@ -15,7 +15,7 @@ ADDRESS CMD
 env = 'OS2ENVIRONMENT'
 x11root = VALUE('X11ROOT',,env)
 IF x11root = '' THEN DO
-	SAY "The environment variable X11ROOT is not set. XFree86/OS2 won't run without it."
+	SAY "The environment variable X11ROOT is not set. X/OS2 won't run without it."
 	EXIT
 END
 

@@ -19,7 +19,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-/* $XFree86: xc/programs/mkfontscale/hash.h,v 1.3 2003/07/08 15:39:49 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _MKS_HASH_H_
 #define _MKS_HASH_H_ 1

@@ -1,6 +1,6 @@
 /*
 ** $XConsortium: tests.c,v 1.20 91/06/08 18:57:07 rws Exp $
-** $XFree86: xc/programs/xgc/tests.c,v 1.12 2003/10/24 20:38:18 tsi Exp $
+** $XFree86: xc/programs/xgc/tests.c,v 1.11tsi Exp $
 **
 */
 

@@ -1,5 +1,6 @@
+/* $XdotOrg: xc/programs/xload/get_load.c,v 1.2 2004/04/23 19:54:57 eich Exp $ */
 /* $XConsortium: get_load.c /main/37 1996/03/09 09:38:04 kaleb $ */
-/* $XFree86: xc/programs/xload/get_load.c,v 1.22 2003/12/22 17:48:13 tsi Exp $ */
+/* $XFree86: xc/programs/xload/get_load.c,v 1.21tsi Exp $ */
 /*
 
 Copyright (c) 1989  X Consortium
@@ -45,6 +46,61 @@ from the X Consortium.
 #include <stdio.h>
 #include <stdlib.h>
 #include "xload.h"
+
+#if defined(__CYGWIN__)
+#include <windows.h>
+typedef struct {
+  DWORD stat;
+  union {
+    LONG vLong;
+    double vDouble;
+    LONGLONG vLongLong;
+    void *string;
+  } u;
+} COUNTER;
+static HANDLE query;
+static HANDLE counter;
+static HINSTANCE hdll;
+static long (__stdcall *pdhopen)(LPCSTR, DWORD, HANDLE);
+static long (__stdcall *pdhaddcounter)(HANDLE, LPCSTR, DWORD, HANDLE*);
+static long (__stdcall *pdhcollectquerydata)(HANDLE);
+static long (__stdcall *pdhgetformattedcountervalue)(HANDLE, DWORD, LPDWORD, COUNTER*);
+#define CYGWIN_PERF 
+void InitLoadPoint()
+{
+  long ret;
+  hdll=LoadLibrary("pdh.dll");
+  if (!hdll) exit(-1);
+  pdhopen=(void*)GetProcAddress(hdll, "PdhOpenQueryA");
+  if (!pdhopen) exit(-1);
+  pdhaddcounter=(void*)GetProcAddress(hdll, "PdhAddCounterA");
+  if (!pdhaddcounter) exit(-1);
+  pdhcollectquerydata=(void*)GetProcAddress(hdll, "PdhCollectQueryData");
+  if (!pdhcollectquerydata) exit(-1);
+  pdhgetformattedcountervalue=(void*)GetProcAddress(hdll, "PdhGetFormattedCounterValue");
+  if (!pdhgetformattedcountervalue) exit(-1);
+  ret = pdhopen( NULL , 0, &query );
+  if (ret!=0) exit(-1);
+  ret = pdhaddcounter(query, "\\Processor(_Total)\\% Processor Time", 0, &counter);
+  if (ret!=0) exit(-1);  
+}
+void GetLoadPoint( w, closure, call_data )      /* SYSV386 version */
+     Widget  w;              /* unused */
+     XtPointer       closure;        /* unused */
+     XtPointer       call_data;      /* pointer to (double) return value */
+{
+  double *loadavg = (double *)call_data;
+  COUNTER fmtvalue;
+  long ret;
+  *loadavg = 0.0;
+  ret = pdhcollectquerydata(query);
+  if (ret!=0) return;
+  ret = pdhgetformattedcountervalue(counter, 0x200, NULL, &fmtvalue);
+  if (ret!=0) return;
+  *loadavg = (fmtvalue.u.vDouble-0.01)/100.0;
+}
+#else
+
 
 #if !defined(DGUX)
 #if defined(att) || defined(QNX4)
@@ -859,7 +915,7 @@ void InitLoadPoint()
     }
 #else /* sun svr4 5.5 or later */
 
-#if (!defined(SVR4)) && !defined(sgi) && !defined(MOTOROLA) && !(BSD >= 199103)
+#if !defined(SVR4) && !defined(sgi) && !defined(MOTOROLA) && !defined(AIXV5) && !(BSD >= 199103)
     extern void nlist();
 #endif
 
@@ -1168,3 +1224,4 @@ getloadavg (double loadavg[], int nelem)
 #endif /* END OF DG/ux */
 
 
+#endif /* END of __CYGWIN__ */

@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/lbxproxy/include/os.h,v 1.8 2003/11/17 22:20:48 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/include/os.h,v 1.7 2001/12/14 20:00:55 dawes Exp $ */
 
 #ifndef OS_H
 #define OS_H

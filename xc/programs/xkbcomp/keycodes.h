@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/keycodes.h,v 1.3 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef KEYCODES_H
 #define KEYCODES_H 1

@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
  *
  */
-/* $XFree86: xc/programs/xmh/actions.h,v 1.3 2002/07/01 02:26:05 tsi Exp $ */
+/* $XFree86$ */
 
 #define XMH_ACTION_ARGS Widget, XEvent *, String *, Cardinal *
 

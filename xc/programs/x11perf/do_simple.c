@@ -21,7 +21,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************************/
-/* $XFree86: xc/programs/x11perf/do_simple.c,v 1.7 2003/05/27 22:26:58 tsi Exp $ */
+/* $XFree86: xc/programs/x11perf/do_simple.c,v 1.6tsi Exp $ */
 
 #ifndef VMS
 #include <X11/Xatom.h>

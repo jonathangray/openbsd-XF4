@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/xtrapout.c,v 1.2 2001/12/12 00:43:50 dawes Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapout.c,v 1.1 2001/11/02 23:29:34 dawes Exp $ */
 /*
  * @DEC_COPYRIGHT@
  */
@@ -101,6 +101,11 @@ SOFTWARE.
 #ifndef vaxc
 #define globalref extern
 #endif
+#ifdef Lynx     
+extern char *optarg;     
+extern int optind;     
+extern int opterr;     
+#endif     
 
 
 /* Forward declarations */

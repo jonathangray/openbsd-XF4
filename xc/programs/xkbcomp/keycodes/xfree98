@@ -24,7 +24,7 @@
 //other dealings in this Software without prior written authorization
 //from The Open Group.
 //
-// $XFree86: xc/programs/xkbcomp/keycodes/xfree98,v 3.7 2001/12/14 20:02:00 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/keycodes/xfree98,v 3.6 2001/01/17 23:45:51 dawes Exp $
 //
 default xkb_keycodes "pc98" {
 

@@ -1,6 +1,6 @@
 // based on a keyboard map from an 'xkb/symbols/fi' file
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/fi,v 1.10 2003/04/19 12:22:11 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/fi,v 1.9 2003/01/29 17:17:31 dawes Exp $
 
 
 partial default alphanumeric_keys

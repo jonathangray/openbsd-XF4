@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/difsutils.c,v 1.7 2001/12/14 20:01:33 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/difs/difsutils.c,v 1.6 2001/01/17 23:45:28 dawes Exp $ */
 
 #define	XK_LATIN1
 

@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xfd/xfd.man,v 1.10 2003/04/21 20:42:49 dawes Exp $
+.\" $XFree86: xc/programs/xfd/xfd.man,v 1.9 2003/04/19 23:49:27 herrb Exp $
 .\"
 .TH XFD 1 __xorgversion__
 .SH NAME

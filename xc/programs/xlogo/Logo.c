@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xlogo/Logo.c,v 1.2 2004/04/23 19:54:57 eich Exp $ */
 /* $Xorg: Logo.c,v 1.4 2001/02/09 02:05:54 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlogo/Logo.c,v 1.7 2003/12/19 02:05:40 dawes Exp $ */
+/* $XFree86: xc/programs/xlogo/Logo.c,v 1.6 2002/05/23 23:53:59 keithp Exp $ */
 
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>

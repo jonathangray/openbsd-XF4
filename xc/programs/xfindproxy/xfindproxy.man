@@ -24,7 +24,7 @@
 .\" from The Open Group.
 .\" 
 .\"
-.\" $XFree86: xc/programs/xfindproxy/xfindproxy.man,v 1.7 2001/12/14 20:01:32 dawes Exp $
+.\" $XFree86: xc/programs/xfindproxy/xfindproxy.man,v 1.6 2001/01/27 18:21:12 dawes Exp $
 .\"
 .TH XFINDPROXY 1 __xorgversion__
 .SH NAME

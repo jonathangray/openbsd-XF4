@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/indicators.h,v 1.3 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef INDICATORS_H
 #define INDICATORS_H 1

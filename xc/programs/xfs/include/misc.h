@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/include/misc.h,v 3.9 2001/12/14 20:01:38 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/misc.h,v 3.8 2001/07/25 15:05:21 dawes Exp $ */
 
 #ifndef _MISC_H_
 #define _MISC_H_

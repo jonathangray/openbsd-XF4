@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
 
-/* $XFree86: xc/programs/editres/handler.c,v 1.8 2003/10/24 20:38:10 tsi Exp $ */
+/* $XFree86: xc/programs/editres/handler.c,v 1.7tsi Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

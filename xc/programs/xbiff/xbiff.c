@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xbiff/xbiff.c,v 1.4 2003/05/27 22:26:59 tsi Exp $ */
+/* $XFree86: xc/programs/xbiff/xbiff.c,v 1.3tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

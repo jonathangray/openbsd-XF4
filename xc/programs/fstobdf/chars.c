@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/fstobdf/chars.c,v 3.8 2001/12/14 20:00:45 dawes Exp $ */
+/* $XFree86: xc/programs/fstobdf/chars.c,v 3.7 2001/03/04 00:16:31 tsi Exp $ */
 
 /* Morten Storgaard Nielsen: chars.c,v 3.2-1 2000/01/30 14:11:19 kat Exp */
 

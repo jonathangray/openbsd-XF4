@@ -1,4 +1,5 @@
-XCOMM $XFree86: xc/programs/xedit/lisp/modules/Imakefile,v 1.17 2003/12/11 16:03:30 paulo Exp $
+XCOMM $XdotOrg: xc/programs/xedit/lisp/modules/Imakefile,v 1.2 2004/04/23 19:54:44 eich Exp $
+XCOMM $XFree86: xc/programs/xedit/lisp/modules/Imakefile,v 1.15tsi Exp $
 
 #include "../lisp.cf"
 #include "../lisp.rules"

@@ -3,7 +3,7 @@
 // Lithuanian keyboard map by Rièardas Èepas <rch@richard.eu.org>
 // merged into one file by Nerijus Baliûnas
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/lt,v 1.4 2003/04/19 12:22:12 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/lt,v 1.3 2002/12/14 22:26:11 dawes Exp $
 
 // If you want to have 2 layouts, use
 // Option "XkbLayout" "lt,lt(lt_us)"

@@ -21,7 +21,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************************/
-/* $XFree86: xc/programs/x11perf/do_traps.c,v 1.10 2003/05/27 22:26:58 tsi Exp $ */
+/* $XFree86: xc/programs/x11perf/do_traps.c,v 1.9tsi Exp $ */
 
 #include "x11perf.h"
 #include "bitmaps.h"
@@ -110,10 +110,160 @@ EndTrapezoids(XParms xp, Parms p)
 #include <X11/extensions/Xrender.h>
 #include <X11/Xft/Xft.h>
 
-static XTrapezoid	*traps;
-static XftDraw		*aadraw;
-static XftColor		aablack, aawhite;
+static XTrap		    *traps;
+static XTrapezoid	    *trapezoids;
+static XftDraw		    *aadraw;
+static XftColor		    aablack, aawhite;
+static XRenderColor	    transparent = { 0, 0, 0, 0 };
 static XRenderPictFormat    *maskFormat;
+static Pixmap		    maskPixmap;
+static Picture		    mask;
+
+int
+InitFixedTraps(XParms xp, Parms p, int reps)
+{
+    int     i, numTraps;
+    int     rows;
+    int     x, y;
+    int     size, skew;
+    XTrap	*curTrap;
+    XRenderColor	color;
+    int			major, minor;
+    int		depth;
+    int		width;
+    int		std_fmt;
+
+    XRenderQueryVersion (xp->d, &major, &minor);
+    if (major == 0 && minor < 9)
+	return 0;
+
+    pgc = xp->fggc;
+
+    size = p->special;
+    numTraps = p->objects;
+    traps = (XTrap *)malloc(numTraps * sizeof(XTrap));
+    curTrap = traps;
+    x = size;
+    y = 0;
+    rows = 0;
+    skew = size;
+    aadraw = XftDrawCreate (xp->d, xp->w, 
+			    xp->vinfo.visual, 
+			    xp->cmap);
+    
+    depth = 0;
+    width = 0;
+    if (p->font)
+	sscanf (p->font, "%d,%d", &depth, &width);
+
+    switch (depth) {
+    case 8:
+    default:
+	depth = 8;
+	std_fmt = PictStandardA8;
+	break;
+    case 4:
+	std_fmt = PictStandardA4;
+	break;
+    case 1:
+	std_fmt = PictStandardA1;
+	break;
+    }
+    maskFormat = XRenderFindStandardFormat (xp->d, std_fmt);
+    
+    maskPixmap = XCreatePixmap (xp->d, xp->w, WIDTH, HEIGHT, depth);
+    
+    mask = XRenderCreatePicture (xp->d, maskPixmap, maskFormat, 0, 0);
+    
+    color.red = 0;
+    color.green = 0;
+    color.blue = 0;
+    color.alpha = 0xffff;
+    if (!XftColorAllocValue (xp->d,
+			     xp->vinfo.visual, 
+			     xp->cmap,
+			     &color, &aablack))
+    {
+	XftDrawDestroy (aadraw);
+	aadraw = 0;
+	return 0;
+    }
+    color.red = 0xffff;
+    color.green = 0xffff;
+    color.blue = 0xffff;
+    color.alpha = 0xffff;
+    if (!XftColorAllocValue (xp->d,
+			     xp->vinfo.visual, 
+			     xp->cmap,
+			     &color, &aawhite))
+    {
+	XftDrawDestroy (aadraw);
+	aadraw = 0;
+	return 0;
+    }
+
+    if (width == 0)
+	width = size;
+    for (i = 0; i != p->objects; i++, curTrap ++) {
+	curTrap->top.y = XDoubleToFixed (y);
+	curTrap->top.left = XDoubleToFixed (x - skew);
+	curTrap->top.right = XDoubleToFixed (x - skew + width);
+	curTrap->bottom.y = XDoubleToFixed (y + size);
+	curTrap->bottom.left = XDoubleToFixed (x + skew - width);
+	curTrap->bottom.right = XDoubleToFixed (x + skew);
+	
+	skew--;
+	if (skew < 0) skew = size;
+
+	y += size;
+	rows++;
+	if (y + size > HEIGHT || rows == MAXROWS) {
+	    rows = 0;
+	    y = 0;
+	    x += 2 * size;
+	    if (x + size > WIDTH) {
+		x = size;
+	    }
+	}
+    }
+    
+    SetFillStyle(xp, p);
+    return reps;
+}
+
+void 
+DoFixedTraps(XParms xp, Parms p, int reps)
+{
+    int		i;
+    Picture	white, black, src, dst;
+
+    white = XftDrawSrcPicture (aadraw, &aawhite);
+    black = XftDrawSrcPicture (aadraw, &aablack);
+    dst = XftDrawPicture (aadraw);
+
+    src = black;
+    for (i = 0; i != reps; i++) {
+	XRenderFillRectangle (xp->d, PictOpSrc, mask, &transparent,
+			      0, 0, WIDTH, HEIGHT);
+	XRenderAddTraps (xp->d, mask, 0, 0, traps, p->objects);
+	XRenderComposite (xp->d, PictOpOver, src, mask, dst,
+			  0, 0, 0, 0, 0, 0, WIDTH, HEIGHT);
+        if (src == black)
+	    src = white;
+        else
+            src = black;
+	CheckAbort ();
+    }
+}
+
+void
+EndFixedTraps (XParms xp, Parms p)
+{
+    free (traps);
+    XftDrawDestroy (aadraw);
+    XRenderFreePicture (xp->d, mask);
+    XFreePixmap (xp->d, maskPixmap);
+}
 
 int
 InitFixedTrapezoids(XParms xp, Parms p, int reps)
@@ -129,8 +279,8 @@ InitFixedTrapezoids(XParms xp, Parms p, int reps)
 
     size = p->special;
     numTraps = p->objects;
-    traps = (XTrapezoid *)malloc(numTraps * sizeof(XTrapezoid));
-    curTrap = traps;
+    trapezoids = (XTrapezoid *)malloc(numTraps * sizeof(XTrapezoid));
+    curTrap = trapezoids;
     x = size;
     y = 0;
     rows = 0;
@@ -228,7 +378,7 @@ DoFixedTrapezoids(XParms xp, Parms p, int reps)
     src = black;
     for (i = 0; i != reps; i++) {
 	XRenderCompositeTrapezoids (xp->d, PictOpOver, src, dst, maskFormat,
-				    0, 0, traps, p->objects);
+				    0, 0, trapezoids, p->objects);
         if (src == black)
 	    src = white;
         else
@@ -240,7 +390,7 @@ DoFixedTrapezoids(XParms xp, Parms p, int reps)
 void
 EndFixedTrapezoids (XParms xp, Parms p)
 {
-    free (traps);
+    free (trapezoids);
     XftDrawDestroy (aadraw);
 }
 

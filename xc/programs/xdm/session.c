@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xdm/session.c,v 1.2 2004/04/23 19:54:42 eich Exp $ */
 /* $Xorg: session.c,v 1.8 2001/02/09 02:05:40 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/session.c,v 3.37 2004/01/07 04:28:06 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/session.c,v 3.36 2003/09/29 21:00:08 herrb Exp $ */
 
 /*
  * xdm - display manager daemon

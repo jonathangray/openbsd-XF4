@@ -27,7 +27,7 @@ from The Open Group.
 
 */
 
-/* $XFree86: xc/programs/bdftopcf/bdftopcf.c,v 1.5 2001/12/14 20:00:39 dawes Exp $ */
+/* $XFree86: xc/programs/bdftopcf/bdftopcf.c,v 1.4 2001/08/01 00:45:00 tsi Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xproto.h>

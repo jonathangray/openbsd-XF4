@@ -1,6 +1,6 @@
 /*
  * $XConsortium: util.c /main/42 1996/01/14 16:51:55 kaleb $
- * $XFree86: xc/programs/xmh/util.c,v 3.7 2002/04/05 21:06:29 dickey Exp $
+ * $XFree86: xc/programs/xmh/util.c,v 3.6 2001/10/31 22:50:31 tsi Exp $
  *
  *
  *			  COPYRIGHT 1987

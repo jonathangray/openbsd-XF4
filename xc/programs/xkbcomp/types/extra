@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/types/extra,v 1.4 2003/10/25 13:24:06 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/types/extra,v 1.3 2002/11/26 02:14:02 dawes Exp $
 
 partial default xkb_types "default" {
     // Definition for a key type used for the czech keymap, for instance.

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlogo/RenderLogo.h,v 1.2 2002/07/01 02:26:04 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _RenderLogo_h
 #define _RenderLogo_h

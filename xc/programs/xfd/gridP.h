@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xfd/gridP.h,v 1.4 2002/07/23 01:45:41 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _FontGridP_h_
 #define _FontGridP_h_

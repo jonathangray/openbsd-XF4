@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/setxkbmap/setxkbmap.c,v 1.2 2004/04/23 19:54:37 eich Exp $ */
 /************************************************************
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/setxkbmap/setxkbmap.c,v 3.8 2003/11/17 22:20:50 dawes Exp $ */
+/* $XFree86: xc/programs/setxkbmap/setxkbmap.c,v 3.7 2003/01/20 04:15:08 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,7 +50,7 @@
 #define	DFLT_XKB_CONFIG_ROOT "/usr/X11R6/lib/X11/xkb"
 #endif
 #ifndef DFLT_XKB_RULES_FILE
-#define	DFLT_XKB_RULES_FILE "xfree86"
+#define	DFLT_XKB_RULES_FILE __XKBDEFRULES__
 #endif
 #ifndef DFLT_XKB_LAYOUT
 #define	DFLT_XKB_LAYOUT "us"

@@ -1,4 +1,5 @@
 /* $Xorg: connection.c,v 1.5 2001/02/09 02:05:33 xorgcvs Exp $ */
+/* $Xdotorg$ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -60,7 +61,7 @@ SOFTWARE.
  *      socket ids aren't small nums (0 - 2^8)
  *
  *****************************************************************/
-/* $XFree86: xc/programs/lbxproxy/os/connection.c,v 1.19 2003/11/17 22:20:49 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/os/connection.c,v 1.18 2002/07/06 09:59:17 alanh Exp $ */
 
 #include "misc.h"
 #include <X11/Xtrans.h>
@@ -168,11 +169,15 @@ PickNewListenDisplay (displayP)
     char **displayP;
 {
     static char newDisplay[16];
-    sprintf (newDisplay, "%d", atoi (*displayP) + 1);
-    *displayP = newDisplay;
+    long displayNum;
 
-    if (atoi (*displayP) > 65535)
+    errno = 0;
+    displayNum = strtol (*displayP, NULL, 10);
+    if ((displayNum >= 65535) || (displayNum < 0) || (errno != 0))
 	return (FALSE);
+
+    sprintf (newDisplay, "%d", displayNum + 1);
+    *displayP = newDisplay;
 
     return (TRUE);
 }

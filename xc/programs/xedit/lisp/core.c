@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/core.c,v 1.72 2003/05/27 22:27:01 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/core.c,v 1.71tsi Exp $ */
 
 #include "lisp/io.h"
 #include "lisp/core.h"

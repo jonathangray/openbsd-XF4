@@ -1,4 +1,4 @@
-! $XFree86: xc/programs/xedit/Xedit-sample,v 1.10 2002/11/08 08:00:55 paulo Exp $
+! $XFree86: xc/programs/xedit/Xedit-sample,v 1.7 1999/06/06 08:49:13 dawes Exp $
 
 Xedit*insertFile*text.width:		150
 Xedit*search*searchText.width:		192

@@ -28,7 +28,7 @@
  *		X Device Color Characterization Convention (XDCCC).
  *
  */
-/* $XFree86: xc/programs/xcmsdb/SCCDFile.h,v 1.4 2001/01/17 23:45:19 dawes Exp $ */
+/* $XFree86: xc/programs/xcmsdb/SCCDFile.h,v 1.3 1999/03/02 11:49:36 dawes Exp $ */
 #ifndef SCCDFILE_H
 #define SCCDFILE_H
 

@@ -1,10 +1,10 @@
 ! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: Xres.cpp,v 1.13 2004/02/13 22:41:24 matthieu Exp $
+! $OpenBSD: Xres.cpp,v 1.14 2004/11/03 00:22:21 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.7 2003/11/15 03:25:22 dawes Exp $
+! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.6 2003/01/04 03:11:31 dawes Exp $
 !
 #define BS \ /* cpp can be trickier than m4 */
 #define NLBS \n\ /* don't remove these comments */
@@ -137,6 +137,7 @@ xlogin*useShape: true
 xlogin*logoPadding: 10
 #endif /* Hp300Architecture */
 #endif /* XPM */
+
 ! comment out to disable root logins
 xlogin.Login.allowRootLogin:	true
 

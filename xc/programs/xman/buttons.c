@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/buttons.c,v 1.4 2003/01/19 04:44:45 paulo Exp $ */
+/* $XFree86: xc/programs/xman/buttons.c,v 1.3 2000/03/03 23:16:26 dawes Exp $ */
 
 /*
  * xman - X window system manual page display program.
@@ -121,13 +121,7 @@ MakeTopBox(void)
 				/* add WM_COMMAND property */
   XSetCommand(XtDisplay(top), XtWindow(top), saved_argv, saved_argc);
 
-  man_globals = (ManpageGlobals*) XtMalloc( (Cardinal) sizeof(ManpageGlobals));
-  man_globals->label = NULL;
-  man_globals->search_widget = NULL;
-  man_globals->manpagewidgets.directory = NULL;
-  man_globals->manpagewidgets.manpage = NULL;
-  man_globals->manpagewidgets.box = NULL;
-  man_globals->current_directory = 0;
+  man_globals = (ManpageGlobals*) XtCalloc(ONE, (Cardinal) sizeof(ManpageGlobals));
   MakeSearchWidget(man_globals, top);
   MakeSaveWidgets(man_globals, top);
 
@@ -283,6 +277,11 @@ Boolean full_instance)
     XtSetValues(man_globals->both_screens_entry, arglist, ONE);
   }
 
+#ifdef INCLUDE_XPRINT_SUPPORT
+  XtSetArg(arglist[0], XtNsensitive, True);
+  XtSetValues(man_globals->print_entry, arglist, ONE);
+#endif /* INCLUDE_XPRINT_SUPPORT */
+
   man_globals->label = XtCreateManagedWidget("manualTitle", labelWidgetClass,
 					     hpane, NULL, (Cardinal) 0);
 
@@ -435,6 +434,9 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
     BOTH_SCREENS, 
     REMOVE_MANPAGE,
     OPEN_MANPAGE,
+#ifdef INCLUDE_XPRINT_SUPPORT
+    PRINT_MANPAGE,
+#endif /* INCLUDE_XPRINT_SUPPORT */
     SHOW_VERSION,
     QUIT
   };
@@ -469,16 +471,33 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
     case 6:
 	man_globals->open_entry = entry;
 	break;
+#ifdef INCLUDE_XPRINT_SUPPORT
+    case 7:
+	man_globals->print_entry = entry;
+	break;
+    case 8:
+	man_globals->version_entry = entry;
+	break;
+    case 9:
+	man_globals->quit_entry = entry;
+	break;
+#else /* !INCLUDE_XPRINT_SUPPORT */
     case 7:
 	man_globals->version_entry = entry;
 	break;
     case 8:
 	man_globals->quit_entry = entry;
 	break;
+#endif /* !INCLUDE_XPRINT_SUPPORT */
     default:
+        Error(("CreateOptionMenu: Unknown id=%d\n", i));
 	break;
     }
   }
+
+#ifdef INCLUDE_XPRINT_SUPPORT
+  XtVaSetValues(man_globals->print_entry, XtNsensitive, FALSE, NULL);
+#endif /* INCLUDE_XPRINT_SUPPORT */
 }
 
 /*      Function Name: CreateSectionMenu

@@ -23,7 +23,7 @@
 .\" dealing in this Software without prior written authorization from the 
 .\" The Open Group.
 .\"
-.\" $XFree86: xc/programs/scripts/xon.man,v 1.7 2001/12/14 20:01:04 dawes Exp $
+.\" $XFree86: xc/programs/scripts/xon.man,v 1.6 2001/01/27 18:21:05 dawes Exp $
 .\"
 .TH XON 1 __xorgversion__
 .SH NAME

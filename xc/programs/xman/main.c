@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/main.c,v 1.4 2001/10/28 03:34:36 tsi Exp $ */
+/* $XFree86: xc/programs/xman/main.c,v 1.3 2000/03/03 23:16:27 dawes Exp $ */
 
 /*
  * xman - X window system manual page display program.
@@ -41,7 +41,7 @@ from the X Consortium.
 #include <X11/Xaw/Cardinals.h>
 #endif /* ZERO */
 
-#if !defined(lint) && !defined(SABER) && 0
+#if !defined(lint) && !defined(SABER)
   static char version[] = XMAN_VERSION;  /* via strings. */
 #endif
 
@@ -125,6 +125,9 @@ XtActionsRec xman_actions[] = {
   {"CreateNewManpage",  CreateNewManpage},
   {"RemoveThisManpage", RemoveThisManpage},
   {"SaveFormattedPage", SaveFormattedPage},
+#ifdef INCLUDE_XPRINT_SUPPORT
+  {"PrintThisManpage",  PrintThisManpage},
+#endif /* INCLUDE_XPRINT_SUPPORT */
   {"ShowVersion",       ShowVersion},
 };
 
@@ -168,7 +171,7 @@ int main(int argc, char ** argv)
 
   if ( (argc != 1) || (resources.show_help_syntax) ) {
     ArgError(argc, argv);
-    exit(1);
+    return EXIT_FAILURE;
   }
 
   XtAppAddActions(app_con, xman_actions, XtNumber(xman_actions));
@@ -215,7 +218,7 @@ int main(int argc, char ** argv)
 
   XtAppMainLoop(app_con);
 
-  exit(0);
+  return EXIT_SUCCESS;
 }
 
 /*	Function Name: ArgError
@@ -288,7 +291,7 @@ AdjustDefResources(void)
       if (!(my_resources[i].default_addr =
               malloc(strlen(xwinhome) + sizeof("/lib/X11/xman.help")))) {
         fprintf(stderr, "malloc failure\n");
-        exit(1);
+        exit(EXIT_FAILURE);
       }
       sprintf(my_resources[i].default_addr, "%s/lib/X11/xman.help", xwinhome);
     }

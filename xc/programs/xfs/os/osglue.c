@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * $NCDXorg: @(#)osglue.c,v 4.6 1991/07/09 14:07:30 lemke Exp $
  *
  */
-/* $XFree86: xc/programs/xfs/os/osglue.c,v 3.19 2002/10/19 20:04:20 herrb Exp $ */
+/* $XFree86: xc/programs/xfs/os/osglue.c,v 3.18 2002/10/15 01:45:03 dawes Exp $ */
 
 /*
  * this is miscellaneous OS specific stuff.

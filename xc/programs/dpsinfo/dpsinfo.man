@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/dpsinfo/dpsinfo.man,v 1.1 2001/03/01 01:23:59 dawes Exp $
+.\" $XFree86$
 .TH DPSINFO 1 __vendorversion__
 .SH NAME
 dpsinfo \- Display PostScript Information

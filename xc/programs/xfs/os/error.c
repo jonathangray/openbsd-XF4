@@ -44,7 +44,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/error.c,v 1.12 2004/01/28 22:12:49 herrb Exp $ */
+/* $XFree86: error.c,v 1.11 2002/10/15 01:45:03 dawes Exp $ */
 
 #include	<stdio.h>
 #include	<stdlib.h>
@@ -86,7 +86,7 @@ Bool        UseSyslog;
 Bool        log_open = FALSE;
 #endif
 char        ErrorFile[PATH_MAX];
-static char	    CurrentErrorFile[PATH_MAX];
+static char	CurrentErrorFile[PATH_MAX];
 
 static void
 abort_server(void)

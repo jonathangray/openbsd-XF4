@@ -23,7 +23,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/choose.c,v 1.7 2003/07/20 16:12:21 tsi Exp $ */
+/* $XFree86: xc/programs/xsm/choose.c,v 1.6tsi Exp $ */
 
 #include "xsm.h"
 #include "saveutil.h"

@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/keymap/xfree86,v 3.31 2003/06/21 13:01:58 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/keymap/xfree86,v 3.30 2003/04/03 16:34:49 dawes Exp $
 
 
 default xkb_keymap "us" {

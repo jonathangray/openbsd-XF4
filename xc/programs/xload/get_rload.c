@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xload/get_rload.c,v 1.5 2002/01/07 21:46:49 dawes Exp $ */
+/* $XFree86: xc/programs/xload/get_rload.c,v 1.4 2002/01/07 20:38:31 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>
@@ -10,7 +10,7 @@
 /* Not all OS supports get_rload
    steal the STUB idea from get_load
  */
-#if defined(QNX4)
+#if defined(QNX4) || defined(__CYGWIN__)
 #define RLOADSTUB
 #endif
 

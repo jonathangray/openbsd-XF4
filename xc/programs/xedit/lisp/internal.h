@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xedit/lisp/internal.h,v 1.2 2004/04/23 19:54:44 eich Exp $ */
 /*
  * Copyright (c) 2001 by The XFree86 Project, Inc.
  *
@@ -27,7 +28,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/internal.h,v 1.51 2003/05/27 22:27:03 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/internal.h,v 1.50tsi Exp $ */
 
 #ifndef Lisp_internal_h
 #define Lisp_internal_h
@@ -549,6 +550,13 @@ typedef struct {
     LispObj *errorp;		/* ALWAYS (ONLY) READABLE: stderr of program */
 } LispPipe;
 
+/* silly IBM compiler */
+#ifdef AIXV5 /* probably want !gcc too */
+#define LispType int
+#define LispFunType int
+#define LispStreamType int
+#endif
+
 struct _LispObj {
     LispType type : 6;
     unsigned int mark : 1;	/* gc protected */
@@ -641,6 +649,11 @@ struct _LispObj {
 	} hash;
     } data;
 };
+#ifdef AIXV5
+#undef LispType
+#undef LispFunType
+#undef LispStreamType
+#endif
 
 typedef	LispObj *(*LispFunPtr)(LispBuiltin*);
 typedef void (*LispComPtr)(LispCom*, LispBuiltin*);

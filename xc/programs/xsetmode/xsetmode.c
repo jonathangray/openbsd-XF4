@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xsetmode/xsetmode.c,v 3.6 2003/05/27 22:27:09 tsi Exp $ */
+/* $XFree86: xc/programs/xsetmode/xsetmode.c,v 3.5tsi Exp $ */
 
 /*
  * Copyright 1995 by Frederic Lepied, France. <fred@sugix.frmug.fr.net>       

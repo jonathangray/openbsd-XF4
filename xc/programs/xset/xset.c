@@ -27,7 +27,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xset/xset.c,v 3.32 2003/09/24 02:43:39 dawes Exp $ */
+/* $XFree86: xc/programs/xset/xset.c,v 3.31 2003/05/27 22:27:09 tsi Exp $ */
 /* Modified by Stephen so keyboard rate is set using XKB extensions */
 
 #include <stdio.h>
@@ -87,6 +87,9 @@ in this Software without prior written authorization from The Open Group.
 
 static Status set_font_cache(Display *, long, long, long);
 static void query_cache_status(Display *dpy);
+#endif
+#ifdef INCLUDE_XPRINT_SUPPORT
+#include <X11/extensions/Print.h>
 #endif
 
 #define ON 1
@@ -350,6 +353,16 @@ for (i = 1; i < argc; ) {
 	  }
       } else {
 	  fprintf(stderr, "server does not have extension for fc option\n");
+      }
+  }
+#endif
+#ifdef INCLUDE_XPRINT_SUPPORT
+  else if (strcmp(arg, "rehashprinterlist") == 0) { /* rehash list of printers */
+      short dummy;
+      if (XpQueryVersion(dpy, &dummy, &dummy)) {
+          XpRehashPrinterList(dpy);
+      } else {
+          fprintf(stderr, "server does not have extension for rehashprinterlist option\n");
       }
   }
 #endif
@@ -1499,6 +1512,10 @@ usage(char *fmt, ...)
     fprintf (stderr, "\t    balance value spcecified in percent (10 - 90)\n");
     fprintf (stderr, "    Show font cache statistics:\n");
     fprintf (stderr, "\t fc s\n");
+#endif
+#ifdef INCLUDE_XPRINT_SUPPORT
+    fprintf (stderr, "    To control Xprint features:\n");
+    fprintf (stderr, "\t rehashprinterlist      Recomputes the list of available printers\n");
 #endif
     fprintf (stderr, "    To set the font path:\n" );
     fprintf (stderr, "\t fp= path[,path...]\n" );

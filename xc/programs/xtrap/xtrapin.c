@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/xtrapin.c,v 1.3 2003/05/27 22:27:13 tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapin.c,v 1.2tsi Exp $ */
 /*
  * @DEC_COPYRIGHT@
  */
@@ -94,6 +94,11 @@ SOFTWARE.
 #ifndef vaxc
 #define globalref extern
 #endif
+#ifdef Lynx     
+extern char *optarg;     
+extern int optind;     
+extern int opterr;     
+#endif     
 
 static Boolean grabFlag = False;
 

@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/lbxproxy/di/cache.c,v 1.7 2003/10/24 20:38:12 tsi Exp $ */
+/* $XFree86: xc/programs/lbxproxy/di/cache.c,v 1.6tsi Exp $ */
 #include	"misc.h"
 #include	"util.h"
 #include	"cache.h"

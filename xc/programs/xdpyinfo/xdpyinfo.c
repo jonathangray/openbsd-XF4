@@ -29,7 +29,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xdpyinfo/xdpyinfo.c,v 3.30 2003/11/17 22:20:51 dawes Exp $ */
+/* $XFree86: xc/programs/xdpyinfo/xdpyinfo.c,v 3.29 2003/04/14 20:38:10 herrb Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -70,9 +70,18 @@ in this Software without prior written authorization from The Open Group.
 #ifdef PANORAMIX
 #include <X11/extensions/Xinerama.h>
 #endif
+#ifdef DMX
+#include <X11/extensions/dmxext.h>
+#endif
+#ifdef INCLUDE_XPRINT_SUPPORT
+#include <X11/extensions/Print.h>
+#endif /* INCLUDE_XPRINT_SUPPORT */
 #include <X11/Xos.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+/* Turn a NULL pointer string into an empty string */
+#define NULLSTR(x) (((x)!=NULL)?(x):(""))
 
 char *ProgramName;
 Bool queryExtensions = False;
@@ -172,6 +181,50 @@ print_display_info(Display *dpy)
 	    }
 	}
 	printf("\n");
+    }
+
+    if (strstr(ServerVendor (dpy), "X.Org")) {
+	int vendrel = VendorRelease(dpy);
+
+	printf("X.Org version: ");
+	printf("%d.%d.%d", vendrel / 10000000,
+	       (vendrel /   100000) % 100,
+	       (vendrel /     1000) % 100);
+	if (vendrel % 1000)
+	    printf(".%d", vendrel % 1000);
+	printf("\n");
+    }
+
+    if (strstr(ServerVendor (dpy), "DMX")) {
+	int vendrel = VendorRelease(dpy);
+        int major, minor, year, month, day;
+
+        major    = vendrel / 100000000;
+        vendrel -= major   * 100000000;
+        minor    = vendrel /   1000000;
+        vendrel -= minor   *   1000000;
+        year     = vendrel /     10000;
+        vendrel -= year    *     10000;
+        month    = vendrel /       100;
+        vendrel -= month   *       100;
+        day      = vendrel;
+
+                                /* Add other epoch tests here */
+        if (major > 0 && minor > 0) year += 2000;
+
+                                /* Do some sanity tests in case there is
+                                 * another server with the same vendor
+                                 * string.  That server could easily use
+                                 * values < 100000000, which would have
+                                 * the effect of keeping our major
+                                 * number 0. */
+        if (major > 0 && major <= 20
+            && minor >= 0 && minor <= 99
+            && year >= 2000
+            && month >= 1 && month <= 12
+            && day >= 1 && day <= 31)
+            printf("DMX version: %d.%d.%04d%02d%02d\n",
+                   major, minor, year, month, day);
     }
 
     req_size = XExtendedMaxRequestSize (dpy);
@@ -290,6 +343,20 @@ print_visual_info(XVisualInfo *vip)
 	    vip->bits_per_rgb);
 }
 
+static
+Bool hasExtension(Display *dpy, char *extname)
+{
+  int    num_extensions,
+         i;
+  char **extensions;
+  extensions = XListExtensions(dpy, &num_extensions);
+  for (i = 0; i < num_extensions &&
+         (strcmp(extensions[i], extname) != 0); i++);
+  XFreeExtensionList(extensions);
+  return i != num_extensions;
+}
+
+
 static void
 print_screen_info(Display *dpy, int scr)
 {
@@ -303,7 +370,7 @@ print_screen_info(Display *dpy, int scr)
     double xres, yres;
     int ndepths = 0, *depths = NULL;
     unsigned int width, height;
-
+    Bool isPrintScreen = False;
 
     /*
      * there are 2.54 centimeters to an inch; so there are 25.4 millimeters.
@@ -320,11 +387,39 @@ print_screen_info(Display *dpy, int scr)
 
     printf ("\n");
     printf ("screen #%d:\n", scr);
-    printf ("  dimensions:    %dx%d pixels (%dx%d millimeters)\n",
-	    DisplayWidth (dpy, scr), DisplayHeight (dpy, scr),
-	    DisplayWidthMM(dpy, scr), DisplayHeightMM (dpy, scr));
-    printf ("  resolution:    %dx%d dots per inch\n", 
-	    (int) (xres + 0.5), (int) (yres + 0.5));
+
+#ifdef INCLUDE_XPRINT_SUPPORT
+    /* Check whether this is a screen of a print DDX */
+    if (hasExtension(dpy, XP_PRINTNAME)) {
+        Screen **pscreens;
+        int      pscrcount;
+
+        pscreens = XpQueryScreens(dpy, &pscrcount);
+        for( i = 0 ; (i < pscrcount) && pscreens ; i++ ) {
+            if (scr == (int)XScreenNumberOfScreen(pscreens[i])) {
+                isPrintScreen = True;
+                break;
+            }
+        }
+        XFree(pscreens);		      
+    }
+    printf ("  print screen:    %s\n", isPrintScreen?"yes":"no");
+#endif /* INCLUDE_XPRINT_SUPPORT */
+
+    if (isPrintScreen) {
+        /* Print resolution is set on a per-printer basis (per-document
+         * or per-page), the screen itself has no "default" resolution */
+        printf ("  maximum dimensions:    %dx%d pixels\n",
+	        XDisplayWidth (dpy, scr),  XDisplayHeight (dpy, scr));
+    }
+    else
+    {
+        printf ("  dimensions:    %dx%d pixels (%dx%d millimeters)\n",
+	        XDisplayWidth (dpy, scr),  XDisplayHeight (dpy, scr),
+	        XDisplayWidthMM(dpy, scr), XDisplayHeightMM (dpy, scr));
+        printf ("  resolution:    %dx%d dots per inch\n", 
+	        (int) (xres + 0.5), (int) (yres + 0.5));
+    }
     depths = XListDepths (dpy, scr, &ndepths);
     if (!depths) ndepths = 0;
     printf ("  depths (%d):    ", ndepths);
@@ -360,7 +455,6 @@ print_screen_info(Display *dpy, int scr)
 	printf ("  largest cursor:    %dx%d\n", width, height);
     printf ("  current input event mask:    0x%lx\n", EventMaskOfScreen (s));
     (void) print_event_mask (eventbuf, 79, 4, EventMaskOfScreen (s));
-		      
 
     nvi = 0;
     viproto.screen = scr;
@@ -1003,6 +1097,205 @@ print_xinerama_info(Display *dpy, char *extname)
 
 #endif /* PANORAMIX */
 
+#ifdef DMX
+static const char *core(DMXInputAttributes *iinfo)
+{
+    if (iinfo->isCore)         return "core";
+    else if (iinfo->sendsCore) return "extension (sends core)";
+    else                       return "extension";
+}
+
+static int print_dmx_info(Display *dpy, char *extname)
+{
+    int                  event_base, error_base;
+    int                  major_version, minor_version, patch_version;
+    DMXScreenAttributes  sinfo;
+    DMXInputAttributes   iinfo;
+    int                  count;
+    int                  i;
+
+    if (!DMXQueryExtension(dpy, &event_base, &error_base)
+        || !DMXQueryVersion(dpy, &major_version, &minor_version,
+                            &patch_version)) return 0;
+    print_standard_extension_info(dpy, extname, major_version, minor_version);
+    printf("  Version stamp: %d\n", patch_version);
+
+    if (!DMXGetScreenCount(dpy, &count)) return 1;
+    printf("  Screen count: %d\n", count);
+    for (i = 0; i < count; i++) {
+        if (DMXGetScreenAttributes(dpy, i, &sinfo)) {
+            printf("    %2d %s %ux%u+%d+%d %d @%dx%d\n",
+                   i, sinfo.displayName,
+                   sinfo.screenWindowWidth, sinfo.screenWindowHeight,
+                   sinfo.screenWindowXoffset, sinfo.screenWindowYoffset,
+                   sinfo.logicalScreen,
+                   sinfo.rootWindowXorigin, sinfo.rootWindowYorigin);
+        }
+    }
+
+    if (major_version != 1
+        || minor_version < 1
+        || !DMXGetInputCount(dpy, &count))
+        return 1;
+
+    printf("  Input count = %d\n", count);
+    for (i = 0; i < count; i++) {
+#ifdef XINPUT
+        Display *backend;
+        char    *backendname = NULL;
+#endif
+        if (DMXGetInputAttributes(dpy, i, &iinfo)) {
+            switch (iinfo.inputType) {
+            case DMXLocalInputType:
+                printf("    %2d local %s", i, core(&iinfo));
+                break;
+            case DMXConsoleInputType:
+                printf("    %2d console %s %s", i, core(&iinfo),
+                       iinfo.name);
+                break;
+            case DMXBackendInputType:
+#ifdef XINPUT
+                if (iinfo.physicalId >= 0) {
+                    if ((backend = XOpenDisplay(iinfo.name))) {
+                        XExtensionVersion *ext
+                            = XGetExtensionVersion(backend, INAME);
+                        if (ext
+                            && ext != (XExtensionVersion *)NoSuchExtension) {
+                            
+                            int         count, i;
+                            XDeviceInfo *devInfo = XListInputDevices(backend,
+                                                                     &count);
+                            if (devInfo) {
+                                for (i = 0; i < count; i++) {
+                                    if ((unsigned)iinfo.physicalId
+                                        == devInfo[i].id
+                                        && devInfo[i].name) {
+                                        backendname = strdup(devInfo[i].name);
+                                        break;
+                                    }
+                                }
+                                XFreeDeviceList(devInfo);
+                            }
+                        }
+                        XCloseDisplay(backend);
+                    }
+                }
+#endif
+                printf("    %2d backend %s o%d/%s",i, core(&iinfo),
+                       iinfo.physicalScreen, iinfo.name);
+                if (iinfo.physicalId >= 0) printf("/id%d", iinfo.physicalId);
+#ifdef XINPUT
+                if (backendname) {
+                    printf("=%s", backendname);
+                    free(backendname);
+                }
+#endif
+                break;
+            }
+        }
+        printf("\n");
+    }
+    return 1;
+}
+
+#endif /* DMX */
+
+#ifdef INCLUDE_XPRINT_SUPPORT
+static
+void print_xprint_attrpool(const char *name, const char *attrpool)
+{
+  int         c;
+  const char *s = attrpool;
+  
+  printf("    %s:\n      ", name);
+  
+  while( (c = *s++) != '\0' )
+  {
+    if (c == '\n') {
+      printf("\n      ");
+    }
+    else
+    {
+      fputc(c, stdout);
+    }
+  }
+  fputc('\n', stdout);
+}
+
+static int
+print_xprint_info(Display *dpy, char *extname)
+{  
+
+  short           majorrev,
+                  minorrev;
+  int             xp_event_base,
+                  xp_error_base;
+  XPPrinterList   printerlist;
+  Screen        **pscreens;
+  int             plcount,
+                  pscrcount,
+                  i;
+
+  if (XpQueryVersion(dpy, &majorrev, &minorrev) == False) {
+    return 0;
+  }
+  
+  print_standard_extension_info(dpy, extname, majorrev, minorrev);
+
+  if (XpQueryExtension(dpy, &xp_event_base, &xp_error_base) == False) {
+    printf("  XpQueryExtension() failed.\n");
+    return 0;
+  }
+  
+  /* Print event info */
+  printf("  xp_event_base=%d, xp_error_base=%d\n", xp_event_base, xp_error_base);
+  
+  /* Print info which screens support the Xprint extension */
+  printf("  Print screens = {");
+  pscreens = XpQueryScreens(dpy, &pscrcount);
+  for( i = 0 ; i < pscrcount ; i++ ) {
+    printf("%s%d", ((i > 0)?(", "):("")), (int)XScreenNumberOfScreen(pscreens[i]));
+  }
+  XFree(pscreens);
+  printf("}\n");
+
+  /* Enumerate the list of printers */
+  printerlist = XpGetPrinterList(dpy, NULL, &plcount);
+  /* Print number of printers, then each printer name and description */
+  printf("  Found %d printers on this server.\n", plcount);
+  for( i = 0 ; i < plcount ; i++) {
+    printf("  printer %d: name='%s', descr='%s'\n",
+           i, NULLSTR(printerlist[i].name), NULLSTR(printerlist[i].desc));
+  }
+  
+  /* Enumerate the list of printers with details */
+  for( i = 0 ; i < plcount ; i++) {
+    char       *printername = printerlist[i].name;
+    XPContext   pcontext;
+    char       *s;
+    
+    printf("  Attributes of printer '%s':\n", NULLSTR(printername));
+
+    pcontext = XpCreateContext(dpy, printername);
+    if (pcontext == None) {
+      printf("    Error: Could not open printer.\n");
+      continue;
+    }
+
+    s=XpGetAttributes(dpy, pcontext, XPJobAttr);     print_xprint_attrpool("XPJobAttr",     s);  XFree(s);
+    s=XpGetAttributes(dpy, pcontext, XPDocAttr);     print_xprint_attrpool("XPDocAttr",     s);  XFree(s);
+    s=XpGetAttributes(dpy, pcontext, XPPageAttr);    print_xprint_attrpool("XPPageAttr",    s);  XFree(s);
+    s=XpGetAttributes(dpy, pcontext, XPPrinterAttr); print_xprint_attrpool("XPPrinterAttr", s);  XFree(s);
+    s=XpGetAttributes(dpy, pcontext, XPServerAttr);  print_xprint_attrpool("XPServerAttr",  s);  XFree(s);
+
+    XpDestroyContext(dpy, pcontext);
+  }
+  
+  XpFreePrinterList(printerlist);
+
+  return 1;
+}
+#endif /* INCLUDE_XPRINT_SUPPORT */
 
 /* utilities to manage the list of recognized extensions */
 
@@ -1051,6 +1344,12 @@ ExtensionPrintInfo known_extensions[] =
 #ifdef PANORAMIX
     {"XINERAMA", print_xinerama_info, False},
 #endif
+#ifdef DMX
+    {"DMX", print_dmx_info, False},
+#endif
+#ifdef INCLUDE_XPRINT_SUPPORT
+    {XP_PRINTNAME, print_xprint_info, False},
+#endif /* INCLUDE_XPRINT_SUPPORT */
     /* add new extensions here */
 };
 

@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/defs.h,v 1.3 2001/04/19 19:54:51 dawes Exp $ */
+/* $XFree86: xc/programs/xman/defs.h,v 1.2 2000/03/03 23:16:26 dawes Exp $ */
 
 /*
  * xman - X window system manual page display program.
@@ -67,7 +67,11 @@ from the X Consortium.
 
 /* Names of the menu buttons */
 
+#ifdef INCLUDE_XPRINT_SUPPORT
+#define NUM_OPTIONS 10		/* Number of menu options. */
+#else /* !INCLUDE_XPRINT_SUPPORT */
 #define NUM_OPTIONS 9		/* Number of menu options. */
+#endif /* !INCLUDE_XPRINT_SUPPORT */
 
 #define DIRECTORY      "displayDirectory"
 #define MANPAGE        "displayManualPage"
@@ -76,6 +80,9 @@ from the X Consortium.
 #define BOTH_SCREENS   "showBothScreens"
 #define REMOVE_MANPAGE "removeThisManpage"
 #define OPEN_MANPAGE   "openNewManpage"
+#ifdef INCLUDE_XPRINT_SUPPORT
+#define PRINT_MANPAGE  "printManualPage"
+#endif /* INCLUDE_XPRINT_SUPPORT */
 #define SHOW_VERSION   "showVersion"
 #define QUIT           "quit"
 

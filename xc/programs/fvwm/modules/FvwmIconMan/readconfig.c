@@ -4,7 +4,7 @@
 #include "readconfig.h"
 
 static char const rcsid[] =
-  "$Id: readconfig.c,v 1.6 2004/01/29 22:13:15 matthieu Exp $";
+  "$Id: readconfig.c,v 1.7 2004/11/03 00:22:05 matthieu Exp $";
 
 /************************************************************************
  *

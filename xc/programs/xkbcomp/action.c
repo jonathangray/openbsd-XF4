@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/action.c,v 3.11 2002/11/22 22:56:04 tsi Exp $ */
+/* $XFree86: xc/programs/xkbcomp/action.c,v 3.10tsi Exp $ */
 
 #include "xkbcomp.h"
 #include "tokens.h"

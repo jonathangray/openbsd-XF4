@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xditview/parse.c,v 1.6 2003/05/27 22:27:00 tsi Exp $ */
+/* $XFree86: xc/programs/xditview/parse.c,v 1.5tsi Exp $ */
 
 /*
  * parse.c

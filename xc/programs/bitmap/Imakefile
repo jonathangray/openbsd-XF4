@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:50 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/bitmap/Imakefile,v 3.7 2002/05/31 18:46:07 dawes Exp $
+XCOMM $XFree86: xc/programs/bitmap/Imakefile,v 3.6 2002/05/29 21:37:42 torrey Exp $
 
 #if CaseSensitiveFileSystem
 BUTTONPICTURES = \

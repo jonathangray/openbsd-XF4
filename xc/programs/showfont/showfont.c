@@ -49,7 +49,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/showfont/showfont.c,v 1.4 2001/08/27 17:41:01 dawes Exp $ */
+/* $XFree86: xc/programs/showfont/showfont.c,v 1.3 2000/02/18 12:20:17 tsi Exp $ */
 
 #include	<stdio.h>
 #include	<stdlib.h>

@@ -49,7 +49,7 @@ in this Software without prior written authorization from The Open Group.
  * This file was once on the other side of
  * the font library interface as util/fsfuncs.c.
  */
-/* $XFree86: xc/programs/xfs/difs/charinfo.c,v 1.12 2001/12/14 20:01:33 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/difs/charinfo.c,v 1.11 2001/10/28 03:34:34 tsi Exp $ */
 
 #include <X11/Xos.h>
 #include "misc.h"

@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/fstobdf/fstobdf.c,v 1.7 2003/07/09 15:27:36 tsi Exp $ */
+/* $XFree86: xc/programs/fstobdf/fstobdf.c,v 1.6tsi Exp $ */
 
 #include	<stdio.h>
 #include	<stdlib.h>

@@ -3,7 +3,7 @@
 
 
 
-// $XFree86: xc/programs/xkbcomp/symbols/pc104,v 3.5 2001/08/17 13:27:58 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc104,v 3.4 2001/01/17 23:45:59 dawes Exp $
 
 // Use "Alt_*" for both alt keys, "Meta_*" for both windows keys, and Menu for
 // the menu key

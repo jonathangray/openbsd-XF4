@@ -7,7 +7,7 @@
 **       functions to create more than one of these dashlist choice things
 **       will fail in a big way.
 */
-/* $XFree86: xc/programs/xgc/dashlist.c,v 1.4 2003/05/07 21:02:06 herrb Exp $ */
+/* $XFree86: xc/programs/xgc/dashlist.c,v 1.3 2001/07/29 21:23:21 tsi Exp $ */
 
 #include <stdio.h>
 #include <X11/Xos.h>

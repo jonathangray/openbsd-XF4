@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/expr.h,v 3.3 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef EXPR_H
 #define EXPR_H 1

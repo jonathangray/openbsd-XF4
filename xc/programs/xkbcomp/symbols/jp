@@ -3,7 +3,7 @@
 
 // symbols for a Japanese 106 keyboard(by tsuka@kawalab.dnj.ynu.ac.jp)
 
-// $XFree86: xc/programs/xkbcomp/symbols/jp,v 3.11 2003/11/14 02:45:24 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/jp,v 3.10 2003/10/25 13:24:05 pascal Exp $
 
 default xkb_symbols "jp106" {
     include "srvr_ctrl(xfree86)"
@@ -117,16 +117,8 @@ default xkb_symbols "jp106" {
 	type= "PC_SYSRQ",
 	symbols[Group1]= [ Print, Execute ]
     };
-    key <SYRQ> {
-	type= "PC_SYSRQ",
-	symbols[Group1]= [ Print, Execute ]
-    };
     key <SCLK> {  [  Scroll_Lock	]	};
     key <PAUS> {
-	type= "PC_BREAK",
-	symbols[Group1]= [ Pause, Break ]
-    };
-    key <BRK> {
 	type= "PC_BREAK",
 	symbols[Group1]= [ Pause, Break ]
     };

@@ -34,7 +34,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/programs/texteroids/twraps.psw,v 1.1 2001/03/01 01:23:59 dawes Exp $ */
+/* $XFree86$ */
 
 defineps Clear(float w, h; boolean rv)
     rv {0 setgray} {1 setgray} ifelse

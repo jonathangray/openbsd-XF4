@@ -15,7 +15,7 @@
 // aclark (2000-07-27)
 // I've modified this to refer to the correct keysyms in the server
 //
-// $XFree86: xc/programs/xkbcomp/symbols/vn,v 1.5 2003/02/04 02:32:48 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/vn,v 1.4 2002/11/20 04:49:03 dawes Exp $
 
 partial modifier_keys
 xkb_symbols "toggle" {

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/bitmap/BitEdit.c,v 1.7 2003/05/27 22:26:55 tsi Exp $ */
+/* $XFree86: xc/programs/bitmap/BitEdit.c,v 1.6tsi Exp $ */
 
 /*
  * Author:  Davor Matic, MIT X Consortium

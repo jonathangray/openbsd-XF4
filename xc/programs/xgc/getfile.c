@@ -2,7 +2,7 @@
 ** getfilename.c
 **
 */
-/* $XFree86: xc/programs/xgc/getfile.c,v 1.5 2003/05/27 22:27:06 tsi Exp $ */
+/* $XFree86: xc/programs/xgc/getfile.c,v 1.4tsi Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xgc/main.c,v 1.7 2003/05/27 22:27:06 tsi Exp $ */
+/* $XFree86: xc/programs/xgc/main.c,v 1.6tsi Exp $ */
 
 /* xgc
 **

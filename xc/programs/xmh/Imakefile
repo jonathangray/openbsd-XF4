@@ -1,9 +1,13 @@
 XCOMM $XConsortium: Imakefile /main/31 1996/09/28 17:18:46 rws $
 
+         XORGREL = XOrgReleaseString
+     XORGREL_DEF = -DXORG_RELEASE="\"$(XORGREL)\""
+
 #if HasVFork
   VFORK_DEFINES = -DHAS_VFORK
 #endif
-        DEFINES = $(VFORK_DEFINES) XkbClientDefines
+        DEFINES = $(VFORK_DEFINES) XkbClientDefines $(XORGREL_DEF) \
+		  $(VENDOR_DEFINES)
         DEPLIBS = XkbClientDepLibs XawClientDepLibs
 LOCAL_LIBRARIES = XkbClientLibs XawClientLibs
 

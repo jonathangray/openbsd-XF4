@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/editres/editres.man,v 1.9 2002/10/12 16:06:44 herrb Exp $
+.\" $XFree86: xc/programs/editres/editres.man,v 1.8 2001/12/14 20:00:42 dawes Exp $
 .\"
 .TH EDITRES 1 __xorgversion__
 .SH NAME

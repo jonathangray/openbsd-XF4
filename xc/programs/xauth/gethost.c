@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xauth/gethost.c,v 3.21 2003/08/02 15:30:10 herrb Exp $ */
+/* $XFree86: xc/programs/xauth/gethost.c,v 3.20 2003/07/27 12:34:25 herrb Exp $ */
 
 /* sorry, streams support does not really work yet */
 #if defined(STREAMSCONN) && defined(SVR4)

@@ -1,4 +1,5 @@
 /* $Xorg: resource.c,v 1.4 2000/08/17 19:53:56 cpqbld Exp $ */
+/* $XdotOrg: xc/programs/lbxproxy/di/resource.c,v 1.2 2004/04/23 19:54:33 eich Exp $ */
 /*
 
 Copyright 1987, 1998  The Open Group
@@ -471,10 +472,12 @@ LookupIDByType(pclient, id, rtype)
 	if (pserver->clientTable[i].buckets) {
 	    for (j = 0; j < INITBUCKETS; j++) {
 		if (pserver->clientTable[i].resources[j]) {
-	            res = pserver->clientTable[i].resources[Hash(j, id)];
-		    for (; res; res = res->next)
-			if ((res->id == id) && (res->type == rtype))
-			    return res->value;
+	            if (clients[j]) {
+			res = pserver->clientTable[i].resources[Hash(j, id)];
+			for (; res; res = res->next)
+			    if ((res->id == id) && (res->type == rtype))
+				return res->value;
+		    }
 		}
 	    }
 	}

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xmag/Scale.h,v 1.5 2001/12/14 20:02:11 dawes Exp $ */
+/* $XFree86: xc/programs/xmag/Scale.h,v 1.4 2001/01/17 23:46:20 dawes Exp $ */
 
 #ifndef _XawScale_h
 #define _XawScale_h

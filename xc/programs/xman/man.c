@@ -1,4 +1,5 @@
 /* $XConsortium: man.c,v 1.30 94/04/17 20:43:56 rws Exp $ */
+/* $XdotOrg: xc/programs/xman/man.c,v 1.3 2004/05/22 19:20:06 alanc Exp $ */
 /*
 
 Copyright (c) 1987, 1988  X Consortium
@@ -285,7 +286,7 @@ SortList(SectionList ** list)
 
 /*	Function Name: ReadMandescFile
  *	Description: Reads the mandesc file, and adds more sections as 
- *                   nescessary.
+ *                   necessary.
  *	Arguments: path - path name if the current search directory.
  *                 section_list - pointer to the list of sections.
  *	Returns: TRUE in we should use default sections
@@ -300,7 +301,7 @@ ReadMandescFile(SectionList ** section_list, char * path)
   Boolean use_defaults = TRUE;
   char *cp;
 
-  sprintf(mandesc_file, "%s/%s", path, MANDESC);
+  snprintf(mandesc_file, sizeof(mandesc_file), "%s/%s", path, MANDESC);
   if ( (descfile = fopen(mandesc_file, "r")) != NULL) {
     while ( fgets(string, BUFSIZ, descfile) != NULL) {
       string[strlen(string)-1] = '\0';        /* Strip off the CR. */
@@ -328,10 +329,10 @@ ReadMandescFile(SectionList ** section_list, char * path)
         } else
 	    AddNewSection(section_list, path, local_file, cp, MNULL);
       } else {
-	sprintf(local_file, "%s%c", MAN, string[0]);
+	snprintf(local_file, sizeof(local_file), "%s%c", MAN, string[0]);
 	AddNewSection(section_list, path, local_file, (string + 1), FALSE );
 #ifdef SEARCHOTHER
-	sprintf(local_file, "%s%c", SEARCHOTHER, string[0]);
+	snprintf(local_file, sizeof(local_file), "%s%c", SEARCHOTHER, string[0]);
 	AddNewSection(section_list, path, local_file, (string + 1), FALSE);
 #endif
       }
@@ -376,7 +377,7 @@ int flags)
 
   local_list->next = NULL;
   local_list->label = StrAlloc(label);
-  sprintf(full_path, "%s/%s", path, file);
+  snprintf(full_path, sizeof(full_path), "%s/%s", path, file);
   local_list->directory = StrAlloc(full_path);
   local_list->flags = flags;
 }  
@@ -395,11 +396,11 @@ AddToCurrentSection(Manual * local_manual, char * path)
   char temp_path[BUFSIZ];
 
 #if defined(__OpenBSD__) || defined(__NetBSD__)
-  sprintf(temp_path, "%s/%s", path, MACHINE);
+  snprintf(temp_path, sizeof(temp_path), "%s/%s", path, MACHINE);
   ReadCurrentSection(local_manual, temp_path);
 #endif
   ReadCurrentSection(local_manual, path);
-  sprintf(temp_path, "%s.%s", path, COMPRESSION_EXTENSION);
+  snprintf(temp_path, sizeof(temp_path), "%s.%s", path, COMPRESSION_EXTENSION);
   ReadCurrentSection(local_manual, temp_path);
 }
 
@@ -425,7 +426,7 @@ ReadCurrentSection(Manual * local_manual, char * path)
 
   if((dir = opendir(path)) == NULL) {
 #ifdef DEBUG
-    sprintf(error_buf,"Can't open directory %s", path);
+    snprintf(error_buf, sizeof(error_buf), "Can't open directory %s", path);
     PopupWarning(NULL, error_buf);
 #endif /* DEBUG */
     return;
@@ -468,7 +469,7 @@ ReadCurrentSection(Manual * local_manual, char * path)
 			    nalloc * sizeof(char *));
     }
 
-    sprintf(full_name, "%s/%s", path, name);
+    snprintf(full_name, sizeof(full_name), "%s/%s", path, name);
 /*
  * Remove the compression extension from the entry name.
  */
@@ -484,6 +485,12 @@ ReadCurrentSection(Manual * local_manual, char * path)
       else if (streq(ptr + 1, GZIP_EXTENSION))
 	*ptr = '\0';
 #endif
+#ifdef IGNORE_EXTENSION
+      /* skip files with specified extension - they're not real man pages */
+      else if (streq(ptr + 1, IGNORE_EXTENSION)) {
+	continue;
+      }
+#endif /* IGNORE_EXTENSION */
     }
     local_manual->entries[nentries] = StrAlloc(full_name);
     local_manual->entries_less_paths[nentries] = 

@@ -3,7 +3,7 @@ XCOMM $XConsortium: Imakefile,v 1.15 94/04/04 21:49:55 gildea Exp $
 
 
 
-XCOMM $XFree86: xc/programs/xditview/Imakefile,v 1.7 2003/11/17 15:18:07 tsi Exp $
+XCOMM $XFree86: xc/programs/xditview/Imakefile,v 1.6tsi Exp $
 
 
 #define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'

@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xdm/sessreg.man,v 1.8 2001/12/14 20:01:24 dawes Exp $
+.\" $XFree86: xc/programs/xdm/sessreg.man,v 1.7 2001/04/23 20:31:09 dawes Exp $
 .\"
 .TH SESSREG 1 __xorgversion__
 .SH NAME

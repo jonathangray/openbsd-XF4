@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/symbols/th_pat,v 1.2 2003/10/24 20:38:20 tsi Exp $
+// $XFree86$
 //
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

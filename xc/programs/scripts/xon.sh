@@ -1,6 +1,6 @@
 #!/bin/sh
 # $Xorg: xon.sh,v 1.4 2000/12/20 16:50:07 pookie Exp $
-# $XFree86: xc/programs/scripts/xon.sh,v 1.9 2004/02/08 00:48:27 dawes Exp $
+# $XFree86: xc/programs/scripts/xon.sh,v 1.8 2003/04/03 22:28:01 dawes Exp $
 # start up xterm (or any other X command) on the specified host
 # Usage: xon host [arguments] [command]
 

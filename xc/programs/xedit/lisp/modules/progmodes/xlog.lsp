@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/xlog.lsp,v 1.2 2004/01/08 21:29:13 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/xlog.lsp,v 1.1 2003/01/16 06:25:51 paulo Exp $
 ;;
 
 (require "syntax")

@@ -24,7 +24,7 @@
  * or publicity pertaining to distribution of the software without specific,
  * written prior permission.
  */
-/* $XFree86: xc/programs/xmh/tsource.c,v 1.4 2002/04/07 03:57:46 tsi Exp $ */
+/* $XFree86: xc/programs/xmh/tsource.c,v 1.3 2002/04/05 21:06:29 dickey Exp $ */
 
 /* File: tsource.c -- the code for a toc source */
 

@@ -6,7 +6,7 @@
 #define DEFAULT_MOUSE "0 N sendcommand Iconify"
 
 static char const rcsid[] =
-  "$Id: globals.c,v 1.3 2003/04/01 22:36:59 matthieu Exp $";
+  "$Id: globals.c,v 1.4 2004/11/03 00:22:05 matthieu Exp $";
 
 GlobalData globals;
 ContextDefaults contextDefaults[] = {

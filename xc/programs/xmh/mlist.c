@@ -24,7 +24,7 @@
  * used in advertising or publicity pertaining to distribution of the software
  * without specific, written prior permission.
  */
-/* $XFree86: xc/programs/xmh/mlist.c,v 1.3 2002/07/01 02:26:05 tsi Exp $ */
+/* $XFree86$ */
 
 /* mlist.c -- functions to deal with message lists. */
 

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/time.c,v 1.10 2003/04/27 18:17:35 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/time.c,v 1.9tsi Exp $ */
 
 #include "lisp/time.h"
 #include "lisp/bytecode.h"

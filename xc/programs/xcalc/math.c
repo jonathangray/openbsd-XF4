@@ -1,5 +1,7 @@
-/* $XConsortium: math.c,v 1.17 91/07/25 17:51:34 rws Exp $ 
- * $XFree86: xc/programs/xcalc/math.c,v 1.6 2003/05/27 22:26:59 tsi Exp $ 
+/* $XConsortium: math.c,v 1.17 91/07/25 17:51:34 rws Exp $
+ * $MIT: contrib/programs/xcalc/math.c,v 3.2 1999/12/14 18:53:00 gjcoram Exp$
+ * $XFree86: xc/programs/xcalc/math.c,v 1.5tsi Exp $ 
+ * $XdotOrg: xc/programs/xcalc/math.c,v 1.4 2004/07/06 09:24:58 ago Exp $
  *
  *  math.c  -  mathematics functions for a hand calculator under X
  *
@@ -14,6 +16,8 @@
  *  original calculator, and it still needs to be rewritten.  The HP
  *  functionality should be separated from the TI functionality. 
  *  Beware the HP functions: there are still errors here.
+ *
+ *  Geoffrey Coram fixed most of the HP mode bugs.
  */
 
 #include <stdio.h>
@@ -163,8 +167,8 @@ int pre_op(keynum)
 #ifndef IEEE
 
 /* cannot assign result of setjmp under ANSI C, use global instead */
-static int SignalKind;
-static int SignalCode;
+static volatile int SignalKind;
+static volatile int SignalCode;
 
 void fail_op()
 {
@@ -323,8 +327,8 @@ numeric(keynum)
       case kSTO:
 	mem[cell] = dnum;
 	lift_enabled = 1;
-      entered = 2;
-      clrdisp++;
+	entered = 2;
+	clrdisp++;
 	break;
       case kRCL:
 	PushNum(dnum);
@@ -332,13 +336,13 @@ numeric(keynum)
 	sprintf(dispstr, "%.8g", dnum);
 	lift_enabled = 1;
         entered = 1;
-	clrdisp = 0;
+	clrdisp++;
 	break;
       case kSUM:
 	mem[cell] += dnum;
 	lift_enabled = 1;
-      entered = 2;
-      clrdisp++;
+	entered = 2;
+	clrdisp++;
 	break;
       }
       memop = kCLR;
@@ -376,6 +380,7 @@ numeric(keynum)
   DrawDisplay();
   if (clrdisp && keynum != kZERO)
     clrdisp=0; /*no leading 0s*/
+  memop = keynum;
   entered=1;
   lift_enabled = 0;
 }
@@ -388,10 +393,25 @@ bkspf(void)
 
   if (! flagINV)
   {
-      if (entered!=1 || clrdisp)
+      if (entered!=1) {
+	  clearf();
 	  return;
-      if ((int) strlen(dispstr) > 0)
+      }
+      if (clrdisp)
+	  return;
+      if ((int) strlen(dispstr) > 0) {
+#ifndef X_LOCALE
+          const char *dp = localeconv()->decimal_point;
+          size_t dp_len = strlen(dp);
+          size_t ds_len = strlen(dispstr);
+          if (ds_len >= dp_len && strcmp(dispstr + ds_len - dp_len, dp) == 0)
+             Dpoint=0;
+#else
+	  if (dispstr[strlen(dispstr)-1] == '.')
+             Dpoint=0;
+#endif	  
 	  dispstr[strlen(dispstr)-1] = 0;
+      }
       if (strlen(dispstr) == 0) {
 	  strcat(dispstr, "0");
 	  clrdisp++;
@@ -412,7 +432,7 @@ decf(void)
 {
   flagINV=0;
   if (clrdisp) {
-      if (rpn)
+      if (rpn && lift_enabled)
 	PushNum(dnum);
       strcpy(dispstr,"0");
   }
@@ -822,6 +842,7 @@ oneop(int keynum)
     return;
   }
 
+  memop = keynum;
   entered=2;
   clrdisp=1;
   flagINV=0;

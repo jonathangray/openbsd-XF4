@@ -23,7 +23,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/save.c,v 3.4 2001/12/14 20:02:27 dawes Exp $ */
+/* $XFree86: xc/programs/xsm/save.c,v 3.3 2001/01/17 23:46:30 dawes Exp $ */
 
 #include "xsm.h"
 #include "save.h"

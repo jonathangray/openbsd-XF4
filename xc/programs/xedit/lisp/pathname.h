@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/pathname.h,v 1.5 2003/04/27 18:17:34 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/pathname.h,v 1.4tsi Exp $ */
 
 #ifndef Lisp_pathname_h
 #define Lisp_pathname_h

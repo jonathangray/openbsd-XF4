@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/test/math.lsp,v 1.5 2003/01/30 02:46:26 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/test/math.lsp,v 1.4 2002/11/30 23:13:14 paulo Exp $
 ;;
 
 ;; basic math tests

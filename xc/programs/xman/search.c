@@ -271,7 +271,7 @@ DoSearch(ManpageGlobals * man_globals, int type)
     snprintf(man_globals->manpage_title,sizeof(man_globals->manpage_title),
 	"%s", label);
     ChangeLabel(man_globals->label,label);
-    fseek(file, 0L, 0);		/* reset file to point at top. */
+    fseek(file, 0L, SEEK_SET);		/* reset file to point at top. */
   }
   else {			/* MANUAL SEACH */
     file = DoManualSearch(man_globals, search_string);

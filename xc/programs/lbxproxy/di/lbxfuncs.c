@@ -22,7 +22,7 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/lbxproxy/di/lbxfuncs.c,v 1.7 2003/05/27 22:26:56 tsi Exp $ */
+/* $XFree86: xc/programs/lbxproxy/di/lbxfuncs.c,v 1.6tsi Exp $ */
 
 /*
  * top level LBX request & reply handling

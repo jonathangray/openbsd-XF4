@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/appres/appres.man,v 1.9 2003/05/29 21:48:10 herrb Exp $
+.\" $XFree86: xc/programs/appres/appres.man,v 1.8 2001/12/14 20:00:38 dawes Exp $
 .\"
 .TH APPRES 1 __xorgversion__
 .SH NAME

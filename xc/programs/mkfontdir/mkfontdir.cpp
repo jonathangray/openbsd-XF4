@@ -1,4 +1,4 @@
 XCOMM!/bin/sh
-XCOMM $XFree86: xc/programs/mkfontdir/mkfontdir.cpp,v 1.1 2003/11/14 02:42:07 dawes Exp $
+XCOMM $XFree86: xc/programs/mkfontdir/mkfontdir,v 1.2 2003/07/18 14:51:43 tsi Exp $
 
 exec BINDIR/mkfontscale -b -s -l "$@"

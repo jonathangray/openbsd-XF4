@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/test/stream.lsp,v 1.4 2002/12/10 03:59:04 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/test/stream.lsp,v 1.3 2002/12/06 03:25:29 paulo Exp $
 ;;
 
 ;; most format tests from the cltl second edition samples

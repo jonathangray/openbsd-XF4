@@ -3,7 +3,7 @@
 //
 // symbols definition for a very simple Azerbaidjani keyboard layout.
 
-// $XFree86: xc/programs/xkbcomp/symbols/az,v 1.2 2001/11/21 22:28:52 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/az,v 1.1 2000/10/27 18:31:08 dawes Exp $
 // both latin and cyrillic layouts are available.
 // the cyrillic layout uses the corresponding latin letters in group2;
 // so it is useful to type in latin for people accostumed to cyrillic layout

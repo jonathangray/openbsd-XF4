@@ -10,7 +10,7 @@
 //
 // This file is distributed without any expressed or implied warranty.
 //
-// $XFree86: xc/programs/xkbcomp/symbols/czsk,v 1.9 2003/02/04 02:32:48 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/czsk,v 1.8 2002/11/20 04:49:03 dawes Exp $
 
 partial default alphanumeric_keys 
 xkb_symbols "us_sk_qwerty" {
@@ -293,17 +293,6 @@ xkb_symbols "def_basic" {
         type= "PC_SYSRQ",
         symbols[Group1]= [ Print, Sys_Req ]
     };
-
-    key <SYRQ> {
-        type= "PC_SYSRQ",
-        symbols[Group1]= [ Print, Sys_Req ]
-    };
-
-    key <BRK> {
-        type= "PC_BREAK",
-        symbols[Group1]= [ Pause, Break ]
-    };
-
 
     key <PAUS> {	[ Multi_key				]	};
     key <RALT> {        [ Mode_switch,  Multi_key       	]       };

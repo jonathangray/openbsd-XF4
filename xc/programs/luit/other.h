@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/luit/other.h,v 1.2 2004/01/27 02:30:30 dawes Exp $ */
+/* $XFree86: xc/programs/luit/other.h,v 1.1 2002/10/17 01:06:09 dawes Exp $ */
 
 typedef struct {
     FontMapPtr mapping;

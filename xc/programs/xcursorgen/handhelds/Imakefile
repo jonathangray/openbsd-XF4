@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xcursorgen/handhelds/Imakefile,v 1.5 2003/03/26 20:43:58 tsi Exp $
+XCOMM $XFree86: xc/programs/xcursorgen/handhelds/Imakefile,v 1.4tsi Exp $
 
 #define CursorSources(name) $(PNGDIR)/name-16.png
 

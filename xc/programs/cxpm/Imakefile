@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/cxpm/Imakefile,v 1.3 2003/05/27 17:58:21 tsi Exp $
+XCOMM $XFree86: xc/programs/cxpm/Imakefile,v 1.2tsi Exp $
 
 /* This is a simplified version of the Imakefile included with the xpm dist */
 

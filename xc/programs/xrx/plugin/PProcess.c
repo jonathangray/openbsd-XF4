@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization from
 The Open Group.
 
 */
-/* $XFree86: xc/programs/xrx/plugin/PProcess.c,v 1.7 2003/12/22 17:48:13 tsi Exp $ */
+/* $XFree86: xc/programs/xrx/plugin/PProcess.c,v 1.6tsi Exp $ */
 
 #include "RxPlugin.h"
 #include "XUrls.h"

@@ -26,7 +26,7 @@ in this Software without prior written authorization from the X Consortium.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/programs/beforelight/b4light.c,v 3.7 2003/10/24 20:38:10 tsi Exp $ */
+/* $XFree86: xc/programs/beforelight/b4light.c,v 3.6tsi Exp $ */
 
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>

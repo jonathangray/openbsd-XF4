@@ -27,7 +27,7 @@ The Open Group.
 
 */
 
-/* $XFree86: xc/programs/xrx/helper/httptran.c,v 1.6 2001/12/14 20:02:16 dawes Exp $ */
+/* $XFree86: xc/programs/xrx/helper/httptran.c,v 1.5 2001/07/25 15:05:28 dawes Exp $ */
 
 #if !defined(UNIXCPP) || defined(ANSICPP)
 #define TRANS(func) _HttpTrans##func

@@ -7,7 +7,7 @@ xkb_symbols "basic" {
 // Date        : Sat Aug  17 21:10:48 IST 2002
 // Mapping:
 //
-// $XFree86: xc/programs/xkbcomp/symbols/ml,v 1.1 2002/10/11 01:59:04 dawes Exp $
+// $XFree86$
 
     name[Group1] = "US/ASCII";
     name[Group2] = "Malayalam";

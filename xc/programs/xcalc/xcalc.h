@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xcalc/xcalc.h,v 1.2 2001/08/01 00:45:02 tsi Exp $ */
+/* $XFree86$ */
 
 /*
  * xcalc.h - symbolic constants for xcalc

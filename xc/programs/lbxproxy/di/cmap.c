@@ -48,7 +48,7 @@ from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/lbxproxy/di/cmap.c,v 1.7 2003/11/17 22:20:48 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/di/cmap.c,v 1.6 2001/12/14 20:00:50 dawes Exp $ */
 
 #include	<stdio.h>
 #include	"assert.h"

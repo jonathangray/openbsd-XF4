@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/lbxproxy/os/io.c,v 1.11 2003/11/17 22:20:49 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/os/io.c,v 1.10 2001/12/14 20:00:58 dawes Exp $ */
 /*****************************************************************
  * i/o functions
  *

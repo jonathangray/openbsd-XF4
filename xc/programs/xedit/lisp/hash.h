@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/hash.h,v 1.3 2003/04/27 18:17:33 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/hash.h,v 1.2tsi Exp $ */
 
 #ifndef Lisp_hash_h
 #define Lisp_hash_h

@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/rgb/showrgb.c,v 3.9 2002/05/31 18:46:08 dawes Exp $ */
+/* $XFree86: xc/programs/rgb/showrgb.c,v 3.8 2001/12/14 20:01:04 dawes Exp $ */
 
 #ifndef USE_RGB_TXT
 #ifdef NDBM

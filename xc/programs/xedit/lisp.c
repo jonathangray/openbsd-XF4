@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp.c,v 1.21 2003/05/23 14:56:51 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp.c,v 1.20tsi Exp $ */
 
 #include "xedit.h"
 #include "lisp/lisp.h"

@@ -1,10 +1,10 @@
 /* OS/2 REXX */
-/* $XFree86: xc/programs/xinit/xinitrc.cmd,v 3.6 2003/11/12 00:10:31 dawes Exp $ */
+/* $XFree86: xc/programs/xinit/xinitrc.cmd,v 3.5 1997/01/27 08:26:14 dawes Exp $ */
 '@echo off'
 env = 'OS2ENVIRONMENT'
 x11root = VALUE('X11ROOT',,env)
 IF x11root = '' THEN DO
-	SAY "The environment variable X11ROOT is not set. XFree86/OS2 won't run without it."
+	SAY "The environment variable X11ROOT is not set. X/OS2 won't run without it."
 	EXIT
 END
 home = VALUE('HOME',,env)

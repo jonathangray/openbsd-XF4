@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/fc-lang/Imakefile,v 1.1 2003/06/09 15:11:16 dawes Exp $
+XCOMM $XFree86$
 
 FONTCONFIGDIR = $(TOP)/extras/fontconfig
 

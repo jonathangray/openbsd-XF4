@@ -24,7 +24,7 @@
  * used in advertising or publicity pertaining to distribution of the software
  * without specific, written prior permission.
  */
-/* $XFree86: xc/programs/xmh/msg.c,v 1.5 2003/05/28 14:14:40 tsi Exp $ */
+/* $XFree86: xc/programs/xmh/msg.c,v 1.4 2002/04/05 21:06:28 dickey Exp $ */
 
 /* msgs.c -- handle operations on messages. */
 

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/xfs/include/dispatch.h,v 1.3 2001/08/28 23:44:54 paulo Exp $
+ * $XFree86: xc/programs/xfs/include/dispatch.h,v 1.2 1999/03/07 11:41:00 dawes Exp $
  */
 
 /************************************************************

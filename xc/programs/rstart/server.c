@@ -23,7 +23,7 @@
 /* OF WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT	*/
 /* OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.	*/
 /************************************************************************/
-/* $XFree86: xc/programs/rstart/server.c,v 1.6 2003/05/27 22:26:57 tsi Exp $ */
+/* $XFree86: xc/programs/rstart/server.c,v 1.5tsi Exp $ */
 
 /* Extended rsh "helper" program */
 #include <stdio.h>

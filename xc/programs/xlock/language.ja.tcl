@@ -4,7 +4,7 @@
 #
 # By: YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>
 
-# $Id: language.ja.tcl,v 1.3 2003/04/01 22:37:06 matthieu Exp $
+# $Id: language.ja.tcl,v 1.4 2004/11/03 00:22:47 matthieu Exp $
 
 settext "Wizard configure" "configure ウィザード"
 settext "Font Options" "フォント オプション"

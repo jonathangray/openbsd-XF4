@@ -29,7 +29,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xauth/parsedpy.c,v 3.8 2003/07/18 15:53:28 tsi Exp $ */
+/* $XFree86: xc/programs/xauth/parsedpy.c,v 3.7 2003/07/09 15:27:37 tsi Exp $ */
 
 #include <stdio.h>			/* for NULL */
 #include <ctype.h>			/* for isascii() and isdigit() */

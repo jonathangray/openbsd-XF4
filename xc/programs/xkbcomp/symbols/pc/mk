@@ -3,7 +3,7 @@
 // Author: Damjan Georgievski <gdamjan@freemail.org.mk>
 // Revision: 1.4
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/mk,v 1.2 2002/11/22 04:03:28 dawes Exp $
+// $XFree86$
 
 partial default alphanumeric_keys
 xkb_symbols "basic" { 

@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/fonttosfnt/write.c,v 1.5 2003/10/24 20:38:11 tsi Exp $ */
+/* $XFree86: xc/programs/fonttosfnt/write.c,v 1.4tsi Exp $ */
 
 #if defined(linux) && !defined(_GNU_SOURCE)
 /* for fwrite_unlocked and fread_unlocked */
@@ -1030,7 +1030,7 @@ writeOS2(FILE* out, FontPtr font)
 static int 
 writePCLT(FILE* out, FontPtr font)
 {
-    char name[16] = "XFree86 font    ";
+    char name[16] = XVENDORNAME" font    ";
     char filename[6] = "X11R00";
     unsigned char charComplement[8] = 
         {0xFF, 0xFF, 0xFF, 0xFF, 0x0B, 0xFF, 0xFF, 0xFE};

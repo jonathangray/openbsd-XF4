@@ -24,7 +24,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xfsinfo/xfsinfo.man,v 1.5 2001/12/14 20:01:42 dawes Exp $
+.\" $XFree86: xc/programs/xfsinfo/xfsinfo.man,v 1.4 2001/04/18 16:13:23 dawes Exp $
 .\"
 .TH XFSINFO 1 __xorgversion__
 .SH NAME

@@ -1,6 +1,6 @@
 
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/pc,v 1.10 2003/08/22 13:31:11 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/pc,v 1.9 2003/06/09 19:59:46 dawes Exp $
 
 partial hidden alphanumeric_keys modifier_keys 
 xkb_symbols "basic" {
@@ -101,16 +101,8 @@ xkb_symbols "basic" {
 	type= "PC_SYSRQ",
 	symbols[Group1]= [ Print, Sys_Req ]
     };
-    key <SYRQ> {
-	type= "PC_SYSRQ",
-	symbols[Group1]= [ Print, Sys_Req ]
-    };
     key <SCLK> {  [  Scroll_Lock	]	};
     key <PAUS> {
-	type= "PC_BREAK",
-	symbols[Group1]= [ Pause, Break ]
-    };
-    key <BRK> {
 	type= "PC_BREAK",
 	symbols[Group1]= [ Pause, Break ]
     };

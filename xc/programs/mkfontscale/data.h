@@ -19,7 +19,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-/* $XFree86: xc/programs/mkfontscale/data.h,v 1.4 2003/07/08 15:39:49 tsi Exp $ */
+/* $XFree86: xc/programs/mkfontscale/data.h,v 1.3 2003/04/30 20:39:43 herrb Exp $ */
 
 #ifndef _MKS_DATA_H_
 #define _MKS_DATA_H_ 1
@@ -39,6 +39,7 @@ char *notice_foundries[][2] =
      {"International Typeface Corporation", "itc"},
      {"Tiro Typeworks", "tiro"},
      {"XFree86", "xfree86"},
+     {"Xorg", "xorg"},
      {"Microsoft", "microsoft"},
      {"Omega", "omega"},
      {"Font21", "hwan"},

@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/fslsfonts/fslsfonts.c,v 3.8 2001/12/14 20:00:45 dawes Exp $ */
+/* $XFree86: xc/programs/fslsfonts/fslsfonts.c,v 3.7 2001/08/27 17:41:01 dawes Exp $ */
 
 #include <X11/fonts/FSlib.h>
 #include <stdio.h>

@@ -7,4 +7,4 @@ keyboard mapping override those defined in the keycodes component.
 
 
 
-/* $XFree86: xc/programs/xkbcomp/geometry/README,v 1.1 2002/11/22 04:19:26 dawes Exp $ */
+/* $XFree86$ */

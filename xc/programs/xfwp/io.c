@@ -29,7 +29,7 @@ authorization from The Open Group.
 X Window System is a trademark of The Open Group.
 
 */
-/* $XFree86: xc/programs/xfwp/io.c,v 1.11 2001/12/14 20:01:43 dawes Exp $ */
+/* $XFree86: xc/programs/xfwp/io.c,v 1.10 2001/07/25 15:05:22 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

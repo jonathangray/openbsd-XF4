@@ -27,7 +27,7 @@ in this Software without prior written authorization from the X Consortium.
  * *
  * Author:  Jim Fulton, MIT X Consortium
  */
-/* $XFree86: xc/programs/listres/listres.c,v 1.4 2001/04/01 14:00:18 tsi Exp $ */
+/* $XFree86: xc/programs/listres/listres.c,v 1.3 2000/02/17 14:00:32 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/hook.c,v 1.10 2003/01/09 03:36:29 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/hook.c,v 1.9 2003/01/08 05:07:40 paulo Exp $ */
 
 /*
  * This file is intended to be used to add all the necessary hooks to xedit
@@ -388,9 +388,11 @@ LineEditAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     XawTextBlock block;
 
-    if (international)
+    if (True) {
 	/* XXX FIXME */
+        fprintf(stderr, "LineEditAction: Not working in international mode.\n");
 	return;
+    }
 
     block.firstPos = 0;
     block.format = FMT8BIT;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/dpsinfo/Imakefile,v 1.5 2003/05/28 16:02:35 tsi Exp $
+XCOMM $XFree86: xc/programs/dpsinfo/Imakefile,v 1.4tsi Exp $
 XCOMM XTOOLLIB is currently needed by our version of DPSLIB
 
         DEPLIBS = $(DEPDPSLIB) $(DEPXTOOLLIB) $(DEPXONLYLIB)

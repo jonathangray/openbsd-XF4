@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/rgb/rgb.c,v 3.9 2002/10/09 16:56:47 tsi Exp $ */
+/* $XFree86: xc/programs/rgb/rgb.c,v 3.8tsi Exp $ */
 
 
 /* reads from standard input lines of the form:

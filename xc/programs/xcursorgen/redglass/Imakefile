@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xcursorgen/redglass/Imakefile,v 1.10 2003/03/26 20:43:59 tsi Exp $
+XCOMM $XFree86: xc/programs/xcursorgen/redglass/Imakefile,v 1.9tsi Exp $
 
 #define CursorSources(name) name-16.png name-24.png name-32.png name-48.png name-64.png
 

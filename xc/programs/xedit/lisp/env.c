@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  */
 
-/* $XFree86: xc/programs/xedit/lisp/env.c,v 1.1 2002/03/05 03:52:34 dawes Exp $ */
+/* $XFree86$ */
 
 
 #include <stdlib.h>

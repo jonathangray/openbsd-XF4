@@ -35,10 +35,13 @@
 *horizPane*sections.Label:	Sections
 
 *helpButton.Label:		Help
+*helpButton.Tip:		Open help browser
 
 *quitButton.Label:		Quit
+*quitButton.Tip:		Quit Xman
 
 *manpageButton.Label:		Manual Page
+*manpageButton.Tip:		Open new manpage browser
 
 *topLabel.Label:		Manual Browser
 
@@ -188,3 +191,5 @@
 
 *manpageButton.translations: #augment \
 		<Btn1Down>,<Btn1Up>: CreateNewManpage() reset()
+
+! EOF.

@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/xkbparse.y,v 3.12 2002/10/16 21:33:04 tsi Exp $ */
+/* $XFree86: xc/programs/xkbcomp/xkbparse.y,v 3.11tsi Exp $ */
 
 %token
 	END_OF_FILE	0

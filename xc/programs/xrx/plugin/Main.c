@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization from
 The Open Group.
 
 */
-/* $XFree86: xc/programs/xrx/plugin/Main.c,v 1.9 2003/05/27 22:27:09 tsi Exp $ */
+/* $XFree86: xc/programs/xrx/plugin/Main.c,v 1.8tsi Exp $ */
 
 /*
  * RX plug-in module based on the UnixTemplate file provided by Netcape.

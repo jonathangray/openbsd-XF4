@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xdpyinfo/xdpyinfo.man,v 3.8 2001/12/14 20:01:30 dawes Exp $
+.\" $XFree86: xc/programs/xdpyinfo/xdpyinfo.man,v 3.7 2001/01/27 18:21:11 dawes Exp $
 .\"
 .TH XDPYINFO 1 __xorgversion__
 .SH NAME

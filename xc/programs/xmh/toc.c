@@ -1,5 +1,5 @@
 /* $XConsortium: toc.c,v 2.59 95/01/09 16:52:53 swick Exp $
- * $XFree86: xc/programs/xmh/toc.c,v 3.5 2002/04/05 21:06:29 dickey Exp $
+ * $XFree86: xc/programs/xmh/toc.c,v 3.4 2001/10/28 03:34:39 tsi Exp $
  *
  *
  *			  COPYRIGHT 1987

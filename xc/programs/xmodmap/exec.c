@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xmodmap/exec.c,v 1.2 2004/04/23 19:54:59 eich Exp $ */
 /* $Xorg: exec.c,v 1.4 2001/02/09 02:05:56 xorgcvs Exp $ */
 /*
 
@@ -56,7 +57,7 @@ from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium; derived from parts of the
  * original xmodmap, written by David Rosenthal, of Sun Microsystems.
  */
-/* $XFree86: xc/programs/xmodmap/exec.c,v 1.6 2003/12/02 13:13:57 pascal Exp $ */
+/* $XFree86: xc/programs/xmodmap/exec.c,v 1.5 2001/12/14 20:02:13 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/Xlib.h>

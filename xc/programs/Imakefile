@@ -2,7 +2,7 @@ XCOMM $Xorg: Imakefile,v 1.4 2000/08/17 19:47:01 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/Imakefile,v 3.56 2003/06/20 15:49:50 eich Exp $
+XCOMM $XFree86: xc/programs/Imakefile,v 3.54 2003/04/14 20:37:16 herrb Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
@@ -38,6 +38,9 @@ SCREENSAVESRCDIR = beforelight
 #if BuildLBX
   LBXPROXYSRCDIR = lbxproxy
 #endif
+#if BuildXprintClients
+  XPSRCDIRS = xplsprinters xprehashprinterlist xphelloworld
+#endif
   PROXYMGRSRCDIR = proxymngr
     RSTARTSRCDIR = rstart
    SMPROXYSRCDIR = smproxy
@@ -57,7 +60,9 @@ XFINDPROXYSRCDIR = xfindproxy
        XRXSRCDIR = xrx
 #endif
        XSMSRCDIR = xsm
+#if BuildXterm
      XTERMSRCDIR = xterm
+#endif
       SCRIPTSDIR = scripts
 #endif
 #if BuildCID
@@ -92,9 +97,7 @@ XTRAPCLIENTDIRS = xtrap
       GLXCLIENTDIRS = glxinfo glxgears
 #endif
 
-#ifndef cygwinArchitecture
         XLOADDIR = xload
-#endif
 
 #if BuildRandRLibrary
        XRANDRDIR = xrandr
@@ -111,11 +114,19 @@ XTRAPCLIENTDIRS = xtrap
        FCLANGDIR = fc-lang
 #endif
 
+#if BuildXDriInfo
+        XDRIINFO = xdriinfo
+#endif
+
+#if BuildXaw
+        XMORE = xmore
+#endif
+
 #if BuildServersOnly || !BuildClients
 SUBDIRS = $(XSSRCDIR)
 #else
 SUBDIRS = \
-	appres bdftopcf fonttosfnt bitmap \
+	appres bdftopcf bitmap \
 	$(SCREENSAVESRCDIR) editres $(FCDIRS) $(FCLANGDIR) fslsfonts fstobdf \
 	fvwm iceauth ico listres luit \
 	$(MAKEPSRESDIR) $(DPSCLIENTDIRS) \
@@ -128,13 +139,13 @@ SUBDIRS = \
 	$(XF86DGASRCDIR) xedit xev xeyes xfd xfontsel $(XFSSRCDIR) xfsinfo \
 	$(XFINDPROXYSRCDIR) $(XFWPSRCDIR) $(XGAMMASRCDIR) xgc $(XHOSTSRCDIR) \
 	$(XINITSRCDIR) $(XKBSRCDIRS) xkill $(XLOADDIR) xlock xlogo xlsatoms \
-	xlsclients xlsfonts xmag xman xmessage xmh xmodmap xprop xrdb \
-	xrefresh $(XRXSRCDIR) xset xsystrace \
+	xlsclients xlsfonts xmag xman xmessage xmh xmodmap $(XMORE) xprop \
+	xrdb xrefresh $(XRXSRCDIR) xset xsystrace \
 	xsetroot $(XSMSRCDIR) xstdcmap $(XINPUTCLIENTDIRS) \
 	$(XTERMSRCDIR) $(XTRAPCLIENTDIRS) $(XVIDTUNESRCDIR) xwd xwininfo xwud \
 	$(XPMCLIENTDIRS) $(XVINFOSRCDIR) \
-	$(XSSRCDIR) $(XASSRCDIR) $(LBXPROXYSRCDIR) $(SCRIPTSDIR) \
-	$(GLXCLIENTDIRS) $(XRANDRDIR) $(XCURSORGENDIR) 
+	$(XSSRCDIR) $(XASSRCDIR) $(LBXPROXYSRCDIR) $(XPSRCDIRS) $(SCRIPTSDIR) \
+	$(GLXCLIENTDIRS) $(XRANDRDIR) $(XCURSORGENDIR) $(XDRIINFO)
 #endif
 
 MakeSubdirs($(SUBDIRS))

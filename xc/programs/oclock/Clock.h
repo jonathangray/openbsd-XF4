@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/oclock/Clock.h,v 1.5 2001/12/14 20:01:00 dawes Exp $ */
+/* $XFree86: xc/programs/oclock/Clock.h,v 1.4 2001/01/17 23:45:01 dawes Exp $ */
 
 #ifndef _XtClock_h
 #define _XtClock_h

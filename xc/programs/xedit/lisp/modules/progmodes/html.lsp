@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/html.lsp,v 1.3 2002/10/06 17:11:48 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/html.lsp,v 1.2 2002/09/22 18:41:27 paulo Exp $
 ;;
 
 (require "syntax")

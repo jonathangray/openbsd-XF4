@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/mkfontscale/Imakefile,v 1.8 2003/11/17 15:18:06 tsi Exp $
+XCOMM $XFree86: xc/programs/mkfontscale/Imakefile,v 1.7tsi Exp $
 
 LOCAL_LIBRARIES = $(XFONTENCLIB) $(FREETYPE2LIB)
         DEPLIBS = $(DEPXFONTENCLIB) $(DEPFREETYPE2LIB)

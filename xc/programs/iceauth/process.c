@@ -28,7 +28,7 @@ in this Software without prior written authorization from The Open Group.
  * Modified into "iceauth"    : Ralph Mor, X Consortium
  */
 
-/* $XFree86: xc/programs/iceauth/process.c,v 3.8 2002/05/31 18:46:07 dawes Exp $ */
+/* $XFree86: xc/programs/iceauth/process.c,v 3.7 2001/12/14 20:00:49 dawes Exp $ */
 
 #include "iceauth.h"
 #include <ctype.h>

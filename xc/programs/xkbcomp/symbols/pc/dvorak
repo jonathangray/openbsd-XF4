@@ -1,7 +1,7 @@
 
 // based on a keyboard map from an 'xkb/symbols/dk' file
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/dvorak,v 1.6 2004/01/03 16:38:26 herrb Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/dvorak,v 1.5 2004/01/03 16:35:07 herrb Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "basic" {

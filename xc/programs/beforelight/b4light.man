@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from the X Consortium.
 .\"
-.\" $XFree86: xc/programs/beforelight/b4light.man,v 3.2 2001/02/09 03:47:56 tsi Exp $
+.\" $XFree86: xc/programs/beforelight/b4light.man,v 3.1 2001/01/27 18:21:00 dawes Exp $
 .\"
 .TH beforelight 1 __xorgversion__
 .SH NAME

@@ -6,7 +6,7 @@
  * Map DVI (ditrof output) character names to
  * font indexes and back
  */
-/* $XFree86: xc/programs/xditview/DviChar.c,v 1.3 2001/08/28 16:48:09 tsi Exp $ */
+/* $XFree86$ */
 
 # include   <X11/Intrinsic.h>
 # include   "DviChar.h"

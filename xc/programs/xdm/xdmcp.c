@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xdm/xdmcp.c,v 1.4 2004/08/07 19:22:01 alanc Exp $ */
 /* $Xorg: xdmcp.c,v 1.4 2001/02/09 02:05:41 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/xdmcp.c,v 3.26 2004/01/07 04:28:06 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/xdmcp.c,v 3.25 2003/11/23 22:36:03 herrb Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -942,13 +943,20 @@ request_respond (
     ARRAY8Ptr	    connectionAddress;
 
     Debug ("Request respond %d\n", length);
+    connectionTypes.length = 0;
     connectionTypes.data = 0;
+    connectionAddresses.length = 0;
     connectionAddresses.data = 0;
+    authenticationName.length = 0;
     authenticationName.data = 0;
+    authenticationData.length = 0;
     authenticationData.data = 0;
+    authorizationNames.length = 0;
     authorizationNames.data = 0;
     authorizationName.length = 0;
+    authorizationName.data = 0;
     authorizationData.length = 0;
+    authorizationData.data = 0;
     manufacturerDisplayID.data = 0;
     if (XdmcpReadCARD16 (&buffer, &displayNumber) &&
 	XdmcpReadARRAY16 (&buffer, &connectionTypes) &&
@@ -1189,7 +1197,8 @@ manage (
 					 &pdpy->connectionAddress,
 					 from,
 					 pdpy->displayNumber);
-	    Debug ("Computed display name: %s\n", name);
+	    Debug ("Computed display name: %s for: %s\n",
+		   name, (char *)pdpy->connectionAddress.data);
 	    if (!name)
 	    {
 		send_failed (from, fromlen, "(no name)", sessionID, 

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/xedit.c,v 1.26 2003/05/20 21:44:48 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/xedit.c,v 1.25 2003/04/27 18:17:35 tsi Exp $ */
 
 #include "xedit/xedit.h"
 #include <X11/Xaw/TextSrcP.h>	/* Needs some private definitions */

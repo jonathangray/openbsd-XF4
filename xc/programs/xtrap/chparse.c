@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/chparse.c,v 1.4 2003/05/27 22:27:13 tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/chparse.c,v 1.3tsi Exp $ */
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991 by Digital Equipment Corp., Maynard, MA
 

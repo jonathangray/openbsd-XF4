@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xdm/auth.c,v 1.2 2004/04/23 19:54:42 eich Exp $ */
 /* $Xorg: auth.c,v 1.5 2001/02/09 02:05:40 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/auth.c,v 3.33 2004/01/16 00:03:54 herrb Exp $ */
+/* $XFree86: xc/programs/xdm/auth.c,v 3.32 2003/12/22 17:48:12 tsi Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -40,7 +41,7 @@ from The Open Group.
 #include <X11/X.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
 #include <pwd.h>
 #endif
 
@@ -360,8 +361,8 @@ MakeServerAuthFile (struct display *d, FILE ** file, uid_t uid, gid_t gid)
 	    return TRUE;
 #else
 	    (void) mktemp (d->authFile);
-#endif
 	    (void) chown(d->authFile, uid, gid);
+#endif
 	}
     }
 
@@ -382,11 +383,9 @@ SaveServerAuthorizations (
     int		i;
     uid_t	uid;
     gid_t	gid;
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
     struct passwd *x11;
-#endif
 
-#ifdef __OpenBSD__
     /* Give read capability to group _x11 */
     x11 = getpwnam("_x11");
     if (x11 == NULL) {
@@ -402,12 +401,12 @@ SaveServerAuthorizations (
     gid = getgid();
 #endif
 
+
     mask = umask (0077);
     ret = MakeServerAuthFile(d, &auth_file, uid, gid);
     umask (mask);
     if (!ret)
 	return FALSE;
-    fchown(fileno(auth_file), uid, gid);
     if (!auth_file) {
 	Debug ("Can't creat auth file %s\n", d->authFile);
 	LogError ("Cannot open server authorization file %s\n", d->authFile);
@@ -417,6 +416,7 @@ SaveServerAuthorizations (
     }
     else
     {
+	fchown(fileno(auth_file), uid, gid);
     	Debug ("File: %s auth: %p\n", d->authFile, auths);
 	ret = TRUE;
 	for (i = 0; i < count; i++)

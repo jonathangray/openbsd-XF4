@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/programs/makepsres/makepsres.c,v 1.9 2003/10/24 20:38:13 tsi Exp $ */
+/* $XFree86: xc/programs/makepsres/makepsres.c,v 1.8tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -23,7 +23,7 @@
 /* OF WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT	*/
 /* OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.	*/
 /************************************************************************/
-/* $XFree86: xc/programs/rstart/auth.c,v 1.5 2001/07/25 15:05:15 dawes Exp $ */
+/* $XFree86: xc/programs/rstart/auth.c,v 1.4 2001/01/17 23:45:03 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Xos.h>

@@ -18,7 +18,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/glxgears/glxgears.c,v 1.4 2003/10/24 20:38:11 tsi Exp $ */
+/* $XFree86: xc/programs/glxgears/glxgears.c,v 1.3tsi Exp $ */
 
 /*
  * This is a port of the infamous "gears" demo to straight GLX (i.e. no GLUT)
@@ -29,25 +29,67 @@
  *
  */
 
-
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#ifdef INCLUDE_XPRINT_SUPPORT
+#include <X11/XprintUtil/xprintutil.h>
+#endif /* INCLUDE_XPRINT_SUPPORT */
+#include <X11/keysym.h>
+#include <GL/gl.h>
+#include <GL/glx.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <GL/gl.h>
-#include <GL/glx.h>
+#include <ctype.h>
+#include <math.h>
+
+/* XXX this probably isn't very portable */
+#include <sys/time.h>
+#include <unistd.h>
+
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif /* !M_PI */
+
+/* Turn a NULL pointer string into an empty string */
+#define NULLSTR(x) (((x)!=NULL)?(x):(""))
+#define Log(x) { if(verbose) printf x; }
+
+/* Globla vars */ 
+static const char *ProgramName;      /* program name (from argv[0]) */
+static Bool        verbose = False;  /* verbose output what the program is doing */
+ 
+int                xp_event_base,      /* XpExtension even base */
+                   xp_error_base;      /* XpExtension error base */
+
+static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;
+static GLint gear1, gear2, gear3;
+static GLfloat angle = 0.0;
+static GLboolean printInfo = GL_FALSE;
+
+static
+void usage(void)
+{
+   fprintf (stderr, "usage:  %s [options]\n", ProgramName);
+   fprintf (stderr, "-display\tSet X11 display for output.\n");
+#ifdef INCLUDE_XPRINT_SUPPORT
+   fprintf (stderr, "-print\tUse printer instead of video card for output.\n");
+   fprintf (stderr, "-printer printername\tname of printer to use\n");
+   fprintf (stderr, "-printfile printername\tOutput file for print job\n");
+   fprintf (stderr, "-numpages count\tNumber of pages to print\n");
+#endif /* INCLUDE_XPRINT_SUPPORT */
+   fprintf (stderr, "-info\tPrint additional GLX information.\n");
+   fprintf (stderr, "-h\tPrint this help page.\n");
+   fprintf (stderr, "-v\tVerbose output.\n");
+   fprintf (stderr, "\n");
+   exit(EXIT_FAILURE);
+}
 
 
 #define BENCHMARK
 
 #ifdef BENCHMARK
-
-/* XXX this probably isn't very portable */
-
-#include <sys/time.h>
-#include <unistd.h>
 
 /* return current time (in seconds) */
 static int
@@ -59,7 +101,7 @@ current_time(void)
    return (int) tv.tv_sec;
 }
 
-#else /*BENCHMARK*/
+#else /* BENCHMARK */
 
 /* dummy */
 static int
@@ -68,19 +110,7 @@ current_time(void)
    return 0;
 }
 
-#endif /*BENCHMARK*/
-
-
-
-#ifndef M_PI
-#define M_PI 3.14159265
-#endif
-
-
-static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;
-static GLint gear1, gear2, gear3;
-static GLfloat angle = 0.0;
-
+#endif /* BENCHMARK */
 
 /*
  *
@@ -311,7 +341,8 @@ init(void)
  * Return the window and context handles.
  */
 static void
-make_window( Display *dpy, const char *name,
+make_window( Display *dpy, Screen *scr,
+             const char *name,
              int x, int y, int width, int height,
              Window *winRet, GLXContext *ctxRet)
 {
@@ -329,14 +360,15 @@ make_window( Display *dpy, const char *name,
    Window win;
    GLXContext ctx;
    XVisualInfo *visinfo;
+   GLint max[2] = { 0, 0 };
 
-   scrnum = DefaultScreen( dpy );
-   root = RootWindow( dpy, scrnum );
+   scrnum = XScreenNumberOfScreen(scr);
+   root   = XRootWindow(dpy, scrnum);
 
    visinfo = glXChooseVisual( dpy, scrnum, attrib );
    if (!visinfo) {
-      printf("Error: couldn't get an RGB, Double-buffered visual\n");
-      exit(1);
+      fprintf(stderr, "%s: Error: couldn't get an RGB, Double-buffered visual.\n", ProgramName);
+      exit(EXIT_FAILURE);
    }
 
    /* window attributes */
@@ -346,7 +378,7 @@ make_window( Display *dpy, const char *name,
    attr.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
    mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
-   win = XCreateWindow( dpy, root, 0, 0, width, height,
+   win = XCreateWindow( dpy, root, x, y, width, height,
 		        0, visinfo->depth, InputOutput,
 		        visinfo->visual, mask, &attr );
 
@@ -365,11 +397,25 @@ make_window( Display *dpy, const char *name,
 
    ctx = glXCreateContext( dpy, visinfo, NULL, True );
    if (!ctx) {
-      printf("Error: glXCreateContext failed\n");
-      exit(1);
+      fprintf(stderr, "%s: Error: glXCreateContext failed.\n", ProgramName);
+      exit(EXIT_FAILURE);
    }
 
    XFree(visinfo);
+
+   XMapWindow(dpy, win);
+   glXMakeCurrent(dpy, win, ctx);
+
+   /* Check for maximum size supported by the GL rasterizer */   
+   glGetIntegerv(GL_MAX_VIEWPORT_DIMS, max);
+   if (printInfo)
+      printf("GL_MAX_VIEWPORT_DIMS=%d/%d\n", (int)max[0], (int)max[1]);
+   if (width > max[0] || height > max[1]) {
+      fprintf(stderr, "%s: Error: Requested window size (%d/%d) larger than "
+              "maximum supported by GL engine (%d/%d).\n",
+              ProgramName, width, height, (int)max[0], (int)max[1]);
+      exit(EXIT_FAILURE);
+   }
 
    *winRet = win;
    *ctxRet = ctx;
@@ -377,42 +423,45 @@ make_window( Display *dpy, const char *name,
 
 
 static void
-event_loop(Display *dpy, Window win)
+event_loop(Display *dpy, Window win, int numPages )
 {
    while (1) {
-      while (XPending(dpy) > 0) {
-         XEvent event;
-         XNextEvent(dpy, &event);
-         switch (event.type) {
-	 case Expose:
-            /* we'll redraw below */
-	    break;
-	 case ConfigureNotify:
-	    reshape(event.xconfigure.width, event.xconfigure.height);
-	    break;
-         case KeyPress:
-            {
-               char buffer[10];
-               int code;
-               code = XLookupKeysym(&event.xkey, 0);
-               if (code == XK_Left) {
-                  view_roty += 5.0;
-               }
-               else if (code == XK_Right) {
-                  view_roty -= 5.0;
-               }
-               else if (code == XK_Up) {
-                  view_rotx += 5.0;
-               }
-               else if (code == XK_Down) {
-                  view_rotx -= 5.0;
-               }
-               else {
-                  (void) XLookupString(&event.xkey, buffer, sizeof(buffer),
-                                    NULL, NULL);
-                  if (buffer[0] == 27) {
-                     /* escape */
-                     return;
+      /* Process interactive events only when we are not printing */
+      if (numPages == 0) {
+         while (XPending(dpy) > 0) {
+            XEvent event;
+            XNextEvent(dpy, &event);
+            switch (event.type) {
+	    case Expose:
+               /* we'll redraw below */
+	       break;
+	    case ConfigureNotify:
+	       reshape(event.xconfigure.width, event.xconfigure.height);
+	       break;
+            case KeyPress:
+               {
+                  char buffer[10];
+                  int code;
+                  code = XLookupKeysym(&event.xkey, 0);
+                  if (code == XK_Left) {
+                     view_roty += 5.0;
+                  }
+                  else if (code == XK_Right) {
+                     view_roty -= 5.0;
+                  }
+                  else if (code == XK_Up) {
+                     view_rotx += 5.0;
+                  }
+                  else if (code == XK_Down) {
+                     view_rotx -= 5.0;
+                  }
+                  else {
+                     (void) XLookupString(&event.xkey, buffer, sizeof(buffer),
+                                       NULL, NULL);
+                     if (buffer[0] == 27) {
+                        /* escape */
+                        return;
+                     }
                   }
                }
             }
@@ -422,9 +471,27 @@ event_loop(Display *dpy, Window win)
       /* next frame */
       angle += 2.0;
 
+#ifdef INCLUDE_XPRINT_SUPPORT
+      if (numPages > 0) {
+         XpStartPage(dpy, win);
+         XpuWaitForPrintNotify(dpy, xp_event_base, XPStartPageNotify);      
+      }
+#endif /* INCLUDE_XPRINT_SUPPORT */
+
       draw();
       glXSwapBuffers(dpy, win);
 
+#ifdef INCLUDE_XPRINT_SUPPORT
+      if (numPages > 0) {
+         XpEndPage(dpy);
+         XpuWaitForPrintNotify(dpy, xp_event_base, XPEndPageNotify);
+
+         /* Last page ? */          
+         if( --numPages == 0 )
+            return;
+      }
+#endif /* INCLUDE_XPRINT_SUPPORT */
+           
       /* calc framerate */
       {
          static int t0 = -1;
@@ -452,33 +519,188 @@ event_loop(Display *dpy, Window win)
 int
 main(int argc, char *argv[])
 {
-   Display *dpy;
-   Window win;
-   GLXContext ctx;
-   char *dpyName = NULL;
-   GLboolean printInfo = GL_FALSE;
-   int i;
+   Display       *dpy;
+   Window         win;
+   Screen        *screen;
+   GLXContext     ctx;
+   char          *dpyName            = NULL;
+   int            i;
+   XRectangle     winrect;
 
+#ifdef INCLUDE_XPRINT_SUPPORT
+   long           dpi;
+   XPContext      pcontext           = None; /* Xprint context */
+   void          *printtofile_handle = NULL; /* "context" when printing to file */
+   Bool           doPrint            = FALSE; /* Print to printer ? */
+   const char    *printername        = NULL;  /* printer to query */
+   const char    *toFile             = NULL;  /* output file (instead of printer) */
+   int            numPages           = 5;     /* Numer of pages to print */
+   XPPrinterList  plist              = NULL;  /* list of printers */
+   int            plist_count;                /* number of entries in |plist|-array */
+   unsigned short dummy;
+#endif /* INCLUDE_XPRINT_SUPPORT */
+
+   ProgramName = argv[0];
+    
    for (i = 1; i < argc; i++) {
+      const char *arg = argv[i];
+      int         len = strlen(arg);
+
       if (strcmp(argv[i], "-display") == 0) {
-         dpyName = argv[i+1];
-         i++;
+         if (++i >= argc)
+            usage();
+         dpyName = argv[i];
       }
       else if (strcmp(argv[i], "-info") == 0) {
          printInfo = GL_TRUE;
       }
+#ifdef INCLUDE_XPRINT_SUPPORT
+      else if (strcmp(argv[i], "-print") == 0) {
+         doPrint = True;
+      }
+      else if (!strncmp("-printer", arg, len)) {
+         if (++i >= argc)
+            usage();
+         printername = argv[i];
+         doPrint = True;
+      }
+      else if (!strncmp("-printfile", arg, len)) {
+         if (++i >= argc)
+            usage();
+         toFile = argv[i];
+         doPrint = True;
+      }
+      else if (!strncmp("-numpages", arg, len)) {
+         if (++i >= argc)
+            usage();
+         numPages = atoi(argv[i]);
+         doPrint = True;
+         if (numPages <= 0)
+            usage();
+      }
+#endif /* INCLUDE_XPRINT_SUPPORT */
+      else if (!strncmp("-v", arg, len)) {
+         verbose   = True;
+         printInfo = GL_TRUE;
+      }
+      else if (strcmp(argv[i], "-h") == 0) {
+         usage();
+      }
+      else
+      {
+        fprintf(stderr, "%s: Unsupported option '%s'.\n", ProgramName, argv[i]);
+        usage();
+      }
+   }
+   
+#ifdef INCLUDE_XPRINT_SUPPORT
+   /* Display and printing at the same time not implemented */
+   if (doPrint && dpyName) {
+      usage();
    }
 
-   dpy = XOpenDisplay(dpyName);
-   if (!dpy) {
-      printf("Error: couldn't open display %s\n", dpyName);
-      return -1;
-   }
+   if (doPrint) {
+      plist = XpuGetPrinterList(printername, &plist_count);
 
-   make_window(dpy, "glxgears", 0, 0, 300, 300, &win, &ctx);
-   XMapWindow(dpy, win);
-   glXMakeCurrent(dpy, win, ctx);
-   reshape(300, 300);
+      if (!plist) {
+         fprintf(stderr, "%s:  no printers found for printer spec \"%s\".\n",
+                 ProgramName, NULLSTR(printername));
+         return EXIT_FAILURE;
+      }
+
+      printername = plist[0].name;
+
+      Log(("Using printer '%s'\n", printername));
+
+      if (XpuGetPrinter(printername, &dpy, &pcontext) != 1) {
+         fprintf(stderr, "%s: Cannot open printer '%s'\n", ProgramName, printername);
+         return EXIT_FAILURE;
+      }
+
+      if (XpQueryExtension(dpy, &xp_event_base, &xp_error_base) == False) {
+         fprintf(stderr, "%s: XpQueryExtension() failed.\n", ProgramName);
+         XpuClosePrinterDisplay(dpy, pcontext);
+         return EXIT_FAILURE;
+      }
+
+      /* Listen to XP(Start|End)(Job|Doc|Page)Notify events).
+       * This is mantatory as Xp(Start|End)(Job|Doc|Page) functions are _not_ 
+       * syncronous !!
+       * Not waiting for such events may cause that subsequent data may be 
+       * destroyed/corrupted!!
+       */
+      XpSelectInput(dpy, pcontext, XPPrintMask);
+
+      /* Set job title */
+      XpuSetJobTitle(dpy, pcontext, "glxgears for Xprint");
+
+      /* Set print context
+       * Note that this modifies the available fonts, including builtin printer prints.
+       * All XListFonts()/XLoadFont() stuff should be done _after_ setting the print 
+       * context to obtain the proper fonts.
+       */ 
+      XpSetContext(dpy, pcontext);
+
+      /* Get default printer reolution */   
+      if (XpuGetResolution(dpy, pcontext, &dpi) != 1) {
+         fprintf(stderr, "%s: No default resolution for printer '%s'.\n",
+         ProgramName, printername);
+         XpuClosePrinterDisplay(dpy, pcontext);
+         return EXIT_FAILURE;
+      }
+
+      if (toFile) {
+         Log(("starting job (to file '%s').\n", toFile));
+         printtofile_handle = XpuStartJobToFile(dpy, pcontext, toFile);
+         if( !printtofile_handle ) {
+            fprintf(stderr, "%s: Error: %s while trying to print to file.\n", 
+                    ProgramName, strerror(errno));
+            XpuClosePrinterDisplay(dpy, pcontext);
+            return EXIT_FAILURE;
+         }
+
+         XpuWaitForPrintNotify(dpy, xp_event_base, XPStartJobNotify);
+      }
+      else
+      {
+         Log(("starting job.\n"));
+         XpuStartJobToSpooler(dpy);    
+         XpuWaitForPrintNotify(dpy, xp_event_base, XPStartJobNotify);
+      }
+
+      screen = XpGetScreenOfContext(dpy, pcontext);
+
+      /* Obtain some info about page geometry */
+      XpGetPageDimensions(dpy, pcontext, &dummy, &dummy, &winrect);
+
+      /* Center output window on page */
+      winrect.width  /= 2;
+      winrect.height /= 2;
+      winrect.x += winrect.width  / 2;
+      winrect.y += winrect.height / 2;
+   }
+   else
+#endif /* INCLUDE_XPRINT_SUPPORT */
+   {
+      dpy = XOpenDisplay(dpyName);
+      if (!dpy) {
+         fprintf(stderr, "%s: Error: couldn't open display '%s'\n", ProgramName, dpyName);
+         return EXIT_FAILURE;
+      }
+
+      screen = XDefaultScreenOfDisplay(dpy);
+
+      winrect.x      = 0;
+      winrect.y      = 0;
+      winrect.width  = 300;
+      winrect.height = 300;
+   }
+   
+   Log(("Window x=%d, y=%d, width=%d, height=%d\n",
+       (int)winrect.x, (int)winrect.y, (int)winrect.width, (int)winrect.height));
+
+   make_window(dpy, screen, "glxgears", winrect.x, winrect.y, winrect.width, winrect.height, &win, &ctx);
+   reshape(winrect.width, winrect.height);
 
    if (printInfo) {
       printf("GL_RENDERER   = %s\n", (char *) glGetString(GL_RENDERER));
@@ -489,11 +711,43 @@ main(int argc, char *argv[])
 
    init();
 
-   event_loop(dpy, win);
+#ifdef INCLUDE_XPRINT_SUPPORT
+   event_loop(dpy, win, doPrint?numPages:0);
+#else /* !INCLUDE_XPRINT_SUPPORT */
+   event_loop(dpy, win, 0);
+#endif /* !INCLUDE_XPRINT_SUPPORT */
 
    glXDestroyContext(dpy, ctx);
-   XDestroyWindow(dpy, win);
-   XCloseDisplay(dpy);
 
-   return 0;
+#ifdef INCLUDE_XPRINT_SUPPORT
+   if (doPrint) {
+      /* End the print job - the final results are sent by the X print
+       * server to the spooler sub system.
+       */
+      XpEndJob(dpy);
+      XpuWaitForPrintNotify(dpy, xp_event_base, XPEndJobNotify);    
+      Log(("end job.\n"));
+
+      if (toFile) {
+         if (XpuWaitForPrintFileChild(printtofile_handle) != XPGetDocFinished) {
+            fprintf(stderr, "%s: Error while printing to file.\n", ProgramName);
+            XpuClosePrinterDisplay(dpy, pcontext);
+            return EXIT_FAILURE;
+         }
+      }
+
+      XDestroyWindow(dpy, win);
+      XpuClosePrinterDisplay(dpy, pcontext);
+
+      XpuFreePrinterList(plist);
+   }
+   else
+#endif /* INCLUDE_XPRINT_SUPPORT */
+   {
+      XDestroyWindow(dpy, win);
+      XCloseDisplay(dpy);
+   }
+   
+   return EXIT_SUCCESS;
 }
+

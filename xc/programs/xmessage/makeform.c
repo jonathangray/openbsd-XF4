@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xmessage/makeform.c,v 1.7 2003/04/14 23:03:13 herrb Exp $ */
+/* $XFree86: xc/programs/xmessage/makeform.c,v 1.6 2002/11/22 03:56:39 paulo Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

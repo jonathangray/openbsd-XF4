@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/read.c,v 1.37 2003/05/27 22:27:04 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/read.c,v 1.36tsi Exp $ */
 
 #include <errno.h>
 #include "lisp/read.h"

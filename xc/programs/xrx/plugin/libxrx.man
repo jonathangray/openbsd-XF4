@@ -24,7 +24,7 @@
 .\" from The Open Group.
 .\" 
 .\"
-.\" $XFree86: xc/programs/xrx/plugin/libxrx.man,v 1.8 2001/12/14 20:02:17 dawes Exp $
+.\" $XFree86: xc/programs/xrx/plugin/libxrx.man,v 1.7 2001/01/27 18:21:22 dawes Exp $
 .\"
 .TH LIBXRX 1 __xorgversion__
 .SH NAME
@@ -50,7 +50,7 @@ embedded within the browser page from which it was launched.
 .SH INSTALLATION
 To install the \fBRX Plug-in\fP so that Netscape Navigator can use it, find
 the file named libxrx.so.6.3 or libxrx.sl.6.3 (or similar, depending on
-your platform) in <ProjectRoot>/lib (e.g. /usr/X11R6.4/lib) and copy it to
+your platform) in <ProjectRoot>/lib (e.g. /usr/X11R6/lib) and copy it to
 either /usr/local/lib/netscape/plugins or $HOME/.netscape/plugins. Do
 not install the symlinks libxrx.so or libxrx.sl; they would confuse
 Netscape.

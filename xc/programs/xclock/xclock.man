@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xclock/xclock.man,v 1.16 2003/07/07 15:34:29 eich Exp $
+.\" $XFree86: xc/programs/xclock/xclock.man,v 1.15 2003/07/04 16:24:30 eich Exp $
 .\"
 .TH XCLOCK 1 __xorgversion__
 .SH NAME

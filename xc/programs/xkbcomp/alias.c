@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/alias.c,v 1.5 2002/07/01 02:26:00 tsi Exp $ */
+/* $XFree86$ */
 
 #include "xkbcomp.h"
 #include "misc.h"

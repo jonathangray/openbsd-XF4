@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/struct.h,v 1.7 2003/04/27 18:17:35 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/struct.h,v 1.6tsi Exp $ */
 
 #ifndef Lisp_struct_h
 #define Lisp_struct_h

@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/appres/appres.c,v 1.4 2001/12/14 20:00:38 dawes Exp $ */
+/* $XFree86: xc/programs/appres/appres.c,v 1.3 2001/01/17 23:44:49 dawes Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <stdio.h>

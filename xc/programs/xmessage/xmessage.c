@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xmessage/xmessage.c,v 1.5 2003/04/14 23:03:13 herrb Exp $ */
+/* $XFree86: xc/programs/xmessage/xmessage.c,v 1.4 2000/02/17 16:53:03 dawes Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

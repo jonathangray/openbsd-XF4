@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/ico/ico.c,v 1.10 2003/05/27 22:26:56 tsi Exp $ */
+/* $XFree86: xc/programs/ico/ico.c,v 1.9tsi Exp $ */
 
 /******************************************************************************
  * Description

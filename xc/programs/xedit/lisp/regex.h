@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/regex.h,v 1.4 2003/04/27 18:17:34 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/regex.h,v 1.3tsi Exp $ */
 
 #ifndef Lisp_regex_h
 #define Lisp_regex_h

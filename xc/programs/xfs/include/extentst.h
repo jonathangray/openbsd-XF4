@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)extentst.h	4.1	91/05/02
  *
  */
-/* $XFree86: xc/programs/xfs/include/extentst.h,v 1.7 2003/07/16 01:39:17 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/extentst.h,v 1.6 2001/12/14 20:01:38 dawes Exp $ */
 
 #ifndef _EXTENTST_H_
 #define _EXTENTST_H_

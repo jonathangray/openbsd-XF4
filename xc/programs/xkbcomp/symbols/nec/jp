@@ -24,7 +24,7 @@
 //other dealings in this Software without prior written authorization
 //from The Open Group.
 //
-// $XFree86: xc/programs/xkbcomp/symbols/nec/jp,v 3.10 2001/12/14 20:02:04 dawes Exp $ 
+// $XFree86: xc/programs/xkbcomp/symbols/nec/jp,v 3.9 2001/01/17 23:46:03 dawes Exp $ 
 //
 // symbols for a NEC PC98 keyboard
 default xkb_symbols "pc98" {

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/xtrapchar.c,v 1.3 2001/12/12 00:43:50 dawes Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapchar.c,v 1.2 2001/11/19 15:33:41 tsi Exp $ */
 /*
  * @DEC_COPYRIGHT@
  */
@@ -90,6 +90,12 @@ SOFTWARE.
 #ifndef vaxc
 #define globalref extern
 #endif
+#ifdef Lynx
+extern char *optarg;
+extern int optind;
+extern int opterr;
+#endif
+
     /* Special private indicators */
 #define BPRESS      '!'
 #define BRELEASE    '"'

@@ -1,3 +1,4 @@
+// $XdotOrg: xc/programs/xkbcomp/symbols/dvorak,v 1.2 2004/04/23 19:54:52 eich Exp $
 // $Xorg: dvorak,v 1.3 2000/08/17 19:54:42 cpqbld Exp $
 
 // symbols definition for a very simple dvorak layout.
@@ -6,7 +7,7 @@
 // uses the punctuation keys configurations common on PC 
 // keyboards (e.g. key <ABO9> is { [ period greater ] })
 
-// $XFree86: xc/programs/xkbcomp/symbols/dvorak,v 3.11 2003/12/18 14:14:38 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/dvorak,v 3.10 2003/08/08 06:27:09 dawes Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "basic" {

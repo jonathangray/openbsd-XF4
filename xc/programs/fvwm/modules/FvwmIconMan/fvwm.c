@@ -8,7 +8,7 @@
 #include "../fvwm/module.h"
 
 static char const rcsid[] =
-  "$Id: fvwm.c,v 1.3 2003/04/01 22:36:59 matthieu Exp $";
+  "$Id: fvwm.c,v 1.4 2004/11/03 00:22:05 matthieu Exp $";
 
 typedef struct {
   Ulong paging_enabled;

@@ -34,7 +34,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/programs/texteroids/texteroids.c,v 1.5 2001/08/01 00:45:02 tsi Exp $ */
+/* $XFree86: xc/programs/texteroids/texteroids.c,v 1.4 2001/04/01 14:00:18 tsi Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/symbols/pc/fo,v 1.1 2003/06/30 13:23:11 pascal Exp $
+// $XFree86$
 
 partial alphanumeric_keys 
 xkb_symbols "basic" {

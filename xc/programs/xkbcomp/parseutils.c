@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/parseutils.c,v 1.5 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #define DEBUG_VAR_NOT_LOCAL
 #define	DEBUG_VAR parseDebug

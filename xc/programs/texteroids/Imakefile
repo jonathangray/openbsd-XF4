@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/texteroids/Imakefile,v 1.4 2003/05/27 17:58:24 tsi Exp $
+XCOMM $XFree86: xc/programs/texteroids/Imakefile,v 1.3tsi Exp $
 
         DEPLIBS = $(DEPDPSLIB) $(DEPXTOOLLIB) $(DEPXONLYLIB)
 LOCAL_LIBRARIES = $(XTOOLLIB) $(DPSLIB) $(XONLYLIB)

@@ -1,6 +1,6 @@
 
   /*\
-   * $XFree86: xc/programs/xkbevd/utils.c,v 3.6 2002/01/14 18:30:11 dawes Exp $
+   * $XFree86: xc/programs/xkbevd/utils.c,v 3.5 2001/07/25 15:05:25 dawes Exp $
    *
    *		              COPYRIGHT 1990
    *		        DIGITAL EQUIPMENT CORPORATION

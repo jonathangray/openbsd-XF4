@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-/* $XFree86: xc/programs/lbxproxy/include/util.h,v 1.8 2003/11/17 22:20:49 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/include/util.h,v 1.7 2001/12/14 20:00:56 dawes Exp $ */
 
 #ifndef	_UTIL_H_
 #define	_UTIL_H_

@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/vmod.h,v 1.3 2002/07/01 02:26:01 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef VMOD_H
 #define VMOD_H 1

@@ -13,7 +13,7 @@
 // layout and some widely used Hungarian keyboard layouts.
 // Tested on Linux with XFree86 3.3.6
 //
-// $XFree86: xc/programs/xkbcomp/symbols/hu,v 1.8 2003/09/27 13:31:59 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/hu,v 1.7 2002/12/13 04:18:03 dawes Exp $
 
 
 // Default layout

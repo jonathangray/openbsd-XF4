@@ -1,4 +1,4 @@
-// $XFree86: xc/programs/xkbcomp/types/numpad,v 1.1 2003/08/09 14:30:49 pascal Exp $
+// $XFree86$
 
 xkb_types "microsoft" {
 

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/options.c,v 1.14 2002/11/10 23:21:56 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/options.c,v 1.13 2002/09/22 07:09:05 paulo Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

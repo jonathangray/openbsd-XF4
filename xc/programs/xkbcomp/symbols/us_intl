@@ -1,5 +1,6 @@
 //
-// $XFree86: xc/programs/xkbcomp/symbols/us_intl,v 1.8 2003/12/18 22:10:41 dawes Exp $
+// $XdotOrg: xc/programs/xkbcomp/symbols/us_intl,v 1.2 2004/04/23 19:54:53 eich Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/us_intl,v 1.7 2003/06/17 12:32:53 pascal Exp $
 //
 // Dead-keys definition for a very simple US/ASCII layout.
 // by Conectiva (http://www.conectiva.com.br)

@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/luit/charset.h,v 1.4 2002/10/17 01:06:09 dawes Exp $ */
+/* $XFree86: xc/programs/luit/charset.h,v 1.3 2002/07/01 02:25:59 tsi Exp $ */
 
 #define T_FAILED 0
 #define T_94 1

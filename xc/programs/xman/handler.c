@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/handler.c,v 1.7 2003/04/09 20:31:31 herrb Exp $ */
+/* $XFree86: xc/programs/xman/handler.c,v 1.6 2003/01/19 04:44:45 paulo Exp $ */
 
 /*
  * xman - X window system manual page display program.
@@ -40,6 +40,10 @@ from the X Consortium.
 #include <sys/stat.h>
 #include "globals.h"
 #include "vendor.h"
+#ifdef INCLUDE_XPRINT_SUPPORT
+#include "printdialog.h"
+#include "print.h"
+#endif /* INCLUDE_XPRINT_SUPPORT */
 
 static void PutUpManpage(ManpageGlobals * man_globals, FILE * file);
 static void ToggleBothShownState(ManpageGlobals * man_globals);
@@ -79,6 +83,10 @@ OptionCallback(Widget w, XtPointer pointer, XtPointer junk)
     RemoveThisManpage(XtParent(w), NULL, NULL, NULL);
   else if ( w == man_globals->open_entry)       /* Open new manpage */
     CreateNewManpage(XtParent(w), NULL, NULL, NULL);
+#ifdef INCLUDE_XPRINT_SUPPORT
+  else if ( w == man_globals->print_entry)    /* Print current manpage */
+    PrintThisManpage(XtParent(w), NULL, NULL, NULL);
+#endif /* INCLUDE_XPRINT_SUPPORT */
   else if ( w == man_globals->version_entry)    /* Get version */
     ShowVersion(XtParent(w), NULL, NULL, NULL);
   else if ( w == man_globals->quit_entry)      /* Quit. */
@@ -215,7 +223,9 @@ DirectoryHandler(Widget w, XtPointer global_pointer, XtPointer ret_val)
   file = FindManualFile(man_globals, man_globals->current_directory,
 			ret_struct->list_index);
   PutUpManpage(man_globals, file);
-  fclose(file);
+  if ((file != NULL) && (file != man_globals->curr_file)) {
+    fclose(file);
+  }
 }
 
 /*	Function Name: DirPopupCallback
@@ -431,8 +441,7 @@ GotoPage(Widget w, XEvent * event, String * params, Cardinal * num_params)
 void 
 Quit(Widget w, XEvent * event, String * params, Cardinal * num_params)
 {
-  XCloseDisplay(XtDisplay(w));
-  exit(0);
+  XtAppSetExitFlag(XtWidgetToApplicationContext(w));
 }
 
 /*      Function Name: PopupHelp
@@ -589,9 +598,113 @@ Search(Widget w, XEvent * event, String * params, Cardinal * num_params)
   else {
     PutUpManpage(man_globals, file);
   }
-  if (file != NULL)
-	  fclose(file);
+  if ((file != NULL) && (file != man_globals->curr_file)) {
+    fclose(file);
+  }
 }
+
+#ifdef INCLUDE_XPRINT_SUPPORT
+static void
+printshellDestroyXtProc(Widget w, XtPointer client_data, XtPointer callData)
+{
+  ManpageGlobals *mg = GetGlobals(w);
+  XawPrintDialogClosePrinterConnection(mg->printdialog, False);
+}
+
+static void
+printOKXtProc(Widget w, XtPointer client_data, XtPointer callData)
+{
+  XawPrintDialogCallbackStruct *pdcs = (XawPrintDialogCallbackStruct *)callData;
+  Cardinal                      n;
+  Arg                           args[2];
+  ManpageGlobals               *mg = GetGlobals(w);
+  Widget                        topwindow = mg->This_Manpage;
+  FILE                         *file;
+
+  Log(("printOKXtProc: OK.\n"));
+  
+  /* Get file object */
+  n = 0;
+  XtSetArg(args[n], XtNfile, &file); n++;
+  XtGetValues(mg->manpagewidgets.manpage, args, n);
+  Assertion(file != NULL, (("printOKXtProc: file == NULL.\n")));
+  
+  DoPrintManpage("Xman",
+                 file, topwindow,
+                 pdcs->pdpy, pdcs->pcontext, printshellDestroyXtProc,
+                 mg->manpage_title,
+                 pdcs->printToFile?pdcs->printToFileName:NULL);
+
+  XtPopdown(mg->printdialog_shell);
+}
+
+static void
+printCancelXtProc(Widget w, XtPointer client_data, XtPointer callData)
+{
+    ManpageGlobals * mg = GetGlobals(w);
+
+    Log(("printCancelXtProc: cancel.\n"));
+    XtPopdown(mg->printdialog_shell);
+    
+    Log(("destroying print dialog shell...\n"));
+    XtDestroyWidget(mg->printdialog_shell);
+    mg->printdialog_shell = NULL;
+    mg->printdialog       = NULL;
+    Log(("... done\n"));
+}
+
+/*      Function Name: PrintThisManpage
+ *      Description: Print the current manual page.
+ *      Arguments: mg - manpage globals
+ *      Returns: none.
+ */
+
+/*ARGSUSED*/
+void 
+PrintThisManpage(Widget w, XEvent * event, String * params, Cardinal * num_params)
+{
+  ManpageGlobals *mg = GetGlobals(w);
+  Dimension       width, height;
+  Position        x, y;
+  Widget          parent    = mg->This_Manpage;
+  Widget          topwindow = mg->This_Manpage;
+  Log(("print!\n"));
+  
+  if (!mg->printdialog) {
+    int n;
+    Arg args[20];
+
+    n = 0;
+    XtSetArg(args[n], XtNallowShellResize, True); n++;
+    mg->printdialog_shell = XtCreatePopupShell("printdialogshell",
+                                               transientShellWidgetClass,
+                                               topwindow, args, n);
+    n = 0;
+    mg->printdialog = XtCreateManagedWidget("printdialog", printDialogWidgetClass,
+                                            mg->printdialog_shell, args, n);
+    XtAddCallback(mg->printdialog, XawNOkCallback,     printOKXtProc,     NULL);
+    XtAddCallback(mg->printdialog, XawNCancelCallback, printCancelXtProc, NULL);
+
+    XtRealizeWidget(mg->printdialog_shell);
+  }
+
+  /* Center dialog */
+  XtVaGetValues(mg->printdialog_shell,
+      XtNwidth,  &width,
+      XtNheight, &height,
+      NULL);
+
+  x = (Position)(XWidthOfScreen( XtScreen(parent)) - width)  / 2;
+  y = (Position)(XHeightOfScreen(XtScreen(parent)) - height) / 3;
+
+  XtVaSetValues(mg->printdialog_shell,
+      XtNx, x,
+      XtNy, y,
+      NULL);
+        
+  XtPopup(mg->printdialog_shell, XtGrabNonexclusive);
+}
+#endif /* INCLUDE_XPRINT_SUPPORT */
 
 /*      Function Name: ShowVersion
  *      Description: Show current version.

@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/xconf.lsp,v 1.1 2003/01/16 03:50:46 paulo Exp $
+;; $XFree86$
 ;;
 
 (require "syntax")

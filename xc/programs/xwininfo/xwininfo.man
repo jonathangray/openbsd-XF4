@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xwininfo/xwininfo.man,v 1.9 2004/01/12 21:43:20 herrb Exp $
+.\" $XFree86: xwininfo.man,v 1.8 2001/12/14 20:02:35 dawes Exp $
 .\"
 .TH XWININFO 1 __xorgversion__
 .SH NAME

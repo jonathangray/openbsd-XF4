@@ -24,7 +24,7 @@
 .\" from The Open Group.
 .\" 
 .\"
-.\" $XFree86: xc/programs/lbxproxy/lbxproxy.man,v 1.9 2003/05/29 21:48:10 herrb Exp $
+.\" $XFree86: xc/programs/lbxproxy/lbxproxy.man,v 1.8 2001/12/14 20:00:49 dawes Exp $
 .\"
 .TH LBXPROXY 1 __xorgversion__
 .SH NAME

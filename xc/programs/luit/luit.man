@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/luit/luit.man,v 1.8 2003/04/03 16:44:36 dawes Exp $
+.\" $XFree86: xc/programs/luit/luit.man,v 1.7 2003/02/24 01:10:25 dawes Exp $
 .TH LUIT 1 __vendorversion__
 .SH NAME
 luit \- Locale and ISO\ 2022 support for Unicode terminals
@@ -217,5 +217,8 @@ xterm(1), unicode(7), utf-8(7), charsets(7).
 .I Character Code Structure and Extension Techniques (ISO\ 2022, ECMA-35).
 .I Control Functions for Coded Character Sets (ISO\ 6429, ECMA-48).
 .SH AUTHOR
-Luit was written by Juliusz Chroboczek <jch@xfree86.org> for the
-XFree86 project.
+The version of
+.B Luit
+included in this X.org Foundataion release
+was originally written by Juliusz Chroboczek <jch@freedesktop.org>
+for the XFree86 Project.

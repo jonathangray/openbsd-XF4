@@ -19,7 +19,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-/* $XFree86: xc/programs/mkfontscale/list.h,v 1.3 2003/07/08 15:39:49 tsi Exp $ */
+/* $XFree86: xc/programs/mkfontscale/list.h,v 1.2 2003/06/20 15:49:52 eich Exp $ */
 
 #ifndef _MKS_LIST_H_
 #define _MKS_LIST_H_ 1

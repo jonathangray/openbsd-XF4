@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/lisp.h,v 1.5 2002/11/08 08:00:57 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/lisp.h,v 1.4 2002/07/16 05:19:39 paulo Exp $ */
 
 #ifndef Lisp_lisp_h
 #define Lisp_lisp_h

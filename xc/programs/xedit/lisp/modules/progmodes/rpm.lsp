@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/rpm.lsp,v 1.2 2004/01/08 21:29:12 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/rpm.lsp,v 1.1 2003/01/16 03:50:46 paulo Exp $
 ;;
 
 (require "syntax")

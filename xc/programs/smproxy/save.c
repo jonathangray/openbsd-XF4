@@ -25,7 +25,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author:  Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/programs/smproxy/save.c,v 1.8 2001/12/14 20:01:05 dawes Exp $ */
+/* $XFree86: xc/programs/smproxy/save.c,v 1.7 2001/01/17 23:45:04 dawes Exp $ */
 
 #include "smproxy.h"
 #ifdef HAS_MKSTEMP

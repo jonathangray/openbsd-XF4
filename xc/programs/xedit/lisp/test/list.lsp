@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/test/list.lsp,v 1.6 2002/12/06 03:25:29 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/test/list.lsp,v 1.5 2002/11/26 04:06:30 paulo Exp $
 ;;
 
 ;; basic lisp function tests

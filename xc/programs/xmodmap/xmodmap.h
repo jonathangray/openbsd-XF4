@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xmodmap/xmodmap.h,v 1.5 2001/12/14 20:02:13 dawes Exp $ */
+/* $XFree86: xc/programs/xmodmap/xmodmap.h,v 1.4 2001/01/17 23:46:21 dawes Exp $ */
 
 extern char *ProgramName;
 extern Display *dpy;

@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/luit/parser.c,v 1.2 2002/09/18 17:11:50 tsi Exp $ */
+/* $XFree86$ */
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/write.h,v 1.10 2003/04/27 18:17:35 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/write.h,v 1.9tsi Exp $ */
 
 #ifndef Lisp_write_h
 #define Lisp_write_h

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xwud/xwud.c,v 3.11 2003/11/17 15:18:08 tsi Exp $ */
+/* $XFree86: xc/programs/xwud/xwud.c,v 3.10tsi Exp $ */
 
 /* xwud - marginally useful raster image undumper */
 

@@ -3,7 +3,7 @@
 #include "xmanager.h"
 
 static char const rcsid[] =
-  "$Id: functions.c,v 1.3 2003/04/01 22:36:59 matthieu Exp $";
+  "$Id: functions.c,v 1.4 2004/11/03 00:22:05 matthieu Exp $";
 
 static Button *get_select_button (void);
 

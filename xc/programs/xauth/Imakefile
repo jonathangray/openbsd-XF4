@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:11 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/xauth/Imakefile,v 3.6 2003/07/09 15:27:37 tsi Exp $
+XCOMM $XFree86: xc/programs/xauth/Imakefile,v 3.5tsi Exp $
 
         DEPLIBS = $(DEPXAUTHLIB) $(DEPXMUULIB) $(DEPXLIB)
 LOCAL_LIBRARIES = $(XAUTHLIB) $(XMUULIB) $(XLIB)

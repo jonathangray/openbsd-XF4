@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:24 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/xhost/Imakefile,v 1.7 2003/07/27 14:05:45 herrb Exp $
+XCOMM $XFree86: xc/programs/xhost/Imakefile,v 1.6 2003/05/27 17:58:24 tsi Exp $
 
 #if HasSecureRPC
 RPC_DEFINES = -DSECURE_RPC

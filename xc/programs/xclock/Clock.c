@@ -1,5 +1,5 @@
 /* $Xorg: Clock.c,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $ */
-/* $OpenBSD: Clock.c,v 1.3 2004/02/13 22:41:23 matthieu Exp $ */
+/* $XdotOrg: xc/programs/xclock/Clock.c,v 1.2 2004/04/23 19:54:39 eich Exp $ */
 
 /***********************************************************
 
@@ -47,7 +47,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xclock/Clock.c,v 3.26 2003/10/25 00:52:37 dawes Exp $ */
+/* $XFree86: xc/programs/xclock/Clock.c,v 3.25 2003/07/04 16:24:30 eich Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
@@ -83,7 +83,7 @@ SOFTWARE.
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
-#define abs(a) ((a) < 0 ? -(a) : (a))
+/* #define abs(a) ((a) < 0 ? -(a) : (a)) */
 
 
 /* Initialization of defaults */

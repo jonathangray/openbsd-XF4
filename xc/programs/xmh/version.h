@@ -29,4 +29,4 @@ from the X Consortium.
 
 */
 
-#define XMH_VERSION "xmh    X Consortium    R6.3"
+#define XMH_VERSION "xmh    "XVENDORNAME", "XORG_RELEASE

@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/test/regex.lsp,v 1.2 2002/12/11 04:44:28 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/test/regex.lsp,v 1.1 2002/12/10 03:59:04 paulo Exp $
 ;;
 
 ;; Basic regex tests. This file is only for xedit lisp and for it's regex

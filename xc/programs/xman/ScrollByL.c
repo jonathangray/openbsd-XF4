@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/ScrollByL.c,v 1.7 2003/05/27 22:27:07 tsi Exp $ */
+/* $XFree86: xc/programs/xman/ScrollByL.c,v 1.6tsi Exp $ */
 
 #if !defined(lint) && !defined(SABER) && 0
   static char rcs_version[] = "$Athena: ScrollByL.c,v 4.5 88/12/19 13:46:04 kit Exp $";
@@ -93,6 +93,10 @@ static XtResource resources[] = {
        Offset(symbol_font), XtRString, MANPAGE_SYMBOL},
     {XtNfile, XtCFile, XtRFile, sizeof(FILE *),
        Offset(file), XtRImmediate, (caddr_t) NULL},
+    {XtNNumTotalLines, XtCNumTotalLines, XtRInt, sizeof(int),
+       Offset(lines), XtRImmediate, (caddr_t) 0},
+    {XtNNumVisibleLines, XtCNumVisibleLines, XtRInt, sizeof(int),
+       Offset(num_visible_lines), XtRImmediate, (caddr_t) 0},
 };
 
 #undef Offset
@@ -104,6 +108,7 @@ static XtResource resources[] = {
  *
  ****************************************************************/
 
+static void CreateScrollbar(Widget w);
 static Boolean ScrollVerticalText(Widget w, int new_line, Boolean force_redisp);
 static void Layout(Widget w);
 static void LoadFile(Widget w);
@@ -197,6 +202,8 @@ Layout(Widget w)
   Widget bar;
   Position bar_bw;
 
+  CreateScrollbar(w);
+
 /* 
  * For now always show the bar.
  */
@@ -222,6 +229,8 @@ Layout(Widget w)
   XtResizeWidget(bar, bar->core.width, height, bar->core.border_width);
 
   SetThumbHeight(w);
+  
+  sblw->scroll.num_visible_lines = height / sblw->scroll.font_height + 1;
 }
 
 /* ARGSUSED */
@@ -277,22 +286,20 @@ static void
 PaintText(Widget w, int y_loc, int height)
 {
   ScrollByLineWidget sblw = (ScrollByLineWidget) w;
-  int start_line, num_lines, location;
+  int start_line, location;
 
   start_line = y_loc / sblw->scroll.font_height + sblw->scroll.line_pointer;
 
   if (start_line >= sblw->scroll.lines)
     return;
   
-  num_lines = height / sblw->scroll.font_height + 1;
-
 /*
  * Only integer arithmetic makes this possible. 
  */
 
   location =  y_loc / sblw->scroll.font_height * sblw->scroll.font_height;
 
-  PrintText(w, start_line, num_lines, location);
+  PrintText(w, start_line, sblw->scroll.num_visible_lines, location);
 } 
 
 /*	Function Name: Page
@@ -384,7 +391,7 @@ int new_line,
 Boolean force_redisp)
 {
   ScrollByLineWidget sblw = (ScrollByLineWidget) w;
-  int num_lines = (int)w->core.height / sblw->scroll.font_height + 1;
+  int num_lines = sblw->scroll.num_visible_lines;
   int max_lines, old_line;
   Boolean move_thumb = FALSE;
 
@@ -598,8 +605,6 @@ VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data)
   SetThumb( (Widget) sblw);
 }
 
-int h_width;			/* main font width */
-
 /* ARGSUSED */
 static void 
 Initialize(Widget req, Widget new, ArgList args, Cardinal *num_args)
@@ -619,12 +624,9 @@ Initialize(Widget req, Widget new, ArgList args, Cardinal *num_args)
   atomNum = XInternAtom(XtDisplay(req), "FIGURE_WIDTH", False);
 
   if (XGetFontProperty(sblw->scroll.normal_font, atomNum, &figWidth))
-      h_width = figWidth;
+    sblw->scroll.h_width = figWidth;
   else
-    h_width = XTextWidth(sblw->scroll.normal_font, "$", 1);
-
-
-
+    sblw->scroll.h_width = XTextWidth(sblw->scroll.normal_font, "$", 1);
 } /* Initialize. */
 
 /*	Function Name: CreateGCs
@@ -721,7 +723,7 @@ static Boolean
 SetValuesHook(Widget w, ArgList args, Cardinal *num_args)
 {
   Boolean ret = TRUE;
-  int i;
+  Cardinal i;
 
   for (i = 0; i < *num_args; i++) {
     if (strcmp(XtNfile, args[i].name) == 0) {
@@ -819,6 +821,7 @@ LoadFile(Widget w)
  * Copy the file into memory. 
  */
 
+  fseek(file, 0L, SEEK_SET);
   if (fread(page, sizeof(char), fileinfo.st_size, file) == 0)
     XtAppError(XtWidgetToApplicationContext(w), 
 	       "SBLW LoadFile: Failure in fread.");
@@ -1021,7 +1024,7 @@ PrintText(Widget w, int start_line, int num_lines, int location)
       italicflag = FALSE;
       x_loc = sblw->scroll.offset + sblw->scroll.indent;
       h_col = h_col + 8 - (h_col%8);
-      x_loc += h_width * h_col;
+      x_loc += sblw->scroll.h_width * h_col;
       break;
 
     case ' ':
@@ -1042,7 +1045,7 @@ PrintText(Widget w, int start_line, int num_lines, int location)
 
       x_loc = sblw->scroll.offset + sblw->scroll.indent; 
       h_col += (h_c - c);
-      x_loc += h_width * h_col; 
+      x_loc += sblw->scroll.h_width * h_col; 
       c = h_c - 1;
       break;
 

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlogo/Logo.h,v 1.4 2002/07/01 02:26:04 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _XawLogo_h
 #define _XawLogo_h

@@ -1,4 +1,5 @@
 /* $XConsortium: vendor.h,v 1.12 94/04/17 20:44:00 rws Exp $ */
+/* $XdotOrg: xc/programs/xman/vendor.h,v 1.3 2004/05/22 19:20:06 alanc Exp $ */
 /*
 
 Copyright (c) 1991  X Consortium
@@ -218,6 +219,16 @@ from the X Consortium.
 #else
 #  define CAT "cat"
 #endif
+
+/* Solaris has nroff man pages in "man" and sgml man pages in "sman" */
+#if defined(sun) && defined(SVR4)
+#  define SFORMAT		"/usr/lib/sgml/sgml2roff"
+#  define SMAN			"sman"
+#  undef SEARCHOTHER
+#  define SEARCHOTHER 		SMAN
+#  define SGMLENT_EXTENSION	"ent"	/* SGML entity files end in ".ent" */
+#endif
+
 
 typedef struct _SectionList {
   struct _SectionList * next;

@@ -47,7 +47,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xmh/tsource.h,v 1.3 2002/07/01 02:26:05 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _tsource_h
 #define _tsource_h

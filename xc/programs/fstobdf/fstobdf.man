@@ -24,7 +24,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/fstobdf/fstobdf.man,v 1.7 2001/12/14 20:00:46 dawes Exp $
+.\" $XFree86: xc/programs/fstobdf/fstobdf.man,v 1.6 2001/01/27 18:21:02 dawes Exp $
 .\"
 .TH FSTOBDF 1 __xorgversion__
 .SH NAME

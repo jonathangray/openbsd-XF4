@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xtrap/XEKeybCtrl.h,v 1.1 2001/11/02 23:29:34 dawes Exp $ */
+/* $XFree86$ */
 
 extern int XEEnableCtrlKeys(void(*rtn)(int));
 extern int XEEnableCtrlC(void (*rtn)(int));

@@ -1,5 +1,5 @@
 /* $Xorg: xinit.c,v 1.5 2001/02/09 02:05:49 xorgcvs Exp $ */
-
+/* $OpenBSD: xinit.c,v 1.9 2004/11/03 00:22:32 matthieu Exp $ */
 /*
 
 Copyright 1986, 1998  The Open Group
@@ -123,6 +123,9 @@ char *server_names[] = {
 #endif
 #ifdef XFREE86
     "XFree86     XFree86 displays",
+#endif
+#ifdef XORG
+    "Xorg	 X.Org displays",
 #endif
 #ifdef __DARWIN__
     "XDarwin         Darwin/Mac OS X IOKit displays",
@@ -583,6 +586,9 @@ startServer(char *server[])
 #else
 	int old;
 #endif
+#ifdef __UNIXOS2__
+	sigset_t pendings;
+#endif
 
 #if !defined(X_NOT_POSIX)
 	sigemptyset(&mask);
@@ -671,6 +677,17 @@ startServer(char *server[])
 		alarm (15);
 
 #ifndef X_NOT_POSIX
+#ifdef __UNIXOS2__
+		/*
+		 * fg2003/05/06: work around a problem in EMX: sigsuspend()
+		 * does not deliver pending signals when called but when
+		 * returning; so if SIGUSR1 has already been sent by the
+		 * server, we would still have to await SIGALRM
+		 */
+		sigemptyset(&pendings);
+		sigpending(&pendings);
+		if (!sigismember(&pendings, SIGUSR1))
+#endif /* __UNIXOS2__ */
 		sigsuspend(&old);
 		alarm (0);
 		sigprocmask(SIG_SETMASK, &old, NULL);

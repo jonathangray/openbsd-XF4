@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xditview/XFontName.h,v 1.2 2001/08/01 00:45:03 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _XFONTNAME_H_
 #define _XFONTNAME_H_

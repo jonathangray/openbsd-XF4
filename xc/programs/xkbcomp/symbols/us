@@ -6,7 +6,7 @@
 // uses the punctuation keys configurations common on PC 
 // keyboards (e.g. key <ABO9> is { [ period greater ] })
 
-// $XFree86: xc/programs/xkbcomp/symbols/us,v 3.15 2003/10/31 14:32:04 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/us,v 3.14 2003/10/25 13:24:05 pascal Exp $
 
 partial hidden alphanumeric_keys modifier_keys 
 xkb_symbols "basic" {
@@ -116,16 +116,8 @@ xkb_symbols "generic101" {
 	type= "PC_SYSRQ",
 	symbols[Group1]= [ Print, Sys_Req ]
     };
-    key <SYRQ> {
-	type= "PC_SYSRQ",
-	symbols[Group1]= [ Print, Sys_Req ]
-    };
     key <SCLK> {  [  Scroll_Lock	]	};
     key <PAUS> {
-	type= "PC_BREAK",
-	symbols[Group1]= [ Pause, Break ]
-    };
-    key <BRK> {
 	type= "PC_BREAK",
 	symbols[Group1]= [ Pause, Break ]
     };

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization from
 The Open Group.
 
 */
-/* $XFree86: xc/programs/xrx/rx/XDpyName.c,v 1.7 2003/10/24 20:38:22 tsi Exp $ */
+/* $XFree86: xc/programs/xrx/rx/XDpyName.c,v 1.6tsi Exp $ */
 
 #ifdef XP_UNIX
 #include "RxPlugin.h"		/* for PluginGlobal */

@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/mathimp.c,v 1.15 2003/10/24 20:38:16 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/mathimp.c,v 1.14tsi Exp $ */
 
 
 /*

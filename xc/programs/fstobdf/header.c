@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/fstobdf/header.c,v 3.7 2001/12/14 20:00:46 dawes Exp $ */
+/* $XFree86: xc/programs/fstobdf/header.c,v 3.6 2001/07/25 15:05:13 dawes Exp $ */
 
 #include	<stdio.h>
 #include	<X11/Xosdefs.h>

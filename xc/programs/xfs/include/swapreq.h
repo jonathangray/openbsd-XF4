@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/xfs/include/swapreq.h,v 1.2 2001/06/25 20:40:18 paulo Exp $
+ * $XFree86: xc/programs/xfs/include/swapreq.h,v 1.1 1998/10/25 07:12:32 dawes Exp $
  */
 
 /************************************************************

@@ -25,7 +25,7 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
-/* $XFree86: xc/programs/xfindproxy/xfindproxy.c,v 1.9 2003/05/27 22:27:05 tsi Exp $ */
+/* $XFree86: xc/programs/xfindproxy/xfindproxy.c,v 1.8tsi Exp $ */
 
 
 #include <stdio.h>

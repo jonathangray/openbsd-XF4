@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/lbxproxy/include/resource.h,v 1.6 2003/11/17 22:20:49 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef RESOURCE_H
 #define RESOURCE_H 1

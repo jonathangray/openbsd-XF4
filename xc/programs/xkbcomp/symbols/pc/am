@@ -1,7 +1,7 @@
 
 // based on a keyboard map from an 'xkb/symbols/am' file
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/am,v 1.5 2003/12/30 13:26:26 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/am,v 1.4 2003/05/29 12:41:58 pascal Exp $
 
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

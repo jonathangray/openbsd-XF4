@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/glxinfo/Imakefile,v 1.8 2002/11/22 22:56:03 tsi Exp $
+XCOMM $XFree86: xc/programs/glxinfo/Imakefile,v 1.7tsi Exp $
 
 #include <Threads.tmpl>
 

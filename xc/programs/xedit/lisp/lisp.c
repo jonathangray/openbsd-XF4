@@ -27,7 +27,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/lisp.c,v 1.89 2003/10/02 13:30:13 eich Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/lisp.c,v 1.87tsi Exp $ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +46,7 @@
 #endif
 
 #if defined(linux)
-#include <asm/page.h>	/* for PAGE_SIZE */
+#include <asm/page.h>  /* for PAGE_SIZE */
 #define HAS_GETPAGESIZE
 #define HAS_SC_PAGESIZE	/* _SC_PAGESIZE may be an enum for Linux */
 #endif

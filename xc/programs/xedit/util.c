@@ -24,7 +24,7 @@
  * used in advertising or publicity pertaining to distribution of the software
  * without specific, written prior permission.
  */
-/* $XFree86: xc/programs/xedit/util.c,v 1.27 2003/05/23 14:58:02 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/util.c,v 1.26 2003/05/07 20:54:43 herrb Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>		/* for realpath() */
@@ -83,6 +83,8 @@ MakeCommandButton(Widget box, char *name, XtCallbackProc function)
   Widget w = XtCreateManagedWidget(name, commandWidgetClass, box, NULL, ZERO);
   if (function != NULL)
     XtAddCallback(w, XtNcallback, function, (caddr_t) NULL);
+  else
+    XtVaSetValues(w, XtNsensitive, False, NULL);
   return w;
 }
 

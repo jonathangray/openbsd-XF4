@@ -3,7 +3,7 @@
 
 
 
-// $XFree86: xc/programs/xkbcomp/symbols/lock,v 3.4 2001/01/17 23:45:59 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/lock,v 3.3 2000/08/03 12:24:03 dawes Exp $
 
 partial hidden modifier_keys
 xkb_symbols "shift" {

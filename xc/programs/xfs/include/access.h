@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)access.h	4.1	91/05/02
  *
  */
-/* $XFree86: xc/programs/xfs/include/access.h,v 1.5 2001/12/14 20:01:36 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/access.h,v 1.4 2001/01/17 23:45:30 dawes Exp $ */
 
 #ifndef _ACCESS_H_
 #define _ACCESS_H_

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization from
 The Open Group.
 
 */
-/* $XFree86: xc/programs/xrx/rx/XUrls.c,v 1.12 2003/07/20 16:12:20 tsi Exp $ */
+/* $XFree86: xc/programs/xrx/rx/XUrls.c,v 1.11tsi Exp $ */
 
 #include "RxI.h"
 #include "XUrls.h"

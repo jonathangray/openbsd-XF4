@@ -26,7 +26,7 @@
  * used in advertising or publicity pertaining to distribution of the software
  * without specific, written prior permission.
  */
-/* $XFree86: xc/programs/xedit/xedit.h,v 1.18 2002/11/10 23:21:57 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/xedit.h,v 1.17 2002/10/06 17:11:39 paulo Exp $ */
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>
@@ -100,7 +100,6 @@ extern struct _app_resources {
 
 extern Widget topwindow, textwindow, labelwindow, filenamewindow, messwidget;
 extern Widget dirlabel, dirwindow;
-extern Boolean international;
 extern Boolean line_edit;
 
 /*	externals in xedit.c 	*/
@@ -132,9 +131,15 @@ void QuitAction(Widget, XEvent*, String*, Cardinal*);
 void DoSave(Widget, XtPointer, XtPointer);
 void SaveFile(Widget, XEvent*, String*, Cardinal*);
 void DoLoad(Widget, XtPointer, XtPointer);
+#ifdef INCLUDE_XPRINT_SUPPORT
+void DoPrint(Widget, XtPointer, XtPointer);
+#endif /* INCLUDE_XPRINT_SUPPORT */
 void CancelFindFile(Widget, XEvent*, String*, Cardinal*);
 void FindFile(Widget, XEvent*, String*, Cardinal*);
 void LoadFile(Widget, XEvent*, String*, Cardinal*);
+#ifdef INCLUDE_XPRINT_SUPPORT
+void PrintFile(Widget, XEvent*, String*, Cardinal*);
+#endif /* INCLUDE_XPRINT_SUPPORT */
 void FileCompletion(Widget, XEvent*, String*, Cardinal*);
 void KillFile(Widget, XEvent*, String*, Cardinal*);
 void DirWindowCB(Widget, XtPointer, XtPointer);

@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\" 
-.\" $XFree86: xc/programs/xinit/xinit.man,v 3.10 2001/12/14 20:01:56 dawes Exp $
+.\" $XFree86: xc/programs/xinit/xinit.man,v 3.9 2001/02/07 23:25:56 dawes Exp $
 .\" 
 .TH XINIT 1 __xorgversion__
 .SH NAME

@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/xdm/socket.c,v 1.3 2004/07/06 00:44:39 anholt Exp $ */
 /* $Xorg: socket.c,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $ */
 /*
 
@@ -27,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the copyright holder.
 
 */
-/* $XFree86: xc/programs/xdm/socket.c,v 3.14 2003/11/25 22:21:08 herrb Exp $ */
+/* $XFree86: xc/programs/xdm/socket.c,v 3.13 2003/07/18 15:39:52 tsi Exp $ */
 
 /*
  * xdm - display manager daemon

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xgc/choice.c,v 1.3 2003/10/24 20:38:18 tsi Exp $ */
+/* $XFree86$ */
 /*
 ** xgc
 **

@@ -1,7 +1,7 @@
 // Maltese keyboard map (based on MSA Standard DMS100)
 // by Ramon Casha (ramon.casha@linux.org.mt)
 //
-// $XFree86: xc/programs/xkbcomp/symbols/mt,v 1.3 2002/12/13 04:18:03 dawes Exp $
+// $XFree86$
 
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

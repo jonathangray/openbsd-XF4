@@ -21,7 +21,7 @@ static volatile sig_atomic_t isTerminated = False;
 static char *IM_VERSION = "1.3";
 
 static char const rcsid[] =
-  "$Id: FvwmIconMan.c,v 1.4 2003/04/01 22:36:59 matthieu Exp $";
+  "$Id: FvwmIconMan.c,v 1.5 2004/11/03 00:22:05 matthieu Exp $";
 
 
 static RETSIGTYPE TerminateHandler(int);

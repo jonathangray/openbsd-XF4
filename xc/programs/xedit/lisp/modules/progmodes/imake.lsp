@@ -27,7 +27,7 @@
 ;; Author: Paulo César Pereira de Andrade
 ;;
 ;;
-;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/imake.lsp,v 1.3 2004/01/08 21:29:12 paulo Exp $
+;; $XFree86: xc/programs/xedit/lisp/modules/progmodes/imake.lsp,v 1.2 2002/10/06 17:11:48 paulo Exp $
 ;;
 
 (require "syntax")

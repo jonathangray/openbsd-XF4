@@ -1,4 +1,5 @@
 /* $Xorg: process.c,v 1.6 2001/02/09 02:05:38 xorgcvs Exp $ */
+/* $XdotOrg: xc/programs/xauth/process.c,v 1.3 2004/04/24 23:26:55 alanc Exp $ */
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xauth/process.c,v 3.24 2004/01/21 23:49:40 herrb Exp $ */
+/* $XFree86: xc/programs/xauth/process.c,v 3.23 2003/11/25 03:15:04 dawes Exp $ */
 
 /*
  * Author:  Jim Fulton, MIT X Consortium
@@ -675,6 +676,9 @@ register_signals(void)
     signal (SIGTERM, catchsig);
 #ifdef SIGHUP
     signal (SIGHUP, catchsig);
+#endif
+#ifdef SIGPIPE
+    signal (SIGPIPE, catchsig);
 #endif
     return;
 }

@@ -29,7 +29,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
-/* $XFree86: xc/programs/xclock/xclock.c,v 1.17 2003/12/29 09:10:37 herrb Exp $ */
+/* $XFree86: xclock.c,v 1.16 2002/10/21 13:33:08 alanh Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

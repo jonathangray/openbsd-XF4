@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xkbcomp/compat.h,v 1.1 2002/06/05 00:00:37 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef COMPAT_H
 #define COMPAT_H 1

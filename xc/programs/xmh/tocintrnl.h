@@ -1,4 +1,5 @@
 /* $XConsortium: tocintrnl.h,v 2.18 91/07/14 18:53:37 converse Exp $ */
+/* $XdotOrg: xc/programs/xmh/tocintrnl.h,v 1.2 2004/04/23 19:54:58 eich Exp $ */
 /*
  *			  COPYRIGHT 1987
  *		   DIGITAL EQUIPMENT CORPORATION
@@ -24,7 +25,7 @@
  * without specific, written prior permission.
  */
 
-/* $XFree86: xc/programs/xmh/tocintrnl.h,v 1.2 2003/05/27 22:27:08 tsi Exp $ */
+/* $XFree86$ */
 
 /* Includes for modules implementing toc stuff. */
 
@@ -38,6 +39,11 @@
 typedef enum {
     unknown, valid, invalid
 } ValidType;
+
+/* silly IBM compiler, but it's probably just as silly to use bitfields. */
+#ifdef AIXV5 /* probably want !gcc too */
+#define FateType int
+#endif
 
 typedef struct _MsgRec {
     Toc		toc;		/* Which toc this message is in. */
@@ -59,6 +65,10 @@ typedef struct _MsgRec {
 				   composition around */
     unsigned	unused:2;
 } MsgRec;
+
+#ifdef AIXV5 /* probably want !gcc too */
+#undef FateType
+#endif
 
 typedef struct _TocRec {
    Scrn		*scrn;		/* Scrns containing this table of contents. */

@@ -20,7 +20,7 @@
   THE SOFTWARE.
 */
 
-/* $XFree86: xc/programs/mkfontscale/ident.h,v 1.2 2003/07/08 15:39:49 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _MKS_IDENT_H_
 #define _MKS_IDENT_H_ 1

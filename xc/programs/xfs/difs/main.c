@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/main.c,v 3.12 2002/10/15 01:45:02 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/difs/main.c,v 3.11 2001/12/14 20:01:35 dawes Exp $ */
 
 #include	<stdlib.h>
 #include	<sys/types.h>

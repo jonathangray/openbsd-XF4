@@ -1,7 +1,7 @@
 
 // keycode aliases for phonetic keyboard maps
 //
-// $XFree86: xc/programs/xkbcomp/keycodes/aliases,v 1.1 2002/09/17 01:26:24 dawes Exp $
+// $XFree86$
 
 default
 xkb_keycodes "qwerty" {

@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/rgb/showrgb.man,v 1.8 2002/10/12 16:06:45 herrb Exp $
+.\" $XFree86: xc/programs/rgb/showrgb.man,v 1.7 2001/12/14 20:01:04 dawes Exp $
 .\"
 .TH SHOWRGB 1 __xorgversion__
 .SH NAME

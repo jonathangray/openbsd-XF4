@@ -34,7 +34,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/programs/dpsexec/dpsexec.c,v 1.7 2002/03/05 21:50:15 herrb Exp $ */
+/* $XFree86: dpsexec.c,v 1.6 2002/01/07 20:38:29 dawes Exp $ */
 
 #include <errno.h>
 #include <stdlib.h>

@@ -30,7 +30,7 @@
  *   by Andreas Stolcke <stolcke@icsi.berkeley.edu>
  */
 
-/* $XFree86: xc/programs/xdm/sessreg.c,v 3.19 2002/12/07 20:31:04 herrb Exp $ */
+/* $XFree86: xc/programs/xdm/sessreg.c,v 3.18 2001/12/14 20:01:24 dawes Exp $ */
 
 /*
  * sessreg

@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xlogo/xlogo.man,v 1.11 2003/05/24 15:26:19 herrb Exp $
+.\" $XFree86: xc/programs/xlogo/xlogo.man,v 1.10 2002/10/12 16:06:48 herrb Exp $
 .\"
 .TH XLOGO 1 __xorgversion__
 .SH NAME

@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-/* $XFree86: xc/programs/lbxproxy/di/atomcache.c,v 1.7 2002/10/15 02:16:26 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/di/atomcache.c,v 1.6 2001/12/14 20:00:50 dawes Exp $ */
 
 /*
  * atom cache for LBX

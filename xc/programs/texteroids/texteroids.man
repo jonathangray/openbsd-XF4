@@ -1,5 +1,5 @@
 .\" Id: texteroids.man,v 6.1 1994/05/18 23:21:41 asente Exp $
-.\" $XFree86: xc/programs/texteroids/texteroids.man,v 1.1 2001/03/01 01:23:59 dawes Exp $
+.\" $XFree86$
 .TH TEXTEROIDS 1 __vendorversion__
 .SH NAME
 texteroids \- test your mousing skills on spinning text

@@ -1,5 +1,5 @@
 XCOMM $XConsortium: Imakefile,v 1.2 93/09/18 16:23:30 rws Exp $
-XCOMM $XFree86: xc/programs/beforelight/Imakefile,v 3.6 2003/10/24 20:38:10 tsi Exp $
+XCOMM $XFree86: xc/programs/beforelight/Imakefile,v 3.5tsi Exp $
         DEPLIBS = $(DEPXSSLIB) $(DEPXTOOLLIB) $(DEPXLIB)
 LOCAL_LIBRARIES = $(XSSLIB) $(XTOOLLIB) $(XLIB)
            SRCS = b4light.c

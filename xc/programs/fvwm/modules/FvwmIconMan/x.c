@@ -5,7 +5,7 @@
 #include "xmanager.h"
 
 static char const rcsid[] =
-  "$Id: x.c,v 1.5 2004/01/29 22:13:15 matthieu Exp $";
+  "$Id: x.c,v 1.6 2004/11/03 00:22:05 matthieu Exp $";
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 

@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xfs/os/daemon.c,v 1.13 2004/01/07 03:47:36 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/daemon.c,v 1.12 2002/10/20 21:42:50 tsi Exp $ */
 
 #include <X11/Xos.h>
 #include <sys/types.h>
