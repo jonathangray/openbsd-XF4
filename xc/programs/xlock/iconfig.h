@@ -95,7 +95,7 @@ XCOMM  XPMINC = -I/usr/include/Vk
 
 XCOMM If you get an error "Cannot find libXpm" while linking, set XPMLIBPATH
 XCOMM to the directory libXpm.* is in.  Below is a guess.
-XPMLIB = -L/usr/local/lib -lXpm
+XPMLIB = -lXpm
 
 #endif
 
@@ -547,8 +547,8 @@ DEPLIBS = $(DEPXLIB)
 #if SGIArchitecture
 FIRSTLIB = -L/usr/lib32
 #endif
-LOCAL_LIBRARIES = $(FIRSTLIB) $(MODULELIB) $(XLIB) \
-$(XPMLIB) $(GLLIB) $(TTFLIB) $(GLTTLIB) $(DTSAVERLIB) $(DPMSLIB) $(SOUNDLIB)
+LOCAL_LIBRARIES = $(FIRSTLIB) $(MODULELIB) \
+$(XPMLIB) $(GLLIB) $(TTFLIB) $(GLTTLIB) $(DTSAVERLIB) $(DPMSLIB) $(SOUNDLIB) $(XLIB)
 MLIBS = $(FIRSTLIB) $(XPMLIB) $(XMLIB) $(EDITRESLIB) -lXt \
 $(XLIB) $(SMLIB) $(ICELIB)
 LINTLIBS = $(LINTXLIB)
