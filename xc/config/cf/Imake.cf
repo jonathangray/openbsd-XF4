@@ -106,9 +106,13 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.67 2001/04/18 17:13:58 dawes Exp $
 #  define i386Architecture
 #  undef i386
 # endif
-# if defined(__sparc__) || defined(sparc)
+# if defined(__sparc__)
 #  define SparcArchitecture
 #  undef sparc
+# endif
+# if defined(__arch64__) && defined(__sparc__)
+#  undef SparcArchitecture
+#  define Sparc64Architecture
 # endif
 # if defined(__mips__) || defined(mips)
 #   define MipsArchitecture
