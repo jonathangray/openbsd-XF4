@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: alpha_video.c,v 1.7 2002/09/15 10:17:16 matthieu Exp $ */
+/* $OpenBSD: alpha_video.c,v 1.8 2002/09/15 13:02:30 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -219,11 +219,11 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 	pVidMem->linearSupported = useDevMem;
 
 	if (has_bwx()) {
-	    xf86Msg(X_INFO,"Machine type has 8/16 bit access\n");
+	    xf86Msg(X_PROBED,"Machine type has 8/16 bit access\n");
 	    pVidMem->mapMem = mapVidMem;
 	    pVidMem->unmapMem = unmapVidMem;
 	} else {
-	    xf86Msg(X_INFO,"Machine needs sparse mapping\n");
+	    xf86Msg(X_PROBED,"Machine needs sparse mapping\n");
 	    pVidMem->mapMem = mapVidMemSparse;
 	    pVidMem->unmapMem = unmapVidMemSparse;
 	    if (axpSystem == -1)
