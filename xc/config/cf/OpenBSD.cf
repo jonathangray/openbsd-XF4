@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.126 2003/12/21 12:02:52 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.127 2004/01/21 15:26:04 todd Exp $
 
 
 
@@ -693,6 +693,9 @@ install:: fonts.alias							@@\
  * Definitions for the Mc88000Architecture architecture (currently mvme88k)
  */
 #ifdef Mc88000Architecture
+
+# define HasSharedLibraries	NO
+# define HasDlopen		NO
 
 # define BuildGlxExt		NO
 # define BuildGLXLibrary	YES 
