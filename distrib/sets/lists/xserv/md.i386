@@ -1,3 +1,5 @@
+./etc/X11/xserver
+./etc/X11/xserver/SecurityPolicy
 ./usr/X11R6/bin/XF86_3DLabs
 ./usr/X11R6/bin/XF86_8514
 ./usr/X11R6/bin/XF86_AGX
@@ -13,6 +15,9 @@
 ./usr/X11R6/bin/XF86_VGA16
 ./usr/X11R6/bin/XF86_W32
 ./usr/X11R6/bin/XFree86
+./usr/X11R6/bin/Xnest
+./usr/X11R6/bin/Xprt
+./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/codeconv
 ./usr/X11R6/lib/modules/drivers
@@ -72,3 +77,4 @@
 ./usr/X11R6/man/cat1/XF86_SVGA.0
 ./usr/X11R6/man/cat1/XF86_VGA16.0
 ./usr/X11R6/man/cat1/XF86_W32.0
+./usr/X11R6/man/cat1/Xnest.0
