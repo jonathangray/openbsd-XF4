@@ -49,3 +49,5 @@ XCOMM operating system:  OSName
 
 #define ServerOnly YES
 #define BuildServer YES
+
+#define ManSuffix 1
