@@ -17,7 +17,7 @@ if (! $?DESTDIR) then
 	exit 1
 endif
 
-set arch=`machine`
+set arch=${MACHINE}
 set listsdir=`pwd`/lists
 set tardir=$RELEASEDIR
 set fsdir=$DESTDIR
