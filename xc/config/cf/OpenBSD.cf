@@ -658,7 +658,16 @@ install:: fonts.alias							@@\
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
-#   define DevelDrivers nv
+#   ifndef XFree86CardDrivers
+#    define XF86CardDrivers	ati mga glint s3virge sis savage\
+				trident chips tdfx \
+				DevelDrivers vga \
+				XF86OSCardDrivers XF86ExtraCardDrivers
+#   endif
+#   ifndef DevelDrivers 
+#    define DevelDrivers nv
+#   endif
+
     /* Support for USB Mices */
 #   ifndef UsbMouseSupport
 #     define UsbMouseSupport		YES
