@@ -58,6 +58,11 @@ saber_src:
 	XCOMM load $(CFLAGS) $(SRCS)
 #endif
 
+depend:: cfb8bit.h cfbmskbits.h cfbrrop.h stip68kgnu.h $(SRCS)
+
+clean::
+	$(RM) -f cfb8bit.h cfbmskbits.h cfbrrop.h stip68kgnu.h
+
 #ifdef MipsArchitecture
 stipmipste.s: stipmips.s
 	$(RM) $@

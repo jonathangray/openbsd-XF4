@@ -38,6 +38,11 @@ NormalLibraryTarget(mfb,$(OBJS))
 LintLibraryTarget(mfb,$(SRCS1))
 NormalLintTarget($(LINTDEFS) $(SRCS1))
 
+depend:: fastblt.h maskbits.h mergerop.h $(SRCS)
+
+clean::
+	$(RM) -f fastblt.h maskbits.h mergerop.h
+
 ObjectFromSpecialSource(mfbseg,mfbline,-DPOLYSEGMENT)
 
 ObjectFromSpecialSource(mfbpgbwht,mfbplygblt,-DMFBPOLYGLYPHBLT=mfbPolyGlyphBltWhite -DOPEQ=\|=)
