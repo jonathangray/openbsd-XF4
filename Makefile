@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.20 2002/03/25 18:58:33 todd Exp $
+#	$OpenBSD: Makefile,v 1.21 2002/03/26 22:05:20 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -64,7 +64,9 @@ all:	compile
 
 compile:
 .if (${NEED_XC_MIT:L} == "yes")
-	cd xc-mit && exec ${MAKE} -f Makefile.ini World BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000"
+	cd xc-mit && exec ${MAKE} -f Makefile.ini World \
+		BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000" \
+		WORLDOPTS=
 .endif
 	${RM} -f ${CONFHOSTDEF}
 	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
