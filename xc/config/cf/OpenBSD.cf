@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.92 2002/05/24 20:37:34 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.93 2002/05/24 20:48:02 matthieu Exp $
 
 
 
@@ -776,7 +776,8 @@ install:: fonts.alias							@@\
 
 #ifndef DefaultCCOptions
 # if defined(UseInstalled)
-#  define DefaultCCOptions 	/**/
+   /* conform to OpenBSD's habits */
+#  define DefaultCCOptions     $(COPTS)
 # else
 #  ifdef  PpcArchitecture
 #    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm \
