@@ -26,12 +26,12 @@ specified in its invocation, and then have fvwm read the resulting file.
 
 .SH INVOCATION
 FvwmM4 can be invoked by inserting the line 'FvwmM4' in
-the .fvwm2rc file. It can also be called from a menu or mouse binding.
-If the user wants his entire .fvwm2rc file pre-processed with FvwmM4,
+the .fvwmrc file. It can also be called from a menu or mouse binding.
+If the user wants his entire .fvwmrc file pre-processed with FvwmM4,
 then fvwm should be invoked as:
 
 .EX
-fvwm2 -cmd "FvwmM4 .fvwm2rc"
+fvwm2 -cmd "FvwmM4 .fvwmrc"
 .EE
 
 Note that the argument to the option "-cmd" should be enclosed
@@ -39,7 +39,7 @@ in quotes, and no other quoting should be used. For example, a
 typical invocation might be:
 
 .EX
-fvwm2 -cmd "FvwmM4 -m4-squote { -m4-equote } .fvwm2rc"
+fvwm2 -cmd "FvwmM4 -m4-squote { -m4-equote } .fvwmrc"
 .EE
 
 Some options can be specified on the command line:

@@ -15,7 +15,7 @@ into the file
 in your home directory. As explain in the other documation, this
 function is called at startup of fvwm2.
 You have to include this file in
-.I .fvwm2rc
+.I .fvwmrc
 after the definition of the Function Initfunction.
 You can do this by using the module
 .I FvwmM4
@@ -40,20 +40,20 @@ option to prefix all builtins with 'm4_'. FvwmM4 can be called with
 option -m4-prefix and then will provide the option -P to M4.
 I personally use the FvwmM4 module this way.
 
-fvwm2 -f "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
+fvwm2 -f "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwmrc"
 
-Simply add the following line to the end of .fvwm2rc:
+Simply add the following line to the end of .fvwmrc:
 
 m4_include(`.fvwm2desk') .
 
 .SH SETUP USING FVWMCPP MODULE
 With the FVWMCPP you may have the problem that the preprocessor
 directives starts with the comment charakter '#' and will
-complain about unknown directives, if you have comments in your .fvwm2rc.
+complain about unknown directives, if you have comments in your .fvwmrc.
 
-fvwm2 -f "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
+fvwm2 -f "FvwmCpp -C-I$HOME $HOME/.fvwmrc"
 
-Simply add the following line to the end of .fvwm2rc:
+Simply add the following line to the end of .fvwmrc:
 
 #include ".fvwm2desk"
 
@@ -61,7 +61,7 @@ Simply add the following line to the end of .fvwm2rc:
 FvwmSaveDesk can be invoked by adding it to a menu or binding it to a 
 mouse button or keystoke in
 the 
-.I .fvwm2rc
+.I .fvwmrc
 file.
 Fvwm2 will search directory specified in the ModulePath
 configuration option to locate FvwmSaveDesk.
