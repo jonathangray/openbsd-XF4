@@ -398,15 +398,17 @@ install:: fonts.alias							@@\
 
  /*
   * For the current ECOFF system
-  */
-# define HasSharedLibraries	NO
 # define UseElfFormat		NO
+  */
  /*
   * For the upcoming ELF system
   */
+#  define HasSharedLibraries	NO
+#  define UseElfFormat		YES
+#  define SharedLibXThrStub	NO
+
 # if 0 /* NOT YET */
 #  define HasSharedLibraries	YES
-#  define UseElfFormat		YES
 # endif
 
 # define BuildServer		YES
@@ -640,6 +642,7 @@ install:: fonts.alias							@@\
 #  endif
 
 # if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 8)
+#   define  BuildServer NO
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
