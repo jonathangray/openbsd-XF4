@@ -1,4 +1,5 @@
 ! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
+! $OpenBSD: Xres.cpp,v 1.9 2002/09/19 20:06:51 matthieu Exp $
 !
 !
 !
