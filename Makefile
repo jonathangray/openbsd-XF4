@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.30 2002/08/26 17:25:17 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.31 2003/01/04 11:58:35 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -31,7 +31,7 @@ HOSTDEFo=xc-old/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEFo=xc-old/config/cf/host.def
 XCONFIG=xc/${BINDIST}/OpenBSD-${XMACH}/XF86Config
 
-.if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == mac68k
+.if ${MACHINE} == i386 || ${MACHINE} == mac68k
 NEED_XC_OLD?=yes
 .else
 NEED_XC_OLD?=no
