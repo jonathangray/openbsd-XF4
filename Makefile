@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.18 2001/11/09 15:55:31 espie Exp $
+#	$OpenBSD: Makefile,v 1.19 2001/11/28 15:11:05 danh Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -105,7 +105,7 @@ release-mkdir:
 release-install:
 	@${MAKE} install
 .if defined(MACHINE) && ${MACHINE} == hp300
-	@${INSTALL} ${INSTALL_STRIP} -m 755 -o ${BINOWN} -g ${BINGRP} \
+	@${INSTALL} ${INSTALL_STRIP} -m 755 -o ${DIROWN} -g ${DIRGRP} \
 		${XHP} ${DESTDIR}/usr/X11R6/bin
 	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
@@ -121,12 +121,12 @@ release-install:
 	@${MAKE} fix-appd
 
 perms:
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/.
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/.
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6/.
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11/.
+	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/.
+	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/.
+	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/X11R6/.
+	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/etc/X11/.
 	@find ${DESTDIR}/usr/X11R6/. \
-		${DESTDIR}/etc/X11/. \! -user ${BINOWN} -ls
+		${DESTDIR}/etc/X11/. \! -user ${DIROWN} -ls
 
 dist-rel:
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist 2>&1 | tee distlog
