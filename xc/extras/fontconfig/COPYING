@@ -1,6 +1,6 @@
-$XFree86: xc/extras/fontconfig/COPYING,v 1.1.1.1 2003/06/04 02:56:24 dawes Exp $
+$Id: COPYING,v 1.1.1.2 2004/06/21 16:13:59 matthieu Exp $
 
-Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
+Copyright © 2001,2003 Keith Packard
 
 Permission to use, copy, modify, distribute, and sell this software and its
 documentation for any purpose is hereby granted without fee, provided that

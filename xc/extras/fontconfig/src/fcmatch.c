@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcmatch.c,v 1.1.1.1 2003/06/04 02:58:01 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcmatch.c,v 1.20 2002/08/31 22:17:32 keithp Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -28,13 +28,31 @@
 #include <stdio.h>
 
 static double
-FcCompareInteger (char *object, FcValue value1, FcValue value2)
+FcCompareNumber (char *object, FcValue value1, FcValue value2)
 {
-    int	v;
+    double  v1, v2, v;
     
-    if (value2.type != FcTypeInteger || value1.type != FcTypeInteger)
+    switch (value1.type) {
+    case FcTypeInteger:
+	v1 = (double) value1.u.i;
+	break;
+    case FcTypeDouble:
+	v1 = value1.u.d;
+	break;
+    default:
 	return -1.0;
-    v = value2.u.i - value1.u.i;
+    }
+    switch (value2.type) {
+    case FcTypeInteger:
+	v2 = (double) value2.u.i;
+	break;
+    case FcTypeDouble:
+	v2 = value2.u.d;
+	break;
+    default:
+	return -1.0;
+    }
+    v = v2 - v1;
     if (v < 0)
 	v = -v;
     return (double) v;
@@ -173,7 +191,7 @@ static FcMatcher _FcMatchers [] = {
     { FC_LANG,		FcCompareLang,		3, 3 },
 #define MATCH_LANG	    3
     
-    { FC_SPACING,	FcCompareInteger,	5, 5 },
+    { FC_SPACING,	FcCompareNumber,	5, 5 },
 #define MATCH_SPACING	    4
     
     { FC_PIXEL_SIZE,	FcCompareSize,		6, 6 },
@@ -182,26 +200,29 @@ static FcMatcher _FcMatchers [] = {
     { FC_STYLE,		FcCompareString,	7, 7 },
 #define MATCH_STYLE	    6
     
-    { FC_SLANT,		FcCompareInteger,	8, 8 },
+    { FC_SLANT,		FcCompareNumber,	8, 8 },
 #define MATCH_SLANT	    7
     
-    { FC_WEIGHT,	FcCompareInteger,	9, 9 },
+    { FC_WEIGHT,	FcCompareNumber,	9, 9 },
 #define MATCH_WEIGHT	    8
     
-    { FC_ANTIALIAS,	FcCompareBool,		10, 10 },
-#define MATCH_ANTIALIAS	    9
+    { FC_WIDTH,		FcCompareNumber,	10, 10 },
+#define MATCH_WIDTH	    9
     
-    { FC_RASTERIZER,	FcCompareString,	11, 11 },
-#define MATCH_RASTERIZER    10
+    { FC_ANTIALIAS,	FcCompareBool,		11, 11 },
+#define MATCH_ANTIALIAS	    10
     
-    { FC_OUTLINE,	FcCompareBool,		12, 12 },
-#define MATCH_OUTLINE	    11
+    { FC_RASTERIZER,	FcCompareString,	12, 12 },
+#define MATCH_RASTERIZER    11
+    
+    { FC_OUTLINE,	FcCompareBool,		13, 13 },
+#define MATCH_OUTLINE	    12
 
-    { FC_FONTVERSION,	FcCompareInteger,	13, 13 },
-#define MATCH_FONTVERSION   12
+    { FC_FONTVERSION,	FcCompareNumber,	14, 14 },
+#define MATCH_FONTVERSION   13
 };
 
-#define NUM_MATCH_VALUES    14
+#define NUM_MATCH_VALUES    15
 
 static FcBool
 FcCompareValueList (const char  *object,
@@ -255,7 +276,13 @@ FcCompareValueList (const char  *object,
     case 'p':
 	i = MATCH_PIXEL_SIZE; break;
     case 'w':
-	i = MATCH_WEIGHT; break;
+	switch (FcToLower (object[1])) {
+	case 'i':
+	    i = MATCH_WIDTH; break;
+	case 'e':
+	    i = MATCH_WEIGHT; break;
+	}
+	break;
     case 'r':
 	i = MATCH_RASTERIZER; break;
     case 'o':

@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcatomic.c,v 1.1.1.1 2003/06/04 02:57:42 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcatomic.c,v 1.2 2002/03/04 21:15:28 tsi Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -30,7 +30,7 @@
  * Uses only regular filesystem calls so it should
  * work even in the absense of functioning file locking
  *
- *  Four files:
+ * On Unix, four files are used:
  *	file	    - the data file accessed by other apps.
  *	new	    - a new version of the data file while it's being written
  *	lck	    - the lock file
@@ -41,6 +41,10 @@
  *	Attempt to link it to 'lck'
  *	Unlink 'tmp'
  *	If the link succeeded, the lock is held
+ *
+ * On Windows, where there are no links, no tmp file is used, and lck
+ * is a directory that's mkdir'ed. If the mkdir succeeds, the lock is
+ * held.
  */
 
 #include "fcint.h"
@@ -50,6 +54,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+
+#ifdef _WIN32
+#define mkdir(path,mode) _mkdir(path)
+#endif
 
 #define NEW_NAME	".NEW"
 #define LCK_NAME	".LCK"
@@ -96,6 +104,7 @@ FcAtomicLock (FcAtomic *atomic)
     int		ret;
     struct stat	lck_stat;
 
+#ifdef HAVE_LINK
     strcpy ((char *) atomic->tmp, (char *) atomic->file);
     strcat ((char *) atomic->tmp, TMP_NAME);
     fd = mkstemp ((char *) atomic->tmp);
@@ -122,6 +131,9 @@ FcAtomicLock (FcAtomic *atomic)
     }
     ret = link ((char *) atomic->tmp, (char *) atomic->lck);
     (void) unlink ((char *) atomic->tmp);
+#else
+    ret = mkdir ((char *) atomic->lck, 0600);
+#endif
     if (ret < 0)
     {
 	/*
@@ -135,8 +147,13 @@ FcAtomicLock (FcAtomic *atomic)
 	    time_t  now = time (0);
 	    if ((long int) (now - lck_stat.st_mtime) > 10 * 60)
 	    {
+#ifdef HAVE_LINK
 		if (unlink ((char *) atomic->lck) == 0)
 		    return FcAtomicLock (atomic);
+#else
+		if (rmdir ((char *) atomic->lck) == 0)
+		    return FcAtomicLock (atomic);
+#endif
 	    }
 	}
 	return FcFalse;
@@ -174,7 +191,11 @@ FcAtomicDeleteNew (FcAtomic *atomic)
 void
 FcAtomicUnlock (FcAtomic *atomic)
 {
+#ifdef HAVE_LINK
     unlink ((char *) atomic->lck);
+#else
+    rmdir ((char *) atomic->lck);
+#endif
 }
 
 void

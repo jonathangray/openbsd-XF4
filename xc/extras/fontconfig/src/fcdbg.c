@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcdbg.c,v 1.1.1.1 2003/06/04 02:57:52 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcdbg.c,v 1.10 2002/08/22 18:53:22 keithp Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -34,10 +34,10 @@ FcValuePrint (const FcValue v)
 	printf (" <void>");
 	break;
     case FcTypeInteger:
-	printf (" %d", v.u.i);
+	printf (" %d(i)", v.u.i);
 	break;
     case FcTypeDouble:
-	printf (" %g", v.u.d);
+	printf (" %g(f)", v.u.d);
 	break;
     case FcTypeString:
 	printf (" \"%s\"", v.u.s);
@@ -52,7 +52,8 @@ FcValuePrint (const FcValue v)
 	printf (" set");
 	break;
     case FcTypeLangSet:
-	printf (" langset");
+	printf (" ");
+	FcLangSetPrint (v.u.l);
 	break;
     case FcTypeFTFace:
 	printf (" face");
@@ -66,9 +67,32 @@ FcValueListPrint (const FcValueList *l)
     for (; l; l = l->next)
     {
 	FcValuePrint (l->value);
-	if (l->binding == FcValueBindingWeak)
+	switch (l->binding) {
+	case FcValueBindingWeak:
 	    printf ("(w)");
+	    break;
+	case FcValueBindingStrong:
+	    printf ("(s)");
+	    break;
+	case FcValueBindingSame:
+	    printf ("(=)");
+	    break;
+	}
     }
+}
+
+void
+FcLangSetPrint (const FcLangSet *ls)
+{
+    FcStrBuf	buf;
+    FcChar8	init_buf[1024];
+    
+    FcStrBufInit (&buf, init_buf, sizeof (init_buf));
+    if (FcNameUnparseLangSet (&buf, ls) && FcStrBufChar (&buf,'\0'))
+	printf ("%s", buf.buf);
+    else
+	printf ("langset (alloc error)");
+    FcStrBufDestroy (&buf);
 }
 
 void
@@ -129,6 +153,10 @@ FcOpPrint (FcOp op)
     case FcOpNot: printf ("Not"); break;
     case FcOpNil: printf ("Nil"); break;
     case FcOpComma: printf ("Comma"); break;
+    case FcOpFloor: printf ("Floor"); break;
+    case FcOpCeil: printf ("Ceil"); break;
+    case FcOpRound: printf ("Round"); break;
+    case FcOpTrunc: printf ("Trunc"); break;
     case FcOpInvalid: printf ("Invalid"); break;
     }
 }
@@ -136,7 +164,8 @@ FcOpPrint (FcOp op)
 void
 FcExprPrint (const FcExpr *expr)
 {
-    switch (expr->op) {
+    if (!expr) printf ("none");
+    else switch (expr->op) {
     case FcOpInteger: printf ("%d", expr->u.ival); break;
     case FcOpDouble: printf ("%g", expr->u.dval); break;
     case FcOpString: printf ("\"%s\"", expr->u.sval); break;
@@ -209,6 +238,22 @@ FcExprPrint (const FcExpr *expr)
 	break;
     case FcOpNot:
 	printf ("Not ");
+	FcExprPrint (expr->u.tree.left);
+	break;
+    case FcOpFloor:
+	printf ("Floor ");
+	FcExprPrint (expr->u.tree.left);
+	break;
+    case FcOpCeil:
+	printf ("Ceil ");
+	FcExprPrint (expr->u.tree.left);
+	break;
+    case FcOpRound:
+	printf ("Round ");
+	FcExprPrint (expr->u.tree.left);
+	break;
+    case FcOpTrunc:
+	printf ("Trunc ");
 	FcExprPrint (expr->u.tree.left);
 	break;
     case FcOpInvalid: printf ("Invalid"); break;

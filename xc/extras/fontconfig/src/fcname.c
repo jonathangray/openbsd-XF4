@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcname.c,v 1.1.1.1 2003/06/04 02:58:01 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcname.c,v 1.15 2002/09/26 00:17:28 keithp Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -33,6 +33,7 @@ static const FcObjectType _FcBaseObjectTypes[] = {
     { FC_STYLE,		FcTypeString, },
     { FC_SLANT,		FcTypeInteger, },
     { FC_WEIGHT,	FcTypeInteger, },
+    { FC_WIDTH,		FcTypeInteger, },
     { FC_SIZE,		FcTypeDouble, },
     { FC_ASPECT,	FcTypeDouble, },
     { FC_PIXEL_SIZE,	FcTypeDouble, },
@@ -137,16 +138,33 @@ FcNameGetObjectType (const char *object)
 }
 
 static const FcConstant _FcBaseConstants[] = {
+    { (FcChar8 *) "thin",	    "weight",   FC_WEIGHT_THIN, },
+    { (FcChar8 *) "extralight",	    "weight",   FC_WEIGHT_EXTRALIGHT, },
+    { (FcChar8 *) "ultralight",	    "weight",   FC_WEIGHT_EXTRALIGHT, },
     { (FcChar8 *) "light",	    "weight",   FC_WEIGHT_LIGHT, },
+    { (FcChar8 *) "regular",	    "weight",   FC_WEIGHT_REGULAR, },
     { (FcChar8 *) "medium",	    "weight",   FC_WEIGHT_MEDIUM, },
     { (FcChar8 *) "demibold",	    "weight",   FC_WEIGHT_DEMIBOLD, },
+    { (FcChar8 *) "semibold",	    "weight",   FC_WEIGHT_DEMIBOLD, },
     { (FcChar8 *) "bold",	    "weight",   FC_WEIGHT_BOLD, },
+    { (FcChar8 *) "extrabold",	    "weight",   FC_WEIGHT_EXTRABOLD, },
+    { (FcChar8 *) "ultrabold",	    "weight",   FC_WEIGHT_EXTRABOLD, },
     { (FcChar8 *) "black",	    "weight",   FC_WEIGHT_BLACK, },
 
     { (FcChar8 *) "roman",	    "slant",    FC_SLANT_ROMAN, },
     { (FcChar8 *) "italic",	    "slant",    FC_SLANT_ITALIC, },
     { (FcChar8 *) "oblique",	    "slant",    FC_SLANT_OBLIQUE, },
 
+    { (FcChar8 *) "ultracondensed", "width",	FC_WIDTH_ULTRACONDENSED },
+    { (FcChar8 *) "extracondensed", "width",	FC_WIDTH_EXTRACONDENSED },
+    { (FcChar8 *) "condensed",	    "width",	FC_WIDTH_CONDENSED },
+    { (FcChar8 *) "semicondensed", "width",	FC_WIDTH_SEMICONDENSED },
+    { (FcChar8 *) "normal",	    "width",	FC_WIDTH_NORMAL },
+    { (FcChar8 *) "semiexpanded",   "width",	FC_WIDTH_SEMIEXPANDED },
+    { (FcChar8 *) "expanded",	    "width",	FC_WIDTH_EXPANDED },
+    { (FcChar8 *) "extraexpanded",  "width",	FC_WIDTH_EXTRAEXPANDED },
+    { (FcChar8 *) "ultraexpanded",  "width",	FC_WIDTH_ULTRAEXPANDED },
+    
     { (FcChar8 *) "proportional",   "spacing",  FC_PROPORTIONAL, },
     { (FcChar8 *) "mono",	    "spacing",  FC_MONO, },
     { (FcChar8 *) "charcell",	    "spacing",  FC_CHARCELL, },
@@ -218,7 +236,7 @@ FcNameGetConstant (FcChar8 *string)
 {
     const FcConstantList    *l;
     int			    i;
-    
+
     for (l = _FcConstants; l; l = l->next)
     {
 	for (i = 0; i < l->nconsts; i++)
@@ -247,8 +265,7 @@ FcNameBool (FcChar8 *v, FcBool *result)
     char    c0, c1;
 
     c0 = *v;
-    if (isupper (c0))
-	c0 = tolower (c0);
+    c0 = FcToLower (c0);
     if (c0 == 't' || c0 == 'y' || c0 == '1')
     {
 	*result = FcTrue;
@@ -262,8 +279,7 @@ FcNameBool (FcChar8 *v, FcBool *result)
     if (c0 == 'o')
     {
 	c1 = v[1];
-	if (isupper (c1))
-	    c1 = tolower (c1);
+	c1 = FcToLower (c1);
 	if (c1 == 'n')
 	{
 	    *result = FcTrue;

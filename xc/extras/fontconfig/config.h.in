@@ -1,32 +1,35 @@
-/* config.h.in.  Generated manually by keithp.  */
+/* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* Path library uses when config file is broken */
+/* Font configuration directory */
+#undef CONFDIR
+
+/* Additional font directories */
+#undef FC_ADD_FONTS
+
+/* System font directory */
 #undef FC_DEFAULT_FONTS
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
 
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
 
-/* Use expat library for xml parsing */
+/* Found a useable expat library */
 #undef HAVE_EXPAT
-
-/* expat uses old xmlparse.h include */
-#undef HAVE_XMLPARSE_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* whether system has freetype2 library */
-#undef HAVE_FREETYPE
+/* Define to 1 if you have the `FT_Get_First_Char' function. */
+#undef HAVE_FT_GET_FIRST_CHAR
 
-/* Define to 1 if you have the <ft2build.h> header file. */
-#undef HAVE_FT2BUILD_H
-
-/* Define to 1 if you have the `FT_Init_FreeType' function. */
-#undef HAVE_FT_INIT_FREETYPE
+/* Define to 1 if you have the `geteuid' function. */
+#undef HAVE_GETEUID
 
 /* Define to 1 if you have the `getopt' function. */
 #undef HAVE_GETOPT
@@ -34,11 +37,14 @@
 /* Define to 1 if you have the `getopt_long' function. */
 #undef HAVE_GETOPT_LONG
 
+/* Define to 1 if you have the `getuid' function. */
+#undef HAVE_GETUID
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if your system has a working `malloc' function. */
-#undef HAVE_MALLOC
+/* Define to 1 if you have the `link' function. */
+#undef HAVE_LINK
 
 /* Define to 1 if you have the `memmove' function. */
 #undef HAVE_MEMMOVE
@@ -49,12 +55,11 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
+/* Define to 1 if you have the `mkstemp' function. */
+#undef HAVE_MKSTEMP
+
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
-
-/* Define to 1 if `stat' has the bug that it succeeds when given the
-   zero-length file name argument. */
-#undef HAVE_STAT_EMPTY_STRING_BUG
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -97,27 +102,20 @@
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
+/* Use xmlparse.h instead of expat.h */
+#undef HAVE_XMLPARSE_H
+
 /* Define to 1 if you have the `XML_ParserCreate' function. */
 #undef HAVE_XML_PARSERCREATE
 
-/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
-   slash. */
-#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
+/* Name of package */
+#undef PACKAGE
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
-/* Library major version */
-#undef PACKAGE_MAJOR
-
-/* Library minor version */
-#undef PACKAGE_MINOR
-
 /* Define to the full name of this package. */
 #undef PACKAGE_NAME
-
-/* Library revision */
-#undef PACKAGE_REVISION
 
 /* Define to the full name and version of this package. */
 #undef PACKAGE_STRING
@@ -130,6 +128,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

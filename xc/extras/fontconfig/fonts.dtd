@@ -91,7 +91,7 @@
 <!ENTITY % expr 'int|double|string|matrix|bool|charset
 		|name|const
 		|or|and|eq|not_eq|less|less_eq|more|more_eq|contains|not_contains
-		|plus|minus|times|divide|not|if'>
+		|plus|minus|times|divide|not|if|floor|ceil|round|trunc'>
 
 <!--
     Match and edit patterns.
@@ -145,7 +145,7 @@
 <!ATTLIST edit
 	  name CDATA	    #REQUIRED
 	  mode (assign|assign_replace|prepend|append|prepend_first|append_last) "assign"
-	  binding (weak|strong) "weak">
+	  binding (weak|strong|same) "weak">
 
 <!--
     Elements of expressions follow
@@ -157,7 +157,7 @@
 <!ELEMENT string (#PCDATA)>
 <!ATTLIST string xml:space (default|preserve) 'preserve'>
 <!ELEMENT matrix (double,double,double,double)>
-<!ELEMENT bool (true|false)>
+<!ELEMENT bool (#PCDATA)>
 <!ELEMENT charset (#PCDATA)>
 <!ATTLIST charset xml:space (default|preserve) 'preserve'>
 <!ELEMENT name (#PCDATA)>
@@ -180,3 +180,7 @@
 <!ELEMENT divide (%expr;)*>
 <!ELEMENT not (%expr;)>
 <!ELEMENT if ((%expr;), (%expr;), (%expr;))>
+<!ELEMENT floor (%expr;)>
+<!ELEMENT ceil (%expr;)>
+<!ELEMENT round (%expr;)>
+<!ELEMENT trunc (%expr;)>

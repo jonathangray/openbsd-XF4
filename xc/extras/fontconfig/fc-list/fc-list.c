@@ -1,5 +1,7 @@
 /*
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * $RCSId: xc/lib/fontconfig/fc-list/fc-list.c,v 1.5 2002/06/30 23:45:40 keithp Exp $
+ *
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,7 +21,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/extras/fontconfig/fc-list/fc-list.c,v 1.3 2003/09/13 21:33:00 dawes Exp $ */
 
 #include <fontconfig/fontconfig.h>
 #include <stdio.h>
@@ -32,9 +33,6 @@
 #define HAVE_GETOPT_LONG 1
 #endif
 #define HAVE_GETOPT 1
-#if defined(ISC) || defined(Lynx)
-#define HAVE_OPTARG_IN_UNISTD 0
-#endif
 #endif
 
 #ifndef HAVE_GETOPT
@@ -42,9 +40,6 @@
 #endif
 #ifndef HAVE_GETOPT_LONG
 #define HAVE_GETOPT_LONG 0
-#endif
-#ifndef HAVE_OPTARG_IN_UNISTD
-#define HAVE_OPTARG_IN_UNISTD HAVE_GETOPT
 #endif
 
 #if HAVE_GETOPT_LONG
@@ -58,7 +53,7 @@ const struct option longopts[] = {
     {NULL,0,0,0},
 };
 #else
-#if HAVE_GETOPT && !HAVE_OPTARG_IN_UNISTD
+#if HAVE_GETOPT
 extern char *optarg;
 extern int optind, opterr, optopt;
 #endif
@@ -66,25 +61,20 @@ extern int optind, opterr, optopt;
 
 static void usage (char *program)
 {
-#if HAVE_GETOPT_LONG || HAVE_GETOPT
-    fprintf (stderr,
-	     "usage: %s [-V?] [--version] [--help] [pattern] {element ...} \n",
+    fprintf (stderr, "usage: %s [-vV?] [--verbose] [--version] [--help] [pattern] {element ...} \n",
 	     program);
     fprintf (stderr, "List fonts matching [pattern]\n");
     fprintf (stderr, "\n");
-    fprintf (stderr,
-	     "  -V, --version        display font config version and exit\n");
+    fprintf (stderr, "  -v, --verbose        display status information while busy\n");
+    fprintf (stderr, "  -V, --version        display font config version and exit\n");
     fprintf (stderr, "  -?, --help           display this help and exit\n");
-#else
-    fprintf (stderr, "usage: %s [pattern] {element ...} \n", program);
-    fprintf (stderr, "List fonts matching [pattern]\n");
-#endif
     exit (1);
 }
 
 int
 main (int argc, char **argv)
 {
+    int		verbose = 0;
     int		i;
     FcObjectSet *os = 0;
     FcFontSet	*fs;
@@ -104,7 +94,7 @@ main (int argc, char **argv)
 		     FC_MAJOR, FC_MINOR, FC_REVISION);
 	    exit (0);
 	case 'v':
-	    /* Ignore */
+	    verbose = 1;
 	    break;
 	default:
 	    usage (argv[0]);

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcmatrix.c,v 1.1.1.1 2003/06/04 02:58:01 dawes Exp $
+ * $RCSId: $
  *
  * Copyright © 2000 Tuomas J. Lukka
  *

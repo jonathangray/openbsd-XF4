@@ -1,5 +1,7 @@
 /*
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * $RCSId: xc/lib/fontconfig/src/fccache.c,v 1.12 2002/08/22 07:36:44 keithp Exp $
+ *
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,7 +21,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/extras/fontconfig/src/fccache.c,v 1.4 2003/12/02 20:51:42 dawes Exp $ */
 
 #include "fcint.h"
 
@@ -187,9 +188,19 @@ FcCacheWritePath (FILE *f, const FcChar8 *dir, const FcChar8 *file)
     if (dir)
 	if (!FcCacheWriteChars (f, dir))
 	    return FcFalse;
+#ifdef _WIN32
+    if (dir &&
+	dir[strlen((const char *) dir) - 1] != '/' &&
+	dir[strlen((const char *) dir) - 1] != '\\')
+    {
+	if (!FcCacheWriteChars (f, "\\"))
+	    return FcFalse;
+    }
+#else
     if (dir && dir[strlen((const char *) dir) - 1] != '/')
 	if (PUTC ('/', f) == EOF)
 	    return FcFalse;
+#endif
     if (!FcCacheWriteChars (f, file))
 	return FcFalse;
     if (PUTC ('"', f) == EOF)
@@ -257,8 +268,13 @@ FcCacheFontSetAdd (FcFontSet	    *set,
 	    return FcFalse;
     }
     strncpy ((char *) path, (const char *) dir, dir_len);
+#ifdef _WIN32
+    if (dir[dir_len - 1] != '/' && dir[dir_len - 1] != '\\' )
+	path[dir_len++] = '\\';
+#else
     if (dir[dir_len - 1] != '/')
 	path[dir_len++] = '/';
+#endif
     strcpy ((char *) path + dir_len, (const char *) file);
     if (!FcStrCmp (name, FC_FONT_FILE_DIR))
     {
@@ -294,28 +310,28 @@ FcCacheFontSetAdd (FcFontSet	    *set,
 }
 
 static unsigned int
-FcCacheHash (const FcChar8 *string)
+FcCacheHash (const FcChar8 *string, int len)
 {
     unsigned int    h = 0;
     FcChar8	    c;
 
-    while ((c = *string++))
+    while (len-- && (c = *string++))
 	h = (h << 1) ^ c;
-    return 0;
+    return h;
 }
 
 /*
  * Verify the saved timestamp for a file
  */
 FcBool
-FcGlobalCacheCheckTime (FcGlobalCacheInfo *info)
+FcGlobalCacheCheckTime (const FcChar8 *file, FcGlobalCacheInfo *info)
 {
     struct stat	    statb;
 
-    if (stat ((char *) info->file, &statb) < 0)
+    if (stat ((char *) file, &statb) < 0)
     {
 	if (FcDebug () & FC_DBG_CACHE)
-	    printf (" file missing\n");
+	    printf (" file %s missing\n", file);
 	return FcFalse;
     }
     if (statb.st_mtime != info->time)
@@ -360,7 +376,7 @@ FcFilePathInfoGet (const FcChar8    *path)
     FcFilePathInfo  i;
     FcChar8	    *slash;
 
-    slash = (FcChar8 *) strrchr ((const char *) path, '/');
+    slash = FcStrLastSlash (path);
     if (slash)
     {
         i.dir = path;
@@ -375,7 +391,7 @@ FcFilePathInfoGet (const FcChar8    *path)
 	i.dir_len = 1;
 	i.base = path;
     }
-    i.base_hash = FcCacheHash (i.base);
+    i.base_hash = FcCacheHash (i.base, -1);
     return i;
 }
 
@@ -385,7 +401,7 @@ FcGlobalCacheDirGet (FcGlobalCache  *cache,
 		     int	    len,
 		     FcBool	    create_missing)
 {
-    unsigned int	hash = FcCacheHash (dir);
+    unsigned int	hash = FcCacheHash (dir, len);
     FcGlobalCacheDir	*d, **prev;
 
     for (prev = &cache->ents[hash % FC_GLOBAL_CACHE_DIR_HASH_SIZE];
@@ -426,13 +442,29 @@ static FcGlobalCacheInfo *
 FcGlobalCacheDirAdd (FcGlobalCache  *cache,
 		     const FcChar8  *dir,
 		     time_t	    time,
-		     FcBool	    replace)
+		     FcBool	    replace,
+		     FcBool	    create_missing)
 {
     FcGlobalCacheDir	*d;
     FcFilePathInfo	i;
     FcGlobalCacheSubdir	*subdir;
     FcGlobalCacheDir	*parent;
 
+    i = FcFilePathInfoGet (dir);
+    parent = FcGlobalCacheDirGet (cache, i.dir, i.dir_len, create_missing);
+    /*
+     * Tricky here -- directories containing fonts.cache-1 files
+     * need entries only when the parent doesn't have a cache file.
+     * That is, when the parent already exists in the cache, is
+     * referenced and has a "real" timestamp.  The time of 0 is
+     * special and marks directories which got stuck in the
+     * global cache for this very reason.  Yes, it could
+     * use a separate boolean field, and probably should.
+     */
+    if (!parent || (!create_missing && 
+		    (!parent->info.referenced ||
+		    (parent->info.time == 0))))
+	return 0;
     /*
      * Add this directory to the cache
      */
@@ -440,13 +472,9 @@ FcGlobalCacheDirAdd (FcGlobalCache  *cache,
     if (!d)
 	return 0;
     d->info.time = time;
-    i = FcFilePathInfoGet (dir);
     /*
      * Add this directory to the subdirectory list of the parent
      */
-    parent = FcGlobalCacheDirGet (cache, i.dir, i.dir_len, FcTrue);
-    if (!parent)
-	return 0;
     subdir = malloc (sizeof (FcGlobalCacheSubdir));
     if (!subdir)
 	return 0;
@@ -483,6 +511,30 @@ FcGlobalCacheDirDestroy (FcGlobalCacheDir *d)
     free (d);
 }
 
+/*
+ * If the parent is in the global cache and referenced, add
+ * an entry for 'dir' to the global cache.  This is used
+ * for directories with fonts.cache files
+ */
+
+void
+FcGlobalCacheReferenceSubdir (FcGlobalCache *cache,
+			      const FcChar8 *dir)
+{
+    FcGlobalCacheInfo	*info;
+    info = FcGlobalCacheDirAdd (cache, dir, 0, FcFalse, FcFalse);
+    if (info && !info->referenced)
+    {
+	info->referenced = FcTrue;
+	cache->referenced++;
+    }
+}
+
+/*
+ * Check to see if the global cache contains valid data for 'dir'.
+ * If so, scan the global cache for files and directories in 'dir'.
+ * else, return False.
+ */
 FcBool
 FcGlobalCacheScanDir (FcFontSet		*set,
 		      FcStrSet		*dirs,
@@ -496,6 +548,7 @@ FcGlobalCacheScanDir (FcFontSet		*set,
     int			h;
     int			dir_len;
     FcGlobalCacheSubdir	*subdir;
+    FcBool		any_in_cache = FcFalse;
 
     if (FcDebug() & FC_DBG_CACHE)
 	printf ("FcGlobalCacheScanDir %s\n", dir);
@@ -507,19 +560,27 @@ FcGlobalCacheScanDir (FcFontSet		*set,
 	return FcFalse;
     }
 
-    if (!FcGlobalCacheCheckTime (&d->info))
+    /*
+     * See if the timestamp recorded in the global cache
+     * matches the directory time, if not, return False
+     */
+    if (!FcGlobalCacheCheckTime (d->info.file, &d->info))
     {
 	if (FcDebug () & FC_DBG_CACHE)
 	    printf ("\tdir cache entry time mismatch\n");
 	return FcFalse;
     }
 
+    /*
+     * Add files from 'dir' to the fontset
+     */
     dir_len = strlen ((const char *) dir);
     for (h = 0; h < FC_GLOBAL_CACHE_FILE_HASH_SIZE; h++)
 	for (f = d->ents[h]; f; f = f->next)
 	{
 	    if (FcDebug() & FC_DBG_CACHEV)
 		printf ("FcGlobalCacheScanDir add file %s\n", f->info.file);
+	    any_in_cache = FcTrue;
 	    if (!FcCacheFontSetAdd (set, dirs, dir, dir_len,
 				    f->info.file, f->name))
 	    {
@@ -528,11 +589,14 @@ FcGlobalCacheScanDir (FcFontSet		*set,
 	    }
 	    FcGlobalCacheReferenced (cache, &f->info);
 	}
+    /*
+     * Add directories in 'dir' to 'dirs'
+     */
     for (subdir = d->subdirs; subdir; subdir = subdir->next)
     {
-	FcFilePathInfo info;
+	FcFilePathInfo	info = FcFilePathInfoGet (subdir->ent->info.file);
 	
-	info = FcFilePathInfoGet (subdir->ent->info.file);
+        any_in_cache = FcTrue;
 	if (!FcCacheFontSetAdd (set, dirs, dir, dir_len,
 				info.base, FC_FONT_FILE_DIR))
 	{
@@ -544,7 +608,15 @@ FcGlobalCacheScanDir (FcFontSet		*set,
     
     FcGlobalCacheReferenced (cache, &d->info);
 
-    return FcTrue;
+    /*
+     * To recover from a bug in previous versions of fontconfig,
+     * return FcFalse if no entries in the cache were found
+     * for this directory.  This will cause any empty directories
+     * to get rescanned every time fontconfig is initialized.  This
+     * might get removed at some point when the older cache files are
+     * presumably fixed.
+     */
+    return any_in_cache;
 }
 
 /*
@@ -576,7 +648,7 @@ FcGlobalCacheFileGet (FcGlobalCache *cache,
 	}
     }
     if (count)
-	*count = max;
+	*count = max + 1;
     return match;
 }
     
@@ -713,7 +785,7 @@ FcGlobalCacheLoad (FcGlobalCache    *cache,
 	if (FcDebug () & FC_DBG_CACHEV)
 	    printf ("FcGlobalCacheLoad \"%s\" \"%20.20s\"\n", file, name);
 	if (!FcStrCmp (name, FC_FONT_FILE_DIR))
-	    info = FcGlobalCacheDirAdd (cache, file, time, FcFalse);
+	    info = FcGlobalCacheDirAdd (cache, file, time, FcFalse, FcTrue);
 	else
 	    info = FcGlobalCacheFileAdd (cache, file, id, time, name, FcFalse);
 	if (!info)
@@ -743,14 +815,17 @@ FcGlobalCacheUpdate (FcGlobalCache  *cache,
 		     int	    id,
 		     const FcChar8  *name)
 {
+    const FcChar8	*match;
     struct stat		statb;
     FcGlobalCacheInfo	*info;
+
+    match = file;
 
     if (stat ((char *) file, &statb) < 0)
 	return FcFalse;
     if (S_ISDIR (statb.st_mode))
 	info = FcGlobalCacheDirAdd (cache, file, statb.st_mtime, 
-				   FcTrue);
+				    FcTrue, FcTrue);
     else
 	info = FcGlobalCacheFileAdd (cache, file, id, statb.st_mtime, 
 				    name, FcTrue);
@@ -780,9 +855,11 @@ FcGlobalCacheSave (FcGlobalCache    *cache,
     if (cache->broken)
 	return FcFalse;
 
+#if defined (HAVE_GETUID) && defined (HAVE_GETEUID)
     /* Set-UID programs can't safely update the cache */
     if (getuid () != geteuid ())
 	return FcFalse;
+#endif
     
     atomic = FcAtomicCreate (cache_file);
     if (!atomic)
@@ -888,7 +965,7 @@ FcDirCacheValid (const FcChar8 *dir)
      * If the directory has been modified more recently than
      * the cache file, the cache is not valid
      */
-    if (dir_stat.st_mtime > file_stat.st_mtime)
+    if (dir_stat.st_mtime - file_stat.st_mtime > 0)
 	return FcFalse;
     return FcTrue;
 }
@@ -973,7 +1050,7 @@ FcFileBaseName (const FcChar8 *cache, const FcChar8 *file)
 {
     const FcChar8   *cache_slash;
 
-    cache_slash = (const FcChar8 *) strrchr ((const char *) cache, '/');
+    cache_slash = FcStrLastSlash (cache);
     if (cache_slash && !strncmp ((const char *) cache, (const char *) file,
 				 (cache_slash + 1) - cache))
 	return file + ((cache_slash + 1) - cache);

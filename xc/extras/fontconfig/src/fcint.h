@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcint.h,v 1.2 2003/10/22 17:15:22 tsi Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcint.h,v 1.27 2002/08/31 22:17:32 keithp Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -53,6 +53,12 @@ typedef struct _FcSymbolic {
 #define FC_FONT_FILE_INVALID	((FcChar8 *) ".")
 #define FC_FONT_FILE_DIR	((FcChar8 *) ".dir")
 
+#ifdef _WIN32
+#define FC_SEARCH_PATH_SEPARATOR ';'
+#else
+#define FC_SEARCH_PATH_SEPARATOR ':'
+#endif
+
 #define FC_DBG_MATCH	1
 #define FC_DBG_MATCHV	2
 #define FC_DBG_EDIT	4
@@ -97,7 +103,7 @@ typedef struct _FcSymbolic {
 #define FC_MEM_NUM	    29
 
 typedef enum _FcValueBinding {
-    FcValueBindingWeak, FcValueBindingStrong
+    FcValueBindingWeak, FcValueBindingStrong, FcValueBindingSame
 } FcValueBinding;
 
 typedef struct _FcValueList {
@@ -129,7 +135,8 @@ typedef enum _FcOp {
     FcOpOr, FcOpAnd, FcOpEqual, FcOpNotEqual, FcOpContains, FcOpNotContains,
     FcOpLess, FcOpLessEqual, FcOpMore, FcOpMoreEqual,
     FcOpPlus, FcOpMinus, FcOpTimes, FcOpDivide,
-    FcOpNot, FcOpComma, FcOpInvalid
+    FcOpNot, FcOpComma, FcOpFloor, FcOpCeil, FcOpRound, FcOpTrunc,
+    FcOpInvalid
 } FcOp;
 
 typedef struct _FcExpr {
@@ -338,11 +345,15 @@ void
 FcGlobalCacheDestroy (FcGlobalCache *cache);
 
 FcBool
-FcGlobalCacheCheckTime (FcGlobalCacheInfo *info);
+FcGlobalCacheCheckTime (const FcChar8*file, FcGlobalCacheInfo *info);
 
 void
 FcGlobalCacheReferenced (FcGlobalCache	    *cache,
 			 FcGlobalCacheInfo  *info);
+
+void
+FcGlobalCacheReferenceSubdir (FcGlobalCache *cache,
+			      const FcChar8 *dir);
 
 FcGlobalCacheDir *
 FcGlobalCacheDirGet (FcGlobalCache  *cache,
@@ -421,9 +432,9 @@ FcConfigSetFonts (FcConfig	*config,
 		  FcSetName	set);
 
 FcBool
-FcConfigCompareValue (FcValue m,
-		      FcOp    op,
-		      FcValue v);
+FcConfigCompareValue (const FcValue m,
+		      FcOp	    op,
+		      const FcValue v);
 
 /* fccharset.c */
 FcCharSet *
@@ -435,18 +446,15 @@ FcNameUnparseCharSet (FcStrBuf *buf, const FcCharSet *c);
 FcCharSet *
 FcNameParseCharSet (FcChar8 *string);
 
-FcChar32
-FcFreeTypeUcs4ToPrivate (FcChar32 ucs4, const FcCharMap *map);
+FcCharLeaf *
+FcCharSetFindLeafCreate (FcCharSet *fcs, FcChar32 ucs4);
 
-FcChar32
-FcFreeTypePrivateToUcs4 (FcChar32 private, const FcCharMap *map);
-
-const FcCharMap *
-FcFreeTypeGetPrivateMap (FT_Encoding encoding);
-    
 /* fcdbg.c */
 void
 FcValueListPrint (const FcValueList *l);
+
+void
+FcLangSetPrint (const FcLangSet *ls);
 
 void
 FcOpPrint (FcOp op);
@@ -479,6 +487,15 @@ FcFreeTypeIsExclusiveLang (const FcChar8  *lang);
 FcBool
 FcFreeTypeHasLang (FcPattern *pattern, const FcChar8 *lang);
 
+FcChar32
+FcFreeTypeUcs4ToPrivate (FcChar32 ucs4, const FcCharMap *map);
+
+FcChar32
+FcFreeTypePrivateToUcs4 (FcChar32 private, const FcCharMap *map);
+
+const FcCharMap *
+FcFreeTypeGetPrivateMap (FT_Encoding encoding);
+    
 /* fcfs.c */
 /* fcgram.y */
 int
@@ -635,5 +652,11 @@ FcStrBufData (FcStrBuf *buf, const FcChar8 *s, int len);
 
 int
 FcStrCmpIgnoreBlanksAndCase (const FcChar8 *s1, const FcChar8 *s2);
+
+FcBool
+FcStrUsesHome (const FcChar8 *s);
+
+FcChar8 *
+FcStrLastSlash (const FcChar8  *path);
 
 #endif /* _FC_INT_H_ */

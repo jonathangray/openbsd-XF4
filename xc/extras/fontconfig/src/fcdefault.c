@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/src/fcdefault.c,v 1.1.1.1 2003/06/04 02:57:52 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/src/fcdefault.c,v 1.2 2002/07/09 22:08:14 keithp Exp $
  *
- * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2001 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -54,6 +54,9 @@ FcDefaultSubstitute (FcPattern *pattern)
 	    FcPatternAddInteger (pattern, FC_SLANT, FC_SLANT_ROMAN);
 	}
     }
+
+    if (FcPatternGet (pattern, FC_WIDTH, 0, &v) == FcResultNoMatch)
+	FcPatternAddInteger (pattern, FC_WIDTH, FC_WIDTH_NORMAL);
 
     for (i = 0; i < NUM_FC_BOOL_DEFAULTS; i++)
 	if (FcPatternGet (pattern, FcBoolDefaults[i].field, 0, &v) == FcResultNoMatch)

@@ -1,7 +1,7 @@
 /*
- * $XFree86: xc/extras/fontconfig/fontconfig/fcfreetype.h,v 1.2 2003/11/20 22:36:33 dawes Exp $
+ * $RCSId: xc/lib/fontconfig/fontconfig/fcfreetype.h,v 1.2 2002/02/15 06:01:27 keithp Exp $
  *
- * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2001 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -30,6 +30,9 @@
 FT_UInt
 FcFreeTypeCharIndex (FT_Face face, FcChar32 ucs4);
 
+FcCharSet *
+FcFreeTypeCharSetAndSpacing (FT_Face face, FcBlanks *blanks, int *spacing);
+    
 FcCharSet *
 FcFreeTypeCharSet (FT_Face face, FcBlanks *blanks);
 
