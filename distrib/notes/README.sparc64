@@ -249,16 +249,10 @@ Section "ServerLayout"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
-Finally, a virtual terminal must be created on the second framebuffer.
-The following command creates the terminal:
-	wsconscfg -f /dev/ttyDcfg -e sun 0
-This command can be put in /etc/rc.local so that it is run everytime
-the machine is booted.
-
 See XF86Config(5) for more options.
 
 ------------------------
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.9 2002/05/29 01:51:21 fgsch Exp $
+$OpenBSD: README.sparc64,v 1.10 2002/08/21 16:52:35 miod Exp $

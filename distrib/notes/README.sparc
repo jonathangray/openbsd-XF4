@@ -59,12 +59,6 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 		InputDevice	"Keyboard0" "CoreKeyboard"
 	EndSection
 
-   Finally, a virtual terminal must be created on the second framebuffer.
-   The following command creates the terminal:
-	wsconscfg -f /dev/ttyDcfg -e sun 0
-   This command can be put in /etc/rc.local so that it is run everytime
-   the machine is booted.
-
    See XF86Config(5) for more options.
 
 2. Start either xdm(1) or startx(1).
@@ -81,4 +75,4 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc,v 1.5 2002/08/15 15:50:20 millert Exp $
+$OpenBSD: README.sparc,v 1.6 2002/08/21 16:52:35 miod Exp $
