@@ -60,6 +60,10 @@
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 
+#ifdef __OpenBSD__
+extern int priv_open_device(const char *);
+#endif
+
 static int 
 GetBaud (int baudrate)
 {
@@ -131,7 +135,7 @@ xf86OpenSerial (pointer options)
 #ifndef __OpenBSD__
 	SYSCALL (fd = open (dev, O_RDWR | O_NONBLOCK | O_EXCL));
 #else
-	fd = priv_open_device (dev, O_NONBLOCK | O_EXCL);
+	fd = priv_open_device (dev);
 #endif
 #else
 	/* O_EXCL yields an EEXIST on LynxOS */
