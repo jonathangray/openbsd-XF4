@@ -145,7 +145,7 @@ static int
 KbdOn(InputInfoPtr pInfo, int what)
 {
     KbdDevPtr pKbd = (KbdDevPtr) pInfo->private;
-#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT)
+#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
     BsdKbdPrivPtr priv = (BsdKbdPrivPtr) pKbd->private;
     struct termios nTty;
 #endif
@@ -156,7 +156,7 @@ KbdOn(InputInfoPtr pInfo, int what)
     if (pKbd->isConsole) {
         switch (pKbd->consType) {
 
-#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT)
+#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
 	    case SYSCONS:
 	    case PCCONS:
 	    case PCVT:
@@ -172,7 +172,10 @@ KbdOn(InputInfoPtr pInfo, int what)
 		 nTty.c_cc[VMIN] = 1;
 		 cfsetispeed(&nTty, 9600);
 		 cfsetospeed(&nTty, 9600);
-		 tcsetattr(pInfo->fd, TCSANOW, &nTty);
+		 if (tcsetattr(pInfo->fd, TCSANOW, &nTty) < 0) {
+			 xf86Msg(X_ERROR, "KbdOn: tcsetattr: %s\n",
+			     strerror(errno));
+		 }
                  break; 
 #endif 
         }
@@ -234,7 +237,7 @@ KbdOff(InputInfoPtr pInfo, int what)
             case WSCONS:
                  option = WSKBD_TRANSLATED;
                  ioctl(xf86Info.consoleFd, WSKBDIO_SETMODE, &option);
-                 tcsetattr(xf86Info.consoleFd, TCSANOW, &(priv->kbdtty));
+                 tcsetattr(pInfo->fd, TCSANOW, &(priv->kbdtty));
 	         break;
 #endif
         }
@@ -469,8 +472,7 @@ OpenKeyboard(InputInfoPtr pInfo)
            return FALSE;
        }
        pKbd->isConsole = FALSE;
-       /* XXX What is consType here? */
-       pKbd->consType = SYSCONS;
+       pKbd->consType = xf86Info.consType;
        xfree(s);
     }
 
