@@ -158,7 +158,7 @@ typedef struct _xReq *xReqPtr;
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
-#if !defined(AMOEBA) && !defined(__EMX__)
+#if !defined(AMOEBA) && !defined(__EMX__) && !defined(__OpenBSD__)
 #ifndef abs
 #define abs(a) ((a) > 0 ? (a) : -(a))
 #endif
