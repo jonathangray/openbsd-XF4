@@ -27,7 +27,7 @@
 char *notice_foundries[][2] = 
     {{"Bigelow", "b&h"},
      {"Adobe", "adobe"},
-     {"Bitstream", "bitsteam"},
+     {"Bitstream", "bitstream"},
      {"Monotype", "monotype"},
      {"Linotype", "linotype"},
      {"LINOTYPE-HELL", "linotype"},
