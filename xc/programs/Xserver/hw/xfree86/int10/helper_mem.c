@@ -281,9 +281,9 @@ xf86int10ParseBiosLocation(void* options,
     
     s = xstrdup(str);
     p = strtok(s,":");
-    if (xf86NameCmp(p,"pci")) bios->bus = BUS_PCI;
+    if (xf86NameCmp(p,"pci") == 0) bios->bus = BUS_PCI;
     else
-	if (xf86NameCmp(p,"primary")) bios->bus = BUS_ISA;
+	if (xf86NameCmp(p,"primary") == 0) bios->bus = BUS_ISA;
 
     xfree(s);
     
