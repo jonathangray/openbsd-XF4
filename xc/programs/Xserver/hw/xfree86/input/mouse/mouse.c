@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mouse.c,v 1.43 2001/05/18 20:22:30 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mouse.c,v 1.44 2001/07/06 08:02:37 keithp Exp $ */
 /*
  *
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
@@ -386,6 +386,14 @@ InitProtocols(void)
     return TRUE;
 }
 
+static void MouseBlockHandler(pointer data,
+			      struct timeval **waitTime,
+			      pointer LastSelectMask);
+
+static void MouseWakeupHandler(pointer data,
+			       int i,
+			       pointer LastSelectMask);
+
 /* Process options common to all mouse types. */
 static void
 MouseCommonOptions(InputInfoPtr pInfo)
@@ -411,6 +419,8 @@ MouseCommonOptions(InputInfoPtr pInfo)
     if (pMse->emulate3Buttons) {
 	xf86Msg(X_CONFIG, "%s: Emulate3Buttons, Emulate3Timeout: %d\n",
 		pInfo->name, pMse->emulate3Timeout);
+	RegisterBlockAndWakeupHandlers (MouseBlockHandler, MouseWakeupHandler,
+					(pointer) pInfo);
     }
 
     pMse->chordMiddle = xf86SetBoolOption(pInfo->options, "ChordMiddle", FALSE);
@@ -1822,18 +1832,17 @@ static char hitachMap[16] = {  0,  2,  1,  3,
 #define reverseBits(map, b)	(((b) & ~0x0f) | map[(b) & 0x0f])
 
 static CARD32
-buttonTimer(OsTimerPtr timer, CARD32 now, pointer arg)
+buttonTimer(InputInfoPtr pInfo)
 {
-    InputInfoPtr pInfo;
     MouseDevPtr pMse;
     int	sigstate;
     int id;
 
-    pInfo = arg;
     pMse = pInfo->private;
 
     sigstate = xf86BlockSIGIO ();
 
+    pMse->emulate3Pending = FALSE;
     if ((id = stateTab[pMse->emulateState][4][0]) != 0) {
         xf86PostButtonEvent(pInfo->dev, 0, abs(id), (id >= 0), 0, 0);
         pMse->emulateState = stateTab[pMse->emulateState][4][2];
@@ -1845,10 +1854,42 @@ buttonTimer(OsTimerPtr timer, CARD32 now, pointer arg)
     return 0;
 }
 
+static void MouseBlockHandler(pointer data,
+			      struct timeval **waitTime,
+			      pointer LastSelectMask)
+{
+    InputInfoPtr    pInfo = (InputInfoPtr) data;
+    MouseDevPtr	    pMse = (MouseDevPtr) pInfo->private;
+    int		    ms;
+
+    if (pMse->emulate3Pending)
+    {
+	ms = pMse->emulate3Expires - GetTimeInMillis ();
+	if (ms <= 0)
+	    ms = 0;
+	AdjustWaitForDelay (waitTime, ms);
+    }
+}
+
+static void MouseWakeupHandler(pointer data,
+			       int i,
+			       pointer LastSelectMask)
+{
+    InputInfoPtr    pInfo = (InputInfoPtr) data;
+    MouseDevPtr	    pMse = (MouseDevPtr) pInfo->private;
+    int		    ms;
+    
+    if (pMse->emulate3Pending)
+    {
+	ms = pMse->emulate3Expires - GetTimeInMillis ();
+	if (ms <= 0)
+	    buttonTimer (pInfo);
+    }
+}
+
 static void
 MouseDoPostEvent(InputInfoPtr pInfo, int buttons, int dx, int dy)
 {
-    static OsTimerPtr timer = NULL;
     MouseDevPtr pMse;
     int truebuttons, emulateButtons;
     int id, change;
@@ -1890,13 +1931,10 @@ MouseDoPostEvent(InputInfoPtr pInfo, int buttons, int dx, int dy)
                 stateTab[pMse->emulateState][emulateButtons][2];
 
             if (stateTab[pMse->emulateState][4][0] != 0) {
-                timer = TimerSet(timer, 0, pMse->emulate3Timeout, buttonTimer,
-			     pInfo);
+		pMse->emulate3Expires = GetTimeInMillis () + pMse->emulate3Timeout;
+		pMse->emulate3Pending = TRUE;
             } else {
-                if (timer) {
-                    TimerFree(timer);
-                    timer = NULL;
-                }
+		pMse->emulate3Pending = FALSE;
             }
         }
 

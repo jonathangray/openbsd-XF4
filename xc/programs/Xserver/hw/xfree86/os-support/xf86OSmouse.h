@@ -140,6 +140,8 @@ typedef struct _MouseDevRec {
     InputInfoPtr	pInfo;
     int			origProtocolID;
     const char *	origProtocol;
+    Bool		emulate3Pending;/* timer waiting */
+    CARD32		emulate3Expires;/* time to fire emulation code */
 } MouseDevRec, *MouseDevPtr;
 
 /* Z axis mapping */
