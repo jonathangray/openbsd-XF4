@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.57 2001/04/23 17:15:58 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.59 2001/10/28 03:34:09 tsi Exp $ */
 
 /*
  * This is a configuration program that will create a base XF86Config
@@ -300,7 +300,8 @@ createtmpdir(void) {
 #ifndef __EMX__
        /* length of prefix + 20 (digits in 2**64) + 1 (slash) + 1 */
        temp_dir = Malloc(strlen(TEMPORARY_XF86CONFIG_DIR_PREFIX) + 22);
-       sprintf(temp_dir, "%s%d", TEMPORARY_XF86CONFIG_DIR_PREFIX, getpid());
+       sprintf(temp_dir, "%s%ld", TEMPORARY_XF86CONFIG_DIR_PREFIX,
+	       (long)getpid());
        if (mkdir(temp_dir, 0700) != 0) {
                printf("Cannot create directory %s\n", temp_dir);
                exit(-1);

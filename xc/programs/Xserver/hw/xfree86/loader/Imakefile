@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.27 2001/04/21 20:14:39 herrb Exp $ */
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.29 2001/11/16 16:47:55 dawes Exp $ */
 
 
 
@@ -26,7 +26,17 @@ DLOBJ=dlloader.o
 USBDEFINES = -DUSB_HID
 #endif
 
-DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OS_DEFINES) $(USBDEFINES)
+#if FontencCompatibility
+ COMPAT_DEFINES = -DFONTENC_COMPATIBILITY
+#endif
+
+#if HasShm
+    SHM_DEFINES = -DHAS_SHM
+#endif
+
+DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OS_DEFINES) $(COMPAT_DEFINES) \
+	  $(SHM_DEFINES) $(USBDEFINES)
+
 
 MODULEDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
 

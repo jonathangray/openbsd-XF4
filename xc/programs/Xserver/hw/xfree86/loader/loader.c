@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loader.c,v 1.53 2001/04/05 15:55:28 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loader.c,v 1.55 2001/10/28 03:33:59 tsi Exp $ */
 
 /*
  *
@@ -105,7 +105,7 @@ DEFFUNCDOT(mul)
 DEFFUNCDOT(umul)
 DEFFUNCDOT(div)
 DEFFUNCDOT(udiv)
-#ifndef __OpenBSD__
+#ifdef linux
 static LOOKUP SparcV89LookupTab[] = {
    SYMFUNCDOT89(rem)
    SYMFUNCDOT89(urem)
@@ -712,38 +712,52 @@ SymInList(symlist *list, char *sym)
 }
 
 void
-LoaderRefSymbols(const char *sym0, ...)
+LoaderVRefSymbols(const char *sym0, va_list args)
 {
-    va_list ap;
     const char *s;
 
     if (sym0 == NULL)
         return;
 
-    va_start(ap, sym0);
     s = sym0;
     do {
         AppendSymbol(&refList, s);
-        s = va_arg(ap, const char *);
+        s = va_arg(args, const char *);
     } while (s != NULL);
+}
+
+void
+LoaderRefSymbols(const char *sym0, ...)
+{
+    va_list ap;
+
+    va_start(ap, sym0);
+    LoaderVRefSymbols(sym0, ap);
     va_end(ap);
+}
+
+void
+LoaderVRefSymLists(const char **list0, va_list args)
+{
+    const char **l;
+
+    if (list0 == NULL)
+	return;
+
+    l = list0;
+    do {
+	AppendSymList(&refList, l);
+	l = va_arg(args, const char **);
+    } while (l != NULL);
 }
 
 void
 LoaderRefSymLists(const char **list0, ...)
 {
     va_list ap;
-    const char **l;
-
-    if (list0 == NULL)
-	return;
 
     va_start(ap, list0);
-    l = list0;
-    do {
-	AppendSymList(&refList, l);
-	l = va_arg(ap, const char **);
-    } while (l != NULL);
+    LoaderVRefSymLists(list0, ap);
     va_end(ap);
 }
 

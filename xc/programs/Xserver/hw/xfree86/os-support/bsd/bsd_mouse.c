@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.18 2001/02/03 19:33:05 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.20 2002/01/14 15:34:23 dawes Exp $ */
 
 /*
  * Copyright 1999 by The XFree86 Project, Inc.
@@ -145,6 +145,8 @@ SetupAuto(InputInfoPtr pInfo, int *protoPara)
     hw.iftype = MOUSE_IF_UNKNOWN;
     hw.model = MOUSE_MODEL_GENERIC;
     ioctl(pInfo->fd, MOUSE_GETHWINFO, &hw);
+    xf86MsgVerb(X_INFO, 3, "%s: SetupAuto: hw.iftype is %d, hw.model is %d\n",
+		pInfo->name, hw.iftype, hw.model);
     if (ioctl(pInfo->fd, MOUSE_GETMODE, &mode) == 0) {
 	for (i = 0; i < sizeof(devproto)/sizeof(devproto[0]); ++i) {
 	    if (mode.protocol == devproto[i].dproto) {
@@ -154,6 +156,8 @@ SetupAuto(InputInfoPtr pInfo, int *protoPara)
 		    protoPara[0] = mode.syncmask[0];
 		    protoPara[1] = mode.syncmask[1];
 		}
+    		xf86MsgVerb(X_INFO, 3, "%s: SetupAuto: protocol is %s\n",
+			    pInfo->name, devproto[i].name);
 		return devproto[i].name;
 	    }
 	}
