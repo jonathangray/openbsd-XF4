@@ -25,7 +25,7 @@ Use xf86config to build a /etc/X11/XF86Config file before starting
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
-You need to set machdep.allowaperture to 2 in /etc/rc.securelevel in
+You need to set machdep.allowaperture to 2 in /etc/sysctl.conf in
 order to be able to use the XFree86 accelerated drivers.
 
 -- Cut Here for a sample /etc/X11/XF86Config to use with the ati driver ---
@@ -182,4 +182,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.13 2002/12/08 17:08:52 matthieu Exp $
+$OpenBSD: README.macppc,v 1.14 2004/03/14 20:10:52 matthieu Exp $
