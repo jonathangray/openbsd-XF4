@@ -55,7 +55,7 @@ Conventions used in this document:
    not have great success mixing XFree86 4.1.0 XF86Config(5) files with
    XFree86 3.3.6 XF86Config(5) files.
 
-    a. For the XFree86 4.1.0 server, run xf86cfg(1) or xf86setup(1).
+    a. For the XFree86 4.1.0 server, run xf86cfg(1) or xf86config(1).
 
        - This will produce the /etc/X11/XF86Config file.
        - This will create /usr/X11R6/bin/X as a link to XFree86.
