@@ -89,7 +89,7 @@ XCOMM  XPMDEF = -DUSE_XPMINC
 
 XCOMM If you get an error "Cannot find xpm.h" while compiling, set
 XCOMM XPMINC to the directory X11/xpm.h is in.  Below is a guess.
-XPMINC = -I/usr/local/include
+XCOMM XPMINC = -I/usr/local/include
 XCOMM SGI's ViewKit (use with -DUSE_XPMINC)
 XCOMM  XPMINC = -I/usr/include/Vk
 

@@ -26,7 +26,7 @@ OG = $(O)$(S)$(DOG)
 CM = $(C) $(DM)
 CU = $(C) $(DU)
 CG = $(C) $(DG)
-CG = $(CX) $(DG)
+CXG = $(CX) $(DG)
 
 XCOMM  please define
 XCOMM  C as the C source code extension
@@ -230,8 +230,8 @@ $(DG)i_threejet$(CXG)i_threejetvec$(CX) \
 $(DG)i_twojet$(CXG)i_twojetvec$(CXG)text3d$(CX)
 XLOCKBOMBSRCS = $(DM)bomb$(C)
 XLOCKUTILMODESRCS = $(XLOCKBOMBSRCS) $(DM)blank$(CM)random$(C)
-XLOCKSRCS = $(XLOCKUTILSRCS) $(XLOCKCHECKSRCS) $(XLOCKUNSTABLESRCS) \
-$(XLOCKCPPSRCS) $(XLOCKXPMSRCS) $(XLOCKGLSRCS) \
+SRCS = $(XLOCKUTILSRCS) $(XLOCKCHECKSRCS) $(XLOCKUNSTABLESRCS) \
+$(XLOCKCPPSRCS) $(XLOCKXPMSRCS) \
 $(XLOCKMODESRCS) $(XLOCKUTILMODESRCS)
 
 AllTarget($(UTILDIR)xlock)
@@ -427,6 +427,7 @@ $(XLOCKUTILOBJS) :
 	cd $(UTILOBJDIR) ; \
 $(MAKE) $(@F) CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
+#if 0
 $(GLOBJDIR)cage.o : $(GLDIR)cage.c
 $(GLOBJDIR)fire.o : $(GLDIR)fire.c
 $(GLOBJDIR)gears.o : $(GLDIR)gears.c
@@ -478,6 +479,7 @@ $(GLOBJDIR)text3d.o : $(GLDIR)text3d.cc
 $(XLOCKGLOBJS) :
 	cd $(GLDIR) ; \
 $(MAKE) $(@F) CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+#endif 
 
 XLOCKINC = -I$(top_srcdir) -I. -I$(UTILDIR) -I../$(UTILDIR) -I../..
 

@@ -32,7 +32,10 @@ $(DU)util$(CU)logout$(CU)mode$(CU)xlockimage$(CU)ras$(CU)xbm$(C) \
 $(DU)vis$(CU)visgl$(CU)color$(CU)random$(CU)iostuff$(CU)automata$(C) \
 $(DU)spline$(CU)sound$(CU)erase$(C) \
 $(DU)vtlock$(CU)vtlock_proc$(C)
+#ifdef Check
 XLOCKCHECKSRCS = $(DU)memcheck$(C)
+#endif
+SRCS=$(XLOCKUTILSRCS) $(XLOCKCHECKSRCS)
 
 #if HasBSDAuth
 INSTPGMFLAGS= -g auth -m2755

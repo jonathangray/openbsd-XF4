@@ -5,6 +5,7 @@ XCOMM @(#)Sub Imakefile	xlockmore
 XCOMM
 
 #include "../../iconfig.h"
+top_srcdir = ../..
 
 UTILDIR = $(top_srcdir)/xlock/
 MODEDIR = $(top_srcdir)/modes/
@@ -60,6 +61,40 @@ $(DOG)pipes$(OG)sproingies$(OG)atlantis$(OG)bubble3d$(OG)glplanet$(O)$(S)\
 $(XLOCKMULTCPPGLOBJS)
 XLOCKGLOBJS = $(XLOCKNORMGLOBJS)$(S)\
 $(XLOCKDEPGLOBJS)$(S)$(XLOCKMULTGLOBJS)
+
+/* Sources */
+#ifdef Unstable
+XLOCKUNSTABLEGLSRCS = $(DOG)skewb$(C)
+#endif
+#ifdef CPPCompiler
+INVERTSRCS = $(DOG)i_figureeight$(C)$(S)\
+$(DOG)i_linkage$(CG)i_sphere$(CG)i_spline$(C)$(S)\
+$(DOG)i_threejet$(CG)i_threejetvec$(C)$(S)\
+$(DOG)i_twojet$(CG)i_twojetvec$(C)
+XLOCKDEPCPPGLSRCS = $(INVERTSRCS)
+XLOCKMULTCPPGLSRCS = $(DOG)invert$(C)
+#if defined(TtfLibrary) && defined(GlttLibrary) && defined(Unstable)
+XLOCKUNSTABLETEXTGLSRCS = $(DOG)text3d$(C)
+#endif
+#endif
+SPROINGIESSRCS = $(DOG)buildlwo$(CG)sproingiewrap$(CG)s1_b$(C)$(S)\
+$(DOG)s1_1$(CG)s1_2$(CG)s1_3$(CG)s1_4$(CG)s1_5$(CG)s1_6$(C)
+ATLANTISSRCS = $(DOG)dolphin$(CG)shark$(CG)swim$(CG)whale$(C)
+GLPLANETSRCS = $(DOG)sphere$(C)
+BUBBLE3DSRCS = $(DOG)b_draw$(CG)b_sphere$(CG)b_lockglue$(C)
+MOLECULESRCS = $(DOG)tube$(C)
+XLOCKDEPGLSRCS = $(DOG)xpm-ximage$(CG)pipeobjs$(C)$(S)\
+$(SPROINGIESSRCS)$(S)$(ATLANTISSRCS)$(S)$(GLPLANETSRCS)$(S)$(BUBBLE3DSRCS)$(S)\
+$(MOLECULESRCS)$(S)$(XLOCKDEPCPPGLSRCS)
+XLOCKNORMGLSRCS = $(DOG)cage$(CG)gears$(C)$(S)\
+$(DOG)moebius$(CG)morph3d$(C)$(S)\
+$(DOG)rubik$(CG)sierpinski3d$(CG)stairs$(CG)superquadrics$(C)$(S)\
+$(XLOCKUNSTABLEGLSRCS)$(S)$(XLOCKUNSTABLETEXTGLSRCS)
+XLOCKMULTGLSRCS = $(DOG)fire$(CG)lament$(CG)sballs$(CG)molecule$(C)$(S)\
+$(DOG)pipes$(CG)sproingies$(CG)atlantis$(CG)bubble3d$(CG)glplanet$(C)$(S)\
+$(XLOCKMULTCPPGLSRCS)
+SRCS = $(XLOCKNORMGLSRCS)$(S)\
+$(XLOCKDEPGLSRCS)$(S)$(XLOCKMULTGLSRCS)
 #endif
 XCOMM default target
 
