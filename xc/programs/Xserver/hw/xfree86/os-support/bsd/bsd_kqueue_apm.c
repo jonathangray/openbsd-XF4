@@ -26,7 +26,7 @@
  * or other dealings in this Software without prior written authorization
  * from the XFree86 Project.
  */
-/* $OpenBSD: bsd_kqueue_apm.c,v 1.4 2002/05/04 18:11:37 matthieu Exp $ */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.5 2002/07/30 23:07:42 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"
@@ -188,8 +188,11 @@ bsdCloseAPM(void)
     if (APMihPtr) {
 	kq = xf86RemoveInputHandler(APMihPtr);
 	close(devFd);
+	devFd = -1;
+	close(kq);
 	if (ctlFd >= 0) {
 	    close(ctlFd);
+	    ctlFd = -1;
 	}
 	APMihPtr = NULL;
     }
