@@ -315,6 +315,7 @@ install:: fonts.alias							@@\
 # define BuildGlxExt		YES
 # define BuildGLXLibrary	YES
 # define BuildGLULibrary	YES
+# define HasGcc2ForCplusplus	YES
 
 # if BuildAlphaXF86
 #  include <xf86.rules>
