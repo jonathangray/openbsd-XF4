@@ -19,4 +19,4 @@ b) run the X11R6 font server:	xfs
    in /etc/rc.conf.  You may need to disable the console getty.
 
 If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.1.0/
+http://www.xfree86.org/4.2.0/

@@ -19,4 +19,4 @@ Post-installation instructions for XFree86 on OpenBSD/mac68k
 
 If you encounter a problem, you can browse the entire documentation 
 in /usr/X11R6/lib/X11/doc.  Alternately, for XFree86 4 documentation,
-you can visit http://www.xfree86.org/4.1.0/.
+you can visit http://www.xfree86.org/4.2.0/.
