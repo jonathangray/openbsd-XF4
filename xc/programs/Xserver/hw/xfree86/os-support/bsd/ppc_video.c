@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.3 2002/06/11 16:50:59 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.4 2002/07/27 21:41:41 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -105,18 +105,13 @@ ppcUnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
 	munmap(Base, Size);
 }
 
+static int kmem;
+
 int
 xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	     int Len)
 {
 	int rv;
-	int kmem;
-
- 	kmem = open("/dev/xf86", 2);
- 	if (kmem == -1) {
-		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86ReadBIOS: open /dev/xf86");
- 	}
 
 #ifdef DEBUG
 	ErrorF("xf86ReadBIOS() %lx %lx, %x\n", Base, Offset, Len);
@@ -175,4 +170,22 @@ xf86EnableInterrupts()
 {
 
 	return;
+}
+
+/*
+ * Do all things that need root privileges early 
+ * and revoke those privileges 
+ */
+void
+xf86DropPriv(void)
+{
+ 	kmem = open("/dev/xf86", 2);
+ 	if (kmem == -1) {
+		ErrorF("errno: %d\n", errno);
+ 		FatalError("xf86DropPriv: open /dev/xf86");
+ 	}
+	pciInit();
+	/* revoke privileges */
+	seteuid(getuid());
+	setuid(getuid());
 }

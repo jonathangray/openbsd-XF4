@@ -1021,8 +1021,12 @@ InitInput(argc, argv)
  *      is called by dix before establishing the well known sockets.
  */
  
+#ifdef __OpenBSD__
+extern void xf86DropPriv(void);
+#endif
+
 void
-OsVendorInit()
+OsVendorInit(void)
 {
   static Bool beenHere = FALSE;
 
@@ -1063,6 +1067,12 @@ OsVendorInit()
     }
   }
 #endif
+#endif
+
+#ifdef __OpenBSD__		/* Heh */
+  if (!beenHere) {
+	  xf86DropPriv();
+  }
 #endif
 
   beenHere = TRUE;

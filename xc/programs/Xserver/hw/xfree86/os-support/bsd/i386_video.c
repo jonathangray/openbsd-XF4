@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: i386_video.c,v 1.4 2002/06/29 17:22:53 matthieu Exp $ */
+/* $OpenBSD: i386_video.c,v 1.5 2002/07/27 21:41:41 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -349,7 +349,7 @@ xf86DisableIO()
 		ExtendedEnabled = FALSE;
 	}
 	/* Otherwise, the X server has revoqued its root uid, 
-	   and thus cannot give up IO priviledges any more */
+	   and thus cannot give up IO privileges any more */
 	   
 	return;
 }
@@ -879,3 +879,17 @@ NetBSDundoWC(int screenNum, pointer list)
 	xfree(mtrrp);
 }
 #endif
+
+/*
+ * Do all things that need root privileges early 
+ * and revoke those privileges 
+ */
+void
+xf86DropPriv(void)
+{
+	checkDevMem(TRUE);
+	xf86EnableIO();
+	/* revoke privileges */
+	seteuid(getuid());
+	setuid(getuid());
+}

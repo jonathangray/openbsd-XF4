@@ -155,12 +155,13 @@ xf86OpenConsole()
     
     if (serverGeneration == 1)
     {
+#ifndef __OpenBSD__
 	/* check if we are run with euid==0 */
 	if (geteuid() != 0)
 	{
 	    FatalError("xf86OpenConsole: Server must be suid root.");
 	}
-
+#endif
 	if (!KeepTty)
 	{
 	    /*

@@ -293,6 +293,10 @@ LockServer()
     FatalError("Could not create lock file in %s\n", tmp);
   (void) sprintf(pid_str, "%10ld\n", (long)getpid());
   (void) write(lfd, pid_str, 11);
+#ifdef __OpenBSD__
+  /* if possible give away the lock file to the real uid/gid */
+  fchown(lfd, getuid(), getgid());
+#endif
 #ifndef __EMX__
 #ifndef USE_CHMOD
   (void) fchmod(lfd, 0444);
