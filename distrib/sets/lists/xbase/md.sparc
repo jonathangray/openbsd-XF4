@@ -280,12 +280,6 @@
 ./usr/X11R6/bin/xtrapproto
 ./usr/X11R6/bin/xtrapreset
 ./usr/X11R6/bin/xtrapstats
-./usr/X11R6/include/X11/PEX5
-./usr/X11R6/include/X11/PEX5/PEX.h
-./usr/X11R6/include/X11/PEX5/PEXlib.h
-./usr/X11R6/include/X11/PEX5/PEXlibint.h
-./usr/X11R6/include/X11/PEX5/PEXproto.h
-./usr/X11R6/include/X11/PEX5/PEXprotost.h
 ./usr/X11R6/include/X11/Xft
 ./usr/X11R6/include/X11/Xft/Xft.h
 ./usr/X11R6/include/X11/Xft/XftFreetype.h
@@ -354,9 +348,6 @@
 ./usr/X11R6/lib/X11/XftConfig
 ./usr/X11R6/lib/X11/etc/xterm.termcap
 ./usr/X11R6/lib/X11/etc/xterm.terminfo
-./usr/X11R6/lib/X11/fonts/PEX
-./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
-./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
 ./usr/X11R6/lib/X11/fonts/Type1
 ./usr/X11R6/lib/X11/locale/common
 ./usr/X11R6/lib/X11/locale/common/ximcp.so.2
@@ -366,8 +357,6 @@
 ./usr/X11R6/lib/X11/locale/common/xlocale.so.2
 ./usr/X11R6/lib/X11/locale/common/xomGeneric.so.2
 ./usr/X11R6/lib/X11/rgb.txt
-./usr/X11R6/lib/libPEX5.a
-./usr/X11R6/lib/libPEX5.so.6.0
 ./usr/X11R6/lib/libXThrStub.so.6.1
 ./usr/X11R6/lib/libXTrap.a
 ./usr/X11R6/lib/libXTrap.so.6.4
