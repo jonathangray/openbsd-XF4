@@ -11,7 +11,7 @@ LOCAL_LIBRARIES = $(XKBFILELIB) $(XONLYLIB)
 
 EXTRA_INCLUDES = -I$(EXTINCSRC)
 
-#ifdef SGIArchitecture
+#if defined(SGIArchitecture) && !defined(OpenBSDArchitecture)
 EXTRA_LIBRARIES = -lmalloc
 #endif
 

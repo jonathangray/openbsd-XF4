@@ -23,7 +23,7 @@ XCOMM $XFree86: xc/programs/xkbutils/Imakefile,v 3.3 2003/05/28 15:59:58 tsi Exp
 
 EXTRA_INCLUDES = -I$(EXTINCSRC)
 
-#ifdef SGIArchitecture
+#if defined(SGIArchitecture) && !defined(OpenBSDArchitecture)
 EXTRA_LIBRARIES = -lmalloc
 #endif
 

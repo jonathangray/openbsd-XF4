@@ -121,7 +121,8 @@ LinkSourceFile(glapi_sparc.S, $(MESASRCDIR)/src/SPARC)
 #endif
 #endif
 
-#if defined(DarwinArchitecture) || defined(OS2Architecture)
+#if defined(DarwinArchitecture) || defined(OS2Architecture) \
+	|| defined(OpenBSDArchitecture) && defined(MipsArchitecture)
   ALIAS_DEFINES = -DGLX_ALIAS_UNSUPPORTED
 #endif
 

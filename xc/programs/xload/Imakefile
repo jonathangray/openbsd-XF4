@@ -6,7 +6,8 @@ LOCAL_LIBRARIES = XawClientLibs
 #if defined(i386MachArchitecture) && !defined(GNUMachArchitecture)
   SYS_LIBRARIES = -lsys
 #elif defined(SGIArchitecture) && \
-     !defined(MipsN32Architecture) && !defined(Mips64Architecture)
+     !defined(MipsN32Architecture) && !defined(Mips64Architecture) \
+	&& !defined(OpenBSDArchitecture)
   SYS_LIBRARIES = -lmld
 #elif defined(SonyArchitecture)
   SYS_LIBRARIES = -lmld

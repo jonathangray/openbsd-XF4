@@ -12,7 +12,7 @@ InstallMultipleFlags($(MAPFILES),$(FONTDIR)/util,$(INSTDATFLAGS))
 DEFINES= -DNEED_BASENAME
 #endif
 
-#ifdef SGIArchitecture
+#if defined(SGIArchitecture) && !defined(OpenBSDArchitecture)
 LOCAL_LIBRARIES = -lgen
 #endif
 

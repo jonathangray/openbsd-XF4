@@ -150,7 +150,7 @@ XCOMM !!!WARNING!!! Known security hole with MesaGL < 3.0 if setuid root
 GLLIB = -lGL -lGLU
 XCOMM   GLLIB = -L/usr/local/lib -lMesaGL -lMesaGLU
 
-#if defined(SGIArchitecture)
+#if defined(SGIArchitecture) && !defined(OpenBSDArchitecture)
 GLLIB = -lGL -lGLU -lgl
 #endif
 #if defined(SunArchitecture)
