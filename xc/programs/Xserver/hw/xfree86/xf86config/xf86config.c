@@ -190,6 +190,7 @@ int config_mousetype;		/* Mouse. */
 int config_emulate3buttons;
 int config_chordmiddle;
 int config_cleardtrrts;
+int config_wheel;
 char *config_pointerdevice;
 int config_altmeta;		/* Keyboard. */
 int config_monitortype;		/* Monitor. */
@@ -537,13 +538,21 @@ mouse_configuration(void) {
 
 	printf("\n");
 
-	printf("Please answer the following question with either 'y' or 'n'.\n");
+	printf("Please answer the following questions with either 'y' or 'n'.\n");
 	printf("Do you want to enable Emulate3Buttons? ");
 	getstring(s);
 	if (answerisyes(s))
 		config_emulate3buttons = 1;
 	else
 		config_emulate3buttons = 0;
+	printf("\n");
+
+	printf("Do want to configure a mouse wheel? ");
+	getstring(s);
+	if (answerisyes(s)) 
+		config_wheel = 1;
+	else
+		config_wheel = 0;
 	printf("\n");
 
 	printf("%s", mousedev_text);
@@ -2428,6 +2437,11 @@ write_XF86Config(char *filename)
 		fprintf(f, "    Option \"ClearDTR\"\n");
 		fprintf(f, "    Option \"ClearRTS\"\n\n");
 	}
+	fprintf(f, "# ZaxisMapping is an option for handling the wheel\n");
+	if (!config_wheel) 
+		fprintf(f, "#");
+	fprintf(f, "    Option \"ZAxisMapping\" \"4 5\"\n\n");
+
 	fprintf(f, "EndSection\n\n\n");
 
 	/*
