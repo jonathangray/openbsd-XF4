@@ -803,7 +803,7 @@ void changeDesks(int desk)
    * focus-follows-mouse person, but put in one sticky click-to-focus window
    * (typically because you don't really want to give focus to this window),
    * then the following lines are screwed up. */
-/*  else if (StickyWin && (StickyWin->flags && STICKY))
+/*  else if (StickyWin && (StickyWin->flags & STICKY))
     SetFocus(StickyWin->w, StickyWin,1);*/
   else
 #endif
