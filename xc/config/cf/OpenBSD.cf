@@ -313,6 +313,8 @@ install:: fonts.alias							@@\
  */
 # define BuildAlphaXF86		NO
 # define BuildGlxExt		YES
+# define BuildGLXLibrary	YES
+# define BuildGLULibrary	YES
 
 # if BuildAlphaXF86
 #  include <xf86.rules>
