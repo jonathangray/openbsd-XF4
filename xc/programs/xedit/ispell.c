@@ -27,13 +27,11 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/ispell.c,v 1.15 2001/02/07 16:36:29 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/ispell.c,v 1.17 2001/12/03 21:04:40 herrb Exp $ */
 
 #include "xedit.h"
-#ifndef X_NOT_STDC_ENV
 #include <stdlib.h>
 #include <unistd.h>
-#endif
 #include <fcntl.h>
 #include <signal.h>
 #include <ctype.h>

@@ -1,10 +1,10 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.7 2001/10/30 18:38:34 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.8 2002/01/19 15:39:05 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xterm/XTerm.ad,v 3.19 2001/01/17 23:46:34 dawes Exp $
+! $XFree86: xc/programs/xterm/XTerm.ad,v 3.22 2002/01/05 22:05:02 dickey Exp $
 
 XTerm.JoinSession:False
 
@@ -115,7 +115,7 @@ XTerm.JoinSession:False
 *VT100*boldColors: on
 *VT100*dynamicColors: on
 
-! Uncomment this use color for underline attribute
+! Uncomment this to use color for underline attribute
 !*VT100*colorULMode: on
 !*VT100*underLine: off
 

@@ -1,9 +1,13 @@
-/* $Xorg: xhost.c,v 1.3 2000/08/17 19:54:24 cpqbld Exp $ */
+/* $Xorg: xhost.c,v 1.4 2001/02/09 02:05:46 xorgcvs Exp $ */
 /*
 
 Copyright 1985, 1986, 1987, 1998  The Open Group
 
-All Rights Reserved.
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
 
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
@@ -22,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xhost/xhost.c,v 3.14 2001/01/30 22:06:21 tsi Exp $ */
+/* $XFree86: xc/programs/xhost/xhost.c,v 3.20 2001/12/14 20:01:45 dawes Exp $ */
 
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(AMTCPCONN)
 #define NEEDSOCKETS
@@ -46,12 +50,7 @@ from The Open Group.
 #include <ctype.h>
 #include <X11/Xauth.h>
 #include <X11/Xmu/Error.h>
-
-#ifndef X_NOT_STDC_ENV
 #include <stdlib.h>
-#else
-char *malloc();
-#endif
 
 #ifdef NEEDSOCKETS
 #ifdef att
@@ -63,7 +62,6 @@ typedef long sign32;
 #include <interlan/netdb.h>
 #include <interlan/in.h>
 #else
-#ifndef AMOEBA
 #ifndef Lynx
 #include <sys/socket.h>
 #else
@@ -71,13 +69,6 @@ typedef long sign32;
 #endif
 #include <netdb.h>
 #include <netinet/in.h>
-#else
-#include <server/ip/gen/socket.h>
-#include <server/ip/types.h>
-#include <server/ip/gen/in.h>
-#include <server/ip/gen/inet.h>
-#include <server/ip/gen/netdb.h>
-#endif
 #endif
 #endif /* NEEDSOCKETS */
 
@@ -112,6 +103,10 @@ extern unsigned long inet_makeaddr();
 #ifndef NGROUPS_MAX
 #include <sys/param.h>
 #define NGROUPS_MAX NGROUPS
+#endif
+#ifdef sun
+/* Go figure, there's no getdomainname() prototype available */
+extern int getdomainname(char *name, size_t len);
 #endif
 #endif
 
@@ -551,9 +546,6 @@ get_hostname(XHostAddress *ha)
 {
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(AMTCPCONN)
     static struct hostent *hp = NULL;
-#ifdef X_NOT_STDC_ENV
-    char *inet_ntoa();
-#endif
 #endif
 #ifdef DNETCONN
     struct nodeent *np;
@@ -627,7 +619,6 @@ get_hostname(XHostAddress *ha)
 #ifdef SECURE_RPC
 	if (netname2user(netname, &uid, &gid, &gidlen, gidlist)) {
 	    struct passwd *pwd;
-	    char *cp;
 
 	    pwd = getpwuid(uid);
 	    if (pwd)

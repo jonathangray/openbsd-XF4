@@ -1,10 +1,14 @@
-/* $Xorg: xinit.c,v 1.4 2000/08/17 19:54:30 cpqbld Exp $ */
+/* $Xorg: xinit.c,v 1.5 2001/02/09 02:05:49 xorgcvs Exp $ */
 
 /*
 
 Copyright 1986, 1998  The Open Group
 
-All Rights Reserved.
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -21,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xinit/xinit.c,v 3.26 2001/04/16 06:51:46 torrey Exp $ */
+/* $XFree86: xc/programs/xinit/xinit.c,v 3.31 2001/12/14 20:01:56 dawes Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
@@ -49,9 +53,7 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #include <errno.h>
 #include <setjmp.h>
-#ifdef NeedVarargsPrototypes
 #include <stdarg.h>
-#endif
 
 #if !defined(SIGCHLD) && defined(SIGCLD)
 #define SIGCHLD SIGCLD
@@ -69,11 +71,7 @@ char **envsave;	/* to circumvent an EMX problem */
 #define environ envsave
 #endif
 
-#ifndef X_NOT_STDC_ENV
 #include <stdlib.h>
-#else
-extern char *getenv();
-#endif
 extern char **environ;
 char **newenviron = NULL;
 
@@ -168,7 +166,7 @@ char *displayNum;
 char *program;
 Display *xd;			/* server connection */
 #ifndef SYSV
-#if defined(SVR4) || defined(_POSIX_SOURCE) || defined(CSRG_BASED) || defined(__EMX__) || defined(Lynx)
+#if defined(__CYGWIN__) || defined(SVR4) || defined(_POSIX_SOURCE) || defined(CSRG_BASED) || defined(__EMX__) || defined(Lynx)
 int status;
 #else
 union wait	status;
@@ -178,10 +176,6 @@ int serverpid = -1;
 int clientpid = -1;
 #ifndef X_NOT_POSIX
 volatile int gotSignal = 0;
-#endif
-
-#ifdef X_NOT_STDC_ENV
-extern int errno;
 #endif
 
 static void Execute ( char **vec, char **envp );

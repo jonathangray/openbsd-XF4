@@ -1,9 +1,13 @@
-/* $Xorg: signals.c,v 1.3 2000/08/17 19:55:06 cpqbld Exp $ */
+/* $Xorg: signals.c,v 1.4 2001/02/09 02:06:01 xorgcvs Exp $ */
 /******************************************************************************
 
 Copyright 1994, 1998  The Open Group
 
-All Rights Reserved.
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -19,13 +23,17 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/signals.c,v 3.2 2001/01/17 23:46:31 dawes Exp $ */
+/* $XFree86: xc/programs/xsm/signals.c,v 3.6 2001/12/14 20:02:27 dawes Exp $ */
+
+#include <stdlib.h>
 
 #include <X11/Xos.h>
 #include <X11/Xfuncs.h>
 #include <X11/Intrinsic.h>
 
 #include <X11/SM/SMlib.h>
+
+#include "save.h"
 
 #include <errno.h>
 #ifdef USG
@@ -88,9 +96,7 @@ in this Software without prior written authorization from The Open Group.
 #define SIGNALS_RESET_WHEN_CAUGHT
 #endif
 
-#ifndef NULL
-#define NULL 0
-#endif
+#include <stddef.h>
 
 int checkpoint_from_signal = 0;
 
