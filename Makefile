@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.34 2003/04/12 16:32:03 todd Exp $
+#	$OpenBSD: Makefile,v 1.35 2003/06/11 06:18:56 miod Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -131,7 +131,7 @@ PERMDIRS = / /usr /usr/X11R6 /etc /etc/X11 /usr/local /usr/local/lib
 PERMDIRS+= /usr/local/lib/X11
 perms:
 .for _dir in ${PERMDIRS}
-	${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}${_dir}/.
+	${CHOWN} ${DIROWN}:${DIRGRP} ${DESTDIR}${_dir}/.
 .endfor
 	find ${DESTDIR}/usr/X11R6/. ${DESTDIR}/etc/. ${DESTDIR}/usr/local/. \
 		-type d \
