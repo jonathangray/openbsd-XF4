@@ -403,12 +403,8 @@ PMprocessMessages (iceConn, clientData, opcode, length,
 		 * Connect to this server and send a GetProxyAddrReply msg.
 		 */
 		if (!ConnectToServer (display_name)) {
-		    char msg [100];
-
-		    (void) sprintf (msg, 
-				    "could not connect to '%s'", 
+		    FatalError( "could not connect to '%s'", 
 				    display_name);
-		    FatalError(msg);
 		}
 	    }
 	    else
