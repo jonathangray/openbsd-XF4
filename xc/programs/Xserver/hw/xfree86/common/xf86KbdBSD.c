@@ -1082,6 +1082,12 @@ WSKbdToKeycode(int keycode)
 			return KEY_UNKNOWN;
 		else 
 			return wsAdbMap[keycode];
+	case WSKBD_TYPE_SUN:
+		/* XXX */
+		if (keycode < 0 || keycode >= WS_ADB_MAP_SIZE) 
+			return KEY_UNKNOWN;
+		else 
+			return wsAdbMap[keycode];
 	default:
 		ErrorF("Unkown wskbd type %d\n", xf86Info.wsKbdType);
 		return KEY_UNKNOWN;

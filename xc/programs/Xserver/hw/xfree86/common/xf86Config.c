@@ -1051,6 +1051,11 @@ configInputKbd(IDevPtr inputp)
 	     xf86Msg(X_PROBED, "Keyboard type: ADB\n");
 	     break;
 #endif
+#ifdef WSKBD_TYPE_SUN
+     case WSKBD_TYPE_SUN:
+	     xf86Msg(X_PROBED, "Keyboard type: Sun\n");
+	     break;
+#endif
      default:
 	     xf86ConfigError("Unsupported wskbd type \"%d\"", 
 			     xf86Info.wsKbdType);
