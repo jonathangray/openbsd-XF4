@@ -238,6 +238,7 @@
 ./etc/X11/xkb/symbols/sony/us
 ./etc/X11/xkb/symbols/sr
 ./etc/X11/xkb/symbols/sun
+./etc/X11/xkb/symbols/sun/lkeys
 ./etc/X11/xkb/symbols/sun/se
 ./etc/X11/xkb/symbols/sun/us
 ./etc/X11/xkb/symbols/th
