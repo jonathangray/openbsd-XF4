@@ -41,7 +41,7 @@ Section "Monitor"
 	Identifier   "Monitor"
 	VendorName   "Unknown"
 	ModelName    "Unknown"
-# Adujst those to your monitor before using another device than wsfb 
+# Adjust those to your monitor before using another device than wsfb 
 # or you can destroy it !!
 	HorizSync    31.5-60
 	VertRefresh  50-70
