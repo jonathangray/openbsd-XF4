@@ -313,6 +313,10 @@ install:: fonts.alias							@@\
  */
 # define BuildAlphaXF86		NO
 
+# if BuildAlphaXF86
+#  include <xf86.rules>
+# endif
+
 #  define UseElfFormat		YES
 
 # if 1
@@ -495,12 +499,13 @@ install:: fonts.alias							@@\
 #ifdef Mac68kArchitecture
 
 
-# include <xf86.rules>
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
 
 # define ServerExtraDefines	-DXFree86Server
+
+# include <xfree86.cf>
 
 #endif /* mac68kArchitecture */
 
