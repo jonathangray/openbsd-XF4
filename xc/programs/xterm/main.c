@@ -3990,7 +3990,7 @@ spawn (void)
 		  execl (bin_login, "login", "-p", "-f", login_name, 0);
 #endif
 		execlp (ptr, (term->misc.login_shell ? shname_minus : shname),
-			0);
+			(void *)0);
 
 		/* Exec failed. */
 		fprintf (stderr, "%s: Could not exec %s: %s\n", xterm_name,
