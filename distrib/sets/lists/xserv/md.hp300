@@ -906,3 +906,4 @@
 ./usr/X11R6/lib/X11/xkb/xkbcomp
 ./usr/X11R6/lib/libXxf86dga.a
 ./usr/X11R6/man/cat1/dga.0
+./usr/X11R6/man/man1/Xserver.1

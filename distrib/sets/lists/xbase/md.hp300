@@ -4,6 +4,8 @@
 ./usr/X11R6/include/X11/extensions/xf86dga1str.h
 ./usr/X11R6/include/X11/extensions/xf86dgastr.h
 ./usr/X11R6/lib/X11/X0screens
+./usr/X11R6/lib/X11/rgb.db
+./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/X11/xkb/compat
 ./usr/X11R6/lib/X11/xkb/compat.dir
 ./usr/X11R6/lib/X11/xkb/compat/accessx
