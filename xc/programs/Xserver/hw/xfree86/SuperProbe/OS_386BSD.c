@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/SuperProbe/OS_386BSD.c,v 3.17 2000/06/23 22:42:02 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/SuperProbe/OS_386BSD.c,v 3.17.2.2 2001/03/02 22:55:24 dawes Exp $ */
 /*
  * (c) Copyright 1993,1994 by David Dawes <dawes@xfree86.org>
  *
@@ -87,7 +87,17 @@
 #  endif
 #  ifdef SYSCONS_SUPPORT
     /* both, Free and NetBSD have syscons */
-#   include <machine/console.h>
+#   if defined(__FreeBSD__)
+#    include <osreldate.h>
+#    if __FreeBSD_version >= 410000
+#     include <sys/consio.h>
+#     include <sys/kbio.h>
+#    else
+#     include <machine/console.h>
+#    endif
+#   else 
+#    include <machine/console.h>
+#   endif
 #  endif
 # else
 #  ifdef CODRV_SUPPORT

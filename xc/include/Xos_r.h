@@ -18,7 +18,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
-/* $XFree86: xc/include/Xos_r.h,v 1.7 2000/08/28 15:29:11 dawes Exp $ */
+/* $XFree86: xc/include/Xos_r.h,v 1.7.2.1 2001/03/02 20:40:45 herrb Exp $ */
 
 /* 
  * Various and sundry Thread-Safe functions used by X11, Motif, and CDE.

@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.49 2001/02/03 19:33:04 herrb Exp $
+XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.44.2.5 2001/03/02 20:40:45 herrb Exp $
 XCOMM
 
 #ifndef OSName
@@ -72,8 +72,18 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasVarRun		YES
 #define HasVarDb		YES
 
+#define InstallXloadSetGID	NO
+
 #ifndef HasLibPthread
 #define HasLibPthread		NO
+#endif
+
+#ifndef HasMktemp
+# if (OSMajorVersion > 2) || (OSMajorVersion == 2 && OSMinorVersion >= 1)
+#  define HasMktemp		YES
+# else
+#  define HasMktemp		NO
+# endif
 #endif
 
 /*
@@ -94,7 +104,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 
 /* Set this to YES when getpwuid_r is added to libc_r */
-# define HasThreadSafeAPI	NO
+# define HasThreadSafeAPI      NO
 
 /*
  * Compiler Features

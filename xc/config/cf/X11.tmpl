@@ -5,7 +5,7 @@ XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.93 2000/12/15 18:18:04 keithp Exp $
+XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.93.2.3 2001/03/15 19:14:15 dawes Exp $
 
 /***************************************************************************
  *                                                                         *
@@ -342,6 +342,9 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.93 2000/12/15 18:18:04 keithp Exp $
 #ifndef InstallXtermSetUID
 #define InstallXtermSetUID	YES	/* xterm needs to be set uid */
 #endif
+#ifndef InstallXloadSetGID
+#define InstallXloadSetGID	YES	/* xload often needs set gid kmem */
+#endif
 #ifndef InstallXinitConfig
 #define InstallXinitConfig	NO	/* install sample xinit config */
 #endif
@@ -360,6 +363,12 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.93 2000/12/15 18:18:04 keithp Exp $
 #endif
 #ifndef InstallAppDefFiles
 #define InstallAppDefFiles	YES	/* install application defaults */
+#endif
+#ifndef UseConfDirForAppDefaults
+#define UseConfDirForAppDefaults YES
+#endif
+#ifndef UseConfDirForXkb
+#define UseConfDirForXkb	YES
 #endif
 #ifndef CompressAllFonts
 #define CompressAllFonts	NO
@@ -1206,7 +1215,11 @@ XCOMM X Window System make variables; these need to be coordinated with rules
               RGB = $(CLIENTENVSETUP) $(XBUILDBINDIR)/rgb
             FONTC = $(CLIENTENVSETUP) $(XBUILDBINDIR)/bdftopcf
         MKFONTDIR = $(CLIENTENVSETUP) $(XBUILDBINDIR)/mkfontdir
+#if HasPerl
+      MKHTMLINDEX = RunPerlScript($(CONFIGSRC)/util/mkhtmlindex.pl,)
+#else
       MKHTMLINDEX = $(SHELL) $(CONFIGSRC)/util/mkhtmlindex.sh
+#endif
           UCS2ANY = $(FONTSRC)/util/ucs2any.pl
       BDFTRUNCATE = $(FONTSRC)/util/bdftruncate.pl
      UCSMAPPREFIX = $(FONTSRC)/util/map-
@@ -2404,6 +2417,7 @@ ProjectUnsharedLibReferences(XKBUI,xkbui,$(XKBUILIBSRC),XBuildLibDir)
  * if the InstallAppDefFiles configuration parameter is set.
  */
 #ifndef InstallAppDefaultsLong
+#if UseConfDirForAppDefaults
 #if InstallAppDefFiles
 #define InstallAppDefaultsLong(file,class)				@@\
 LinkConfDirectory(app-defaults,.,app-defaults,.)			@@\
@@ -2413,6 +2427,15 @@ InstallNamedTarget(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
 LinkConfDirectory(app-defaults,.,app-defaults,.)			@@\
 InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
 #endif /* InstallAppDefFiles */
+#else /* UseConfDirForAppDefaults */
+#if InstallAppDefFiles
+#define InstallAppDefaultsLong(file,class)				@@\
+InstallNamedTarget(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
+#else
+#define InstallAppDefaultsLong(file,class)				@@\
+InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
+#endif /* InstallAppDefFiles */
+#endif /* UseConfDirForAppDefaults */
 #endif /* InstallAppDefaultsLong */
 
 /*
