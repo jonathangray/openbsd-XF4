@@ -1,3 +1,5 @@
+/* $OpenBSD: util.c,v 1.2 2003/05/07 23:46:19 avsm Exp $ */
+
 /* $XConsortium: util.c,v 1.16 92/08/12 16:46:22 converse Exp $ */
 
 /*
@@ -858,7 +860,7 @@ DirWindow(Widget w, XEvent *event, String *params, Cardinal *num_params)
 	return;
 
     if (*num_params == 1) {
-	strncpy(path, params[0], sizeof(path - 2));
+	strncpy(path, params[0], sizeof(path) - 2);
 	path[sizeof(path) - 2] = '\0';
     }
     else {
