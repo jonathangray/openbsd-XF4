@@ -27,6 +27,7 @@
   abnt2		=	xfree86(abnt2)
   jp106		=	xfree86(jp106)
   sun		=	xfree86(sun)
+  zaurus	=	xfree86
   *		=	xfree86
 
 ! $azerty = be fr fr-latin9
@@ -73,6 +74,7 @@
   sun		us	=	us(pc104)+sun/lkeys
   sun		en_US	=	en_US(pc104)+sun/lkeys
   sun		*	=	en_US(pc104)+sun/lkeys+%l%(v)
+  zaurus	*	=	pc/pc(pc104)+zaurus(basic)
  $maclaptop	us	=	macintosh/us(extended)+apple(laptop_bad_switch)
  $maclaptop	en_US	=	macintosh/us(extended)+apple(laptop_bad_switch)
  $maclaptop	*	=	macintosh/us(extended)+apple(laptop_bad_switch)+macintosh/%l%(v)
