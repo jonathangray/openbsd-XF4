@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.6 2002/07/27 21:41:41 matthieu Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.7 2002/08/03 17:37:21 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -40,6 +40,7 @@
 #define MAP_FAILED ((caddr_t)-1)
 #endif
 
+#ifdef notyet
 static char *devPrefix[] = {
 	"/dev/ttyC",
 	"/dev/ttyD",
@@ -47,6 +48,7 @@ static char *devPrefix[] = {
 
 #define N_DEV_PREFIX (sizeof(devPrefix)/sizeof(char *))
 #define MAX_DEV_PER_PREFIX 8
+#endif /* notyet */
 
 /***************************************************************************/
 /* Video Memory Mapping section                                            */
@@ -62,7 +64,7 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 {
 	pVidMem->linearSupported = TRUE;
 	pVidMem->mapMem = sparc64MapVidMem;
-	pVidMem->mapMemTag = sparc64MapVidMemTag;
+	pVidMem->mapMemTag = NULL; /* sparc64MapVidMemTag */
 	pVidMem->unmapMem = sparc64UnmapVidMem;
 	pVidMem->initialised = TRUE;
 }
@@ -85,6 +87,12 @@ sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size,
 	return base;
 }
 
+#ifdef notyet
+/**
+ ** XXX 
+ ** This code has problems on machines with more than 1 pci host bridge.
+ ** The PCI_BUS_FROM_TAG value is not unique in this case. 
+ **/
 static pointer
 sparc64MapVidMemTag(int ScreenNum, unsigned long Base, 
 		    unsigned long Size, int Flags, PCITAG tag)
@@ -138,6 +146,7 @@ sparc64MapVidMemTag(int ScreenNum, unsigned long Base,
 	close(fd);
 	return base;
 }
+#endif /* notyet */
 
 static void
 sparc64UnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
