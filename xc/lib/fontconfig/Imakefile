@@ -107,6 +107,17 @@ fonts.conf: fonts.conf.in setfontdirs findfonts
 clean::
 	RemoveFile(fonts.conf)
 
+all:: fontconfig-config.script
+
+fontconfig-config.script: fontconfig-config.in
+	RemoveFile($@)
+	$(CONFIG_SUBST_PROG) $(SUBSTVARS) < fontconfig-config.in > $@
+
+InstallScript(fontconfig-config,$(BINDIR))
+
+clean::
+	RemoveFile(fontconfig-config.script)
+
 all:: fontconfig.pc
 
 fontconfig.pc: fontconfig.pc.in
