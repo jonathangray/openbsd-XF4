@@ -20,7 +20,7 @@ Conventions used in this document:
    in /etc/sysctl.conf.  See xf86(4) for more details about security
    issues related to this.  After changing this variable in sysctl.conf,
    you will need to reboot for the change to take effect. Most drivers for
-   XFree86 4.0.3 servers require this value to be set to 2, while
+   XFree86 4.1.0 servers require this value to be set to 2, while
    drivers for XFree86 3.3.6 require it only to be set to 1.
 
 2. Find out about your hardware:
@@ -28,7 +28,7 @@ Conventions used in this document:
    Run SuperProbe(1) to find out what chipset is used by your video board.
    Write this information down. The dmesg(8) command output is useful too.
 
-   You need to decide if you can use the newer XFree86 4.0.3 server,
+   You need to decide if you can use the newer XFree86 4.1.0 server,
    XFree86(1), or if you have some legacy VGA card supported only by
    one of the older XFree86 3.3.6 servers:
 
@@ -37,8 +37,8 @@ Conventions used in this document:
         XF86_8514(1)   XF86_Mach64(1) XF86_W32(1)  XF86_Mono(1)
         XF86_P9000(1)  XF86_AGX(1)
 
-   See http://www.xfree86.org/4.0.3/Status.html for specific details on
-   which server to use.  If in doubt, try XFree86 4.0.3 first.
+   See http://www.xfree86.org/4.1.0/Status.html for specific details on
+   which server to use.  If in doubt, try XFree86 4.1.0 first.
 
    What kind of mouse do you have and which port is it connected to? The 2
    most common cases are a serial mouse, connected to /dev/tty00 (MS
@@ -52,10 +52,10 @@ Conventions used in this document:
    You must choose one of option a or b below.  If one does not work, try the
    other.  Please note the location of the XF86Config file listed below.  Both
    the location and the utilities that generate them are different.  You will
-   not have great success mixing XFree86 4.0.3 XF86Config(5) files with
+   not have great success mixing XFree86 4.1.0 XF86Config(5) files with
    XFree86 3.3.6 XF86Config(5) files.
 
-    a. For the XFree86 4.0.3 server, run xf86cfg(1) or xf86setup(1).
+    a. For the XFree86 4.1.0 server, run xf86cfg(1) or xf86setup(1).
 
        - This will produce the /etc/X11/XF86Config file.
        - This will create /usr/X11R6/bin/X as a link to XFree86.
@@ -63,7 +63,7 @@ Conventions used in this document:
          using the text mode by typing ``xf86cfg -textmode'', or try the
          alternate program, xf86config(1).
 
-       See the XFree86 4.0.3 documentation available at:
+       See the XFree86 4.1.0 documentation available at:
 
               /usr/X11R6/lib/X11/doc/
 
@@ -92,5 +92,5 @@ Conventions used in this document:
 
 If you encounter a problem, you can browse the entire documentation 
 in /usr/X11R6/lib/X11/doc.  Alternately, for XFree86 4 documentation,
-you can visit http://www.xfree86.org/4.0.3/.  For XFree86 3 documentation,
+you can visit http://www.xfree86.org/4.1.0/.  For XFree86 3 documentation,
 visit http://www.xfree86.org/3.3.6/.
