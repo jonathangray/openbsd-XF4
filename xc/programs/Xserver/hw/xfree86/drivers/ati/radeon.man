@@ -310,6 +310,14 @@ You have been warned. The
 parameter may be specified as a float value with standard suffixes like
 "k", "kHz", "M", "MHz".
 
+.TP
+.BI "Option \*qiBookHacks\*q \*q" boolean \*q
+On some iBook models the screen is distorted and exiting the X server
+does not reset the console properly.
+This option enables a workaround for these problems.
+The default is
+.B off.
+
 .SH SEE ALSO
 XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__)
 .SH AUTHORS
