@@ -4,7 +4,7 @@
 
 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/XF86Setup/tclmisc.c,v 3.13 1999/04/25 10:01:58 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/XF86Setup/tclmisc.c,v 3.14 2001/07/25 15:05:05 dawes Exp $ */
 /*
  * Copyright 1996 by Joseph V. Moss <joe@XFree86.Org>
  *
@@ -42,14 +42,6 @@
 #include <tk.h>
 #include <ctype.h>
 #include "tclmisc.h"
-
-#if X_NOT_STDC_ENV
-int atoi(
-#if NeedFunctionPrototypes
-  char  *str
-#endif
-);
-#endif
 
 static int (*savErrorFunc)();
 static int errorOccurred;
@@ -402,7 +394,7 @@ static char *msetable[] = { "None", "Microsoft", "MouseSystems", "MMSeries",
 			    "ThinkingMouse", "IMPS/2", "ThinkingMousePS/2",
 			    "MouseManPlusPS/2", "GlidePointPS/2", 
 			    "NetMousePS/2", "NetScrollPS/2", "SysMouse",
-			    "Auto", "Xqueue", "OSMouse", "wsmouse" };
+			    "Auto", "Xqueue", "OSMouse" };
 #define MSETABLESIZE	(sizeof(msetable)/sizeof(char *))
 
 /*

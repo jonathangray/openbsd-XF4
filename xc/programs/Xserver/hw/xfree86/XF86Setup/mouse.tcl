@@ -3,7 +3,7 @@
 #
 #
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/XF86Setup/mouse.tcl,v 3.25 1998/04/26 16:04:34 robin Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/XF86Setup/mouse.tcl,v 3.24 1998/04/05 16:15:50 robin Exp $
 #
 # Copyright 1996 by Joseph V. Moss <joe@XFree86.Org>
 #
@@ -17,7 +17,8 @@
 
 set mseTypeList [concat $SupportedMouseTypes { Xqueue OSMouse } ]
 
-set msePatterns [list {*mouse* tty[0-9]*]
+set msePatterns [list {tty[0-9A-Za-o]*} cua* *bm *mse* *mouse* \
+                      ps*x psm* m320 pms* com* gpmdata lms* kdmouse logi msm]
 set mseDevices ""
 foreach pat $msePatterns {
 	if ![catch {glob /dev/$pat}] {
@@ -37,7 +38,9 @@ proc Mouse_proto_select { win } {
 	set canv $w.mouse.mid.right.canvas
 	$canv itemconfigure mbut  -fill white
 	$canv itemconfigure coord -fill black
-	if {[lsearch -exact {wsmouse} \
+	if {[lsearch -exact {BusMouse Xqueue OSMouse PS/2 IMPS/2
+			     ThinkingMousePS/2 MouseManPlusPS/2 GlidePointPS/2 
+			     NetMousePS/2 NetScrollPS/2 SysMouse} \
 			     $mseType] == -1} {
 		foreach rate {1200 2400 4800 9600} {
 			$w.mouse.brate.$rate configure -state normal
@@ -668,8 +671,6 @@ proc Mouse_defaultdevice { mousetype } {
 					/dev/.*bm|/dev/mse.* ] }
 		SysMouse { set idx [lsearch -regexp $mseDevices \
 					/dev/sysmouse.* ] }
-		wsmouse { set idx [lsearch -regexp $mseDevices \
-					/dev/wsmouse.* ] }
 		OsMouse  -
 		Xqueue	 { return "" }
 		default	 { set idx [lsearch -regexp $mseDevices \
