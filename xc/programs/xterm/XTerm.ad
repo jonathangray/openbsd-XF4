@@ -138,3 +138,6 @@ XTerm.JoinSession:False
 *VT100*color15: white
 *VT100*colorUL: yellow
 *VT100*colorBD: white
+
+! The delete key should generate DEL
+*deleteIsDEL: true
