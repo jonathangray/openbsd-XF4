@@ -454,6 +454,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasKrb5
 #define HasKrb5			NO      /* if you have Kerberos V5 */
 #endif
+#ifndef HasLibDes
+#define HasLibDes		NO
+#endif
 #ifndef HasLatex
 #define HasLatex		NO
 #endif
@@ -485,6 +488,11 @@ XCOMM the platform-specific parameters - edit site.def to change
 /* If the system has the Freetype2 library */
 #ifndef HasFreetype2
 #define HasFreetype2		NO
+#endif
+#if HasLibDes
+#ifndef DesLibrary
+#define DesLibrary 	-ldes
+#endif
 #endif
 #if HasKrbIV
 #ifndef KrbIVIncludes

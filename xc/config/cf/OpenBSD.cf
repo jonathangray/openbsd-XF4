@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.78 2002/03/19 20:47:44 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.79 2002/03/21 22:28:00 matthieu Exp $
 
 
 
@@ -54,6 +54,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define SetTtyGroup     	YES
 #define DBMLibrary		/**/
 #define HasLibCrypt		NO
+#define HasLibDes		YES
 #define HasPosixSignals		YES
 #define HasShm          	YES
 #define HasWChar32		YES
@@ -784,9 +785,6 @@ install:: fonts.alias							@@\
 /* GLX doesn't work on sparc64 */
 # define BuildGlxExt		NO
 # define BuildGLXLibrary	YES
-
-/* Neither does the Xdm Auth code */
-# define HasXdmAuth		NO
 
 # if XF86Server
 #   ifndef DoLoadableServer

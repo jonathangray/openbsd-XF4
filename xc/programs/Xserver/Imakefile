@@ -285,8 +285,11 @@ XPFBLIBS = dix/LibraryTargetName(xpstubs)
 #if !(SystemV4 || defined(SGIArchitecture) || UseRgbTxt)
        DBMLIBS = DBMLibrary
 #endif
+#if HasLibDes
+         DESLIB = DesLibrary
+#endif
         SYSLIBS = $(ZLIB) MathLibrary Krb5Libraries $(DBMLIBS) $(USB) \
-		  $(PAMLIBS) $(EXTRASYSLIBS)
+		  $(PAMLIBS) $(DESLIB) $(EXTRASYSLIBS)
            CBRT = mi/LibraryTargetName(cbrt)
         STDDIRS = include dix os mi $(XPDDXDIR) $(EXTDIRS)
 
