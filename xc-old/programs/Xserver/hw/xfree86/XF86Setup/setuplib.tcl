@@ -56,7 +56,7 @@ proc initconfig {xwinhome} {
 		set Keyboard(XkbLayout)		us
 		set Keyboard(XkbVariant)	""
 		set Keyboard(XkbOptions)	""
-		set Pointer(Protocol)		Microsoft
+		set Pointer(Protocol)		wsmouse
 		set Pointer(Emulate3Buttons)	""
 	} else {
 		set Keyboard(XkbDisable)	""

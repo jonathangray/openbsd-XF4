@@ -66,7 +66,7 @@ set ExtraMouseTypes [list \
 set ExtraMouseTypes [ list \
 		    "wsmouse" \
 ]
-#define MOUSE_TYPES $SerialMouseTypes $ExtraMouseTypes $PnpMouseTypes 
+#define MOUSE_TYPES $ExtraMouseTypes $PnpMouseTypes $SerialMouseTypes
 #elif defined(Lynx)
 #define MOUSE_TYPES $SerialMouseTypes $BusMouseTypes $StandardPS2Types \
 			$ExtendedPS2Types
