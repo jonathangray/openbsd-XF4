@@ -1,4 +1,4 @@
-/* $OpenBSD: privsep.c,v 1.1 2003/02/17 23:04:20 matthieu Exp $ */
+/* $OpenBSD: privsep.c,v 1.2 2003/02/19 19:31:56 matthieu Exp $ */
 /*
  * Copyright 2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -134,7 +134,7 @@ send_fd(int socket, int fd)
 	msg.msg_iovlen = 1;
 	
 	if ((n = sendmsg(socket, &msg, 0)) == -1)
-		warn("%s: sendmsg(%d): %s", __func__, socket);
+		warn("%s: sendmsg(%d)", __func__, socket);
 	if (n != sizeof(int))
 		warnx("%s: sendmsg: expected sent 1 got %ld",
 		    __func__, (long)n);
@@ -160,7 +160,7 @@ receive_fd(int socket)
 	msg.msg_controllen = sizeof(tmp);
 
 	if ((n = recvmsg(socket, &msg, 0)) == -1)
-		warn("%s: recvmsg: %s", __func__);
+		warn("%s: recvmsg", __func__);
 	if (n != sizeof(int))
 		warnx("%s: recvmsg: expected received 1 got %ld",
 		    __func__, (long)n);
@@ -273,11 +273,15 @@ priv_signal_parent(void)
 	priv_cmd_t cmd;
 
 	if (priv_fd != -1) {
+		if (parent_pid == -1) {
+			warnx("parent_pid == -1");
+			return -1;
+		}
 		cmd.cmd = PRIV_SIG_PARENT;
 		write(priv_fd, &cmd, sizeof(cmd));
 		return 0;
 	} else 
-		return kill(parent_pid, SIGUSR1);
+		return kill(getppid(), SIGUSR1);
 }
 
 #ifdef TEST
