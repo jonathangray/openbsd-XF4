@@ -32,6 +32,7 @@
   rapidaccess2	IBM Rapid Access II
   chicony	Chicony Internet Keyboard
   dell		Dell Internet Keyboard
+  macintosh	Apple Macintosh Keyoboards
 
 
 // The entries here should be ordered as follows:
