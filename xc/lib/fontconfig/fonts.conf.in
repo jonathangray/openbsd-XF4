@@ -26,6 +26,7 @@
 
 	<dir>/usr/X11R6/lib/X11/fonts</dir>
  	<dir>/usr/share/fonts</dir>
+	<dir>/usr/local/lib/X11/fonts</dir>
 	<dir>~/.fonts</dir>
 
 <!-- FONTPATH_END -->
