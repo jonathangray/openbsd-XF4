@@ -1,4 +1,4 @@
-/* $OpenBSD: main.c,v 1.4 2002/12/31 16:31:30 matthieu Exp $ */
+/* $OpenBSD: main.c,v 1.5 2002/12/31 17:41:02 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -8,11 +8,11 @@
  * are met:
  *
  *    - Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
+ *	notice, this list of conditions and the following disclaimer.
  *    - Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
+ *	copyright notice, this list of conditions and the following
+ *	disclaimer in the documentation and/or other materials provided
+ *	with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -82,7 +82,7 @@ static XtActionsRec actionsList[] = {
 	{ "exit", exitAction},
 };
 
-static String topTranslations = 
+static String topTranslations =
 "<ClientMessage>WM_PROTOCOLS: exit(1)\n";
 
 /*
@@ -93,9 +93,9 @@ static void
 exitAction(Widget w, XEvent *event, String *params, Cardinal *numParams)
 {
 	int exitStatus = 0;
-	
-	if (event->type == ClientMessage 
-	    && event->xclient.data.l[0] != wm_delete_window) 
+
+	if (event->type == ClientMessage
+	    && event->xclient.data.l[0] != wm_delete_window)
 		return;
 	if (*numParams == 1) {
 		exitStatus = atoi(params[0]);
@@ -122,14 +122,13 @@ main(int argc, char *argv[])
 
 	XtSetLanguageProc(NULL, (XtLanguageProc)NULL, NULL);
 	top = XtAppInitialize(&appContext, "Xsystrace",
-			      optionList, XtNumber(optionList),
-			      &argc, argv, fallbackResources, 
-			      NULL, 0);
+	    optionList, XtNumber(optionList),
+	    &argc, argv, fallbackResources, NULL, 0);
 	XtGetApplicationResources(top, (XtPointer)&nres, resources,
-				  XtNumber(resources), NULL, 0);
+	    XtNumber(resources), NULL, 0);
 
 	wm_delete_window = XInternAtom(XtDisplay(top), "WM_DELETE_WINDOW",
-				      False);
+	    False);
 	XtAppAddActions(appContext, actionsList, XtNumber(actionsList));
 	XtOverrideTranslations(top, XtParseTranslationTable(topTranslations));
 
@@ -140,22 +139,21 @@ main(int argc, char *argv[])
 	}
 
 	XtSetMappedWhenManaged(top, FALSE);
-	
+
 	XtRealizeWidget(top);
 	/* do WM_DELETE_WINDOW */
 	XSetWMProtocols(XtDisplay(top), XtWindow(top), &wm_delete_window, 1);
-		
+
 	/* Register timeout */
-	if (nres.timeout_secs) 
-		XtAppAddTimeOut(appContext, 1000*nres.timeout_secs, 
-				timeOut, NULL);
-	
+	if (nres.timeout_secs)
+		XtAppAddTimeOut(appContext, 1000*nres.timeout_secs,
+		    timeOut, NULL);
+
 	setvbuf(stdin, NULL, _IOLBF, 0);
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
-	inputId = XtAppAddInput(appContext, fileno(stdin), 
-				(XtPointer)XtInputReadMask, 
-				getInput, top);
+	inputId = XtAppAddInput(appContext, fileno(stdin),
+	    (XtPointer)XtInputReadMask, getInput, top);
 
 	done = False;
 	while (!done) {

@@ -1,4 +1,4 @@
-/* $OpenBSD: policy.c,v 1.1 2002/12/31 16:31:30 matthieu Exp $ */
+/* $OpenBSD: policy.c,v 1.2 2002/12/31 17:41:02 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -8,11 +8,11 @@
  * are met:
  *
  *    - Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
+ *	notice, this list of conditions and the following disclaimer.
  *    - Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
+ *	copyright notice, this list of conditions and the following
+ *	disclaimer in the documentation and/or other materials provided
+ *	with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -52,7 +52,7 @@ alloc_policy(char *p)
 	struct policy_list *np;
 
 	np = (struct policy_list *)malloc(sizeof(struct policy_list));
-	if (np == NULL) 
+	if (np == NULL)
 		errx(1, "alloc_policy: cannot allocate memory");
 	np->line = strdup(p);
 	if (np->line == NULL)
@@ -137,9 +137,10 @@ make_policy(char **type, char **data, int count, char **presult, int derive)
 			isfilename = 1;
 			nfilename++;
 		}
-		
+
 		if (strlen(result)) {
-			if (strlcat(result, " and ", sizeof(result)) >= sizeof(result))
+			if (strlcat(result, " and ",
+				sizeof(result)) >= sizeof(result))
 				return (-1);
 		}
 
@@ -197,7 +198,7 @@ make_policy_suggestion(char *info)
 	struct policy_list *np;
 
 	items = (struct plist *)malloc(sizeof(struct plist));
-	if (items == NULL) 
+	if (items == NULL)
 		errx(1, "make_policy_suggestion: cannot allocate memory");
 	SIMPLEQ_INIT(items);
 
@@ -244,7 +245,7 @@ make_policy_suggestion(char *info)
 			SIMPLEQ_INSERT_TAIL(items, np, next);
 		}
 	}
-			
+
  out:
 	/* Simples policy */
 	p = count == -1 ? "permit" : "true then permit";
