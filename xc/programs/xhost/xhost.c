@@ -40,7 +40,6 @@ from The Open Group.
 #include <X11/Xfuncs.h>
 #include <stdio.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <ctype.h>
 #include <X11/Xauth.h>
 #include <X11/Xmu/Error.h>
@@ -540,7 +539,6 @@ change_host(Display *dpy, char *name, Bool add)
  * be found.
  */
 
-jmp_buf env;
 
 static char *
 get_hostname(XHostAddress *ha)
@@ -561,6 +559,7 @@ get_hostname(XHostAddress *ha)
     char *kname;
     static char kname_out[255];
 #endif
+    struct sigaction sa;
 
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(AMTCPCONN)
     if (ha->family == FamilyInternet) {
@@ -576,11 +575,12 @@ get_hostname(XHostAddress *ha)
 	   gethostbyaddr will continue after a signal, so we have to
 	   jump out of it. 
 	   */
-	signal(SIGALRM, nameserver_lost);
+	memset(&sa, 0, sizeof sa);
+	sa.sa_handler = nameserver_lost;
+	sa.sa_flags = 0;	/* don't restart syscalls */
+	sigaction(SIGALRM, &sa, NULL);
 	alarm(4);
-	if (setjmp(env) == 0) {
-	    hp = gethostbyaddr (ha->address, ha->length, AF_INET);
-	}
+	hp = gethostbyaddr (ha->address, ha->length, AF_INET);
 	alarm(0);
 	if (hp)
 	    return (hp->h_name);
@@ -654,7 +654,10 @@ static signal_t
 nameserver_lost(int sig)
 {
     nameserver_timedout = 1;
-    longjmp(env, -1);
+    /* not needed anymore - stuck syscalls will not be restarted 
+       after signal delivery 
+       longjmp(env, -1);
+    */
 }
 
 /*
