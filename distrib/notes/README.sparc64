@@ -45,6 +45,11 @@ Section "ServerLayout"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
+- For systems with both UPA and VGA framebuffers, the device parameter
+in the "Device" section must match the wsdisplay device corresponding
+to the console (/dev/ttyC0 for wsdisplay0, /dev/ttyD0 for wsdisplay1,
+etc).
+
 - For systems with UPA Creator/Creator3D/Elite3D framebuffers use 
 	DefaultDepth 24
   in the "Screen" section.
@@ -255,4 +260,4 @@ See XF86Config(5) for more options.
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.12 2002/08/29 22:27:01 miod Exp $
+$OpenBSD: README.sparc64,v 1.13 2002/10/02 23:57:24 jason Exp $
