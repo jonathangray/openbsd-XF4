@@ -102,7 +102,7 @@
 typedef unsigned __int64    FbBits;
 # else
 #  if defined(__alpha__) || defined(__alpha) || \
-      defined(ia64) || defined(__ia64__)
+      defined(ia64) || defined(__ia64__) || defined(__sparc64__)
 typedef unsigned long	    FbBits;
 #  else
 typedef unsigned long long  FbBits;
