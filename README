@@ -8,7 +8,7 @@ o Shadow trees
 Always use a shadow tree to build X, especially on multiple
 architectures. 
 
-Lets assume XF4 is in /source/XF4, and you want to setup the build
+Let's assume XF4 is in /source/XF4, and you want to setup the build
 shadow tree in /obj/XF4 do:
 
        mkdir -p /obj/XF4
@@ -25,7 +25,7 @@ run from the top of the shadow tree).
 o Makefile targets 
   ----------------
 
-There are 2 ways to build X in OpenBSD either from XF4 or from
+There are two ways to build X in OpenBSD either from XF4 or from
 XF4/xc. 
 
 The Makefile in XF4 is added by OpenBSD to provide a set of high-level
@@ -87,7 +87,7 @@ Use it in selected directories after a regular build by doing:
     make depend
     makeg
 
-in the directories(s) in which you need debugging information. 
+in the directory(ies) in which you need debugging information. 
 
 If you did that in a subdirectory of the Xserver, finish by relinking
 the X server: 
@@ -175,7 +175,7 @@ handle this at all.
 
 Please be patient and (re)build X from the top of the tree as much as
 possible. Trying to be smarter will considerably augment the risk of
-things getting out of sync and make you loose time.
+things getting out of sync and make you lose time.
 
 Whenever you want to rebuild something in a particular directory
 without touching the rest, use the following sequence: 
@@ -188,7 +188,7 @@ make depend
 make
 
 No, there is no built-in target to handle this. As mentioned above, a
-particular X server can be re-linked by running
+particular X server can be re-linked by running:
 
 make load<Server>
 
@@ -253,7 +253,7 @@ o What to do when make detects an error in a generated Makefile?
   --------------------------------------------------------------
 
 A common problem that arises when hacking imake configuration files is
-that an imake can generate incorrect Makefiles, leadings to errors in
+that imake can generate incorrect Makefiles, leadings to errors in
 'make'. The easiest to recover is to fix the problem in the Imakefile
 or in the files in xc/config/cf/ and to re-generate the faulty
 Makefile with:
@@ -342,13 +342,13 @@ the rest of the Makefile will be added from the configuration files by
 imake. 
 
 It's better to use one directory per program or library to build. It
-will make Imakefiles simplerr to write. 
+will make Imakefiles simpler to write. 
 
-If the application has only one souce file, the Imakefile can be real
+If the application has only one source file, the Imakefile can be real
 simple. The SimpleProgramTarget() macro takes care of everything. You
 just need to specifly libraries and library dependencies with the
 DEPLIBS and LOCAL_LIBRARIES make variables. This is for instance the
-Imafile for xev:
+Imakefile for xev:
 
 ---Cut here---
         DEPLIBS = $(DEPXONLYLIB)
@@ -401,4 +401,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.2 2001/11/28 07:29:48 matthieu Exp $
+$Id: README,v 1.3 2002/01/26 21:27:54 matthieu Exp $
