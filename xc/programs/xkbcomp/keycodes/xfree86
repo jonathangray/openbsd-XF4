@@ -409,6 +409,7 @@ xkb_keycodes "abnt2" {
     <BKSL> = 94;
     <AC12> = 51;
     <KPPT> = 134;
+    <AB11> = 123;
 };
 
 xkb_keycodes "sun" {
