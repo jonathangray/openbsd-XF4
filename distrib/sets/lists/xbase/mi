@@ -120,6 +120,7 @@
 ./usr/X11R6/include/X11
 ./usr/X11R6/include/X11/bitmaps
 ./usr/X11R6/include/X11/extensions
+./usr/X11R6/include/X11/extensions/XKBui.h
 ./usr/X11R6/include/X11/fonts/codeconv
 ./usr/X11R6/include/X11/pixmaps
 ./usr/X11R6/lib
@@ -182,6 +183,7 @@
 ./usr/X11R6/lib/libXfontcache.a
 ./usr/X11R6/lib/libXft.a
 ./usr/X11R6/lib/libXinerama.a
+./usr/X11R6/lib/libXinerama.so.1.0
 ./usr/X11R6/lib/libXmu.a
 ./usr/X11R6/lib/libXmuu.a
 ./usr/X11R6/lib/libXp.a
