@@ -1,5 +1,5 @@
 /* (c) Itai Nahshon */
-#define DEBUG
+#undef DEBUG
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/alp_xaam.c,v 1.7 2001/10/01 13:44:05 eich Exp $ */
 
 #include "xf86.h"
