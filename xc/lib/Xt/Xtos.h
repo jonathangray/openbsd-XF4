@@ -67,7 +67,7 @@ SOFTWARE.
     defined(__sparc64__) || \
     defined(__s390x__) || \
     (defined(__hppa__) && defined(__LP64__)) || \
-    defined(__AMD64__) || defined(AMD64) || defined(__amd64__) || \
+    defined(__AMD64__) || defined(AMD64) || \
     (defined(sgi) && (_MIPS_SZLONG == 64))
 #define LONG64
 #endif
