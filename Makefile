@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.29 2002/08/15 15:56:41 millert Exp $
+#	$OpenBSD: Makefile,v 1.30 2002/08/26 17:25:17 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -120,7 +120,7 @@ release-install:
 	@if [ -f $(DESTDIR)/etc/X11/XF86Config ]; then \
 	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/XF86Config; \
 	else set -x; \
-	 ${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 444 \
+	 ${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 644 \
 		${XCONFIG} ${DESTDIR}/etc/X11 ; \
 	fi
 .endif
