@@ -141,8 +141,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define HasBsdMake		YES
 
+#define StripInstalledPrograms	YES
 #define BuildCyrillicFonts	YES
 #define GzipFontCompression	YES
+#define MakeLocalFontDir	YES
 #define DefaultUserPath		/bin:/usr/bin:/usr/local/bin:$(BINDIR)
 #define DefaultSystemPath	/sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
 
@@ -826,4 +828,3 @@ install:: fonts.alias							@@\
 #else
 # include <bsdLib.rules>
 #endif
-
