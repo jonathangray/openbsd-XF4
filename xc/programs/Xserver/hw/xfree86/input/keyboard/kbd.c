@@ -135,7 +135,7 @@ static const char *kbdDefaults[] = {
     "Protocol",		"standard",
     "AutoRepeat",	"500 30",
     "XkbRules",		__XKBDEFRULES__,
-    "XkbModel",		"pc101",
+    "XkbModel",		"pc105",
     "XkbLayout",	"us",
     "Panix106",		"off",
     "CustomKeycodes",	"off",
