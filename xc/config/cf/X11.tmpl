@@ -310,6 +310,9 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.93 2000/12/15 18:18:04 keithp Exp $
 #ifndef BuildXftLibrary
 #define BuildXftLibrary		BuildRenderLibrary
 #endif
+#ifndef BuildFreetype2Library
+#define BuildFreetype2Library	BuildXftLibrary
+#endif
 
 #ifndef BuildMiscDocs
 #define BuildMiscDocs		NO
@@ -2199,6 +2202,60 @@ ProjectUnsharedLibReferences(FONTSTUB,fntstubs,$(FONTSUBLIBSRC),XBuildLibDir)
 SharedLibReferences(XPM,Xpm,$(XPMLIBSRC),SOXPMREV,SharedXpmRev)
 #else
 ProjectUnsharedLibReferences(XPM,Xpm,$(XPMLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibFreetype2
+#define SharedLibFreetype2 HasSharedLibraries
+#endif
+#ifndef NormalLibFreetype2
+#define NormalLibFreetype2 (!SharedLibFreetype2 | ForceNormalLib)
+#endif
+#ifndef DebugLibFreetype2
+#define DebugLibFreetype2		NO
+#endif
+#ifndef ProfileLibFreetype2
+#define ProfileLibFreetype2		NO
+#endif
+          FREETYPE2LIBSRC = $(LIBSRC)/freetype2
+#if SharedLibFreetype2
+#ifndef SharedFreetype2Rev
+#define SharedFreetype2Rev 6.0
+#endif
+SharedLibReferences(FREETYPE2,freetype,$(FREETYPE2LIBSRC),SOFREETYPE2REV,SharedFreetype2Rev)
+#else
+ProjectUnsharedLibReferences(FREETYPE2,freetype,$(FREETYPE2LIBSRC),XBuildLibDir)
+#endif
+
+#if BuildFreetype2Library
+FREETYPE2INCLUDES=$(TOP_X_INCLUDES)/freetype2
+FREETYPE2DEFINES=-DFREETYPE2
+#define HasFreetype2	YES
+#else
+
+#ifdef Freetype2Dir
+
+#define HasFreetype2	YES
+
+#ifndef Freetype2LibDir
+#define Freetype2LibDir Freetype2Dir/lib
+#endif
+
+#ifndef Freetype2IncDir
+#define Freetype2IncDir Freetype2Dir/include/freetype2
+#endif
+
+FREETYPE2DIR = Freetype2Dir
+FREETYPE2LIBDIR = Freetype2LibDir
+FREETYPE2INCDIR = Freetype2IncDir
+FREETYPE2INCLUDES = -I$(FREETYPE2INCDIR)
+FREETYPE2LIB = -L$(FREETYPE2LIBDIR) -lfreetype
+FREETYPE2DEFINES = -DFREETYPE2
+#endif
+
+#endif
+
+#ifndef HasFreetype2
+#define HasFreetype2	NO
 #endif
 
 #ifndef SharedLibXft

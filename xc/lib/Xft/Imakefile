@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.8 2000/12/15 17:12:52 keithp Exp $
+XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.8.2.1 2001/03/12 16:03:23 keithp Exp $
 
 #define DoNormalLib NormalLibXft
 #define DoSharedLib SharedLibXft
@@ -31,7 +31,7 @@ INCLUDES=$(FREETYPE2INCLUDES)
 DEFINES=-DXFT_DEFAULT_PATH=\"$(XFTCONFIG)\" $(FREETYPE2DEFINES) $(RENDERDEFINES)
 REQUIREDLIBS=$(LDPRELIBS) $(XRENDERLIB) $(XLIB) $(FREETYPE2LIB)
 
-#ifdef Freetype2Dir
+#if HasFreetype2
 FT_HEADERS = XftFreetype.h
    FT_SRCS = xftdir.c xftfreetype.c xftglyphs.c xftrender.c
    FT_OBJS = xftdir.o xftfreetype.o xftglyphs.o xftrender.o
