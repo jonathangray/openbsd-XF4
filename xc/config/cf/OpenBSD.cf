@@ -434,7 +434,7 @@ install:: fonts.alias							@@\
 /* Support for USB Mices */
 # ifndef UsbMouseSupport
 #  if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 6)
-#   define UsbMouseSupport		YES
+#   define UsbMouseSupport	YES
 #  endif
 # endif
 
@@ -444,6 +444,10 @@ install:: fonts.alias							@@\
 #  define GccOptBug295
 # endif
 
+/* SuperProbe  should be built on OpenBSD/i386 */
+# ifndef BuildSuperProbe
+#  define BuildSuperProbe	YES
+# endif
 # include <xfree86.cf>
 
 #endif /* i386Architecture */
