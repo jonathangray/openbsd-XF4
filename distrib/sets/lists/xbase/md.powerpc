@@ -1,7 +1,6 @@
 ./etc/X11/app-defaults/Xvidtune
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/showrgb
-./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xvidtune
 ./usr/X11R6/include/X11/extensions/xf86dga.h
 ./usr/X11R6/include/X11/extensions/xf86dga1.h
@@ -272,5 +271,3 @@
 ./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/showrgb.0
-./usr/X11R6/man/cat1/xgamma.0
-./usr/X11R6/man/cat1/xvidtune.0

@@ -1,4 +1,5 @@
 ./etc/X11/app-defaults
+./etc/X11/app-defaults/Beforelight
 ./etc/X11/app-defaults/Bitmap
 ./etc/X11/app-defaults/Bitmap-color
 ./etc/X11/app-defaults/Chooser
@@ -454,10 +455,6 @@
 ./usr/X11R6/include/X11/extensions/sync.h
 ./usr/X11R6/include/X11/extensions/xf86bigfont.h
 ./usr/X11R6/include/X11/extensions/xf86bigfstr.h
-./usr/X11R6/include/X11/extensions/xf86misc.h
-./usr/X11R6/include/X11/extensions/xf86mscstr.h
-./usr/X11R6/include/X11/extensions/xf86vmode.h
-./usr/X11R6/include/X11/extensions/xf86vmstr.h
 ./usr/X11R6/include/X11/extensions/xtestext1.h
 ./usr/X11R6/include/X11/fonts
 ./usr/X11R6/include/X11/fonts/FS.h

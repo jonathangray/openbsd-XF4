@@ -1,7 +1,6 @@
 ./etc
 ./etc/X11
 ./etc/X11/XftConfig
-./etc/X11/app-defaults/Beforelight
 ./etc/X11/xdm
 ./etc/X11/xdm/Xresources
 ./etc/X11/xdm/Xservers
@@ -192,8 +191,6 @@
 ./usr/X11R6/lib/libXt.a
 ./usr/X11R6/lib/libXtst.a
 ./usr/X11R6/lib/libXv.a
-./usr/X11R6/lib/libXxf86misc.a
-./usr/X11R6/lib/libXxf86vm.a
 ./usr/X11R6/lib/libdps.a
 ./usr/X11R6/lib/libdpstk.a
 ./usr/X11R6/lib/libfntstubs.a
