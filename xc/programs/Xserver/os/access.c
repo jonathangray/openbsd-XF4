@@ -730,6 +730,7 @@ DefineSelf (int fd)
 	if (ifr->ifa_addr.sa_family == AF_DECnet) 
 	    continue;
 #endif /* DNETCONN */
+	len = sizeof(*(ifr->ifa_addr));
 	family = ConvertAddr(ifr->ifa_addr, &len, (pointer *)&addr);
 	if (family == -1 || family == FamilyLocal) 
 	    continue;
