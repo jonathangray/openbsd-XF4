@@ -326,10 +326,7 @@ OpenWriteFile(filename, mdata)
 #ifndef NO_ZPIPE
 	size_t len = strlen(filename);
 
-	if(len == 0                        ||
-	   filename[0] == '/'              ||
-	   strstr(filename, "../") != NULL ||
-	   filename[len-1] == '/')
+	if(len == 0)
 		return(XpmOpenFailed);
 
 	if (len > 2 && !strcmp(".Z", filename + (len - 2))) {
