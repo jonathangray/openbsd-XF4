@@ -1,0 +1,25 @@
+#!/bin/sh
+#	$OpenBSD: gensetlist,v 1.1 2003/04/07 16:24:06 todd Exp $
+
+arch=$MACHINE
+listsdir=`pwd`/lists
+
+setname=$1
+Release=$2
+
+if [ "$setname" = "xfont" ]; then
+        if [ "$arch" = "hp300" -o "$arch" = "pmax" ]; then
+                arch=x11r5
+        else
+                arch=x11r6
+        fi
+fi
+
+
+cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} 
+
+echo ./var/db/pkg/${setname}-${Release}
+echo ./var/db/pkg/${setname}-${Release}/+COMMENT
+echo ./var/db/pkg/${setname}-${Release}/+CONTENTS
+echo ./var/db/pkg/${setname}-${Release}/+DEINSTALL
+echo ./var/db/pkg/${setname}-${Release}/+DESCR

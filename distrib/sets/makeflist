@@ -1,26 +1,17 @@
-#!/bin/csh -f
+#!/bin/sh
+#	$OpenBSD: makeflist,v 1.5 2003/04/07 16:24:06 todd Exp $
 
-set arch=$MACHINE
-set listsdir=`pwd`/lists
+arch=$MACHINE
+Release=$1
+listsdir=`pwd`/lists
 
-set TMPFILE=/tmp/_LIST.$$
+lists="xbase xserv xshare"
 
-set lists=(xbase xserv xshare)
+if [ "$arch" != "vax" -a "$arch" != "hppa" ]; then
+	lists="$lists xfont"
+fi
 
-foreach setname ($lists)
-	cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} >>! $TMPFILE
-end
-
-if ( "$arch" != "vax" && "$arch" != "hppa" ) then
-	if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
-    		set xvers=x11r5
-	else
-    		set xvers=x11r6
-	endif
-
-	set setname=xfont
-	cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} >>! $TMPFILE
-endif
-
-sort $TMPFILE
-/bin/rm $TMPFILE
+for setname in $lists
+do
+	sh ./gensetlist $setname $Release
+done | sort

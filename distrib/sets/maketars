@@ -1,48 +1,62 @@
-#!/bin/csh -f
+#!/bin/sh
+#	$OpenBSD: maketars,v 1.5 2003/04/07 16:24:06 todd Exp $
 
-set RELEASE=$1
+# xy
+RELEASE=$1
+Release=$2
+# x.y
 
-if ( "X${RELEASE}" == "X" ) then
+if [ "X${RELEASE}" = "X" ]; then
 	echo "Usage: `basename $0` <OSREVISION>"
 	exit 1
-endif
+fi
 
-if (! $?RELEASEDIR) then
+if [ "X${RELEASEDIR}" = "X" ]; then
 	echo RELEASEDIR must be set
 	exit 1
-endif
+fi
 
-if (! $?DESTDIR) then
+if [ "X${DESTDIR}" = "X" ]; then
 	echo DESTDIR must be set
 	exit 1
-endif
+fi
 
-set arch=${MACHINE}
-set listsdir=`pwd`/lists
-set tardir=$RELEASEDIR
-set fsdir=$DESTDIR
+arch=${MACHINE}
+pwd=`pwd`
+listsdir=`pwd`/lists
+tardir=$RELEASEDIR
 
-cd $fsdir
+cd $DESTDIR
 
-set lists=(xbase xserv xshare)
+lists="xbase xserv xshare"
 
-foreach setname ($lists)
+if [ "$arch" != "vax" -a "$arch" != "hppa" ]; then
+	lists="$lists xfont"
+fi
+
+gencontents() {
+	local setname="$1"
+	echo "@name ${setname}-$Release"
+	echo "@cwd /"
+	echo "@comment subdir=XF4 cdrom=yes ftp=yes"
+	(cd $pwd; sh gensetlist $setname $Release) | while read f; do
+		[ -f "$f" ] || continue
+		echo "${f#./*}"
+		echo "@comment MD5:$(md5 < $f)"
+	done
+}
+
+for setname in $lists; do
 	echo -n "${setname}: "
-	cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} | sort | \
+	setdir=${DESTDIR}/var/db/pkg/${setname}-${Release}
+	install -d -m 755 -o root -g wheel ${setdir}
+	gencontents $setname > ${setdir}/+CONTENTS
+	echo "X11R6 $setname package for OpenBSD/$arch ${Release}" \
+		> ${setdir}/+COMMENT
+	chmod 755 ${setdir}/+DEINSTALL
+	(cd $pwd; sh gensetlist $setname $Release) | sort | \
 	    pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
 	echo    "done."
-end
-
-if ( "$arch" != "vax" && "$arch" != "hppa" ) then
-	if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
-    		set xvers=x11r5
-	else
-    		set xvers=x11r6
-	endif
-	set setname=xfont
-	echo -n "${setname}: "
-	cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} | sort | \
-    		pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
-endif
+done
 
 echo    "done."
