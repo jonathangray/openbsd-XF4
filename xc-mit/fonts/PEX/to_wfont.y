@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include <X11/Xos.h>
 #include <stdio.h>
+#include <stdlib.h>
 #ifndef L_SET
 #define L_SET SEEK_SET
 #endif
@@ -97,7 +98,6 @@ int             yyerrno;	/* error number */
 %token <nil> WIDTH
 
 %type <cval> fontname
-%type <ival> properties
 %type <dval> top bottom center right
 %type <ival> nstroke nvertice n_pts index num_ch
 %type <ival> closeflag
@@ -124,9 +124,9 @@ num_ch: NUM_CH INTEGER { set_num_ch($2);};
 fontprops : /* empty */ | properties;
 
 properties : PROPERTIES INTEGER { init_properties ($2); } property_list
-        { check_num_props (); }
+        { check_num_props (); };
 
-property_list : /* empty */ | single_property property_list
+property_list : /* empty */ | single_property property_list;
 
 single_property : STRING STRING { add_property($1, $2); };
 
@@ -154,7 +154,7 @@ right : RIGHT REAL{ $$ = $2; };
 strokes :	/* empty */ | path strokes;
 
 path : closeflag n_pts { init_path($1, $2); } points
-	{ check_npts(); }
+	{ check_npts(); };
 
 points : 	/* empty */ | coord points;
 
@@ -610,14 +610,15 @@ freeall()
 				free((char *) spath->pts.pt2df);
 		if (path->subpaths != NULL)
 			free((char *) path->subpaths);
-	free(table);
-	free(sp_table);
-	free(strokes);
 	}
-	for (i=0; i < head.num_props; i++, head.properties++) {
-	  if (head.properties != NULL)
-	    free((char *) head.properties);
-	}
+	if (table)
+		free(table);
+	if (sp_table)
+		free(sp_table);
+	if (strokes)
+		free(strokes);
+	if (head.properties != NULL)
+		free((char *) head.properties);
 }
 
 check_nstroke()
