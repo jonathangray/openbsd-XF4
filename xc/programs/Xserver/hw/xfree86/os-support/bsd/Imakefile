@@ -149,6 +149,9 @@ VIDEO_OBJ = arm_video.o
 #elif defined(SparcArchitecture) || defined(Sparc64Architecture)
 VIDEO_SRC = sparc64_video.c
 VIDEO_OBJ = sparc64_video.o
+#elif defined(HPArchitecture)
+VIDEO_SRC = hppa_video.c
+VIDEO_OBJ = hppa_video.o
 #else
 #error Unknown architecture !
 #endif
