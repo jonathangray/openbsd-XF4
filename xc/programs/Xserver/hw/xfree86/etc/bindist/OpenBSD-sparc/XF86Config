@@ -35,7 +35,7 @@ EndSection
 Section "InputDevice"
 	Identifier	"zsmouse0"
 	Driver		"mouse"
-	Option		"Protocol" "MouseSystems"
+	Option		"Protocol" "SunMouse"
 	Option		"Device" "/dev/ttyc"
 	Option		"Baudrate" "1200"
 EndSection
