@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.3 2002/06/06 18:24:47 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.4 2002/07/04 18:29:54 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -76,21 +76,27 @@ dprintf(char *format, ...)
 }
 	
 static char *
-freadline(char *line, int size, int fd)
+freadline(char *line, size_t size, int fd)
 {
 	char *p = line;
-	int n;
+	ssize_t n;
 
-	do {
+	for (;;) {
+		if (size == 0)
+			return NULL;
+
 		if ((n = read(fd, p, 1)) <= 0) {
-			dprintf("got null line n=%d state %d\n", n, state);
+			dprintf("got null line n=%zd state %d\n", n, state);
 			XtRemoveInput(inputId);
 			return NULL;
 		}
-		if (*p == '\n') break;
+		if (*p == '\n')
+			break;
+
+		size--;
 		p++;
-	} while (1);
-	
+	}
+
 	*p = '\0';
 
 	dprintf("state %d got line: %s\n", state, line);
