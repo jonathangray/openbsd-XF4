@@ -1139,8 +1139,6 @@
 ./usr/X11R6/man/cat3/gluTessProperty.0
 ./usr/X11R6/man/cat3/gluTessVertex.0
 ./usr/X11R6/man/cat3/gluUnProject.0
-./usr/X11R6/man/cat4
-./usr/X11R6/man/cat5
 ./usr/X11R6/man/cat7/Xprint.0
 ./var/db/xkb
 ./var/db/xkb/README

@@ -1,6 +1,7 @@
 ./usr/X11R6/bin/X
 ./usr/X11R6/bin/XFree86
 ./usr/X11R6/bin/Xnest
+./usr/X11R6/bin/Xorg
 ./usr/X11R6/bin/Xprt
 ./usr/X11R6/bin/Xvfb
 ./usr/X11R6/bin/getconfig
@@ -9,8 +10,11 @@
 ./usr/X11R6/bin/mmapr
 ./usr/X11R6/bin/mmapw
 ./usr/X11R6/bin/pcitweak
+./usr/X11R6/bin/xdriinfo
 ./usr/X11R6/bin/xf86cfg
 ./usr/X11R6/bin/xf86config
+./usr/X11R6/bin/xorgcfg
+./usr/X11R6/bin/xorgconfig
 ./usr/X11R6/lib/X11/XF86Config.98
 ./usr/X11R6/lib/X11/XF86Config.eg
 ./usr/X11R6/lib/X11/getconfig
@@ -128,6 +132,7 @@
 ./usr/X11R6/lib/modules/libxf4bpp.a
 ./usr/X11R6/lib/modules/libxf8_16bpp.a
 ./usr/X11R6/lib/modules/libxf8_32bpp.a
+./usr/X11R6/man/cat1/XDarwin.0
 ./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
@@ -137,6 +142,7 @@
 ./usr/X11R6/man/cat1/pcitweak.0
 ./usr/X11R6/man/cat1/xf86cfg.0
 ./usr/X11R6/man/cat1/xf86config.0
+./usr/X11R6/man/cat4/aiptek.0
 ./usr/X11R6/man/cat4/chips.0
 ./usr/X11R6/man/cat4/citron.0
 ./usr/X11R6/man/cat4/dmc.0
@@ -144,6 +150,7 @@
 ./usr/X11R6/man/cat4/elographics.0
 ./usr/X11R6/man/cat4/fbdevhw.0
 ./usr/X11R6/man/cat4/fpit.0
+./usr/X11R6/man/cat4/glide.0
 ./usr/X11R6/man/cat4/glint.0
 ./usr/X11R6/man/cat4/js_x.0
 ./usr/X11R6/man/cat4/kbd.0
@@ -152,6 +159,7 @@
 ./usr/X11R6/man/cat4/microtouch.0
 ./usr/X11R6/man/cat4/mouse.0
 ./usr/X11R6/man/cat4/mutouch.0
+./usr/X11R6/man/cat4/newport.0
 ./usr/X11R6/man/cat4/nv.0
 ./usr/X11R6/man/cat4/palmax.0
 ./usr/X11R6/man/cat4/penmount.0
@@ -160,9 +168,18 @@
 ./usr/X11R6/man/cat4/s3virge.0
 ./usr/X11R6/man/cat4/savage.0
 ./usr/X11R6/man/cat4/sis.0
+./usr/X11R6/man/cat4/sunbw2.0
+./usr/X11R6/man/cat4/suncg14.0
+./usr/X11R6/man/cat4/suncg3.0
+./usr/X11R6/man/cat4/suncg6.0
+./usr/X11R6/man/cat4/sunffb.0
+./usr/X11R6/man/cat4/sunleo.0
+./usr/X11R6/man/cat4/suntcx.0
 ./usr/X11R6/man/cat4/tdfx.0
 ./usr/X11R6/man/cat4/tek4957.0
 ./usr/X11R6/man/cat4/trident.0
+./usr/X11R6/man/cat4/ur98.0
+./usr/X11R6/man/cat4/v4l.0
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
