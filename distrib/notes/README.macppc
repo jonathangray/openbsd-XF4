@@ -22,9 +22,8 @@ Use xf86config to build a /etc/X11/XF86Config file before starting
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
-You need a kernel configured and built with 'option INSECURE' and also
-set securelvel to -1 in /etc/rc.securelevel in order to be able to use
-the XFree86 accelerated drivers.
+You need to set securelvel to -1 in /etc/rc.securelevel in order to be
+able to use the XFree86 accelerated drivers.
 
 -- Cut Here for a sample /etc/X11/XF86Config to use with the ati driver ---
 Section "ServerLayout"
