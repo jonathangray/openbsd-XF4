@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.4 2002/03/31 17:35:58 jason Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.5 2002/04/20 17:00:25 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -222,6 +222,11 @@ typedef struct {
 	Bool				shadowFB;
 	CloseScreenProcPtr		CloseScreen;
 	EntityInfoPtr			pEnt;
+	struct wsdisplay_cmap		saved_cmap;
+	unsigned char			saved_red[256];
+	unsigned char			saved_green[256];
+	unsigned char			saved_blue[256];
+	
 	/* DGA info */
 	DGAModePtr			pDGAMode;
 	int				nDGAMode;
@@ -233,6 +238,7 @@ typedef struct {
 static Bool
 WsfbGetRec(ScrnInfoPtr pScrn)
 {
+
 	if (pScrn->driverPrivate != NULL)
 		return TRUE;
 	
@@ -243,6 +249,7 @@ WsfbGetRec(ScrnInfoPtr pScrn)
 static void
 WsfbFreeRec(ScrnInfoPtr pScrn)
 {
+
 	if (pScrn->driverPrivate == NULL)
 		return;
 	xfree(pScrn->driverPrivate);
@@ -773,22 +780,50 @@ WsfbLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 {
 	WsfbPtr fPtr = WSFBPTR(pScrn);
 	struct wsdisplay_cmap cmap;
-	unsigned char red,green,blue;
-	int i;
+	unsigned char red[256],green[256],blue[256];
+	int i, indexMin=256, indexMax=0;
 
 	TRACE_ENTER("LoadPalette");
 
 	cmap.count   = 1;
-	cmap.red   = &red;
-	cmap.green = &green;
-	cmap.blue  = &blue;
-	for (i = 0; i < numColors; i++) {
-		cmap.index = indices[i];
-		red   = colors[indices[i]].red;
-		green = colors[indices[i]].green;
-		blue  = colors[indices[i]].blue;
+	cmap.red   = red;
+	cmap.green = green;
+	cmap.blue  = blue;
+	ErrorF("load palette %d\n", numColors);
+	if (numColors == 1) {
+		/* Optimisation */
+		cmap.index = indices[0];
+		red[0]   = colors[indices[0]].red;
+		green[0] = colors[indices[0]].green;
+		blue[0]  = colors[indices[0]].blue;
 		if (ioctl(fPtr->fd,WSDISPLAYIO_PUTCMAP, &cmap) == -1)
-			perror("ioctl FBIOPUTCMAP");
+			ErrorF("ioctl FBIOPUTCMAP: %s\n", strerror(errno));
+	} else {
+		/* Change all colors in 2 syscalls */
+		/* and limit the data to be transfered */
+		for (i = 0; i < numColors; i++) {
+			if (indices[i] < indexMin) 
+				indexMin = indices[i];
+			if (indices[i] > indexMax) 
+				indexMax = indices[i];
+		}
+		cmap.index = indexMin;
+		cmap.count = indexMax - indexMin + 1;
+		cmap.red = &red[indexMin];
+		cmap.green = &green[indexMin];
+		cmap.blue = &blue[indexMin];
+		/* Get current map */
+		if (ioctl(fPtr->fd, WSDISPLAYIO_GETCMAP, &cmap) == -1) 
+			ErrorF("ioctl FBIOGETCMAP: %s\n", strerror(errno));
+		/* Change the colors that require updating */
+		for (i = 0; i < numColors; i++) {
+			red[indices[i]]   = colors[indices[i]].red;
+			green[indices[i]] = colors[indices[i]].green;
+			blue[indices[i]]  = colors[indices[i]].blue;
+		}
+		/* Write the colormap back */
+		if (ioctl(fPtr->fd,WSDISPLAYIO_PUTCMAP, &cmap) == -1)
+			ErrorF("ioctl FBIOPUTCMAP: %s\n", strerror(errno));
 	}
 }
 
@@ -819,7 +854,18 @@ WsfbSaveScreen(ScreenPtr pScreen, int mode)
 static void
 WsfbSave(ScrnInfoPtr pScrn)
 {
+	WsfbPtr fPtr = WSFBPTR(pScrn);
+
 	TRACE_ENTER("WsfbSave");
+	fPtr->saved_cmap.index = 0;
+	fPtr->saved_cmap.count = 256;
+	fPtr->saved_cmap.red = fPtr->saved_red;
+	fPtr->saved_cmap.green = fPtr->saved_green;
+	fPtr->saved_cmap.blue = fPtr->saved_blue;
+	if (ioctl(fPtr->fd, WSDISPLAYIO_GETCMAP, 
+		  &(fPtr->saved_cmap)) == -1) {
+		ErrorF("error saving colormap\n");
+	}
 	
 }
 
@@ -827,30 +873,21 @@ static void
 WsfbRestore(ScrnInfoPtr pScrn)
 {
 	WsfbPtr fPtr = WSFBPTR(pScrn);
-	struct wsdisplay_cmap cmap;
-	u_char map[2];
 	int mode;
 
 	TRACE_ENTER("WsfbRestore");
+
 	/* reset colormap for text mode */
-	map[0] = 0x00;
-	cmap.index = 0;
-	cmap.count = 1;
-	cmap.red = map;
-	cmap.green = map;
-	cmap.blue = map;
-	if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP, &cmap) == -1) {
-		ErrorF("error resetting colormap\n");
+	fPtr->saved_cmap.index = 0;
+	fPtr->saved_cmap.count = 256;
+	fPtr->saved_cmap.red = fPtr->saved_red;
+	fPtr->saved_cmap.green = fPtr->saved_green;
+	fPtr->saved_cmap.blue = fPtr->saved_blue;
+	if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP, 
+		  &(fPtr->saved_cmap)) == -1) {
+		ErrorF("error restoring colormap\n");
 	}
-	map[0] = 0xFF;
-	cmap.index = 255;
-	cmap.count = 1;
-	cmap.red = map;
-	cmap.green = map;
-	cmap.blue = map;
-	if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP, &cmap) == -1) {
-		ErrorF("error resetting colormap\n");
-	}
+
 	/* Clear the screen */
 	memset(fPtr->fbmem, 0, fPtr->fbmem_len);
 
