@@ -391,7 +391,7 @@ BITMAPTYPE = sun
 PASSWDDEF = -DHAVE_SHADOW
 XCOMM  PASSWDLIB = -lshadow
 #endif
-#if defined(HPArchitecture) || defined(ApolloArchitecture)
+#if (defined(HPArchitecture) || defined(ApolloArchitecture)) && !defined(OpenBSDArchitecture)
 #ifdef HPArchitecture
 XCOMM If your site is using Secured Passwords,
 XCOMM  PASSWDDEF = -DHPUX_SECURE_PASSWD
