@@ -32,6 +32,7 @@
 ./etc/X11/app-defaults/Xman
 ./etc/X11/app-defaults/Xmessage
 ./etc/X11/app-defaults/Xmh
+./etc/X11/app-defaults/Xsystrace
 ./etc/X11/app-defaults/Xvidtune
 ./etc/X11/fs
 ./etc/X11/fs/config
@@ -496,6 +497,8 @@
 ./usr/X11R6/include/X11/pixmaps/clamp.xpm
 ./usr/X11R6/include/X11/pixmaps/colormap.xpm
 ./usr/X11R6/include/X11/pixmaps/datebook.xpm
+./usr/X11R6/include/X11/pixmaps/deny-always.xpm
+./usr/X11R6/include/X11/pixmaps/deny.xpm
 ./usr/X11R6/include/X11/pixmaps/desk.xpm
 ./usr/X11R6/include/X11/pixmaps/dialog_box.xpm
 ./usr/X11R6/include/X11/pixmaps/doomface.xpm
@@ -530,6 +533,7 @@
 ./usr/X11R6/include/X11/pixmaps/jterm.xpm
 ./usr/X11R6/include/X11/pixmaps/jwindow.xpm
 ./usr/X11R6/include/X11/pixmaps/jx.xpm
+./usr/X11R6/include/X11/pixmaps/logo.xpm
 ./usr/X11R6/include/X11/pixmaps/mag_glass.xpm
 ./usr/X11R6/include/X11/pixmaps/mail1.xpm
 ./usr/X11R6/include/X11/pixmaps/mail2.xpm
@@ -581,12 +585,15 @@
 ./usr/X11R6/include/X11/pixmaps/mini.zircon.xpm
 ./usr/X11R6/include/X11/pixmaps/page.xpm
 ./usr/X11R6/include/X11/pixmaps/page2.xpm
+./usr/X11R6/include/X11/pixmaps/permit-always.xpm
+./usr/X11R6/include/X11/pixmaps/permit.xpm
 ./usr/X11R6/include/X11/pixmaps/ps.xpm
 ./usr/X11R6/include/X11/pixmaps/question.xpm
 ./usr/X11R6/include/X11/pixmaps/rbomb.xpm
 ./usr/X11R6/include/X11/pixmaps/rcalc.xpm
 ./usr/X11R6/include/X11/pixmaps/rterm.xpm
 ./usr/X11R6/include/X11/pixmaps/side.fvwm2.xpm
+./usr/X11R6/include/X11/pixmaps/skull.xpm
 ./usr/X11R6/include/X11/pixmaps/term.xpm
 ./usr/X11R6/include/X11/pixmaps/tiff2.xpm
 ./usr/X11R6/include/X11/pixmaps/toolbox.xpm
@@ -967,6 +974,7 @@
 ./usr/X11R6/man/cat1/xsetroot.0
 ./usr/X11R6/man/cat1/xsm.0
 ./usr/X11R6/man/cat1/xstdcmap.0
+./usr/X11R6/man/cat1/xsystrace.0
 ./usr/X11R6/man/cat1/xterm.0
 ./usr/X11R6/man/cat1/xtrap.0
 ./usr/X11R6/man/cat1/xtrapchar.0
