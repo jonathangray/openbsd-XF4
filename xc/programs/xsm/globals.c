@@ -84,3 +84,4 @@ Bool		remote_allowed;
 XtAppContext	appContext;
 Widget		topLevel;
 
+XtSignalId	sig_term_id, sig_usr1_id;

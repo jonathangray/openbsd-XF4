@@ -207,7 +207,7 @@ extern void remote_start(char *restart_protocol, char *restart_machine,
 extern void sig_child_handler(void);
 extern void sig_term_handler(void);
 extern void sig_usr1_handler(void);
-extern void register_signals(void);
+extern void register_signals(XtAppContext);
 extern int execute_system_command(char *s);
 
 #ifdef XKB
