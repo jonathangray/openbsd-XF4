@@ -1,16 +1,11 @@
 #!/bin/sh
-#	$OpenBSD: makeflist,v 1.7 2004/06/22 00:37:34 matthieu Exp $
+#	$OpenBSD: makeflist,v 1.8 2004/11/11 23:01:11 todd Exp $
 
 arch=$MACHINE
 Release=$1
 listsdir=`pwd`/lists
 
-lists="xbase xetc xserv xshare"
-
-if [ "$arch" != "vax" ]; then
-	lists="$lists xfont"
-fi
-
+lists=`sh ./genlists $arch`
 for setname in $lists
 do
 	sh ./gensetlist $setname $Release
