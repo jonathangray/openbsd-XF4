@@ -1,21 +1,8 @@
 XCOMM $NetBSD: Imakefile,v 1.3 2000/12/19 01:33:53 perseant Exp $
+XCOMM $OpenBSD: Imakefile,v 1.2 2002/03/29 21:28:32 matthieu Exp $
 
 XCOMM $XConsortium: Imakefile,v 5.27 94/07/28 16:44:16 dpw Exp $
 #include <Server.tmpl>
-
-/*
-XCOMM SRCS1 =	sunInit.c \
-XCOMM 	sunCfb.c \
-XCOMM 	sunCfb24.c \
-XCOMM 	sunCursor.c \
-XCOMM 	sunFbs.c \
-XCOMM 	sunIo.c \
-XCOMM 	sunKbd.c \
-XCOMM 	sunMfb.c \
-XCOMM 	sunMouse.c\
-XCOMM 	sunGX.c \
-XCOMM 	sunKeyMap.c
-*/
 
 SRCS1 = alphaInit.c \
 	alphaFbs.c \
@@ -25,26 +12,9 @@ SRCS1 = alphaInit.c \
 	alphaMouse.c \
 	alphaKeyMap.c
 
-/* XCOMM SRCS =	$(SRCS1) kbd_mode.c constype.c */
-
 SRCS =	$(SRCS1)
 
-/* XCOMM OFILES = sunInit.o sunInitMono.o sunInExMono.o sunInitMulti.o */
-
 OFILES = alphaInit.o
-
-/*
-XCOMM OBJS = 	sunCfb.o \
-XCOMM 	sunCfb24.o \
-XCOMM 	sunCursor.o \
-XCOMM 	sunFbs.o \
-XCOMM 	sunIo.o \
-XCOMM 	sunKbd.o \
-XCOMM 	sunMfb.o \
-XCOMM 	sunMouse.o \
-XCOMM 	sunGX.o \
-XCOMM 	sunKeyMap.o
-*/
 
 OBJS =	alphaFbs.o \
 	alphaIo.o \
@@ -57,12 +27,7 @@ OBJS =	alphaFbs.o \
 	      -I$(SERVERSRC)/include -I$(SERVERSRC)/os \
 	      -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
-#   LINTLIBS = ../../dix/llib-ldix.ln ../../os/llib-los.ln \
-#	      ../mfb/llib-lmfb.ln ../mi/llib-lmi.ln ../cfb/llib-lcfb.ln
-
 NormalLibraryObjectRule()
-
-/* XCOMM all:: $(OFILES) kbd_mode constype */
 
 #define IHaveSubdirs
 
@@ -74,18 +39,8 @@ SUBDIRS = tga
 
 all:: $(OFILES)
 
-lintlib:
-
 NormalLibraryTarget(alpha,$(OBJS))
 NormalLintTarget($(SRCS1))
-
-/* SingleProgramTarget(kbd_mode, kbd_mode.o,,) */
-/* SingleProgramTarget(constype, constype.o,,) */
-/* InstallProgram(kbd_mode,$(BINDIR)) */
-/* InstallProgram(constype,$(BINDIR)) */
-/* InstallManPage(kbd_mode,$(MANDIR)) */
-/* InstallManPage(constype,$(MANDIR)) */
-/* InstallManPage(XalphaNetBSD,$(MANDIR)) */
 
 DependTarget()
 MakeSubdirs($(SUBDIRS))
