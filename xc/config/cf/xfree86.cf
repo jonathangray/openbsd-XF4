@@ -220,6 +220,9 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 #ifndef HasGlide2
 #define HasGlide2 NO
 #endif
+#ifndef HasGlide3
+#define HasGlide3 NO
+#endif
 #if HasGlide2 && DoLoadableServer
 #define GlideDriver glide
 #else
