@@ -73,6 +73,7 @@
 ./usr/X11R6/lib/modules/drivers/r128_drv.o
 ./usr/X11R6/lib/modules/drivers/radeon_drv.o
 ./usr/X11R6/lib/modules/drivers/rendition_drv.o
+./usr/X11R6/lib/modules/drivers/s3_drv.o
 ./usr/X11R6/lib/modules/drivers/s3virge_drv.o
 ./usr/X11R6/lib/modules/drivers/savage_drv.o
 ./usr/X11R6/lib/modules/drivers/siliconmotion_drv.o
@@ -89,9 +90,8 @@
 ./usr/X11R6/lib/modules/extensions/libdbe.a
 ./usr/X11R6/lib/modules/extensions/libextmod.a
 ./usr/X11R6/lib/modules/extensions/libglx.a
-./usr/X11R6/lib/modules/extensions/libpex5.a
 ./usr/X11R6/lib/modules/extensions/librecord.a
-./usr/X11R6/lib/modules/extensions/libxie.a
+./usr/X11R6/lib/modules/extensions/libxtrap.a
 ./usr/X11R6/lib/modules/fonts
 ./usr/X11R6/lib/modules/fonts/libbitmap.a
 ./usr/X11R6/lib/modules/fonts/libfreetype.a
@@ -99,13 +99,17 @@
 ./usr/X11R6/lib/modules/fonts/libtype1.a
 ./usr/X11R6/lib/modules/fonts/libxtt.a
 ./usr/X11R6/lib/modules/input
+./usr/X11R6/lib/modules/input/calcomp_drv.o
 ./usr/X11R6/lib/modules/input/citron_drv.o
 ./usr/X11R6/lib/modules/input/digitaledge_drv.o
+./usr/X11R6/lib/modules/input/dmc_drv.o
 ./usr/X11R6/lib/modules/input/dynapro_drv.o
 ./usr/X11R6/lib/modules/input/elographics_drv.o
+./usr/X11R6/lib/modules/input/hyperpen_drv.o
 ./usr/X11R6/lib/modules/input/microtouch_drv.o
 ./usr/X11R6/lib/modules/input/mouse_drv.o
 ./usr/X11R6/lib/modules/input/mutouch_drv.o
+./usr/X11R6/lib/modules/input/penmount_drv.o
 ./usr/X11R6/lib/modules/input/spaceorb_drv.o
 ./usr/X11R6/lib/modules/input/summa_drv.o
 ./usr/X11R6/lib/modules/input/usbtablet_drv.o
@@ -120,6 +124,7 @@
 ./usr/X11R6/lib/modules/libfb.a
 ./usr/X11R6/lib/modules/libi2c.a
 ./usr/X11R6/lib/modules/libint10.a
+./usr/X11R6/lib/modules/liblayer.a
 ./usr/X11R6/lib/modules/libmfb.a
 ./usr/X11R6/lib/modules/libpcidata.a
 ./usr/X11R6/lib/modules/librac.a
@@ -170,6 +175,7 @@
 ./usr/X11R6/man/cat4/cirrus.0
 ./usr/X11R6/man/cat4/citron.0
 ./usr/X11R6/man/cat4/cyrix.0
+./usr/X11R6/man/cat4/dmc.0
 ./usr/X11R6/man/cat4/dynapro.0
 ./usr/X11R6/man/cat4/elographics.0
 ./usr/X11R6/man/cat4/fbdev.0
@@ -184,6 +190,7 @@
 ./usr/X11R6/man/cat4/mutouch.0
 ./usr/X11R6/man/cat4/neomagic.0
 ./usr/X11R6/man/cat4/nv.0
+./usr/X11R6/man/cat4/penmount.0
 ./usr/X11R6/man/cat4/r128.0
 ./usr/X11R6/man/cat4/rendition.0
 ./usr/X11R6/man/cat4/s3virge.0
