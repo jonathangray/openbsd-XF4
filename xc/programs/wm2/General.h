@@ -10,12 +10,11 @@
 #undef _POSIX_SOURCE
 #endif
 
-#define _POSIX_SOURCE 1
-
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -29,7 +28,7 @@
 // True and False are defined in Xlib.h
 typedef char Boolean;
 
-#define NewString(x) (strcpy((char *)malloc(strlen(x)+1),(x)))
+#define NewString(x) (strdup(x))
 
 #ifndef SIGNAL_CALLBACK_TYPE
 #define SIGNAL_CALLBACK_TYPE (void (*)(int))

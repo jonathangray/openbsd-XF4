@@ -189,11 +189,11 @@ void Border::fixTabHeight(int maxHeight)
     m_tabHeight = XRotTextWidth(m_tabFont, m_label, len) + 6 + m_tabWidth;
     if (m_tabHeight <= maxHeight) return;
 
-    char *newLabel = (char *)malloc(len + 3);
+    char *newLabel = (char *)malloc(len + 4);
 
     do {
-	strncpy(newLabel, m_label, len - 1);
-	strcpy(newLabel + len - 1, "...");
+	strlcpy(newLabel, m_label, len + 4);
+	strlcat(newLabel, "...", len + 4);
 	m_tabHeight = XRotTextWidth(m_tabFont, newLabel,
 				    strlen(newLabel)) + 6 + m_tabWidth;
 	--len;

@@ -327,7 +327,7 @@ void WindowManager::menu(XButtonEvent *e)
 void WindowManager::showGeometry(int x, int y)
 {
     char string[20];
-    sprintf(string, "%d %d\n", x, y);
+    snprintf(string, sizeof(string), "%d %d\n", x, y);
     int width = XTextWidth(m_menuFont, string, strlen(string)) + 8;
     int height = m_menuFont->ascent + m_menuFont->descent + 8;
     int mx = DisplayWidth (display(), m_screenNumber) - 1;

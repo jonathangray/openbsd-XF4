@@ -40,17 +40,19 @@ static char *my_strtok(char *, char *);
 static char *my_strdup(char *str)
 {
   char *s;
+  size_t len;
 
   if (str == NULL) return NULL;
 
-  s = (char *)malloc((unsigned)(strlen(str)+1));
+  len = strlen(str) + 1;
+  s = (char *)malloc(len);
   /* this error is highly unlikely ... */
   if (s == NULL) {
     fprintf(stderr, "Fatal error: my_strdup(): Couldn't do malloc (gulp!)\n");
     exit(1); 
   }
 
-  strcpy(s, str);
+  strlcpy(s, str, len);
   return s;
 }
 
@@ -228,7 +230,7 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
       XFillRectangle(dpy, canvas, font_gc, 0, 0, boxlen, boxlen);
 
       /* draw the character centre top right on canvas ... */
-      sprintf(text, "%c", ichar);
+      snprintf(text, sizeof(text), "%c", ichar);
       XSetForeground(dpy, font_gc, on);
       XDrawImageString(dpy, canvas, font_gc, boxlen/2 - lbearing,
 		       boxlen/2 - descent, text, 1);
