@@ -663,7 +663,7 @@ install:: fonts.alias							@@\
 # define BuildXF86VidModeExt	NO
 # define BuildXF86DGA		NO
 # define BuildXInputExt		NO
-# define BuildRender            NO
+# define BuildRender            YES
 # include <xfree86.cf>
 
 #endif /* SparcArchitecture */

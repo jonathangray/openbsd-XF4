@@ -62,7 +62,7 @@ NormalLintTarget($(SRCS1))
 
 #ifndef i386Architecture
 sunInExMono.o: $(ICONFIGFILES)
-ObjectFromSpecialSource(sunInExMono,../../mi/miinitext,-I$(EXTINCSRC) $(EXT_DEFINES) -UPEXEXT -UGLXEXT)
+ObjectFromSpecialSource(sunInExMono,../../mi/miinitext,-I$(EXTINCSRC) $(EXT_DEFINES) -UPEXEXT -UGLXEXT -UXV -UXF86BIGFONT -UXF86MISC -URENDER)
 ObjectFromSpecialSource(sunInitMono,sunInit,-DSUNMAXDEPTH=1)
 ObjectFromSpecialSource(sunInitMulti,sunInit,-DSUNMAXDEPTH=32)
 #endif
