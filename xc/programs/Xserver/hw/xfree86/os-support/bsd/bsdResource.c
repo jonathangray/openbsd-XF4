@@ -11,7 +11,7 @@
 #define NEED_OS_RAC_PROTOS
 #include "xf86_OSlib.h"
 
-#ifdef __alpha__
+#if defined(__alpha__) || defined(__sparc64__)
 #include <sys/param.h>
 #include <sys/sysctl.h>
 

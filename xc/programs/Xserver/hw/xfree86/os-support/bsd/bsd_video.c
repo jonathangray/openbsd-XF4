@@ -879,7 +879,7 @@ xf86DisableInterrupts()
 {
 
 #if !defined(__mips__) && !defined(__arm32__) && !defined(__alpha__) && \
-    !defined(__powerpc__)
+    !defined(__powerpc__) && !defined(__sparc__)
 #ifdef __GNUC__
 	__asm__ __volatile__("cli");
 #else 
@@ -895,7 +895,7 @@ xf86EnableInterrupts()
 {
 
 #if !defined(__mips__) && !defined(__arm32__) && !defined(__alpha__) && \
-    !defined(__powerpc__)
+    !defined(__powerpc__) && !defined(__sparc__)
 #ifdef __GNUC__
 	__asm__ __volatile__("sti");
 #else 
