@@ -1,5 +1,5 @@
 /* $Xorg: Clock.c,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $ */
-/* $OpenBSD: Clock.c,v 1.2 2003/05/07 21:53:11 matthieu Exp $ */
+/* $OpenBSD: Clock.c,v 1.3 2004/02/13 22:41:23 matthieu Exp $ */
 
 /***********************************************************
 
@@ -47,7 +47,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xclock/Clock.c,v 3.24 2002/10/21 13:33:07 alanh Exp $ */
+/* $XFree86: xc/programs/xclock/Clock.c,v 3.26 2003/10/25 00:52:37 dawes Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
@@ -134,15 +134,15 @@ static XtResource resources[] = {
     {XtNforeground, XtCForeground, XtRXftColor, sizeof(XftColor),
         offset(fg_color), XtRString, XtDefaultForeground},
     {XtNhourColor, XtCForeground, XtRXftColor, sizeof(XftColor),
-	offset(hour_color), XtRString, "rgba:7f/00/00/c0"},
+	offset(hour_color), XtRString, XtDefaultForeground},
     {XtNminuteColor, XtCForeground, XtRXftColor, sizeof(XftColor),
-	offset(min_color), XtRString, "rgba:00/7f/7f/c0"},
+	offset(min_color), XtRString, XtDefaultForeground},
     {XtNsecondColor, XtCForeground, XtRXftColor, sizeof(XftColor),
-	offset(sec_color), XtRString, "rgba:00/00/ff/80"},
+	offset(sec_color), XtRString, XtDefaultForeground},
     {XtNmajorColor, XtCForeground, XtRXftColor, sizeof(XftColor),
-	offset(major_color), XtRString, "rgba:7f/00/00/c0"},
+	offset(major_color), XtRString, XtDefaultForeground},
     {XtNminorColor, XtCForeground, XtRXftColor, sizeof(XftColor),
-	offset(minor_color), XtRString, "rgba:00/7f/7f/c0"},
+	offset(minor_color), XtRString, XtDefaultForeground},
     {XtNface, XtCFace, XtRXftFont, sizeof (XftFont *),
 	offset (face), XtRString, ""},
 #endif
@@ -564,7 +564,7 @@ Initialize (Widget request, Widget new, ArgList args, Cardinal *num_args)
 #endif
 }
 
-#if XRENDER
+#ifdef XRENDER
 static void
 RenderPrepare (ClockWidget  w, XftColor *color)
 {

@@ -1,16 +1,49 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Init.c,v 3.198 2003/02/26 09:21:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Init.c,v 3.212 2004/01/27 01:31:45 dawes Exp $ */
 
 /*
- * Copyright 1991-1999 by The XFree86 Project, Inc.
- *
  * Loosely based on code bearing the following copyright:
  *
  *   Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  */
+/*
+ * Copyright (c) 1992-2003 by The XFree86 Project, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the name of the copyright holder(s)
+ * and author(s) shall not be used in advertising or otherwise to promote
+ * the sale, use or other dealings in this Software without prior written
+ * authorization from the copyright holder(s) and author(s).
+ */
 
 #include <stdlib.h>
 
+#undef HAS_UTSNAME
+#if !defined(WIN32) && !defined(__UNIXOS2__)
+#define HAS_UTSNAME 1
+#include <sys/utsname.h>
+#endif
+
 #define NEED_EVENTS
+#ifdef __UNIXOS2__
+#define I_NEED_OS2_H
+#endif
 #include "X.h"
 #include "Xmd.h"
 #include "Xproto.h"
@@ -126,7 +159,7 @@ xf86CreateRootWindow(WindowPtr pWin)
   int ret = TRUE;
   int err = Success;
   ScreenPtr pScreen = pWin->drawable.pScreen;
-  PropertyPtr pRegProp, pOldRegProp;
+  RootWinPropPtr pProp;
   CreateWindowProcPtr CreateWindow =
     (CreateWindowProcPtr)(pScreen->devPrivates[xf86CreateRootWindowIndex].ptr);
 
@@ -138,7 +171,8 @@ xf86CreateRootWindow(WindowPtr pWin)
     /* Can't find hook we are hung on */
 	xf86DrvMsg(pScreen->myNum, X_WARNING /* X_ERROR */,
 		  "xf86CreateRootWindow %p called when not in pScreen->CreateWindow %p n",
-		   xf86CreateRootWindow, pScreen->CreateWindow );
+		   (void *)xf86CreateRootWindow,
+		   (void *)pScreen->CreateWindow );
   }
 
   /* Unhook this function ... */
@@ -151,25 +185,19 @@ xf86CreateRootWindow(WindowPtr pWin)
   }
 
   /* Now do our stuff */
-
   if (xf86RegisteredPropertiesTable != NULL) {
     if (pWin->parent == NULL && xf86RegisteredPropertiesTable != NULL) {
-      for (pRegProp = xf86RegisteredPropertiesTable[pScreen->myNum];
-	   pRegProp != NULL && err==Success;
-	   pRegProp = pRegProp->next )
+      for (pProp = xf86RegisteredPropertiesTable[pScreen->myNum];
+	   pProp != NULL && err==Success;
+	   pProp = pProp->next )
 	{
-	  Atom oldNameAtom = pRegProp->propertyName;
-	  char *nameString;
-	  /* propertyName was created before the screen existed,
-	   * so the atom does not belong to any screen;
-	   * we need to create a new atom with the same name.
-	   */
-	  nameString = NameForAtom(oldNameAtom);
-	  pRegProp->propertyName = MakeAtom(nameString, strlen(nameString), TRUE);
+	  Atom prop;
+
+	  prop = MakeAtom(pProp->name, strlen(pProp->name), TRUE);
 	  err = ChangeWindowProperty(pWin,
-				     pRegProp->propertyName, pRegProp->type,
-				     pRegProp->format, PropModeReplace,
-				     pRegProp->size, pRegProp->data,
+				     prop, pProp->type,
+				     pProp->format, PropModeReplace,
+				     pProp->size, pProp->data,
 				     FALSE
 				     );
 	}
@@ -177,17 +205,10 @@ xf86CreateRootWindow(WindowPtr pWin)
       /* Look at err */
       ret &= (err==Success);
       
-      /* free memory */
-      pOldRegProp = xf86RegisteredPropertiesTable[pScreen->myNum];
-      while (pOldRegProp!=NULL) { 	
-	pRegProp = pOldRegProp->next;
-	xfree(pOldRegProp);
-	pOldRegProp = pRegProp;
-      }  
-      xf86RegisteredPropertiesTable[pScreen->myNum] = NULL;
     } else {
       xf86Msg(X_ERROR, "xf86CreateRootWindow unexpectedly called with "
-	      "non-root window %p (parent %p)\n", pWin, pWin->parent);
+	      "non-root window %p (parent %p)\n",
+	      (void *)pWin, (void *)pWin->parent);
       ret = FALSE;
     }
   }
@@ -206,6 +227,46 @@ xf86CreateRootWindow(WindowPtr pWin)
  *      collecting the pixmap formats.
  */
 
+static void
+PostConfigInit(void)
+{
+    /*
+     * Install signal handler for unexpected signals
+     */
+    xf86Info.caughtSignal=FALSE;
+    if (!xf86Info.notrapSignals) {
+       signal(SIGSEGV,xf86SigHandler);
+       signal(SIGILL,xf86SigHandler);
+#ifdef SIGEMT
+       signal(SIGEMT,xf86SigHandler);
+#endif
+       signal(SIGFPE,xf86SigHandler);
+#ifdef SIGBUS
+       signal(SIGBUS,xf86SigHandler);
+#endif
+#ifdef SIGSYS
+       signal(SIGSYS,xf86SigHandler);
+#endif
+#ifdef SIGXCPU
+       signal(SIGXCPU,xf86SigHandler);
+#endif
+#ifdef SIGXFSZ
+       signal(SIGXFSZ,xf86SigHandler);
+#endif
+#ifdef MEMDEBUG
+       signal(SIGUSR2,xf86SigMemDebug);
+#endif
+    }
+
+    xf86OSPMClose = xf86OSPMOpen();
+    
+    /* Run an external VT Init program if specified in the config file */
+    xf86RunVtInit();
+
+    /* Do this after XF86Config is read (it's normally in OsInit()) */
+    OsInitColors();
+}
+
 void
 InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 {
@@ -219,6 +280,7 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
   Pix24Flags		 screenpix24, pix24;
   MessageType		 pix24From = X_DEFAULT;
   Bool			 pix24Fail = FALSE;
+  Bool			 autoconfig = FALSE;
   
 #ifdef __UNIXOS2__
   os2ServerVideoAccess();  /* See if we have access to the screen before doing anything */
@@ -231,7 +293,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
       xf86ScreenIndex = AllocateScreenPrivateIndex();
       xf86CreateRootWindowIndex = AllocateScreenPrivateIndex();
       xf86PixmapIndex = AllocatePixmapPrivateIndex();
-      xf86RegisteredPropertiesTable=NULL;
       generation = serverGeneration;
   }
 
@@ -261,51 +322,20 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 
     /* Read and parse the config file */
     if (!xf86DoProbe && !xf86DoConfigure) {
-      if (!xf86HandleConfigFile()) {
-	xf86Msg(X_ERROR, "Error from xf86HandleConfigFile()\n");
+      switch (xf86HandleConfigFile(FALSE)) {
+      case CONFIG_OK:
+	break;
+      case CONFIG_PARSE_ERROR:
+	xf86Msg(X_ERROR, "Error parsing the config file\n");
 	return;
+      case CONFIG_NOFILE:
+	autoconfig = TRUE;
+	break;
       }
     }
 
-    /*
-     * Install signal handler for unexpected signals
-     */
-    xf86Info.caughtSignal=FALSE;
-    if (!xf86Info.notrapSignals) {
-       signal(SIGSEGV,xf86SigHandler);
-       signal(SIGILL,xf86SigHandler);
-#ifdef SIGEMT
-       signal(SIGEMT,xf86SigHandler);
-#endif
-       signal(SIGFPE,xf86SigHandler);
-#ifdef SIGBUS
-       signal(SIGBUS,xf86SigHandler);
-#endif
-#ifdef SIGSYS
-       signal(SIGSYS,xf86SigHandler);
-#endif
-#ifdef SIGXCPU
-       signal(SIGXCPU,xf86SigHandler);
-#endif
-#ifdef SIGXFSZ
-       signal(SIGXFSZ,xf86SigHandler);
-#endif
-#ifdef MEMDEBUG
-       signal(SIGUSR2,xf86SigMemDebug);
-#endif
-    }
-
-    xf86OpenConsole();
-    xf86OSPMClose = xf86OSPMOpen();
-    
-    /* Run an external VT Init program if specified in the config file */
-    xf86RunVtInit();
-
-    /* Do this after XF86Config is read (it's normally in OsInit()) */
-    OsInitColors();
-
-    /* Enable full I/O access */
-    xf86EnableIO();
+    if (!autoconfig)
+	PostConfigInit();
 
 #ifdef XFree86LOADER
     /* Initialise the loader */
@@ -353,6 +383,11 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     
 #endif
 
+    xf86OpenConsole();
+
+    /* Enable full I/O access */
+    xf86EnableIO();
+
     /* Do a general bus probe.  This will be a PCI probe for x86 platforms */
     xf86BusProbe();
 
@@ -361,6 +396,14 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 
     if (xf86DoConfigure)
 	DoConfigure();
+
+    if (autoconfig) {
+	if (!xf86AutoConfig()) {
+	    xf86Msg(X_ERROR, "Auto configuration failed\n");
+	    return;
+	}
+	PostConfigInit();
+    }
 
     /* Initialise the resource broker */
     xf86ResourceBrokerInit();
@@ -601,7 +644,7 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     /* XXX Should this be before or after loading dependent modules? */
     if (xf86ProbeOnly)
     {
-      OsCleanup();
+      OsCleanup(TRUE);
       AbortDDX();
       fflush(stderr);
       exit(0);
@@ -695,6 +738,32 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     }
     formatsDone = TRUE;
 
+    if (xf86Info.vtno >= 0 ) {
+#define VT_ATOM_NAME         "XFree86_VT"
+      Atom VTAtom=-1;
+      CARD32  *VT = NULL;
+      int  ret;
+
+      /* This memory needs to stay available until the screen has been
+	 initialized, and we can create the property for real.
+      */
+      if ( (VT = xalloc(sizeof(CARD32)))==NULL ) {
+	FatalError("Unable to make VT property - out of memory. Exiting...\n");
+      }
+      *VT = xf86Info.vtno;
+    
+      VTAtom = MakeAtom(VT_ATOM_NAME, sizeof(VT_ATOM_NAME), TRUE);
+
+      for (i = 0, ret = Success; i < xf86NumScreens && ret == Success; i++) {
+	ret = xf86RegisterRootWindowProperty(xf86Screens[i]->scrnIndex,
+					     VTAtom, XA_INTEGER, 32, 
+					     1, VT );
+	if (ret != Success)
+	  xf86DrvMsg(xf86Screens[i]->scrnIndex, X_WARNING,
+		     "Failed to register VT property\n");
+      }
+    }
+
     /* If a screen uses depth 24, show what the pixmap format is */
     for (i = 0; i < xf86NumScreens; i++) {
 	if (xf86Screens[i]->depth == 24) {
@@ -747,7 +816,7 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     if (xf86OSPMClose)
         xf86OSPMClose();
     if ((xf86OSPMClose = xf86OSPMOpen()) != NULL)
-	xf86MsgVerb(3,X_INFO,"APM registered successfully\n");
+	xf86MsgVerb(X_INFO, 3, "APM registered successfully\n");
 
     /* Make sure full I/O access is enabled */
     xf86EnableIO();
@@ -833,6 +902,9 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 #else
 	xf86Screens[i]->SetDGAMode = NULL;
 #endif
+	xf86Screens[i]->DPMSSet = NULL;
+	xf86Screens[i]->LoadPalette = NULL; 
+	xf86Screens[i]->SetOverscan = NULL;
 	scr_index = AddScreen(xf86Screens[i]->ScreenInit, argc, argv);
       if (scr_index == i) {
 	/*
@@ -1052,7 +1124,7 @@ InitInput(argc, argv)
  *      OS/Vendor-specific initialisations.  Called from OsInit(), which
  *      is called by dix before establishing the well known sockets.
  */
- 
+
 #ifdef __OpenBSD__
 extern void xf86DropPriv(char *);
 extern void xf86PrivilegedInit(void);
@@ -1218,6 +1290,26 @@ OsVendorFatalError()
   ErrorF("\n");
 }
 
+int
+xf86SetVerbosity(int verb)
+{
+    int save = xf86Verbose;
+
+    xf86Verbose = verb;
+    LogSetParameter(XLOG_VERBOSITY, verb);
+    return save;
+}
+
+int
+xf86SetLogVerbosity(int verb)
+{
+    int save = xf86LogVerbose;
+
+    xf86LogVerbose = verb;
+    LogSetParameter(XLOG_FILE_VERBOSITY, verb);
+    return save;
+}
+
 /*
  * ddxProcessArgument --
  *	Process device-dependent command line args. Returns 0 if argument is
@@ -1236,19 +1328,6 @@ ddxProcessArgument(int argc, char **argv, int i)
    * Note: can't use xalloc/xfree here because OsInit() hasn't been called
    * yet.  Use malloc/free instead.
    */
-
-#ifdef DDXOSVERRORF
-  static Bool beenHere = FALSE;
-
-  if (!beenHere) {
-    /*
-     * This initialises our hook into VErrorF() for catching log messages
-     * that are generated before OsInit() is called.
-     */
-    OsVendorVErrorFProc = OsVendorVErrorF;
-    beenHere = TRUE;
-  }
-#endif
 
   /* First the options that are only allowed for root */
   if (getuid() == 0)
@@ -1371,11 +1450,11 @@ ddxProcessArgument(int argc, char **argv, int i)
       val = strtol(argv[i], &end, 0);
       if (*end == '\0')
       {
-	xf86Verbose = val;
+	xf86SetVerbosity(val);
 	return 2;
       }
     }
-    xf86Verbose++;
+    xf86SetVerbosity(++xf86Verbose);
     return 1;
   }
   if (!strcmp(argv[i],"-logverbose"))
@@ -1387,16 +1466,16 @@ ddxProcessArgument(int argc, char **argv, int i)
       val = strtol(argv[i], &end, 0);
       if (*end == '\0')
       {
-	xf86LogVerbose = val;
+	xf86SetLogVerbosity(val);
 	return 2;
       }
     }
-    xf86LogVerbose++;
+    xf86SetLogVerbosity(++xf86LogVerbose);
     return 1;
   }
   if (!strcmp(argv[i],"-quiet"))
   {
-    xf86Verbose = 0;
+    xf86SetVerbosity(0);
     return 1;
   }
   if (!strcmp(argv[i],"-showconfig") || !strcmp(argv[i],"-version"))
@@ -1701,7 +1780,17 @@ xf86PrintBanner()
   ErrorF("X Protocol Version %d, Revision %d, %s\n",
          X_PROTOCOL, X_PROTOCOL_REVISION, XORG_RELEASE );
   ErrorF("Build Operating System:%s%s\n", OSNAME, OSVENDOR);
-#ifdef BUILD_DATE
+#ifdef HAS_UTSNAME
+  {
+    struct utsname name;
+
+    if (uname(&name) == 0) {
+      ErrorF("Current Operating System: %s %s %s %s %s\n",
+	name.sysname, name.nodename, name.release, name.version, name.machine);
+    }
+  }
+#endif
+#if defined(BUILD_DATE) && (BUILD_DATE > 19000000)
   {
     struct tm t;
     char buf[100];
@@ -1713,6 +1802,20 @@ xf86PrintBanner()
     t.tm_year = BUILD_DATE / 10000 - 1900;
     if (strftime(buf, sizeof(buf), "%d %B %Y", &t))
        ErrorF("Build Date: %s\n", buf);
+  }
+#endif
+#if defined(CLOG_DATE) && (CLOG_DATE > 19000000)
+  {
+    struct tm t;
+    char buf[100];
+
+    bzero(&t, sizeof(t));
+    bzero(buf, sizeof(buf));
+    t.tm_mday = CLOG_DATE % 100;
+    t.tm_mon = (CLOG_DATE / 100) % 100 - 1;
+    t.tm_year = CLOG_DATE / 10000 - 1900;
+    if (strftime(buf, sizeof(buf), "%d %B %Y", &t))
+       ErrorF("Changelog Date: %s\n", buf);
   }
 #endif
 #if defined(BUILDERSTRING)
@@ -1728,17 +1831,7 @@ xf86PrintBanner()
 static void
 xf86PrintMarkers()
 {
-    /* Show what the marker symbols mean */
-  ErrorF("Markers: " X_PROBE_STRING " probed, "
-		     X_CONFIG_STRING " from config file, "
-		     X_DEFAULT_STRING " default setting,\n"
-	 "         " X_CMDLINE_STRING " from command line, "
-		     X_NOTICE_STRING " notice, "
-		     X_INFO_STRING " informational,\n"
-	 "         " X_WARNING_STRING " warning, "
-		     X_ERROR_STRING " error, "
-		     X_NOT_IMPLEMENTED_STRING " not implemented, "
-		     X_UNKNOWN_STRING " unknown.\n");
+  LogPrintMarkers();
 }
 
 static void

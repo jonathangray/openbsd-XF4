@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/os/auth.c,v 1.12 2002/12/09 02:56:03 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/auth.c,v 1.14 2003/08/27 19:57:21 herrb Exp $ */
 
 /*
  * authorization hooks for the server
@@ -128,30 +128,19 @@ InitAuthorization (char *file_name)
     authorization_file = file_name;
 }
 
-int
+static int
 LoadAuthorization (void)
 {
     FILE    *f;
     Xauth   *auth;
     int	    i;
     int	    count = 0;
-#if !defined(WIN32) && !defined(__UNIXOS2__)
-    char    *buf;
-#endif
 
     ShouldLoadAuth = FALSE;
     if (!authorization_file)
 	return 0;
-#if !defined(WIN32) && !defined(__UNIXOS2__)
-    buf = xalloc (strlen(authorization_file) + 5);
-    if (!buf)
-	return -1;
-    sprintf (buf, "cat %s", authorization_file);
-    f = Popen (buf, "r");
-    xfree (buf);
-#else
-    f = fopen (authorization_file, "r");
-#endif
+
+    f = Fopen (authorization_file, "r");
     if (!f)
 	return -1;
 
@@ -169,12 +158,7 @@ LoadAuthorization (void)
 	XauDisposeAuth (auth);
     }
 
-#if !defined(WIN32) && !defined(__UNIXOS2__)
-    if (Pclose (f) != 0)
-	return -1;
-#else
-    fclose (f);
-#endif
+    Fclose (f);
     return count;
 }
 
@@ -376,7 +360,6 @@ GenerateAuthorization(
    than that shipped with some systems.
    This code is taken from the C standard. */
 
-#ifndef ARC4_RANDOM
 static unsigned long int next = 1;
 
 static int
@@ -391,12 +374,10 @@ xdm_srand(unsigned int seed)
 {
     next = seed;
 }
-#endif
 
 void
 GenerateRandomData (int len, char *buf)
 {
-#ifndef ARC4_RANDOM
     static int seed;
     int value;
     int i;
@@ -410,15 +391,6 @@ GenerateRandomData (int len, char *buf)
     }
 
     /* XXX add getrusage, popen("ps -ale") */
-#else
-    u_int32_t *rnd = (u_int32_t *)buf;
-    int i;
-
-    for (i = 0; i < len; i += 4)
-	rnd[i / 4] = arc4random();
-    for (i = (len / 4) * 4; i < len; i++)
-	buf[i] = arc4random() & 0xff;
-#endif    
 }
 
 #endif /* XCSECURITY */

@@ -1,8 +1,8 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_axp.c,v 1.2 2002/10/29 23:19:13 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_axp.c,v 1.3 2003/10/07 22:33:37 herrb Exp $ */
 
 
 
-/* $OpenBSD: bsd_axp.c,v 1.5 2003/04/01 22:36:52 matthieu Exp $ */
+/* $OpenBSD: bsd_axp.c,v 1.6 2004/02/13 22:41:21 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"

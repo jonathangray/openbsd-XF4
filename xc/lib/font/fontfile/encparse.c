@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/fontfile/encparse.c,v 1.18 2001/11/02 03:06:40 dawes Exp $ */
+/* $XFree86: xc/lib/font/fontfile/encparse.c,v 1.20 2004/02/11 21:11:19 dawes Exp $ */
 
 /* Parser for encoding files */
 
@@ -31,6 +31,10 @@ THE SOFTWARE.
 
 #include <string.h>
 #include <stdio.h>
+
+#ifdef SCO325
+#include <strings.h>
+#endif
 
 #ifndef FONTENC_NO_LIBFONT
 

@@ -32,7 +32,7 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
-/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.3 2002/01/07 19:40:49 dawes Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.5 2003/10/07 21:25:37 herrb Exp $ */
 
 /*
  * The code related to FOR_MSW has been added by
@@ -767,7 +767,6 @@ XpmCreateImageFromXpmImage(display, image,
     unsigned int depth;
     int bitmap_format;
     XpmFreeColorsFunc freeColors;
-    void *closure;
 
     /* variables to return */
     XImage *ximage = NULL;
@@ -814,10 +813,6 @@ XpmCreateImageFromXpmImage(display, image,
 	freeColors = attributes->free_colors;
     else
 	freeColors = FreeColors;
-    if (attributes && (attributes->valuemask & XpmColorClosure))
-	closure = attributes->color_closure;
-    else
-	closure = NULL;
 
     ErrorStatus = XpmSuccess;
 
@@ -1955,7 +1950,6 @@ xpmParseDataAndCreate(display, data, image_return, shapeimage_return,
     unsigned int depth;
     int bitmap_format;
     XpmFreeColorsFunc freeColors;
-    void *closure;
 
     /* variables to return */
     XImage *ximage = NULL;
@@ -2013,10 +2007,6 @@ xpmParseDataAndCreate(display, data, image_return, shapeimage_return,
 	freeColors = attributes->free_colors;
     else
 	freeColors = FreeColors;
-    if (attributes && (attributes->valuemask & XpmColorClosure))
-	closure = attributes->color_closure;
-    else
-	closure = NULL;
 
     cmts = info && (info->valuemask & XpmReturnComments);
 

@@ -1,10 +1,10 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.8 2003/04/01 22:37:03 matthieu Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.9 2004/02/13 22:41:24 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.10 2002/11/30 19:11:32 herrb Exp $
+! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.11 2004/01/09 00:25:25 dawes Exp $
 !
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm.log
 DisplayManager.pidFile:		XDMPIDDIR/xdm.pid
@@ -21,6 +21,7 @@ DisplayManager._0.setup:	XDMDIR/Xsetup_0
 DisplayManager._0.startup:	XDMDIR/Startup_0
 DisplayManager._0.reset:	XDMDIR/TakeConsole
 !
+DisplayManager*chooser:		CHOOSERPATH
 DisplayManager*resources:	XDMDIR/Xresources
 DisplayManager*session:		XDMDIR/Xsession
 DisplayManager*authComplain:	true

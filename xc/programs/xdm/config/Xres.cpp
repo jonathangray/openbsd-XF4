@@ -1,10 +1,10 @@
 ! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: Xres.cpp,v 1.12 2003/04/14 20:28:50 matthieu Exp $
+! $OpenBSD: Xres.cpp,v 1.13 2004/02/13 22:41:24 matthieu Exp $
 !
 !
 !
 !
-! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.6 2003/01/04 03:11:31 dawes Exp $
+! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.7 2003/11/15 03:25:22 dawes Exp $
 !
 #define BS \ /* cpp can be trickier than m4 */
 #define NLBS \n\ /* don't remove these comments */
@@ -28,44 +28,44 @@ xlogin*namePrompt: \040\040\040\040\040\040\040Login:
 #endif /* XPM */
 xlogin*fail: Login incorrect
 #ifdef XPM
-/**/#if WIDTH > 800
+XHASHif WIDTH > 800
 xlogin*greetFont: -adobe-helvetica-bold-o-normal--24-240-75-75-p-138-iso8859-1
 xlogin*font: -adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1
 xlogin*promptFont: -adobe-helvetica-bold-r-normal--18-180-75-75-p-103-iso8859-1
 xlogin*failFont: -adobe-helvetica-bold-r-normal--18-180-75-75-p-103-iso8859-1
-/**/#else
+XHASHelse
 xlogin*greetFont: -adobe-helvetica-bold-o-normal--17-120-100-100-p-92-iso8859-1
 xlogin*font: -adobe-helvetica-medium-r-normal--12-120-75-75-p-67-iso8859-1
 xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
 xlogin*failFont: -adobe-helvetica-bold-o-normal--14-140-75-75-p-82-iso8859-1
-/**/#endif
+XHASHendif
 #endif /* XPM */
 
-/**/#if !(defined(bpp1) || defined(bpp4) || defined(bpp8) || defined(bpp15))
-/**/# if PLANES < 4 || defined(Hp300Architecture)
-/**/#  ifndef bpp1
-/**/#   define bpp1
-/**/#  endif
-/**/# else
-/**/#  if PLANES > 4
-/**/#   if PLANES > 8
-/**/#    ifndef bpp15
-/**/#     define bpp15
-/**/#    endif
-/**/#   else
-/**/#    ifndef bpp8
-/**/#     define bpp8
-/**/#    endif bpp8
-/**/#   endif
-/**/#  else
-/**/#   ifndef bpp4
-/**/#    define bpp4
-/**/#   endif
-/**/#  endif
-/**/# endif
-/**/#endif  //**/* If manual override */**//
+XHASHif !(defined(bpp1) || defined(bpp4) || defined(bpp8) || defined(bpp15))
+XHASH if PLANES < 4 || defined(Hp300Architecture)
+XHASH  ifndef bpp1
+XHASH   define bpp1
+XHASH  endif
+XHASH else
+XHASH  if PLANES > 4
+XHASH   if PLANES > 8
+XHASH    ifndef bpp15
+XHASH     define bpp15
+XHASH    endif
+XHASH   else
+XHASH    ifndef bpp8
+XHASH     define bpp8
+XHASH    endif bpp8
+XHASH   endif
+XHASH  else
+XHASH   ifndef bpp4
+XHASH    define bpp4
+XHASH   endif
+XHASH  endif
+XHASH endif
+XHASHendif  //**/* If manual override */**//
 
-/**/#ifndef bpp1
+XHASHifndef bpp1
 #ifndef XPM
 xlogin*greetColor: CadetBlue
 #else
@@ -82,11 +82,11 @@ xlogin*shdColor: #384c70
 ! 'Welcome to..' text color
 xlogin*greetColor: #000000
 #endif /* XPM */
-/**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
+XHASHif defined(bpp4) || defined(bpp8) || defined(bpp15)
 ! flood fill
 !xlogin*background: #2559a5
 xlogin*background: #5272b6
-/**/#endif
+XHASHendif
 xlogin*failColor: red
 
 ! 'Login:' and 'Password:'
@@ -94,7 +94,7 @@ xlogin*failColor: red
 
 ! border/shadow
 *Background: #000000
-/**/#else
+XHASHelse
 #ifdef XPM
 xlogin*borderWidth: 3
 xlogin*frameWidth: 5
@@ -112,26 +112,26 @@ xlogin*borderWidth: 3
 xlogin*Foreground: black
 xlogin*Background: white
 #endif /* XPM */
-/**/#endif
+XHASHendif
 #if defined(XPM)
-/**/#ifdef bpp1
+XHASHifdef bpp1
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_1bpp.xpm
-/**/#endif
+XHASHendif
 #if ! defined(SparcArchitecture)
-/**/#if defined(bpp4) || defined(bpp8)
+XHASHif defined(bpp4) || defined(bpp8)
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
-/**/#endif
+XHASHendif
 #else /* sparc */
-/**/#ifdef bpp4
+XHASHifdef bpp4
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
-/**/#endif
-/**/#ifdef bpp8
+XHASHendif
+XHASHifdef bpp8
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
-/**/#endif
+XHASHendif
 #endif
-/**/#ifdef bpp15
+XHASHifdef bpp15
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
-/**/#endif
+XHASHendif
 #if ! defined(Hp300Architecture)
 xlogin*useShape: true
 xlogin*logoPadding: 10

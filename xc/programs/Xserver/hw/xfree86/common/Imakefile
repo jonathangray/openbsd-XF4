@@ -4,7 +4,7 @@ XCOMM $XConsortium: Imakefile /main/34 1996/10/27 11:05:08 kaleb $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.148 2003/02/17 17:06:41 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.155 2004/01/27 01:29:02 dawes Exp $
 
 
 
@@ -18,7 +18,8 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.148 2003/02/
 #endif /* GNUMachArchitecture */
 #else
 # if defined(i386BsdArchitecture) || defined(AlphaBsdArchitecture) \
-	|| defined(OpenBSDArchitecture) || defined(NetBSDArchitecture)
+	|| defined(OpenBSDArchitecture) || defined(NetBSDArchitecture) \
+	|| defined(FreeBSDArchitecture)
         KBD = xf86KbdBSD
 # else
 #  ifdef LinuxArchitecture
@@ -29,7 +30,8 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.148 2003/02/
 # endif
 #endif
 
-#if defined(SparcArchitecture) && !defined(OpenBSDArchitecture)
+#if (defined(SparcArchitecture) || defined(Sparc64Architecture)) \
+	&& !defined(OpenBSDArchitecture)
         SBUSSRC = xf86sbusBus.c
         SBUSOBJ = xf86sbusBus.o
 #endif
@@ -101,6 +103,7 @@ SRCS =	\
 	xf86noBus.c \
 	xf86IniExt.c \
 	xf86Config.c \
+	xf86AutoConfig.c \
 	xf86Cursor.c \
 	$(XF86_DGA_SRC) \
 	xf86DPMS.c \
@@ -121,6 +124,7 @@ SRCS =	\
 	xf86xvmc.c \
 	xf86cmap.c\
 	xf86PM.c \
+	xf86Versions.c \
 	$(DEBUGSRC) \
 	$(KBD).c \
 	$(SBUSSRC) \
@@ -139,6 +143,7 @@ OBJS = \
 	xf86fbBus.o \
 	xf86noBus.o \
 	xf86Config.o \
+	xf86AutoConfig.o \
 	xf86Cursor.o \
 	$(XF86_DGA_OBJ) \
 	xf86DPMS.o \
@@ -158,6 +163,7 @@ OBJS = \
 	xf86xvmc.o \
 	xf86cmap.o\
 	xf86PM.o \
+	xf86Versions.o \
 	$(DEBUGOBJ) \
 	$(SBUSOBJ) \
 	$(XF86_XINPUT_OBJ) \
@@ -192,9 +198,6 @@ CUSTOMVERSION = XFree86CustomVersion
   BUILDERSTRING = BuilderString
   BUILDERMSG = -DBUILDERSTRING='$(BUILDERSTRING)'
 #endif
-#if defined(BuildDate)
-    BUILD_DATE = BuildDate
-#endif
        XORGREL = XOrgReleaseString
    XORGREL_DEF = -DXORG_RELEASE='"$(XORGREL)"'
 
@@ -203,6 +206,7 @@ EXP_DEFINES = -DEXPIRY_TIME=XF86ServerExpiry $(EXP_FORCE_DEFINES)
     DRIVERS = XF86CardDrivers
    IDRIVERS = XInputDrivers
 XCONFIGDEFINES = -DPROJECTROOT='"$(PROJECTROOT)"' \
+		 -DBINDIR='"$(BINDIR)"' \
 		 -DDRIVERS='"$(DRIVERS)"' \
 		 -DIDRIVERS='"$(IDRIVERS)"'
 XF86CONFIGFILE = XConfigFile
@@ -216,6 +220,7 @@ SpecialCObjectRule(xf86Bus,NullParameter,$(BUGMSG) $(VGAINCLUDES))
 SpecialCObjectRule(xf86Init,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) $(BUGMSG) $(CUSTOMVERDEF) $(XORGREL_DEF) $(EXT_DEFINES) $(BETADEFS) $(MDEBUGDEFS))
 SpecialCObjectRule(xf86Events,$(ICONFIGFILES),$(EXT_DEFINES) $(MDEBUGDEFS))
 SpecialCObjectRule(xf86Globals,$(ICONFIGFILES),$(EXT_DEFINES) $(MODPATHDEFINES) $(LOGDEFINES))
+SpecialCObjectRule(xf86AutoConfig,$(ICONFIGFILES),$(XCONFIGDEFINES))
 SpecialCObjectRule(xf86Config,$(ICONFIGFILES),$(XCONFIGDEFINES))
 SpecialCObjectRule(xf86Configure,$(ICONFIGFILES),$(XCONFIGUREDEFINES))
 
@@ -257,33 +262,6 @@ clean::
 LinkFile(xf86DefModeSet.c,xf86DefModes.c)
 #endif
 
-includes:: xf86Build.h
-
-clean::
-	RemoveFile(xf86Build.h)
-
-#if defined(BuildDate)
-xf86Build.h: FRC
-	echo "#define BUILD_DATE $(BUILD_DATE)" > xf86Build.h.new
-	@if test -f xf86Build.h ; then  \
-		if cmp -s xf86Build.h.new xf86Build.h ; then  \
-			rm -f xf86Build.h.new ; \
-		else  \
-			mv xf86Build.h.new xf86Build.h ; \
-			echo "xf86Build.h changed" ; \
-		fi  \
-	else  \
-		mv xf86Build.h.new xf86Build.h ; \
-		echo "xf86Build.h created" ; \
-	fi
-
-FRC:
-#else
-xf86Build.h:
-	RemoveFile($@)
-	echo "" > $@
-#endif
-
 DependTarget()
 
 InstallDriverSDKNonExecFile(compiler.h,$(DRIVERSDKINCLUDEDIR))
@@ -303,3 +281,4 @@ InstallDriverSDKNonExecFile(xf86fbman.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86str.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86xv.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86xvmc.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(xisb.h,$(DRIVERSDKINCLUDEDIR))

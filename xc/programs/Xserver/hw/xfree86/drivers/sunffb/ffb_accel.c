@@ -24,7 +24,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_accel.c,v 1.5 2001/03/03 22:41:34 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_accel.c,v 1.7 2003/11/10 18:22:31 tsi Exp $ */
 
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
@@ -457,7 +457,7 @@ CreatorCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 
 	FFBLOG(("CreatorCopyWindow: WIN(%p)\n", pWin));
 
-	REGION_INIT(pScreen, &rgnDst, NullBox, 0);
+	REGION_NULL(pScreen, &rgnDst);
 
 	dx = ptOldOrg.x - pWin->drawable.x;
 	dy = ptOldOrg.y - pWin->drawable.y;

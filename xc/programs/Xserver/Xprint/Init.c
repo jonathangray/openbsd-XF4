@@ -50,7 +50,7 @@ copyright holders.
 **    *********************************************************
 ** 
 ********************************************************************/
-/* $XFree86: xc/programs/Xserver/Xprint/Init.c,v 1.13 2001/12/21 21:02:04 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/Init.c,v 1.15 2003/10/29 22:11:54 tsi Exp $ */
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -324,11 +324,6 @@ typedef struct _driverMapping {
     char *driverName;
     int screenNum;
 } DriverMapEntry, *DriverMapPtr;
-
-static const char configFilePath[] =
-"/etc/dt/config/print:/usr/dt/config/print";
-
-static const char printServerConfigDir[] = "XPSERVERCONFIGDIR";
 
 static char *configFileName = (char *)NULL;
 static Bool freeDefaultFontPath = FALSE;

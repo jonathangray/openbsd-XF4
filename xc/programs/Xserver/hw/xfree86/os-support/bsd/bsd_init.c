@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.19 2002/05/05 18:54:02 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.22 2003/10/07 23:14:55 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -39,8 +39,10 @@
 
 static Bool KeepTty = FALSE;
 static int devConsoleFd = -1;
+#if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
 static int VTnum = -1;
 static int initialVT = -1;
+#endif
 
 #ifdef PCCONS_SUPPORT
 /* Stock 0.1 386bsd pccons console driver interface */
@@ -147,10 +149,10 @@ void
 xf86OpenConsole()
 {
     int i, fd = -1;
-    int result;
-    struct utsname uts;
     xf86ConsOpen_t *driver;
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
+    int result;
+    struct utsname uts;
     vtmode_t vtmode;
 #endif
 
@@ -215,7 +217,7 @@ xf86OpenConsole()
 	case PCCONS:
 	    if (ioctl (xf86Info.consoleFd, CONSOLE_X_MODE_ON, 0) < 0)
 	    {
-		FatalError("%s: CONSOLE_X_MODE_ON failed (%s)\n%s", 
+		FatalError("%s: CONSOLE_X_MODE_ON failed (%s)\n%s",
 			   "xf86OpenConsole", strerror(errno),
 			   CHECK_DRIVER_MSG);
 	    }
@@ -462,7 +464,7 @@ xf86OpenSyscons()
 	    xf86Msg(X_PROBED, "Using syscons driver with X support");
 	    if (syscons_version >= 0x100)
 	    {
-		xf86ErrorF(" (version %d.%d)\n", syscons_version >> 8,
+		xf86ErrorF(" (version %ld.%ld)\n", syscons_version >> 8,
 			   syscons_version & 0xFF);
 	    }
 	    else
@@ -617,7 +619,7 @@ xf86OpenWScons()
     }
     if (fd != -1) {
 	if (ioctl(fd, WSDISPLAYIO_SMODE, &mode) < 0) {
-	    FatalError("%s: WSDISPLAYIO_MODE_MAPPED failed (%s)\n%s", 
+	    FatalError("%s: WSDISPLAYIO_MODE_MAPPED failed (%s)\n%s",
 		       "xf86OpenConsole", strerror(errno),
 		       CHECK_DRIVER_MSG);
 	}

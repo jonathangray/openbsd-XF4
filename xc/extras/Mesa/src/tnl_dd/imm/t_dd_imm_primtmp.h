@@ -1,4 +1,3 @@
-/* $Id: t_dd_imm_primtmp.h,v 1.2 2003/04/01 22:36:10 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library

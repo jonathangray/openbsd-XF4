@@ -1,6 +1,7 @@
 /* Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
    See the file COPYING for copying permission.
 */
+/* $XFree86: xc/extras/expat/lib/expat.h,v 1.2 2003/10/22 16:59:31 tsi Exp $ */
 
 #ifndef XmlParse_INCLUDED
 #define XmlParse_INCLUDED 1
@@ -57,26 +58,6 @@ typedef unsigned char XML_Bool;
 #define XML_TRUE   ((XML_Bool) 1)
 #define XML_FALSE  ((XML_Bool) 0)
 
-/* The XML_Status enum gives the possible return values for several
-   API functions.  The preprocessor #defines are included so this
-   stanza can be added to code that still needs to support older
-   versions of Expat 1.95.x:
-
-   #ifndef XML_STATUS_OK
-   #define XML_STATUS_OK    1
-   #define XML_STATUS_ERROR 0
-   #endif
-
-   Otherwise, the #define hackery is quite ugly and would have been
-   dropped.
-*/
-enum XML_Status {
-  XML_STATUS_ERROR = 0,
-#define XML_STATUS_ERROR XML_STATUS_ERROR
-  XML_STATUS_OK = 1
-#define XML_STATUS_OK XML_STATUS_OK
-};
-
 enum XML_Error {
   XML_ERROR_NONE,
   XML_ERROR_NO_MEMORY,
@@ -121,6 +102,28 @@ enum XML_Content_Quant {
   XML_CQUANT_OPT,
   XML_CQUANT_REP,
   XML_CQUANT_PLUS
+};
+
+/* The XML_Status enum gives the possible return values for the
+   XML_Parse and XML_ParseBuffer functions.  Though the return values
+   for these functions has always been described as a Boolean value,
+   the implementation, at least for the 1.95.x series, has always
+   returned exactly one of these values.  The preprocessor #defines
+   are included so this stanza can be added to code that still needs
+   to support older versions of Expat 1.95.x:
+
+   #ifndef XML_STATUS_OK
+   #define XML_STATUS_OK    1
+   #define XML_STATUS_ERROR 0
+   #endif
+
+   Otherwise, the #define hackery is quite ugly and would have been dropped.
+*/
+enum XML_Status {
+  XML_STATUS_ERROR = 0,
+#define XML_STATUS_ERROR XML_STATUS_ERROR
+  XML_STATUS_OK = 1
+#define XML_STATUS_OK XML_STATUS_OK
 };
 
 /* If type == XML_CTYPE_EMPTY or XML_CTYPE_ANY, then quant will be
@@ -736,11 +739,6 @@ XML_GetIdAttributeIndex(XML_Parser parser);
 /* Parses some input. Returns XML_STATUS_ERROR if a fatal error is
    detected.  The last call to XML_Parse must have isFinal true; len
    may be zero for this call (or any other).
-
-   Though the return values for these functions has always been
-   described as a Boolean value, the implementation, at least for the
-   1.95.x series, has always returned exactly one of the XML_Status
-   values.
 */
 XMLPARSEAPI(enum XML_Status)
 XML_Parse(XML_Parser parser, const char *s, int len, int isFinal);
@@ -814,8 +812,8 @@ XML_GetErrorCode(XML_Parser parser);
 /* These functions return information about the current parse
    location.  They may be called from any callback called to report
    some parse event; in this case the location is the location of
-   the first of the sequence of characters that generated the event. 
-   
+   the first of the sequence of characters that generated the event.
+
    They may also be called after returning from a call to XML_Parse
    or XML_ParseBuffer.  If the return value is XML_STATUS_ERROR then
    the location is the location of the character at which the error

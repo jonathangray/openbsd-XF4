@@ -3,35 +3,22 @@ XCOMM!/bin/sh
 XCOMM
 XCOMM makedepend which uses 'gcc -M'
 XCOMM
-XCOMM $XFree86: xc/config/util/gccmdep.cpp,v 3.10 2002/11/25 14:04:48 eich Exp $
+XCOMM $XFree86: xc/config/util/gccmdep.cpp,v 3.11 2003/06/15 16:53:11 tsi Exp $
 XCOMM
 XCOMM Based on mdepend.cpp and code supplied by Hongjiu Lu <hjl@nynexst.com>
 XCOMM
 
-TMP=${TMPDIR-/tmp}/mdep$$
+TMP=mdep$$.tmp
 TMPARG=${TMP}arg
 CC=CCCMD
 RM=RMCMD
 LN=LNCMD
 MV=MVCMD
 
-XCOMM Security: if $tmp exists exit immediately
-rm -f ${TMP} ${TMPARG}
-if [ -e ${TMP} ] ; then
-    echo "$0: ${TMP} exists already, exit." 1>&2
-    exit 1;
-fi
-if [ -e ${TMPARG} ] ; then
-    echo "$0: ${TMPARG} exists already, exit." 1>&2
-    exit 1;
-fi
-if [ -n "`type -p mktemp`" ] ; then
-    TMP="`mktemp ${TMP}.XXXXXX`" || exit 1
-    TMPARG="`mktemp ${TMPARG}.XXXXXX`" || exit 1
-fi
+${RM} ${TMP} ${TMPARG}
 
-trap "$RM ${TMP} ${TMPARG}; exit 1" 1 2 15
-trap "$RM ${TMP} ${TMPARG}; exit 0" 0 1 2 13
+trap "${RM} ${TMP} ${TMPARG}; exit 1" 1 2 15
+trap "${RM} ${TMP} ${TMPARG}; exit 0" 0 1 2 13
 
 files=
 makefile=
@@ -70,7 +57,7 @@ XCOMM ignore these flags
 				makefile="$2"
 				shift
 			    else
-				echo "$1" | sed 's/^\-f//' >${TMPARG}
+			    	echo "$1" | sed 's/^\-f//' >${TMPARG}
 				makefile="`cat ${TMPARG}`"
 			    fi
 			    ;;

@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.1 2002/08/06 13:08:39 herrb Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.9 2003/04/01 22:36:52 matthieu Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.3 2003/10/07 23:14:55 herrb Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.10 2004/02/13 22:41:21 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -24,6 +24,7 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
 
 /* $XConsortium: bsd_video.c /main/10 1996/10/25 11:37:57 kaleb $ */
 
@@ -71,19 +72,20 @@ volatile unsigned char *ioBase = MAP_FAILED;
 
 static pointer
 sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, 
-		 int Flags)
+		 int flags)
 {
 	int fd = xf86Info.screenFd;
 	pointer base;
 
-	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
+	base = mmap(0, Size,
+		    (flags & VIDMEM_READONLY) ?
+		     PROT_READ : (PROT_READ | PROT_WRITE),
+		    MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)\n",
+		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
 			   "xf86MapVidMem", Size, Base, strerror(errno));
-
 	return base;
 }
-
 
 static void
 sparc64UnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
@@ -95,9 +97,9 @@ int
 xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	     int Len)
 {
+
 	return (0);
 }
-
 
 /***************************************************************************/
 /* Interrupt Handling section                                              */

@@ -1,5 +1,3 @@
-/* $OpenBSD: makepsres.c,v 1.2 2003/05/07 23:45:02 avsm Exp $ */
-
 /*
  * makepsres.c
  *
@@ -37,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/programs/makepsres/makepsres.c,v 1.7 2002/09/18 17:11:51 tsi Exp $ */
+/* $XFree86: xc/programs/makepsres/makepsres.c,v 1.9 2003/10/24 20:38:13 tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,9 +130,7 @@ static char lineBuffer[BUFFER_SIZE];
 
 Category *categories;
 
-static char *ckmalloc(size, whynot)
-    int size;
-    char *whynot;
+static char *ckmalloc(int size, char *whynot)
 {
     char *result;
 
@@ -147,10 +143,7 @@ static char *ckmalloc(size, whynot)
     return result;
 }
 
-static char *ckrealloc(ptr, size, whynot)
-    char *ptr;
-    int size;
-    char *whynot;
+static char *ckrealloc(char *ptr, int size, char *whynot)
 {
     char *result;
 
@@ -163,10 +156,7 @@ static char *ckrealloc(ptr, size, whynot)
     return result;
 }
 
-static char *ckcalloc(count, size, whynot)
-    int count;
-    int size;
-    char *whynot;
+static char *ckcalloc(int count, int size, char *whynot)
 {
     char *result;
 
@@ -688,7 +678,7 @@ static char *FindKeyValue (file, key)
     if (fgets (lineBuffer, BUFFER_SIZE, file) == NULL)
       break;
 
-    sscanf (lineBuffer, "%64[%a-zA-Z]", lineKey);
+    sscanf (lineBuffer, "%63[%a-zA-Z]", lineKey);
     if (strcmp (key, lineKey) == 0) {
       result = strchr (lineBuffer, ' ');
       if (result != NULL) {

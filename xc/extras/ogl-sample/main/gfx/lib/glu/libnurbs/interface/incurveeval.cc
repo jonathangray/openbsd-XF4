@@ -31,10 +31,12 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
-** $Date: 2003/04/01 22:36:14 $ $Revision: 1.2 $
+** $Date: 2004/02/13 22:40:56 $ $Revision: 1.3 $
 */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/interface/incurveeval.cc,v 1.2 2003/10/22 19:20:55 tsi Exp $ */
+
 /*
-** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/interface/incurveeval.cc,v 1.2 2003/04/01 22:36:14 matthieu Exp $
+** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/interface/incurveeval.cc,v 1.3 2004/02/13 22:40:56 matthieu Exp $
 */
 
 #include <stdlib.h>
@@ -97,7 +99,7 @@ void OpenGLCurveEvaluator::inMap1f(int which, //0: vert, 1: norm, 2: color, 3: t
 				   int uorder,
 				   REAL *ctlpoints)
 {
-  int i,j,x;
+  int i,x;
   curveEvalMachine *temp_em;
   switch(which){
   case 0: //vertex
@@ -139,7 +141,6 @@ void OpenGLCurveEvaluator::inDoDomain1(curveEvalMachine *em, REAL u, REAL *retPo
 {
   int j, row;
   REAL the_uprime;
-  REAL p;
   REAL *data;
   
   if(em->u2 == em->u1)

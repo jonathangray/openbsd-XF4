@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Configure.c,v 3.78 2003/01/18 07:27:13 paulo Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Configure.c,v 3.81 2003/10/29 04:17:21 dawes Exp $ */
 /*
  * Copyright 2000-2002 by Alan Hourihane, Flint Mountain, North Wales.
  *
@@ -283,7 +283,6 @@ configureInputSection (void)
 	} else {
 	    ErrorF("cannot open /dev/wsmouse\n");
 	}
-
 #endif
 
 #ifndef SCO
@@ -875,7 +874,7 @@ DoConfigure()
     xf86DoConfigurePass1 = FALSE;
     /* Try to get DDC information filled in */
     xf86ConfigFile = filename;
-    if (!xf86HandleConfigFile()) {
+    if (xf86HandleConfigFile(FALSE) != CONFIG_OK) {
 	goto bail;
     }
 
@@ -997,7 +996,7 @@ DoConfigure()
     ErrorF("To test the server, run 'XFree86 -xf86config %s'\n\n", filename);
 
 bail:
-    OsCleanup();
+    OsCleanup(TRUE);
     AbortDDX();
     fflush(stderr);
     exit(0);

@@ -31,12 +31,13 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/backend.cc,v 1.2 2003/10/22 19:20:56 tsi Exp $ */
 
 /*
  * backend.c++
  *
- * $Date: 2003/04/01 22:36:14 $ $Revision: 1.2 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/backend.cc,v 1.2 2003/04/01 22:36:14 matthieu Exp $
+ * $Date: 2004/02/13 22:40:57 $ $Revision: 1.3 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/backend.cc,v 1.3 2004/02/13 22:40:57 matthieu Exp $
  */
 
 /* Bezier surface backend
@@ -326,7 +327,9 @@ void
 Backend::tmeshvert( TrimVertex *t )
 {
 
+#ifndef NOWIREFRAME
     const long nuid = t->nuid;
+#endif
     const REAL u = t->param[0];
     const REAL v = t->param[1];
 
@@ -355,9 +358,7 @@ Backend::tmeshvert( TrimVertex *t )
 	surfaceEvaluator.evalcoord2f( nuid, u, v );
     }
 #else
-          
           surfaceEvaluator.evalcoord2f( 0, u, v );
-//for uninitial memory read          surfaceEvaluator.evalcoord2f( nuid, u, v );
 #endif
 }
 
@@ -365,11 +366,9 @@ Backend::tmeshvert( TrimVertex *t )
 void
 Backend::tmeshvert( REAL u, REAL v )
 {
-
+#ifndef NOWIREFRAME
     const long nuid = 0;
 
-
-#ifndef NOWIREFRAME
     npts++;
     if( wireframetris ) {
 	if( npts >= 3 ) {
@@ -394,7 +393,6 @@ Backend::tmeshvert( REAL u, REAL v )
 	surfaceEvaluator.evalcoord2f( nuid, u, v );
     }
 #else
-          
           surfaceEvaluator.evalcoord2f( 0, u, v );
 #endif
 }

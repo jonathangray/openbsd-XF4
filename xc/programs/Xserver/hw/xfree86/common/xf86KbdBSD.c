@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.20 2002/05/22 21:38:27 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.22 2003/10/07 22:00:52 herrb Exp $ */
 /*
  * Derived from xf86Kbd.c by S_ren Schmidt (sos@login.dkuug.dk)
  * which is Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
@@ -22,6 +22,33 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+/*
+ * Copyright (c) 1994-2002 by The XFree86 Project, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the name of the copyright holder(s)
+ * and author(s) shall not be used in advertising or otherwise to promote
+ * the sale, use or other dealings in this Software without prior written
+ * authorization from the copyright holder(s) and author(s).
+ */
+
 /* $XConsortium: xf86KbdBSD.c /main/6 1996/10/23 13:12:27 kaleb $ */
 
 #include "X.h"
@@ -709,17 +736,17 @@ static CARD8 wsUsbMap[] = {
 	/* 113 */ KEY_NOTUSED,
 	/* 114 */ KEY_NOTUSED,
 	/* 115 */ KEY_NOTUSED,
-	/* 116 */ KEY_NOTUSED,
+	/* 116 */ KEY_L7,
 	/* 117 */ KEY_NOTUSED,
-	/* 118 */ KEY_NOTUSED,
-	/* 119 */ KEY_NOTUSED,
+	/* 118 */ KEY_L3,
+	/* 119 */ KEY_L5,
 	/* 120 */ KEY_NOTUSED,
-	/* 121 */ KEY_NOTUSED,
-	/* 122 */ KEY_NOTUSED,
-	/* 123 */ KEY_NOTUSED,
-	/* 124 */ KEY_NOTUSED,
-	/* 125 */ KEY_NOTUSED,
-	/* 126 */ KEY_NOTUSED,
+	/* 121 */ KEY_L2,
+	/* 122 */ KEY_L4,
+	/* 123 */ KEY_L10,
+	/* 124 */ KEY_L6,
+	/* 125 */ KEY_L8,
+	/* 126 */ KEY_L9,
 	/* 127 */ KEY_NOTUSED,
 	/* 128 */ KEY_NOTUSED,
 	/* 129 */ KEY_NOTUSED,
@@ -1057,15 +1084,14 @@ static CARD8 wsAdbMap[] = {
 	/* 223 */ KEY_NOTUSED,
 };
 
-
 #define WS_ADB_MAP_SIZE (sizeof(wsAdbMap)/sizeof(unsigned char))
 
 static CARD8 wsSunMap[] = {
 	/* 0x00 */ KEY_NOTUSED,
 	/* 0x01 */ KEY_Stop,		/* stop */
-	/* 0x02 */ KEY_NOTUSED,		/* BrightnessDown / S-VolumeDown */
+	/* 0x02 */ KEY_NOTUSED,	/* BrightnessDown / S-VolumeDown */
 	/* 0x03 */ KEY_Again,		/* again */
-	/* 0x04 */ KEY_NOTUSED,		/* BridgtnessUp / S-VolumeUp */
+	/* 0x04 */ KEY_NOTUSED,	/* BridgtnessUp / S-VolumeUp */
 	/* 0x05 */ KEY_F1,
 	/* 0x06 */ KEY_F2,
 	/* 0x07 */ KEY_F10,
@@ -1106,7 +1132,7 @@ static CARD8 wsSunMap[] = {
 	/* 0x2a */ KEY_Tilde,
 	/* 0x2b */ KEY_BackSpace,
 	/* 0x2c */ KEY_Insert,
-	/* 0x2d */ KEY_KP_Equal,
+	/* 0x2d */ KEY_NOTUSED,		/* Audio Mute */
 	/* 0x2e */ KEY_KP_Divide,
 	/* 0x2f */ KEY_KP_Multiply,
 	/* 0x30 */ KEY_NOTUSED,
@@ -1128,7 +1154,7 @@ static CARD8 wsSunMap[] = {
 	/* 0x40 */ KEY_LBrace,
 	/* 0x41 */ KEY_RBrace,
 	/* 0x42 */ KEY_Delete,
-	/* 0x43 */ KEY_NOTUSED,		/* compose */
+	/* 0x43 */ KEY_Menu,		/* compose */
 	/* 0x44 */ KEY_KP_7,
 	/* 0x45 */ KEY_KP_8,
 	/* 0x46 */ KEY_KP_9,
@@ -1192,7 +1218,6 @@ static CARD8 wsSunMap[] = {
 };
 
 #define WS_SUN_MAP_SIZE (sizeof(wsSunMap)/sizeof(unsigned char))
-
 
 /*
  * Translate raw wskbd keyboard event values to XFree86 standard keycodes

@@ -35,15 +35,16 @@
 /*
  * mystdio.h
  *
- * $Date: 2003/04/01 22:36:15 $ $Revision: 1.2 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdio.h,v 1.2 2003/04/01 22:36:15 matthieu Exp $
+ * $Date: 2004/02/13 22:40:57 $ $Revision: 1.3 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdio.h,v 1.3 2004/02/13 22:40:57 matthieu Exp $
  */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdio.h,v 1.2 2003/10/22 19:20:57 tsi Exp $ */
 
 #ifndef __glumystdio_h_
 #define __glumystdio_h_
 
 #ifdef STANDALONE
-inline void dprintf( char *, ... ) { }
+static inline void dprintf( char *fmt, ... ) { }
 #endif
 
 #ifdef LIBRARYBUILD
@@ -51,12 +52,12 @@ inline void dprintf( char *, ... ) { }
 #include <stdio.h>
 #define dprintf printf
 #else
-inline void dprintf( char *, ... ) { }
+static inline void dprintf( char *fmt, ... ) { }
 #endif
 #endif
 
 #ifdef GLBUILD
-inline void dprintf( char *, ... ) { }
+static inline void dprintf( char *fmt, ... ) { }
 #endif
 
 #ifndef NULL

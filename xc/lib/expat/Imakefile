@@ -28,7 +28,7 @@ INCLUDES = -I$(EXPATINC) -I$(EXPATTOP) -I.
  * XML_BYTE_ORDER == 21			little endian
  * XML_BYTE_ORDER == anything else	determined at run-time.
  */
-DEFINES = -DXML_BYTE_ORDER=0 -DX_BYTE_ORDER=ByteOrder
+DEFINES = -DXML_BYTE_ORDER=0 -DX_BYTE_ORDER=$(X_BYTE_ORDER)
 REQUIREDLIBS=$(LDPRELIBS)
 
 SRCS = xmlparse.c xmltok.c xmlrole.c

@@ -3,7 +3,7 @@
  * that Imakefiles in the various library subtrees will need.
  *
  * Before including this, you must set the following boolean variables:
- * DoNormalLib, DoSharedLib, DoDebugLib, DoProfileLib, DoPicLib
+ * DoNormalLib, DoSharedLib, DoDebugLib, DoProfileLib
  *
  * To get automatic generation of standard rules, also set the variables:
  * LibName, SoRev, HasSharedData, and optionally HugeLibrary and IncSubdir.
@@ -15,12 +15,11 @@
  */
 
 XCOMM $Xorg: Library.tmpl,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
-XCOMM $OpenBSD: Library.tmpl,v 1.3 2003/04/01 22:36:03 matthieu Exp $
 
 
 
 
-XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.21 2003/01/04 02:48:24 dawes Exp $
+XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.24 2003/10/21 17:41:43 tsi Exp $
 
 #ifndef DoNormalLib
 #define DoNormalLib NO
@@ -33,9 +32,6 @@ XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.21 2003/01/04 02:48:24 dawes Exp $
 #endif
 #ifndef DoProfileLib
 #define DoProfileLib NO
-#endif
-#ifndef DoPicLib
-#define DoPicLib NO
 #endif
 #ifndef DoExtraLib
 #define DoExtraLib NO
@@ -57,7 +53,7 @@ SHLIBGLOBALSFLAGS = ShlibGlobalsFlags
 #endif
 
 #ifndef LibraryCplusplusOptions
-# if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusOptions)
+# if DoSharedLib && defined(SharedLibraryCplusplusOptions)
 #  define LibraryCplusplusOptions SharedLibraryCplusplusOptions
 # else
 #  define LibraryCplusplusOptions DefaultCplusplusOptions
@@ -85,18 +81,18 @@ SHLIBGLOBALSFLAGS = ShlibGlobalsFlags
 # ifndef StripPath
 #  define StripPath(x) `echo x|sed "s%.*/%%"`
 # endif
-#endif 
+#endif
 
 #ifndef CplusplusSource
 # ifndef LibraryCcCmd
-#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCcCmd)
+#  if DoSharedLib && defined(SharedLibraryCcCmd)
 #   define LibraryCcCmd SharedLibraryCcCmd
 #  else
 #   define LibraryCcCmd CcCmd
 #  endif
 # endif
 # ifndef LibraryCCOptions
-#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCCOptions)
+#  if DoSharedLib && defined(SharedLibraryCCOptions)
 #   define LibraryCCOptions SharedLibraryCCOptions
 #  else
 #   define LibraryCCOptions DefaultCCOptions
@@ -125,15 +121,15 @@ CLIBDEBUGFLAGS = LibraryDebugOpt
 #else
 # ifndef CrossCompileDir
 #  ifndef LibraryCplusplusCmd
-#   if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusCmd)
+#   if DoSharedLib && defined(SharedLibraryCplusplusCmd)
 #    define LibraryCplusplusCmd SharedLibraryCplusplusCmd
 #   else
 #    define LibraryCplusplusCmd CplusplusCmd
 #   endif
 #  endif
-# else 
+# else
 #  ifndef CrossLibraryCplusplusCmd
-#   if (DoSharedLib || DocPicLib) && defined(SharedLibraryCplusplusCmd)
+#   if DoSharedLib && defined(SharedLibraryCplusplusCmd)
 #    define CrossLibraryCplusplusCmd Concat3(CrossCompileDir,/,StripPath(SharedLibraryCplusplusCmd))
 #   else
 #    define CrossLibraryCplusplusCmd Concat3(CrossCompileDir,/,StripPath(CplusplusCmd))
@@ -142,7 +138,7 @@ CLIBDEBUGFLAGS = LibraryDebugOpt
 # endif
 
 # ifndef LibraryCplusplusOptions
-#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusOptions)
+#  if DoSharedLib && defined(SharedLibraryCplusplusOptions)
 #   define LibraryCplusplusOptions SharedLibraryCplusplusOptions
 #  else
 #   define LibraryCplusplusOptions DefaultCplusplusOptions
@@ -168,7 +164,9 @@ CXXLIBDEBUGFLAGS = LibraryDebugOpt
 # endif
 #endif
 
+#ifdef LibraryMTDefines
 LIB_MT_DEFINES = LibraryMTDefines
+#endif
 
 #if defined(IHaveSubdirs) && HasSymLinks && !defined(NoLibSubdirs)
 #define _LibMkdir LibMkdirLinkSubdirs
@@ -206,7 +204,7 @@ LIB_MT_DEFINES = LibraryMTDefines
 # define _NormalObjCplusplusCompile(options) $(_NULLCMD_)
 # define _NormalCleanDir() $(_NULLCMD_)
 #else
-# if (DoSharedLib || DoPicLib) && SeparateSharedCompile
+# if DoSharedLib && SeparateSharedCompile
 #  define _NormalLibMkdir() _LibMkdir(unshared)
 #  define _NormalObjCompile(options) UnsharedLibObjCompile(options)
 #  define _NormalObjCplusplusCompile(options) UnsharedLibObjCplusplusCompile(options)
@@ -223,7 +221,7 @@ LIB_MT_DEFINES = LibraryMTDefines
 # endif
 #endif
 
-#if !DoSharedLib && !DoPicLib || (DoNormalLib && !SeparateSharedCompile)
+#if !DoSharedLib || (DoNormalLib && !SeparateSharedCompile)
 # define _SharedObjCompile(options) $(_NULLCMD_)
 # define _SharedObjCplusplusCompile(options) $(_NULLCMD_)
 #else
@@ -254,10 +252,12 @@ LIB_MT_DEFINES = LibraryMTDefines
 
 #ifndef CplusplusSource
 # define SRCsuf c
+# define Isuf i
 #else
 # define SRCsuf CCsuf
+# define Isuf ii
 # ifdef SunArchitecture
-.SUFFIXES: .CCsuf
+.SUFFIXES: Concat(.,CCsuf)
 # endif
 #endif
 
@@ -279,7 +279,7 @@ target									@@\
 	_ProfiledObjCompile(staticopts)					@@\
 	_NormalObjCompile(staticopts)					@@\
 	_ExtraObjCompile(staticopts)					@@\
-	_SharedObjCompile(sharedopts)	
+	_SharedObjCompile(sharedopts)
 #endif
 
 #ifdef CplusplusSource
@@ -328,7 +328,7 @@ _CompileObj(objs: depends,options)
 # define SpecialCLibObjectRule(basename,depends,options)		@@\
 _CompileObj(basename.Osuf: basename.SRCsuf depends,options)		@@\
 									@@\
-basename.i: basename.SRCsuf depends					@@\
+basename.Isuf: basename.SRCsuf depends					@@\
 	CPPOnlyCompile(basename.SRCsuf,options)				@@\
 									@@\
 CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
@@ -338,7 +338,7 @@ CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
 # define SpecialCLibObjectRuleSeparateOpts(basename,depends,staticopts,shopts) @@\
 _CompileObjSeparateOpts(basename.Osuf: basename.SRCsuf depends,staticopts,shopts)	@@\
 									@@\
-basename.i: basename.SRCsuf depends					@@\
+basename.Isuf: basename.SRCsuf depends					@@\
 	CPPOnlyCompile(basename.SRCsuf,sharedopts)			@@\
 									@@\
 CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
@@ -463,10 +463,18 @@ LibraryObjectRule()
 #   if HugeLibrary && defined(SharedLibraryTarget3)
 SharedLibraryTarget3($(LIBNAME),$(SoRev),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRASHAREDOBJS),.,.)
 #   else
+#    if defined(SharedLibtoolRev) && defined(SharedLibtoolLibraryTarget)
+SharedLibtoolLibraryTarget($(LIBNAME),SharedLibtoolRev,$(OBJS) $(EXTRASHAREDOBJS),.,.)
+#    else
 SharedLibraryTarget($(LIBNAME),$(SoRev),$(OBJS) $(EXTRASHAREDOBJS),.,.)
+#    endif
 #   endif
 #   if !defined(LibInstall) || LibInstall
+#    if defined(SharedLibtoolRev) && defined(InstallSharedLibtoolLibrary)
+InstallSharedLibtoolLibrary($(LIBNAME),SharedLibtoolRev,$(SHLIBDIR))
+#    else
 InstallSharedLibrary($(LIBNAME),$(SoRev),$(SHLIBDIR))
+#    endif
 #   endif
 #   if HasSharedData
 SharedLibraryDataTarget($(LIBNAME),$(SoRev),$(UNSHAREDOBJS))
@@ -477,13 +485,13 @@ InstallSharedLibraryData($(LIBNAME),$(SoRev),$(SHLIBDIR))
 #  endif
 #  if DoNormalLib
 #   if HugeLibrary
-#    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
+#    if DoSharedLib && SeparateSharedCompile
 UnsharedLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRAUNSHAREDOBJS),unshared,..)
 #    else
 NormalLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3) $(EXTRAUNSHAREDOBJS))
 #    endif
 #   else
-#    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
+#    if DoSharedLib && SeparateSharedCompile
 UnsharedLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS),unshared,..)
 #    else
 NormalLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS))
@@ -503,12 +511,6 @@ InstallLibrary($(LIBNAME)_p,$(USRLIBDIR))
 DebuggedLibraryTarget($(LIBNAME),$(OBJS) $(EXTRAUNSHAREDOBJS))
 #   if !defined(LibInstall) || LibInstall
 InstallLibrary($(LIBNAME)_d,$(USRLIBDIR))
-#   endif
-#  endif
-#  if DoPicLib
-PicLibraryTarget($(LIBNAME),$(OBJS))
-#   if !defined(LibInstall) || LibInstall
-InstallLibrary($(LIBNAME)_pic,$(USRLIBDIR))
 #   endif
 #  endif
 #  if DoExtraLib && defined(ExtraLibRules)

@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/ppc_video.c,v 1.3 2002/11/09 17:28:08 herrb Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.8 2003/04/01 22:36:52 matthieu Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/ppc_video.c,v 1.6 2003/10/07 23:14:55 herrb Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.9 2004/02/13 22:41:21 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -45,9 +45,13 @@
 /* Video Memory Mapping section                                            */
 /***************************************************************************/
 
-static pointer ppcMapVidMem(int, unsigned long, unsigned long, int);
-static void ppcUnmapVidMem(int, pointer, unsigned long);
+#ifdef __OpenBSD__
+#undef DEV_MEM
+#define DEV_MEM "/dev/xf86"
+#endif
 
+static pointer ppcMapVidMem(int, unsigned long, unsigned long, int flags);
+static void ppcUnmapVidMem(int, pointer, unsigned long);
 
 void
 xf86OSInitVidMem(VidMemInfoPtr pVidMem)
@@ -66,28 +70,29 @@ ppcMapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 {
 	int fd = xf86Info.screenFd;
 	pointer base;
-
 #ifdef DEBUG
-	ErrorF("mapVidMem %lx, %lx, fd = %d\n", Base, Size, fd);
+	xf86MsgVerb(X_INFO, 3, "mapVidMem %lx, %lx, fd = %d", 
+		    Base, Size, fd);
 #endif
 
-	base = mmap(0, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
+	base = mmap(0, Size,
+		    (flags & VIDMEM_READONLY) ?
+		     PROT_READ : (PROT_READ | PROT_WRITE),
+		    MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
+		FatalError("%s: could not mmap screen [s=%lx,a=%lx] (%s)",
 			   "xf86MapVidMem", Size, Base, strerror(errno));
 
 	return base;
 }
 
-
 static void
 ppcUnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
 {
-
 	munmap(Base, Size);
 }
 
-static int kmem;
+static int kmem = -1;
 
 int
 xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
@@ -95,21 +100,26 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 {
 	int rv;
 
-#ifdef DEBUG
-	ErrorF("xf86ReadBIOS() %lx %lx, %x\n", Base, Offset, Len);
-#endif
-
 	if (Base < 0x80000000) {
 		xf86Msg(X_WARNING, "No VGA Base=%#lx\n", Base);
-		close(kmem);
 		return 0;
 	}
+
+	if (kmem == -1) {
+		kmem = open(DEV_MEM, 2);
+		if (kmem == -1) {
+			FatalError("xf86ReadBIOS: open %s", DEV_MEM);
+		}
+	}
+
+#ifdef DEBUG
+	xf86MsgVerb(X_INFO, 3, "xf86ReadBIOS() %lx %lx, %x\n", 
+		    Base, Offset, Len);
+#endif
 
 
 	lseek(kmem, Base + Offset, 0);
 	rv = read(kmem, Buf, Len);
-	close(kmem);
-
 	return rv;
 }
 
@@ -137,10 +147,10 @@ xf86EnableInterrupts()
 void
 xf86PrivilegedInit(void)
 {
- 	kmem = open("/dev/xf86", 2);
+ 	kmem = open(DEV_MEM, 2);
  	if (kmem == -1) {
 		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86PrivilegedInit: open /dev/xf86");
+ 		FatalError("xf86PrivilegedInit: open %s", DEV_MEM);
  	}
 	pciInit();
 	xf86OpenConsole();
