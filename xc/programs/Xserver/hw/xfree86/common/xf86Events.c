@@ -26,6 +26,7 @@
 /* [JCH-96/01/21] Extended std reverse map to four buttons. */
 
 #include "X.h"
+#include "Xpoll.h"
 #include "Xproto.h"
 #include "misc.h"
 
@@ -34,9 +35,7 @@
 #include "xf86.h"
 #include "xf86Priv.h"
 #define XF86_OS_PRIVS
-#include "Xpoll.h"
 #include "xf86_OSlib.h"
-#include "Xpoll.h"
 #include "atKeynames.h"
 
 
