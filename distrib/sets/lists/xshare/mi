@@ -857,6 +857,9 @@
 ./usr/X11R6/lib/X11/locale/mulelao-1/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/nokhchi-1
 ./usr/X11R6/lib/X11/locale/nokhchi-1/XLC_LOCALE
+./usr/X11R6/lib/X11/locale/pt_BR.UTF-8
+./usr/X11R6/lib/X11/locale/pt_BR.UTF-8/Compose
+./usr/X11R6/lib/X11/locale/pt_BR.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/tatar-cyr
 ./usr/X11R6/lib/X11/locale/tatar-cyr/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/th_TH
@@ -958,6 +961,7 @@
 ./usr/X11R6/man/cat1/ico.0
 ./usr/X11R6/man/cat1/imake.0
 ./usr/X11R6/man/cat1/lbxproxy.0
+./usr/X11R6/man/cat1/libxrx.0
 ./usr/X11R6/man/cat1/listres.0
 ./usr/X11R6/man/cat1/luit.0
 ./usr/X11R6/man/cat1/makedepend.0
@@ -1044,6 +1048,7 @@
 ./usr/X11R6/man/cat1/xrandr.0
 ./usr/X11R6/man/cat1/xrdb.0
 ./usr/X11R6/man/cat1/xrefresh.0
+./usr/X11R6/man/cat1/xrx.0
 ./usr/X11R6/man/cat1/xset.0
 ./usr/X11R6/man/cat1/xsetmode.0
 ./usr/X11R6/man/cat1/xsetpointer.0

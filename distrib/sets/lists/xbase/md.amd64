@@ -564,6 +564,8 @@
 ./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/lib/libxkbfile.so.2.0
 ./usr/X11R6/lib/libxkbui.so.2.0
+./usr/X11R6/lib/libxrx.so.6.8
+./usr/X11R6/lib/libxrxnest.so.6.8
 ./usr/X11R6/lib/modules
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/glxgears.0

@@ -691,9 +691,14 @@
 ./etc/X11/xserver/pt.ISO8859-1
 ./etc/X11/xserver/pt.ISO8859-15
 ./etc/X11/xserver/pt_BR
+./etc/X11/xserver/pt_BR.88591
+./etc/X11/xserver/pt_BR.88591.en
+./etc/X11/xserver/pt_BR.ISO-8859-1
+./etc/X11/xserver/pt_BR.ISO_8859-1
 ./etc/X11/xserver/pt_BR.ISO8859-1
 ./etc/X11/xserver/pt_BR.UTF-8
 ./etc/X11/xserver/pt_BR.iso88591
+./etc/X11/xserver/pt_BR.iso885915
 ./etc/X11/xserver/pt_BR.utf8
 ./etc/X11/xserver/pt_PT
 ./etc/X11/xserver/pt_PT.ISO8859-1
@@ -922,6 +927,7 @@
 ./usr/X11R6/man/cat4/glide.0
 ./usr/X11R6/man/cat4/glint.0
 ./usr/X11R6/man/cat4/i128.0
+./usr/X11R6/man/cat4/i810.0
 ./usr/X11R6/man/cat4/js_x.0
 ./usr/X11R6/man/cat4/kbd.0
 ./usr/X11R6/man/cat4/keyboard.0
