@@ -8,12 +8,12 @@ Contents
 	Dual, unaccelerated display
 
 Single, unaccelerated display
--------------------------------------
+-----------------------------
 This setup is by far the easiest to configure and is supported on just
-about every machine OpenBSD/sparc64 runs on (both PCI and SBUS based
-machines).  A sample XFConfig is given at the end of this section, but
-it may need to be customized to fit the machine.  Mostly these just
-entails configuring where mouse input comes from.
+about every machine OpenBSD/sparc64 runs on (both PCI and SBus based
+machines).  A sample /etc/X11/XF86Config is given at the end of this
+section, but it may need to be customized to fit the machine.  Mostly
+these just entails configuring where mouse input comes from.
 
 - For systems with serial mice on Zilog ports (zstty), the following
 'ServerLayout' section should be used in place of the one provided:
@@ -54,7 +54,8 @@ etc).
 	DefaultDepth 24
   in the "Screen" section.
 
-- What follows is the whole X config.
+- What follows is a  whole sample configuration file. Copy it to
+  /etc/X11/XF86Config and customize it as described above. 
 
 -- Cut Here --
 #
@@ -104,7 +105,7 @@ EndSection
 Section "InputDevice"
 	Identifier	"zsmouse0"
 	Driver		"mouse"
-	Option		"Protocol" "MouseSystems"
+	Option		"Protocol" "SunMouse"
 	Option		"Device" "/dev/ttyc"
 	Option		"Baudrate" "1200"
 EndSection
@@ -113,7 +114,7 @@ EndSection
 Section "InputDevice"
 	Identifier	"commouse0"
 	Driver		"mouse"
-	Option		"Protocol" "MouseSystems"
+	Option		"Protocol" "SunMouse"
 	Option		"Device" "/dev/tty00"
 	Option		"Baudrate" "1200"
 EndSection
@@ -123,7 +124,7 @@ Section "Monitor"
 	Identifier   "Monitor"
 	VendorName   "Unknown"
 	ModelName    "Unknown"
-# Adujst those to your monitor before using another device than wsfb 
+# Adjust those to your monitor before using another device than wsfb 
 # or you can destroy it !!
 	HorizSync    31.5-60
 	VertRefresh  50-70
@@ -159,7 +160,7 @@ EndSection
 
 Single, accelerated display
 ---------------------------
-Accelerated access to the framebuffer is only supportted on machines with
+Accelerated access to the framebuffer is only supported on machines with
 PCI VGA framebuffers.  To use it, retrieve the PCI bus, device and function
 of the video card, eg:
 
@@ -207,7 +208,7 @@ See XF86Config(5) for more options.
 
 Dual, unaccelerated display
 ---------------------------
-Dual-headed displays are only supported on machines with SBUS cgsix(4) or
+Dual-headed displays are only supported on machines with SBus cgsix(4) or
 cgthree(4) framebuffers.  Starting with the configuration in the first
 section, three additional sections are added for the second framebuffer:
 
@@ -258,4 +259,4 @@ See XF86Config(5) for more options.
 
 problem_blurb
 
-$OpenBSD: README.sparc64,v 1.15 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.sparc64,v 1.16 2002/12/08 17:12:41 matthieu Exp $
