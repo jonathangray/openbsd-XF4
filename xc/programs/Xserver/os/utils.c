@@ -406,6 +406,8 @@ SIGVAL
 AutoResetServer (sig)
     int sig;
 {
+    int olderrno = errno;
+
     dispatchException |= DE_RESET;
     isItTimeToYield = TRUE;
 #ifdef GPROF
@@ -418,6 +420,7 @@ AutoResetServer (sig)
 #ifdef AMOEBA
     WakeUpMainThread();
 #endif
+    errno = olderrno;
 }
 
 /* Force connections to close and then exit on SIGTERM, SIGINT */
@@ -427,6 +430,8 @@ SIGVAL
 GiveUp(sig)
     int sig;
 {
+    int olderrno = errno;
+
     dispatchException |= DE_TERMINATE;
     isItTimeToYield = TRUE;
 #if defined(SYSV) && defined(X_NOT_POSIX)
@@ -436,6 +441,7 @@ GiveUp(sig)
 #ifdef AMOEBA
     WakeUpMainThread();
 #endif
+    errno = olderrno;
 }
 
 #if __GNUC__
@@ -1616,11 +1622,14 @@ SmartScheduleStartTimer (void)
 void
 SmartScheduleTimer (int sig)
 {
+    int olderrno = errno;
+
     SmartScheduleTime += SmartScheduleInterval;
     if (SmartScheduleIdle)
     {
 	SmartScheduleStopTimer ();
     }
+    errno = olderrno;
 }
 #endif
 
