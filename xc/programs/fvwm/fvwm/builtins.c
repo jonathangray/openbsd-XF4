@@ -866,7 +866,7 @@ void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   /* Not everyone has vfork! */
   if (!(fork())) /* child process */
   {
-    if (execl(exec_shell_name, exec_shell_name, "-c", cmd, NULL)==-1)
+    if (execl(exec_shell_name, exec_shell_name, "-c", cmd, (char *)NULL)==-1)
     {
       fvwm_msg(ERR,"exec_function","execl failed (%s)",strerror(errno));
       exit(100);
