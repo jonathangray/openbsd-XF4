@@ -74,6 +74,22 @@ ObjectFromSpecialSource(mfbtileC,mfbtile,-DMROP=Mcopy)
 
 ObjectFromSpecialSource(mfbtileG,mfbtile,-DMROP=0)
 
+LinkSourceFile(fastblt.h,../../mfb)
+LinkSourceFile(maskbits.c,../../mfb)
+LinkSourceFile(maskbits.h,../../mfb)
+LinkSourceFile(mergerop.h,../../mfb)
+LinkSourceFile(mfbbitblt.c,../../mfb)
+LinkSourceFile(mfbbres.c,../../mfb)
+LinkSourceFile(mfbbresd.c,../../mfb)
+LinkSourceFile(mfbcmap.c,../../mfb)
+LinkSourceFile(mfbfillrct.c,../../mfb)
+LinkSourceFile(mfbfont.c,../../mfb)
+LinkSourceFile(mfbhrzvert.c,../../mfb)
+LinkSourceFile(mfbmisc.c,../../mfb)
+LinkSourceFile(mfbpntwin.c,../../mfb)
+LinkSourceFile(mfbscrclse.c,../../mfb)
+LinkSourceFile(mfbwindow.c,../../mfb)
+
 DependTarget()
 
 #if HasSaberC
