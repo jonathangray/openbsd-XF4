@@ -2255,6 +2255,7 @@ void MakeMenu(MenuRoot *mr)
   XSetWindowAttributes attributes;
   int y,width;
   int cItems;
+  size_t len;
 
   if((mr->func != F_POPUP)||(!(Scr.flags & WindowsCaptured)))
     return;
@@ -2393,11 +2394,11 @@ void MakeMenu(MenuRoot *mr)
 		     "Confused-- expected continuation to be null");
 	    break;
 	  }
-	  szMenuContinuationActionAndName =
-	    (char *) safemalloc((8+strlen(mr->name))*sizeof(char));
-	  strcpy(szMenuContinuationActionAndName,"Popup ");
-	  strcat(szMenuContinuationActionAndName, mr->name);
-	  strcat(szMenuContinuationActionAndName,"$");
+	  len = 8 + strlen(mr->name);
+	  szMenuContinuationActionAndName = (char *) safemalloc(len);
+	  strlcpy(szMenuContinuationActionAndName,"Popup ", len);
+	  strlcat(szMenuContinuationActionAndName, mr->name, len);
+	  strlcat(szMenuContinuationActionAndName,"$", len);
 	  /* NewMenuRoot inserts at the head of the list of menus
 	     but, we need it at the end */
 	  /* (Give it just the name, which is 6 chars past the action
@@ -2538,13 +2539,15 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 {
   char *tstart, *txt, *save_instring, *name;
   int i;
+  size_t len;
 
   *c = False;
 
   /* save instring in case can't find pixmap */
   save_instring = (char *)safemalloc(strlen(instring)+1);
-  name = (char *)safemalloc(strlen(instring)+1);
-  strcpy(save_instring,instring);
+  len = strlen(instring)+1;
+  name = (char *)safemalloc(len);
+  strlcpy(save_instring,instring, len);
 
   /* Scan whole string        */
   for (txt = instring; *txt != '\0'; txt++)
@@ -2597,6 +2600,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
   extern char *PixmapPath;
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   char *save_instring;
+  size_t len;
 #endif
 
   if (!instring)
@@ -2607,8 +2611,9 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   /* save instring in case can't find pixmap */
-  save_instring = (char *)safemalloc(strlen(instring)+1);
-  strcpy(save_instring,instring);
+  len = strlen(instring)+1;
+  save_instring = (char *)safemalloc(len);
+  strlcpy(save_instring,instring,len);
 #endif
   name = (char *)safemalloc(strlen(instring)+1);
 
@@ -2652,7 +2657,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	    *p = pp;
 	  else
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
-            strcpy(instring,save_instring);
+	    strlcpy(instring,save_instring,len);
 #else
   	    fvwm_msg(WARN,"scanForPixmap","Couldn't find pixmap %s",name);
 #endif

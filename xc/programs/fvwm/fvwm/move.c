@@ -638,7 +638,7 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
   char str [100];
   int offset;
 
-  (void) sprintf (str, " %+-4d %+-4d ", x, y);
+  (void) snprintf (str, sizeof(str), " %+-4d %+-4d ", x, y);
   if(Init)
     {
       XClearWindow(dpy,Scr.SizeWindow);

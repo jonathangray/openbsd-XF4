@@ -149,6 +149,7 @@ int main(int argc, char **argv)
   Bool single = False;
   Bool option_error = FALSE;
   int x, y;
+  size_t buflen;
 
   g_argv = argv;
   g_argc = argc;
@@ -181,10 +182,10 @@ int main(int argc, char **argv)
         usage();
       if (num_config_commands < MAX_CFG_CMDS)
       {
-        config_commands[num_config_commands] =
-          (char *)malloc(6+strlen(argv[i]));
-        strcpy(config_commands[num_config_commands],"Read ");
-        strcat(config_commands[num_config_commands],argv[i]);
+	buflen = 6+strlen(argv[i]);
+        config_commands[num_config_commands] = (char *)malloc(buflen);
+        strlcpy(config_commands[num_config_commands],"Read ", buflen);
+        strlcat(config_commands[num_config_commands],argv[i], buflen);
         num_config_commands++;
       }
       else
@@ -305,7 +306,7 @@ int main(int argc, char **argv)
     int	myscreen = 0;
     char *cp;
 
-    strcpy(message, XDisplayString(dpy));
+    strlcpy(message, XDisplayString(dpy), sizeof(message));
 
     for(i=0;i<Scr.NumberOfScreens;i++)
     {
@@ -324,7 +325,8 @@ int main(int argc, char **argv)
           if (cp != NULL)
             *cp = '\0';		/* truncate at display part */
         }
-        sprintf(message + strlen(message), ".%d", myscreen);
+        snprintf(message + strlen(message), sizeof(message) - strlen(message),
+	    ".%d", myscreen);
         dpy = XOpenDisplay(message);
         Scr.screen = myscreen;
         Scr.NumberOfScreens = ScreenCount(dpy);
@@ -347,8 +349,9 @@ int main(int argc, char **argv)
    * with fvwm -display term:0.0
    */
   len = strlen(XDisplayString(dpy));
-  display_string = safemalloc(len+10);
-  sprintf(display_string,"DISPLAY=%s",XDisplayString(dpy));
+  buflen = len+10;
+  display_string = safemalloc(buflen);
+  snprintf(display_string, buflen, "DISPLAY=%s",XDisplayString(dpy));
   putenv(display_string);
   /* Add a HOSTDISPLAY environment variable, which is the same as
    * DISPLAY, unless display = :0.0 or unix:0.0, in which case the full
@@ -359,24 +362,28 @@ int main(int argc, char **argv)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
     gethostname(client,MAXHOSTNAME);
-    rdisplay_string = safemalloc(len+14 + strlen(client));
-    sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,&display_string[9]);
+    buflen = len+14 + strlen(client);
+    rdisplay_string = safemalloc(buflen);
+    snprintf(rdisplay_string, buflen, 
+	"HOSTDISPLAY=%s:%s",client,&display_string[9]);
     putenv(rdisplay_string);
   }
   else if(strncmp(display_string,"DISPLAY=unix:",13)==0)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
     gethostname(client,MAXHOSTNAME);
-    rdisplay_string = safemalloc(len+14 + strlen(client));
-    sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,
+    buflen=len+14 + strlen(client);
+    rdisplay_string = safemalloc(buflen);
+    snprintf(rdisplay_string,buflen,"HOSTDISPLAY=%s:%s",client,
             &display_string[13]);
     putenv(rdisplay_string);
   }
   else
   {
     char *rdisplay_string;
-    rdisplay_string = safemalloc(len+14);
-    sprintf(rdisplay_string,"HOSTDISPLAY=%s",XDisplayString(dpy));
+    buflen=len+14;
+    rdisplay_string = safemalloc(buflen);
+    snprintf(rdisplay_string,buflen,"HOSTDISPLAY=%s",XDisplayString(dpy));
     putenv(rdisplay_string);
   }
 

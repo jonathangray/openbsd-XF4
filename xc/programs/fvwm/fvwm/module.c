@@ -173,10 +173,10 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   pipeName[i] = stripcpy(cptr);
   free(cptr);
-  sprintf(arg2,"%d",app_to_fvwm[1]);
-  sprintf(arg3,"%d",fvwm_to_app[0]);
-  sprintf(arg5,"%lx",(unsigned long)win);
-  sprintf(arg6,"%lx",(unsigned long)context);
+  snprintf(arg2,sizeof(arg2),"%d",app_to_fvwm[1]);
+  snprintf(arg3,sizeof(arg3),"%d",fvwm_to_app[0]);
+  snprintf(arg5,sizeof(arg5),"%lx",(unsigned long)win);
+  snprintf(arg6,sizeof(arg6),"%lx",(unsigned long)context);
   args[0]=arg1;
   args[1]=arg2;
   args[2]=arg3;
@@ -507,7 +507,8 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   make_vpacket(body, event_type, num, ap);
   va_end(ap);
 
-  strcpy((char *)&body[HEADER_SIZE+num], name);
+  strlcpy((char *)&body[HEADER_SIZE+num], name,
+      *len * sizeof(unsigned long) - HEADER_SIZE - num);
   body[2] = *len;
 
   /* DB(("Packet (%lu): %lu %lu %lu `%s'", *len,

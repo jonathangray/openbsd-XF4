@@ -81,6 +81,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuStatus menu_retval;
   XEvent *teventp;
   MenuOptions mops;
+  size_t hotlen;
 
   mops.flags.allflags = 0;
   if (action && *action)
@@ -164,11 +165,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   globalFlags = flags;
   if (flags & SHOW_GEOMETRY)
   {
-    sprintf(tlabel,"Desk: %d\tGeometry",desk);
+    snprintf(tlabel,sizeof(tlabel),"Desk: %d\tGeometry",desk);
   }
   else
   {
-    sprintf(tlabel,"Desk: %d",desk);
+    snprintf(tlabel,sizeof(tlabel),"Desk: %d",desk);
   }
   mr=NewMenuRoot(tlabel, False);
   AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
@@ -255,17 +256,18 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           name = t->icon_name;
         else
           name = t->name;
-        t_hot = safemalloc(strlen(name) + strlen(tname) + 48);
-        sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
+	hotlen = strlen(name) + strlen(tname) + 48;
+        t_hot = safemalloc(hotlen);
+        snprintf(t_hot, hotlen, "&%c.  %s", scut, name); /* Generate label */
         if (scut++ == '9') scut = 'A';	/* Next shortcut key */
 
         if (flags & SHOW_GEOMETRY)
         {
           tname[0]=0;
           if(t->flags & ICONIFIED)
-            strcpy(tname, "(");
-          sprintf(loc,"%d:",t->Desk);
-          strcat(tname,loc);
+	    strlcpy(tname, "(", sizeof(tname));
+          snprintf(loc, sizeof(loc), "%d:",t->Desk);
+          strlcat(tname, loc, sizeof(tname));
 
           dheight = t->frame_height - t->title_height - 2*t->boundary_width;
           dwidth = t->frame_width - 2*t->boundary_width;
@@ -276,39 +278,40 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           dwidth /= t->hints.width_inc;
           dheight /= t->hints.height_inc;
 
-          sprintf(loc,"%d",dwidth);
-          strcat(tname, loc);
-          sprintf(loc,"x%d",dheight);
-          strcat(tname, loc);
+          snprintf(loc, sizeof(loc), "%d", dwidth);
+          strlcat(tname, loc,sizeof(tname));
+          snprintf(loc, sizeof(loc), "x%d", dheight);
+          strlcat(tname, loc,sizeof(tname));
           if(t->frame_x >=0)
-            sprintf(loc,"+%d",t->frame_x);
+	    snprintf(loc, sizeof(loc), "+%d", t->frame_x);
           else
-            sprintf(loc,"%d",t->frame_x);
-          strcat(tname, loc);
+	    snprintf(loc, sizeof(loc), "%d", t->frame_x);
+          strlcat(tname, loc, sizeof(tname));
           if(t->frame_y >=0)
-            sprintf(loc,"+%d",t->frame_y);
+	    snprintf(loc, sizeof(loc), "+%d", t->frame_y);
           else
-            sprintf(loc,"%d",t->frame_y);
-          strcat(tname, loc);
+	    snprintf(loc, sizeof(loc), "%d", t->frame_y);
+          strlcat(tname, loc, sizeof(tname));
 
           if (t->flags & STICKY)
-            strcat(tname, " S");
+	    strlcat(tname, " S", sizeof(tname));
           if (t->flags & ONTOP)
-            strcat(tname, " T");
+	    strlcat(tname, " T", sizeof(tname));
           if (t->flags & ICONIFIED)
-            strcat(tname, ")");
-          strcat(t_hot,"\t");
-          strcat(t_hot,tname);
+	    strlcat(tname, ")", sizeof(tname));
+          strlcat(t_hot,"\t",hotlen);
+          strlcat(t_hot,tname,hotlen);
         }
         if (!func)
         {
           tfunc = safemalloc(40);
-          sprintf(tfunc,"WindowListFunc %ld",t->w);
+          snprintf(tfunc,40,"WindowListFunc %ld",t->w);
         }
         else
 	{
-          tfunc = safemalloc(strlen(func) + 32);
-          sprintf(tfunc,"%s %ld",func,t->w);
+	  size_t funclen = strlen(func) + 32;
+          tfunc = safemalloc(funclen);
+          snprintf(tfunc,funclen,"%s %ld",func,t->w);
 	  free(func);
 	  func = NULL;
 	}

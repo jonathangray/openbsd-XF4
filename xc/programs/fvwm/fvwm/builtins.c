@@ -2234,6 +2234,7 @@ static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   char *buffer, *rest;
   char *fore, *back, *stipple, *font, *style, *animated;
+  size_t len;
 
   rest = GetNextToken(action,&fore);
   rest = GetNextToken(rest,&back);
@@ -2248,8 +2249,9 @@ static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
   else
     {
-      buffer = (char *)safemalloc(strlen(action) + 100);
-      sprintf(buffer,
+      len = strlen(action) + 100;
+      buffer = (char *)safemalloc(len);
+      snprintf(buffer, len,
 	      "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
 	      style, fore, back, stipple, font,
 	      (animated != NULL && StrEquals(animated, "anim")) ?
@@ -4087,6 +4089,7 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     char *szVar = NULL;
     char *szValue = NULL;
     char *szPutenv = NULL;
+    size_t len;
 
     action = GetNextToken(action,&szVar);
     if (!szVar)
@@ -4098,8 +4101,9 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	return;
       }
 
-    szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
-    sprintf(szPutenv,"%s=%s",szVar,szValue);
+    len = strlen(szVar)+strlen(szValue)+2;
+    szPutenv = safemalloc(len);
+    snprintf(szPutenv,len,"%s=%s",szVar,szValue);
     putenv(szPutenv);
     free(szVar);
     free(szValue);

@@ -840,9 +840,9 @@ void ProcessNewStyle(XEvent *eventp,
 	    restofline = tmp;           /* move forward one word */
 	    if (!hit) {
               tmp=safemalloc(500);
-              strcat(tmp,"UseStyle: ");
-              strncat(tmp,restofline-len,len);
-              strcat(tmp," style not found!");
+              strlcat(tmp,"UseStyle: ", 500);
+              strlcat(tmp,restofline-len,500);
+              strlcat(tmp," style not found!",500);
               fvwm_msg(ERR,"ProcessNewStyle",tmp);
               free(tmp);
             }

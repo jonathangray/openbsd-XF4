@@ -82,6 +82,7 @@ void  ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void AddToModList(char *tline)
 {
   struct moduleInfoList *t, *prev, *this;
+  size_t len;
 
   /* Find end of list */
   t = modlistroot;
@@ -94,9 +95,10 @@ void AddToModList(char *tline)
   }
 
   this = (struct moduleInfoList *)safemalloc(sizeof(struct moduleInfoList));
-  this->data = (char *)safemalloc(strlen(tline)+1);
+  len = strlen(tline)+1;
+  this->data = (char *)safemalloc(len);
   this->next = NULL;
-  strcpy(this->data, tline);
+  strlcpy(this->data, tline, len);
   if(prev == NULL)
   {
     modlistroot = this;
@@ -167,28 +169,31 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *message,msg2[32];
   extern char *IconPath;
   extern char *PixmapPath;
+  size_t len;
 
   if (IconPath && strlen(IconPath))
   {
-    message=safemalloc(strlen(IconPath)+11);
-    sprintf(message,"IconPath %s\n",IconPath);
+    len=strlen(IconPath)+11;
+    message=safemalloc(len);
+    snprintf(message,len,"IconPath %s\n",IconPath);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
     free(message);
   }
 #ifdef XPM
   if (PixmapPath && strlen(PixmapPath))
   {
-    message=safemalloc(strlen(PixmapPath)+13);
-    sprintf(message,"PixmapPath %s\n",PixmapPath);
+    len=strlen(PixmapPath)+13;
+    message=safemalloc(len);
+    snprintf(message,len,"PixmapPath %s\n",PixmapPath);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    sprintf(message,"ColorLimit %d\n",Scr.ColorLimit);
+    snprintf(message,len,"ColorLimit %d\n",Scr.ColorLimit);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
     free(message);
   }
 #endif
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
    * 'not at all' during InitFunction and RestartFunction. */
-  sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?
+  snprintf(msg2,sizeof(msg2),"ClickTime %d\n", (Scr.ClickTime < 0) ?
 	  -Scr.ClickTime : Scr.ClickTime);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
 

@@ -1145,8 +1145,8 @@ void fvwm_msg(int type,char *id,char *msg,...)
   if (type == ERR)
   {
     char tmp[1024]; /* I hate to use a fixed length but this will do for now */
-    sprintf(tmp,"[FVWM][%s]: %s ",id,typestr);
-    vsprintf(tmp+strlen(tmp), msg, args);
+    snprintf(tmp, sizeof(tmp), "[FVWM][%s]: %s ",id,typestr);
+    vsnprintf(tmp+strlen(tmp), sizeof(tmp)-strlen(tmp), msg, args);
     tmp[strlen(tmp)+1]='\0';
     tmp[strlen(tmp)]='\n';
     BroadcastName(M_ERROR,0,0,0,tmp);

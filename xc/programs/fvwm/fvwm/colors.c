@@ -183,7 +183,7 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
     }
     if (!got_all) {
 	char s[256];
-	sprintf(s, "color gradient %s to %s", s_from, s_to);
+	snprintf(s, 256, "color gradient %s to %s", s_from, s_to);
 	nocolor("alloc", s);
     }
     return pixels;

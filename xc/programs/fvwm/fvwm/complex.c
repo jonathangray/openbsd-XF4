@@ -215,6 +215,7 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
   int l,i,l2,n,k,j;
   char *out;
   int addto = 0; /*special cas if doing addtofunc */
+  size_t outlen;
 
   l = strlen(input);
   l2 = l;
@@ -243,7 +244,8 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
       i++;
     }
 
-  out = safemalloc(l2+1);
+  outlen = l2 + 1;
+  out = safemalloc(outlen);
   i=0;
   j=0;
   while(i<l)
@@ -271,15 +273,15 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 	  else if(input[i+1] == 'w')
 	    {
 	      if(tmp_win)
-		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
+		snprintf(&out[j],outlen - j,"0x%x",(unsigned int)tmp_win->w);
 	      else
-		sprintf(&out[j],"$w");
+		snprintf(&out[j],outlen -j,"$w");
 	      j += strlen(&out[j]);
 	      i++;
 	    }
 	  else if(input[i+1] == 'd')
 	    {
-	      sprintf(&out[j], "%d", Scr.CurrentDesk);
+	      snprintf(&out[j], outlen - j,"%d", Scr.CurrentDesk);
 	      j += strlen(&out[j]);
 	      i++;
 	    }

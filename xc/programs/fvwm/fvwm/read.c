@@ -56,6 +56,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   int thisfileno;
   char missing_quiet;                   /* missing file msg control */
   char *cmdname;
+  size_t len;
 
   /* domivogt (30-Dec-1998: I tried using conditional evaluation instead
    * of the cmdname variable ( piperead?"PipeRead":"Read" ), but gcc seems
@@ -99,10 +100,11 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     Home = getenv("HOME");
     if (Home != NULL)
     {
-      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-      strcpy(home_file,Home);
-      strcat(home_file,"/");
-      strcat(home_file,ofilename);
+      len = strlen(Home) + strlen(ofilename) + 3;
+      home_file = safemalloc(len);
+      strlcpy(home_file,Home,len);
+      strlcat(home_file,"/",len);
+      strlcat(home_file,ofilename,len);
       filename = home_file;
       fd = fopen(filename,"r");
     }
@@ -116,10 +118,11 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	free(filename);
       /* find the home directory to look in */
       Home = FVWM_CONFIGDIR;
-      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-      strcpy(home_file,Home);
-      strcat(home_file,"/");
-      strcat(home_file,ofilename);
+      len = strlen(Home) + strlen(ofilename) + 3;
+      home_file = safemalloc(len);
+      strlcpy(home_file,Home,len);
+      strlcat(home_file,"/",len);
+      strlcat(home_file,ofilename,len);
       filename = home_file;
       fd = fopen(filename,"r");
     }

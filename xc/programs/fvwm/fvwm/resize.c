@@ -426,7 +426,7 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
   dwidth /= tmp_win->hints.width_inc;
   dheight /= tmp_win->hints.height_inc;
 
-  (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
+  (void) snprintf (str, sizeof(str), " %4d x %-4d ", dwidth, dheight);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
     - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
   if(Init)
