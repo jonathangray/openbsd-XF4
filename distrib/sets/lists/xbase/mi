@@ -1,5 +1,6 @@
 ./etc
 ./etc/X11
+./etc/X11/app-defaults/Beforelight
 ./etc/X11/xdm
 ./etc/X11/xdm/Xresources
 ./etc/X11/xdm/Xservers
@@ -13,6 +14,7 @@
 ./usr/X11R6/bin/atobm
 ./usr/X11R6/bin/bdftopcf
 ./usr/X11R6/bin/bdftruncate.pl
+./usr/X11R6/bin/beforelight
 ./usr/X11R6/bin/bitmap
 ./usr/X11R6/bin/bmtoa
 ./usr/X11R6/bin/cxpm
@@ -104,6 +106,7 @@
 ./usr/X11R6/bin/xsm
 ./usr/X11R6/bin/xstdcmap
 ./usr/X11R6/bin/xterm
+./usr/X11R6/bin/xvinfo
 ./usr/X11R6/bin/xwd
 ./usr/X11R6/bin/xwininfo
 ./usr/X11R6/bin/xwud
@@ -112,11 +115,6 @@
 ./usr/X11R6/include/X11/bitmaps
 ./usr/X11R6/include/X11/extensions
 ./usr/X11R6/include/X11/fonts/codeconv
-./usr/X11R6/include/X11/fonts/codeconv/xttcap.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcconv.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcconvP.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcommon.h
-./usr/X11R6/include/X11/fonts/codeconv/xttversion.h
 ./usr/X11R6/include/X11/pixmaps
 ./usr/X11R6/lib
 ./usr/X11R6/lib/X11
