@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.21 2004/11/03 00:08:59 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.22 2004/11/07 15:48:26 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -71,7 +71,11 @@
 #include <sys/mman.h>
 #endif
 
+#ifdef X_PRIVSEP
 extern int priv_open_device(const char *);
+#else
+#define priv_open_device(n)    open(n,O_RDWR|O_NONBLOCK|O_EXCL)
+#endif
 
 #define WSFB_DEFAULT_DEV "/dev/ttyC0"
 
