@@ -852,12 +852,12 @@ InitXDMCP (char **argv)
 	perror ("setsockopt");
 #endif
 #endif
-    
     XtAddInput (socketFD, (XtPointer) XtInputReadMask, ReceivePacket,
 		(XtPointer) &socketFD);
 #if defined(IPv6) && defined(AF_INET6)
-    XtAddInput (socket6FD, (XtPointer) XtInputReadMask, ReceivePacket,
-		(XtPointer) &socket6FD);
+    if (socket6FD != -1)
+	XtAddInput (socket6FD, (XtPointer) XtInputReadMask, ReceivePacket,
+		    (XtPointer) &socket6FD);
 #endif
     while (*argv)
     {
