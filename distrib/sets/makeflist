@@ -11,14 +11,16 @@ foreach setname ($lists)
 	cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} >>! $TMPFILE
 end
 
-if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
-    set xvers=x11r5
-else
-    set xvers=x11r6
-endif
-set setname=xfont
-cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} >>! $TMPFILE
+if ( "$arch" != "vax" ) then
+	if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
+    		set xvers=x11r5
+	else
+    		set xvers=x11r6
+	endif
 
+	set setname=xfont
+	cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} >>! $TMPFILE
+endif
 
 sort $TMPFILE
 /bin/rm $TMPFILE

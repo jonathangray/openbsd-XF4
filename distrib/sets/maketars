@@ -33,16 +33,16 @@ foreach setname ($lists)
 	echo    "done."
 end
 
-if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
-    set xvers=x11r5
-else
-    set xvers=x11r6
+if ( "$arch" != "vax" ) then
+	if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
+    		set xvers=x11r5
+	else
+    		set xvers=x11r6
+	endif
+	set setname=xfont
+	echo -n "${setname}: "
+	cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} | sort | \
+    		pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
 endif
-set setname=xfont
-echo -n "${setname}: "
-cat $listsdir/$setname/mi $listsdir/$setname/md.${xvers} | sort | \
-    pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
+
 echo    "done."
-
-
-
