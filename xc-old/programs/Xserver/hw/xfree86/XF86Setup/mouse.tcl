@@ -575,6 +575,7 @@ proc Mouse_getsettings { win } {
 	    }
 	}
 	Mouse_setlistbox $w $w.mouse.device.list.lb
+        if { $initbrate == 0 } { set initbrate 1200 }
 	$w.mouse.brate.$initbrate invoke
 
 	set chordMiddle     [expr [string compare $initchdmid on] == 0]
