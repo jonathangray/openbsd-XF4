@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.13 2001/06/15 17:42:30 todd Exp $
+#	$OpenBSD: Makefile,v 1.14 2001/09/16 22:01:11 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -30,6 +30,7 @@ HOSTDEF=xc/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
 HOSTDEFo=xc-old/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEFo=xc-old/config/cf/host.def
+XCONFIG=xc/${BINDIST}/OpenBSD-${XMACH}/XF86Config
 
 .if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == alpha \
 	 || ${MACHINE} == mac68k
@@ -106,6 +107,14 @@ release-install:
 	@${CHMOD} 755 ${DESTDIR}/usr/X11R6/bin/XhpBSD
 	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
+.endif
+.if ${MACHINE} == macppc
+	@if [ -f $(DESTDIR)/etc/X11/XF86Config ]; then \
+	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/XF86Config; \
+	else set -x; \
+	 ${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 444 \
+		${XCONFIG} ${DESTDIR}/etc/X11 ; \
+	fi
 .endif
 	@${MAKE} fix-appd
 
