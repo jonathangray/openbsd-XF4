@@ -368,7 +368,7 @@ Time WindowManager::timestamp(Boolean reset)
     return m_currentTime;
 }
 
-void WindowManager::sigHandler()
+void WindowManager::sigHandler(int)
 {
     m_signalled = True;
 }
