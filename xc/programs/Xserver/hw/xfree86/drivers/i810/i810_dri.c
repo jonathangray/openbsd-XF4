@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_dri.c,v 1.41 2003/09/24 02:43:23 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_dri.c,v 1.42 2003/09/28 20:15:58 alanh Exp $ */
 /*
  * Reformatted with GNU indent (2.2.8), using the following options:
  *
@@ -34,9 +34,9 @@ static char I810ClientDriverName[] = "i810";
 
 static Bool I810InitVisualConfigs(ScreenPtr pScreen);
 static Bool I810CreateContext(ScreenPtr pScreen, VisualPtr visual,
-			      drm_context_t hwContext, void *pVisualConfigPriv,
+			      drmContext hwContext, void *pVisualConfigPriv,
 			      DRIContextType contextStore);
-static void I810DestroyContext(ScreenPtr pScreen, drm_context_t hwContext,
+static void I810DestroyContext(ScreenPtr pScreen, drmContext hwContext,
 			       DRIContextType contextStore);
 static void I810DRISwapContext(ScreenPtr pScreen, DRISyncType syncType,
 			       DRIContextType readContextType,
@@ -104,7 +104,7 @@ Bool
 I810InitDma(ScrnInfoPtr pScrn)
 {
    I810Ptr pI810 = I810PTR(pScrn);
-   I810RingBuffer *ring = pI810->LpRing;
+   I810RingBuffer *ring = &(pI810->LpRing);
    I810DRIPtr pI810DRI = (I810DRIPtr) pI810->pDRIInfo->devPrivate;
    drmI810Init info;
 
@@ -290,7 +290,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
    unsigned long dcacheHandle;
    int sysmem_size = 0;
    int back_size = 0;
-   unsigned int pitch_idx = 0;
+   int pitch_idx = 0;
    int bufs;
    int width = pScrn->displayWidth * pI810->cpp;
    int i;
@@ -343,15 +343,12 @@ I810DRIScreenInit(ScreenPtr pScreen)
 
    pDRIInfo->drmDriverName = I810KernelDriverName;
    pDRIInfo->clientDriverName = I810ClientDriverName;
-   if (xf86LoaderCheckSymbol("DRICreatePCIBusID")) {
-      pDRIInfo->busIdString = DRICreatePCIBusID(pI810->PciInfo);
-   } else {
-      pDRIInfo->busIdString = xalloc(64);
-      sprintf(pDRIInfo->busIdString, "PCI:%d:%d:%d",
-	      ((pciConfigPtr) pI810->PciInfo->thisCard)->busnum,
-	      ((pciConfigPtr) pI810->PciInfo->thisCard)->devnum,
-	      ((pciConfigPtr) pI810->PciInfo->thisCard)->funcnum);
-   }
+   pDRIInfo->busIdString = xalloc(64);
+
+   sprintf(pDRIInfo->busIdString, "PCI:%d:%d:%d",
+	   ((pciConfigPtr) pI810->PciInfo->thisCard)->busnum,
+	   ((pciConfigPtr) pI810->PciInfo->thisCard)->devnum,
+	   ((pciConfigPtr) pI810->PciInfo->thisCard)->funcnum);
    pDRIInfo->ddxDriverMajorVersion = I810_MAJOR_VERSION;
    pDRIInfo->ddxDriverMinorVersion = I810_MINOR_VERSION;
    pDRIInfo->ddxDriverPatchVersion = I810_PATCHLEVEL;
@@ -481,7 +478,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
    }
 
    pI810DRI->regsSize = I810_REG_SIZE;
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->MMIOAddr,
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->MMIOAddr,
 		 pI810DRI->regsSize, DRM_REGISTERS, 0, &pI810DRI->regs) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR, "[drm] drmAddMap(regs) failed\n");
       DRICloseScreen(pScreen);
@@ -517,7 +514,6 @@ I810DRIScreenInit(ScreenPtr pScreen)
    memset(&pI810->BackBuffer, 0, sizeof(I810MemRange));
    memset(&pI810->DepthBuffer, 0, sizeof(I810MemRange));
    pI810->CursorPhysical = 0;
-   pI810->CursorARGBPhysical = 0;
 
    /* Dcache - half the speed of normal ram, but has use as a Z buffer
     * under the DRI.
@@ -591,7 +587,6 @@ I810DRIScreenInit(ScreenPtr pScreen)
    }
 
    sysmem_size -= 4096;			/* remove 4k for the hw cursor */
-   sysmem_size -= 16384;		/* remove 16k for the ARGB hw cursor */
 
    pI810->SysMem.Start = 0;
    pI810->SysMem.Size = sysmem_size;
@@ -683,19 +678,16 @@ I810DRIScreenInit(ScreenPtr pScreen)
     * regular framebuffer as well as texture memory.
     */
    drmAgpAlloc(pI810->drmSubFD, sysmem_size, 0, NULL, &agpHandle);
+
+   if (agpHandle == DRM_AGP_NO_HANDLE) {
+      xf86DrvMsg(pScreen->myNum, X_ERROR, "[agp] drmAgpAlloc failed\n");
+      DRICloseScreen(pScreen);
+      return FALSE;
+   }
    pI810->sysmemHandle = agpHandle;
-   
-   if (agpHandle != DRM_AGP_NO_HANDLE) {
-      if (drmAgpBind(pI810->drmSubFD, agpHandle, 0) == 0) {
-	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		   "[agp] Bound System Texture Memory\n");
-      } else {
-          xf86DrvMsg(pScreen->myNum, X_ERROR, "[agp] Unable to bind system texture memory. Disabling DRI.\n");
-	  DRICloseScreen(pScreen);
-	  return FALSE;
-      }
-   } else {
-      xf86DrvMsg(pScreen->myNum, X_ERROR, "[agp] Unable to allocate system texture memory. Disabling DRI.\n");
+
+   if (drmAgpBind(pI810->drmSubFD, agpHandle, 0) != 0) {
+      xf86DrvMsg(pScreen->myNum, X_ERROR, "[agp] drmAgpBind failed\n");
       DRICloseScreen(pScreen);
       return FALSE;
    }
@@ -773,30 +765,6 @@ I810DRIScreenInit(ScreenPtr pScreen)
       pI810->CursorPhysical = 0;
    }
 
-   drmAgpAlloc(pI810->drmSubFD, 16384, 2,
-	       (unsigned long *)&pI810->CursorARGBPhysical, &agpHandle);
-
-   pI810->cursorARGBHandle = agpHandle;
-
-   if (agpHandle != DRM_AGP_NO_HANDLE) {
- 	int r;
-
-      if ((r = drmAgpBind(pI810->drmSubFD, agpHandle, tom)) == 0) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "[agp] GART: Allocated 16K for ARGB mouse cursor image\n");
-	 pI810->CursorARGBStart = tom;
-	 tom += 16384;
-      } else {
-	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "[agp] GART: ARGB cursor bind failed\n");
-	 pI810->CursorARGBPhysical = 0;
-      }
-   } else {
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		 "[agp] GART: ARGB cursor alloc failed\n");
-      pI810->CursorARGBPhysical = 0;
-   }
-
    /* Steal some of the excess cursor space for the overlay regs.
     */
    pI810->OverlayPhysical = pI810->CursorPhysical + 1024;
@@ -850,7 +818,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
    pI810->SavedDcacheMem = pI810->DcacheMem;
    pI810DRI->backbufferSize = pI810->BackBuffer.Size;
 
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->BackBuffer.Start,
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->BackBuffer.Start,
 		 pI810->BackBuffer.Size, DRM_AGP, 0,
 		 &pI810DRI->backbuffer) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR,
@@ -860,7 +828,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
    }
 
    pI810DRI->depthbufferSize = pI810->DepthBuffer.Size;
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->DepthBuffer.Start,
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->DepthBuffer.Start,
 		 pI810->DepthBuffer.Size, DRM_AGP, 0,
 		 &pI810DRI->depthbuffer) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR,
@@ -890,7 +858,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->BufferMem.Start,
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->BufferMem.Start,
 		 pI810->BufferMem.Size, DRM_AGP, 0, &pI810->buffer_map) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR,
 		 "[drm] drmAddMap(buffer_map) failed.  Disabling DRI.\n");
@@ -901,8 +869,8 @@ I810DRIScreenInit(ScreenPtr pScreen)
    pI810DRI->agp_buffers = pI810->buffer_map;
    pI810DRI->agp_buf_size = pI810->BufferMem.Size;
 
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->LpRing->mem.Start,
-		 pI810->LpRing->mem.Size, DRM_AGP, 0, &pI810->ring_map) < 0) {
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->LpRing.mem.Start,
+		 pI810->LpRing.mem.Size, DRM_AGP, 0, &pI810->ring_map) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR,
 		 "[drm] drmAddMap(ring_map) failed.  Disabling DRI.\n");
       DRICloseScreen(pScreen);
@@ -929,7 +897,7 @@ I810DRIScreenInit(ScreenPtr pScreen)
 
    I810AllocLow(&(pI810->TexMem), &(pI810->SysMem), pI810DRI->textureSize);
 
-   if (drmAddMap(pI810->drmSubFD, (drm_handle_t) pI810->TexMem.Start,
+   if (drmAddMap(pI810->drmSubFD, (drmHandle) pI810->TexMem.Start,
 		 pI810->TexMem.Size, DRM_AGP, 0, &pI810DRI->textures) < 0) {
       xf86DrvMsg(pScreen->myNum, X_ERROR,
 		 "[drm] drmAddMap(textures) failed.  Disabling DRI.\n");
@@ -992,8 +960,8 @@ I810DRIScreenInit(ScreenPtr pScreen)
    pI810DRI->backOffset = pI810->BackBuffer.Start;
    pI810DRI->depthOffset = pI810->DepthBuffer.Start;
 
-   pI810DRI->ringOffset = pI810->LpRing->mem.Start;
-   pI810DRI->ringSize = pI810->LpRing->mem.Size;
+   pI810DRI->ringOffset = pI810->LpRing.mem.Start;
+   pI810DRI->ringSize = pI810->LpRing.mem.Size;
 
    pI810DRI->auxPitch = pI810->auxPitch;
    pI810DRI->auxPitchBits = pI810->auxPitchBits;
@@ -1069,14 +1037,14 @@ I810DRICloseScreen(ScreenPtr pScreen)
 
 static Bool
 I810CreateContext(ScreenPtr pScreen, VisualPtr visual,
-		  drm_context_t hwContext, void *pVisualConfigPriv,
+		  drmContext hwContext, void *pVisualConfigPriv,
 		  DRIContextType contextStore)
 {
    return TRUE;
 }
 
 static void
-I810DestroyContext(ScreenPtr pScreen, drm_context_t hwContext,
+I810DestroyContext(ScreenPtr pScreen, drmContext hwContext,
 		   DRIContextType contextStore)
 {
 }
@@ -1450,10 +1418,6 @@ static void I810DRITransitionTo2d(ScreenPtr pScreen)
     I810Ptr       pI810       = I810PTR(pScrn);
     I810SAREAPtr  pSAREAPriv = DRIGetSAREAPrivate(pScreen);
 
-    /* Try flipping back to the front page if necessary */
-    if (pSAREAPriv->pf_current_page == 1)
-	drmCommandNone(pI810->drmSubFD, DRM_I810_FLIP);
-
     /* Shut down shadowing if we've made it back to the front page */
     if (pSAREAPriv->pf_current_page == 0) {
 	I810DisablePageFlip(pScreen);
@@ -1497,11 +1461,6 @@ I810DRILeave(ScrnInfoPtr pScrn)
 	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,"%s\n",strerror(errno));
 	    return FALSE;
 	 }
-      if (pI810->cursorARGBHandle != 0)
-	 if (drmAgpUnbind(pI810->drmSubFD, pI810->cursorARGBHandle) != 0) {
-	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,"%s\n",strerror(errno));
-	    return FALSE;
-	 }
       if (pI810->agpAcquired == TRUE)
 	 drmAgpRelease(pI810->drmSubFD);
       pI810->agpAcquired = FALSE;
@@ -1541,10 +1500,6 @@ I810DRIEnter(ScrnInfoPtr pScrn)
       if (pI810->cursorHandle != 0)
 	 if (drmAgpBind(pI810->drmSubFD, pI810->cursorHandle,
 			pI810->CursorStart) != 0)
-	    return FALSE;
-      if (pI810->cursorARGBHandle != 0)
-	 if (drmAgpBind(pI810->drmSubFD, pI810->cursorARGBHandle,
-			pI810->CursorARGBStart) != 0)
 	    return FALSE;
    }
    return TRUE;

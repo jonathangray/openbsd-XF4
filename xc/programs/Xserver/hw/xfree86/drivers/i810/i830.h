@@ -27,7 +27,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830.h,v 1.12 2004/01/07 03:43:19 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830.h,v 1.13 2004/02/20 00:06:00 alanh Exp $ */
 
 /*
  * Authors:
@@ -78,16 +78,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Paulo César Pereira de Andrade <pcpa@conectiva.com.br>.
  */
 
-#define PIPE_NONE	0<<0
-#define PIPE_CRT	1<<0
-#define PIPE_TV		1<<1
-#define PIPE_DFP	1<<2
-#define PIPE_LFP	1<<3
-#define PIPE_CRT2	1<<4
-#define PIPE_TV2	1<<5
-#define PIPE_DFP2	1<<6
-#define PIPE_LFP2	1<<7
-
 typedef struct _VESARec {
    /* SVGA state */
    pointer state, pstate;
@@ -97,8 +87,6 @@ typedef struct _VESARec {
    xf86MonPtr monitor;
    /* Don't try to set the refresh rate for any modes. */
    Bool useDefaultRefresh;
-   /* display start */
-   int x, y;
 } VESARec, *VESAPtr;
 
 
@@ -145,64 +133,33 @@ typedef struct {
    unsigned int Fence[8];
 } I830RegRec, *I830RegPtr;
 
-typedef struct {
-   int            lastInstance;
-   int            refCount;
-   ScrnInfoPtr    pScrn_1;
-   ScrnInfoPtr    pScrn_2;
-   int            RingRunning;
-#ifdef I830_XV
-   int            XvInUse;
-#endif
-} I830EntRec, *I830EntPtr;
-
 typedef struct _I830Rec {
    unsigned char *MMIOBase;
    unsigned char *FbBase;
    int cpp;
 
-   unsigned int bios_version;
-
-   Bool newPipeSwitch;
-
-   Bool Clone;
-   int CloneRefresh;
-   int CloneHDisplay;
-   int CloneVDisplay;
-
-   I830EntPtr entityPrivate;	
-   int pipe;
-   int init;
-
    unsigned int bufferOffset;		/* for I830SelectBuffer */
    BoxRec FbMemBox;
-   BoxRec FbMemBox2;
    int CacheLines;
 
    /* These are set in PreInit and never changed. */
-   long FbMapSize;
-   long TotalVideoRam;
+   unsigned long FbMapSize;
+   unsigned long TotalVideoRam;
    I830MemRange StolenMemory;		/* pre-allocated memory */
-   long BIOSMemorySize;			/* min stolen pool size */
+   unsigned long BIOSMemorySize;	/* min stolen pool size */
    int BIOSMemSizeLoc;
 
    /* These change according to what has been allocated. */
    long FreeMemory;
    I830MemRange MemoryAperture;
    I830MemPool StolenPool;
-   long allocatedMemory;
+   unsigned long allocatedMemory;
 
    /* Regions allocated either from the above pools, or from agpgart. */
-   /* for single and dual head configurations */
    I830MemRange FrontBuffer;
-   I830MemRange FrontBuffer2;
+   I830MemRange	CursorMem;
+   I830RingBuffer LpRing;
    I830MemRange Scratch;
-   I830MemRange Scratch2;
-
-   /* Regions allocated either from the above pools, or from agpgart. */
-   I830MemRange	*CursorMem;
-   I830MemRange	*CursorMemARGB;
-   I830RingBuffer *LpRing;
 
 #if REMAP_RESERVED
    I830MemRange Dummy;
@@ -210,13 +167,14 @@ typedef struct _I830Rec {
 
 #ifdef I830_XV
    /* For Xvideo */
-   I830MemRange *OverlayMem;
+   I830MemRange OverlayMem;
 #endif
 
 #ifdef XF86DRI
    I830MemRange BackBuffer;
    I830MemRange DepthBuffer;
    I830MemRange TexMem;
+   I830MemRange BufferMem;
    I830MemRange ContextMem;
    int TexGranularity;
    int drmMinor;
@@ -227,13 +185,10 @@ typedef struct _I830Rec {
    Bool allowPageFlip;
    Bool disableTiling;
 
-   int backPitch;
+   int auxPitch;
+   int auxPitchBits;
 
    Bool CursorNeedsPhysical;
-   Bool CursorIsARGB;
-
-   int MonType1;
-   int MonType2;
 
    DGAModePtr DGAModes;
    int numDGAModes;
@@ -266,6 +221,7 @@ typedef struct _I830Rec {
    XAAInfoRecPtr AccelInfoRec;
    xf86CursorInfoPtr CursorInfoRec;
    CloseScreenProcPtr CloseScreen;
+   ScreenBlockHandlerProcPtr BlockHandler;
 
    I830WriteIndexedByteFunc writeControl;
    I830ReadIndexedByteFunc readControl;
@@ -278,8 +234,7 @@ typedef struct _I830Rec {
 #ifdef I830_XV
    int colorKey;
    XF86VideoAdaptorPtr adaptor;
-   ScreenBlockHandlerProcPtr BlockHandler;
-   Bool *overlayOn;
+   Bool overlayOn;
 #endif
 
    Bool directRenderingDisabled;	/* DRI disabled in PreInit. */
@@ -293,8 +248,8 @@ typedef struct _I830Rec {
    int numVisualConfigs;
    __GLXvisualConfig *pVisualConfigs;
    I830ConfigPrivPtr pVisualConfigsPriv;
-   drm_handle_t buffer_map;
-   drm_handle_t ring_map;
+   drmHandle buffer_map;
+   drmHandle ring_map;
 #endif
 
    OptionInfoPtr Options;
@@ -317,13 +272,12 @@ typedef struct _I830Rec {
    CARD32 saveSWF0;
    CARD32 saveSWF4;
 
+   /* Use BIOS call 0x5f64 to explicitly enable displays. */
+   Bool enableDisplays;
    /* Use BIOS call 0x5f05 to set the refresh rate. */
    Bool useExtendedRefresh;
 
-   Bool checkLid;
-   int monitorSwitch;
-   int operatingDevices;
-   int savedDevices;
+   int configuredDevices;
 
    /* These are indexed by the display types */
    Bool displayAttached[NumDisplayTypes];
@@ -339,7 +293,6 @@ typedef struct _I830Rec {
    int planeEnabled[MAX_DISPLAY_PIPES];
 
    /* Driver phase/state information */
-   Bool preinit;
    Bool starting;
    Bool closing;
    Bool suspended;
@@ -348,12 +301,9 @@ typedef struct _I830Rec {
    int xoffset;
    int yoffset;
 
-   unsigned int SaveGeneration;
+   int SaveGeneration;
    Bool vbeRestoreWorkaround;
    Bool displayInfo;
-   Bool devicePresence;
-
-   OsTimerPtr lidTimer;
 } I830Rec;
 
 #define I830PTR(p) ((I830Ptr)((p)->driverPrivate))
@@ -415,7 +365,7 @@ extern Bool I830FixupOffsets(ScrnInfoPtr pScrn);
 extern Bool I830BindGARTMemory(ScrnInfoPtr pScrn);
 extern Bool I830UnbindGARTMemory(ScrnInfoPtr pScrn);
 extern unsigned long I830AllocVidMem(ScrnInfoPtr pScrn, I830MemRange *result,
-				     I830MemPool *pool, long size,
+				     I830MemPool *pool, unsigned long size,
 				     unsigned long alignment, int flags);
 
 extern void I830PrintAllRegisters(I830RegPtr i830Reg);
@@ -451,8 +401,7 @@ extern void I830ChangeFrontbuffer(ScrnInfoPtr pScrn,int buffer);
 #define ALLOCATE_DRY_RUN		0x80000000
 
 /* Chipset registers for VIDEO BIOS memory RW access */
-#define _855_DRAM_RW_CONTROL 0x58
-#define _845_DRAM_RW_CONTROL 0x90
+#define DRAM_RW_CONTROL 0x58
 #define DRAM_WRITE    0x33330000
 
 #endif /* _I830_H_ */

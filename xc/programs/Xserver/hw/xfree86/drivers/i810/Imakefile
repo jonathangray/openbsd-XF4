@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/Imakefile,v 1.27 2003/04/21 18:56:48 sven Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/Imakefile,v 1.28 2003/09/28 20:15:57 alanh Exp $
 XCOMM
 XCOMM This is the Imakefile for the i810 driver.  
 XCOMM 
@@ -26,7 +26,7 @@ I830DRIOBJS = i830_dri.o
 DRISRCS = $(I810DRISRCS) $(I830DRISRCS)
 DRIOBJS = $(I810DRIOBJS) $(I830DRIOBJS)
 DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri \
-	-I$(TOP)/include -I$(DRMSRCDIR)/shared
+	-I$(XF86OSSRC)/linux/drm/kernel -I$(TOP)/include
 DRIDEFINES = $(GLX_DEFINES)
 #endif
 
@@ -78,6 +78,12 @@ INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC)				\
 #endif
 DEFINES = $(DRIDEFINES) $(CHIPDEFINES) $(I830XVDEFINES)
 
+#if BuildXF86DRI
+#if !defined(XF86DriverSDK)
+LinkSourceFile(i830_3d_reg.h, $(GLXLIBSRC)/mesa/src/drv/i830)
+#endif
+#endif
+
 ObjectFromSpecialSource(i830_io, i810_io, -DBUILD_FOR_I830)
 
 #if MakeHasPosixVariableSubstitutions
@@ -122,5 +128,6 @@ InstallDriverSDKNonExecFile(i830_dri.h,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_driver.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_memory.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_video.c,$(DRIVERSDKDIR)/drivers/i810)
+InstallDriverSDKNonExecFile(../../../../../../lib/GL/mesa/src/drv/i830/i830_3d_reg.h,$(DRIVERSDKDIR)/drivers/i810)
 
 InstallDriverSDKObjectModule(i810,$(DRIVERSDKMODULEDIR),drivers)
