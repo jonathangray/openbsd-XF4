@@ -1,25 +1,29 @@
 Post-installation instructions for XFree86 on OpenBSD/macppc
 ------------------------------------------------------------
 
-The XFree86 server is currently known to work on the G4 Macs with ATI
+OpenBSD 3.0 uses the XFree86 4.1.0 X server now. 
+
+A special driver reproduces the functionnality of Xmacppc in previous 
+releases: wsfb. It uses whatever graphics mode the console is set to 
+(by Mac OS 9) as a dump unaccelerated framebuffer in 8 bits per pixel. 
+A default /etc/X11/XF86Config is installed that uses this driver.
+So you can just use 'startx' or xdm to start X without further 
+configuration. 
+
+Accellerated drivers
+--------------------
+
+The 'ati' driver is currently known to work on the G4 Macs with ATI
 Rage 128 cards. Other machines are more or less untested. The Titanium
-PowerBook G4 is known to crash with the ati driver. 
+PowerBook G4 is known to crash. The 'nv' driver has problems on 
+nVidia cards too for now. Other cards are more or less untested
 
 Use xf86config to build a /etc/X11/XF86Config file before starting 
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
-A special driver reproduces the functionnality of Xmacppc in previous 
-releases: wsfb. It uses whatever graphics mode the console is set to 
-(by Mac OS 9) as a dump unaccelerated framebuffer in 8 bits per pixel. 
 
-Future plans:
--------------
-
-Test this and solve as much as possible of the problems on various
-powerpc machines.
-
--- Cut Here for a sample /etc/X11/XF86Config ---
+-- Cut Here for a sample /etc/X11/XF86Config to use with the ati driver ---
 Section "ServerLayout"
 	Identifier     "Sample Config"
 	Screen      0  "Screen0" 0 0
