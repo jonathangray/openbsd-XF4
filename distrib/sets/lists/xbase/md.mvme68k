@@ -1,3 +1,17 @@
+./etc/X11
+./etc/X11/app-defaults
+./etc/X11/fs
+./etc/X11/lbxproxy
+./etc/X11/proxymngr
+./etc/X11/rstart
+./etc/X11/rstart/commands
+./etc/X11/rstart/commands/x11r6
+./etc/X11/rstart/contexts
+./etc/X11/twm
+./etc/X11/xdm
+./etc/X11/xdm/pixmaps
+./etc/X11/xinit
+./etc/X11/xsm
 ./usr/X11R6/bin/bdftruncate
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/fonttosfnt
@@ -1039,3 +1053,4 @@
 ./usr/X11R6/man/cat3/gluTessProperty.0
 ./usr/X11R6/man/cat3/gluTessVertex.0
 ./usr/X11R6/man/cat3/gluUnProject.0
+./usr/X11R6/man/cat5
