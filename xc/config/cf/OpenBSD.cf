@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.66 2001/12/31 18:13:24 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.67 2002/01/05 00:25:51 matthieu Exp $
 
 
 
@@ -763,11 +763,22 @@ install:: fonts.alias							@@\
 # endif
 
 # define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
-# define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME
+# define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 
 /* FreeType2 don't work on 64bit machines */
 # define BuildFreetype2Library  NO
 # define BuildXftLibrary	NO
+
+# if XF86Server
+#   ifndef DoLoadableServer
+#     define DoLoadableServer	YES
+#   endif
+#   define XF86OSCardDrivers	wsfb
+#   ifndef XF86CardDrivers
+#    define XF86CardDrivers	ati XF86OSCardDrivers
+#   endif
+
+# endif
 
 # include <xfree86.cf>
 
