@@ -235,6 +235,7 @@
 ./usr/X11R6/lib/X11/doc/html/wacom.4.html
 ./usr/X11R6/lib/X11/doc/html/xf86cfg.1.html
 ./usr/X11R6/lib/X11/doc/html/xf86config.1.html
+./usr/X11R6/lib/X11/doc/html/xgamma.1.html
 ./usr/X11R6/lib/X11/doc/html/xvidtune.1.html
 ./usr/X11R6/lib/X11/etc
 ./usr/X11R6/lib/X11/etc/Xinstall.sh
@@ -243,7 +244,6 @@
 ./usr/X11R6/lib/X11/etc/xmodmap.std
 ./usr/X11R6/lib/X11/etc/xterm.termcap
 ./usr/X11R6/lib/X11/etc/xterm.terminfo
-./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/lib/modules/codeconv/libARABIC.a
 ./usr/X11R6/lib/modules/codeconv/libARMSCII8.a

@@ -1,3 +1,9 @@
+./usr/X11R6/bin/Xsun
+./usr/X11R6/bin/Xsun24
+./usr/X11R6/bin/XsunMono
+./usr/X11R6/lib/X11/doc/html/Xsun.1.html
+./usr/X11R6/lib/X11/doc/html/Xsun24.1.html
+./usr/X11R6/lib/X11/doc/html/XsunMono.1.html
 ./usr/X11R6/man/cat1/Xsun.0
 ./usr/X11R6/man/cat1/Xsun24.0
 ./usr/X11R6/man/cat1/XsunMono.0
