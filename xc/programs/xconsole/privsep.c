@@ -1,4 +1,4 @@
-/* $OpenBSD: privsep.c,v 1.1 2003/02/20 19:38:12 matthieu Exp $ */
+/* $OpenBSD: privsep.c,v 1.2 2003/02/21 14:02:03 matthieu Exp $ */
 /*
  * Copyright 2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -191,7 +191,7 @@ priv_init(uid_t uid, gid_t gid)
 			fd = receive_fd(socks[0]);
 			result = ioctl(fd, TIOCCONS, (char *) &on);
 			if (result < 0) {
-				warn("%d: ioctl(TIOCCONS)", __func__);
+				warn("%s: ioctl(TIOCCONS)", __func__);
 			}
 			write(socks[0], &result, sizeof(int));
 			close(fd);
