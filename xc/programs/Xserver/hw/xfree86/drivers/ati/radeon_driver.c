@@ -1808,6 +1808,11 @@ static Bool RADEONGetPLLParameters(ScrnInfoPtr pScrn)
 		    pll->reference_div  = 12;
 		    pll->xclk           = 23000;
 		    break;
+		case PCI_CHIP_RADEON_LW: /* Guessed based on iBook Open Firmware data -ReneR */
+		    pll->reference_freq = 2700;
+		    pll->reference_div  = 12;
+		    pll->xclk           = 36000;
+		    break;
 		default:
 		    pll->reference_freq = 2700;
 		    pll->reference_div  = 67;
@@ -3684,9 +3689,9 @@ static Bool RADEONPreInitAccel(ScrnInfoPtr pScrn)
 
 static Bool RADEONPreInitInt10(ScrnInfoPtr pScrn, xf86Int10InfoPtr *ppInt10)
 {
+#if !defined(__powerpc__)
     RADEONInfoPtr  info = RADEONPTR(pScrn);
 
-#if !defined(__powerpc__)
     if (xf86LoadSubModule(pScrn, "int10")) {
 	xf86LoaderReqSymLists(int10Symbols, NULL);
 	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"initializing int10\n");
@@ -6510,6 +6515,9 @@ static void RADEONInitPLLRegisters(RADEONSavePtr save, RADEONPLLPtr pll,
 
     save->ppll_ref_div   = pll->reference_div;
     save->ppll_div_3     = (save->feedback_div | (post_div->bitvalue << 16));
+#if defined(__powerpc__) /* on iBooks the LCD pannel needs tweaked PLL timings -ReneR */
+    save->ppll_div_3     = 0x000600ad; /* -ReneR */
+#endif
     save->htotal_cntl    = 0;
 }
 
