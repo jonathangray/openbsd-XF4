@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/lib/font/FreeType/ftfuncs.h,v 1.18 2004/02/24 01:13:04 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftfuncs.h,v 1.17 2003/12/21 04:02:07 dawes Exp $ */
 
 /* Number of buckets in the hashtable holding faces */
 #define NUMFACEBUCKETS 32
@@ -174,7 +174,8 @@ static void FreeTypeFreeXFont(FontPtr pFont, int freeProps);
 static void FreeTypeUnloadXFont(FontPtr pFont);
 static int
 FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info, 
-                      char *fontname, int rawAverageWidth, Bool font_properties);
+                      char *fontname, 
+                      int rawAverageWidth);
 static int FreeTypeFontGetGlyph(unsigned code, int flags, CharInfoPtr *g, FTFontPtr font);
 static int
 FreeTypeLoadFont(FTFontPtr font, FontInfoPtr info, FTFacePtr face,

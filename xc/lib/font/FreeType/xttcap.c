@@ -30,7 +30,7 @@
 
 Notice===
  */
-/* $XFree86: xc/lib/font/FreeType/xttcap.c,v 1.2 2004/02/24 01:13:04 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/xttcap.c,v 1.1 2003/10/19 18:53:50 dawes Exp $ */
 
 /*
 #include "xttversion.h"
@@ -102,7 +102,7 @@ static SPropertyRecord const validRecords[] =
     { "FaceNumber",             eRecTypeString },
     { "AutoItalic",             eRecTypeDouble  },
     { "DoubleStrike",           eRecTypeString  },
-    { "FontProperties",         eRecTypeBool    },
+    { "ForceProportional",      eRecTypeBool    },
     { "ForceSpacing",           eRecTypeString  },
     { "ScaleBBoxWidth",         eRecTypeString  },
     { "ScaleWidth",             eRecTypeDouble  },
@@ -126,8 +126,13 @@ static struct {
 } const correspondRelations[] = {
     { "fn", "FaceNumber" },
     { "ai", "AutoItalic" },
+#if True /* obsoleted - pointed out by mrt ->->-> */
+    { "ab", "DoubleStrike" },
+#endif /* <-<-<- obsoleted */
     { "ds", "DoubleStrike" },
-    { "fp", "FontProperties" },
+#if True /* obsoleted ->->-> */
+    { "fp", "ForceProportional" },
+#endif /* <-<-<- obsoleted */
     { "fs", "ForceSpacing" },
     { "bw", "ScaleBBoxWidth" },
     { "sw", "ScaleWidth" },
