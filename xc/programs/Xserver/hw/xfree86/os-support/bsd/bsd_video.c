@@ -732,9 +732,10 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	int rv;
 	int kmem;
 
- 	kmem = open("/dev/kmem", 2);
+ 	kmem = open("/dev/xf86", 2);
  	if (kmem == -1) {
- 		FatalError("xf86ReadBIOS: open /dev/kmem\n");
+		ErrorF("errno: %d\n", errno);
+ 		FatalError("xf86ReadBIOS: open /dev/xf86\n");
  	}
 
 #ifdef DEBUG
@@ -743,6 +744,7 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 
 	if (Base < 0x80000000) {
 		fprintf(stderr, "No VGA\n");
+		close(kmem);
 		return 0;
 	}
 
