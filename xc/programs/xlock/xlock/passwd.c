@@ -1134,6 +1134,7 @@ checkPasswd(char *buffer)
 	char       *pass;
 	char       *style;
 	char       *name;
+	int	    authok;
 	extern	gid_t egid, rgid;
 
 	(void)setegid(egid);
@@ -1153,15 +1154,19 @@ checkPasswd(char *buffer)
 	if ((pass = strchr(buffer, ':')) != NULL) {
 		*pass++ = '\0';
 		style = buffer;
-	}else{
-	    pass = buffer;
-	    style = NULL;
-	}
-	if (auth_userokay(name,style,"auth-xlock",pass)||
-	    auth_userokay(ROOT,style,"auth-xlock",pass)) {
-	    done = True;
+		authok = auth_userokay(name, style, "auth-xlock", pass) ||
+		    auth_userokay(ROOT, style, "auth-xlock", pass);
+		*--pass = ':';
+	} else
+		authok = 0;
+	pass = buffer;
+	style = NULL;
+	if (authok || auth_userokay(name, style, "auth-xlock", pass) ||
+		auth_userokay(ROOT, style, "auth-xlock", pass)) {
+		done = True;
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
-	    syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName, ROOT);
+		syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName,
+		    ROOT);
 #endif
 	}
 	
