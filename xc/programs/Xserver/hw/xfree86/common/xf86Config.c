@@ -755,6 +755,7 @@ static OptionInfoRec FlagOptions[] = {
 	{0}, FALSE }
 };
 
+#if defined(i386) || defined(__i386__)
 static Bool
 detectPC98(void)
 {
@@ -771,6 +772,7 @@ detectPC98(void)
     return FALSE;
 #endif
 }
+#endif /* __i386__ */
 
 static Bool
 configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
@@ -1004,7 +1006,7 @@ configInputKbd(IDevPtr inputp)
      int xf86WSKbdProc(DeviceIntPtr, int);
 
      xf86Info.kbdProc    = xf86WSKbdProc;
-     xf86Info.kbdEvents  = xf86KbdEvents;
+     xf86Info.kbdEvents  = NULL;
      xfree(s);
      s = xf86SetStrOption(inputp->commonOptions, "Device", NULL);
      xf86Msg(X_CONFIG, "Keyboard: Protocol: wskbd\n");
