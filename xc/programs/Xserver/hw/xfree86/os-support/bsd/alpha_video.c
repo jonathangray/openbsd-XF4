@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: alpha_video.c,v 1.6 2002/08/24 17:35:29 matthieu Exp $ */
+/* $OpenBSD: alpha_video.c,v 1.7 2002/09/15 10:17:16 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -151,47 +151,14 @@ checkDevMem(Bool warn)
 	    return;
 	devMemChecked = TRUE;
 
-	if ((fd = open(DEV_MEM, O_RDWR)) >= 0)
-	{
-	    /* Try to map a page at the VGA address */
-	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
-				 MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
-	
-	    if (base != MAP_FAILED)
-	    {
-		munmap((caddr_t)base, 4096);
-		devMemFd = fd;
-		useDevMem = TRUE;
-		return;
-	    } else {
-		/* This should not happen */
-		if (warn)
-		{
-		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
-			    DEV_MEM, strerror(errno));
-		}
-		useDevMem = FALSE;
-		return;
-	    }
-	}
-#ifndef HAS_APERTURE_DRV
-	if (warn)
-	{ 
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s (%s)\n",
-		    DEV_MEM, strerror(errno));
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
-	} 
-	useDevMem = FALSE;
-#else
-	/* Failed to open /dev/mem, try the aperture driver */
-	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0)
-	{
+#ifdef HAS_APERTURE_DRV
+	/* Try the aperture driver first */
+	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0) {
 	    /* Try to map a page at the VGA address */
 	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
 			     MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
 	
-	    if (base != MAP_FAILED)
-	    {
+	    if (base != MAP_FAILED) {
 		munmap((caddr_t)base, 4096);
 		devMemFd = fd;
 		useDevMem = TRUE;
@@ -199,24 +166,45 @@ checkDevMem(Bool warn)
 		        DEV_APERTURE);
 		return;
 	    } else {
-
-		if (warn)
-		{
+		if (warn) {
 		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
 			    DEV_APERTURE, strerror(errno));
 		}
 	    }
-	} else {
-	    if (warn)
-	    {
-		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-			"\t(%s)\n%s", DEV_MEM, DEV_APERTURE, strerror(errno),
-			SYSCTL_MSG);
-	    }
-	}
+	} 
+#endif
+	if ((fd = open(DEV_MEM, O_RDWR)) >= 0) {
+	    /* Try to map a page at the VGA address */
+	    base = mmap((caddr_t)0, 4096, PROT_READ|PROT_WRITE,
+				 MAP_FLAGS, fd, (off_t)0xA0000 + BUS_BASE);
 	
-	if (warn)
-	{
+	    if (base != MAP_FAILED) {
+		munmap((caddr_t)base, 4096);
+		devMemFd = fd;
+		useDevMem = TRUE;
+		return;
+	    } else {
+		if (warn) {
+		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
+			    DEV_MEM, strerror(errno));
+		}
+	    }
+	} 
+	if (warn) { 
+#ifndef HAS_APERTURE_DRV
+	    xf86Msg(X_WARNING, "checkDevMem: failed to open/mmap %s (%s)\n",
+		    DEV_MEM, strerror(errno));
+	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
+#else
+#ifndef __OpenBSD__
+	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+		"\t(%s)\n", DEV_APERTURE, DEV_MEM, strerror(errno));
+#else /* __OpenBSD__ */
+	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+		    "\t(%s)\n%s", DEV_APERTURE, DEV_MEM, strerror(errno),
+		    SYSCTL_MSG);
+#endif /* __OpenBSD__ */
+
 	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
 	}
 	useDevMem = FALSE;
@@ -665,6 +653,7 @@ xf86DropPriv(void)
 	xf86EnableIO();
 	checkDevMem(TRUE);
 	pciInit();
+	xf86OpenConsole();
 	/* revoke privileges */
 	seteuid(getuid());
 	setuid(getuid());
