@@ -521,6 +521,51 @@ WaitForChild (void)
 		    d->lastCrash = Time;
 		}
 		break;
+	    case waitCompose (SIGTERM,0,0):
+		d->startTries = 0;
+		Debug ("Display exited on SIGTERM\n");
+		if (d->displayType.origin == FromXDMCP || d->status == zombie)
+		    StopDisplay(d);
+		else
+		    RestartDisplay (d, TRUE);
+		break;
+	    case REMANAGE_DISPLAY:
+		d->startTries = 0;
+		Debug ("Display exited with REMANAGE_DISPLAY\n");
+		/*
+ 		 * XDMCP will restart the session if the display
+		 * requests it
+		 */
+		if (d->displayType.origin == FromXDMCP || d->status == zombie)
+		    StopDisplay(d);
+		else
+		    RestartDisplay (d, FALSE);
+		break;
+	    }
+	}
+	/* SUPPRESS 560 */
+	else if ((d = FindDisplayByServerPid (pid)))
+	{
+	    d->serverPid = -1;
+	    switch (d->status)
+	    {
+	    case zombie:
+		Debug ("Zombie server reaped, removing display %s\n", d->name);
+		RemoveDisplay (d);
+		break;
+	    case phoenix:
+		Debug ("Phoenix server arises, restarting display %s\n", d->name);
+		d->status = notRunning;
+		break;
+	    case running:
+		Debug ("Server for display %s terminated unexpectedly, status %d %d\n", d->name, waitVal (status), status);
+		LogError ("Server for display %s terminated unexpectedly: %d\n", d->name, waitVal (status));
+		if (d->pid != -1)
+		{
+		    Debug ("Terminating session pid %d\n", d->pid);
+		    TerminateProcess (d->pid, SIGTERM);
+		}
+		break;
 	    case notRunning:
 		Debug ("Server exited for notRunning session on display %s\n", d->name);
 		break;
