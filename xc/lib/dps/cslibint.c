@@ -250,16 +250,14 @@ _XEventsQueued (Display *dpy, int mode)
 void _XReadEvents(Display *dpy)
 {
 	char buf[BUFSIZE];
-	long pend_not_register; /* because can't "&" a register variable */
-	register long pend;
+	int pend; 
 	register xEvent *ev;
 	Bool not_yet_flushed = True;
 
 	do {
 	    /* find out how much data can be read */
-	    if (BytesReadable(dpy->fd, (char *) &pend_not_register) < 0)
+	    if (BytesReadable(dpy->fd, (char *) &pend) < 0)
 	    	_XIOError(dpy);
-	    pend = pend_not_register;
 
 	    /* must read at least one xEvent; if none is pending, then
 	       we'll just flush and block waiting for it */

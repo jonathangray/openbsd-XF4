@@ -743,14 +743,12 @@ void N_XWaitForWritable(Display *dpy)
 
 	if (_XANYSET(r_mask)) {
 	    char buf[BUFSIZE];
-	    long pend_not_register;
-	    register long pend;
+	    int pend;
 	    register xEvent *ev;
 
 	    /* find out how much data can be read */
-	    if (BytesReadable(dpy->fd, (char *) &pend_not_register) < 0)
+	    if (BytesReadable(dpy->fd, (char *) &pend) < 0)
 		_XIOError(dpy);
-	    pend = pend_not_register;
 
 	    /* must read at least one xEvent; if none is pending, then
 	       we'll just block waiting for it */
