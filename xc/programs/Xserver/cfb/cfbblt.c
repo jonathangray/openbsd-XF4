@@ -1,7 +1,7 @@
 /*
  * cfb copy area
  */
-/* $XFree86: xc/programs/Xserver/cfb/cfbblt.c,v 3.9 2000/02/12 03:39:22 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbblt.c,v 3.10 2001/01/17 22:36:34 dawes Exp $ */
 
 /*
 
@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 Author: Keith Packard
 
 */
-/* $TOG: cfbblt.c /main/14 1998/02/09 14:04:41 kaleb $ */
+/* $Xorg: cfbblt.c,v 1.3 2000/08/17 19:48:13 cpqbld Exp $ */
 
 /* 24-bit bug fixes: Peter Wainwright, 1998/11/28 */
 

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Screen.c,v 1.16 2000/12/01 16:10:01 paulo Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Screen.c,v 1.17 2001/02/15 19:54:40 eich Exp $ */
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -315,6 +315,7 @@ xf86parseScreenSection (void)
 			if (xf86getToken (NULL) != STRING)
 				Error (QUOTE_MSG, "SubSection");
 			{
+			        xf86conffree(val.str);
 				HANDLE_LIST (scrn_display_lst, xf86parseDisplaySubSection,
 							 XF86ConfDisplayPtr);
 			}

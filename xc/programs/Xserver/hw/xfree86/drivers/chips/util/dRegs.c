@@ -4,7 +4,7 @@
 
 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/util/dRegs.c,v 1.6 2000/09/22 11:35:49 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/util/dRegs.c,v 1.6.4.1 2001/05/25 18:15:45 eich Exp $ */
 
 #ifdef __NetBSD__
 #  include <sys/types.h>
@@ -188,7 +188,7 @@ void main(void)
     storeReg = inb(0x3CE);
     for(i = 0;i < 0x10;i++){
 	outb(0x3CE,i);
-	printf("GC 0x%2.2X\t0x%X2.2\n",i,inb(0x3CF)&0xFF);
+	printf("GC 0x%2.2X\t0x%2.2X\n",i,inb(0x3CF)&0xFF);
     }
     outb(0x3CE,storeReg);
     printf("port 0x3C4 (Sequencer)\n");

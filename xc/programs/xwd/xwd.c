@@ -1,4 +1,4 @@
-/* $TOG: xwd.c /main/65 1998/02/09 14:20:36 kaleb $ */
+/* $Xorg: xwd.c,v 1.4 2000/08/17 19:55:13 cpqbld Exp $ */
 
 /*
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xwd/xwd.c,v 3.6 2000/12/01 00:24:36 dawes Exp $ */
+/* $XFree86: xc/programs/xwd/xwd.c,v 3.7 2001/01/17 23:46:42 dawes Exp $ */
 
 /*
  * xwd.c MIT Project Athena, X Window system window raster image dumper.

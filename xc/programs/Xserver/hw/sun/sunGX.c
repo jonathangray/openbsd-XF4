@@ -1,5 +1,5 @@
 #ifndef lint
-static char *rid="$TOG: sunGX.c /main/28 1998/02/10 13:16:33 kaleb $";
+static char *rid="$Xorg: sunGX.c,v 1.4 2000/08/18 11:06:23 xorgcvs Exp $";
 #endif /* lint */
 /*
 Copyright 1991, 1998  The Open Group
@@ -23,7 +23,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.3 1998/10/04 09:38:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.4 2001/01/17 22:36:50 dawes Exp $ */
 
 #include	"sun.h"
 

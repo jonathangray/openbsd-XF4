@@ -24,7 +24,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_frect.c,v 1.2 2000/05/23 04:47:44 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_frect.c,v 1.3 2001/04/05 17:42:33 dawes Exp $ */
 
 #include "ffb.h"
 #include "ffb_regs.h"
@@ -451,7 +451,7 @@ CreatorFillBoxSolid (DrawablePtr pDrawable, int nBox, BoxPtr pBox, unsigned long
 		CreatorBoxFillPage(pFfb, nBox, pBox);
 
 	pFfb->rp_active = 1;
-	FFBSync(pFfb, ffb);
+	FFBSync(pFfb, pFfb->regs);
 }
 
 static void

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/glyph.c,v 1.4.2.1 2001/03/09 02:26:51 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/glyph.c,v 1.5 2001/01/30 07:01:22 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *

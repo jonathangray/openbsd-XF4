@@ -1,4 +1,4 @@
-/* $TOG: error.c /main/9 1998/02/09 16:11:09 kaleb $ */
+/* $Xorg: error.c,v 1.5 2000/08/17 19:47:30 cpqbld Exp $ */
 /* AGE Logic - Oct 15 1995 - Larry Hare */
 /**** module error.c ****/
 /****************************************************************************
@@ -61,7 +61,7 @@ terms and conditions:
      Title to this software shall at all times remain with AGE
      Logic, Inc.
 ****************************************************************************/
-/* $XFree86: xc/programs/Xserver/XIE/dixie/request/error.c,v 3.3 1998/10/10 15:25:21 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/XIE/dixie/request/error.c,v 3.4 2001/01/17 22:12:55 dawes Exp $ */
 
 /*
  *  Include files

@@ -1,4 +1,4 @@
-/* $TOG: listdev.c /main/13 1998/02/09 15:29:56 kaleb $ */
+/* $Xorg: listdev.c,v 1.3 2000/08/17 19:48:02 cpqbld Exp $ */
 
 /************************************************************
 
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/Xi/listdev.c,v 3.2 1998/10/04 09:37:12 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xi/listdev.c,v 3.3 2001/01/17 22:13:25 dawes Exp $ */
 
 /***********************************************************************
  *

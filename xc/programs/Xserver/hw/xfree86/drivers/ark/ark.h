@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ark/ark.h,v 1.1 2000/11/14 17:28:12 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ark/ark.h,v 1.2 2001/01/29 15:15:44 keithp Exp $ */
 /*
  * ark
  */
@@ -67,5 +67,6 @@ typedef struct _ARKRec {
 #define	ZOOMDAC		0x404
 #define ATT490		0x101
 
+Bool ARKAccelInit(ScreenPtr pScreen);
 
 #endif /* _ARK_H */

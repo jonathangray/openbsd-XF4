@@ -1,4 +1,4 @@
-/* $TOG: AuLock.c /main/16 1998/02/06 14:14:52 kaleb $ */
+/* $Xorg: AuLock.c,v 1.3 2000/08/17 19:45:29 cpqbld Exp $ */
 
 /*
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xau/AuLock.c,v 3.2 2000/02/14 17:43:40 robin Exp $ */
+/* $XFree86: xc/lib/Xau/AuLock.c,v 3.3 2001/01/17 19:42:24 dawes Exp $ */
 
 #include <X11/Xauth.h>
 #include <X11/Xos.h>

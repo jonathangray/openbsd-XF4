@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/xf4bpp.h,v 1.5 2000/09/26 15:57:21 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/xf4bpp.h,v 1.6 2001/03/08 17:12:17 eich Exp $ */
 
 
 #ifndef __XF4BPP_H__
@@ -10,7 +10,7 @@
 #include "colormapst.h"
 #include "fontstruct.h"
 #ifndef PixelType
-#define PixelType unsigned long
+#define PixelType CARD32
 #endif
 
 /* ppcArea.c */

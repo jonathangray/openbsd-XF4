@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dga.c,v 1.9.2.1 2001/03/06 19:44:47 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dga.c,v 1.10 2001/01/22 21:32:36 dawes Exp $ */
 
 #include "nv_local.h"
 #include "nv_include.h"

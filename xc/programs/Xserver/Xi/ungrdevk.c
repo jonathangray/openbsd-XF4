@@ -1,4 +1,4 @@
-/* $TOG: ungrdevk.c /main/8 1998/02/09 15:30:50 kaleb $ */
+/* $Xorg: ungrdevk.c,v 1.3 2000/08/17 19:48:02 cpqbld Exp $ */
 
 /************************************************************
 
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/Xi/ungrdevk.c,v 3.2 1998/10/04 09:37:18 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xi/ungrdevk.c,v 3.3 2001/01/17 22:13:26 dawes Exp $ */
 
 /***********************************************************************
  *

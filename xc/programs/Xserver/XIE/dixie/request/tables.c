@@ -1,4 +1,4 @@
-/* $TOG: tables.c /main/5 1998/02/09 16:11:59 kaleb $ */
+/* $Xorg: tables.c,v 1.3 2000/08/17 19:47:32 cpqbld Exp $ */
 /**** tables.c ****/
 /****************************************************************************
 
@@ -66,7 +66,7 @@ terms and conditions:
 	Dean Verheiden, AGE Logic, Inc	March 1993
 
 ****************************************************************************/
-/* $XFree86: xc/programs/Xserver/XIE/dixie/request/tables.c,v 3.4 1999/01/31 12:21:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/XIE/dixie/request/tables.c,v 3.5 2001/01/17 22:12:56 dawes Exp $ */
 
 #define _XIEC_TABLES
 

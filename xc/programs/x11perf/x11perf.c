@@ -1,5 +1,4 @@
-/* $XConsortium: x11perf.c,v 2.54 94/03/30 19:40:27 gildea Exp $ */
-/* $XFree86: xc/programs/x11perf/x11perf.c,v 3.3 2000/11/29 08:58:20 keithp Exp $ */
+/* $Xorg: x11perf.c,v 1.4 2000/08/17 19:54:10 cpqbld Exp $ */
 /****************************************************************************
 Copyright 1988, 1989 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -22,6 +21,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ****************************************************************************/
+/* $XFree86: xc/programs/x11perf/x11perf.c,v 3.4 2001/01/17 23:45:12 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>

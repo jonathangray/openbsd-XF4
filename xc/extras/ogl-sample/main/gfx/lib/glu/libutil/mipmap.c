@@ -31,8 +31,8 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
-** $Date: 2001/04/05 22:05:45 $ $Revision: 1.1.1.1 $
-** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libutil/mipmap.c,v 1.1.1.1 2001/04/05 22:05:45 matthieu Exp $
+** $Date: 2001/06/04 09:48:29 $ $Revision: 1.1.1.2 $
+** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libutil/mipmap.c,v 1.1.1.2 2001/06/04 09:48:29 matthieu Exp $
 */
 /* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/mipmap.c,v 1.3 2001/02/01 08:44:54 alanh Exp $ */
 

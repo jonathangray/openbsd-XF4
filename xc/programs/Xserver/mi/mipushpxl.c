@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/mi/mipushpxl.c,v 3.10 2000/02/12 03:40:06 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipushpxl.c,v 3.11 2001/01/17 22:37:07 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $TOG: mipushpxl.c /main/12 1998/02/09 14:48:25 kaleb $ */
+/* $Xorg: mipushpxl.c,v 1.3 2000/08/17 19:53:38 cpqbld Exp $ */
 #include "X.h"
 #include "gcstruct.h"
 #include "scrnintstr.h"

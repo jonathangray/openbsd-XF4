@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Privstr.h,v 1.21 2000/11/06 19:24:07 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Privstr.h,v 1.25 2001/05/18 16:03:11 tsi Exp $ */
 
 /*
  * Copyright (c) 1997,1998 by The XFree86 Project, Inc.
@@ -12,10 +12,8 @@
 #ifndef _XF86PRIVSTR_H
 #define _XF86PRIVSTR_H
 
-#include "Xproto.h"
 #include "xf86Pci.h"
-#ifdef XINPUT
-#endif
+#include "xf86str.h"
 
 /* PCI probe flags */
 
@@ -124,6 +122,7 @@ typedef struct {
 #endif
     Bool                pmFlag;
     int                 estimateSizesAggressively;
+    Bool                kbdCustomKeycodes;
 } xf86InfoRec, *xf86InfoPtr;
 
 #ifdef DPMSExtension
@@ -200,6 +199,9 @@ typedef struct {
 #endif
 #ifndef X_INFO_STRING
 #define X_INFO_STRING		"(II)"
+#endif
+#ifndef X_NOT_IMPLEMENTED_STRING
+#define X_NOT_IMPLEMENTED_STRING	"(NI)"
 #endif
 
 #endif /* _XF86PRIVSTR_H */

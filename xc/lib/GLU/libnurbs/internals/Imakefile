@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GLU/libnurbs/internals/Imakefile,v 1.4 2001/02/18 20:01:02 dawes Exp $
+XCOMM $XFree86: xc/lib/GLU/libnurbs/internals/Imakefile,v 1.5 2001/04/07 17:13:26 dawes Exp $
 
 XCOMM License Applicability. Except to the extent portions of this file are
 XCOMM made subject to an alternative license as permitted in the SGI Free
@@ -138,12 +138,15 @@ OBJS = \
 
 INCLUDES = \
 	-I../nurbtess \
+	-I../../libutil \
 	-I../../include \
 	-I$(TOP)/include \
 	-I$(TOP)/include/GL
 
 #if SystemV4
 OSDEFINES = -DNEEDCEILF
+#else
+OSDEFINES = -D_EXTENSIONS_
 #endif
 
 DEFINES = $(OSDEFINES) \

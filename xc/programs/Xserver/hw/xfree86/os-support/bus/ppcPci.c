@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/ppcPci.c,v 1.5 2000/02/08 13:13:29 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/ppcPci.c,v 1.6 2001/05/11 08:16:55 alanh Exp $ */
 /*
  * ppcPci.c - PowerPC PCI access functions
  *
@@ -140,7 +140,13 @@ motoppcPciInit()
 }
 
 extern unsigned long motoPciMemBase    = 0;
+
+#if defined(Lynx) && defined(__powerpc__)
+extern unsigned long motoPciMemLen     = 0x40000000;
+#else
 extern unsigned long motoPciMemLen     = 0x3f000000;
+#endif
+
 extern unsigned long motoPciMemBaseCPU = 0xc0000000;
 
 ADDRESS

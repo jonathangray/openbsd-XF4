@@ -5,7 +5,7 @@
  *
  * Author: David Dawes <dawes@xfree86.org>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/pcitweak.c,v 1.14 2000/08/10 17:40:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/pcitweak.c,v 1.15 2001/01/06 20:19:12 tsi Exp $ */
 
 #include "X.h"
 #include "os.h"
@@ -31,6 +31,8 @@
 extern char *optarg;
 extern int optind, opterr;
 #endif
+
+pciVideoPtr *xf86PciVideoInfo = NULL;
 
 static void usage(void);
 static Bool parsePciBusString(const char *id, int *bus, int *device, int *func);

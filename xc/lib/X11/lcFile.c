@@ -1,4 +1,4 @@
-/* $TOG: lcFile.c /main/13 1998/05/28 14:21:35 kaleb $ */
+/* $Xorg: lcFile.c,v 1.4 2000/08/17 19:45:17 cpqbld Exp $ */
 /*
  *
  * Copyright IBM Corporation 1993
@@ -23,7 +23,7 @@
  * SOFTWARE.
  *
 */
-/* $XFree86: xc/lib/X11/lcFile.c,v 3.19 2000/11/28 18:49:43 dawes Exp $ */
+/* $XFree86: xc/lib/X11/lcFile.c,v 3.23 2001/05/18 23:35:28 dawes Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>

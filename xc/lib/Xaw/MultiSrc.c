@@ -1,4 +1,4 @@
-/* $TOG: MultiSrc.c /main/12 1998/05/14 14:55:50 kaleb $ */
+/* $Xorg: MultiSrc.c,v 1.3 2000/08/17 19:45:35 cpqbld Exp $ */
 
 /*
  * Copyright 1991 by OMRON Corporation
@@ -27,7 +27,7 @@
  *
  * Much code taken from X11R3 String and Disk Sources.
  */
-/* $XFree86: xc/lib/Xaw/MultiSrc.c,v 1.19.2.1 2001/01/27 20:06:56 herrb Exp $ */
+/* $XFree86: xc/lib/Xaw/MultiSrc.c,v 1.21 2001/01/26 22:45:59 herrb Exp $ */
 
 /*
 

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/mipict.c,v 1.5.2.1 2001/03/09 02:26:51 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/mipict.c,v 1.6.2.1 2001/06/01 01:06:35 dawes Exp $
  *
  * Copyright © 1999 Keith Packard
  *
@@ -29,6 +29,10 @@
 #include "mi.h"
 #include "picturestr.h"
 #include "mipict.h"
+
+#ifndef __GNUC__
+#define __inline
+#endif
 
 int
 miCreatePicture (PicturePtr pPicture)

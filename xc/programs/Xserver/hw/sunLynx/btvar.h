@@ -1,10 +1,4 @@
-/* $XConsortium: btvar.h /main/1 1996/10/31 14:20:34 kaleb $ */
-
-
-
-/*	$NetBSD: btvar.h,v 1.2 1994/11/20 20:51:56 deraadt Exp $ */
-/*	$XFree86: xc/programs/Xserver/hw/sunLynx/btvar.h,v 3.1 1996/12/27 06:51:32 dawes Exp $ */
-
+/* $Xorg: btvar.h,v 1.3 2000/08/17 19:48:36 cpqbld Exp $ */
 /*
  * Copyright (c) 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -48,6 +42,8 @@
  *
  *	@(#)btvar.h	8.2 (Berkeley) 1/21/94
  */
+/*	$NetBSD: btvar.h,v 1.2 1994/11/20 20:51:56 deraadt Exp $ */
+/*	$XFree86: xc/programs/Xserver/hw/sunLynx/btvar.h,v 3.2 2001/01/17 22:36:52 dawes Exp $ */
 
 /*
  * Brooktree color frame buffer state variables (see btreg.h).

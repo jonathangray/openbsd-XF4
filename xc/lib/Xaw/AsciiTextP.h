@@ -1,5 +1,5 @@
 /*
- * $TOG: AsciiTextP.h /main/19 1998/02/11 14:53:10 kaleb $ 
+ * $Xorg: AsciiTextP.h,v 1.3 2000/08/17 19:45:31 cpqbld Exp $
  */
 
 /***********************************************************
@@ -44,7 +44,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/AsciiTextP.h,v 1.7 1999/06/20 08:40:57 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/AsciiTextP.h,v 1.8 2001/01/17 19:42:25 dawes Exp $ */
 
 /*
  * AsciiText.c - Private header file for AsciiText Widget.

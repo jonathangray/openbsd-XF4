@@ -21,7 +21,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/xvdix.h,v 1.6 2000/01/18 16:35:39 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xvdix.h,v 1.7 2001/05/07 21:37:51 tsi Exp $ */
 
 #ifndef XVDIX_H
 #define XVDIX_H
@@ -53,7 +53,7 @@ SOFTWARE.
 **
 */
 
-#include "pixmap.h"
+#include "scrnintstr.h"
 #include "Xvproto.h"
 
 extern int  XvScreenIndex;

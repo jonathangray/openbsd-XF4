@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/dummylib/getvalidbios.c,v 1.2 2000/12/07 15:43:45 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/dummylib/getvalidbios.c,v 1.3 2001/05/15 10:19:41 eich Exp $ */
 
 #include "X.h"
 #include "os.h"
@@ -10,7 +10,7 @@
  */
 
 memType
-getValidBIOSBase(PCITAG tag, int *num)
+getValidBIOSBase(PCITAG tag, int num)
 {
     return 0;
 }

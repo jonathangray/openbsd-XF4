@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.26 2000/11/02 19:10:53 dawes Exp $ */
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.27 2001/04/21 20:14:39 herrb Exp $ */
 
 
 
@@ -22,7 +22,7 @@ DLSRC=dlloader.c
 DLOBJ=dlloader.o
 #endif
 
-DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OSDEFINES)
+DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OS_DEFINES)
 
 MODULEDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
 

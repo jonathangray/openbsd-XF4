@@ -1,4 +1,4 @@
-/* $XConsortium: dbe.c /main/4 1996/08/01 19:24:47 dpw $ */
+/* $Xorg: dbe.c,v 1.3 2000/08/17 19:48:16 cpqbld Exp $ */
 /******************************************************************************
  * 
  * Copyright (c) 1994, 1995  Hewlett-Packard Company
@@ -30,7 +30,7 @@
  *     DIX DBE code
  *
  *****************************************************************************/
-/* $XFree86: xc/programs/Xserver/dbe/dbe.c,v 3.7 1999/11/11 03:38:15 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/dbe/dbe.c,v 3.8 2001/01/17 22:36:41 dawes Exp $ */
 
 
 /* INCLUDES */

@@ -1,4 +1,4 @@
-/* $TOG: XSetBMap.c /main/5 1998/02/06 15:04:40 kaleb $ */
+/* $Xorg: XSetBMap.c,v 1.3 2000/08/17 19:45:57 cpqbld Exp $ */
 
 /************************************************************
 
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/lib/Xi/XSetBMap.c,v 3.1 1998/10/03 09:06:12 dawes Exp $ */
+/* $XFree86: xc/lib/Xi/XSetBMap.c,v 3.2 2001/01/17 19:42:50 dawes Exp $ */
 
 /***********************************************************************
  *

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loader.h,v 1.23 2000/11/13 23:09:56 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loader.h,v 1.25 2001/02/22 23:17:09 dawes Exp $ */
 
 /*
  *
@@ -84,12 +84,14 @@ typedef struct _LoaderReloc {
     AOUTRelocPtr aout_reloc;
 } LoaderRelocRec, *LoaderRelocPtr;
 
+typedef struct _loader_item *itemPtr;
 typedef struct _loader_item {
 	char	*name ;
 	void	*address ;
-	struct _loader_item *next ;
+	itemPtr	next ;
 	int	handle ;
 	int	module ;
+	itemPtr	exports;
 #if defined(__powerpc__)
 	/*
 	 * PowerPC file formats require special routines in some circumstances
@@ -101,7 +103,7 @@ typedef struct _loader_item {
 		unsigned short	glink[14];	/* XCOFF */
 	} code ;
 #endif
-	} itemRec, *itemPtr ;
+	} itemRec ;
 
 /* The following structures provide an interface to GDB (note that GDB
    has copies of the definitions - if you change anything here make
@@ -215,7 +217,9 @@ extern unsigned long LoaderOptions;
 void LoaderAddSymbols(int, int, LOOKUP *);
 void LoaderDefaultFunc(void);
 void LoaderDuplicateSymbol(const char *, const int);
+#if 0
 void LoaderFixups(void);
+#endif
 void LoaderResolve(void);
 int LoaderResolveSymbols(void);
 int _LoaderHandleUnresolved(char *, char *);

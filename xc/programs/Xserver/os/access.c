@@ -1,4 +1,4 @@
-/* $TOG: access.c /main/72 1998/04/22 16:31:03 msr $ */
+/* $Xorg: access.c,v 1.3 2000/08/17 19:53:40 cpqbld Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/access.c,v 3.31 1999/12/27 00:39:57 robin Exp $ */
+/* $XFree86: xc/programs/Xserver/os/access.c,v 3.32 2001/01/17 22:37:10 dawes Exp $ */
 
 #ifdef WIN32
 #include <X11/Xwinsock.h>

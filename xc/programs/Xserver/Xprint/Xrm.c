@@ -1,5 +1,5 @@
 /*
- * $TOG: Xrm.c /main/4 1997/06/22 07:14:18 kaleb $
+ * $Xorg: Xrm.c,v 1.3 2000/08/17 19:48:06 cpqbld Exp $
  */
 /*
 (c) Copyright 1996 Hewlett-Packard Company
@@ -57,7 +57,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/Xprint/Xrm.c,v 1.6 1999/12/13 02:12:49 robin Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/Xrm.c,v 1.7 2001/01/17 22:36:28 dawes Exp $ */
 
 #include	<stdio.h>
 #include	<ctype.h>

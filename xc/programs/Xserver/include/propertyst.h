@@ -1,4 +1,4 @@
-/* $TOG: propertyst.h /main/6 1998/02/09 14:29:30 kaleb $ */
+/* $Xorg: propertyst.h,v 1.3 2000/08/17 19:53:30 cpqbld Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/propertyst.h,v 3.1 1998/10/04 09:39:00 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/propertyst.h,v 3.2 2001/01/17 22:36:57 dawes Exp $ */
 
 #ifndef PROPERTYSTRUCT_H
 #define PROPERTYSTRUCT_H 

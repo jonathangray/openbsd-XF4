@@ -1,4 +1,4 @@
-/* $TOG: await.c /main/13 1998/02/09 13:59:20 kaleb $ */
+/* $Xorg: await.c,v 1.3 2000/08/17 19:54:24 cpqbld Exp $ */
 
 /**** module await.c ****/
 /******************************************************************************
@@ -67,7 +67,7 @@ terms and conditions:
 	Syd Logan -- AGE Logic, Inc.
   
 *****************************************************************************/
-/* $XFree86: xc/programs/xieperf/await.c,v 3.3 1999/03/02 10:42:07 dawes Exp $ */
+/* $XFree86: xc/programs/xieperf/await.c,v 3.4 2001/01/17 23:45:36 dawes Exp $ */
 
 #ifdef WIN32
 #include <X11/Xthreads.h>

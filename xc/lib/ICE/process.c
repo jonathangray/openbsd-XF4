@@ -1,4 +1,4 @@
-/* $TOG: process.c /main/44 1998/02/06 13:57:34 kaleb $ */
+/* $Xorg: process.c,v 1.3 2000/08/17 19:44:16 cpqbld Exp $ */
 /******************************************************************************
 
 
@@ -22,7 +22,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/process.c,v 3.4 2000/06/17 17:44:18 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/process.c,v 3.5 2001/01/17 19:41:29 dawes Exp $ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"

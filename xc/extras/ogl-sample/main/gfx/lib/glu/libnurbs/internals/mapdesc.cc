@@ -35,12 +35,11 @@
 /*
  * mapdesc.c++
  *
- * $Date: 2001/04/05 22:04:55 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdesc.cc,v 1.1.1.1 2001/04/05 22:04:55 matthieu Exp $
+ * $Date: 2001/06/04 09:48:20 $ $Revision: 1.1.1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdesc.cc,v 1.1.1.2 2001/06/04 09:48:20 matthieu Exp $
  */
 
 #include <stdio.h>
-#include <math.h>
 #include "glimports.h"
 #include "mystdio.h"
 #include "myassert.h"

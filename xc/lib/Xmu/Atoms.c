@@ -1,4 +1,4 @@
-/* $TOG: Atoms.c /main/20 1998/02/06 15:41:04 kaleb $ */
+/* $Xorg: Atoms.c,v 1.3 2000/08/17 19:45:58 cpqbld Exp $ */
  
 /* 
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/Atoms.c,v 3.5 2000/11/28 18:50:07 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/Atoms.c,v 3.6 2001/01/17 19:42:53 dawes Exp $ */
 
 /*
  * This file contains routines to cache atoms, avoiding multiple

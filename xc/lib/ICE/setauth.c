@@ -1,4 +1,4 @@
-/* $TOG: setauth.c /main/9 1998/02/06 13:57:59 kaleb $ */
+/* $Xorg: setauth.c,v 1.3 2000/08/17 19:44:18 cpqbld Exp $ */
 /******************************************************************************
 
 
@@ -22,7 +22,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/setauth.c,v 1.2 1998/12/20 11:56:50 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/setauth.c,v 1.3 2001/01/17 19:41:29 dawes Exp $ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"

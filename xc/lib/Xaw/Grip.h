@@ -1,4 +1,4 @@
-/* $TOG: Grip.h /main/20 1998/02/06 12:46:14 kaleb $ */
+/* $Xorg: Grip.h,v 1.3 2000/08/17 19:45:33 cpqbld Exp $ */
 
 /***********************************************************
 
@@ -42,7 +42,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Grip.h,v 1.5 1999/06/06 08:47:57 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Grip.h,v 1.6 2001/01/17 19:42:26 dawes Exp $ */
 
 /*
  *  Grip.h - Public Definitions for Grip widget (used by VPane Widget)

@@ -36,8 +36,8 @@
 /*
 ** Author: Eric Veach, July 1994.
 **
-** $Date: 2001/04/05 22:05:21 $ $Revision: 1.1.1.1 $
-** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libtess/memalloc.h,v 1.1.1.1 2001/04/05 22:05:21 matthieu Exp $
+** $Date: 2001/06/04 09:48:27 $ $Revision: 1.1.1.2 $
+** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libtess/memalloc.h,v 1.1.1.2 2001/06/04 09:48:27 matthieu Exp $
 */
 
 #ifndef __memalloc_simple_h_

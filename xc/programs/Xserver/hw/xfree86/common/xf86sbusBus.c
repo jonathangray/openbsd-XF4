@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.c,v 3.5 2000/12/06 15:35:11 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.c,v 3.6 2001/03/03 22:16:35 tsi Exp $ */
 
 #include <ctype.h>
 #include <stdio.h>
@@ -276,7 +276,7 @@ xf86ParseSbusBusString(const char *busID, int *fbNum)
 	    for (i = 0, len = 0; sbusDeviceTable[i].devId; i++) {
 		len = strlen(sbusDeviceTable[i].promName);
 		if (!strncmp (sbusDeviceTable[i].promName, id, len)
-		    && isdigit(id + len))
+		    && isdigit(id[len]))
 		    break;
 	    }
 	    devId = sbusDeviceTable[i].devId;

@@ -1,4 +1,4 @@
-/* $XConsortium: ddxInit.c /main/2 1996/11/16 15:23:55 rws $ */
+/* $Xorg: ddxInit.c,v 1.3 2000/08/17 19:48:07 cpqbld Exp $ */
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -30,7 +30,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
-/* $XFree86: xc/programs/Xserver/Xprint/ddxInit.c,v 1.10 1999/12/13 02:12:51 robin Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/ddxInit.c,v 1.12 2001/03/04 17:40:04 herrb Exp $ */
 
 #include "X.h"
 #include "Xproto.h"
@@ -205,6 +205,13 @@ void
 ProcessInputEvents(void)
 {
 }
+
+#ifdef __DARWIN__
+void
+DarwinHandleGUI(int argc, char *argv[])
+{
+}
+#endif
 
 #ifdef DDXOSINIT
 void

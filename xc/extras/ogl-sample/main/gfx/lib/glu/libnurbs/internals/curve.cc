@@ -1,3 +1,4 @@
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/curve.cc,v 1.3 2001/04/27 12:58:28 dawes Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -35,8 +36,8 @@
 /*
  * curve.c++
  *
- * $Date: 2001/04/05 22:04:52 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/curve.cc,v 1.1.1.1 2001/04/05 22:04:52 matthieu Exp $
+ * $Date: 2001/06/04 09:48:18 $ $Revision: 1.1.1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/curve.cc,v 1.1.1.2 2001/06/04 09:48:18 matthieu Exp $
  */
 
 #include "glimports.h"
@@ -48,6 +49,7 @@
 #include "types.h"
 #include "quilt.h"
 #include "nurbsconsts.h"
+#include "gluint.h"
 
 /*--------------------------------------------------------------------------
  * Curve::Curve - copy curve from quilt and transform control points
@@ -170,7 +172,7 @@ Curve::getstepsize( void )
             REAL t = mapdesc->getProperty( N_PIXEL_TOLERANCE );
 	    if( mapdesc->isParametricDistanceSampling() ) {
 		REAL d = mapdesc->calcPartialVelocity( &tmp[0][0], tstride, order, 2, range[2] );
-		stepsize = (d > 0.0) ? ::sqrtf( 8.0 * t / d ) : range[2];
+		stepsize = (d > 0.0) ? ::SQRT( 8.0 * t / d ) : range[2];
 		minstepsize = ( mapdesc->maxrate > 0.0 ) ? (range[2] / mapdesc->maxrate) : 0.0;
 	    } else if( mapdesc->isPathLengthSampling() ) {
 		// t is upper bound on path (arc) length

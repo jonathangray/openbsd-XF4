@@ -3,7 +3,7 @@
  *
  * accelerator functions for X
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/accelX.c,v 1.8 2000/06/13 02:28:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/accelX.c,v 1.9 2001/05/16 06:48:10 keithp Exp $ */
 
 
 
@@ -112,7 +112,6 @@ void
 RENDITIONAccelPreInit(ScrnInfoPtr pScreenInfo)
 {
     renditionPtr pRendition = RENDITIONPTR(pScreenInfo);
-    int c;
 
 #ifdef DEBUG
     ErrorF("RENDITION: RENDITIONAccelPreInit called\n");
@@ -140,7 +139,6 @@ RENDITIONAccelXAAInit(ScreenPtr pScreen)
     XAAInfoRecPtr pXAAinfo;
 
     BoxRec AvailFBArea;
-    int c;
 
 #ifdef DEBUG
     ErrorF("RENDITION: RENDITIONAccelInit called\n");

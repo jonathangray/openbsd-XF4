@@ -1,4 +1,4 @@
-/* $TOG: chgkbd.c /main/21 1998/02/09 15:28:12 kaleb $ */
+/* $Xorg: chgkbd.c,v 1.3 2000/08/17 19:48:00 cpqbld Exp $ */
 
 /************************************************************
 
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/Xi/chgkbd.c,v 3.3 1998/10/04 09:36:59 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xi/chgkbd.c,v 3.4 2001/01/17 22:13:24 dawes Exp $ */
 
 /***********************************************************************
  *

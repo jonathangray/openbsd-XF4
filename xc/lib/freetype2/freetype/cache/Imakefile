@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/freetype2/freetype/cache/Imakefile,v 1.1.2.1 2001/03/12 16:03:23 keithp Exp $
+XCOMM $XFree86: xc/lib/freetype2/freetype/cache/Imakefile,v 1.1 2001/02/08 00:55:41 keithp Exp $
 
 FREETYPETOP = $(TOP)/extras/freetype2
 FREETYPESRC = $(FREETYPETOP)/src

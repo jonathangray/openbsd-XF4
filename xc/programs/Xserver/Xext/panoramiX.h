@@ -19,7 +19,7 @@
 *   or  in  FAR 52.227-19, as applicable.                       *
 *                                                               *
 *****************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.4.2.1 2001/03/09 02:26:52 keithp Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.5 2001/01/03 02:54:17 keithp Exp $ */
 
 /* THIS IS NOT AN X PROJECT TEAM SPECIFICATION */
 

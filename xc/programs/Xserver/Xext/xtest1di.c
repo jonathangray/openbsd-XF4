@@ -1,4 +1,4 @@
-/* $TOG: xtest1di.c /main/14 1998/02/09 15:26:04 kaleb $ */
+/* $Xorg: xtest1di.c,v 1.3 2000/08/17 19:47:59 cpqbld Exp $ */
 /*
  *	File:  xtest1di.c
  *
@@ -48,7 +48,7 @@ Telephone and Telegraph Company or of the Regents of the
 University of California.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xtest1di.c,v 3.1 1998/10/04 09:36:54 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xtest1di.c,v 3.2 2001/01/17 22:13:19 dawes Exp $ */
 
 /*****************************************************************************
  * include files

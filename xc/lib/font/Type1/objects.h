@@ -1,4 +1,4 @@
-/* $XConsortium: objects.h,v 1.8 94/03/22 19:08:58 gildea Exp $ */
+/* $Xorg: objects.h,v 1.3 2000/08/17 19:46:31 cpqbld Exp $ */
 /* Copyright International Business Machines, Corp. 1991
  * All Rights Reserved
  * Copyright Lexmark International, Inc. 1991
@@ -43,7 +43,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
-/* $XFree86: xc/lib/font/Type1/objects.h,v 1.7 1999/08/22 05:35:42 dawes Exp $ */
+/* $XFree86: xc/lib/font/Type1/objects.h,v 1.8 2001/01/17 19:43:22 dawes Exp $ */
 /*SHARED*/
  
 /*END SHARED*/

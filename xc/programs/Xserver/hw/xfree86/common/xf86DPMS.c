@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DPMS.c,v 1.5 2000/09/19 12:46:13 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DPMS.c,v 1.6 2001/05/10 10:17:39 alanh Exp $ */
 
 /*
  * Copyright (c) 1997-1998 by The XFree86 Project, Inc.
@@ -49,9 +49,9 @@ xf86DPMSInit(ScreenPtr pScreen, DPMSSetProcPtr set, int flags)
     pDPMS->Flags = flags;
     DPMSOpt = xf86FindOption(xf86Screens[pScreen->myNum]->options, "dpms");
     if (DPMSOpt) {
-	if (pDPMS->Enabled
+	if ((pDPMS->Enabled
 	    = xf86SetBoolOption(xf86Screens[pScreen->myNum]->options,
-				"dpms",FALSE)
+				"dpms",FALSE))
 	    && !DPMSDisabledSwitch)
 	    DPMSEnabled = TRUE;
 	xf86MarkOptionUsed(DPMSOpt);

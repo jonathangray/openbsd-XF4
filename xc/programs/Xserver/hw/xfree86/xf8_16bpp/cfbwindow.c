@@ -4,7 +4,7 @@
    Written by Mark Vojkovich (mvojkovi@ucsd.edu)
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.2.4.1 2001/03/09 18:03:53 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.3 2001/02/15 19:51:14 eich Exp $ */
 
 #include "X.h"
 #include "scrnintstr.h"

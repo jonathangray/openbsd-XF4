@@ -1,4 +1,4 @@
-/* $TOG: sm_genid.c /main/23 1998/02/06 14:10:08 kaleb $ */
+/* $Xorg: sm_genid.c,v 1.3 2000/08/17 19:44:29 cpqbld Exp $ */
 
 /*
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/SM/sm_genid.c,v 3.10 1998/12/20 11:56:54 dawes Exp $ */
+/* $XFree86: xc/lib/SM/sm_genid.c,v 3.11 2001/01/17 19:41:31 dawes Exp $ */
 
 /*
  * Author: Ralph Mor, X Consortium

@@ -1,4 +1,4 @@
-/* $TOG: DefErrMsg.c /main/11 1998/02/06 15:42:28 kaleb $ */
+/* $Xorg: DefErrMsg.c,v 1.3 2000/08/17 19:46:00 cpqbld Exp $ */
 
 /*
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/DefErrMsg.c,v 1.6 1998/10/03 09:06:25 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/DefErrMsg.c,v 1.7 2001/01/17 19:42:54 dawes Exp $ */
 
 #include <stdio.h>
 #define NEED_EVENTS

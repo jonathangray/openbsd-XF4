@@ -1,4 +1,4 @@
-/* $TOG: transform.c /main/5 1998/02/09 13:45:13 kaleb $ */
+/* $Xorg: transform.c,v 1.3 2000/08/17 19:53:59 cpqbld Exp $ */
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -22,7 +22,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/oclock/transform.c,v 3.2 1999/02/19 21:27:14 hohndel Exp $ */
+/* $XFree86: xc/programs/oclock/transform.c,v 3.3 2001/01/17 23:45:01 dawes Exp $ */
 
 
 /*

@@ -1,4 +1,4 @@
-/* $TOG: ScrOfWin.c /main/4 1998/02/06 15:44:48 kaleb $ */
+/* $Xorg: ScrOfWin.c,v 1.3 2000/08/17 19:46:03 cpqbld Exp $ */
 
 /*
 
@@ -21,7 +21,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/ScrOfWin.c,v 1.5 1998/10/03 09:06:32 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/ScrOfWin.c,v 1.6 2001/01/17 19:42:56 dawes Exp $ */
 
 /*
  * Author:  Jim Fulton, MIT X Consortium

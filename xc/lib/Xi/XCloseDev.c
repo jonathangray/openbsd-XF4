@@ -1,4 +1,4 @@
-/* $TOG: XCloseDev.c /main/6 1998/02/06 15:02:33 kaleb $ */
+/* $Xorg: XCloseDev.c,v 1.3 2000/08/17 19:45:54 cpqbld Exp $ */
 
 /************************************************************
 
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/lib/Xi/XCloseDev.c,v 3.1 1998/10/03 09:06:06 dawes Exp $ */
+/* $XFree86: xc/lib/Xi/XCloseDev.c,v 3.2 2001/01/17 19:42:48 dawes Exp $ */
 
 /***********************************************************************
  *

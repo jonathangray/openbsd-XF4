@@ -2,7 +2,7 @@
  * cfb copy area
  */
 
-/* $XFree86: xc/programs/Xserver/cfb/cfbbitblt.c,v 1.11 2000/09/26 15:57:03 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbbitblt.c,v 1.12 2001/01/17 22:36:34 dawes Exp $ */
 
 /*
 
@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
 Author: Keith Packard
 
 */
-/* $TOG: cfbbitblt.c /main/73 1998/05/14 14:41:31 msr $ */
+/* $Xorg: cfbbitblt.c,v 1.3 2000/08/17 19:48:13 cpqbld Exp $ */
 
 #include	"X.h"
 #include	"Xmd.h"

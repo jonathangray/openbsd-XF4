@@ -1,4 +1,4 @@
-/* $TOG: Berklib.c /main/26 1998/02/06 14:20:17 kaleb $ */
+/* $Xorg: Berklib.c,v 1.3 2000/08/17 19:45:46 cpqbld Exp $ */
 /*
 
 Copyright 1987, 1998 The Open Group
@@ -22,7 +22,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.6 1998/10/03 08:42:49 dawes Exp $ */
+/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.7 2001/01/17 19:42:42 dawes Exp $ */
 
 
 /*

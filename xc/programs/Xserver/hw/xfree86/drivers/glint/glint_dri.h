@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_dri.h,v 1.4 2000/05/10 18:55:29 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_dri.h,v 1.5 2001/01/31 16:14:55 alanh Exp $ */
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -50,7 +50,7 @@ typedef struct {
     drmMapFlags 	flagsControlRegs1;
     drmMapFlags 	flagsControlRegs2;
     drmMapFlags		flagsControlRegs3;
-    int			numMXDevices;
+    int			numMultiDevices;
     int			pprod;
 } GLINTDRIRec, *GLINTDRIPtr;
 

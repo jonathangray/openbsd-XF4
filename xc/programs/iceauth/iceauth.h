@@ -1,5 +1,5 @@
 /*
- * $TOG: iceauth.h /main/4 1998/02/09 13:44:06 kaleb $
+ * $Xorg: iceauth.h,v 1.3 2000/08/17 19:53:53 cpqbld Exp $
  *
  * 
 Copyright 1989, 1998  The Open Group
@@ -23,7 +23,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/iceauth/iceauth.h,v 3.2 1999/02/19 21:27:10 hohndel Exp $ */
+/* $XFree86: xc/programs/iceauth/iceauth.h,v 3.3 2001/01/17 23:44:54 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Xos.h>

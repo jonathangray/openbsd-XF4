@@ -1,4 +1,4 @@
-/* $TOG: k5auth.c /main/10 1998/02/09 15:12:25 kaleb $ */
+/* $Xorg: k5auth.c,v 1.3 2000/08/17 19:53:41 cpqbld Exp $ */
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -22,7 +22,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/os/k5auth.c,v 3.3 1998/10/04 09:39:43 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/k5auth.c,v 3.4 2001/01/17 22:37:10 dawes Exp $ */
 
 /*
  * Kerberos V5 authentication scheme

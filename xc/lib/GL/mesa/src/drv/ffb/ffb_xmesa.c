@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_xmesa.c,v 1.2 2000/12/07 20:26:05 dawes Exp $
+/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_xmesa.c,v 1.2.4.1 2001/05/29 22:28:17 dawes Exp $
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2000 David S. Miller
@@ -338,6 +338,8 @@ void XMesaSwapBuffers(__DRIdrawablePrivate *driDrawPriv)
 	if (ffbCtx == NULL ||
 	    ffbCtx->glCtx->Visual->DBflag == 0)
 		return;
+
+	FLUSH_VB(ffbCtx->glCtx, "swap buffers");
 
 	ffb = ffbCtx->regs;
 	dac = ffbCtx->ffbScreen->dac;

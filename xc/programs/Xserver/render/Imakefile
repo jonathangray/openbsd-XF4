@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/render/Imakefile,v 1.4.2.1 2001/03/09 02:26:51 keithp Exp $
+XCOMM $XFree86: xc/programs/Xserver/render/Imakefile,v 1.6 2001/01/21 21:19:39 tsi Exp $
 #include <Server.tmpl>
 
        SRCS =   glyph.c \

@@ -1,5 +1,5 @@
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng.h,v 1.33.2.1 2001/03/09 18:03:40 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng.h,v 1.36 2001/05/04 19:05:48 dawes Exp $ */
 
 
 
@@ -262,6 +262,7 @@ typedef struct {
     Bool DGAactive;
     DGAModePtr DGAModes;
     int	DGAViewportStatus;
+    OptionInfoPtr Options;
 } TsengRec, *TsengPtr;
 
 #define TsengPTR(p) ((TsengPtr)((p)->driverPrivate))
@@ -371,10 +372,8 @@ Bool TsengHWCursorInit(ScreenPtr pScreen);
  * From tseng_dpms.c
  */
 
-#ifdef DPMSExtension
 void TsengHVSyncDPMSSet(ScrnInfoPtr pScrn, int PowerManagementMode, int flags);
 void TsengCrtcDPMSSet(ScrnInfoPtr pScrn, int PowerManagementMode, int flags);
-#endif
 
 /*
  * For debugging

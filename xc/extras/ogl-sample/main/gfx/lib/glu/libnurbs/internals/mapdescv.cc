@@ -1,3 +1,4 @@
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdescv.cc,v 1.3 2001/04/27 12:58:28 dawes Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -35,8 +36,8 @@
 /*
  * mapdescv.c++
  *
- * $Date: 2001/04/05 22:04:55 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdescv.cc,v 1.1.1.1 2001/04/05 22:04:55 matthieu Exp $
+ * $Date: 2001/06/04 09:48:20 $ $Revision: 1.1.1.2 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdescv.cc,v 1.1.1.2 2001/06/04 09:48:20 matthieu Exp $
  */
 
 #include "glimports.h"
@@ -46,6 +47,7 @@
 #include "mymath.h"
 #include "nurbsconsts.h"
 #include "mapdesc.h"
+#include "gluint.h"
 
 /*--------------------------------------------------------------------------
  * calcPartialVelocity - calculate maximum magnitude of a given partial
@@ -93,7 +95,7 @@ Mapdesc::calcPartialVelocity (
     REAL max = 0.0;
     for( j=0; j != ncols-partial; j++ )
 	if( mag[j] > max ) max = mag[j];
-    max = fac * ::sqrtf( (float) max );
+    max = fac * ::SQRT( (float) max );
 
     return max;
 }
@@ -217,8 +219,8 @@ Mapdesc::calcPartialVelocity (
 	    j = ncols-tpartial-1;
 	    if( mag[i][j] > dist[1] ) dist[1] = mag[i][j];
 	}
-	dist[0] = fac * ::sqrtf( dist[0] );
-	dist[1] = fac * ::sqrtf( dist[1] );
+	dist[0] = fac * ::SQRT( dist[0] );
+	dist[1] = fac * ::SQRT( dist[1] );
     } else if( side == 1 ) {
 	// compute max magnitude of first and last row
 	dist[0] = 0.0;
@@ -230,11 +232,11 @@ Mapdesc::calcPartialVelocity (
 	    i = nrows-spartial-1;
 	    if( mag[i][j] > dist[1] ) dist[1] = mag[i][j];
 	}
-	dist[0] = fac * ::sqrtf( dist[0] );
-	dist[1] = fac * ::sqrtf( dist[1] );
+	dist[0] = fac * ::SQRT( dist[0] );
+	dist[1] = fac * ::SQRT( dist[1] );
     }
 
-    max = fac * ::sqrtf( (float) max );
+    max = fac * ::SQRT( (float) max );
 
     return max;
 }

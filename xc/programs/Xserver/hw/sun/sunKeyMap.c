@@ -1,4 +1,4 @@
-/* $TOG: sunKeyMap.c /main/33 1998/02/10 13:17:03 kaleb $ */
+/* $Xorg: sunKeyMap.c,v 1.3 2000/08/17 19:48:30 cpqbld Exp $ */
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -27,7 +27,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/hw/sun/sunKeyMap.c,v 1.2 1998/12/20 11:57:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunKeyMap.c,v 1.3 2001/01/17 22:36:50 dawes Exp $ */
 
 #include	"sun.h"
 #define		XK_KATAKANA

@@ -28,7 +28,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/search.c,v 1.4.2.1 2001/01/27 20:09:06 herrb Exp $ */
+/* $XFree86: xc/programs/xman/search.c,v 1.5 2001/01/27 17:24:27 herrb Exp $ */
 
 
 #include "globals.h"

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/os/oscolor.c,v 3.4 1998/10/04 09:39:45 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/oscolor.c,v 3.5 2001/01/17 22:37:11 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -41,7 +41,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $TOG: oscolor.c /main/17 1998/02/09 15:12:39 kaleb $ */
+/* $Xorg: oscolor.c,v 1.3 2000/08/17 19:53:41 cpqbld Exp $ */
 
 #ifndef USE_RGB_TXT
 

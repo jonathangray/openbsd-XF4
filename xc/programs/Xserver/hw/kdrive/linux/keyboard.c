@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/kdrive/linux/keyboard.c,v 1.5 2000/12/08 23:04:57 keithp Exp $
+ * $XFree86: xc/programs/Xserver/hw/kdrive/linux/keyboard.c,v 1.6 2001/03/30 02:15:20 keithp Exp $
  *
  * Copyright © 1999 Keith Packard
  *
@@ -29,6 +29,7 @@
 #define XK_PUBLISHING
 #include <X11/keysym.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 
 extern int  LinuxConsoleFd;
 
