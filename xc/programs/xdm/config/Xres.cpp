@@ -75,7 +75,7 @@ xlogin*greetColor: #a6d3e9
 xlogin*background: #337359
 /**/#endif
 xlogin*failColor: red
-*Foreground: black
+*Foreground: #0000ae
 *Background: #808080
 /**/#else
 #ifdef XPM
