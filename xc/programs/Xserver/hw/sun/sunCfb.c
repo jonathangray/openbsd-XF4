@@ -375,6 +375,7 @@ static Bool CG2SaveScreen (pScreen, on)
 
     if (on != SCREEN_SAVER_FORCER)
 	regp->video_enab = (on == SCREEN_SAVER_ON) ? 0 : 1;
+    return TRUE;
 }
 
 static void CG2ScreenInit (pScreen)
@@ -392,7 +393,6 @@ Bool sunCG2Init (screen, pScreen, argc, argv)
     int		argc;	    	/* The number of the Server's arguments. */
     char**	argv;   	/* The arguments themselves. Don't change! */
 {
-    sunScreenPtr    pPrivate;
     int		i;
     Bool	ret;
     Bool	mono = FALSE;

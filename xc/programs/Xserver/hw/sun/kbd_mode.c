@@ -63,12 +63,12 @@ static  char sccsid[] = "@(#)kbd_mode.c 7.1 87/04/13";
 #endif
 #include <stdio.h>
 
-static void         die(), usage();
+static void	    die(char *);
+static void         usage(void);
 static int          kbd_fd;
 
-main(argc, argv)
-    int    argc;
-    char** argv;
+int
+main(int argc, char *argv[])
 {
     int    code, translate, direct = -1;
     char   led;
@@ -122,15 +122,14 @@ main(argc, argv)
 }
 
 static void
-die(msg)
-    char        *msg;
+die(char *msg)
 {
     fprintf(stderr, "%s\n", msg);
     exit(1);
 }
 
 static void
-usage()
+usage(void)
 {
     int             translate;
 
