@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from the copyright holders.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtranssock.c,v 3.68 2004/01/07 04:28:02 dawes Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtranssock.c,v 3.69 2004/02/14 00:10:13 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -82,7 +82,7 @@ from the copyright holders.
 #include <sys/stat.h>
 #endif
 
-#if defined(hpux) || defined(__UNIXOS2__) || (defined(MOTOROLA) && defined(SYSV))
+#if defined(hpux) || (defined(MOTOROLA) && defined(SYSV))
 #define NO_TCP_H
 #endif 
 
@@ -864,9 +864,9 @@ TRANS(SocketCreateListener) (XtransConnInfo ciptr,
 	if (errno == EADDRINUSE) {
 	    if (flags & ADDR_IN_USE_ALLOWED)
 		break;
-	} else
-	    return TRANS_ADDR_IN_USE;
-
+	    else
+		return TRANS_ADDR_IN_USE;
+	}
 	if (retry-- == 0) {
 	    PRMSG (1, "SocketCreateListener: failed to bind listener\n",
 		0, 0, 0);
@@ -1003,7 +1003,7 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port, unsigned int 
     } else {
 	namelen = sizeof (struct sockaddr_in6);
 #ifdef SIN6_LEN
-	((struct sockaddr_in6 *)&sockname)->sin6_len = sizeof(sockname);
+	((struct sockaddr_in6 *)&sockname)->sin6_len = (u_int8_t)sizeof(sockname);
 #endif
 	((struct sockaddr_in6 *)&sockname)->sin6_family = AF_INET6;
 	((struct sockaddr_in6 *)&sockname)->sin6_port = htons(sport);
