@@ -10,12 +10,6 @@ XCOMM $XConsortium: Imakefile /main/9 1996/10/25 15:38:46 kaleb $
 
 #define IHaveSubdirs
 
-#if	(defined(OpenBSDArchitecture) && \
-		(defined(PpcArchitecture) || defined(AlphaArchitecture) || \
-		defined(Sparc64Architecture)))
-TEST
-#endif
-
 #if defined(i386Architecture) || defined(ia64Architecture) || \
 	(defined(SunArchitecture) && defined(SparcArchitecture)) || \
 	(defined(FreeBSDArchitecture) && defined(AlphaArchitecture)) || \
