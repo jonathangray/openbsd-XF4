@@ -1,4 +1,4 @@
-/*	$OpenBSD: kauth.h,v 1.1 2001/02/17 17:49:06 matthieu Exp $	*/
+/*	$OpenBSD: kauth.h,v 1.2 2002/06/10 23:11:09 todd Exp $	*/
 /* $KTH: kauth.h,v 1.18 1997/05/20 18:40:31 bg Exp $ */
 
 /*
@@ -63,7 +63,7 @@
 #include <err.h>
 
 #include <kerberosIV/krb.h>
-#include <kerberosIV/kafs.h>
+#include <kerberosV/kafs.h>
 
 #define KAUTH_PORT 2120
 
