@@ -602,7 +602,6 @@
 ./usr/X11R6/include/X11/pixmaps/xpaint.xpm
 ./usr/X11R6/include/X11/pixmaps/xterm-axp.xpm
 ./usr/X11R6/include/X11/pixmaps/xterm-blank.xpm
-./usr/X11R6/include/X11/pixmaps/xterm-bsd.xpm
 ./usr/X11R6/include/X11/pixmaps/xterm-dec.xpm
 ./usr/X11R6/include/X11/pixmaps/xterm-linux.xpm
 ./usr/X11R6/include/X11/pixmaps/xterm-sgi.xpm
