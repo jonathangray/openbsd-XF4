@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.2 2002/02/07 14:30:31 jason Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.3 2002/03/21 21:51:59 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -613,9 +613,11 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	ret = fbScreenInit(pScreen, fPtr->fbstart, width, height,
 			   pScrn->xDpi, pScrn->yDpi, pScrn->displayWidth, 
 			   pScrn->bitsPerPixel);
-	if (ret && !fbPictureInit(pScreen, NULL, 0))
-		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			   "RENDER extension initialisation failed.\n");
+	if (pScrn->bitsPerPixel > 8) {
+		if (ret && !fbPictureInit(pScreen, NULL, 0))
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			   "RENDER extension initialisation failed.\n");	
+	}
 	if (!ret)
 		return FALSE;
 	
