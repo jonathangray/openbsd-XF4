@@ -4,17 +4,68 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 1. Sun setup is easy:
 
    Typical XFree86 use on Sun sparc-based machines requires no special
-   configuration.  There are no configuration files for Sun sparc-based
-   machines.  However, multi-headed configurations may require new
-   device nodes in /dev.
+   configuration.  The provided /etc/X11/XF86Config will work in most
+   setups.
 
-   If XFree86 does not see a particular video card (ie. cgthree3), then
-   do the following:
+   However, multi-headed configurations will require some changes to this
+   file. Starting from the existing /etc/X11/XF86Config, three additional
+   sections are added for the second framebuffer:
 
-	cd /dev
-	./MAKEDEV cgthree3
+	Section "Device"
+		Identifier      "Wsdisplay1"
+		Driver          "wsfb"
+		Option          "device" "/dev/ttyD0"
+	EndSection
 
-   And try starting again.
+	Section "Monitor"
+		Identifier   "Monitor1"
+		VendorName   "Unknown"
+		ModelName    "Unknown"
+	# Adjust those to your monitor before using another device than wsfb
+	# or you can destroy it !!
+		HorizSync    31.5-60
+		VertRefresh  50-70
+	EndSection
+
+	Section "Screen"
+		Identifier "Screen1"
+		Device     "Wsdisplay1"
+		Monitor    "Monitor1"
+		SubSection "Display"
+			Depth     1
+		EndSubSection
+		SubSection "Display"
+			Depth     8
+		EndSubSection
+		SubSection "Display"
+			Depth     16
+		EndSubSection
+		SubSection "Display"
+			Depth     24
+		EndSubSection
+		SubSection "Display"
+			Depth     32
+		EndSubSection
+	EndSection
+   
+   The ServerLayout section is also changed to include the second framebuffer
+   and it's logical location relative to the first, eg:
+
+	Section "ServerLayout"
+		Identifier	"wsfb"
+		Screen  0       "Screen1" 0 0
+		Screen  1       "Screen0" RightOf "Screen1"
+		InputDevice	"zsmouse0" "CorePointer"
+		InputDevice	"Keyboard0" "CoreKeyboard"
+	EndSection
+
+   Finally, a virtual terminal must be created on the second framebuffer.
+   The following command creates the terminal:
+	wsconscfg -f /dev/ttyDcfg -e sun 0
+   This command can be put in /etc/rc.local so that it is run everytime
+   the machine is booted.
+
+   See XF86Config(5) for more options.
 
 2. Start either xdm(1) or startx(1).
 
@@ -26,5 +77,8 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
       the X server and a few X applications, including a window manager.
 
 
+------------------------
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
+
+$OpenBSD: README.sparc,v 1.5 2002/08/15 15:50:20 millert Exp $

@@ -267,9 +267,7 @@
 ./etc/X11/xkb/types/pc
 ./etc/X11/xkb/xkbcomp
 ./usr/X11R6/.XFree86_Version
-./usr/X11R6/bin/constype
 ./usr/X11R6/bin/freetype-config
-./usr/X11R6/bin/kbd_mode
 ./usr/X11R6/bin/showrgb
 ./usr/X11R6/bin/xftcache
 ./usr/X11R6/bin/xrandr
@@ -384,8 +382,6 @@
 ./usr/X11R6/lib/libfreetype.so.8.0
 ./usr/X11R6/lib/liboldX.so.6.0
 ./usr/X11R6/lib/libpsres.so.1.0
-./usr/X11R6/man/cat1/constype.0
-./usr/X11R6/man/cat1/kbd_mode.0
 ./usr/X11R6/man/cat1/showrgb.0
 ./usr/X11R6/man/cat1/xftcache.0
 ./usr/X11R6/man/cat1/xsetmode.0
