@@ -177,21 +177,21 @@ static KeySym adbmap[] = {
 };
 
 static macppcModmapRec macModMap[] = {
-	0x36,	ControlMask,	/* Control_L */
-	0x38,	ShiftMask,	/* Shift_L */
-	0x39,	LockMask,	/* Caps_Lock */
-	0x3a,	Meta_Mask,	/* Alt_L */
-	0,	0
+	{ 0x36,	ControlMask },	/* Control_L */
+	{ 0x38,	ShiftMask },	/* Shift_L */
+	{ 0x39,	LockMask },	/* Caps_Lock */
+	{ 0x3a,	Meta_Mask },	/* Alt_L */
+	{ 0,	0 }
 };
 
 static macppcModmapRec altModMap[] = {
-	0x36,	ControlMask,
-	0x37,	Meta_Mask,
-	0x38,	ShiftMask,
-	0x39,	LockMask,
-	0x7b,	ShiftMask,
-	0x7d,	ControlMask,
-	0,	0
+	{ 0x36,	ControlMask },
+	{ 0x37,	Meta_Mask },
+	{ 0x38,	ShiftMask },
+	{ 0x39,	LockMask },
+	{ 0x7b,	ShiftMask },
+	{ 0x7d,	ControlMask },
+	{ 0,	0 }
 };
 
 static KeySym usbmap[] = {
@@ -443,14 +443,14 @@ static KeySym usbmap[] = {
 #endif
 
 static macppcModmapRec usbModMap[] = {
-	0xe1,	ShiftMask,	/* Shift_L */
-	0xe5,	ShiftMask,	/* Shift_R */
-	0x39,	LockMask,	/* Caps_Lock */
-	0xe0,	ControlMask,	/* Control_L */
-	0xe4,	ControlMask,	/* Control_R */
-	0xe2,	Mod1Mask,	/* Alt_L */
-	0xe6,	Mod1Mask,	/* Alt_R */
-	0,	0
+	{ 0xe1,	ShiftMask },	/* Shift_L */
+	{ 0xe5,	ShiftMask },	/* Shift_R */
+	{ 0x39,	LockMask },	/* Caps_Lock */
+	{ 0xe0,	ControlMask },	/* Control_L */
+	{ 0xe4,	ControlMask },	/* Control_R */
+	{ 0xe2,	Mod1Mask },	/* Alt_L */
+	{ 0xe6,	Mod1Mask },	/* Alt_R */
+	{ 0,	0 }
 };
 
 macppcModmapRec *macppcModMaps[] = {
@@ -461,6 +461,6 @@ macppcModmapRec *macppcModMaps[] = {
 
 KeySymsRec macppcKeySyms[] = {
     /*	map	minKC	maxKC	width */
-	adbmap,	0,	0x7f,	2,
-	usbmap,	0,	0xef,	2,
+	{ adbmap,	0,	0x7f,	2 },
+	{ usbmap,	0,	0xef,	2 },
 };
