@@ -94,7 +94,7 @@ for configuration settings
 .SH "SEE ALSO"
 \fIQuick-Start Guide to XFree86 Setup\fP
 .br
-Xserver(1), XFree86(1), XF86Config(4/5), xvidtune(1), xdm(1),
+Xserver(1), XFree86(1), XF86Config-3(4/5), xvidtune(1), xdm(1),
 xf86config(1), xinit(1), XF86Misc(3), XF86VidMode(3),
 xmseconfig(1), dialog(1)
 .SH AUTHOR
