@@ -10,7 +10,6 @@
 xlogin*login.translations: #override BS
 	Ctrl<Key>R: abort-display()NLBS
 	<Key>F1: set-session-argument(failsafe) finish-field()NLBS
-	<Key>Delete: delete-character()NLBS
 	<Key>Left: move-backward-character()NLBS
 	<Key>Right: move-forward-character()NLBS
 	<Key>Home: move-to-begining()NLBS
