@@ -334,6 +334,9 @@ static char *protocols[] = {
     "MouseSystems",
     "SysMouse",
     "ThinkingMouse",
+#ifdef WSCONS_SUPPORT
+    "wsmouse",
+#endif
 };
 
 static int
@@ -492,7 +495,11 @@ MouseConfig(void)
     if (option)
 	str = option->opt_val;
     if (str == NULL)
+#ifdef WSCONS_SUPPORT
+	str = "/dev/wsmouse";
+#else
 	str = "/dev/mouse";
+#endif
 
     ClearScreen();
     refresh();
