@@ -114,7 +114,7 @@ static void ReadStderr(closure, fd, id)
 }
 
 
-static int childdone;		/* Gets nonzero when the child process
+static volatile int childdone;		/* Gets nonzero when the child process
 				   finishes. */
 /* ARGSUSED */
 static void
