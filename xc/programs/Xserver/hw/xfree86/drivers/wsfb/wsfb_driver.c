@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.23 2005/01/15 00:18:58 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.24 2005/01/17 22:30:05 drahn Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -482,6 +482,10 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 			masks.red = 0x0000ff;
 			masks.green = 0x00ff00;
 			masks.blue = 0xff0000;
+		} else if (wstype == WSDISPLAY_TYPE_PXALCD) {
+			masks.red = 0x1f << 11;
+			masks.green = 0x3f << 5;
+			masks.blue = 0x1f;
 		} else {
 			masks.red = 0;
 			masks.green = 0;
