@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.12 2001/04/19 14:19:27 todd Exp $
+#	$OpenBSD: Makefile,v 1.13 2001/06/15 17:42:30 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -83,11 +83,12 @@ release-clean:
 	  exit 1;\
 	fi
 .endif
-	${RM} -rf ${DESTDIR}/usr/X11R6/*
+	${RM} -rf ${DESTDIR}/usr/X11R6/* ${DESTDIR}/usr/X11R6/.[a-zA-Z0-9]*
 	${RM} -rf ${DESTDIR}/var/X11/*
 	${RM} -rf ${DESTDIR}/etc/X11/*
 	@if [ "`cd ${DESTDIR}/usr/X11R6;ls`" ]; then \
-		echo "Files found in ${DESTDIR}/usr/X11R6." \
+		echo "Files found in ${DESTDIR}/usr/X11R6:"; \
+		(cd ${DESTDIR}/usr/X11R6;/bin/pwd;ls -a); \
 		echo "Cleanup before proceeding."; \
 		exit 255; \
 	fi
