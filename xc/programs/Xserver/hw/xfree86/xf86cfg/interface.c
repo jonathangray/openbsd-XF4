@@ -265,7 +265,7 @@ main(int argc, char *argv[])
     
     startedx = startx();
     if (XF86Config_path == NULL)
-	XF86Config_path = "XF86Config-4";
+	XF86Config_path = "XF86Config";
     if (XkbConfig_path == NULL)
 	XkbConfig_path = XkbConfigDir XkbConfigFile;
     toplevel = XtAppInitialize(&appcon, "XF86Cfg",
