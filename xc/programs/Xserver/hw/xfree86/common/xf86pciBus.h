@@ -23,7 +23,7 @@ typedef struct {
     CARD32 ctrl;
 } pciArg;
 
-typedef struct pci_io {
+typedef struct pci_acc {
     int    busnum;
     int    devnum;
     int    funcnum;
