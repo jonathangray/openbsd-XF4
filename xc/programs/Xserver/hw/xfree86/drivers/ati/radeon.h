@@ -556,6 +556,7 @@ typedef struct {
     Bool              RenderAccel;
     Bool              RenderInited3D;
     FBLinearPtr       RenderTex;
+    Bool              RenderTexValidR100;
     void              (*RenderCallback)(ScrnInfoPtr);
     Time              RenderTimeout;
 

@@ -65,7 +65,6 @@ static void
 DestroyCB (Widget widget, XtPointer client_data, XtPointer call_data)
 {
     PluginInstance* This = (PluginInstance*) client_data;
-    int i;
 #ifdef PLUGIN_TRACE
     fprintf (stderr, "DestroyCB, This: 0x%x\n", This);
 #endif
@@ -74,7 +73,7 @@ DestroyCB (Widget widget, XtPointer client_data, XtPointer call_data)
     if (This->dont_reparent == RxFalse) {
 	XUnmapWindow(XtDisplay(widget), This->window);
 	XReparentWindow(XtDisplay(widget), This->window,
-			RootWindowOfScreen(XtScreen(widget)), 0, 0);
+			XRootWindowOfScreen(XtScreen(widget)), 0, 0);
 	This->dont_reparent = RxTrue;
     } else
 	This->dont_reparent = RxFalse;
@@ -177,20 +176,23 @@ NPP_SetWindow(NPP instance, NPWindow* window)
 #endif
 	    pid = fork();
 	    if (pid == 0) {		/* child process */
-		static char *argv[] = {
-		    "Xnest",
-		    "-ac",		/* no access control (sic!) */
-		    ":00",		/* display number */
-		    "-parent",
-		    "01234567890123456789",	/* parent window id */
-		    NULL
-		};
-		close(ConnectionNumber(display));
+                char  buffer1[64],
+                      buffer2[64];
+		char *xnest_argv[6];
+                
+                xnest_argv[0] = "Xnest";
+		xnest_argv[1] =  "-ac";         /* no access control (sic!) */
+		xnest_argv[2] = buffer1;        /* display number */
+		xnest_argv[3] = "-parent";
+		xnest_argv[4] = buffer2;        /* parent window id */
+		xnest_argv[5] = NULL;
 
-		sprintf(argv[2], ":%d", This->display_num);
-		sprintf(argv[4], "%ld", This->window);
+                close(XConnectionNumber(display));
+                
+		sprintf(xnest_argv[2], ":%d", This->display_num);
+		sprintf(xnest_argv[4], "%ld", This->window);
 		/* exec Xnest */
-		execvp("Xnest", argv);
+		execvp("Xnest", xnest_argv);
 		perror("Xnest");
 		return NPERR_GENERIC_ERROR;
 	    } else {			/* parent process */

@@ -1,3 +1,146 @@
+2005-01-25 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgversion.def
+	Bugzilla #2378 (https://bugs.freedesktop.org/show_bug.cgi?id=2378)
+	attachment #1747 (https://bugs.freedesktop.org/attachment.cgi?id=1747):
+	Bump version number for upcoming X11R6.8.2rc3 (release canidate 3) to
+	X11R6.8.1.903.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon.h
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_render.c
+	Bugzilla #1424 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1424)
+	attachment #1209 (https://bugs.freedesktop.org/attachment.cgi?id=1209):
+	Fix problems with RENDER extension accerlation on R100 cards (via
+	pre-rendering small texture).
+	Patch by Matthias Hopf <mhopf@suse.de>.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/xf86pciBus.c
+	Bugzilla #2322 (https://freedesktop.org/bugzilla/show_bug.cgi?id=2322)
+	attachment #1709 (https://bugs.freedesktop.org/attachment.cgi?id=1709):
+	Fix corruption of PCI config BAR1 of native PCI-Express boards
+	on 64-bit platforms.
+	Patch by Michael Yaroslavtsev <mike.work@besm6.org>.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/nls/compose.dir
+	* xc/nls/locale.dir
+	* xc/nls/Compose/Imakefile
+	* xc/nls/Compose/pt_BR.UTF-8
+	* xc/nls/XI18N_OBJS/Imakefile
+	* xc/nls/XI18N_OBJS/pt_BR.UTF-8
+	* xc/nls/XLC_LOCALE/Imakefile
+	* xc/nls/XLC_LOCALE/pt_BR.UTF-8
+	* xc/programs/Xserver/XpConfig/Imakefile
+	Bugzilla #1896 (https://bugs.freedesktop.org/show_bug.cgi?id=1896)
+	attachment #1675 (https://bugs.freedesktop.org/attachment.cgi?id=1675):
+	Add support for pt_BR.UTF-8 locale.
+	Patch by Gustavo Noronha Silva, Branden Robinson, Julien Lafon.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/lib/font/util/Imakefile
+        * xc/lib/font/util/utilbitmap.c
+        Bugzilla #1804 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1804)
+	attachment #1269 (https://bugs.freedesktop.org/attachment.cgi?id=1269):
+        Fix build failure (caused by missing symbols such as |TwoByteSwap|)
+        when linking the FreeType module and the FreeType library both
+        statically info the Xserver.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_ioctl.c
+	Bugzilla #2361 (https://bugs.freedesktop.org/show_bug.cgi?id=2361)
+	attachment #1739 (https://bugs.freedesktop.org/attachment.cgi?id=1739):
+	Fix radeon m7 driver lock-ups on glxgears&co.
+        Patch by Dave Airlie <airlied@freedesktop.org>.
+
+2005-01-24 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_dri.c
+	Bugzilla #2329 (https://bugs.freedesktop.org/show_bug.cgi?id=2329)
+	attachment #1717 (https://bugs.freedesktop.org/attachment.cgi?id=1717):
+	Unmap XCursor AGP memory on VT switch to prevent system from lockup.
+        Patch by Matthias Hopf <mhopf@suse.de>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/X11.tmpl
+	* xc/programs/Imakefile
+	* xc/programs/xrx/Imakefile
+	* xc/programs/xrx/plugin/Imakefile
+	* xc/programs/xrx/plugin/Main.c
+	* xc/programs/xrx/plugin/PProcess.c
+	* xc/programs/xrx/xnest-plugin/Imakefile
+	* xc/programs/xrx/xnest-plugin/NewNDest.c
+	* xc/programs/xrx/xnest-plugin/SetWin.c
+	* xc/programs/xrx/xnest-plugin/XnestDis.c
+	Bugzilla #1372 (https://bugs.freedesktop.org/show_bug.cgi?id=1372)
+	attachment #932 (https://bugs.freedesktop.org/attachment.cgi?id=932)
+        and
+	attachment #1105 (https://bugs.freedesktop.org/attachment.cgi?id=1105)
+        Repairing XRX/Broadway support.
+        This patch fixes both the libxrx.so plugin and the Xnest-based
+        libxrxnest.so plugin and making them compatible to newer versions
+        of Mozilla and removing the backwards compatibility hacks for old
+        Netscape3.x versions with statically linked Motif.      
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/spooler.c
+	Bugzilla #2167 (https://bugs.freedesktop.org/show_bug.cgi?id=2167)
+	attachment #1641 (https://bugs.freedesktop.org/attachment.cgi?id=1641):
+	Fix broken Solaris print queue enumeration.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/Util.c
+	* xc/programs/Xserver/Xprint/attributes.c
+	* xc/programs/Xserver/Xprint/attributes.h
+	* xc/programs/Xserver/Xprint/ps/Ps.h
+	Bugzilla #2254 (https://bugs.freedesktop.org/show_bug.cgi?id=2254)
+	attachment #1654 (https://bugs.freedesktop.org/attachment.cgi?id=1654)
+        and
+	attachment #1659 (https://bugs.freedesktop.org/attachment.cgi?id=1659)
+	Fix for gcc4.0 build failure (including removing |ExecCommand()| -
+	the function has no consumer and can safely be removed).
+	Patch by Egbert Eich <eich@freedesktop.org> and Roland Mainz
+        <roland.mainz@nrubsig.org>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/etc/init.d/xprint.cpp
+	Bugzilla #2240 (https://bugs.freedesktop.org/show_bug.cgi?id=2240)
+	attachment #1642 (https://bugs.freedesktop.org/attachment.cgi?id=1642):
+	Fix incorrect usage of /usr/bin/tr in startup script (the used
+	"[\n]" is neither correct or portable, using "\n" seems to be
+	sufficient (this fixes various "random" issues, including
+	including Debian bug #258419 and Debian bug #264983).
+	Patch by Drew Parsons <dparsons@debian.org>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/config/cf/xorg.cf
+	Bugzilla #2264 (https://bugs.freedesktop.org/show_bug.cgi?id=2264)
+	attachment #1665 (https://bugs.freedesktop.org/attachment.cgi?id=1665):
+	- Don't build tdfx DRI driver on any platform but x86 and AXP
+	as therequired Glide3 lib is only available there (if at all).
+	- Readability fixes.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/config/cf/xorg.cf
+	Bugzilla #2215 (https://bugs.freedesktop.org/show_bug.cgi?id=2215)
+	attachment #1658 (https://bugs.freedesktop.org/attachment.cgi?id=1658):
+        Add i810 driver for AMD64.
+        Patch by Kristian Høgsberg <krh@bitplanet.net>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/config/cf/xorg.cf
+	Bugzilla #2215 (https://bugs.freedesktop.org/show_bug.cgi?id=2215)
+	attachment #1629 (https://bugs.freedesktop.org/attachment.cgi?id=1629):
+        Cleanup and enhancements in xc/config/cf/xorg.cf
+        Patch by Egbert Eich <eich@freedesktop.org>.
+
+2005-01-23 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/programs/Xserver/hw/xfree86/drivers/chips/chips.man
+	Bugzilla #2261 (https://bugs.freedesktop.org/show_bug.cgi?id=2261)
+	attachment #1666 (https://bugs.freedesktop.org/attachment.cgi?id=1666):
+        Update manual page to explain the FpMode option.
+        Patch by Egbert Eich <eich@freedesktop.org>.
+
 2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
 	* xc/config/cf/xorgversion.def
 	Bugzilla #2272 (https://bugs.freedesktop.org/show_bug.cgi?id=2272)
@@ -7814,4 +7957,4 @@ Tue Jul 20 18:23:32 2004  Soeren Sandmann  <sandmann@daimi.au.dk>
        so i18n libs from build tree get used instead of installed ones
        (Egbert Eich).
 
-$XdotOrg: xc/ChangeLog,v 1.365.2.123 2005/01/13 06:04:23 gisburn Exp $
+$XdotOrg: xc/ChangeLog,v 1.365.2.138 2005/01/25 16:26:56 gisburn Exp $

@@ -56,7 +56,7 @@ XFINDPROXYSRCDIR = xfindproxy
     XVINFOSRCDIR = xvinfo
 #endif
      XHOSTSRCDIR = xhost
-#if BuildPlugin
+#if BuildPlugin && BuildXaw
        XRXSRCDIR = xrx
 #endif
        XSMSRCDIR = xsm

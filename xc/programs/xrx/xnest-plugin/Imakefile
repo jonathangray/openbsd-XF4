@@ -1,4 +1,4 @@
-XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:55:03 cpqbld Exp $
+XCOMM $Xorg: Imakefile,v 1.4 2004/09/16 00:55:03 gisburn Exp $
 
 XCOMM This isn't an option we must build a shared lib
 #define DoSharedLib YES
@@ -7,7 +7,7 @@ XCOMM This isn't an option we must build a shared lib
 #define LibName xrxnest
 #define SoRev SOXRXREV
 
-SharedLibReferences(xrxnest,xrxnest,$(RXSRC),SOXRXREV,6.3)
+SharedLibReferences(xrxnest,xrxnest,$(RXSRC),SOXRXREV,6.8)
 
           RXSRC = ../rx
     RX_INCLUDES = -I$(RXSRC)
@@ -15,31 +15,6 @@ SharedLibReferences(xrxnest,xrxnest,$(RXSRC),SOXRXREV,6.3)
 
 #if HasBSD44Sockets
 SOCKET_DEFINES = -DBSD44SOCKETS
-#endif
-
-#ifdef SGIArchitecture
-#if OSMajorVersion == 5 && OSMinorVersion < 3 || OSMajorVersion == 6 && OSMinorV
-ersion < 2
-     XT_DEFINES = -DXUSE_XTREGISTERWINDOW
-#endif
-/* Even though we want to build the distribution with -n32, Navigator 3.0
- * binaries are still built on IRIX 5.2, which means we need to use the
- * old style object format. This is a hack because this Imakefile gets
- * included too late to do this properly, that is to say that the
- * CCOPTIONS in Imake.tmpl gets the -n32 options that we don't want,
- * but the CCOPTIONS in Library.tmpl does get set correctly, and over-
- * rides the value. So it works, but it's not pretty.
- */
-#undef sgiCCOptions
-#define sgiCCOptions -xansi
-#ifdef Mips64Architecture
-     SHLIBLDFLAGS = -shared
-#endif
-               LD = ld
-#endif
-
-#ifdef SunArchitecture
-VENDOR_INCLUDES = -I/usr/openwin/include
 #endif
 
 XCOMM -DPLUGIN_TRACE can be added to the following definition to debug
@@ -56,6 +31,8 @@ PLUGIN_OBJS = $(PLUGINSRC)/PRead.o $(PLUGINSRC)/PParse.o \
 SRCS = Main.c SetWin.c PProcess.c NewNDest.c XnestDis.c
 OBJS = Main.o SetWin.o PProcess.o NewNDest.o XnestDis.o \
 	$(PLUGINSRC)/stubs.o $(PLUGIN_OBJS)
+
+    REQUIREDLIBS =  $(LDPRELIB) XawClientLibs $(XTOOLONLYLIB) $(XPLIB) $(XLIB)
 
 #include <Library.tmpl>
 

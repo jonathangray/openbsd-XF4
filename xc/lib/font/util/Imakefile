@@ -19,17 +19,6 @@ XCOMM $XFree86: xc/lib/font/util/Imakefile,v 1.6 2000/12/07 16:40:30 dawes Exp $
        it doesn't break anything. */
      SYS_DEFINES = -D__XPG4_CHAR_CLASS__
 #endif
-#ifndef LynxOSArchitecture
-/* See xc/lib/font/FreeType/Imakefile - if we build the internal version of
- * FreeType we should not implement functions already defined by it
- * (see http://pdx.freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=513)
- */
-#if !HasFreetype2 && !SharedLibFreetype2
-#if !defined(OpenBSDArchitecture) || !defined(VaxArchitecture)
-INTERNALDEFINES = -DUSE_INTERNAL_FREETYPE
-#endif
-#endif
-#endif
 
 
          DEFINES = StrcasecmpDefines $(SYS_DEFINES) $(INTERNALDEFINES)

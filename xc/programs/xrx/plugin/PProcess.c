@@ -686,6 +686,7 @@ void
 RxpTeardown (PluginInstance* This)
 {
     if (This->toplevel_widget != NULL) {
+#if 0 /* this crashes mozilla/firefox  */
 	/* ConfigureNotify on top level */
 	XtRemoveRawEventHandler (This->toplevel_widget,
 				 StructureNotifyMask,
@@ -697,6 +698,7 @@ RxpTeardown (PluginInstance* This)
 				 True,
 				 RxpWmDelWinHandler,
 				 (XtPointer) This);
+#endif
 #if 0
 	XmRemoveWMProtocolCallback (This->toplevel_widget,
 				    RxGlobal.wm_delete_window,

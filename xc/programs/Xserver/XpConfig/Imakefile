@@ -468,9 +468,14 @@ C_LOCALES= \
         pt.ISO8859-15 \
         pt_BR \
         pt_BR.ISO8859-1 \
-        pt_BR.UTF-8 \
+        pt_BR.ISO-8859-1 \
+        pt_BR.ISO_8859-1 \
         pt_BR.iso88591 \
+        pt_BR.iso885915 \
+        pt_BR.88591 \
+        pt_BR.88591.en \
         pt_BR.utf8 \
+        pt_BR.UTF-8 \
         pt_PT \
         pt_PT.ISO8859-1 \
         pt_PT.ISO8859-15 \

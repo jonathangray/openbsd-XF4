@@ -52,11 +52,20 @@ The Open Group.
  *
  */
 
+
+#include "RxPlugin.h"
+#include <X11/StringDefs.h>
+
+#ifdef USE_MOTIF
+extern WidgetClass xmLabelGadgetClass;
+extern WidgetClass xmPushButtonGadgetClass;
+#else
+#include <X11/Xaw/Label.h>
+#include <X11/Xaw/Command.h>
+#endif /* USE_MOTIF */
+
 #include <ctype.h>
 #include <stdlib.h>
-#include "RxPlugin.h"
-#include "X11/StringDefs.h"
-
 
 /***********************************************************************
  * Utility functions to deal with list of arguments
@@ -380,14 +389,6 @@ StartCB(Widget widget, XtPointer client_data, XtPointer call_data)
     StartApplication(This);
 }
 
-#if defined(linux) || (defined(sun) && !defined(SVR4))
-/* deficient linux linker semantics  */
-static WidgetClass xmLabelGadgetClass;
-static WidgetClass xmPushButtonGadgetClass;
-#else
-extern WidgetClass xmLabelGadgetClass;
-extern WidgetClass xmPushButtonGadgetClass;
-#endif
 
 void
 RxpSetStatusWidget(PluginInstance* This, PluginState state)
@@ -415,35 +416,12 @@ RxpSetStatusWidget(PluginInstance* This, PluginState state)
 	XrmPutStringResource (&db, "*Rx_Start.labelString", "Start");
 	XrmPutStringResource (&db, "RxPlugin_BeenHere", "YES");
     }
-#if defined(linux) || (defined(sun) && !defined(SVR4))
-    /*
-	lame loader semantics mean we have to go fishing around to
-	come up with widget class records so we can create some widgets.
-
-	Names of widgets changed in 4.x, so look for those names too
-	for linux.
-
-	If Microsoft ever does IE for Linux we'll have to figure out
-	those names too.
-    */
-    if (xmLabelGadgetClass == NULL) {
-	Widget w;
-
-	w = XtNameToWidget (This->toplevel_widget, "*topLeftArea.urlLabel");
-	if (w == NULL)
-	    w = XtNameToWidget (This->toplevel_widget, "*urlBar.urlLocationLabel");
-	xmLabelGadgetClass = XtClass (w);
-	w = XtNameToWidget (This->toplevel_widget, "*toolBar.abort");
-	if (w == NULL)
-	    w = XtNameToWidget (This->toplevel_widget, "*PopupMenu.openCustomUrl");
-	xmPushButtonGadgetClass = XtClass (w);
-    }
-#endif
 
     n = 0;
     XtSetArg(args[n], "shadowThickness", 1); n++;
     XtSetArg(args[n], XtNwidth, This->width); n++;
     XtSetArg(args[n], XtNheight, This->height); n++;
+#ifdef USE_MOTIF
     if (state == LOADING) {
 	/* create a label */
 	This->status_widget =
@@ -465,6 +443,29 @@ RxpSetStatusWidget(PluginInstance* This, PluginState state)
     } else if (state == RUNNING) {
 	/* nothing else to be done */
     }
+#else
+    if (state == LOADING) {
+	/* create a label */
+	This->status_widget =
+	    XtCreateManagedWidget("Rx_Loading", labelWidgetClass,
+		This->plugin_widget, args, n);
+#ifndef NO_STARTING_STATE
+    } else if (state == STARTING) {
+	/* create a label */
+	This->status_widget =
+	    XtCreateManagedWidget("Rx_Starting", labelWidgetClass,
+		This->plugin_widget, args, n);
+#endif
+    } else if (state == WAITING) {
+	/* create a push button */
+	This->status_widget =
+	    XtCreateManagedWidget("Rx_Start", commandWidgetClass,
+		This->plugin_widget, args, n);
+	XtAddCallback(This->status_widget, XtNcallback, StartCB, This);
+    } else if (state == RUNNING) {
+	/* nothing else to be done */
+    }
+#endif /* USE_MOTIF */
     This->state = state;
 }
 

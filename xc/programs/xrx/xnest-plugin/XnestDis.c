@@ -28,25 +28,54 @@ The Open Group.
 */
 /* $XFree86$ */
 
+#include <sys/stat.h>
 #include "RxPlugin.h"
 
 /***********************************************************************
  * Utility functions and global variable to manage display numbers
  ***********************************************************************/
 
-/* maximum numbers of concurrent instances */
-#define MAX_PLUGINS 10
+/* maximum numbers of concurrent instances (per machine) */
+#define MAX_PLUGINS 128
 
-/* start from 5 to avoid possible conflict with multi-display X server */
-#define XNEST_OFFSET 5
+/* start from 80 to avoid possible conflict with multi-display X server
+ * like SunRay,LTSP, etc.*/
+#define XNEST_OFFSET 80
 
 /* global allowing to know which display numbers are in use */
-static int16 xnest_display_numbers[MAX_PLUGINS];
+static char xnest_display_numbers[MAX_PLUGINS];
 
 void
 RxpInitXnestDisplayNumbers()
 {
-    memset(xnest_display_numbers, 0, sizeof(int16) * MAX_PLUGINS);
+    memset(xnest_display_numbers, 0, sizeof(char) * MAX_PLUGINS);
+}
+
+static
+Bool IsDisplayNumFree(int id)
+{
+    char        fnamebuf[256];
+    struct stat sbuf;
+    int         res;
+
+    /* /tmp/.X%d-lock is more or less the official way... */    
+    sprintf(fnamebuf, "/tmp/.X%d-lock", id);
+    res = stat(fnamebuf, &sbuf);
+    if (res == 0)
+        return False;
+
+    /* ... but then we have to test for the old stuff, too... ;-( */
+    sprintf(fnamebuf, "/tmp/.X11-pipe/X%d", id);
+    res = stat(fnamebuf, &sbuf);
+    if (res == 0)
+        return False;
+
+    sprintf(fnamebuf, "/tmp/.X11-unix/X%d", id);
+    res = stat(fnamebuf, &sbuf);
+    if (res == 0)
+        return False;
+    
+    return True;
 }
 
 /* function returning first display number available */
@@ -55,7 +84,8 @@ RxpXnestDisplayNumber()
 {
     int i;
     for (i = 0; i < MAX_PLUGINS; i++)
-	if (xnest_display_numbers[i] == 0) {
+	if ((xnest_display_numbers[i] == 0) &&
+            IsDisplayNumFree(i + XNEST_OFFSET)) {
 	    xnest_display_numbers[i] = 1;
 	    return i + XNEST_OFFSET;
 	}

@@ -59,7 +59,14 @@ RxpNew(PluginInstance *This)
 void
 RxpDestroy(PluginInstance *This)
 {
+    int status;
+    
     /* kill child process */
-    kill(This->child_pid, SIGKILL);
+    kill(This->child_pid, SIGTERM);
+    
+    /* ... and fetch the status (to avoid dead process childs
+     * floating around) */
+    waitpid(This->child_pid, &status, 0);
+
     RxpFreeXnestDisplayNumber(This->display_num);
 }
