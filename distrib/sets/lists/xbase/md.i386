@@ -445,8 +445,6 @@
 ./usr/X11R6/lib/X11/etc/sun.termcap
 ./usr/X11R6/lib/X11/etc/sun.terminfo
 ./usr/X11R6/lib/X11/etc/xmodmap.std
-./usr/X11R6/lib/X11/etc/xterm.termcap
-./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/fonts/PEX
 ./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
 ./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
