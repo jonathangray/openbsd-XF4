@@ -1,0 +1,24 @@
+#!/bin/ksh
+
+[ "${DESTDIR}" ] || DESTDIR=$(pwd)/dest
+[ "${RELEASEDIR}" ] || RELEASEDIR=$(pwd)/rel
+export DESTDIR RELEASEDIR
+
+log=`/bin/pwd`/snap.log
+if [ -f $log ]
+then
+
+	i=0
+while [	 -f $log.$i ]
+	do
+		let i=i+1
+	done
+	log=$log.$i
+fi
+sh -c "(echo \$\$ > ${log}.lock ; make build && make release; rm ${log}.lock) > $log 2>&1 &"
+sleep 10
+while [ -f ${log}.lock ]
+do
+	tail -2 $log
+	sleep 120
+done
