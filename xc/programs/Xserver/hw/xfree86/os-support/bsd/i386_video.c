@@ -357,9 +357,12 @@ xf86DisableIO()
 	if (!ExtendedEnabled)
 		return;
 
-	i386_iopl(FALSE);
-	ExtendedEnabled = FALSE;
-
+	if (i386_iopl(FALSE) == 0) {
+		ExtendedEnabled = FALSE;
+	}
+	/* Otherwise, the X server has revoqued its root uid, 
+	   and thus cannot give up IO privileges any more */
+	   
 	return;
 }
 
