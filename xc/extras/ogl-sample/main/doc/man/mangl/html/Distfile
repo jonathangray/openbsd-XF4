@@ -1,6 +1,4 @@
 #
-# $Date: 2002/01/19 11:08:55 $ $Revision: 1.1.1.1 $
-# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/doc/man/mangl/html/Distfile,v 1.1.1.1 2002/01/19 11:08:55 matthieu Exp $
 #
 
 DISTDIR_SI = /xc/doc/hardcopy/GL/html/gl

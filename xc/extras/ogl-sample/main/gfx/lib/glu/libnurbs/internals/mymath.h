@@ -35,19 +35,23 @@
 /*
  * mymath.h
  *
- * $Date: 2001/04/05 22:04:55 $ $Revision: 1.1.1.1 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mymath.h,v 1.1.1.1 2001/04/05 22:04:55 matthieu Exp $
+ * Date Revision
+ * Header: //depot/main/gfx/lib/glu/libnurbs/internals/mymath.h#4 
  */
 
 
 
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mymath.h,v 1.2 2001/02/18 20:01:01 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mymath.h,v 1.3 2002/05/31 16:36:49 dawes Exp $ */
 
 #ifndef __glumymath_h_
 #define __glumymath_h_
 
 #ifdef GLBUILD
 #define sqrtf		gl_fsqrt
+#endif
+
+#ifdef __UNIXOS2__
+#define sqrtf		sqrt
 #endif
 
 #if GLBUILD | STANDALONE

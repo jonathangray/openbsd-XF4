@@ -30,8 +30,6 @@
 # published by SGI, but has not been independently verified as being
 # compliant with the OpenGL(R) version 1.2.1 Specification.
 #
-# $Date: 2002/01/19 11:08:55 $ $Revision: 1.1.1.1 $
-# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/doc/man/mangl/standard/const.awk,v 1.1.1.1 2002/01/19 11:08:55 matthieu Exp $
 
 # compare manpages to gl.h
 #
