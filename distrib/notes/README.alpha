@@ -1,14 +1,19 @@
 Post-installation instructions for XFree86 on OpenBSD/alpha
 -----------------------------------------------------------
 
-1. Alpha setup is not required.   NOTHING needs to be nor can be done
-   beyond package installation.  There are no configuration files for
-   X on alpha machines.
+OpenBSD 3.2 and later uses the XFree86 X server on alpha
 
-   Currently, only TGA video hardware is supported. See the tga(4) manual 
-   page for instructions on setting the resolution of a TGA card. 
+A special driver reproduces the functionnality of Xtga in previous
+releases:  wsfb. It uses the TGA as a dumb framebuffer at 8 or 24 bits
+per pixels, depending on the card model. 
+A default /etc/X11/XF86Config is installed that uses this driver. So
+you can just use 'startx' or xdm to start X without further
+configuration. 
 
-2. Start either xdm(1) or startx(1).
+Currently, only TGA video hardware is supported. See the tga(4) manual 
+page for instructions on setting the resolution of a TGA card. 
+
+Start either xdm(1) or startx(1).
 
    a. Start xdm(1), the X display manager by activating the xdm_flags option
       in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You may need to disable
@@ -18,6 +23,4 @@ Post-installation instructions for XFree86 on OpenBSD/alpha
       the X server and a few X applications, including a window manager.
 
 
-If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.2.0/
 
