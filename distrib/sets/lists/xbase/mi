@@ -25,6 +25,7 @@
 ./usr/X11R6/bin/dpsexec
 ./usr/X11R6/bin/dpsinfo
 ./usr/X11R6/bin/editres
+./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/fslsfonts
 ./usr/X11R6/bin/fstobdf
 ./usr/X11R6/bin/fvwm
