@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.3 2001/04/12 12:17:36 todd Exp $
+# $OpenBSD: Makefile,v 1.4 2001/04/12 21:26:42 todd Exp $
 
 # Various list maintenance functions
 
@@ -47,7 +47,7 @@ mdtomi:
 		done; \
 		echo "===> +$$d/mi"; \
 		echo $$line >> $$d/mi; \
-	done
+	done; rm -rf $$dir
 
 dupes:
 	@for arch in powerpc sparc alpha i386; do \
