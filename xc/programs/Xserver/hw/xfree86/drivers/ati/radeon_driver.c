@@ -5497,7 +5497,7 @@ static void RADEONSave(ScrnInfoPtr pScrn)
 	 */
 	vgaHWSave(pScrn, &hwp->SavedReg, VGA_SR_MODE); /* Save mode only */
 #else
-	vgaHWSave(pScrn, &hwp->SavedReg, VGA_SR_MODE | VGA_SR_FONTS); /* Save mode
+	vgaHWSave(pScrn, &hwp->SavedReg, VGA_SR_ALL); /* Save mode
 						       * & fonts & cmap
 						       */
 #endif
