@@ -1,7 +1,7 @@
 
 /* $XConsortium: sunCfb.c,v 1.15.1.2 95/01/12 18:54:42 kaleb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.2 1995/02/12 02:36:22 dawes Exp $ */
-/* $OpenBSD: macppcfb.c,v 1.2 2001/04/04 20:23:34 drahn Exp $ */
+/* $OpenBSD: macppcfb.c,v 1.3 2001/09/09 13:18:31 matthieu Exp $ */
 
 /*
 Copyright (c) 1990  X Consortium
@@ -88,13 +88,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "macppc.h"
 
-#if 0
-#include "cfb.h"
-#else
 #include "fb.h"
-#endif
 
-/* XXX */
 #include <stdio.h>
 
 static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
@@ -211,11 +206,7 @@ static void CGStoreColors(pmap, ndef, pdefs)
     if (pPrivate->installedMap != NULL && pPrivate->installedMap != pmap)
 	return;
     if ((pmap->pVisual->class | DynamicClass) == DirectColor) {
-#if 0
-	ndef = cfbExpandDirectColors(pmap, ndef, pdefs, expanddefs);
-#else
 	ndef = fbExpandDirectColors(pmap, ndef, pdefs, expanddefs);
-#endif
 	pdefs = expanddefs;
     }
     while (ndef--) {
@@ -300,14 +291,6 @@ Bool macppcFBInit (screen, pScreen, argc, argv)
 			return FALSE;
 	        macppcFbs[screen].fb = fb;
 	}
-#if 0
-	if (!cfbScreenInit(pScreen, fb,
-	    macppcFbs[screen].info.width,
-	    macppcFbs[screen].info.height,
-	    monitorResolution, monitorResolution,
-	    macppcFbs[screen].linebytes))
-            return FALSE;
-#else
 	if (!fbScreenInit(pScreen, fb,
 			 macppcFbs[screen].info.width,
 			 macppcFbs[screen].info.height,
@@ -318,14 +301,9 @@ Bool macppcFBInit (screen, pScreen, argc, argv)
 #ifdef RENDER
 	fbPictureInit(pScreen,0,0);
 #endif
-#endif
 	CGScreenInit(pScreen);
 	if (!macppcScreenInit(pScreen))
 		return FALSE;
 	macppcSaveScreen(pScreen, SCREEN_SAVER_OFF);
-#if 0
-	return cfbCreateDefColormap(pScreen);
-#else
 	return fbCreateDefColormap(pScreen);
-#endif
 }
