@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 3.109 2001/05/18 16:03:10 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 3.124 2001/11/30 12:11:54 eich Exp $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -36,6 +36,7 @@
 #define XF86_OS_PRIVS
 #include "Xpoll.h"
 #include "xf86_OSlib.h"
+#include "Xpoll.h"
 #include "atKeynames.h"
 
 
@@ -52,6 +53,11 @@
 #endif
 
 #include "mipointer.h"
+
+#ifdef XF86BIGFONT
+#define _XF86BIGFONT_SERVER_
+#include "xf86bigfont.h"
+#endif
 
 #ifdef XKB
 extern Bool noXkbExtension;
@@ -146,7 +152,7 @@ static IHPtr InputHandlers = NULL;
 
 /*
  * TimeSinceLastInputEvent --
- *      Function used for screensaver purposes by the os module. Retruns the
+ *      Function used for screensaver purposes by the os module. Returns the
  *      time in milliseconds since there last was any input.
  */
 
@@ -189,20 +195,6 @@ ProcessInputEvents ()
   static int generation = 0;
 #endif
 
-#ifdef AMOEBA
-#define MAXEVENTS	    32
-#define BUTTON_PRESS	    0x1000
-#define MAP_BUTTON(ev,but)  (((ev) == EV_ButtonPress) ? \
-			     ((but) | BUTTON_PRESS) : ((but) & ~BUTTON_PRESS))
-#define KEY_RELEASE	    0x80
-#define MAP_KEY(ev, key)    (((ev) == EV_KeyReleaseEvent) ? \
-			     ((key) | KEY_RELEASE) : ((key) & ~KEY_RELEASE))
-
-    register IOPEvent  *e, *elast;
-    IOPEvent		events[MAXEVENTS];
-    int			dx, dy, nevents;
-#endif
-
     /*
      * With INHERIT_LOCK_STATE defined, the initial state of CapsLock, NumLock
      * and ScrollLock will be set to match that of the VT the server is
@@ -239,37 +231,6 @@ ProcessInputEvents ()
     }
 #endif
 
-#ifdef AMOEBA
-    /*
-     * Get all events from the IOP server
-     */
-    while ((nevents = AmoebaGetEvents(events, MAXEVENTS)) > 0) {
-      for (e = &events[0], elast = &events[nevents]; e < elast; e++) {
-          xf86Info.lastEventTime = e->time;
-          switch (e->type) {
-          case EV_PointerDelta:
-	      if (e->x != 0 || e->y != 0) {
-                  xf86PostMseEvent(&xf86Info.pMouse, 0, e->x, e->y);
-	      }
-              break;
-          case EV_ButtonPress:
-          case EV_ButtonRelease:
-              xf86PostMseEvent(&xf86Info.pMouse, MAP_BUTTON(e->type, e->keyorbut), 0, 0);
-              break;
-          case EV_KeyPressEvent:
-          case EV_KeyReleaseEvent:
-              xf86PostKbdEvent(MAP_KEY(e->type, e->keyorbut));
-              break;
-          default:
-              /* this shouldn't happen */
-              ErrorF("stray event %d (%d,%d) %x\n",
-                      e->type, e->x, e->y, e->keyorbut);
-              break;
-          }
-      }
-    }
-#endif
-
   xf86Info.inputPending = FALSE;
 
 #ifdef XINPUT
@@ -283,7 +244,14 @@ ProcessInputEvents ()
   xf86SetViewport(xf86Info.currentScreen, x, y);
 }
 
+void
+xf86GrabServerCallback(CallbackListPtr *callbacks, pointer data, pointer args)
+{
+    ServerGrabInfoRec *grab = (ServerGrabInfoRec*)args;
 
+    xf86Info.grabInfo.server.client = grab->client;
+    xf86Info.grabInfo.server.grabstate = grab->grabstate;
+}
 
 /*
  * xf86PostKbdEvent --
@@ -301,8 +269,7 @@ extern u_char SpecialServerMap[];
 
 #if !defined(__EMX__) && \
     !defined(__SOL8__) && \
-    (!defined(sun) || defined(i386)) && \
-    !defined(__CYGWIN__)
+    (!defined(sun) || defined(i386)) 
 void
 xf86PostKbdEvent(unsigned key)
 {
@@ -434,7 +401,7 @@ xf86PostKbdEvent(unsigned key)
     case 0x36:
 	return;
     default:
-      xf86MsgVerb(X_INFO, 2, "Unreported Prefix0 scancode: 0x%02x\n",
+      xf86MsgVerb(X_INFO, 4, "Unreported Prefix0 scancode: 0x%02x\n",
 		  scanCode);
       /*
        * "Internet" keyboards are generating lots of new codes.  Let them
@@ -473,6 +440,9 @@ customkeycodes:
       case 0x0e: specialkey = 0x0e; break; /* KEY_BackSpace */
       case 0x40: specialkey = 0x4a; break; /* KEY_KP_Minus  */
       case 0x49: specialkey = 0x4e; break; /* KEY_KP_Plus   */
+
+      /* XXX needs cases for KEY_KP_Divide and KEY_KP_Multiply */
+
       case 0x62: specialkey = 0x3b; break; /* KEY_F1        */
       case 0x63: specialkey = 0x3c; break; /* KEY_F2        */
       case 0x64: specialkey = 0x3d; break; /* KEY_F3        */
@@ -496,6 +466,9 @@ special:
       case 0x2b: specialkey = KEY_BackSpace; break;
       case 0x47: specialkey = KEY_KP_Minus; break;
       case 0x7d: specialkey = KEY_KP_Plus; break;
+
+      /* XXX needs cases for KEY_KP_Divide and KEY_KP_Multiply */
+
       case 0x05: specialkey = KEY_F1; break;
       case 0x06: specialkey = KEY_F2; break;
       case 0x08: specialkey = KEY_F3; break;
@@ -535,6 +508,45 @@ special:
 #endif
 	 GiveUp(0);
         }
+	break;
+
+      /*
+       * Check grabs
+       */
+      case KEY_KP_Divide:
+	if (!xf86Info.grabInfo.disabled && xf86Info.grabInfo.allowDeactivate) {
+	  if (inputInfo.pointer && inputInfo.pointer->grab != NULL &&
+	      inputInfo.pointer->DeactivateGrab)
+	    inputInfo.pointer->DeactivateGrab(inputInfo.pointer);
+	  if (inputInfo.keyboard && inputInfo.keyboard->grab != NULL &&
+	      inputInfo.keyboard->DeactivateGrab)
+	    inputInfo.keyboard->DeactivateGrab(inputInfo.keyboard);
+	}
+	break;
+      case KEY_KP_Multiply:
+	if (!xf86Info.grabInfo.disabled && xf86Info.grabInfo.allowClosedown) {
+	  ClientPtr pointer, keyboard, server;
+
+	  pointer = keyboard = server = NULL;
+	  if (inputInfo.pointer && inputInfo.pointer->grab != NULL)
+	    pointer = clients[CLIENT_ID(inputInfo.pointer->grab->resource)];
+	  if (inputInfo.keyboard && inputInfo.keyboard->grab != NULL) {
+	    keyboard = clients[CLIENT_ID(inputInfo.keyboard->grab->resource)];
+	    if (keyboard == pointer)
+	      keyboard = NULL;
+	  }
+	  if ((xf86Info.grabInfo.server.grabstate == SERVER_GRABBED) &&
+	      (((server = xf86Info.grabInfo.server.client) == pointer) ||
+	       (server == keyboard)))
+	      server = NULL;
+
+	  if (pointer)
+	    CloseDownClient(pointer);
+	  if (keyboard)
+	    CloseDownClient(keyboard);
+	  if (server)
+	    CloseDownClient(server);
+	}
 	break;
 	
 	/*
@@ -864,11 +876,7 @@ special:
      */
     if (scanCode < KEY_KP_7 || scanCode > KEY_KP_Decimal) {
 #if !defined(CSRG_BASED) && \
-    !defined(MACH386) && \
-    !defined(MINIX) && \
-    !defined(__OSF__) && \
     !defined(__GNU__) && \
-    !defined(__CYGWIN__) && \
      defined(KB_84)
       /*
        * magic ALT_L key on AT84 keyboards for multilingual support
@@ -880,7 +888,7 @@ special:
 	  UsePrefix = TRUE;
 	  Direction = TRUE;
 	}
-#endif /* !CSRG_BASED && !MACH386 && !MINIX && !__OSF__ */
+#endif /* !CSRG_BASED && ... */
     }
   }
   if (updateLeds) xf86KbdLeds();
@@ -925,8 +933,6 @@ special:
 #endif /* !__EMX__ */
 
 
-#ifndef AMOEBA
-
 /*
  * xf86Wakeup --
  *      Os wakeup handler.
@@ -936,11 +942,7 @@ special:
 void
 xf86Wakeup(pointer blockData, int err, pointer pReadmask)
 {
-#if !defined(__EMX__) && !defined(__QNX__) && !defined(__CYGWIN__)
-#ifdef	__OSF__
-    fd_set kbdDevices;
-    fd_set mseDevices;
-#endif	/* __OSF__ */
+#if !defined(__EMX__) && !defined(__QNX__)
     fd_set* LastSelectMask = (fd_set*)pReadmask;
     fd_set devicesWithInput;
     InputInfoPtr pInfo;
@@ -948,7 +950,6 @@ xf86Wakeup(pointer blockData, int err, pointer pReadmask)
     if (err >= 0) {
 
 	XFD_ANDSET(&devicesWithInput, LastSelectMask, &EnabledDevices);
-#ifndef __OSF__
 	if (XFD_ANYSET(&devicesWithInput)) {
 	    (xf86Info.kbdEvents)();
 	    pInfo = xf86InputDevs;
@@ -968,25 +969,6 @@ xf86Wakeup(pointer blockData, int err, pointer pReadmask)
 		pInfo = pInfo->next;
 	    }
 	}
-#else /* __OSF__ */
-	/*
-	 * Until the two devices are made nonblock on read, we have to do this.
-	 */
-	MASKANDSETBITS(devicesWithInput, pReadmask, EnabledDevices);
-
-	CLEARBITS(kbdDevices);
-	BITSET(kbdDevices, xf86Info.consoleFd);
-	MASKANDSETBITS(kbdDevices, kbdDevices, devicesWithInput);
-
-	CLEARBITS(mseDevices);
-	BITSET(mseDevices, xf86Info.mouseDev->mseFd);
-	MASKANDSETBITS(mseDevices, mseDevices, devicesWithInput);
-
-	if (ANYSET(kbdDevices) || xf86Info.kbdRate)
-            (xf86Info.kbdEvents)(ANYSET(kbdDevices));
-	if (ANYSET(mseDevices))
-        (xf86Info.mouseDev->mseEvents)(1);
-#endif	/* __OSF__ */
     }
 #else   /* __EMX__ and __QNX__ */
 
@@ -1028,7 +1010,6 @@ xf86Wakeup(pointer blockData, int err, pointer pReadmask)
     if (xf86Info.inputPending) ProcessInputEvents();
 }
 
-#endif /* AMOEBA */
 
 /*
  * xf86SigioReadInput --
@@ -1140,11 +1121,12 @@ xf86VTSwitch()
 	if (xf86Screens[i]->EnableDisableFBAccess)
 	  (*xf86Screens[i]->EnableDisableFBAccess) (i, FALSE);
     }
-    xf86EnterServerState(SETUP);
-    for (i = 0; i < xf86NumScreens; i++) {
-      xf86Screens[i]->LeaveVT(i, 0);
-    }
-#if !defined(__EMX__) && !defined(__CYGWIN__)
+#if !defined(__EMX__)
+
+    /* 
+     * Keep the order: Disable Device > LeaveVT
+     *                        EnterVT > EnableDevice 
+     */
     DisableDevice((DeviceIntPtr)xf86Info.pKeyboard);
     pInfo = xf86InputDevs;
     while (pInfo) {
@@ -1152,6 +1134,10 @@ xf86VTSwitch()
       pInfo = pInfo->next;
     }
 #endif /* !__EMX__ */
+    xf86EnterServerState(SETUP);
+    for (i = 0; i < xf86NumScreens; i++) {
+      xf86Screens[i]->LeaveVT(i, 0);
+    }
     for (ih = InputHandlers; ih; ih = ih->next)
       xf86DisableInputHandler(ih);
     xf86AccessLeave();      /* We need this here, otherwise */
@@ -1180,7 +1166,7 @@ xf86VTSwitch()
       }
       SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
 
-#if !defined(__EMX__) && !defined(__CYGWIN__)
+#if !defined(__EMX__)
       EnableDevice((DeviceIntPtr)xf86Info.pKeyboard);
       pInfo = xf86InputDevs;
       while (pInfo) {
@@ -1231,7 +1217,7 @@ xf86VTSwitch()
     /* Turn screen saver off when switching back */
     SaveScreens(SCREEN_SAVER_FORCER,ScreenSaverReset);
 
-#if !defined(__EMX__) && !defined(__CYGWIN__)
+#if !defined(__EMX__)
     EnableDevice((DeviceIntPtr)xf86Info.pKeyboard);
     pInfo = xf86InputDevs;
     while (pInfo) {
@@ -1239,6 +1225,7 @@ xf86VTSwitch()
       pInfo = pInfo->next;
     }
 #endif /* !__EMX__ */
+    
     for (ih = InputHandlers; ih; ih = ih->next)
       xf86EnableInputHandler(ih);
   }
