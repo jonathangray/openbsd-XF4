@@ -26,13 +26,13 @@ Section "ServerLayout"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
-- For systems with USB mice, the following 'ServerLayout' section should
-be used in place of the one provided:
+- For systems with USB mice or PS/2 mice, the following 'ServerLayout'
+section should be used in place of the one provided:
 
 Section "ServerLayout"
 	Identifier	"wsfb"
 	Screen 0	"Screen0" 0 0
-	InputDevice	"usbmouse0" "CorePointer"
+	InputDevice	"wsmouse0" "CorePointer"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
@@ -43,7 +43,7 @@ EndSection
 Section "ServerLayout"
 	Identifier	"wsfb"
 	Screen	0	"Screen0" 0 0
-	InputDevice    "usbmouse0" "CorePointer"
+	InputDevice    "wsmouse0" "CorePointer"
 	InputDevice    "Keyboard0" "CoreKeyboard"
 EndSection
 	
@@ -74,7 +74,7 @@ EndSection
 
 # USB Mice
 Section "InputDevice"
-	Identifier	"usbmouse0"
+	Identifier	"wsmouse0"
 	Driver		"mouse"
 	Option		"Protocol" "wsmouse"
 	Option		"Device"   "/dev/wsmouse0"
@@ -137,4 +137,4 @@ EndSection
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.4 2002/02/12 02:40:59 pvalchev Exp $
+$OpenBSD: README.sparc64,v 1.5 2002/02/19 04:31:54 jason Exp $
