@@ -1,5 +1,9 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_axp.c,v 1.1 2001/02/15 19:34:18 eich Exp $ */
 
+
+
+/* $OpenBSD: bsd_axp.c,v 1.4 2001/06/27 01:48:56 matthieu Exp $ */
+
 #include "X.h"
 #include "os.h"
 #include "xf86.h"
@@ -42,9 +46,19 @@ bsdGetAXP(void)
 	int i;
 	char sysname[64];
 	size_t len = sizeof(sysname);
-	
+#ifdef __OpenBSD__
+	int mib[3];
+	int error;
+
+	mib[0] = CTL_MACHDEP;
+	mib[1] = CPU_CHIPSET;
+	mib[2] = CPU_CHIPSET_TYPE;
+
+	if ((error = sysctl(mib, 3, &sysname, &len, NULL, 0)) < 0)
+#else	
 	if ((sysctlbyname("hw.chipset.type", &sysname, &len,
                                   0, 0)) < 0)
+#endif
             FatalError("bsdGetAXP: can't find machine type\n");
 #ifdef DEBUG
 	xf86Msg(X_INFO,"AXP is a: %s\n",sysname);
