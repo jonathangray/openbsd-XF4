@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD: gensetlist,v 1.3 2004/11/11 23:01:11 todd Exp $
+#	$OpenBSD: gensetlist,v 1.4 2005/01/26 18:41:59 miod Exp $
 
 arch=$MACHINE
 listsdir=`pwd`/lists
@@ -8,12 +8,7 @@ setname=$1
 Release=$2
 
 if [ "$setname" = "xfont" ]; then
-        if [ "$arch" = "hp300" ]; then
-                arch=x11r5
-        else
-                arch=x11r6
-        fi
+        arch=x11r6
 fi
-
 
 cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} 

@@ -491,6 +491,16 @@ SOFTWARE.
 
 #endif /* linux/m68k */
 
+#if defined (OpenBSD) && defined (__mc68020__)
+
+#define IMAGE_BYTE_ORDER       MSBFirst
+#define BITMAP_BIT_ORDER       MSBFirst
+#define FAST_UNALIGNED_READS
+#define GLYPHPADBYTES          4
+#define GETLEFTBITS_ALIGNMENT  1
+
+#endif /* OpenBSD/hp300 */
+
 #ifdef sgi
 
 #define IMAGE_BYTE_ORDER	MSBFirst

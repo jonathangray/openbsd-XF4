@@ -1,23 +1,21 @@
 Post-installation instructions for X.Org on OpenBSD/hp300
 ---------------------------------------------------------
 
-1. HP300 setup is easy:
+OpenBSD 3.7 and later uses the X.Org X server on hp300. 
 
-Typical X.Org use on HP300 machines requires no special configuration.
-However, you will need to deal with the X11R5 X server provided in 1 of 2 ways
+An unaccelerated frame buffer driver, wsfb, is provided for all frame
+buffers but those on the SGC bus (including the 425e built-in EVRX).
+DaVinci and Renaissance frame buffers are currently only supported
+in monochrome mode.
 
-a) decompress all fonts:	cd /usr/X11R6/lib/X11/fonts
-                         	find . -name '*gz' -exec gzip -d '{}' ';'
-b) run the X11R6 font server:	xfs
-   then, either:
-   1) point the Xserver to it:	X -fp tcp/localhost:7100
-   2) add '-fp tcp/localhost:7100' to /usr/X11R6/lib/X11/xdm/Xservers:
-	:0 local /usr/X11R6/bin/X -fp tcp/localhost:7100 vt05
-      .. then start xdm as below.
+The default /etc/X11/xorg.conf which is installed provides a ready-to-run
+configuration.
 
-2. Start xdm, the X display manager by activating the xdm_flags option
-   in /etc/rc.conf.  You may need to disable the console getty.
+To start xdm, the X display manager, activate the xdm_flags option in
+/etc/rc.conf. You will need to disable the console getty in /etc/ttys.
+
+Alternatively, you can log in on console and use `startx'.
 
 problem_blurb
 
-$OpenBSD: README.hp300,v 1.6 2004/11/03 00:27:47 matthieu Exp $
+$OpenBSD: README.hp300,v 1.7 2005/01/26 18:41:59 miod Exp $

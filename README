@@ -13,8 +13,6 @@ The XF4 directory has several sub-directories :
 
 - distrib: the data files used by the make release process
 - extras:  some extra X application(s) not included anywhere else
-- xc-mit:  a partial X11R5 source tree, used to build the Xhp server
-           for the hp300 port.
 - xc-old:  a partial XFree86 3.3.6 source tree, used to build the
            XFree86 3.3.6 servers on i386 and mac68k.
 - xc:      the X.Org 6.8.1 source tree, augmented with some OpenBSD
@@ -74,7 +72,7 @@ Everything: regenerates all Makefiles and rebuild without cleaning
             (dependencies are supposed to be good enough, which is not
             always true; so if something goes wrong after a make
             Everything, try a make World)
-clean: removes produces files, but not Makefiles. Note the after a
+clean: removes produces files, but not Makefiles. Note that after a
        make clean, 'make includes ; make depend' are needed before a
        'make'.
 distclean: removes every produced file. a 'make World' from the xc
@@ -424,4 +422,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/include to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.16 2004/11/03 18:45:25 matthieu Exp $
+$Id: README,v 1.17 2005/01/26 18:41:57 miod Exp $

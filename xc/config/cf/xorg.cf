@@ -311,7 +311,8 @@ RELEASE_VERSION = ReleaseVersion
     defined(Sparc64Architecture) || defined(MipsArchitecture) || \
     defined(AlphaArchitecture) || defined(PpcArchitecture) || \
     defined(Mc68020Architecture) || defined(Arm32Architecture) || \
-    defined(HPArchitecture) || defined(SuperHArchitecture)
+    defined(HPArchitecture) || defined(SuperHArchitecture) || \
+    defined(Hp300Architecture)
 # ifndef XorgServer
 #  define XorgServer		YES
 # endif
@@ -599,7 +600,9 @@ RELEASE_VERSION = ReleaseVersion
 /*
  * Motorola 68k and PowerPC drivers
  */
-#if defined(PpcArchitecture) || defined(Mc68020Architecture)
+#if defined(PpcArchitecture) || \
+    defined(Mc68020Architecture) && \
+      (!defined(OpenBSDArchitecture) || !defined(Hp300Architecture))
 /* Amiga framebuffer module */
 # ifndef XF86AFB
 #  define XF86AFB		YES

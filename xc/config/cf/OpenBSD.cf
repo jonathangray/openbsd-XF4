@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.142 2005/01/25 21:15:03 drahn Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.143 2005/01/26 18:42:00 miod Exp $
 XCOMM
 
 #ifndef OSName
@@ -675,19 +675,45 @@ install:: fonts.alias							@@\
  */
 #ifdef Hp300Architecture
 
-# ifndef BuildServer
-#  define BuildServer		NO
+# if OSMajorVersion == 2 || OSMajorVersion == 3 && OSMinorVersion < 6
+
+#  ifndef BuildServer
+#   define BuildServer		NO
+#  endif
+
+#  define ServerExtraDefines	-DXFree86Server
+
+# else
+
+#  define HasWeakSymbols	YES
+
+#  define XorgServer		YES
+
+/* No Loadable modules for now */
+#  ifndef DoLoadableServer
+#    define DoLoadableServer	NO
+#  endif
+
+#  define XF86CardDrivers	wsfb
+#  define XFree86ConsoleDefines	-DWSCONS_SUPPORT
+#  define BuildXInputExt	YES
+#  define ServerOSDefines	XFree86ServerOSDefines -DDDXOSINIT
+#  define ServerExtraDefines	GccGasOption XFree86ServerDefines
+
+#  define BuildXF86MiscExt	NO
+#  define BuildMITMiscExt	NO
+
+#  define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+
+#  define BuildXF86VidModeExt	NO
+#  define BuildXF86DGA		NO
+#  ifndef BuildXInputExt
+#  define BuildXInputExt	NO
+#  endif
+
 # endif
-/* For the X11R5 server */
-# define CompressAllFonts	NO
-# define InstallFontAliases	InstallFontAliasesNoComment
-# define UseRgbTxt		NO
-# define UseRgb			YES
-# define XdmServersType		ws
 
-# define ServerExtraDefines	-DXFree86Server
-
-#include <xorg.cf>
+# include <xorg.cf>
 
 #endif /* Hp300Architecture */
 

@@ -50,14 +50,16 @@ PCIDRVRSRC = linuxPci.c
 PCIDRVROBJ = linuxPci.o
 
 #elif defined(OpenBSDArchitecture) && \
-	(defined(Arm32Architecture) || \
-	defined(PpcArchitecture) || \
-	defined(AlphaArchitecture) || \
+	(defined(AlphaArchitecture) || \
+	defined(Arm32Architecture) || \
 	defined(HPArchitecture) || \
+	defined(Hp300Architecture) || \
+	defined(PpcArchitecture) || \
 	defined(SparcArchitecture) || \
 	defined(Sparc64Architecture))
 
-XCOMM OpenBSD/alpha, OpenBSD/hppa, OpenBSD/powerpc and OpenBSD/sparc64
+XCOMM OpenBSD/alpha, OpenBSD/cats, OpenBSD/hp300, OpenBSD/hppa,
+XCOMM OpenBSD/macppc, OpenBSD/sparc and OpenBSD/sparc64
 
 PCIDRVRSRC = freebsdPci.c
 PCIDRVROBJ = freebsdPci.o

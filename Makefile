@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.43 2004/11/03 18:45:25 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.44 2005/01/26 18:41:57 miod Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -37,13 +37,6 @@ NEED_XC_OLD?=yes
 NEED_XC_OLD?=no
 .endif
 
-.if ${MACHINE} == hp300
-NEED_XC_MIT?=yes
-XHP?=${.CURDIR}/xc-mit/server/XhpBSD
-.else
-NEED_XC_MIT?=no
-.endif
-
 LN?= /bin/ln
 CHOWN?=/usr/sbin/chown
 CHMOD?=/bin/chmod
@@ -62,11 +55,6 @@ REALAPPD=/etc/X11/app-defaults
 all:	compile
 
 compile:
-.if (${NEED_XC_MIT:L} == "yes")
-	cd xc-mit && exec ${MAKE} -f Makefile.ini World \
-		BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000" \
-		WORLDOPTS=
-.endif
 	${RM} -f ${CONFHOSTDEF}
 	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
 .ifdef NOFONTS
@@ -115,18 +103,8 @@ release-mkdir:
 
 release-install:
 	@${MAKE} install
-.if defined(MACHINE) && ${MACHINE} == hp300
-	@${INSTALL} ${INSTALL_STRIP} -m 755 -o ${DIROWN} -g ${DIRGRP} \
-		${XHP} ${DESTDIR}/usr/X11R6/bin
-	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
-	@${INSTALL} -d -o ${DIROWN} -g ${DIRGRP} -m ${DIRMODE} \
-		${DESTDIR}/usr/X11R6/man/man1
-	@${INSTALL} -o ${DIROWN} -g ${DIRGRP} -m 644 \
-		${.CURDIR}/xc-mit/server/Xserver.man \
-		${DESTDIR}/usr/X11R6/man/man1/Xserver.1
-	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
-.endif
-.if ${MACHINE} == macppc || ${MACHINE} == alpha || ${MACHINE} == sparc
+.if ${MACHINE} == alpha || ${MACHINE} == hp300 || \
+    ${MACHINE} == hp300 || ${MACHINE} == sparc
 	@if [ -f $(DESTDIR)/etc/X11/xorg.conf ]; then \
 	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/xorg.conf; \
 	else set -x; \
@@ -165,10 +143,6 @@ install: install-xc install-xc-old install-extra install-distrib
 
 install-xc:
 	cd xc; ${MAKE} install && ${MAKE} install.man
-.if (${MACHINE} == "hp300")
-	echo /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
-	${CHOWN} root.wheel ${DESTDIR}/usr/X11R6/lib/X11/X0screens
-.endif
 	cd xc/programs/rstart; ${MAKE} install && ${MAKE} install.man
 
 install-extra:
