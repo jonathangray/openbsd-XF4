@@ -3494,7 +3494,6 @@ MGASwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
     char sCmdIn[256];
     char sCmdOut[256];
     FILE* fdIn;
-    FILE* fdOut;
 #endif
     MGAPtr pMga;
     ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
@@ -3504,9 +3503,8 @@ MGASwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 #ifdef USEMGAHAL
      MGA_HAL(
 	fdIn = fopen("/tmp/mgaDriverIn", "rt");
-	fdOut = fopen("/tmp/mgaDriverOut", "wt");
  
-	if(fdIn && fdOut)
+	if(fdIn)
 	{
  
 	    fgets(sCmdIn, 255, fdIn);
@@ -3519,10 +3517,6 @@ MGASwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 		/* Remove file and close file descriptor */
 		remove("/tmp/mgaDriverIn");
 		fclose(fdIn);
- 
-		/* Write output data to output file for calling application */
-		fputs(sCmdOut, fdOut);
-		fclose(fdOut);
  
 		mode->Flags &= 0x7FFFFFFF;
 		return TRUE;
