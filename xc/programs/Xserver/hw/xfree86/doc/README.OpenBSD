@@ -171,7 +171,6 @@ directory as described in the xinit and startx man pages.
 To make sure X support is enabled under  OpenBSD, the following line must be
 in your config file in /sys/arch/i386/conf:
 
-     option XSERVER
      option APERTURE
 
 7.1  Console drivers
@@ -309,4 +308,4 @@ Nate Williams, Rod Grimes, Jack Velte and Michael Smith.
      Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/OpenBSD.sgml,v 1.24 2002/01/16 22:35:17 herrb Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.OpenBSD,v 1.30 2002/01/16 22:37:23 herrb Exp $
+$XFree86: $
