@@ -1,8 +1,8 @@
-Post-installation instructions for XFree86 on OpenBSD/sgi
----------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/sgi
+-------------------------------------------------------
 
 There is no X server for sgi.  Only userland X.
 
 problem_blurb
 
-$OpenBSD: README.sgi,v 1.1 2004/09/25 08:22:32 matthieu Exp $
+$OpenBSD: README.sgi,v 1.2 2004/11/03 00:27:47 matthieu Exp $

@@ -1,8 +1,8 @@
-Post-installation instructions for XFree86 on OpenBSD/mvme88k
--------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/mvme88k
+-----------------------------------------------------------
 
 There is no X server for mvme88k.  Only userland X.
 
 problem_blurb
 
-$OpenBSD: README.mvme88k,v 1.1 2004/01/20 13:57:42 todd Exp $
+$OpenBSD: README.mvme88k,v 1.2 2004/11/03 00:27:47 matthieu Exp $

@@ -1,12 +1,12 @@
-Post-installation instructions for XFree86 on OpenBSD/macppc
-------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/macppc
+----------------------------------------------------------
 
-OpenBSD 3.0 and later uses the XFree86 X server on macppc. 
+OpenBSD 3.7 and later uses the X.Org X server on macppc. 
 
 A special driver reproduces the functionality of Xmacppc in previous 
 releases: wsfb. It uses whatever graphics mode the console is set to 
-(by Mac OS 9) as a dumb unaccelerated framebuffer in 8 bits per pixel. 
-A default /etc/X11/XF86Config is installed that uses this driver.
+(by Mac OS) as a dumb unaccelerated framebuffer in 8 bits per pixel. 
+A default /etc/X11/xorg.conf is installed that uses this driver.
 So you can just use 'startx' or xdm to start X without further 
 configuration. 
 
@@ -18,17 +18,17 @@ Accelerated drivers
 
 The 'ati' driver is currently known to work on the G4 Macs with ATI
 Rage 128 cards. The Titanium PowerBook G4 and iBook work with the commented
-settings in the below sample XF86Config.  The 'nv' driver has problems
+settings in the below sample xorg.conf.  The 'nv' driver has problems
 on nVidia cards for now.  Other cards are untested.
 
-Use xf86config to build a /etc/X11/XF86Config file before starting 
+Use xorgconfig to build a /etc/X11/xorg.conf file before starting 
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
 You need to set machdep.allowaperture to 2 in /etc/sysctl.conf in
-order to be able to use the XFree86 accelerated drivers.
+order to be able to use the X.Org accelerated drivers.
 
--- Cut Here for a sample /etc/X11/XF86Config to use with the ati driver ---
+-- Cut Here for a sample /etc/X11/xorg.conf to use with the ati driver ---
 Section "ServerLayout"
 	Identifier     "Sample Config"
 	Screen      0  "Screen0" 0 0
@@ -46,7 +46,6 @@ EndSection
 
 Section "Module"
 #   Load        "dbe"
-    Load        "type1"
     Load        "freetype"
     Load        "glx"
     Load        "extmod"
@@ -56,7 +55,7 @@ Section "InputDevice"
 	Identifier  "Keyboard0"
 	Driver      "keyboard"
 	Option	    "Protocol"	"standard"
-	Option	    "XkbRules"	"xfree86"
+	Option	    "XkbRules"	"xorg"
 	Option	    "XkbModel"	"macintosh"
 	Option	    "XkbLayout"	"us"
 EndSection
@@ -137,7 +136,7 @@ EndSection
 Mousekeys (Or how to deal with a One Button Mouse)
 --------------------------------------------------
 
-Using the mousekeys feature of XFree86, it is possible to emulate
+Using the mousekeys feature of Xorg, it is possible to emulate
 button2 and button3, since Apple does not seem to build hardware with
 them. Other mouse operations can also be emulated using the keyboard.
 To see the default key mappings, look at /etc/X11/xkb/compat/mousekeys.
@@ -184,4 +183,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.15 2004/08/17 06:39:43 otto Exp $
+$OpenBSD: README.macppc,v 1.16 2004/11/03 00:27:47 matthieu Exp $

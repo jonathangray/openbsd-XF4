@@ -1,7 +1,7 @@
-Post-installation instructions for XFree86 on OpenBSD/alpha
------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/alpha
+---------------------------------------------------------
 
-OpenBSD 3.2 and later uses the XFree86 X server on alpha. 
+OpenBSD 3.7 and later uses the X.Org X server on alpha. 
 
 Currently, TGA video hardware as well as a few VGA cards are
 supported.
@@ -9,7 +9,7 @@ supported.
 A special driver reproduces the functionnality of Xtga in previous
 releases:  wsfb. It uses the TGA as a dumb framebuffer at 8 or 24 bits
 per pixels, depending on the card model. 
-A default /etc/X11/XF86Config is installed that uses this driver. So
+A default /etc/X11/xorg.conf is installed that uses this driver. So
 you can just use 'startx' or xdm to start X without further
 configuration. 
 
@@ -49,4 +49,4 @@ Start either xdm(1) or startx(1).
 
 problem_blurb
 
-$OpenBSD: README.alpha,v 1.12 2002/11/19 06:16:23 matthieu Exp $
+$OpenBSD: README.alpha,v 1.13 2004/11/03 00:27:47 matthieu Exp $

@@ -1,14 +1,14 @@
-Post-installation instructions for XFree86 on OpenBSD/sparc
------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/sparc
+---------------------------------------------------------
 
 1. Sun setup is easy:
 
-   Typical XFree86 use on Sun sparc-based machines requires no special
-   configuration.  The provided /etc/X11/XF86Config will work in most
+   Typical Xorg use on Sun sparc-based machines requires no special
+   configuration.  The provided /etc/X11/xorg.conf will work in most
    setups.
 
    However, multi-headed configurations will require some changes to this
-   file. Starting from the existing /etc/X11/XF86Config, three additional
+   file. Starting from the existing /etc/X11/xorg.conf, three additional
    sections are added for the second framebuffer:
 
 	Section "Device"
@@ -59,7 +59,7 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 		InputDevice	"Keyboard0" "CoreKeyboard"
 	EndSection
 
-   See XF86Config(5) for more options.
+   See xorg.conf(5) for more options.
 
 2. Start either xdm(1) or startx(1).
 
@@ -73,4 +73,4 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 
 problem_blurb
 
-$OpenBSD: README.sparc,v 1.10 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.sparc,v 1.11 2004/11/03 00:27:47 matthieu Exp $

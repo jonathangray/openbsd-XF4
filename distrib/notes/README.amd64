@@ -1,5 +1,5 @@
-Post-installation instructions for XFree86 on OpenBSD/amd64
------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/amd64
+---------------------------------------------------------
 
 1. Make sure your system has support for X enabled:
 
@@ -22,10 +22,10 @@ Post-installation instructions for XFree86 on OpenBSD/amd64
    which OpenBSD uses the wsmouse(4) protocol with the /dev/wsmouse
    device.
 
-3. Create the XF86Config(5) file for your server.
+3. Create the xorg.conf(5) file for your server.
 
-   Run XFree86 -configure as root and move the resulting
-   XF86Config.new file to /etc/X11/XF86Config. 
+   Run Xorg -configure as root and move the resulting
+   xorg.conf.new file to /etc/X11/xorg.conf. 
    If needed edit it to adust the keyboard and mouse settings. 
 
 4. Start either xdm(1) or startx(1).
@@ -37,9 +37,9 @@ Post-installation instructions for XFree86 on OpenBSD/amd64
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
  
-5. With XFree86 XFree4, you can use antialiased fonts in some applications. 
+5. With X.Org XOrgVersion, you can use antialiased fonts in some applications. 
    visit http://www.openbsd.org/faq/truetype.html for more information. 
 
 problem_blurb
 
-$OpenBSD: README.amd64,v 1.2 2004/02/28 13:57:36 matthieu Exp $
+$OpenBSD: README.amd64,v 1.3 2004/11/03 00:27:47 matthieu Exp $

@@ -55,7 +55,7 @@ etc).
   in the "Screen" section.
 
 - What follows is a  whole sample configuration file. Copy it to
-  /etc/X11/XF86Config and customize it as described above. 
+  /etc/X11/xorg.conf and customize it as described above. 
 
 -- Cut Here --
 #
@@ -89,7 +89,7 @@ Section "InputDevice"
 	Driver      "keyboard"
 	Option	    "Protocol" 	  "wskbd"
 	Option	    "Device" 	  "/dev/wskbd0"
-	Option	    "XkbRules" 	  "xfree86"
+	Option	    "XkbRules" 	  "xorg"
 	Option	    "XkbLayout"   "us"
 EndSection
 
@@ -204,7 +204,7 @@ Section "Screen"
 	EndSubSection
 EndSection
 
-See XF86Config(5) for more options.
+See xorg.conf(5) for more options.
 
 Dual, unaccelerated display
 ---------------------------
@@ -255,8 +255,8 @@ Section "ServerLayout"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
-See XF86Config(5) for more options.
+See xorg.conf(5) for more options.
 
 problem_blurb
 
-$OpenBSD: README.sparc64,v 1.16 2002/12/08 17:12:41 matthieu Exp $
+$OpenBSD: README.sparc64,v 1.17 2004/11/03 00:27:47 matthieu Exp $

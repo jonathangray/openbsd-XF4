@@ -1,8 +1,8 @@
-Post-installation instructions for XFree86 on OpenBSD/vax
--------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/vax
+-------------------------------------------------------
 
 There is no X server for vax.  Only userland X.
 
 problem_blurb
 
-$OpenBSD: README.vax,v 1.2 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.vax,v 1.3 2004/11/03 00:27:47 matthieu Exp $

@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.3 2003/04/07 16:24:09 todd Exp $
+# $OpenBSD: Makefile,v 1.4 2004/11/03 00:27:46 matthieu Exp $
 
 FILE= README.${MACHINE}
 
@@ -22,9 +22,6 @@ install: ${FILE}.generated
 			${DESTDIR}/var/db/pkg/${set}-${OSREV}/+DEINSTALL; \
 	fi
 .endfor
-	
 
 clean:
 	rm -f *.generated
-
-

@@ -1,9 +1,9 @@
-Post-installation instructions for XFree86 on OpenBSD/hp300
------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/hp300
+---------------------------------------------------------
 
 1. HP300 setup is easy:
 
-Typical XFree86 use on HP300 machines requires no special configuration.
+Typical X.Org use on HP300 machines requires no special configuration.
 However, you will need to deal with the X11R5 X server provided in 1 of 2 ways
 
 a) decompress all fonts:	cd /usr/X11R6/lib/X11/fonts
@@ -20,4 +20,4 @@ b) run the X11R6 font server:	xfs
 
 problem_blurb
 
-$OpenBSD: README.hp300,v 1.5 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.hp300,v 1.6 2004/11/03 00:27:47 matthieu Exp $
