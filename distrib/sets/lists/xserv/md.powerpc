@@ -8,4 +8,5 @@
 ./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/man/cat1/Xmacppc.0
 ./usr/X11R6/man/cat1/Xnest.0
+./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0
