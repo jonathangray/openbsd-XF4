@@ -192,6 +192,14 @@ the server does not have.  When this option is specified, mismatches like
 this are downgraded from fatal errors to warnings.  This option should
 be used with care.
 .TP 8
+.B \-keepPriv
+Prevent the server from revoking its privileges.  If this option is
+not specified, the X server will change its uid and gid either to
+those of the user who started it or to the \fI_x11\fP user and group
+if it was started by the super-user, after performing the
+initialisations that require super-user privileges. Only root can use
+this option.
+.TP 8
 .B \-keeptty
 Prevent the server from detaching its initial controlling terminal.
 This option is only useful when debugging the server.  Not all platforms
