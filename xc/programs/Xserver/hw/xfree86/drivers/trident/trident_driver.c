@@ -2389,7 +2389,8 @@ TRIDENTSave(ScrnInfoPtr pScrn)
     vgaReg = &VGAHWPTR(pScrn)->SavedReg;
     tridentReg = &pTrident->SavedReg;
 
-    vgaHWSave(pScrn, vgaReg, VGA_SR_MODE | (IsPrimaryCard ? VGA_SR_FONTS : 0));
+    vgaHWSave(pScrn, vgaReg, VGA_SR_CMAP | VGA_SR_MODE | 
+	      (IsPrimaryCard ? VGA_SR_FONTS : 0));
 
     if (pScrn->progClock)
     	TridentSave(pScrn, tridentReg);
@@ -2543,7 +2544,8 @@ TRIDENTRestore(ScrnInfoPtr pScrn)
     else
 	TVGARestore(pScrn, tridentReg);
 
-    vgaHWRestore(pScrn, vgaReg, VGA_SR_MODE|(IsPrimaryCard ? VGA_SR_FONTS : 0));
+    vgaHWRestore(pScrn, vgaReg, VGA_SR_CMAP | VGA_SR_MODE |
+		 (IsPrimaryCard ? VGA_SR_FONTS : 0));
 
     vgaHWProtect(pScrn, FALSE);
 }
