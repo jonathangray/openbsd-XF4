@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.85 2002/04/23 19:47:16 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.86 2002/04/24 18:35:04 matthieu Exp $
 
 
 
@@ -359,7 +359,8 @@ install:: fonts.alias							@@\
 # define HasWeakSymbols		NO
 # define UseElfFormat		YES
 
-/* XXX Why ?? */
+/* XXX Xvfb currently causes a linker error: */
+/* XXX crtbegin.c(.fini+0x10): relocation truncated to fit: BRADDR text */
 # ifdef XVirtualFramebufferServer
 #  undef XVirtualFramebufferServer
 # endif
