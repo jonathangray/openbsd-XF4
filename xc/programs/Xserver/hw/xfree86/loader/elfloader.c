@@ -2333,6 +2333,8 @@ int		*maxalign;
 	    ELFDEBUG(".text starts at %lx\n", elffile->text );
 #endif
 	    elffile->txtsize=SecSize(i);
+	    mprotect(elffile->text, elffile->txtsize, 
+		     PROT_READ|PROT_WRITE|PROT_EXEC);
 	    continue;
 	}
 	/* .data */
