@@ -1,5 +1,5 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.10 2003/04/01 22:37:07 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.11 2004/02/05 20:56:12 todd Exp $
 !
 !
 !
@@ -170,7 +170,7 @@
 
 ! Restore the traditional backarrow/delete key behaviour
 ! The delete key should generate DEL
-deleteIsDEL: true
+*deleteIsDEL: true
 ! and the back arrow generates whatever the erase char is set to
 *ptyInitialErase: true
 *backarrowKeyIsErase: true
