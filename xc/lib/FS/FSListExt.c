@@ -73,7 +73,7 @@ FSListExtensions(svr, next)
 	return (char **) NULL;
     }
     if (rep.nExtensions && rep.nExtensions <= SIZE_MAX / sizeof(char *)
-	&& rep.length <= ((SIZE_MAX+SIZEOF(fsListExtensionsReply)+1)>>2)) {
+	&& rep.length <= (SIZE_MAX>>2)) {
 	list = (char **) FSmalloc((unsigned)(rep.nExtensions * sizeof(char *)));
 	rlen = (rep.length << 2) - SIZEOF(fsListExtensionsReply);
 	c = (char *) FSmalloc((unsigned) rlen + 1);
