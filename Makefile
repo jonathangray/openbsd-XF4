@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.10 2001/04/04 05:51:54 todd Exp $
+#	$OpenBSD: Makefile,v 1.11 2001/04/04 19:11:18 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -84,6 +84,7 @@ release-clean:
 	fi
 .endif
 	${RM} -rf ${DESTDIR}/usr/X11R6/*
+	${RM} -rf ${DESTDIR}/var/X11/*
 	${RM} -rf ${DESTDIR}/etc/X11/*
 	@if [ "`cd ${DESTDIR}/usr/X11R6;ls`" ]; then \
 		echo "Files found in ${DESTDIR}/usr/X11R6." \
@@ -111,7 +112,6 @@ perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/.
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11
 	@find ${DESTDIR}/usr/X11R6 \
 		${DESTDIR}/etc/X11 \! -user root -ls
@@ -173,4 +173,5 @@ b-r:
 	@env DESTDIR=${DESTDIR} RELEASEDIR=${RELEASEDIR} ${.CURDIR}/build-release
 
 .PHONY: all build release dist install install-xc install-xc-old \
-    install-distrib clean distclean fix-appd b-r
+    install-distrib clean distclean fix-appd b-r \
+    release-clean release-mkdir release-install
