@@ -48,7 +48,7 @@ UCSOBJS = FontObj(5x7) FontObj(5x8) \
 	FontObj(8x13) FontObj(8x13B) FontObj(8x13O) \
 	FontObj(9x15) FontObj(9x15B) FontObj(9x18) FontObj(9x18B) \
 	FontObj(10x20) \
-	FontObj(12x13ja) FontObj(18x18ja) FontObj(18x18ko)
+	FontObj(12x13ja) FontObj(18x18ja) /* FontObj(18x18ko) */
 
 #if DerivedUCSFonts
 DERIVEDOBJS = \
@@ -287,7 +287,7 @@ FontTarget(10x20)
 #endif
 FontTarget(12x13ja)
 FontTarget(18x18ja)
-FontTarget(18x18ko)
+/* FontTarget(18x18ko) */
 
 /* 8-bit fonts derived from UCS fonts */
 #if DerivedUCSFonts
