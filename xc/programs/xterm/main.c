@@ -462,6 +462,10 @@ static void set_owner(char *device, int uid, int gid, int mode);
 
 static Bool added_utmp_entry = False;
 
+#ifdef __OpenBSD__
+static gid_t utmpGid = -1;
+#endif
+
 #ifdef USE_SYSV_UTMP
 static Bool xterm_exiting = False;
 #endif
@@ -1824,13 +1828,19 @@ main (int argc, char *argv[])
 #endif
 		(void) fprintf(stderr, "seteuid(%d): %s\n",
 			       (int) euid, strerror(errno));
-
 	    if (setegid(egid) == -1)
 #ifdef __MVS__
 	       if (!(errno == EMVSERR))
 #endif
 		(void) fprintf(stderr, "setegid(%d): %s\n",
 			       (int) egid, strerror(errno));
+#endif
+#ifdef __OpenBSD__
+	    if (resource.utmpInhibit) {
+		/* Can totally revoke group privs */
+		setegid(getgid());
+		setgid(getgid());
+	    }
 #endif
 	}
 
@@ -3805,6 +3815,16 @@ spawn (void)
 		}
 #endif /* USE_LASTLOG */
 
+#ifdef __OpenBSD__
+		/* Switch to real gid after writing utmp entry */
+		utmpGid = getegid();
+		if (getgid() != getegid()) {
+			utmpGid = getegid();
+			setegid(getgid());
+		}
+#endif
+			
+
 #ifdef USE_HANDSHAKE
 		/* Let our parent know that we set up our utmp entry
 		 * so that it can clean up after us.
@@ -4479,6 +4499,12 @@ Exit(int n)
 	    && added_utmp_entry
 #endif /* USE_HANDSHAKE */
 	    ) {
+#ifdef __OpenBSD__
+	    if (utmpGid != -1) {
+		/* Switch back to group utmp */
+		setegid(utmpGid);
+	    }
+#endif
 	    utmp.ut_type = USER_PROCESS;
 	    (void) strncpy(utmp.ut_id, my_utmp_id(ttydev), sizeof(utmp.ut_id));
 	    (void) setutent();

@@ -167,19 +167,24 @@ SetUIDProgramTarget(xterm,$(OBJS1),$(DEPLIBS1),$(XRFLIBS) XkbClientLibs XawClien
 NormalProgramTarget(xterm,$(OBJS1),$(DEPLIBS1),$(XRFLIBS) XkbClientLibs XawClientLibs,$(TERMCAPLIB) $(UTMPLIB) $(PTYLIB))
 #endif
 
+#if defined(OpenBSDArchitecture)
+/* On OpenBSD xterm is now setgid utmp */
+INSTUIDFLAGS= -m 6755 -g utmp
+#endif
+
 #if InstallXtermSetUID && defined(SunArchitecture) && HasSharedLibraries && (OSMajorVersion < 5)
-#if AlternateUsrLibDir
-#if ((OSMajorVersion == 4) && (OSMinorVersion >= 1))
+# if AlternateUsrLibDir
+#  if ((OSMajorVersion == 4) && (OSMinorVersion >= 1))
 LDOVERRIDE = -L$(DESTDIR)$(USRLIBDIR)
-#else
-#if HasGcc
+#  else
+#   if HasGcc
 LDOVERRIDE = -static -L$(DESTDIR)$(USRLIBDIR)
-#else
+#   else
 LDOVERRIDE = -Bstatic -L$(DESTDIR)$(USRLIBDIR)
 LDRESUME = -Bdynamic
-#endif
-#endif
-#endif
+#   endif
+#  endif
+# endif
 install:: ProgramTargetName(xterm)
 	MakeDir($(DESTDIR)$(BINDIR))
 	RemoveFile(ProgramTargetName(xterm.inst))
