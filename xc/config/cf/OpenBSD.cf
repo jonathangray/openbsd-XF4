@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.72 2002/02/05 20:15:53 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.73 2002/02/10 13:10:52 matthieu Exp $
 
 
 
@@ -793,6 +793,13 @@ install:: fonts.alias							@@\
 /* FreeType2 don't work on 64bit machines */
 # define BuildFreetype2Library  NO
 # define BuildXftLibrary	NO
+
+/* GLX doesn't work on sparc64 */
+# define BuildGlxExt		NO
+# define BuildGLXLibrary	YES
+
+/* Neither does the Xdm Auth code */
+# define HasXdmAuth		NO
 
 # if XF86Server
 #   ifndef DoLoadableServer
