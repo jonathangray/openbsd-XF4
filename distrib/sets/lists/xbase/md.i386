@@ -454,6 +454,8 @@
 ./usr/X11R6/lib/X11/fonts/PEX
 ./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
 ./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
+./usr/X11R6/lib/X11/fonts/Type1
+./usr/X11R6/lib/X11/fonts/Type1/XftCache
 ./usr/X11R6/lib/X11/fvwm/FvwmRearrange
 ./usr/X11R6/lib/X11/fvwm/new-features
 ./usr/X11R6/lib/X11/old-Cards
