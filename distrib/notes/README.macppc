@@ -1,7 +1,7 @@
 Post-installation instructions for XFree86 on OpenBSD/macppc
 ------------------------------------------------------------
 
-OpenBSD 3.0 uses the XFree86 4.1.0 X server now. 
+OpenBSD 3.0 and later uses the XFree86 X server on macppc. 
 
 A special driver reproduces the functionnality of Xmacppc in previous 
 releases: wsfb. It uses whatever graphics mode the console is set to 
