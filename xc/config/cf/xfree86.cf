@@ -1065,7 +1065,7 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 #    define GlxCoreLibDefines /**/
 #  endif
 
-#  if defined(SparcArchitecture)  || defined(ia64Architecture) || defined(s390xArchitecture)
+#  if defined(SparcArchitecture) || defined(Sparc64Architecture) || defined(ia64Architecture) || defined(s390xArchitecture)
 #    define GlxArchDefines -D__GLX_ALIGN64
 #  elif defined(AlphaArchitecture)
 /* On the Alpha we need to ensure floating point accuracy for 3D */

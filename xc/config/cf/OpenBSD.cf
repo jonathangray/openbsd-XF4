@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.87 2002/04/26 20:18:37 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.88 2002/04/28 17:37:20 matthieu Exp $
 
 
 
@@ -770,10 +770,6 @@ install:: fonts.alias							@@\
 # define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
 
 # define XkbServerDefines  -DXKB_ALWAYS_USES_SOFT_REPEAT
-
-/* GLX doesn't work on sparc64 */
-# define BuildGlxExt		NO
-# define BuildGLXLibrary	YES
 
 # if XF86Server
 #   ifndef DoLoadableServer
