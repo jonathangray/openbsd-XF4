@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.h,v 1.3 2002/09/29 21:30:34 matthieu Exp $ */
+/* $OpenBSD: callbacks.h,v 1.4 2002/12/31 16:09:16 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -38,7 +38,6 @@ extern void on_permitonce_clicked(Widget, XtPointer, XtPointer);
 extern void on_deny_clicked(Widget, XtPointer, XtPointer);
 extern void on_permit_clicked(Widget, XtPointer, XtPointer);
 extern void on_filter_entry_changed(Widget, XEvent *, String *, Cardinal *);
-extern void on_filteradd_clicked(Widget, XtPointer, XtPointer);
 extern void on_detachbutton_clicked(Widget, XtPointer, XtPointer);
 extern void on_reviewbutton_clicked(Widget, XtPointer, XtPointer);
 extern void on_wizard_clicked(Widget, XtPointer, XtPointer);

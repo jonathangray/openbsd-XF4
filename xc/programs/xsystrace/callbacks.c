@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.7 2002/09/29 21:30:34 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.8 2002/12/31 16:09:16 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -287,18 +287,6 @@ on_permit_clicked(Widget w, XtPointer closure, XtPointer clientData)
 void 
 on_filter_entry_changed(Widget w, XEvent *event, String *params, 
 			Cardinal *num_params)
-{
-	Arg args[1];
-	char *name;
-
-	XtSetArg(args[0], XtNstring, &name);
-	XtGetValues(filter, args, 1);
-	
-	printf("%s\n", name);
-}
-
-void
-on_filteradd_clicked(Widget w, XtPointer closure, XtPointer clientData)
 {
 	Arg args[1];
 	char *name;
