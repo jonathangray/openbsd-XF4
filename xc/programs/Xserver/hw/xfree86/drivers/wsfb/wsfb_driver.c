@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.15 2002/07/25 22:07:36 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.16 2002/08/01 22:01:28 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -73,7 +73,7 @@
 
 #define WSFB_DEFAULT_DEV "/dev/ttyC0"
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG
 # define TRACE_ENTER(str)       ErrorF("wsfb: " str " %d\n",pScrn->scrnIndex)
