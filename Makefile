@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.26 2002/05/04 00:29:56 espie Exp $
+#	$OpenBSD: Makefile,v 1.27 2002/06/09 04:34:19 nordin Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -197,8 +197,8 @@ distclean:
 .endif
 
 b-r:
-	@echo ${.CURDIR}/build-release
-	@exec ${.CURDIR}/build-release
+	@echo sh ${.CURDIR}/build-release
+	@exec sh ${.CURDIR}/build-release
 
 .PHONY: all build release dist install install-xc install-xc-old \
     install-distrib clean distclean fix-appd b-r \
