@@ -521,7 +521,7 @@ Boolean WindowManager::raiseTransients(Client *c)
     }
 }
 
-#ifdef sgi
+#if defined(sgi) || defined(__OpenBSD__)
 extern "C" {
 extern int putenv(char *);	/* not POSIX */
 }
