@@ -658,7 +658,7 @@ install:: fonts.alias							@@\
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
-#   ifndef XFree86CardDrivers
+#   ifndef XF86CardDrivers
 #    define XF86CardDrivers	ati mga glint s3virge sis savage\
 				trident chips tdfx \
 				DevelDrivers vga \
