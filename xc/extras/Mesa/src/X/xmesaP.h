@@ -55,8 +55,10 @@
 #  define DRI_CTX_ARG
 #endif
 
+#if defined(__mac68k__)
 #if ! defined(_XtIntrinsic_h) && ! defined(PIXEL_ALREADY_TYPEDEFED)
 #include <X11/Intrinsic.h>
+#endif
 #endif
 
 
