@@ -4,6 +4,7 @@ XCOMM $XFree86: xc/lib/Xinerama/Imakefile,v 1.2 2000/02/29 18:38:42 dawes Exp $
 #define DoSharedLib SharedLibXinerama
 #define DoDebugLib DebugLibXinerama
 #define DoProfileLib ProfileLibXinerama
+#define DoPicLib HasSharedLibraries && !SharedLibXinerama
 #define LibName Xinerama
 #define SoRev SOXINERAMAREV
 #define LibHeaders NO

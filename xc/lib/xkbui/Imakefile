@@ -5,6 +5,7 @@ XCOMM $XFree86: xc/lib/xkbui/Imakefile,v 3.3 1999/03/14 03:21:21 dawes Exp $
 #define DoExtraLib NO
 #define DoDebugLib NO
 #define DoProfileLib NO
+#define DoPicLib HasSharedLibraries
 #define HasSharedData NO
 #define LibName xkbui
 #define SoRev SOXKBFILEREV

@@ -43,6 +43,7 @@ XCOMM MOTIF_LDFLAGS  = -L/usr/local/lib
 #define DoSharedLib	SharedLibGLw
 #define DoDebugLib	DebugLibGLw
 #define DoProfileLib	ProfileLibGLw
+#define DoPicLib HasSharedLibraries && !SharedLibGLw
 
 #define HasSharedData	NO
 #define LibName GLw

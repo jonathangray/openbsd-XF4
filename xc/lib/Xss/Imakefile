@@ -4,6 +4,7 @@ XCOMM $XFree86: xc/lib/Xss/Imakefile,v 3.2 2000/06/15 20:49:58 dawes Exp $
 #define DoExtraLib SharedLibXss
 #define DoDebugLib DebugLibXss
 #define DoProfileLib ProfileLibXss
+#define DoPicLib HasSharedLibraries && !SharedLibXss
 #define LibName Xss
 #define SoRev SOXSSREV
 #define LibHeaders NO

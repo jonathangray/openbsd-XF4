@@ -3,7 +3,7 @@
  * that Imakefiles in the various library subtrees will need.
  *
  * Before including this, you must set the following boolean variables:
- * DoNormalLib, DoSharedLib, DoDebugLib, DoProfileLib
+ * DoNormalLib, DoSharedLib, DoDebugLib, DoProfileLib, DoPicLib
  *
  * To get automatic generation of standard rules, also set the variables:
  * LibName, SoRev, HasSharedData, and optionally HugeLibrary and IncSubdir.
@@ -21,8 +21,15 @@ XCOMM $Xorg: Library.tmpl,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
 
 XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.15 2001/08/27 17:40:55 dawes Exp $
 
+/*
+ * Some libraries may not define DoPicLib
+ */
+#ifndef DoPicLib
+#  define DoPicLib	NO
+#endif
+
 #ifndef LibraryCplusplusOptions
-# if DoSharedLib && defined(SharedLibraryCplusplusOptions)
+# if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusOptions)
 #  define LibraryCplusplusOptions SharedLibraryCplusplusOptions
 # else
 #  define LibraryCplusplusOptions DefaultCplusplusOptions
@@ -48,14 +55,14 @@ XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.15 2001/08/27 17:40:55 dawes Exp $
 
 #ifndef CplusplusSource
 # ifndef LibraryCcCmd
-#  if DoSharedLib && defined(SharedLibraryCcCmd)
+#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCcCmd)
 #   define LibraryCcCmd SharedLibraryCcCmd
 #  else
 #   define LibraryCcCmd CcCmd
 #  endif
 # endif
 # ifndef LibraryCCOptions
-#  if DoSharedLib && defined(SharedLibraryCCOptions)
+#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCCOptions)
 #   define LibraryCCOptions SharedLibraryCCOptions
 #  else
 #   define LibraryCCOptions DefaultCCOptions
@@ -73,14 +80,14 @@ CLIBDEBUGFLAGS = LibraryDebugOpt
 # endif
 #else
 # ifndef LibraryCplusplusCmd
-#  if DoSharedLib && defined(SharedLibraryCplusplusCmd)
+#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusCmd)
 #   define LibraryCplusplusCmd SharedLibraryCplusplusCmd
 #  else
 #   define LibraryCplusplusCmd CplusplusCmd
 #  endif
 # endif
 # ifndef LibraryCplusplusOptions
-#  if DoSharedLib && defined(SharedLibraryCplusplusOptions)
+#  if (DoSharedLib || DoPicLib) && defined(SharedLibraryCplusplusOptions)
 #   define LibraryCplusplusOptions SharedLibraryCplusplusOptions
 #  else
 #   define LibraryCplusplusOptions DefaultCplusplusOptions
@@ -140,7 +147,7 @@ LIB_MT_DEFINES = LibraryMTDefines
 # define _NormalObjCplusplusCompile(options) $(_NULLCMD_)
 # define _NormalCleanDir() $(_NULLCMD_)
 #else
-# if DoSharedLib && SeparateSharedCompile
+# if (DoSharedLib || DoPicLib) && SeparateSharedCompile
 #  define _NormalLibMkdir() _LibMkdir(unshared)
 #  define _NormalObjCompile(options) UnsharedLibObjCompile(options)
 #  define _NormalObjCplusplusCompile(options) UnsharedLibObjCplusplusCompile(options)
@@ -153,7 +160,7 @@ LIB_MT_DEFINES = LibraryMTDefines
 # endif
 #endif
 
-#if !DoSharedLib || (DoNormalLib && !SeparateSharedCompile)
+#if !DoSharedLib && !DoPicLib || (DoNormalLib && !SeparateSharedCompile)
 # define _SharedObjCompile(options) $(_NULLCMD_)
 # define _SharedObjCplusplusCompile(options) $(_NULLCMD_)
 #else
@@ -388,13 +395,13 @@ InstallSharedLibraryData($(LIBNAME),$(SoRev),$(SHLIBDIR))
 #  endif
 #  if DoNormalLib
 #   if HugeLibrary
-#    if DoSharedLib && SeparateSharedCompile
+#    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
 UnsharedLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3),unshared,..)
 #    else
 NormalLibraryTarget3($(LIBNAME),$(OBJS1),$(OBJS2),$(OBJS3))
 #    endif
 #   else
-#    if DoSharedLib && SeparateSharedCompile
+#    if (DoSharedLib || DoPicLib) && SeparateSharedCompile
 UnsharedLibraryTarget($(LIBNAME),$(OBJS),unshared,..)
 #    else
 NormalLibraryTarget($(LIBNAME),$(OBJS))
@@ -414,6 +421,12 @@ InstallLibrary($(LIBNAME)_p,$(USRLIBDIR))
 DebuggedLibraryTarget($(LIBNAME),$(OBJS))
 #   if !defined(LibInstall) || LibInstall
 InstallLibrary($(LIBNAME)_d,$(USRLIBDIR))
+#   endif
+#  endif
+#  if DoPicLib
+PicLibraryTarget($(LIBNAME),$(OBJS))
+#   if !defined(LibInstall) || LibInstall
+InstallLibrary($(LIBNAME)_pic,$(USRLIBDIR))
 #   endif
 #  endif
 #  if DoExtraLib && defined(ExtraLibRules)

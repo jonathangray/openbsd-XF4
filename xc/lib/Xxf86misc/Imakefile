@@ -4,6 +4,7 @@ XCOMM $XFree86: xc/lib/Xxf86misc/Imakefile,v 3.1 1998/12/20 11:57:13 dawes Exp $
 #define DoExtraLib SharedLibXxf86misc
 #define DoDebugLib DebugLibXxf86misc
 #define DoProfileLib ProfileLibXxf86misc
+#define DoPicLib HasSharedLibraries && !SharedLibXxf86misc
 #define LibName Xxf86misc
 #define SoRev SOXXF86MISCREV
 #define LibHeaders NO

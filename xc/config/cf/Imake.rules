@@ -2550,6 +2550,20 @@ LibraryTargetName(libname): objlist1 objlist2 objlist3 $(EXTRALIBRARYDEPS)	@@\
 
 
 /*
+ * Rule to build libXXX_pic.a from PIC objects for a library 
+ */
+#ifndef PicLibraryTarget
+#define	PicLibraryTarget(libname,objlist)				@@\
+AllTarget(LibraryTargetNameSuffix(libname,_pic))			@@\
+									@@\
+LibraryTargetNameSuffix(libname,_pic): objlist $(EXTRALIBRARYDEPS)	@@\
+	RemoveFile($@)							@@\
+	MakeLibrary($@,objlist)						@@\
+	RanLibrary($@)							@@\
+	_LinkBuildLibrary($@)
+#endif /* PicLibraryTarget */
+
+/*
  * SubdirLibraryRule -
  */
 #ifndef SubdirLibraryRule
