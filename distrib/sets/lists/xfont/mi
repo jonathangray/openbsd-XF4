@@ -70,7 +70,6 @@
 ./usr/X11R6/lib/X11/fonts/cyrillic/encodings.dir
 ./usr/X11R6/lib/X11/fonts/cyrillic/fonts.alias
 ./usr/X11R6/lib/X11/fonts/cyrillic/fonts.dir
-./usr/X11R6/lib/X11/fonts/local/fonts.dir
 ./usr/X11R6/lib/X11/fonts/misc
 ./usr/X11R6/lib/X11/fonts/misc/fonts.alias
 ./usr/X11R6/lib/X11/fonts/misc/fonts.dir

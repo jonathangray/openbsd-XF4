@@ -849,6 +849,7 @@
 ./usr/X11R6/lib/X11/fonts/latin2/75dpi/timR18.pcf.gz
 ./usr/X11R6/lib/X11/fonts/latin2/75dpi/timR24.pcf.gz
 ./usr/X11R6/lib/X11/fonts/local
+./usr/X11R6/lib/X11/fonts/local/fonts.dir
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libGL.so.1.2
 ./usr/X11R6/lib/libICE.so.6.3

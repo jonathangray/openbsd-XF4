@@ -1,5 +1,6 @@
 ./etc/X11/xserver
 ./etc/X11/xserver/SecurityPolicy
+./usr/X11R6/bin/X
 ./usr/X11R6/bin/Xmacppc
 ./usr/X11R6/bin/Xnest
 ./usr/X11R6/bin/Xprt
