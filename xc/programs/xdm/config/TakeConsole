@@ -5,3 +5,4 @@
 #
 chmod 622 /dev/console
 chown root /dev/console
+/usr/X11R6/bin/sessreg -d -l $DISPLAY -u /var/run/utmp -x /usr/X11R6/lib/X11/xdm/Xservers $USER
