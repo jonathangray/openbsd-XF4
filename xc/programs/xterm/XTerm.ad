@@ -1,5 +1,5 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.6 2001/08/05 19:45:19 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.7 2001/10/30 18:38:34 matthieu Exp $
 !
 !
 !
@@ -168,5 +168,5 @@ XTerm.JoinSession:False
 ! Restore the traditional backarrow/delete key behaviour
 ! The delete key should generate DEL
 *deleteIsDEL: true
-! so should the back arrow key
-*backarrowKey: false
+! and the back arrow generates BS
+*backarrowKey: true
