@@ -48,7 +48,8 @@ Conventions used in this document:
     a. For the XFree86 4.0.x server, run xf86cfg(1) or xf86setup(1).
 
        This will produce the /etc/X11/XF86Config file.  If for some reason
-       xf86cfg(1) doesn't work on your hardware, try the alternate program
+       xf86cfg(1) doesn't work on your hardware, try using the text mode
+       by typing ``xf86cfg -textmode', or try the alternate program,
        xf86config(1).
 
     b. For the XFree86 3.3.6 server, run XF86Setup(1) or xf86setup3(1).
