@@ -54,12 +54,14 @@ static void
 childhandler (int sig)
 {
      pid_t pid;
-     int status;
+     int status, olderrno = errno;
 
      do { 
        pid = waitpid (-1, &status, WNOHANG|WUNTRACED);
      } while(pid > 0);
      signal (SIGCHLD, childhandler);
+     
+     errno = olderrno;
 }
 
 static void

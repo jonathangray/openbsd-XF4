@@ -53,7 +53,7 @@ static void
 childhandler (int sig)
 {
      pid_t pid;
-     int status;
+     int status, olderrno = errno;
 
      do { 
 	 pid = waitpid (-1, &status, WNOHANG|WUNTRACED);
@@ -62,6 +62,7 @@ childhandler (int sig)
 		 exit (0);
      } while(pid > 0);
      signal (SIGCHLD, childhandler);
+     errno = olderrno;
 }
 
 /*
@@ -86,7 +87,7 @@ usr2handler (int sig)
 {
     donep = 1;
     if (nchild == 0)
-	exit (0);
+	_exit (0);
 }
 
 /*
