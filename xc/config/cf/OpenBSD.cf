@@ -328,12 +328,21 @@ install:: fonts.alias							@@\
 # define UseElfFormat		YES
 # define HasSharedLibraries	YES
 
+# ifdef XnestServer
+#  undef XnestServer
+# endif
+# define XnestServer		NO
+# ifdef XVirtualFramebufferServer
+#  undef XVirtualFramebufferServer
+# endif
+# define XVirtualFramebufferServer	NO
+
 # ifndef XF86TGAServer
-#  define XF86TGAServer	NO
+#  define XF86TGAServer		YES
 # endif
 
 # ifndef XF86Server
-#  define XF86Server		YES
+#  define XF86Server		NO
 # endif
 
 /* Definitions for building the XFree86 server */

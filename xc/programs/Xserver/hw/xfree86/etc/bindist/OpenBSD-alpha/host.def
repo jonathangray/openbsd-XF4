@@ -1,6 +1,6 @@
 /*
  * Host.def for building OpenBSD bindists
- * $OpenBSD: host.def,v 1.1 2001/02/27 17:30:29 todd Exp $
+ * $OpenBSD: host.def,v 1.2 2001/07/09 19:25:02 todd Exp $
  * $XFree86$
  */
 
@@ -18,4 +18,13 @@
 #define BuildLinuxDocHtml		YES
 #define BuildAllDocs			YES
 #define InstallJapaneseDocs       	YES
+#endif
+
+/* You must disable Xtga before enabling XFree86 */
+
+#define BuildXFree86			NO
+
+#if BuildXFree86
+#define XF86XTGAServer			NO
+#define XF86Server			YES
 #endif
