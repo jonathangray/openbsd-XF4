@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.50 2001/08/08 12:12:42 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.51 2001/09/04 23:24:42 matthieu Exp $
 
 
 
@@ -94,6 +94,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 /* OpenBSD after 2.9 has BSD authentication -- kludged for now */
 #define HasBSDAuth		YES
+
+/* OpenBSD 3.0 has libusb */
+#define HasLibUsb		YES
 
 /*
  * Compiler Features
