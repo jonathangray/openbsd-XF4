@@ -169,6 +169,10 @@ DoSearch(ManpageGlobals * man_globals, int type)
     return(NULL);
   }
 
+  if (strlen(search_string) >= BUFSIZ) {
+    PopupWarning(man_globals, "Search string too long.");
+    return(NULL);
+  }
   if (search_string[0] == ' ') {
     PopupWarning(man_globals, "First character cannot be a space.");
     return(NULL);
@@ -177,7 +181,7 @@ DoSearch(ManpageGlobals * man_globals, int type)
   if (type == APROPOS) {
     char label[BUFSIZ];
 
-    strcpy(tmp, MANTEMP);		/* get a temp file. */
+    strlcpy(tmp, MANTEMP, sizeof(tmp));		/* get a temp file. */
 #ifdef HAS_MKSTEMP
     fd = mkstemp(tmp);
     if (fd < 0) {
@@ -195,26 +199,27 @@ DoSearch(ManpageGlobals * man_globals, int type)
       if (!ReadManConfig(path))
 #endif
       {
-	strcpy(path,SYSMANPATH);
+	strlcpy(path,SYSMANPATH,sizeof(path));
 #ifdef LOCALMANPATH
-	strcat(path,":");
-	strcat(path,LOCALMANPATH);
+	strlcat(path,":",sizeof(path));
+	strlcat(path,LOCALMANPATH,sizeof(path));
 #endif
       }
     } else {
-      strcpy(path,manpath);
+      strlcpy(path,manpath,sizeof(path));
     }
 
-    sprintf(label,"Results of apropos search on: %s", search_string);
+    snprintf(label, sizeof(label), 
+	"Results of apropos search on: %s", search_string);
 
 #ifdef NO_MANPATH_SUPPORT	/* not quite correct, but the best I can do. */
-    sprintf(cmdbuf, APROPOS_FORMAT, search_string, mantmp);
+    snprintf(cmdbuf, sizeof(cmdbuf), APROPOS_FORMAT, search_string, mantmp);
 #else
-    sprintf(cmdbuf, APROPOS_FORMAT, path, search_string, mantmp);
+    snprintf(cmdbuf, sizeof(cmdbuf), APROPOS_FORMAT, path, search_string, mantmp);
 #endif
 
     if(system(cmdbuf) != 0) {	/* execute search. */
-      sprintf(error_buf,"Something went wrong trying to run %s\n",cmdbuf);
+	snprintf(error_buf, sizeof(error_buf), "Something went wrong trying to run %s\n",cmdbuf);
       PopupWarning(man_globals, error_buf);
     }
 
@@ -232,7 +237,7 @@ DoSearch(ManpageGlobals * man_globals, int type)
 
     unlink(mantmp);
 
-    sprintf(string_buf,"%s: nothing appropriate", search_string);
+    snprintf(string_buf, sizeof(string_buf), "%s: nothing appropriate", search_string);
 
     /*
      * Check first LOOKLINES lines for "nothing appropriate".
@@ -263,14 +268,15 @@ DoSearch(ManpageGlobals * man_globals, int type)
       return(NULL);
     }
   
-    strcpy(man_globals->manpage_title,label);
+    snprintf(man_globals->manpage_title,sizeof(man_globals->manpage_title),
+	"%s", label);
     ChangeLabel(man_globals->label,label);
     fseek(file, 0L, 0);		/* reset file to point at top. */
   }
   else {			/* MANUAL SEACH */
     file = DoManualSearch(man_globals, search_string);
     if (file == NULL) {
-      sprintf(string_buf,"No manual entry for %s.", search_string);
+      snprintf(string_buf,sizeof(string_buf),"No manual entry for %s.", search_string);
       ChangeLabel(man_globals->label, string_buf);
       if (man_globals->label == NULL)
 	PopupWarning(man_globals, string_buf);
