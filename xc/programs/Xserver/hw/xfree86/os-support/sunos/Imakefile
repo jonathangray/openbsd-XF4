@@ -1,5 +1,5 @@
 XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile,v 1.4 2002/10/17 02:22:49 dawes Exp $
-XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile,v 1.2 2004/04/23 19:54:13 eich Exp $
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile,v 1.2.4.2 2005/01/13 01:18:47 gisburn Exp $
 XCOMM
 XCOMM Copyright 2001 The XFree86 Project, Inc.  All Rights Reserved.
 XCOMM
@@ -32,16 +32,29 @@ XCOMM
 
 #include <Server.tmpl>
 
-#if !HasGcc && defined(i386Architecture)
-#if HasSunC
-PROWORKS_INOUT_SRC = solaris-ia32.S
-PROWORKS_INOUT_OBJ = solaris-ia32.o
+#if !HasGcc 
+# if HasSunC
+#  ifdef i386Architecture
+#   define AsmArch ia32
+#   define AsmFlags /**/
+#  else
+#   define AsmArch sparcv8plus
+#   define AsmFlags -xarch=v8plus
+#  endif
+PROWORKS_ASM_ARCH = AsmArch
+PROWORKS_ASM_FLAGS = AsmFlags
+PROWORKS_INOUT_SRC = solaris-$(PROWORKS_ASM_ARCH).S
+PROWORKS_INOUT_OBJ = solaris-$(PROWORKS_ASM_ARCH).o
 
-includes:: ia32.il
+all:: $(PROWORKS_ASM_ARCH).il
+includes:: $(PROWORKS_ASM_ARCH).il
 
-CppFileTarget(ia32.il,solaris-ia32.S,-DINLINE_ASM,NullParameter)
-ObjectFromAsmSource(solaris-ia32,NullParameter)
-#else
+CppFileTarget($(PROWORKS_ASM_ARCH).il,solaris-$(PROWORKS_ASM_ARCH).S,-DINLINE_ASM,NullParameter)
+
+$(PROWORKS_INOUT_OBJ): $(PROWORKS_INOUT_SRC)
+	$(AS) -P -o $@ $(PROWORKS_ASM_FLAGS) $(PROWORKS_INOUT_SRC)
+
+#elif defined(i386Architecture)
 PROWORKS_INOUT_SRC = sun_inout.s
 PROWORKS_INOUT_OBJ = sun_inout.o
 #endif

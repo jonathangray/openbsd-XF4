@@ -1,3 +1,234 @@
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgversion.def
+	Bugzilla #2272 (https://bugs.freedesktop.org/show_bug.cgi?id=2272)
+	attachment #1672 (https://bugs.freedesktop.org/attachment.cgi?id=1672):
+	Bump version number for upcoming X11R6.8.2rc2 (release canidate 2) to
+	X11R6.8.1.902.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xwin/ChangeLog
+	* xc/programs/Xserver/hw/xwin/winkeybd.h
+	* xc/programs/Xserver/hw/xwin/winkeyhook.c
+	* xc/programs/Xserver/hw/xwin/winmultiwindowclass.c
+	* xc/programs/Xserver/hw/xwin/winmultiwindowwindow.c
+	* xc/programs/Xserver/hw/xwin/winmultiwindowwm.c
+	* xc/programs/Xserver/hw/xwin/winwndproc.c
+	Bugzilla #1831 (https://bugs.freedesktop.org/show_bug.cgi?id=1831)
+	attachment #1656 (https://bugs.freedesktop.org/attachment.cgi?id=1656):
+	CGYWIN update, including the following fixes:
+	- Make keyhook feature work in multiwindowmode too
+	- Hook windows keys
+	- Fix crash with non-nullterminated strings (reported by Øyvind Harboe)
+	- From Bug #1945: Stop unnecessary reordering.
+	Patch by Alexander Gottwald and Kensuke Matsuzaki.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/sun.cf
+	* xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile
+	* xc/programs/Xserver/hw/xfree86/os-support/sunos/solaris-sparcv8plus.S
+	Bugzilla #2096 (https://bugs.freedesktop.org/show_bug.cgi?id=2096)
+	attachment #1565 (https://bugs.freedesktop.org/attachment.cgi?id=1565):
+	Fix Solaris/SPARC build failure caused by missing assembler code
+	for this platform.
+	Patch by Alan Coopersmith <alan.coopersmith@sun.com>
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_tcl.c
+	* xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_swtcl.c
+	* xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_tcl.c
+	Bugzilla #2110 (https://bugs.freedesktop.org/show_bug.cgi?id=2110)
+	attachment #1569 (https://bugs.freedesktop.org/attachment.cgi?id=1569):
+	Fix build bustage in MESA/DRI code with gcc 2.96.
+	Patch by Kevin E. Martin <kem@freedesktop.org>
+        
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/compiler.h
+	Bugzilla #2114 (https://bugs.freedesktop.org/show_bug.cgi?id=2114)
+	attachment #1576 (https://bugs.freedesktop.org/attachment.cgi?id=1576):
+	Fix build bustage on PPC64 with Linux 2.6.x kernel headers,
+	use system definition of |eieio()|.
+	Originally Gentoo bug #66223.
+	Patch by Tim Yamin and Donnie Berkholz
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/ddc/edid.h
+	Bugzilla #1490 (https://bugs.freedesktop.org/show_bug.cgi?id=1490)
+	attachment #1576 (https://bugs.freedesktop.org/attachment.cgi?id=1576):
+	Refix for previous patch (updating to EDID 1.3), this syncs the
+	X11R6.8.x stable branch with todays Xorg trunk.
+	Patch by Jay Cotton <jay.cotton@sun.com>, Alan Coopersmith
+	<alan.coopersmith@sun.com> and Egbert Eich <eich@freedesktop.org>.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i830_video.c:
+	Bugzilla #2189 (https://bugs.freedesktop.org/show_bug.cgi?id=2189)
+	attachment #1610 (https://bugs.freedesktop.org/attachment.cgi?id=1610):
+	Fix formatting of XtNextEvent manual page.
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i830_video.c:
+	Bugzilla #1488 (https://bugs.freedesktop.org/show_bug.cgi?id=1488)
+	attachment #1607 (https://bugs.freedesktop.org/attachment.cgi?id=1607):
+	Fix crash on i830 during startup.
+	Patch by Eric Anholt <anholt@FreeBSD.org>
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_kbd.c:
+	Bugzilla #2252 (https://bugs.freedesktop.org/show_bug.cgi?id=2252)
+	attachment #1653 (https://bugs.freedesktop.org/attachment.cgi?id=1653):
+	Make option 'DontVTSwitch' work again with kbd driver 
+	under Linux.
+	The kbd driver now calls the OS layer to handle special
+	keys. Possibly other special keys and other OSes need to 
+	be looked at also. 
+	Patch by Egbert Eich <eich@freedesktop.org>.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+       * xc/programs/xterm/INSTALL
+       * xc/programs/xterm/MANIFEST
+       * xc/programs/xterm/Makefile.in
+       * xc/programs/xterm/Tekproc.c
+       * xc/programs/xterm/VTPrsTbl.c
+       * xc/programs/xterm/VTparse.def
+       * xc/programs/xterm/VTparse.h
+       * xc/programs/xterm/XTerm.ad
+       * xc/programs/xterm/aclocal.m4
+       * xc/programs/xterm/button.c
+       * xc/programs/xterm/charclass.c
+       * xc/programs/xterm/charproc.c
+       * xc/programs/xterm/configure
+       * xc/programs/xterm/configure.in
+       * xc/programs/xterm/ctlseqs.ms
+       * xc/programs/xterm/cursor.c
+       * xc/programs/xterm/doublechr.c
+       * xc/programs/xterm/fontutils.c
+       * xc/programs/xterm/fontutils.h
+       * xc/programs/xterm/input.c
+       * xc/programs/xterm/main.c
+       * xc/programs/xterm/main.h
+       * xc/programs/xterm/menu.c
+       * xc/programs/xterm/menu.h
+       * xc/programs/xterm/misc.c
+       * xc/programs/xterm/os2main.c
+       * xc/programs/xterm/plink.sh
+       * xc/programs/xterm/precompose.c
+       * xc/programs/xterm/print.c
+       * xc/programs/xterm/ptyx.h
+       * xc/programs/xterm/resize.c
+       * xc/programs/xterm/screen.c
+       * xc/programs/xterm/scrollbar.c
+       * xc/programs/xterm/testxmc.c
+       * xc/programs/xterm/trace.c
+       * xc/programs/xterm/util.c
+       * xc/programs/xterm/uxterm
+       * xc/programs/xterm/version.h
+       * xc/programs/xterm/xstrings.c
+       * xc/programs/xterm/xterm.h
+       * xc/programs/xterm/xterm.log.html
+       * xc/programs/xterm/xterm.man
+       * xc/programs/xterm/xterm_io.h
+       * xc/programs/xterm/xtermcfg.hin
+       * xc/programs/xterm/unicode/README
+       * xc/programs/xterm/unicode/make-precompose.sh
+       * xc/programs/xterm/unicode/precompose.c.head
+       Bugzilla #1979 (https://bugs.freedesktop.org/show_bug.cgi?id=1979)
+       attachment #1639 (https://bugs.freedesktop.org/attachment.cgi?id=1639):
+       Update xterm from version #196 to version #197:
+       - modify configure script to remove empty "-DPROJECTROOT="
+         definition which resulted unusable values for luit's default path.
+       - update precompose.c based on Unicode 4.0.1
+       - several minor fixes based on Intel compiler warnings.
+       - change default translations so a BtnDown which is not recognized
+         is simply ignored rather than emitting a bell. That makes it less
+         obtrusive when the user tries to use a mouse which provides more
+         capabilities than the X mouse driver supports, e.g., one with a
+         horizontal scroll wheel (Debian #265133).
+       - note in xterm's manpage that translations is not specific to xterm
+         (Debian #278897).
+       - modify uxterm script to use locale program to verify if the
+         derived locale is installed (Debian #246398).
+       - correct font handling for active icon when in UTF-8 mode (report
+         by Paolo Liberatore).
+       - make active-icon and toolbar configurations work together.
+       - modify the criteria for disowning primary selection. Previously,
+         this happened anytime the cursor was moved before the end of the
+         selection. That would ensure that any insert/delete of char or
+         line, as well as scrolling, would disown the selection. The new
+         criteria change this to checking if the operations would modify
+         the data which is highlighted (Debian #277832).
+       - reimplement DECALN with functions for vt420 rectangles, fixes
+         selection for this case.
+       - implement vt420 rectangle operations.
+       - add parsing, for debug/test of vt220 soft-fonts.
+       - add menu entry, actions and escape sequence to allow
+         enabling/disabling toolbars at runtime.
+       - improve rendering for Xft, allow it to draw non-linedrawing
+         characters such as "pi", which were drawn from internal tables
+         with patch #180 (Freedesktop.org Bugzilla #1260).
+       - add configure option --enable-mini-luit, ifdef'd the mini-luit
+         feature with OPT_MINI_LUIT.
+       - add mini-luit feature, which supports Latin9 directly rather than
+         via luit, provided that Unicode fonts are used (Freedesktop.org
+         Bugzilla #1571, request by Stefan Dirsch, patch by Michael
+         Schroeder).
+       - for Linux, if IUTF8 is defined, e.g., on recent 2.6.x kernels, set
+         the corresponding flag for the slave pty, to enable UTF-8
+         interpretation of backspace in cooked mode (Freedesktop.org
+         Bugzilla #1578, request by Stefan Dirsch).
+       - modify faceSize resource to use a floating-point internal value
+         (adapted from patch by Sam Stephenson).
+       - correct handling selection of tabs over cleared space in UTF-8
+         mode. In this special case, xterm represents the whitespace with a
+         null rather than a space character (Debian #276447).
+       - amend fix for infinite loop from patch #192 to check if there
+         is wrapped text to output in a following iteration (Debian
+         #273202).
+       - fixes ifdef'd with __INTERIX to allow building with Interix
+         (Windows Services for UNIX) 3.5 using the xlibs libraries from
+         freedesktop.org (patch by Min Sik Kim).
+       - amend solution for Debian #252873, #260471 from patch #194 by
+         making the cursor not explicitly colored if only the foreground
+         color is set, and the cursor is on a blank space (Debian #275473).
+       - correct logic for send/receive mode (SRM) with regard to control
+         characters.
+       - fix masking of invisible text in wide-character mode, which did
+         not work for line-drawing characters.
+       - incorporate CF_XOPEN_SOURCE into configure script, replacing
+         CF_GNU_SOURCE.
+       Patch by Thomas Dickey <dickey@radix.net>.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/xf86config/xorgconfig.c:
+	Bugzilla #2211 (https://bugs.freedesktop.org/show_bug.cgi?id=2211)
+	attachment #1627 (https://bugs.freedesktop.org/attachment.cgi?id=1627):
+	xorgconfig default keyboard model outdated (should be pc105, 
+	not pc101/pc102).
+	Patch by Alan Coopersmith <alan.coopersmith@sun.com>
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/xf86config/xorgconfig.c
+	Bugzilla #2206 (https://bugs.freedesktop.org/show_bug.cgi?id=2206)
+	attachment #1622 (https://bugs.freedesktop.org/attachment.cgi?id=1622):
+	Fix missing return value in xf86config.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/include/Xos.h
+	* xc/include/Xthreads.h
+	Bugzilla #2207 (https://bugs.freedesktop.org/show_bug.cgi?id=2207)
+	attachment #1623 (https://bugs.freedesktop.org/attachment.cgi?id=1623):
+	Replace usag of CPP symbol "linux" with "__linux__" to get the build
+	working with gcc4.0 again.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+
+2005-01-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/attributes.c
+	Bugzilla #2205 (https://bugs.freedesktop.org/show_bug.cgi?id=2205)
+	attachment #1621 (https://bugs.freedesktop.org/attachment.cgi?id=1621):
+	Fix missing return value in Xprint's resource handling.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+
 2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
 	* xc/config/cf/xorgversion.def
 	Bugzilla #2086 (https://bugs.freedesktop.org/show_bug.cgi?id=2086)
@@ -7583,4 +7814,4 @@ Tue Jul 20 18:23:32 2004  Soeren Sandmann  <sandmann@daimi.au.dk>
        so i18n libs from build tree get used instead of installed ones
        (Egbert Eich).
 
-$XdotOrg: xc/ChangeLog,v 1.365.2.106 2004/12/17 02:01:21 gisburn Exp $
+$XdotOrg: xc/ChangeLog,v 1.365.2.123 2005/01/13 06:04:23 gisburn Exp $

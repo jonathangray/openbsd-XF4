@@ -1,11 +1,11 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.13 2004/11/03 00:23:03 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.14 2005/01/15 14:55:41 matthieu Exp $
 !
 !
 !
 !
-! $XTermId: XTerm.ad,v 1.61 2004/07/13 00:41:24 tom Exp $
-! $XFree86: xc/programs/xterm/XTerm.ad,v 3.28 2004/07/13 00:41:24 dickey Exp $
+! $XTermId: XTerm.ad,v 1.63 2004/12/01 01:27:46 tom Exp $
+! $XFree86: xc/programs/xterm/XTerm.ad,v 3.29 2004/12/01 01:27:46 dickey Exp $
 
 *scrollBar: true
 *saveLines: 1024
@@ -19,6 +19,7 @@
 *SimpleMenu*Cursor: left_ptr
 
 *mainMenu.Label:  Main Options
+*mainMenu*toolbar*Label:  Toolbar
 *mainMenu*securekbd*Label:  Secure Keyboard
 *mainMenu*allowsends*Label:  Allow SendEvents
 *mainMenu*redraw*Label:  Redraw Window

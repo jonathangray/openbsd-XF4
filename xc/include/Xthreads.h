@@ -267,7 +267,7 @@ static xthread_t _X_no_thread_id;
 #define xthread_clear_id(id) id = _X_no_thread_id
 #define xthread_equal(id1,id2) pthread_equal(id1, id2)
 #endif /* _DECTHREADS_ */
-#if defined(linux)
+#if defined(__linux__)
 #define xthread_have_id(id) !pthread_equal(id, 0)
 #define xthread_clear_id(id) id = 0
 #define xthread_equal(id1,id2) pthread_equal(id1, id2)

@@ -1,4 +1,4 @@
-XCOMM $XdotOrg: xc/config/cf/sun.cf,v 1.9 2004/08/19 16:28:42 kem Exp $
+XCOMM $XdotOrg: xc/config/cf/sun.cf,v 1.9.2.1 2005/01/13 01:18:47 gisburn Exp $
 XCOMM platform:  $Xorg: sun.cf,v 1.4 2000/08/17 19:41:48 cpqbld Exp $
 
 
@@ -240,6 +240,9 @@ XCOMM SunPro C++ CplusplusCompilerMajorVersion./**/CplusplusCompilerMinorVersion
 #  endif
 # endif
 #else
+#  if HasSunC
+#   define CompilerServerExtraDefines $(XF86SRC)/os-support/sunos/sparcv8plus.il
+#  endif
 # define HasPlugin		YES
 #endif
 
