@@ -29,6 +29,7 @@ Section "InputDevice"
 	Option	    "Protocol" 	  "wskbd"
 	Option	    "Device" 	  "/dev/wskbd0"
 	Option	    "XkbRules" 	  "xfree86"
+	Option	    "XkbModel"	  "sun"
 	Option	    "XkbLayout"   "us"
 EndSection
 
