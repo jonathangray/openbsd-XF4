@@ -1,3 +1,1182 @@
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgversion.def
+	Bugzilla #2086 (https://bugs.freedesktop.org/show_bug.cgi?id=2086)
+	attachment #1557 (https://bugs.freedesktop.org/attachment.cgi?id=1557):
+	Bump version number for upcoming X11R6.8.2rc1 (release canidate 1) to
+	X11R6.8.1.901.
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/xf86Init.c
+	Bugzilla #2086 (https://bugs.freedesktop.org/show_bug.cgi?id=2086)
+	attachment #1556 (https://bugs.freedesktop.org/attachment.cgi?id=1556):
+	Fix problems with printing the release candidate version
+	number for point releases.
+	Patch by Kevin E. Martin <kem@freedesktop.org>
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/ddc/edid.h
+	* xc/programs/Xserver/hw/xfree86/ddc/interpret_edid.c
+	* xc/programs/Xserver/hw/xfree86/ddc/print_edid.c
+	Bugzilla #1490 (https://bugs.freedesktop.org/show_bug.cgi?id=1490)
+	attachment #1122 (https://bugs.freedesktop.org/attachment.cgi?id=1122):
+	Updating to EDID 1.3.
+	Patch by Jay Cotton <jay.cotton@sun.com> and Egbert Eich
+	<eich@freedesktop.org>.
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/Xpm/Imakefile
+	* xc/extras/Xpm/lib/Attrib.c
+	* xc/extras/Xpm/lib/CrBufFrI.c
+	* xc/extras/Xpm/lib/CrDatFrI.c
+	* xc/extras/Xpm/lib/RdFToBuf.c
+	* xc/extras/Xpm/lib/RdFToI.c
+	* xc/extras/Xpm/lib/WrFFrBuf.c
+	* xc/extras/Xpm/lib/WrFFrI.c
+	* xc/extras/Xpm/lib/XpmI.h
+	* xc/extras/Xpm/lib/create.c
+	* xc/extras/Xpm/lib/data.c
+	* xc/extras/Xpm/lib/hashtab.c
+	* xc/extras/Xpm/lib/misc.c
+	* xc/extras/Xpm/lib/parse.c
+	* xc/extras/Xpm/lib/scan.c
+	Bugzilla #1920 (https://bugs.freedesktop.org/show_bug.cgi?id=1920)
+	attachment #1514 (https://bugs.freedesktop.org/attachment.cgi?id=1514):
+	libXpm security fixes for CAN-2004-0914.
+        Patch by Thomas Biege.
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bus/460gxPCI.c
+	Bugzilla #1383 (https://bugs.freedesktop.org/show_bug.cgi?id=1383)
+	attachment #902 (https://bugs.freedesktop.org/attachment.cgi?id=902):
+	Fix typo in PCI code for Intel 460gx in X server, which causes a SEGV.
+	Patch by H.J.Lu <hongjiu.lu@intel.com> 
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/fb/fbwindow.c
+	* xc/programs/Xserver/hw/xfree86/xaa/xaaWrapper.c
+	* xc/programs/Xserver/mi/micmap.c
+	Bugzilla #1912 (https://bugs.freedesktop.org/show_bug.cgi?id=1220)
+	attachment #980 (https://bugs.freedesktop.org/attachment.cgi?id=980):
+	Fix (scrolling) performance problems caused by PseudoColor emulation layer.
+	Patch by Egbert Eich <eich@freedesktop.org>
+        
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	Bugzilla #1912 (https://bugs.freedesktop.org/show_bug.cgi?id=1220)
+	attachment #980 (https://bugs.freedesktop.org/attachment.cgi?id=980):
+	Fix garbage screen on radeon cards which may appear after a system
+	suspend/resume cycle.
+	Patch by Matthias Hopf <mhopf@suse.de>
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_reg.h
+	Bugzilla #1912 (https://bugs.freedesktop.org/show_bug.cgi?id=1912)
+	attachment #1433 (https://bugs.freedesktop.org/attachment.cgi?id=1433):
+	Fix hard lockup on Radeon 7000 + SMP due dynamic clock.
+	Patch by Alex Deucher <agd5f@yahoo.com>.
+
+2004-12-16 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c:
+	Bugzilla #1890 (https://bugs.freedesktop.org/show_bug.cgi?id=1890)
+	attachment #1331 (https://bugs.freedesktop.org/attachment.cgi?id=1331):
+	Apply Debian patch to re-POST via VBE if driver thinks it has no
+	video memory (a symptom of incompletely coming up from D3 power
+	state), which fixes some Dell laptops
+	This enables resume from suspend level S3 by asking the Radeon chip if it
+	thinks it has no memory.  If so, the card is re-POSTed via the int10
+	interface.  Reportedly enables the driver to work for this type of
+	suspend/resume cycle on Dell D600 laptops (Dell D800s as well, if the video
+	BIOS is patched to 4.28.20.31.C1 or later).  See Debian Bug #234575.
+	This patch by Emmanuel Thome and Ole Rohne.
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c
+	Bugzilla #1651 (https://bugs.freedesktop.org/show_bug.cgi?id=1651)
+	attachment #1484 (https://bugs.freedesktop.org/attachment.cgi?id=1484):
+	- set default XkbModel to pc105 (like legacy keyboard driver did)
+	- fix autorepeat
+	Patch by Matthieu Herrb and Petter Urkedal
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	Bugzilla #1881 (https://bugs.freedesktop.org/show_bug.cgi?id=1881)
+	attachment #1322 (https://bugs.freedesktop.org/attachment.cgi?id=1322):
+	Fix typo in radeon driver
+	Patch by Daniel Stone <daniel@freedesktop.org>
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_bios.c
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	Bugzilla #1559 (https://bugs.freedesktop.org/show_bug.cgi?id=1559)
+	attachment #1133 (https://bugs.freedesktop.org/attachment.cgi?id=1133):
+	Fix display detection regression on Radeon Mobile.
+	Patch by HUI YU <hyu@ati.com>
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	Bugzilla #1306 (https://bugs.freedesktop.org/show_bug.cgi?id=1306)
+	attachment #1292 (https://bugs.freedesktop.org/attachment.cgi?id=1292):
+
+	This patch should work around the panel timing params not being initialized. 
+	Here's the problem:
+
+	Previously, the PanelXRes and PanelYRes were either read from the BIOS or were
+	left as 0 (if no BIOS was detected).  Then, in RADEONUpdatePanelSize(), the max
+	panel size was found and the timing parameters were initialized, which worked
+	fine for this ppc system.
+
+	Now, the PanelXRes and PanelYRes are either read from the BIOS or are read from
+	the registers.  Note that the other timing parameters (in particular the
+	DotClock) are not initialized when reading from the registers.  Then, when
+	RADEONUpdatePanelSize() is called, the max panel size is already set, so none
+	of the other timing parameters are initialized here either (or anywhere else
+	for that matter), which appears to be why the new code fails for this ppc
+	system.
+
+	The patch changes the test from < to <= in RADEONUpdatePanelSize() and then
+	tests to make sure that only the first set of timings for the panel size read
+	from the registers will be used -- this mimics the way the previous code
+	worked.  The only problem with this code occurs when the registers hold invalid
+	panel size params, which do not match any of the monitor's DDC info.  This
+	should never happen; however, if it does, then the only solution in this case
+	is to explicitly set the panel size in the config file.
+
+	Patch by Kevin E. Martin <kem@freedesktop.org>
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c
+	Bugzilla #1306 (https://bugs.freedesktop.org/show_bug.cgi?id=1306)
+	attachment #1291 (https://bugs.freedesktop.org/attachment.cgi?id=1291):
+	Fix SEGV in "radeon" driver.
+	Patch by Kevin E. Martin <kem@freedesktop.org>
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dac.c
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_driver.c
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_hw.c
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_setup.c
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_type.h
+	Bugzilla #1985 (https://bugs.freedesktop.org/show_bug.cgi?id=1985)
+	attachment #1504 (https://bugs.freedesktop.org/attachment.cgi?id=1504)
+	sync to 12/08/04 version of Nvidia driver from Mark Vojkovich,
+	including these fixes since last sync:
+	Fix some DAC/Graphics memory contention issues on newer 
+	NVIDIA chips (specifically, NV40).
+	More PCI IDs.
+	Also, I've had trouble getting some panels to work 
+	automagically so I expose an FPTweak option to let the user 
+	adjust a troublesome register.
+
+2004-12-15 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx1_video.c
+	* xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx2_video.c
+	Bug #1937 (https://bugs.freedesktop.org/show_bug.cgi?id=1937)
+	attachment #1396 (https://bugs.freedesktop.org/attachment.cgi?id=1396):
+	XV support doesn't depend on 2D acceleration any more. This patch
+	removes this limitation from the NSC driver. This is a patch that
+	I have committed to XFree86 a while ago but never ported over to
+	X.Org.
+	Patch by Egbert Eich <eich@freedesktop.org> and Matthieu
+	Herrb <matthieu.herrb@laas.fr>
+
+2004-12-15 Alexander Gottwald <ago@freedesktop.org>
+	* xc/programs/Xserver/Imakefile
+	* xc/programs/Xserver/hw/xwin/ChangeLog
+	* xc/programs/Xserver/hw/xwin/Imakefile
+	* xc/programs/Xserver/hw/xwin/InitOutput.c
+	* xc/programs/Xserver/hw/xwin/XWin.rc
+	* xc/programs/Xserver/hw/xwin/win.h
+	* xc/programs/Xserver/hw/xwin/winclipboardthread.c
+	* xc/programs/Xserver/hw/xwin/winclipboardwndproc.c
+	* xc/programs/Xserver/hw/xwin/winclipboardxevents.c
+	* xc/programs/Xserver/hw/xwin/winconfig.c
+	* xc/programs/Xserver/hw/xwin/wincreatewnd.c
+	* xc/programs/Xserver/hw/xwin/winmessages.h
+	* xc/programs/Xserver/hw/xwin/winmouse.c
+	* xc/programs/Xserver/hw/xwin/winmultiwindowwm.c
+	* xc/programs/Xserver/hw/xwin/winmultiwindowwndproc.c
+	* xc/programs/Xserver/hw/xwin/winprocarg.c
+	* xc/programs/Xserver/hw/xwin/winresource.h
+	* xc/programs/Xserver/hw/xwin/winshadddnl.c
+	* xc/programs/Xserver/hw/xwin/winwin32rootlesswndproc.c
+	* xc/programs/Xserver/hw/xwin/winwndproc.c
+	Bug #1831 (https://bugs.freedesktop.org/show_bug.cgi?id=1831)
+	attachment #1547 (https://bugs.freedesktop.org/attachment.cgi?id=1547)
+	attachment #1548 (https://bugs.freedesktop.org/attachment.cgi?id=1548):
+	Cygwin/X patches since 6.8.1, including:
+	- Support for placing the mainwindow by coordinates and monitor
+	- Setting default cursor in multiwindow mode
+	- Added keyboardlayout "French (Switzerland)"
+	- Fixed crashes after switching videomodes
+	- Added support for reading the fontpath from /etc/X11/font-dirs
+	- Make -multiplemonitors for multiwindow modes
+	- Added support for mice with more than 3 buttons
+	- Fixed another clipboard bug with Unicode applications
+	
+2004-12-15  Egbert Eich  <eich-at-freedesktop-org>
+
+	* programs/Xserver/hw/xfree86/os-support/bus/460gxPCI.c:
+	(xorgProbe460GX), (xf86PreScan460GX):
+	* programs/Xserver/hw/xfree86/os-support/bus/460gxPCI.h:
+	* programs/Xserver/hw/xfree86/os-support/bus/Imakefile:
+	* programs/Xserver/hw/xfree86/os-support/bus/e8870PCI.c:
+	(xorgProbeE8870), (xf86PreScanE8870):
+	* programs/Xserver/hw/xfree86/os-support/bus/e8870PCI.h:
+	* programs/Xserver/hw/xfree86/os-support/bus/ia64Pci.c:
+	* programs/Xserver/hw/xfree86/os-support/bus/zx1PCI.c:
+	(xf86PreScanZX1):
+	* programs/Xserver/hw/xfree86/os-support/bus/zx1PCI.h:
+	* programs/Xserver/hw/xfree86/os-support/linux/Imakefile:
+	* programs/Xserver/hw/xfree86/os-support/linux/lnx_ia64.c:
+	(OS_PROBE_PCI_CHIPSET):
+	* programs/Xserver/hw/xfree86/os-support/shared/ia64Pci.c:
+	(ia64ScanPCIWrapper):
+	* programs/Xserver/hw/xfree86/os-support/shared/ia64Pci.h:
+	Adding support for OS dependent probing of IA64 chipsets.
+	Not all IA64 chipsets can be probed without OS support as
+	probing them is only possible using ACPI. One example of 
+	this are the HP ZX1/2 chipsets: previously the code assumed
+	that these chips were present when no other of the known
+	chipsets could be probed. This assumption brought SGI Altrix
+        machines with 64 CPUs to a grinding halt.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/common.h
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810.h
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_accel.c
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_dri.c
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_memory.c
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i810_reg.h
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i830.h
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i830_driver.c
+	* xc/programs/Xserver/hw/xfree86/drivers/i810/i830_memory.c
+	Bug #1944 (https://bugs.freedesktop.org/show_bug.cgi?id=1944)
+	attachment #1403 (https://bugs.freedesktop.org/attachment.cgi?id=1403):
+	Various I8xx driver fixes, including:
+	- Fixed server crash on reset when a structure allocated in
+	  PreInit() was freed on CloseScreen().
+	- Fixed ring buffer lock ups that happened because the structure
+	  that contained ringbuffer data was not zeroed after allocation.
+	- Fixed numerous warnings due to signed unsigned comparisons.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/r128_accel.c:
+	Bug #1889 (https://bugs.freedesktop.org/show_bug.cgi?id=1889)
+	attachment #1330 (https://bugs.freedesktop.org/attachment.cgi?id=1330):
+	Retry CCE idle commands until the (higher) timeout is reached, and
+	properly stop the engine if we totally fail -- gets rid of serious
+	performance issues and lockups with r128 DRI (see also Debian bug
+	reports #223089, #236187, #236373, #243436).
+	Patch by Daniel Jacobowitz.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/r128_driver.c
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/r128_video.c
+	Bug #1888 (https://bugs.freedesktop.org/show_bug.cgi?id=1888)
+	attachment #1329 (https://bugs.freedesktop.org/attachment.cgi?id=1329):
+	Allow pitches with a granularity of 32, rather than 64, because some
+	clamshell iBooks have 800-byte pitches.  Change Xv allocation
+	granularity to 8 bytes, rather than 16 bytes, also (see Debian
+	#148775).
+	Patch by Branden Robinson and Dagfinn Ilmari Mannsåker.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/r128_dri.c
+	Bug #1886 (https://bugs.freedesktop.org/show_bug.cgi?id=1886)
+	attachment #1327 (https://bugs.freedesktop.org/attachment.cgi?id=1327):
+	Disable interrupt handling after the DRM handler has been removed,
+	preventing lockups.
+	Patch by Daniel Stone <daniel@freedesktop.org>
+        
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/Imakefile
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/atiprobe.c
+	Bug #1962 (https://bugs.freedesktop.org/show_bug.cgi?id=1962)
+	attachment #1423 (https://bugs.freedesktop.org/attachment.cgi?id=1423):
+	Avoid PIO access on IA64. Some IA64 machine check if legacy ports
+	outside the VGA range are accessed. The ATi driver however does 
+	this to	probe for ISA Mach8/32/64. 
+	Since no IA64 has ISA slots this restriction should not be
+	relevant to the user.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/atiprobe.c
+	Bug #1928 (https://bugs.freedesktop.org/show_bug.cgi?id=1928)
+	attachment #1387 (https://bugs.freedesktop.org/attachment.cgi?id=1387):
+	Added some early bailouts to atiprobe if PCI structure pointer is
+	NULL to prevent sig11.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/atipreinit.c
+	* xc/programs/Xserver/hw/xfree86/drivers/ati/ativga.c
+	Bug #591 (https://bugs.freedesktop.org/show_bug.cgi?id=591)
+	attachment #308 (https://bugs.freedesktop.org/attachment.cgi?id=308):
+	Fix video timing problems with Sony PCG-C1VN Vaio Picturebook notebook
+	&& co.
+	Patch by Marc Aurele La France
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/doc/man/general/Imakefile
+	* xc/doc/man/general/Xprint.html
+	* xc/doc/man/general/Xprint.man
+	* xc/doc/man/general/Xprint.sgml
+	* xc/programs/Xserver/Xprint/Imakefile
+	* xc/programs/Xserver/Xprint/Xprint.html
+	* xc/programs/Xserver/Xprint/Xprint.man
+	* xc/programs/Xserver/Xprint/Xprint.sgml
+	* xc/programs/Xserver/Xprint/Xprt.html
+	* xc/programs/Xserver/Xprint/Xprt.man
+	* xc/programs/Xserver/Xprint/Xprt.sgml
+	Bug #811 (https://bugs.freedesktop.org/show_bug.cgi?id=811)
+	attachment #1374 (https://bugs.freedesktop.org/attachment.cgi?id=1374),
+	attachment #1379 (https://bugs.freedesktop.org/attachment.cgi?id=1379),
+	attachment #1431 (https://bugs.freedesktop.org/attachment.cgi?id=1431): 
+	Add the missing manual page for the Xprt server (and move the Xprint(7)
+	to it's correct location).
+	Authors: Alan Coopersmith, Giuseppe Ghibò, Thomas Gilg, Jay Hobson,
+	Julien Lafon, Masaki Katakai, Roland Mainz, Simon Montagu, Drew Parsons.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/doc/man/X11/XGetWProp.man
+	Bug #2056 (https://bugs.freedesktop.org/show_bug.cgi?id=2056)
+	attachment #1515 (https://bugs.freedesktop.org/attachment.cgi?id=1515):
+	Fix the missing XChangeProperty() prototype in man page's
+        synopsis section.
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/docbook/docbookconv.sh
+	* xc/doc/hardcopy/XPRINT/Xprint_FAQ.html
+	* xc/doc/hardcopy/XPRINT/Xprint_FAQ.txt
+	* xc/doc/hardcopy/XPRINT/Xprint_FAQ.xml
+	* xc/programs/Xserver/Xprint/Xprint.html
+	* xc/programs/Xserver/Xprint/Xprint.man
+	* xc/programs/Xserver/Xprint/Xprint.sgml
+	* xc/programs/xlsfonts/xlsfonts.man
+	* xc/programs/xlsfonts/xlsfonts.sgml
+	* xc/programs/xphelloworld/xphelloworld/xphelloworld.html
+	* xc/programs/xphelloworld/xphelloworld/xphelloworld.man
+	* xc/programs/xphelloworld/xphelloworld/xphelloworld.sgml
+	* xc/programs/xphelloworld/xpsimplehelloworld/xpsimplehelloworld.html
+	* xc/programs/xphelloworld/xpsimplehelloworld/xpsimplehelloworld.man
+	* xc/programs/xphelloworld/xpsimplehelloworld/xpsimplehelloworld.sgml
+	* xc/programs/xphelloworld/xpxmhelloworld/xpxmhelloworld.html
+	* xc/programs/xphelloworld/xpxmhelloworld/xpxmhelloworld.man
+	* xc/programs/xphelloworld/xpxmhelloworld/xpxmhelloworld.sgml
+	* xc/programs/xphelloworld/xpxthelloworld/xpxthelloworld.html
+	* xc/programs/xphelloworld/xpxthelloworld/xpxthelloworld.man
+	* xc/programs/xphelloworld/xpxthelloworld/xpxthelloworld.sgml
+	* xc/programs/xplsprinters/xplsprinters.html
+	* xc/programs/xplsprinters/xplsprinters.man
+	* xc/programs/xplsprinters/xplsprinters.sgml
+	* xc/programs/xprehashprinterlist/xprehashprinterlist.man
+	* xc/programs/xprehashprinterlist/xprehashprinterlist.sgml
+	Bugzilla #1557 (https://bugs.freedesktop.org/show_bug.cgi?id=1557)
+	attachment #1032 (https://bugs.freedesktop.org/attachment.cgi?id=1391):
+	Update DocBook SGML+XML manual pages and docmentation
+	and the in-tree copies of the generated files (*.man, *.html) to
+	get them properly working with newer versions of the tools within the
+	Xorg tree.
+        Patch by Roland Mainz, Drew Parsons, Julien Lafon, Giuseppe Ghibò
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml
+	Bug #1932 (https://bugs.freedesktop.org/show_bug.cgi?id=1932)
+	attachment #1391 (https://bugs.freedesktop.org/attachment.cgi?id=1391
+	with typo fixed):
+	Added explanation for DESTDIR to install to a different directory
+	than /.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile:
+	Bug #1987 (https://bugs.freedesktop.org/show_bug.cgi?id=1987)
+	attachment #1462 (https://bugs.freedesktop.org/attachment.cgi?id=1462):
+	HAVE_SYSV_IPC should be defined when building libc_wrapper.c on 
+	Solaris/SVR4Architecture (otherwise some drivers like those from
+	Nvidia may not work).
+	Patch by Alan Coopersmith <alan.coopersmith@sun.com>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bus/Pci.c
+	Bug #1965 (https://bugs.freedesktop.org/show_bug.cgi?id=1965)
+	attachment #1425 (https://bugs.freedesktop.org/attachment.cgi?id=1425):
+	Avoid recursive calls of xf86scanpci(). This function normally 
+	detects that it has been called before by checking if the PCI
+	structure is filled out. So far if this was not the case 
+	(because PCI probing has failed for some reason) the function
+	is traversed again. With the chipset specific PCI bus probing
+	this can lead to an endless recursive loop as the post-probing
+	code calls xf86scanpci() from within this function.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bus/linuxPci.c
+	Bug #1963 (https://bugs.freedesktop.org/show_bug.cgi?id=1963)
+	attachment #1424 (https://bugs.freedesktop.org/attachment.cgi?id=1424):
+	The OS specific PCI code for Linux worked only if bus 0
+	was populated as it checked for the presence of /proc/bus/pci/00.
+	Fixed to check for /proc/bus/pci/<bus_to_look_for> instead.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/xf86Events.c
+	* xc/programs/Xserver/hw/xfree86/common/xf86Init.c
+	Bug #1933 (https://bugs.freedesktop.org/show_bug.cgi?id=1933)
+	attachment #1392 (https://bugs.freedesktop.org/attachment.cgi?id=1392):
+	Improving DPMS handling on VT swich and server
+	termination/abort: previous version called the driver directly and
+	too late.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/xf86Configure.c
+	Bug #1931 (https://bugs.freedesktop.org/show_bug.cgi?id=1931)
+	attachment #1390 (https://bugs.freedesktop.org/attachment.cgi?id=1390):
+	Removing unused DDC sections that caused misinterpretation of
+	DDC data due to a missing break statement in a switch.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bus/ix86Pci.c
+	Bug #1927 (https://bugs.freedesktop.org/show_bug.cgi?id=1927)
+	attachment #1386 (https://bugs.freedesktop.org/attachment.cgi?id=1386):
+	Fixed typo in |ix86PciSelectCfgmech()|: #if <-> #ifdef.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xext/xf86vmode.c
+	Bug #1552 (https://bugs.freedesktop.org/show_bug.cgi?id=1552)
+	attachment #1026 (https://bugs.freedesktop.org/attachment.cgi?id=1026):
+
+        Currently, when a screensaver kicks in, it calls xf86GetModeLine()
+        which causes the Vidmode extension to write out a debugging log
+        message of what the current modeline is.  These messages are
+        generally only useful to an X11 developer who is debugging the
+        extension itself, or to an application developer who is developing
+        an application which uses the vidmode extension to get/set the video
+        mode, however they're not very useful for end users.
+
+        The current default Xvidmode verbosity causes the X server to write
+        overly detailed video modeline information to the X server log file
+        whenever any application uses the extension to get, set, or delete
+        modelines.  This causes a problem for laptop users on battery power
+        with their hard disks set to power saving mode, because the hard disk
+        will power down, then later the screensaver kicks in, which calls
+        xf86GetModeLine(), which causes the log message to get written out,
+        which causes the hard disk to be powered back up.
+
+        Having these messages off by default solves this problem for laptop
+        users, and seems to make the most sense considering how useful they
+        are in general.
+        By changing the default log level for these messages, developers
+        who need to see these for debugging purposes can increase their X
+        server verbosity level and still see them, so no functionality is lost.
+
+        This patch lowers the default verbosity of the X server's Xvidmode
+        extension log file messages, in order to stop Xvidmode from writing
+        out non-critical log messages to the X server log whenever an
+        application uses this extension.
+
+        Patch by Mike A. Harris <mharris@redhat.com>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/X11.tmpl
+	* xc/config/cf/cygwin.cf
+	* xc/config/cf/darwin.cf
+	* xc/programs/Xserver/dix/Imakefile
+	* xc/programs/Xserver/miext/damage/Imakefile
+	Bug #1816 (https://bugs.freedesktop.org/show_bug.cgi?id=1816)
+	attachment #1300 (https://bugs.freedesktop.org/attachment.cgi?id=1300):
+	Add BuildRootless Imake variable and ROOTLESS define.
+	Patch by Torrey T. Lyons  <torrey@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/cygwin.cf
+	* xc/config/cf/xorg.cf
+	* xc/config/cf/xorgversion.def
+	* xc/config/cf/Imakefile
+	Bug #1393 (https://bugs.freedesktop.org/show_bug.cgi?id=1393)
+	attachment #1188 (https://bugs.freedesktop.org/attachment.cgi?id=1188):
+	Move xorg version numbers to separate config file
+	(xc/config/cf/xorgversion.def).
+	Patch by Alexander Gottwald <ago@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/GL/mesa/drivers/osmesa/Imakefile
+	Bugzilla #1743 (https://bugs.freedesktop.org/show_bug.cgi?id=1743)
+	attachment #1196 (https://bugs.freedesktop.org/attachment.cgi?id=1196):
+	Fix build failure on Solaris due "ld: fatal:
+	too many symbols require `small' PIC references" via adding
+	|#define LargePICTable YES| to the Imakefile.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/xf86cfg/interface.c
+	Bug #1826 (https://bugs.freedesktop.org/show_bug.cgi?id=1826)
+	attachment #1283 (https://bugs.freedesktop.org/attachment.cgi?id=1283):
+	Do not add '-4' to generated default file name (e.g. "xorg.conf"
+	instead of "xorg.conf-4").
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xkbcomp/symbols/inet
+	Bug #1935 (https://bugs.freedesktop.org/show_bug.cgi?id=1935)
+	attachment #1394 (https://bugs.freedesktop.org/attachment.cgi?id=1394):
+	Changed comment in xkbcomp/symbols/inet to mention xorg (instead of
+	Xfree86).
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xkbcomp/rules/Imakefile
+	Bug #1929 (https://bugs.freedesktop.org/show_bug.cgi?id=1929)
+	attachment #1388 (https://bugs.freedesktop.org/attachment.cgi?id=1388):
+	Create missing links for backward compatibility to XFree86
+	Patch by Stefan Dirsch <sndirsch@suse.de>.
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xkbcomp/symbols/macintosh/us
+	Bug #1872 (https://bugs.freedesktop.org/show_bug.cgi?id=1872)
+	attachment #1315 (https://bugs.freedesktop.org/attachment.cgi?id=1315):
+	Include srvrv_ctrl(xfree86) in macintosh US XKB symbol file so VT
+	switching works again on mac.
+	Patch by Kristian Høgsberg <krh@bitplanet.net>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xdm/resource.c
+	Bug #1825 (https://bugs.freedesktop.org/show_bug.cgi?id=1825)
+	attachment #1282 (https://bugs.freedesktop.org/attachment.cgi?id=1282):
+	Fix typo in prngdSocket resource name in xdm/resource.c.
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2004-12-14 Adam Jackson <ajax@freedesktop.org>
+	* xc/extras/Mesa/:
+	Bug #2003 (https://bugs.freedesktop.org/show_bug.cgi?id=2003):
+	Merge Mesa 6.2.1.
+	* lib/GL/mesa/drivers/dri/r128/Imakefile.inc:
+	Fix Imakefile for r128 (Sergio Monteiro Basto)
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xrx/helper/helper.c
+	Bug #1942 (https://bugs.freedesktop.org/show_bug.cgi?id=1942)
+	attachment #1401 (https://bugs.freedesktop.org/attachment.cgi?id=1401):
+	Fix problems with random return code returned by "xrx".
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-14 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xedit/lisp/lisp.c
+	Bug #1936 (https://bugs.freedesktop.org/show_bug.cgi?id=1936)
+	attachment #1395 (https://bugs.freedesktop.org/attachment.cgi?id=1395):
+	Removed inclusion of unnecessary kernel header on Linux. 
+	This may fail in an -ansi environment.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgsite.def
+	* xc/config/cf/xprint_site.def
+	Bug #1827 (https://bugs.freedesktop.org/show_bug.cgi?id=1827)
+	attachment #1284 (https://bugs.freedesktop.org/attachment.cgi?id=1284):
+	xf86site.def is referenced in comments in places where
+	xorgsite.def is used
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/fonts/bdf/100dpi/Imakefile:
+	* xc/fonts/bdf/75dpi/Imakefile:
+	Bug #1560 (https://bugs.freedesktop.org/show_bug.cgi?id=1560)
+	attachment #1036 (https://bugs.freedesktop.org/attachment.cgi?id=1036):
+	Fix build of lucida fonts which were broken since 6.8.0.
+	Patch by Alexander Gottwald  <ago@freedesktop.org>.
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/nls/XLC_LOCALE/en_US.UTF-8
+	Bug #1842 (https://bugs.freedesktop.org/show_bug.cgi?id=1842)
+	attachment #1389 (https://bugs.freedesktop.org/attachment.cgi?id=1298):
+        Move iso10646 last so the "fallback"
+	fonts will actually be used if they are better matches.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xorgsite.def:
+	Bug 2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_KbdMap.c
+	* xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c
+	Bug #1824 (https://bugs.freedesktop.org/show_bug.cgi?id=1824)
+	attachment #1288 (https://bugs.freedesktop.org/attachment.cgi?id=1288):
+	Fix kbd driver for wskbd protocol and pure wscons console driver
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>#1930 (https://bugs.freedesktop.org/show_bug.cgi?id=1930)
+	attachment #1389 (https://bugs.freedesktop.org/attachment.cgi?id=1389):
+	Make Xorg the default server to install.
+	Patch by Egbert Eich <eich@freedesktop.org>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_KbdMap.c
+	* xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c
+	Bug #1824 (https://bugs.freedesktop.org/show_bug.cgi?id=1824)
+	attachment #1288 (https://bugs.freedesktop.org/attachment.cgi?id=1288):
+	Fix kbd driver for wskbd protocol and pure wscons console driver
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/extras/Mesa/src/mesa/drivers/dri/common/dri_util.c
+	* xc/lib/GL/glx/glxext.c
+	Bug #1501 (https://bugs.freedesktop.org/show_bug.cgi?id=1501)
+	attachment #1013 (https://bugs.freedesktop.org/attachment.cgi?id=1013):
+	More complete fix for libglx bugs (double-free etc.).
+	Patch by Egbert Eich and Matthias Hopf.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/fonts/encodings/Imakefile
+	* xc/fonts/encodings/ascii-0.enc
+	* xc/programs/mkfontscale/mkfontscale.c
+	Bugzilla #1703 (https://bugs.freedesktop.org/show_bug.cgi?id=1703)
+	attachment #1226 (https://bugs.freedesktop.org/attachment.cgi?id=1226):
+	Adding ascii-0 font encoding which helps in
+	cases where a font has all ASCII chars populated but not enougth
+	glyphs to match the requirements for ISO8859-1 (and to add
+	backwards compatibility to ttmkfdir).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/extras/Mesa/src/mesa/tnl/t_vtx_x86_gcc.S:
+	Bugzilla #1079 (https://bugs.freedesktop.org/show_bug.cgi?id=1079)
+	attachment #636 (https://bugs.freedesktop.org/attachment.cgi?id=636):
+	Add missing check for CYGWIN for adding underscores tosymbol names
+	in assembler.  Merged upstream, and should be brought in in
+	the next import.
+	Patch by  Alexander Gottwald <ago@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xset/Imakefile
+	* xc/programs/xset/xset.c
+	Bugzilla #1659 (https://bugs.freedesktop.org/show_bug.cgi?id=1659)
+	attachment #1120 (https://bugs.freedesktop.org/attachment.cgi?id=1120):
+	Fix Imakefile bug which caused the Xprint support
+	in "xset" not being build.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xman/print.c
+	* xc/programs/xmore/print.c
+	* xc/programs/xphelloworld/xpawhelloworld/xpawhelloworld.c
+	Bugzilla #1601 (https://bugs.freedesktop.org/show_bug.cgi?id=1601)
+	attachment #1088 (https://bugs.freedesktop.org/attachment.cgi?id=1088):
+	Fix problems with wrong page counts in xedit&co.
+	when a global "*geometry" resource was overriding the internal
+	geometry management used by XawPrintShell(=usually adjust to
+	current page size, the resource was turning this into a static
+	value).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xman/search.c
+	Bugzilla #1481 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1481)
+	attachment #976 (https://bugs.freedesktop.org/attachment.cgi?id=976)
+	Avoid several buffer overflows in xman if search string is too long. 
+	Patch by Matthieu Herrb <matthieu.herrb@laas.fr>.
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/ps/psout.c
+	Bugzilla #661 (https://freedesktop.org/bugzilla/show_bug.cgi?id=661)
+	attachment #1002 (https://bugs.freedesktop.org/attachment.cgi?id=1002):
+	Xprt producing spurious characters in PS
+	output when using the bitmap cache (Originally reported
+	against Solaris Xprt as Sun bug id #4369307, and 
+	fixed in Solaris by Jay Hobson <jay.hobson@sun.com>).
+	Patch by Jay Hobson <jay.hobson@sun.com>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/ps/PsInit.c
+	Bugzilla #1800 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1800)
+	attachment #1474 (https://bugs.freedesktop.org/attachment.cgi?id=1474):
+	Fix Postscript DDX's 1bit StaticGray visual to report only 1bit
+	of significant bits in color specification (instead of 8bits).
+	Patch by Julien Lafon <julien.lafon@gmail.com>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/config/cf/xprint_site.def
+	* xc/programs/Xserver/Xprint/ps/Ps.h
+	* xc/programs/Xserver/Xprint/ps/PsPixmap.c
+	* xc/programs/Xserver/Xprint/ps/PsPolygon.c
+	* xc/programs/Xserver/mi/miinitext.c
+	Bugzilla #1664 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1664)
+	attachment #1161 (https://bugs.freedesktop.org/attachment.cgi?id=1161):
+	RFE: Add support for the DOUBLE-BUFFER extension
+	to the Xprint server and DDX. Additionally a "pixmap-scrubber"
+	optimisation is added to the PostScript DDX to remove all content
+	from a vector pixmap when a |PolyFillRect()| call covers the whole
+	pixmap surface with a solid fill (this avoids that a backbuffer
+	vector pixmap gets constantly filled even when the content is
+	not visible anymore after |XdbeSwapBuffers()| has cleared the
+	hidden buffer with the background color).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/attributes.c
+	Bugzilla #1647 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1647)
+	attachment #1117 (https://bugs.freedesktop.org/attachment.cgi?id=1117):
+        Fix the problem that |XpSubmitJob()| returns
+	a random value (patch by Stefan Dirsch/SuSE).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/ps/PsColor.c
+	Bugzilla #1646 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1646)
+	attachment #1116 (https://bugs.freedesktop.org/attachment.cgi?id=1116):
+        Fix the problem that |PsCreateColormap()| returns
+	a random value (patch by Stefan Dirsch/SuSE).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/Oid.c
+	Bugzilla #1637 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1637)
+	attachment #1114 (https://bugs.freedesktop.org/attachment.cgi?id=1114):
+	Fix problems in oid code which may cause the
+	usage of an invalid string pointer (original patch by Egbert Eich).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xlsfonts/Imakefile
+	* xc/programs/xlsfonts/xlsfonts.c 
+	* xc/programs/xlsfonts/xlsfonts.man
+	* xc/programs/xlsfonts/xlsfonts.sgml
+	* xc/programs/xplsprinters/xplsprinters.html
+	* xc/programs/xplsprinters/xplsprinters.man
+	* xc/programs/xplsprinters/xplsprinters.sgml
+	Bugzilla #1551 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1551)
+	attachment #1025 (https://bugs.freedesktop.org/attachment.cgi?id=1025):
+	Convert "xlsfonts" manual page to DocBook
+	format (and document the new functionality introduced
+	with bug #1518).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xlsfonts/Imakefile
+	* xc/programs/xlsfonts/dsimple.c
+	* xc/programs/xlsfonts/dsimple.h
+	* xc/programs/xlsfonts/xlsfonts.c
+	Bugzilla #1518 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1518)
+	attachment #1022 (https://bugs.freedesktop.org/attachment.cgi?id=1022):
+        Add filter support to "xlsfonts" that it can
+	filter builtin-, glyph- and/or other kinds of printer fonts
+	(controlled by the xp-listfonts-modes attribute as described
+	in the CDE DtPrint and Xprint specifications).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/pcl/PclInit.c
+	* xc/programs/Xserver/Xprint/ps/PsInit.c
+	Bugzilla #1629 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1629)
+	attachment #1107 (https://bugs.freedesktop.org/attachment.cgi?id=1107):
+	Fix crash on AMD64, regression caused by bug
+	1496 ("Xorg Xprt does not support "*xp-listfonts-mode:
+	xp-list-internal-printer-fonts" to toggle the usage of
+	printer-builtin fonts").
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/Init.c
+	* xc/programs/Xserver/Xprint/pcl/PclInit.c
+	* xc/programs/Xserver/Xprint/ps/PsInit.c
+	Bugzilla #1496 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1496)
+	attachment #998 (https://bugs.freedesktop.org/attachment.cgi?id=998):
+	Fixed Xprt font handling which did not support
+	"*xp-listfonts-modes: xp-list-internal-printer-fonts" or
+	"*xp-listfonts-modes: xp-list-glyph-fonts" to toggle
+	the usage of printer-builtin and glyph fonts in XListFonts*(),
+	XLoad*Font(), etc.
+	Additionally the Xprint DDX now explicitly list "xp-listfonts-modes"
+	in "document-attributes-supported" (for document-level) or
+	"xp-page-attributes-supported" (for page-level) when the DDX implements
+	this feature (as described in the CDE DtPrint and Xprint
+	specifications).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/ps/PsGC.c
+	* xc/programs/Xserver/Xprint/ps/PsPixmap.c
+	Bugzilla #1416 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1416)
+	attachment #994 (https://bugs.freedesktop.org/attachment.cgi?id=994):
+	Fix Xprt PostScript DDX crashes when copying
+	offscreen pixmap content to the same pixmap (the crash can
+	be reproduced with % x11perf -copypixpix500 ... # or the
+	reduced testcase in bug #1416 (attachment #993)).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xprint/Init.c
+	* xc/programs/Xserver/Xprint/ps/Ps.h
+	* xc/programs/Xserver/Xprint/ps/PsArea.c
+	* xc/programs/Xserver/Xprint/ps/PsColor.c
+	* xc/programs/Xserver/Xprint/ps/PsInit.c
+	* xc/programs/Xserver/Xprint/ps/psout.c
+	* xc/programs/Xserver/Xprint/ps/psout.h
+	Bugzilla #1299 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1299)
+	attachment #1001 (https://bugs.freedesktop.org/attachment.cgi?id=1001):
+	Add more visuals to the Postscript DDX (8bit GrayScale/StaticGray,
+	1bit StaticGray and the basic infratructure for "deep" visuals with more
+	than 8bits per RGB gun).
+	Patch by Roland Mainz <roland.mainz@nrubsig.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/GL/glx/glxcmds.c
+	Bugzilla #1672 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1672)
+	attachment #1132 (https://bugs.freedesktop.org/attachment.cgi?id=1132):
+	Prevent libGL segfault if server's GLX version is > 1.2.
+	Patch by Adam Jackson <ajax@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/GL/mesa/Imakefile
+	* xc/lib/GL/mesa/math/Imakefile
+	* xc/lib/GL/mesa/shader/Imakefile
+	* xc/lib/GL/mesa/sparc/Imakefile
+	* xc/lib/GL/mesa/swrast/Imakefile
+	* xc/lib/GL/mesa/swrast_setup/Imakefile
+	* xc/lib/GL/mesa/tnl/Imakefile
+	* xc/lib/GL/mesa/tnl_dd/Imakefile
+	Bugzilla #1843 (https://freedesktop.org/bugzilla/show_bug.cgi?id=1843)
+	attachment #1301 (https://bugs.freedesktop.org/attachment.cgi?id=1301):
+	Fix build failure in the linker stage of libOSMesa.so.4.0 which
+	happens more or less every couple of months with the message
+	"ld: fatal: too many symbols require `small' PIC references:
+	have 2112, maximum 2048 -- recompile some modules -K PIC.".
+	The fix is to add |#define LargePICTable YES| to _ALL_ relevant
+	Imakefiles (previously this was done only on "on-demand" basis).
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/util/memleak/getretmips.c
+	Bugzilla #758 (https://bugs.freedesktop.org/show_bug.cgi?id=758)
+	attachment #375 (https://bugs.freedesktop.org/attachment.cgi?id=375):
+	Fix a buffer overrun which may happen when the size of the stack buffer
+	is exactly the same as the actual stack size.
+	Patch by Stephen Kennedy <Stephen.Kennedy@havok.com>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/extras/Xpm/lib/xpm.h
+	Bugzilla #830 (https://bugs.freedesktop.org/show_bug.cgi?id=830)
+	attachment #1493 (https://bugs.freedesktop.org/attachment.cgi?id=1493):
+	Fix libXpm header (xpm.h) to use the X11 function begin/end marker
+	macros (_XFUNCPROTOBEGIN, _XFUNCPROTOEND) instead of homegrown
+	(native) C++ code.
+	Patch by Kevin DeKorte <kdekorte@yahoo.com>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/include/extensions/dpms.h
+	Bugzilla #830 (https://bugs.freedesktop.org/show_bug.cgi?id=830)
+	attachment #1492 (https://bugs.freedesktop.org/attachment.cgi?id=1492):
+	Get DPMS header file (include/extensions/dpms.h) working with C++
+	applications.
+	Patch by Kevin DeKorte <kdekorte@yahoo.com> and Roland
+	Mainz <roland.mainz@nrubsig.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xext/saver.c
+	Bugzilla #1695 (https://bugs.freedesktop.org/show_bug.cgi?id=1695)
+	attachment #1230 (https://bugs.freedesktop.org/attachment.cgi?id=1230):       
+	Fix crash in Xscreensaver code which allowed any authentificated X client
+        to crash the Xserver using |XScreenSaverUnsetAttributes()|.
+        Patch by ajax@nwnk.net
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/include/extensions/Imakefile
+	Bugzilla #1871 (https://bugs.freedesktop.org/show_bug.cgi?id=1871)
+	attachment #1314 (https://bugs.freedesktop.org/attachment.cgi?id=1314):       
+	Remove old and now obsolete xc/include/extensions/damage.h.
+        Patch by Kristian Høgsberg <krh@bitplanet.net>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/include/extensions/Xinerama.h
+	Bugzilla #1897 (https://bugs.freedesktop.org/show_bug.cgi?id=1897)
+	attachment #1338 (https://bugs.freedesktop.org/attachment.cgi?id=1338):       
+	xc/include/extensions/Xinerama.h should include <X11/Xlib.h>, since it uses
+        libX11 functions.
+        Patch by Xavier Bestel and Daniel Stone <daniel@freedesktop.org>.
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/Xaw/AsciiSink.c
+	* xc/lib/Xaw/Label.c
+	* xc/lib/Xaw/List.c
+	* xc/lib/Xaw/MultiSink.c
+	* xc/lib/Xaw/SmeBSB.c
+	* xc/lib/Xaw/Tip.c
+	* xc/lib/Xaw/XawIm.c
+	Bugzilla #1941 (https://bugs.freedesktop.org/show_bug.cgi?id=1941)
+	attachment #1400 (https://bugs.freedesktop.org/attachment.cgi?id=1400):       
+	Fail during initialization with error if font/fontset is not 
+	set for widget. This prevents a sig11 later when the non-existent
+	font/fontset structs are referenced.
+        Patch by Egbert Eich <eich@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/X11/XKBBind.c
+	Bugzilla #1459 (https://bugs.freedesktop.org/show_bug.cgi?id=1459)
+	attachment #966 (https://bugs.freedesktop.org/attachment.cgi?id=966):       
+	Fix |bzero()| size argument so it doesn't trash the stack.
+        Patch by Mike A. Harris <mharris@www.linux.org.uk>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/X11/XlibInt.c
+	Bugzilla #1864 (https://bugs.freedesktop.org/show_bug.cgi?id=1864)
+	attachment #1434 (https://bugs.freedesktop.org/attachment.cgi?id=1434):       
+	Fix random crashes because |bufp| variable is not initialized in
+        |_XopenFile| (later the pointer is checked for |NULL| and freed
+        otherwise. If the file was not found the pointer is uninitialized and
+        rando memory is freed).
+        Patch by  Alexander Gottwald <ago@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/X11/XlibInt.c
+	Bugzilla #1864 (https://bugs.freedesktop.org/show_bug.cgi?id=1864)
+	attachment #1310 (https://bugs.freedesktop.org/attachment.cgi?id=1310):       
+	Fix random crashes because |pbuf| variable is not initialized in
+        |_XFopenFile| (later the pointer is checked for |NULL| and freed
+        otherwise. If the file was not found the pointer is uninitialized and
+        rando memory is freed).
+        Patch by  Alexander Gottwald <ago@freedesktop.org>
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/X11/imInsClbk.c
+	Bugzilla #1926 (https://bugs.freedesktop.org/show_bug.cgi?id=1926)
+	attachment #1482 (https://bugs.freedesktop.org/attachment.cgi?id=1482):       
+	Unregistering events in XSelectInput() when unregistering IM
+	filter callbacks via |_XimUnRegisterIMInstantiateCallback| may be a
+        bad idea as others may be interested in this event.
+        Removed the call to XSelectInput() altogether as we are in root
+        window anyway.
+        Patch by Lubos Lunak and and Egbert Eich <eich@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/common/xf86Xinput.c
+	Bugzilla #1688 (https://bugs.freedesktop.org/show_bug.cgi?id=1688)
+	attachment #1530 (https://bugs.freedesktop.org/attachment.cgi?id=1530):       
+        Fix the current implementation to make it  possible to slow down the
+        mouse pointer or use arbitrary fractions (without running into
+        rounding error issues). The change is using the same method of
+        preserving rounding errors that the exponential method is already
+        using.
+	Patch by Jan Brunner <Jan_B@gmx.ch>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/os/WaitFor.c
+	Bugzilla #1934 (https://bugs.freedesktop.org/show_bug.cgi?id=1934)
+	attachment #1393 (https://bugs.freedesktop.org/attachment.cgi?id=1393):       
+	Fixing |SetDPMSTimers()| so that DPMS*Time == 0 disables the
+	appropriate timer. This takes advantage of the fact that
+	|TimerSet()| with a timeout argument 0 behaves like |TimerCanel()|.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/dix/dispatch.c
+	Bugzilla #1939 (https://bugs.freedesktop.org/show_bug.cgi?id=1939)
+	attachment #1398 (https://bugs.freedesktop.org/attachment.cgi?id=1398):       
+	Fixe size of a variable that gets assigned the value of
+        SmartScheduleTime (|long|) to |long|. This should help to prevent
+        smart scheduler lockup on 64 bit systems due to datatype overruns.
+	Patch by Andreas Schwab and Egbert Eich <eich@freedesktop.org>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xext/saver.c
+	Bugzilla #1989 (https://bugs.freedesktop.org/show_bug.cgi?id=1989)
+	attachment #1399 (https://bugs.freedesktop.org/attachment.cgi?id=1399):       
+	Fixed sig11 in |ScreenSaverUnsetAttributes()| which occured when
+        calling a |CloseDisplay()| after |XScreenSaverSetAttributes()|
+        followed by |XScreenSaverUnsetAttributes()|. Caused by missing
+        |FreeResource()| in |XScreenSaverUnsetAttributes()|.
+	Patch by Egbert Eich <eich@freedesktop.org>.
+        
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/dmx/dmx.c
+	Bugzilla #1989 (https://bugs.freedesktop.org/show_bug.cgi?id=1989)
+	attachment #1442 (https://bugs.freedesktop.org/attachment.cgi?id=1442):       
+	Fix invalid write in libXdmx extension library (for |DMXAddInput()|).
+	Patch by Mark McLoughlin <mark@skynet.ie>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/lib/dmx/dmx.c
+	Bugzilla #1989 (https://bugs.freedesktop.org/show_bug.cgi?id=1989)
+	attachment #1441 (https://bugs.freedesktop.org/attachment.cgi?id=1441):       
+	Fix invalid write in libXdmx extension library.
+	Patch by Mark McLoughlin <mark@skynet.ie>.
+
+2004-12-12 Roland Mainz <roland.mainz@nrubsig.org>
+        * xc/programs/Xserver/miext/damage/damage.c
+        Bugzilla #1204 (https://bugs.freedesktop.org/show_bug.cgi?id=1204)
+        attachment #1360 (https://bugs.freedesktop.org/attachment.cgi?id=1360):
+        Fix X11 test suite (caused by DAMAGE layer) failure with Xvfb when
+        rendering text using |XDrawText*()| (XDrawText() tests 1, 3, 4, 27, 28,
+        29, 30, 34, 37, 39, 41, 43 and XDrawText16() tests 1, 3, 9, 10, 11, 12,
+        13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 34,
+        37, 39, 41, 43).
+        Patch by Hong Bo Peng <penghb@cn.ibm.com> and Stefan Dirsch
+        <sndirsch@suse.de>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/xf86cfg/loader.h
+	Bugzilla #557 (https://bugs.freedesktop.org/show_bug.cgi?id=557)
+	attachment #1255 (https://bugs.freedesktop.org/attachment.cgi?id=1255):       
+	Do not use "bool" as a variable name in xf86cfg, to avoid
+	compiler bugs.
+	Patch by Donnie Berkholz <spyderous@gentoo.org>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/Xext/xf86bigfont.c
+	Bugzilla #1402 (https://bugs.freedesktop.org/show_bug.cgi?id=1402)
+	attachment #948 (https://bugs.freedesktop.org/attachment.cgi?id=948):       
+	Fix BigFont extension if SHM is compiled in but 
+	not working. Does not access SHM and privates if the SHM syscall
+	failed during extension initialization.    
+	Patch by Alexander Gottwald <ago@freedesktop.org>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/os/utils.c
+	Bugzilla #1453 (https://bugs.freedesktop.org/show_bug.cgi?id=1453)
+	attachment #964 (https://bugs.freedesktop.org/attachment.cgi?id=964):       
+	Fix spaces in usage output for BIGREQUESTS extension (option
+	"-maxbigreqsize").
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/os/utils.c
+	Bugzilla #1489 (https://bugs.freedesktop.org/show_bug.cgi?id=1489)
+	attachment #979 (https://bugs.freedesktop.org/attachment.cgi?id=979):       
+	Use |long| instead of |int| for BIGREQUESTS commandline option.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/loader/elfloader.c:
+	Bugzilla #1812 (https://bugs.freedesktop.org/show_bug.cgi?id=1812)
+	attachment #1263 (https://bugs.freedesktop.org/attachment.cgi?id=1263),
+	Sun bug id #6175128:       
+	Add Solaris to the platforms on which mprotect() is run to set
+	execute permissions when necessary.
+	Patch by Alan Coopersmith <alan.coopersmith@sun.com>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/xmodmap/pf.c
+	* xc/programs/xmodmap/xmodmap.c
+	* xc/programs/xmodmap/xmodmap.h
+	Bugzilla #1818 (https://bugs.freedesktop.org/show_bug.cgi?id=1818)
+	attachment #1286 (https://bugs.freedesktop.org/attachment.cgi?id=1286):
+	Fixing off-by-one allocation error.
+	Patch by Kristian Høgsberg <krh@bitplanet.net>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/dix/main.c
+	Bugzilla #1404 (https://bugs.freedesktop.org/show_bug.cgi?id=1404):
+	Fixing random crashes (like in DAMAGE code etc.) in Xnest due
+	uninitalised GetWindowPixmap.
+	Original patch by Alexander Gottwald <ago@freedesktop.org>
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/mi/miinitext.c
+	Bugzilla #1361 (https://bugs.freedesktop.org/show_bug.cgi?id=1361)
+	attachment #1287 (https://bugs.freedesktop.org/attachment.cgi?id=1287):
+	Avoid DRI initalisation when the Xfree86-DRI extension was turned
+	off.
+	Patch by Kristian Høgsberg <krh@bitplanet.net>.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/mi/miinitext.c
+	Bugzilla #1361 (https://bugs.freedesktop.org/show_bug.cgi?id=1361)
+	attachment #938 (https://bugs.freedesktop.org/attachment.cgi?id=938):
+	Allow more extensions to be enabled/disabled.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/mi/miinitext.c
+	Bugzilla #1361 (https://bugs.freedesktop.org/show_bug.cgi?id=1361)
+	attachment #938 (https://bugs.freedesktop.org/attachment.cgi?id=938):
+	Allow more extensions to be enabled/disabled.
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/loader/dixsym.c
+	* xc/programs/Xserver/hw/xfree86/loader/extsym.c
+	Bugzilla #1361 (https://bugs.freedesktop.org/show_bug.cgi?id=1361)
+	attachment #899 (https://bugs.freedesktop.org/attachment.cgi?id=899):
+	Fix module loader bustage due duplicate symbols
+	caused by the first patch in Bugzilla #1361
+
+2004-12-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/loader/dixsym.c
+	* xc/programs/Xserver/include/globals.h
+	* xc/programs/Xserver/mi/miinitext.c
+	* xc/programs/Xserver/os/utils.c
+	Bugzilla #1361 (https://bugs.freedesktop.org/show_bug.cgi?id=1361)
+	attachment #894 (https://bugs.freedesktop.org/attachment.cgi?id=894):
+	Allow turning on/off most of the Xserver extensions
+	(=all except server-specific extensions (e.g. DMX, XpExtension,
+	etc.) via +extension/-extension
+
+2004-11-14  Alan Coopersmith  <alan.coopersmith@sun.com>
+	
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv.man:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_cursor.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dac.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dma.h:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_driver.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_hw.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_proto.h:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_setup.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_type.h:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_video.c:
+	* xc/programs/Xserver/hw/xfree86/drivers/nv/nv_xaa.c:
+
+	(Bugzilla #1777) Import Mark Vojkovich's changes to NV driver 
+	since last sync	with XFree86, including:
+	   Support for new NVIDIA chips.
+	   Egbert has a laptop that needs some DPMS ordering reversed.
+	   New chip support and workaround for Toshiba M30 laptop issue.
+	   PCI-Xpress chip support.
+	   DPMS support for DVI.
+	   Cursor changes for NV11 so that alpha blended cursors will work
+	     in conjunction with dithering (laptop panels).  It previously
+	     did not.
+	   HW support for alpha blended stretch blits on NV5 and higher,
+	     though nothing is using them at this point.
+	   Add support for VBlank syncing the Xv Blit adaptor on hardware
+	     that supports it (NV11 and higher).
+	   Make console restoration a little more robust.  We were making
+	     an assumption that failed on a newer laptop.
+	   Workaround for some NV31 DVI artifacts.	
+	
+	Also add nVidia license statement to nv man page to comply with
+	requirement that it appear in "user documentation"
+
+2004-10-17  Alex Deucher  <agd5f@yahoo.com>
+
+	* programs/Xserver/hw/xfree86/drivers/ati/radeon_driver.c:
+	(RADEONEnterVT):
+	Fix resume in radeon driver (bug 1220)
+
+----------- 6.8.1 Release
+	
+2004-09-17  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* config/cf/xorg.cf:
+	Update the XORG_DATE for the release.
+
+	* config/cf/cygwin.cf:
+	Update cygwin release version.
+
+	* BUILD:
+	* README:
+	* RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/BUILD:
+	* programs/Xserver/hw/xfree86/doc/DESIGN:
+	* programs/Xserver/hw/xfree86/doc/Install:
+	* programs/Xserver/hw/xfree86/doc/OS2.Notes:
+	* programs/Xserver/hw/xfree86/doc/README:
+	* programs/Xserver/hw/xfree86/doc/README.DECtga:
+	* programs/Xserver/hw/xfree86/doc/README.Darwin:
+	* programs/Xserver/hw/xfree86/doc/README.LynxOS:
+	* programs/Xserver/hw/xfree86/doc/README.NetBSD:
+	* programs/Xserver/hw/xfree86/doc/README.OpenBSD:
+	* programs/Xserver/hw/xfree86/doc/README.SCO:
+	* programs/Xserver/hw/xfree86/doc/README.SiS:
+	* programs/Xserver/hw/xfree86/doc/README.Solaris:
+	* programs/Xserver/hw/xfree86/doc/README.XKB-Config:
+	* programs/Xserver/hw/xfree86/doc/README.chips:
+	* programs/Xserver/hw/xfree86/doc/README.dps:
+	* programs/Xserver/hw/xfree86/doc/README.fonts:
+	* programs/Xserver/hw/xfree86/doc/README.i740:
+	* programs/Xserver/hw/xfree86/doc/README.i810:
+	* programs/Xserver/hw/xfree86/doc/README.mouse:
+	* programs/Xserver/hw/xfree86/doc/README.r128:
+	* programs/Xserver/hw/xfree86/doc/README.rendition:
+	* programs/Xserver/hw/xfree86/doc/README.s3virge:
+	* programs/Xserver/hw/xfree86/doc/RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/Versions:
+	* programs/Xserver/hw/xfree86/doc/sgml/defs.ent:
+	* programs/xkbcomp/README.config:
+	Update documentation for release.
+
 2004-09-15  Daniel Stone  <daniel@freedesktop.org>
 
 	* xc/extras/Xpm/lib/Attrib.c:
@@ -6404,4 +7583,4 @@ Tue Jul 20 18:23:32 2004  Soeren Sandmann  <sandmann@daimi.au.dk>
        so i18n libs from build tree get used instead of installed ones
        (Egbert Eich).
 
-$XdotOrg: xc/ChangeLog,v 1.365.2.1 2004/09/15 15:47:36 daniel Exp $
+$XdotOrg: xc/ChangeLog,v 1.365.2.106 2004/12/17 02:01:21 gisburn Exp $

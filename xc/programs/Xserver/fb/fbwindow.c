@@ -122,12 +122,9 @@ fbCopyWindow(WindowPtr	    pWin,
 {
     RegionRec	rgnDst;
     int		dx, dy;
-#ifdef COMPOSITE
+
     PixmapPtr	pPixmap = fbGetWindowPixmap (pWin);
     DrawablePtr	pDrawable = &pPixmap->drawable;
-#else
-    DrawablePtr	pDrawable = &WindowTable[pWin->drawable.pScreen->myNum]->drawable;
-#endif
 
     dx = ptOldOrg.x - pWin->drawable.x;
     dy = ptOldOrg.y - pWin->drawable.y;

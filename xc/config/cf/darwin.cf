@@ -133,6 +133,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  define GlxExtraDefines -DGLX_DIRECT_RENDERING -DGLX_USE_APPLEGL GlxArchDefines
 # endif
 
+# define BuildRootless          YES
 #define BuildAppleWMLibrary     YES
 
 #endif  /* DarwinQuartzSupport */

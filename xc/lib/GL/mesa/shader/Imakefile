@@ -26,6 +26,10 @@ XCOMM $XFree86$
 #define DoProfileLib NO
 #endif
 
+/* Large PIC tables needed for Solaris SPARC builds */
+#if (defined(SunArchitecture) && defined(SparcArchitecture))
+# define LargePICTable YES
+#endif
 
 #define MesaShaderBuildDir /**/
 #define NeedToLinkMesaSrc

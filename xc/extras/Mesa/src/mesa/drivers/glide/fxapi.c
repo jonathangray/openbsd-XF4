@@ -356,11 +356,7 @@ fxMesaCreateContext(GLuint win,
  }
 
  grSstSelect(glbCurrentBoard);
- /*grEnable(GR_OPENGL_MODE_EXT);*/ /* ZZZ: trick to make GL happy.
-                                  Glide3 will unmap memory for card when grSstWinClose is called.
-                                  This also forces the SLI band height to be 32 (above 1024x768) or 16
-                                  and disables the splash screen due to y-origin swapping.
-                                  Note: We only want the former. */
+ /*grEnable(GR_OPENGL_MODE_EXT);*/ /* [koolsmoky] */
  voodoo = &glbHWConfig.SSTs[glbCurrentBoard];
 
  fxMesa = (fxMesaContext)CALLOC_STRUCT(tfxMesaContext);
@@ -393,7 +389,7 @@ fxMesaCreateContext(GLuint win,
         case GR_SSTTYPE_SST96:
         case GR_SSTTYPE_Banshee:
              fxMesa->bgrOrder = GL_TRUE;
-             fxMesa->snapVertices = GL_TRUE;
+             fxMesa->snapVertices = (getenv("MESA_FX_NOSNAP") == NULL);
              break;
         case GR_SSTTYPE_Voodoo2:
              fxMesa->bgrOrder = GL_TRUE;
@@ -411,7 +407,7 @@ fxMesaCreateContext(GLuint win,
              fxMesa->snapVertices = GL_FALSE;
              break;
  }
- /* ZZZ TO DO: Add the old SLI/AA settings for Napalm. */
+ /* XXX todo - Add the old SLI/AA settings for Napalm. */
  switch(voodoo->numChips) {
  case 4: /* 4 chips */
    switch(sliaa) {
@@ -525,8 +521,6 @@ fxMesaCreateContext(GLuint win,
      str = "pixelFormat";
      goto errorhandler;
  }
-
- /* ZZZ TODO: check if there is enough fbRam */
 
  /* Tips:
   * 1. we don't bother setting/checking AUX for stencil, because we'll decide
@@ -644,7 +638,7 @@ fxMesaCreateContext(GLuint win,
                       fxMesa->snapVertices ? "" : "no ");
    }
 
-  sprintf(fxMesa->rendererString, "Mesa %s v0.61 %s%s",
+  sprintf(fxMesa->rendererString, "Mesa %s v0.62 %s%s",
           grGetString(GR_RENDERER),
           grGetString(GR_HARDWARE),
           ((fxMesa->type < GR_SSTTYPE_Voodoo4) && (voodoo->numChips > 1)) ? " SLI" : "");

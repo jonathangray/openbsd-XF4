@@ -43,7 +43,6 @@ SOFTWARE.
 #include "context.h"
 #include "colormac.h"
 #include "macros.h"
-#include "simple_list.h"
 #include "radeon_reg.h" /* gets definition for usleep */
 #include "r200_context.h"
 #include "r200_state.h"
@@ -73,10 +72,8 @@ r200DestroyTexObj( r200ContextPtr rmesa, r200TexObjPtr t )
       for ( i = 0 ; i < rmesa->glCtx->Const.MaxTextureUnits ; i++ ) {
 	 if ( t == rmesa->state.texture.unit[i].texobj ) {
 	    rmesa->state.texture.unit[i].texobj = NULL;
-	    remove_from_list( &rmesa->hw.tex[i] );
-	    make_empty_list( &rmesa->hw.tex[i] );
-	    remove_from_list( &rmesa->hw.cube[i] );
-	    make_empty_list( &rmesa->hw.cube[i] );
+	    rmesa->hw.tex[i].dirty = GL_FALSE;
+	    rmesa->hw.cube[i].dirty = GL_FALSE;
 	 }
       }
    }
@@ -385,6 +382,14 @@ static void uploadSubImage( r200ContextPtr rmesa, r200TexObjPtr t,
    /* copy (x,y,width,height,data) */
    memcpy( &tmp, &t->image[face][hwlevel], sizeof(tmp) );
 
+   /* Adjust the base offset to account for the Y-offset.  This is done,
+    * instead of just letting the Y-offset automatically take care of it,
+    * because it is possible, for very large textures, for the Y-offset
+    * to exceede the [-8192,+8191] range.
+    */
+   tex.offset += tmp.y * 1024;
+   tmp.y = 0;
+    
    LOCK_HARDWARE( rmesa );
    do {
       ret = drmCommandWriteRead( rmesa->dri.fd, DRM_RADEON_TEXTURE,

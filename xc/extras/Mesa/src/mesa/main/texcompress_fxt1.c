@@ -57,6 +57,7 @@ fxt1_decode_1 (const void *texture, int width,
 void
 _mesa_init_texture_fxt1( GLcontext *ctx )
 {
+   (void) ctx;
 }
 
 
@@ -76,6 +77,7 @@ texstore_rgb_fxt1(STORE_PARAMS)
    ASSERT(dstXoffset % 8 == 0);
    ASSERT(dstYoffset % 4 == 0);
    ASSERT(dstZoffset     == 0);
+   (void) dstZoffset; (void) dstImageStride;
 
    if (srcFormat != GL_RGB ||
        srcType != CHAN_TYPE ||
@@ -131,6 +133,7 @@ texstore_rgba_fxt1(STORE_PARAMS)
    ASSERT(dstXoffset % 8 == 0);
    ASSERT(dstYoffset % 4 == 0);
    ASSERT(dstZoffset     == 0);
+   (void) dstZoffset; (void) dstImageStride;
 
    if (srcFormat != GL_RGBA ||
        srcType != CHAN_TYPE ||
@@ -174,6 +177,7 @@ static void
 fetch_texel_2d_rgba_fxt1( const struct gl_texture_image *texImage,
                           GLint i, GLint j, GLint k, GLchan *texel )
 {
+   (void) k;
    fxt1_decode_1(texImage->Data, texImage->Width, i, j, texel);
 }
 
@@ -184,6 +188,7 @@ fetch_texel_2d_f_rgba_fxt1( const struct gl_texture_image *texImage,
 {
    /* just sample as GLchan and convert to float here */
    GLchan rgba[4];
+   (void) k;
    fxt1_decode_1(texImage->Data, texImage->Width, i, j, rgba);
    texel[RCOMP] = CHAN_TO_FLOAT(rgba[RCOMP]);
    texel[GCOMP] = CHAN_TO_FLOAT(rgba[GCOMP]);
@@ -196,6 +201,7 @@ static void
 fetch_texel_2d_rgb_fxt1( const struct gl_texture_image *texImage,
                          GLint i, GLint j, GLint k, GLchan *texel )
 {
+   (void) k;
    fxt1_decode_1(texImage->Data, texImage->Width, i, j, texel);
    texel[ACOMP] = 255;
 }
@@ -207,6 +213,7 @@ fetch_texel_2d_f_rgb_fxt1( const struct gl_texture_image *texImage,
 {
    /* just sample as GLchan and convert to float here */
    GLchan rgba[4];
+   (void) k;
    fxt1_decode_1(texImage->Data, texImage->Width, i, j, rgba);
    texel[RCOMP] = CHAN_TO_FLOAT(rgba[RCOMP]);
    texel[GCOMP] = CHAN_TO_FLOAT(rgba[GCOMP]);
@@ -288,9 +295,9 @@ const struct gl_texture_format _mesa_texformat_rgba_fxt1 = {
 
 typedef unsigned long long Fx64;
 
-#define FX64_MOV32(a, b) a = b;
-#define FX64_OR32(a, b)  a |= b;
-#define FX64_SHL(a, c)   a <<= c;
+#define FX64_MOV32(a, b) a = b
+#define FX64_OR32(a, b)  a |= b
+#define FX64_SHL(a, c)   a <<= c
 
 #else  /* !__GNUC__ */
 
@@ -1284,7 +1291,7 @@ fxt1_quantize_MIXED0 (unsigned long *cc,
       }
 
       /* funky encoding for LSB of green */
-      if (((lolo >> 1) & 1) != (((vec[1][GCOMP] ^ vec[0][GCOMP]) >> 2) & 1)) {
+      if ((int)((lolo >> 1) & 1) != (((vec[1][GCOMP] ^ vec[0][GCOMP]) >> 2) & 1)) {
          for (i = 0; i < n_comp; i++) {
             vec[1][i] = input[minColL][i];
             vec[0][i] = input[maxColL][i];
@@ -1339,7 +1346,7 @@ fxt1_quantize_MIXED0 (unsigned long *cc,
       }
 
       /* funky encoding for LSB of green */
-      if (((lohi >> 1) & 1) != (((vec[3][GCOMP] ^ vec[2][GCOMP]) >> 2) & 1)) {
+      if ((int)((lohi >> 1) & 1) != (((vec[3][GCOMP] ^ vec[2][GCOMP]) >> 2) & 1)) {
          for (i = 0; i < n_comp; i++) {
             vec[3][i] = input[minColR][i];
             vec[2][i] = input[maxColR][i];
@@ -1387,7 +1394,7 @@ fxt1_quantize (unsigned long *cc, const unsigned char *lines[], int comps)
       }
    }
 
-   /* block looks like this:
+   /* block layout:
     * 00, 01, 02, 03, 08, 09, 0a, 0b
     * 10, 11, 12, 13, 18, 19, 1a, 1b
     * 04, 05, 06, 07, 0c, 0d, 0e, 0f
@@ -1427,6 +1434,9 @@ fxt1_quantize (unsigned long *cc, const unsigned char *lines[], int comps)
    } else {
       fxt1_quantize_CHROMA(cc, input);
    }
+   (void)fxt1_quantize_ALPHA1;
+   (void)fxt1_quantize_MIXED1;
+   (void)fxt1_quantize_MIXED0;
 #else
    if (trualpha) {
       fxt1_quantize_ALPHA1(cc, input);
@@ -1438,6 +1448,9 @@ fxt1_quantize (unsigned long *cc, const unsigned char *lines[], int comps)
    } else {
       fxt1_quantize_MIXED0(cc, input);
    }
+   (void)fxt1_quantize_ALPHA0;
+   (void)fxt1_quantize_HI;
+   (void)fxt1_quantize_CHROMA;
 #endif
 }
 
@@ -1454,6 +1467,8 @@ fxt1_encode (GLcontext *ctx,
    const unsigned char *data;
    unsigned long *encoded = dest;
    GLubyte *newSource = NULL;
+
+   (void) ctx;
 
    /*
     * Rescale image if width is less than 8 or height is less than 4.

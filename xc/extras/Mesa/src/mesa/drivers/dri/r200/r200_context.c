@@ -62,7 +62,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_vtxfmt.h"
 #include "r200_maos.h"
 
-#define DRIVER_DATE	"20030328"
+#define DRIVER_DATE	"20040929"
 
 #include "vblank.h"
 #include "utils.h"
@@ -143,7 +143,6 @@ static const char * const card_extensions[] =
     "GL_ATI_texture_env_combine3",
     "GL_ATI_texture_mirror_once",
     "GL_MESA_pack_invert",
-    "GL_MESA_ycbcr_texture",
     "GL_NV_blend_square",
     "GL_SGIS_generate_mipmap",
     NULL
@@ -166,6 +165,7 @@ static const struct tnl_pipeline_stage *r200_pipeline[] = {
    &_tnl_fog_coordinate_stage,
    &_tnl_texgen_stage,
    &_tnl_texture_transform_stage,
+   &_tnl_vertex_program_stage,
 
    /* Try again to go to tcl? 
     *     - no good for asymmetric-twoside (do with multipass)
@@ -322,7 +322,7 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
 	 DRI_CONF_TEXTURE_DEPTH_32 : DRI_CONF_TEXTURE_DEPTH_16;
 
    rmesa->swtcl.RenderIndex = ~0;
-   rmesa->lost_context = 1;
+   rmesa->hw.all_dirty = 1;
 
    /* Set the maximum texture size small enough that we can guarentee that
     * all texture units can bind a maximal texture and have them both in
@@ -400,12 +400,21 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    _math_matrix_set_identity( &rmesa->tmpmat );
 
    driInitExtensions( ctx, card_extensions, GL_TRUE );
+   if (rmesa->r200Screen->chipset & R200_CHIPSET_REAL_R200) {
+   /* yuv textures only work with r200 chips for unknown reasons, the
+      others get the bit ordering right but don't actually do YUV-RGB conversion */
+      _mesa_enable_extension( ctx, "GL_MESA_ycbcr_texture" );
+   }
    if (rmesa->r200Screen->drmSupportsCubeMaps)
       _mesa_enable_extension( ctx, "GL_ARB_texture_cube_map" );
    if (rmesa->r200Screen->drmSupportsBlendColor) {
       _mesa_enable_extension( ctx, "GL_EXT_blend_equation_separate" );
       _mesa_enable_extension( ctx, "GL_EXT_blend_func_separate" );
    }
+   if(driQueryOptionb(&rmesa->optionCache, "arb_vertex_program"))
+      _mesa_enable_extension( ctx, "GL_ARB_vertex_program");
+   if(driQueryOptionb(&rmesa->optionCache, "nv_vertex_program"))
+      _mesa_enable_extension( ctx, "GL_NV_vertex_program");
 
 #if 0
    r200InitDriverFuncs( ctx );

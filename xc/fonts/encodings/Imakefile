@@ -10,6 +10,7 @@ OBJS = EncObjComp(adobe-dingbats) EncObjComp(adobe-standard) \
 	EncObjComp(adobe-symbol) \
 	EncObj(ansi-1251) \
 	EncObj(armscii-8) \
+	EncObj(ascii-0) \
 	EncObj(dec-special) \
 	EncObj(ibm-cp437) EncObj(ibm-cp850) \
 	EncObj(ibm-cp852) EncObj(ibm-cp866) \

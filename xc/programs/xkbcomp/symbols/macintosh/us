@@ -147,6 +147,7 @@ xkb_symbols "extended" {
 
     include "compose(rwin)"
     include "apple(extended)"
+    include "srvr_ctrl(xfree86)"
 
 // *** FIXME
 //    key <LSGT> {	[ quoteleft,	asciitilde	]	};

@@ -184,11 +184,14 @@ getStackTrace (results, max)
 	}
 	ra = (unsigned long *) sp[rc->raOffset>>2];
 	sp += rc->spAdjust >> 2;
-	*results++ = ((unsigned long) ra) - 8;
 	if (ra[-2] == mainCall)
 	{
 	    *results++ = 0;
 	    break;
+	}
+	else
+	{
+	    *results++ = ((unsigned long) ra) - 8;
 	}
 	max--;
     }

@@ -611,7 +611,7 @@ sis_fallback_point( sisContextPtr smesa,
 
 #define POINT_FALLBACK (DD_POINT_SMOOTH)
 #define LINE_FALLBACK (DD_LINE_STIPPLE|DD_LINE_SMOOTH)
-#define TRI_FALLBACK (DD_TRI_SMOOTH)
+#define TRI_FALLBACK (DD_TRI_STIPPLE|DD_TRI_SMOOTH)
 #define ANY_FALLBACK_FLAGS (POINT_FALLBACK|LINE_FALLBACK|TRI_FALLBACK)
 #define ANY_RASTER_FLAGS (DD_TRI_LIGHT_TWOSIDE|DD_TRI_OFFSET|DD_TRI_UNFILLED)
 #define _SIS_NEW_RENDER_STATE (ANY_RASTER_FLAGS | ANY_FALLBACK_FLAGS)
@@ -889,7 +889,8 @@ static void sisRenderFinish( GLcontext *ctx )
 void
 sisFlushPrimsLocked(sisContextPtr smesa)
 {
-   GLuint *start;
+   if (smesa->vb_cur == smesa->vb_last)
+      return;
 
    sisUpdateHWState(smesa->glCtx);
 
@@ -898,7 +899,7 @@ sisFlushPrimsLocked(sisContextPtr smesa)
       mEndPrimitive();
       MMIO(REG_3D_AGPCmBase, (smesa->vb_last - smesa->vb) +
          smesa->vb_agp_offset);
-      MMIO(REG_3D_AGPTtDwNum, (smesa->vb_cur - smesa->vb_last) / 4 |
+      MMIO(REG_3D_AGPTtDwNum, ((smesa->vb_cur - smesa->vb_last) / 4) |
 	 0x50000000);
       MMIO(REG_3D_ParsingSet, smesa->AGPParseSet);
       MMIO(REG_3D_AGPCmFire, (GLint)(-1));

@@ -89,8 +89,9 @@
 #define I830_TEXREG_TM0S2      3
 #define I830_TEXREG_TM0S3      4
 #define I830_TEXREG_TM0S4      5
-#define I830_TEXREG_MCS	      6	/* _3DSTATE_MAP_COORD_SETS */
-#define I830_TEX_SETUP_SIZE    7
+#define I830_TEXREG_MCS	       6	/* _3DSTATE_MAP_COORD_SETS */
+#define I830_TEXREG_CUBE       7	/* _3DSTATE_MAP_SUBE */
+#define I830_TEX_SETUP_SIZE    8
 
 #define I830_TEXBLEND_SIZE	12	/* (4 args + op) * 2 + COLOR_FACTOR */
 
@@ -169,12 +170,9 @@ i830AllocTexObj( struct gl_texture_object *tObj );
 
 /* i830_texblend.c
  */
-extern GLuint 
-i830SetBlend_GL1_2(i830ContextPtr i830, int unit, 
-		   GLenum envMode, GLenum format,
-		   GLuint texel_op,
-		   GLuint *state,
-		   const GLfloat *envcolor );
+extern GLuint i830SetTexEnvCombine(i830ContextPtr i830,
+    const struct gl_tex_env_combine_state * combine, GLint blendUnit,
+     GLuint texel_op, GLuint *state, const GLfloat *factor );
 
 extern void 
 i830EmitTextureBlend( i830ContextPtr i830 );

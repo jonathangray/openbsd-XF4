@@ -1,9 +1,8 @@
-
 /*
  * Mesa 3-D graphics library
- * Version:  3.5
+ * Version:  6.3
  *
- * Copyright (C) 1999-2001  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -24,6 +23,24 @@
  */
 
 
+/**
+ * \mainpage Mesa GL API Module
+ *
+ * \section GLAPIIntroduction Introduction
+ *
+ * The Mesa GL API module is responsible for dispatching all the
+ * gl*() functions.  All GL functions are dispatched by jumping through
+ * the current dispatch table (basically a struct full of function
+ * pointers.)
+ *
+ * A per-thread current dispatch table and per-thread current context
+ * pointer are managed by this module too.
+ *
+ * This module is intended to be non-Mesa-specific so it can be used
+ * with the X/DRI libGL also.
+ */
+
+
 #ifndef _GLAPI_H
 #define _GLAPI_H
 
@@ -33,6 +50,8 @@
 struct _glapi_table;
 
 typedef void (*_glapi_warning_func)(void *ctx, const char *str, ...);
+
+typedef void (*_glapi_proc)(void); /* generic function pointer */
 
 
 extern void *_glapi_Context;
@@ -98,7 +117,7 @@ extern GLint
 _glapi_get_proc_offset(const char *funcName);
 
 
-extern const GLvoid *
+extern const _glapi_proc
 _glapi_get_proc_address(const char *funcName);
 
 

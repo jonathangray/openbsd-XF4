@@ -45,17 +45,22 @@ $(TOP)/configs/current:
 
 # Rules to set/install a specific build configuration
 aix \
+aix-64 \
 aix-gcc \
 aix-static \
 beos \
 darwin \
 darwin-static \
 freebsd \
+freebsd-dri \
+freebsd-dri-x86 \
 hpux10 \
 hpux10-gcc \
 hpux10-static \
+hpux11-32 \
 hpux11-32-static \
 hpux11-32-static-nothreads \
+hpux11-64 \
 hpux11-64-static \
 hpux9 \
 hpux9-gcc \
@@ -81,6 +86,7 @@ linux-osmesa32 \
 linux-ppc \
 linux-ppc-static \
 linux-solo \
+linux-solo-x86 \
 linux-solo-ia64 \
 linux-sparc \
 linux-sparc5 \
@@ -111,9 +117,9 @@ ultrix-gcc:
 
 # Rules for making release tarballs
 
-DIRECTORY = Mesa-6.1
-LIB_NAME = MesaLib-6.1
-DEMO_NAME = MesaDemos-6.1
+DIRECTORY = Mesa-6.2.1
+LIB_NAME = MesaLib-6.2.1
+DEMO_NAME = MesaDemos-6.2.1
 
 LIB_FILES =	\
 	$(DIRECTORY)/Makefile*						\
@@ -121,6 +127,7 @@ LIB_FILES =	\
 	$(DIRECTORY)/mms-config.					\
 	$(DIRECTORY)/Mesa.dsw						\
 	$(DIRECTORY)/bin/mklib						\
+	$(DIRECTORY)/bin/installmesa					\
 	$(DIRECTORY)/configs/[a-z]*					\
 	$(DIRECTORY)/docs/*.html					\
 	$(DIRECTORY)/docs/COPYING					\
@@ -186,7 +193,6 @@ LIB_FILES =	\
 	$(DIRECTORY)/src/mesa/tnl_dd/imm/*.[ch]				\
 	$(DIRECTORY)/src/mesa/tnl_dd/imm/NOTES.imm			\
 	$(DIRECTORY)/src/mesa/drivers/beos/*.cpp			\
-	$(DIRECTORY)/src/mesa/drivers/beos/*.h				\
 	$(DIRECTORY)/src/mesa/drivers/beos/Makefile			\
 	$(DIRECTORY)/src/mesa/drivers/common/*.[ch]			\
 	$(DIRECTORY)/src/mesa/drivers/common/descrip.mms		\
@@ -249,6 +255,7 @@ LIB_FILES =	\
 	$(DIRECTORY)/src/glw/*.[ch]					\
 	$(DIRECTORY)/src/glw/Makefile*					\
 	$(DIRECTORY)/src/glw/README					\
+	$(DIRECTORY)/src/glw/depend					\
 	$(DIRECTORY)/progs/Makefile					\
 	$(DIRECTORY)/progs/util/README					\
 	$(DIRECTORY)/progs/util/*.[ch]					\
@@ -274,6 +281,8 @@ DEMO_FILES =	\
 	$(DIRECTORY)/src/glut/dos/*.[ch]		\
 	$(DIRECTORY)/src/glut/dos/Makefile.DJ		\
 	$(DIRECTORY)/src/glut/dos/PC_HW/*.[chS]		\
+	$(DIRECTORY)/src/glut/ggi/*.[ch]		\
+	$(DIRECTORY)/src/glut/ggi/Makefile		\
 	$(DIRECTORY)/progs/beos/*.cpp			\
 	$(DIRECTORY)/progs/beos/Makefile		\
 	$(DIRECTORY)/progs/images/*.rgb			\
@@ -299,6 +308,26 @@ DEMO_FILES =	\
 	$(DIRECTORY)/progs/windml/*.c			\
 	$(DIRECTORY)/progs/windml/*.bmp			\
 	$(DIRECTORY)/progs/ggi/*.c
+
+
+DRI_FILES = \
+	$(DIRECTORY)/src/glx/Makefile					\
+	$(DIRECTORY)/src/glx/mini/*.[ch]				\
+	$(DIRECTORY)/src/glx/mini/example.miniglx.conf			\
+	$(DIRECTORY)/src/glx/mini/NOTES					\
+	$(DIRECTORY)/src/mesa/drivers/dri/Makefile			\
+	$(DIRECTORY)/src/mesa/drivers/dri/Makefile.template		\
+	$(DIRECTORY)/src/mesa/drivers/dri/common/*.[ch]			\
+	$(DIRECTORY)/src/mesa/drivers/dri/dri_client/imports/*.h	\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/*.[ch]			\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/depend			\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/Makefile			\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/Doxyfile			\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/server/*.[ch]
+
+
+# Everything for new a Mesa release:
+tarballs: lib_gz demo_gz lib_bz2 demo_bz2 lib_zip demo_zip md5
 
 
 lib_gz:
@@ -347,6 +376,3 @@ md5:
 	@-md5sum $(DEMO_NAME).tar.gz
 	@-md5sum $(DEMO_NAME).tar.bz2
 	@-md5sum $(DEMO_NAME).zip
-
-# Everything for new a Mesa release:
-tarballs: lib_gz demo_gz lib_bz2 demo_bz2 lib_zip demo_zip md5

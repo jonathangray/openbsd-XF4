@@ -730,7 +730,7 @@ CallCreateNewScreen(Display *dpy, int scrn, __DRIscreen *psc,
     __DRIscreenPrivate *psp = NULL;
 #ifndef GLX_USE_APPLEGL
     drm_handle_t hSAREA;
-    drmAddress pSAREA;
+    drmAddress pSAREA = MAP_FAILED;
     char *BusID;
     __DRIversion   ddx_version;
     __DRIversion   dri_version;
@@ -742,7 +742,6 @@ CallCreateNewScreen(Display *dpy, int scrn, __DRIscreen *psc,
     const char * err_extra;
     int api_ver = __glXGetInternalVersion();
 
-
     dri_version.major = driDpy->private->driMajor;
     dri_version.minor = driDpy->private->driMinor;
     dri_version.patch = driDpy->private->driPatch;
@@ -751,6 +750,9 @@ CallCreateNewScreen(Display *dpy, int scrn, __DRIscreen *psc,
     err_msg = "XF86DRIOpenConnection";
     err_extra = NULL;
 
+    memset (&framebuffer, 0, sizeof (framebuffer));
+    framebuffer.base = MAP_FAILED;
+    
     if (XF86DRIOpenConnection(dpy, scrn, &hSAREA, &BusID)) {
 	fd = drmOpen(NULL,BusID);
 	Xfree(BusID); /* No longer needed */

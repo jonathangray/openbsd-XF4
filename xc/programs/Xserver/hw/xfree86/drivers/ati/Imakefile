@@ -87,8 +87,16 @@ DRIDEFINES  = $(GLX_DEFINES) $(DRIDEVEL_DEFINES)
  * Currently, ATIAvoidNonPCI needs to be set to YES for those platforms that do
  * not tolerate PCI master aborts.
  */
+/* 
+ * Some older IA64 platforms don't mind if we are poking around in PIO
+ * space, however the newer once do an MC if we poke any registers outside
+ * a small band in the VGA range. Therefore it is best not to touch PIO
+ * space in IA64 at all. 
+ * This will disenfranchise Mach8/32 users but these cards are ISA and
+ * there is no IA64 with ISA slots. It is not recommended to use ISA
+ * adaptor boards for those cards.
+ */
 #if defined(i386Architecture) || \
-    defined(ia64Architecture) || \
     defined(AMD64Architecture) || \
     defined(AlphaArchitecture)
 # ifndef ATIAvoidCPIO
@@ -149,7 +157,8 @@ DGAOBJS2 = atidga.o
 
 #endif
 
-DEFINES = $(CPIODEFINES) $(DGADEFINES) $(NONPCIDEFINES) $(DRIDEFINES)
+DEFINES = $(CPIODEFINES) $(DGADEFINES) $(NONPCIDEFINES) $(NOLEGACYDEFINES) \
+	$(DRIDEFINES)
 
 SRCS1 = ati.c atiadapter.c atibus.c atichip.c atiident.c atioption.c \
 	atiprobe.c atividmem.c $(CPIOSRCS1) $(MODSRCS1) \

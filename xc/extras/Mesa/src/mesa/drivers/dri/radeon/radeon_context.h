@@ -398,14 +398,11 @@ struct radeon_state_atom {
 
 
 struct radeon_hw_state {
-   /* All state should be on one of these lists:
-    */
-   struct radeon_state_atom dirty; /* dirty list head placeholder */
-   struct radeon_state_atom clean; /* clean list head placeholder */
+   /* Head of the linked list of state atoms. */
+   struct radeon_state_atom atomlist;
 
    /* Hardware state, stored as cmdbuf commands:  
     *   -- Need to doublebuffer for
-    *           - reviving state after loss of context
     *           - eliding noop statechange loops? (except line stipple count)
     */
    struct radeon_state_atom ctx;
@@ -428,6 +425,7 @@ struct radeon_hw_state {
    struct radeon_state_atom txr[2]; /* for NPOT */
 
    int max_state_size;	/* Number of bytes necessary for a full state emit. */
+   GLboolean is_dirty, all_dirty;
 };
 
 struct radeon_state {
@@ -715,6 +713,10 @@ struct radeon_context {
    struct radeon_ioctl ioctl;
    struct radeon_dma dma;
    struct radeon_store store;
+   /* A full state emit as of the first state emit in the main store, in case
+    * the context is lost.
+    */
+   struct radeon_store backup_store;
 
    /* Page flipping
     */
@@ -733,6 +735,7 @@ struct radeon_context {
    drm_clip_rect_t *pClipRects;
    unsigned int lastStamp;
    GLboolean lost_context;
+   GLboolean save_on_next_emit;
    radeonScreenPtr radeonScreen;	/* Screen private DRI data */
    drm_radeon_sarea_t *sarea;		/* Private SAREA data */
 

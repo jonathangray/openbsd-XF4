@@ -165,6 +165,7 @@ do {									\
  * integer values starting at 0 is very important, see InstSize array usage)
  */
 typedef enum {
+	OPCODE_INVALID = -1,			/* Force signed enum */
 	OPCODE_ACCUM,
 	OPCODE_ALPHA_FUNC,
         OPCODE_BIND_TEXTURE,
@@ -7659,7 +7660,7 @@ static void GLAPIENTRY print_list( GLcontext *ctx, GLuint list )
    Node *n;
    GLboolean done;
 
-   if (!glIsList(list)) {
+   if (!GL_CALL(IsList)(list)) {
       _mesa_printf("%u is not a display list ID\n", list);
       return;
    }

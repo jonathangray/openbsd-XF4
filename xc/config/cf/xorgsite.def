@@ -24,7 +24,7 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.186 2003/06/25 18:06:22 eich Exp $
  * The host.def file will never be patched.
  *
  * The distributed version of this file MUST contain no uncommented
- * definitions.  Default definitions belong in xfree86.cf, or <vendor>.cf
+ * definitions.  Default definitions belong in xorg.cf, or <vendor>.cf
  * files.
  */
 /******************************************************************************/
@@ -71,7 +71,7 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.186 2003/06/25 18:06:22 eich Exp $
 /*
  * Set the default server (ie the one that gets the sym-link to "X")
  *
-#define ServerToInstall		XFree86
+#define ServerToInstall		Xorg
  */
 
 /*

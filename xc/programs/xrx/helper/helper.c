@@ -526,4 +526,6 @@ main(int argc, char *argv[])
 
     /* then wait for it... */
     XtAppMainLoop(app_context);
+
+    return EXIT_SUCCESS;
 }

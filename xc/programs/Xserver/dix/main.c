@@ -689,7 +689,7 @@ AddScreen(
     if (i == MAXSCREENS)
 	return -1;
 
-    pScreen = (ScreenPtr) xalloc(sizeof(ScreenRec));
+    pScreen = (ScreenPtr) xcalloc(1, sizeof(ScreenRec));
     if (!pScreen)
 	return -1;
 

@@ -92,6 +92,13 @@ extern FILE *popen();
 #include <stdint.h>	/* For SIZE_MAX */
 #endif
 #include <limits.h>
+#ifndef SIZE_MAX
+# ifdef ULONG_MAX
+#  define SIZE_MAX ULONG_MAX
+# else 
+#  define SIZE_MAX UINT_MAX
+# endif
+#endif
 
 #define XPMMAXCMTLEN BUFSIZ
 typedef struct {

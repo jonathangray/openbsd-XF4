@@ -329,6 +329,7 @@
 # define XWinMultiWindowDefines 
 #endif /* BuildXWinMultiWindow */
 #if BuildXWinMultiWindowExtWM
+# define BuildRootless		YES
 # define XWinMultiWindowExtWMDefines -DXWIN_MULTIWINDOWEXTWM
 #else /* BuildXWinMultiWindowExtWM */
 # define XWinMultiWindowExtWMDefines 

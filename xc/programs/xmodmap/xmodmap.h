@@ -56,3 +56,5 @@ extern void PrintModifierMapping(XModifierKeymap *map, FILE *fp);
 extern void PrintKeyTable(Bool exprs, FILE *fp);
 extern void PrintPointerMap(FILE *fp);
 extern int SetPointerMap(unsigned char *map, int n);
+
+extern void *chk_malloc(size_t n_bytes);

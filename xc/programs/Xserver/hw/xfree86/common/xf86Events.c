@@ -1336,6 +1336,10 @@ xf86VTSwitch()
     ErrorF("xf86VTSwitch: Leaving, xf86Exiting is %s\n",
 	   BOOLTOSTRING((dispatchException & DE_TERMINATE) ? TRUE : FALSE));
 #endif
+#ifdef DPMSExtension
+    if (DPMSPowerLevel != DPMSModeOn)
+	DPMSSet(DPMSModeOn);
+#endif
     for (i = 0; i < xf86NumScreens; i++) {
       if (!(dispatchException & DE_TERMINATE))
 	if (xf86Screens[i]->EnableDisableFBAccess)
@@ -1355,13 +1359,9 @@ xf86VTSwitch()
     }
 #endif /* !__UNIXOS2__ */
     xf86EnterServerState(SETUP);
-    for (i = 0; i < xf86NumScreens; i++) {
-#ifdef DPMSExtension
-	if (xf86Screens[i]->DPMSSet)
-	    xf86Screens[i]->DPMSSet(xf86Screens[i],DPMSModeOn,0);
-#endif
+    for (i = 0; i < xf86NumScreens; i++)
 	xf86Screens[i]->LeaveVT(i, 0);
-    }
+
     for (ih = InputHandlers; ih; ih = ih->next)
       xf86DisableInputHandler(ih);
     xf86AccessLeave();      /* We need this here, otherwise */

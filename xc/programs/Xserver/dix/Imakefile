@@ -73,7 +73,7 @@ VENDORRELEASE = XVendorRelease
 
 #ifdef DarwinArchitecture
 #if DarwinQuartzSupport
-    QUARTZ_DEFINES = -DDARWIN_WITH_QUARTZ -DROOTLESS
+    QUARTZ_DEFINES = -DDARWIN_WITH_QUARTZ
 #endif
 #endif
 

@@ -46,7 +46,7 @@ RENDERHEADERS = render.h renderproto.h
 XFIXESHEADERS = xfixeswire.h xfixesproto.h
 #endif
 #if BuildDamage || BuildDamageLibrary
-DAMAGEHEADERS = damage.h damagewire.h damageproto.h
+DAMAGEHEADERS = damagewire.h damageproto.h
 #endif
 #if BuildComposite || BuildCompositeLibrary
 COMPOSITEHEADERS = composite.h compositeproto.h

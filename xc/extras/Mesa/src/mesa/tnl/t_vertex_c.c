@@ -228,25 +228,12 @@ static GLboolean print_attr_header( struct tnl_clipspace_codegen *p,
 
 static GLboolean print_attr_footer( struct tnl_clipspace_codegen *p )
 {
-   return 
-      emit(p, "      }\n");
+   return emit(p, "      }\n");
 }
 
 static tnl_emit_func print_store_func( struct tnl_clipspace_codegen *p ) 
 {
-#if defined( WIN32 ) || defined( __VMS )
-   fprintf(stderr, "%s: emitted:\n%s\n", "print_store_func", p->buf);
-#else
-/* C99 provides __func__, older gcc versions called it __FUNCTION__ */
-#if __STDC_VERSION__ < 199901L
-# if __GNUC__ >= 2
-#  define __func__ __FUNCTION__
-# else
-#  define __func__ "print_store_func"
-# endif
-#endif
-   fprintf(stderr, "%s: emitted:\n%s\n", __func__, p->buf);
-#endif   
+   fprintf(stderr, "print_store_func: emitted:\n%s\n", p->buf);
    return 0;
 }
 

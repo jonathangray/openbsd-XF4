@@ -126,13 +126,11 @@ MakeLintLibSubdirs($(SUBDIRS))
 
 DependTarget()
 
-MANDIR = $(MISCMANDIR)
-MANSUFFIX = $(MISCMANSUFFIX)
-InstallManPage(Xprint,$(MANDIR))
+InstallManPage(Xprt,$(MANDIR))
 
 #ifdef HasDocBookTools
-all:: Xprint.man Xprint.html
+all:: Xprt.man Xprt.html
 
-ConvertDocBookToManPage(Xprint.sgml, Xprint.man)
-ConvertDocBookToHTML(Xprint.sgml, Xprint.html)
+ConvertDocBookToManPage(Xprt.sgml, Xprt.man)
+ConvertDocBookToHTML(Xprt.sgml, Xprt.html)
 #endif /* HasDocBookTools */

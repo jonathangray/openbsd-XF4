@@ -11,13 +11,7 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 /* Get and set version information. */
 
 #include "date.def"
-
-#define XORG_VERSION_MAJOR  6
-#define XORG_VERSION_MINOR  8
-#define XORG_VERSION_PATCH  1
-#define XORG_VERSION_SNAP   0
-
-#define XORG_DATE "17 September 2004"
+#include "xorgversion.def"
 
 #if !defined(XorgVersionString) && \
     defined(XORG_VERSION_MAJOR) && defined(XORG_VERSION_MINOR) && \

@@ -38,27 +38,32 @@ RES_OBJS=lnxResource.o
 #endif
 
 #if defined(AlphaArchitecture)
-AXP_SRC=lnx_ev56.c xf86Axp.c lnx_axp.c
-AXP_OBJ=lnx_ev56.o xf86Axp.o lnx_axp.o
+PLATFORM_SRC=lnx_ev56.c xf86Axp.c lnx_axp.c
+PLATFORM_OBJ=lnx_ev56.o xf86Axp.o lnx_axp.o
+#endif
+#if defined (ia64Architecture)
+PLATFORM_SRC=ia64Pci.c lnx_ia64.c
+PLATFORM_OBJ=ia64Pci.o lnx_ia64.o
+PLATFORM_DEFINES=-DOS_PROBE_PCI_CHIPSET=lnxProbePciChipset
 #endif
 
 SRCS = lnx_init.c lnx_video.c lnx_io.c libc_wrapper.c bios_mmap.c \
        VTsw_usl.c std_kbdEv.c posix_tty.c $(MOUSESRC) \
        lnx_pci.c vidmem.c lnx_apm.c $(JOYSTICK_SRC) $(DRI_SRC) $(RES_SRCS) \
-       $(AXP_SRC) lnx_kmod.c lnx_agp.c $(KBDSRC) /*wcHelper.c*/
+       $(PLATFORM_SRC) lnx_kmod.c lnx_agp.c $(KBDSRC) /*wcHelper.c*/
 
 OBJS = lnx_init.o lnx_video.o lnx_io.o libc_wrapper.o bios_mmap.o \
        VTsw_usl.o std_kbdEv.o posix_tty.o $(MOUSEOBJ) \
        lnx_pci.o vidmem.o lnx_apm.o $(JOYSTICK_OBJ) $(DRI_OBJ) $(RES_OBJS) \
-       $(AXP_OBJ) lnx_kmod.o lnx_agp.o $(KBDOBJ) /*wcHelper.o*/
+       $(PLATFORM_OBJ) lnx_kmod.o lnx_agp.o $(KBDOBJ) /*wcHelper.o*/
 
 INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
            -I$(XINCLUDESRC) -I$(EXTINCSRC) -I$(XF86OSSRC)/shared \
-	   -I$(DRMSRCDIR)/shared
+	   -I$(XF86OSSRC)/bus -I$(DRMSRCDIR)/shared
 
 RESDEFINES = -DUSESTDRES
 
-DEFINES = $(MTRRDEFINES) $(RESDEFINES) -DHAVE_SYSV_IPC
+DEFINES = $(MTRRDEFINES) $(RESDEFINES) $(PLATFORM_DEFINES) -DHAVE_SYSV_IPC
 
 #if defined(AlphaArchitecture)
 SpecialObjectRule(lnx_ev56.o, lnx_ev56.c, -mcpu=ev56)
@@ -113,6 +118,9 @@ LinkSourceFile(stdResource.c,../shared)
 #endif
 #if defined(AlphaArchitecture)
 LinkSourceFile(xf86Axp.c,../shared)
+#endif
+#if defined(ia64Architecture)
+LinkSourceFile(ia64Pci.c,../shared)
 #endif
 DependTarget()
 

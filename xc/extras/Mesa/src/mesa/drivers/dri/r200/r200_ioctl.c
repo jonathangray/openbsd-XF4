@@ -59,10 +59,40 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 static void r200WaitForIdle( r200ContextPtr rmesa );
 
 
+/* At this point we were in FlushCmdBufLocked but we had lost our context, so
+ * we need to unwire our current cmdbuf, hook the one with the saved state in
+ * it, flush it, and then put the current one back.  This is so commands at the
+ * start of a cmdbuf can rely on the state being kept from the previous one.
+ */
+static void r200BackUpAndEmitLostStateLocked( r200ContextPtr rmesa )
+{
+   GLuint nr_released_bufs;
+   struct r200_store saved_store;
+
+   if (rmesa->backup_store.cmd_used == 0)
+      return;
+
+   if (R200_DEBUG & DEBUG_STATE)
+      fprintf(stderr, "Emitting backup state on lost context\n");
+
+   rmesa->lost_context = GL_FALSE;
+
+   nr_released_bufs = rmesa->dma.nr_released_bufs;
+   saved_store = rmesa->store;
+   rmesa->dma.nr_released_bufs = 0;
+   rmesa->store = rmesa->backup_store;
+   r200FlushCmdBufLocked( rmesa, __FUNCTION__ );
+   rmesa->dma.nr_released_bufs = nr_released_bufs;
+   rmesa->store = saved_store;
+}
+
 int r200FlushCmdBufLocked( r200ContextPtr rmesa, const char * caller )
 {
    int ret, i;
    drm_radeon_cmd_buffer_t cmd;
+
+   if (rmesa->lost_context)
+      r200BackUpAndEmitLostStateLocked( rmesa );
 
    if (R200_DEBUG & DEBUG_IOCTL) {
       fprintf(stderr, "%s from %s\n", __FUNCTION__, caller); 
@@ -132,18 +162,7 @@ int r200FlushCmdBufLocked( r200ContextPtr rmesa, const char * caller )
    rmesa->store.statenr = 0;
    rmesa->store.cmd_used = 0;
    rmesa->dma.nr_released_bufs = 0;
-   /* Set lost_context so that the first state emit on the new buffer is a full
-    * one.  This is because the context might get lost while preparing the next
-    * buffer, and when we lock and find out, we don't have the information to
-    * recreate the state.  This function should always be called before the new
-    * buffer is begun, so it's sufficient to just set lost_context here.
-    *
-    * The alternative to this would be to copy out the state on unlock
-    * (approximately) and if we did lose the context, dispatch a cmdbuf to reset
-    * the state to that old copy before continuing with the accumulated command
-    * buffer.
-    */
-   rmesa->lost_context = 1;
+   rmesa->save_on_next_emit = 1;
 
    return ret;
 }
@@ -464,7 +483,7 @@ void r200CopyBuffer( const __DRIdrawablePrivate *dPriv )
    }
 
    UNLOCK_HARDWARE( rmesa );
-   rmesa->lost_context = 1;
+   rmesa->hw.all_dirty = GL_TRUE;
 
    rmesa->swap_count++;
    (*rmesa->get_ust)( & ust );
@@ -576,7 +595,7 @@ static void r200Clear( GLcontext *ctx, GLbitfield mask, GLboolean all,
 	 return;
    }
 
-   R200_FIREVERTICES( rmesa ); 
+   r200Flush( ctx );
 
    if ( mask & DD_FRONT_LEFT_BIT ) {
       flags |= RADEON_FRONT;
@@ -612,13 +631,6 @@ static void r200Clear( GLcontext *ctx, GLbitfield mask, GLboolean all,
    /* Flip top to bottom */
    cx += dPriv->x;
    cy  = dPriv->y + dPriv->h - cy - ch;
-
-   /* We have to emit state along with the clear, since the kernel relies on
-    * some of it.  The EmitState that was above R200_FIREVERTICES was an
-    * attempt to do that, except that another context may come in and cause us
-    * to lose our context while we're unlocked.
-    */
-   r200EmitState( rmesa );
 
    LOCK_HARDWARE( rmesa );
 
@@ -722,7 +734,7 @@ static void r200Clear( GLcontext *ctx, GLbitfield mask, GLboolean all,
    }
 
    UNLOCK_HARDWARE( rmesa );
-   rmesa->lost_context = 1;
+   rmesa->hw.all_dirty = GL_TRUE;
 }
 
 
@@ -763,8 +775,7 @@ void r200Flush( GLcontext *ctx )
    if (rmesa->dma.flush)
       rmesa->dma.flush( rmesa );
 
-   if (!is_empty_list(&rmesa->hw.dirty)) 
-      r200EmitState( rmesa );
+   r200EmitState( rmesa );
    
    if (rmesa->store.cmd_used)
       r200FlushCmdBuf( rmesa, __FUNCTION__ );
@@ -847,7 +858,7 @@ void r200FreeMemoryMESA(__DRInativeDisplay *dpy, int scrn, GLvoid *pointer)
 {
    GET_CURRENT_CONTEXT(ctx);
    r200ContextPtr rmesa;
-   int region_offset;
+   ptrdiff_t region_offset;
    drm_radeon_mem_free_t memfree;
    int ret;
 
@@ -908,7 +919,7 @@ GLuint r200GetMemoryOffsetMESA(__DRInativeDisplay *dpy, int scrn, const GLvoid *
 GLboolean r200IsGartMemory( r200ContextPtr rmesa, const GLvoid *pointer,
 			   GLint size )
 {
-   int offset = (char *)pointer - (char *)rmesa->r200Screen->gartTextures.map;
+   ptrdiff_t offset = (char *)pointer - (char *)rmesa->r200Screen->gartTextures.map;
    int valid = (size >= 0 &&
 		offset >= 0 &&
 		offset + size < rmesa->r200Screen->gartTextures.size);
@@ -922,7 +933,7 @@ GLboolean r200IsGartMemory( r200ContextPtr rmesa, const GLvoid *pointer,
 
 GLuint r200GartOffsetFromVirtual( r200ContextPtr rmesa, const GLvoid *pointer )
 {
-   int offset = (char *)pointer - (char *)rmesa->r200Screen->gartTextures.map;
+   ptrdiff_t offset = (char *)pointer - (char *)rmesa->r200Screen->gartTextures.map;
 
    if (offset < 0 || offset > rmesa->r200Screen->gartTextures.size)
       return ~0;

@@ -33,29 +33,49 @@
 #include "e8870PCI.h"
 #include "zx1PCI.h"
 #include "Pci.h"
+#include "ia64Pci.h"
 
 void
 ia64ScanPCIWrapper(scanpciWrapperOpt flags)
 {
-
+    static IA64Chipset chipset = NONE_CHIPSET;
+    
     if (flags == SCANPCI_INIT) {
 
 	/* PCI configuration space probes should be done first */
-	if (xf86PreScan460GX())
+	if (xorgProbe460GX(flags)) {
+	    chipset = I460GX_CHIPSET;
+	    xf86PreScan460GX();	
 	    return;
-	if (xf86PreScanE8870())
+	} else if (xorgProbeE8870(flags)) {
+	    chipset = E8870_CHIPSET;
+	    xf86PreScanE8870();
 	    return;
-#if 0
-	if (xf86PreScanZX1())
-	    return;
+	}
+#ifdef OS_PROBE_PCI_CHIPSET
+	chipset = OS_PROBE_PCI_CHIPSET(flags);
+	switch (chipset) {
+	    case ZX1_CHIPSET:
+		xf86PreScanZX1();
+		return;
+	    default:
+		return;
+	}
 #endif
     } else /* if (flags == SCANPCI_TERM) */ {
 
-	xf86PostScan460GX();
-	xf86PostScanE8870();
-#if 0
-	xf86PostScanZX1();
-#endif
+	switch (chipset) {
+	    case I460GX_CHIPSET:
+		xf86PostScan460GX();
+		return;
+	    case E8870_CHIPSET:
+		xf86PostScanE8870();
+		return;
+	    case ZX1_CHIPSET:
+		xf86PostScanZX1();
+		return;
+	    default:
+		return;
+	}
     }
-
 }

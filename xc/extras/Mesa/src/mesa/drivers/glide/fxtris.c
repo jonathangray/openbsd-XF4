@@ -146,6 +146,7 @@ fx_translate_vertex( GLcontext *ctx, const GrVertex *src, SWvertex *dst)
    dst->win[2] = src->ooz;
    dst->win[3] = src->oow;
 
+#if FX_PACKEDCOLOR
    dst->color[0] = src->pargb[2];
    dst->color[1] = src->pargb[1];
    dst->color[2] = src->pargb[0];
@@ -154,6 +155,16 @@ fx_translate_vertex( GLcontext *ctx, const GrVertex *src, SWvertex *dst)
    dst->specular[0] = src->pspec[2];
    dst->specular[1] = src->pspec[1];
    dst->specular[2] = src->pspec[0];
+#else  /* !FX_PACKEDCOLOR */
+   dst->color[0] = src->r;
+   dst->color[1] = src->g;
+   dst->color[2] = src->b;
+   dst->color[3] = src->a;
+
+   dst->specular[0] = src->r1;
+   dst->specular[1] = src->g1;
+   dst->specular[2] = src->g1;
+#endif /* !FX_PACKEDCOLOR */
 
    dst->texcoord[ts0][0] = fxMesa->inv_s0scale * src->tmuvtx[0].sow * w;
    dst->texcoord[ts0][1] = fxMesa->inv_t0scale * src->tmuvtx[0].tow * w;
@@ -227,7 +238,11 @@ static void fx_print_vertex( GLcontext *ctx, const GrVertex *v )
  fprintf(stderr, "\tvertex at %p\n", (void *) v);
 
  fprintf(stderr, "\tx %f y %f z %f oow %f\n", v->x, v->y, v->ooz, v->oow);
+#if FX_PACKEDCOLOR
  fprintf(stderr, "\tr %d g %d b %d a %d\n", v->pargb[2], v->pargb[1], v->pargb[0], v->pargb[3]);
+#else  /* !FX_PACKEDCOLOR */
+ fprintf(stderr, "\tr %f g %f b %f a %f\n", v->r, v->g, v->b, v->a);
+#endif /* !FX_PACKEDCOLOR */
    
  fprintf(stderr, "\n");
 }
@@ -298,14 +313,25 @@ static void fx_draw_point_sprite ( fxMesaContext fxMesa,
  /* point coverage? */
  /* we don't care about culling here (see fxSetupCull) */
 
- _v_[0].x -= radius;
- _v_[0].y += radius;
- _v_[1].x += radius;
- _v_[1].y += radius;
- _v_[2].x += radius;
- _v_[2].y -= radius;
- _v_[3].x -= radius;
- _v_[3].y -= radius;
+ if (ctx->Point.SpriteOrigin == GL_UPPER_LEFT) {
+    _v_[0].x -= radius;
+    _v_[0].y += radius;
+    _v_[1].x += radius;
+    _v_[1].y += radius;
+    _v_[2].x += radius;
+    _v_[2].y -= radius;
+    _v_[3].x -= radius;
+    _v_[3].y -= radius;
+ } else {
+    _v_[0].x -= radius;
+    _v_[0].y -= radius;
+    _v_[1].x += radius;
+    _v_[1].y -= radius;
+    _v_[2].x += radius;
+    _v_[2].y += radius;
+    _v_[3].x -= radius;
+    _v_[3].y += radius;
+ }
 
  if (ctx->Point.CoordReplace[ts0]) {
     _v_[0].tmuvtx[0].sow = 0;
@@ -340,7 +366,9 @@ static void fx_draw_point_wide ( fxMesaContext fxMesa,
  GrVertex *_v_[3];
 
  const GLcontext *ctx = fxMesa->glCtx;
- const GLfloat psize = (ctx->_TriangleCaps & DD_POINT_ATTEN) ? v0->psize : ctx->Point.Size;
+ const GLfloat psize = (ctx->_TriangleCaps & DD_POINT_ATTEN)
+                       ? CLAMP(v0->psize, ctx->Point.MinSize, ctx->Point.MaxSize)
+                       : ctx->Point._Size; /* clamped */
 
  if (ctx->Point.PointSprite) {
     fx_draw_point_sprite(fxMesa, v0, psize);
@@ -415,7 +443,9 @@ static void fx_draw_point_wide_aa ( fxMesaContext fxMesa,
  GrVertex vtxB, vtxC;
 
  const GLcontext *ctx = fxMesa->glCtx;
- const GLfloat psize = (ctx->_TriangleCaps & DD_POINT_ATTEN) ? v0->psize : ctx->Point.Size;
+ const GLfloat psize = (ctx->_TriangleCaps & DD_POINT_ATTEN)
+                       ? CLAMP(v0->psize, ctx->Point.MinSize, ctx->Point.MaxSize)
+                       : ctx->Point._Size; /* clamped */
 
  if (ctx->Point.PointSprite) {
     fx_draw_point_sprite(fxMesa, v0, psize);
@@ -499,6 +529,7 @@ static struct {
 #endif
 
 
+#if FX_PACKEDCOLOR
 #define VERT_SET_RGBA( dst, f )			\
 do {						\
    UNCLAMPED_FLOAT_TO_UBYTE(dst->pargb[2], f[0]);\
@@ -538,6 +569,74 @@ do {						\
    fxMesaContext fxMesa = FX_CONTEXT(ctx);	\
    GLubyte color[n][4], spec[n][4];		\
    (void) color; (void) spec;
+#else  /* !FX_PACKEDCOLOR */
+#define VERT_SET_RGBA( dst, f )	\
+do {				\
+   CNORM(dst->r, f[0]);		\
+   CNORM(dst->g, f[1]);		\
+   CNORM(dst->b, f[2]);		\
+   CNORM(dst->a, f[3]);		\
+} while (0)
+
+#define VERT_COPY_RGBA( v0, v1 ) 		\
+do {						\
+   *(GLuint *)&v0->r = *(GLuint *)&v1->r;	\
+   *(GLuint *)&v0->g = *(GLuint *)&v1->g;	\
+   *(GLuint *)&v0->b = *(GLuint *)&v1->b;	\
+   *(GLuint *)&v0->a = *(GLuint *)&v1->a;	\
+} while (0)
+
+#define VERT_SAVE_RGBA( idx )  			\
+do {						\
+   *(GLuint *)&color[idx][0] = *(GLuint *)&v[idx]->r;\
+   *(GLuint *)&color[idx][1] = *(GLuint *)&v[idx]->g;\
+   *(GLuint *)&color[idx][2] = *(GLuint *)&v[idx]->b;\
+   *(GLuint *)&color[idx][3] = *(GLuint *)&v[idx]->a;\
+} while (0)
+
+#define VERT_RESTORE_RGBA( idx )		\
+do {						\
+   *(GLuint *)&v[idx]->r = *(GLuint *)&color[idx][0];\
+   *(GLuint *)&v[idx]->g = *(GLuint *)&color[idx][1];\
+   *(GLuint *)&v[idx]->b = *(GLuint *)&color[idx][2];\
+   *(GLuint *)&v[idx]->a = *(GLuint *)&color[idx][3];\
+} while (0)
+
+
+#define VERT_SET_SPEC( dst, f )	\
+do {				\
+   CNORM(dst->r1, f[0]);	\
+   CNORM(dst->g1, f[1]);	\
+   CNORM(dst->b1, f[2]);	\
+} while (0)
+
+#define VERT_COPY_SPEC( v0, v1 ) 		\
+do {						\
+   *(GLuint *)&v0->r1 = *(GLuint *)&v1->r1;	\
+   *(GLuint *)&v0->g1 = *(GLuint *)&v1->g1;	\
+   *(GLuint *)&v0->b1 = *(GLuint *)&v1->b1;	\
+} while (0)
+
+#define VERT_SAVE_SPEC( idx )  			\
+do {						\
+   *(GLuint *)&spec[idx][0] = *(GLuint *)&v[idx]->r1;\
+   *(GLuint *)&spec[idx][1] = *(GLuint *)&v[idx]->g1;\
+   *(GLuint *)&spec[idx][2] = *(GLuint *)&v[idx]->b1;\
+} while (0)
+
+#define VERT_RESTORE_SPEC( idx )		\
+do {						\
+   *(GLuint *)&v[idx]->r1 = *(GLuint *)&spec[idx][0];\
+   *(GLuint *)&v[idx]->g1 = *(GLuint *)&spec[idx][1];\
+   *(GLuint *)&v[idx]->b1 = *(GLuint *)&spec[idx][2];\
+} while (0)
+
+
+#define LOCAL_VARS(n)				\
+   fxMesaContext fxMesa = FX_CONTEXT(ctx);	\
+   GLuint color[n][4], spec[n][4];		\
+   (void) color; (void) spec;
+#endif /* !FX_PACKEDCOLOR */
 
 
 
@@ -904,7 +1003,6 @@ static void fx_render_vb_tri_strip( GLcontext *ctx,
 {
    fxMesaContext fxMesa = FX_CONTEXT(ctx);
    GrVertex *fxVB = fxMesa->verts;
-   int mode;
    (void) flags;
 
    if (TDFX_DEBUG & VERBOSE_VARRAY) {
@@ -913,13 +1011,9 @@ static void fx_render_vb_tri_strip( GLcontext *ctx,
 
    INIT(GL_TRIANGLE_STRIP);
 
-   /* [dBorca] WTF?!?
-   if (flags & PRIM_PARITY) 
-      mode = GR_TRIANGLE_STRIP_CONTINUE;
-   else*/
-      mode = GR_TRIANGLE_STRIP;
+   /* no GR_TRIANGLE_STRIP_CONTINUE?!? */
 
-   grDrawVertexArrayContiguous( mode, count-start,
+   grDrawVertexArrayContiguous( GR_TRIANGLE_STRIP, count-start,
                                 fxVB + start, sizeof(GrVertex));
 }
 
@@ -1273,58 +1367,41 @@ static void fxRunPipeline( GLcontext *ctx )
     */
    if (new_gl_state & _NEW_PROJECTION)
       fxMesa->new_state |= FX_NEW_FOG;
-   /* [dBorca] Hack alert:
-    * the above _NEW_PROJECTION is not included in the test below,
-    * so we may end up with fxMesa->new_state still dirty by the end
-    * of the routine. The fact is, we don't have NearFar callback
-    * anymore. We could use fxDDDepthRange instead, but it seems
-    * fog needs to be updated only by a fog-basis.
-    * Implementing fxDDDepthRange correctly is another story:
-    * that, together with a presumable fxDDViewport function would set
-    *   fxMesa->SetupNewInputs |= VERT_BIT_CLIP;
-    * which might be useful in fxBuildVertices...
-    */
 #endif
 
-   if (new_gl_state & (_FX_NEW_IS_IN_HARDWARE |
-		       _FX_NEW_RENDERSTATE |
-		       _FX_NEW_SETUP_FUNCTION |
-		       _NEW_TEXTURE)) {
+   if (new_gl_state & _FX_NEW_IS_IN_HARDWARE)
+      fxCheckIsInHardware(ctx);
 
-      if (new_gl_state & _FX_NEW_IS_IN_HARDWARE)
-	 fxCheckIsInHardware(ctx);
+   if (fxMesa->new_state)
+      fxSetupFXUnits(ctx);
 
-      if (fxMesa->new_state)
-	 fxSetupFXUnits(ctx);
+   if (!fxMesa->fallback) {
+      if (new_gl_state & _FX_NEW_RENDERSTATE)
+         fxDDChooseRenderState(ctx);
 
-      if (!fxMesa->fallback) {
-	 if (new_gl_state & _FX_NEW_RENDERSTATE)
-	    fxDDChooseRenderState(ctx);
+      if (new_gl_state & _FX_NEW_SETUP_FUNCTION)
+         fxChooseVertexState(ctx);
+   }
 
-	 if (new_gl_state & _FX_NEW_SETUP_FUNCTION)
-	    fxChooseVertexState(ctx);
+   if (new_gl_state & _NEW_TEXTURE) {
+      struct gl_texture_unit *t0 = &ctx->Texture.Unit[fxMesa->tmu_source[0]];
+      struct gl_texture_unit *t1 = &ctx->Texture.Unit[fxMesa->tmu_source[1]];
+
+      if (t0->_Current && FX_TEXTURE_DATA(t0)) {
+         fxMesa->s0scale = FX_TEXTURE_DATA(t0)->sScale;
+         fxMesa->t0scale = FX_TEXTURE_DATA(t0)->tScale;
+         fxMesa->inv_s0scale = 1.0 / fxMesa->s0scale;
+         fxMesa->inv_t0scale = 1.0 / fxMesa->t0scale;
       }
 
-      if (new_gl_state & _NEW_TEXTURE) {
-         struct gl_texture_unit *t0 = &ctx->Texture.Unit[fxMesa->tmu_source[0]];
-         struct gl_texture_unit *t1 = &ctx->Texture.Unit[fxMesa->tmu_source[1]];
-      
-         if (t0->_Current && FX_TEXTURE_DATA(t0)) {
-            fxMesa->s0scale = FX_TEXTURE_DATA(t0)->sScale;
-            fxMesa->t0scale = FX_TEXTURE_DATA(t0)->tScale;
-            fxMesa->inv_s0scale = 1.0 / fxMesa->s0scale;
-            fxMesa->inv_t0scale = 1.0 / fxMesa->t0scale;
-         }
-      
-         if (t1->_Current && FX_TEXTURE_DATA(t1)) {
-            fxMesa->s1scale = FX_TEXTURE_DATA(t1)->sScale;
-            fxMesa->t1scale = FX_TEXTURE_DATA(t1)->tScale;
-            fxMesa->inv_s1scale = 1.0 / fxMesa->s1scale;
-            fxMesa->inv_t1scale = 1.0 / fxMesa->t1scale;
-         }
+      if (t1->_Current && FX_TEXTURE_DATA(t1)) {
+         fxMesa->s1scale = FX_TEXTURE_DATA(t1)->sScale;
+         fxMesa->t1scale = FX_TEXTURE_DATA(t1)->tScale;
+         fxMesa->inv_s1scale = 1.0 / fxMesa->s1scale;
+         fxMesa->inv_t1scale = 1.0 / fxMesa->t1scale;
       }
    }
-      
+
    fxMesa->new_gl_state = 0;
 
    _tnl_run_pipeline( ctx );
@@ -1483,7 +1560,7 @@ void fxDDInitTriFuncs( GLcontext *ctx )
 
 /* [dBorca] Hack alert:
  * doesn't work with blending.
- * need to take care of stencil.
+ * XXX todo - need to take care of stencil.
  */
 GLboolean fxMultipass_ColorSum (GLcontext *ctx, GLuint pass)
 {
@@ -1518,7 +1595,11 @@ GLboolean fxMultipass_ColorSum (GLcontext *ctx, GLuint pass)
                 fxDDDepthMask( ctx, GL_FALSE );
              }
              /* switch to secondary colors */
+#if FX_PACKEDCOLOR
              grVertexLayout(GR_PARAM_PARGB, GR_VERTEX_PSPEC_OFFSET << 2, GR_PARAM_ENABLE);
+#else  /* !FX_PACKEDCOLOR */
+             grVertexLayout(GR_PARAM_RGB, GR_VERTEX_SPEC_OFFSET << 2, GR_PARAM_ENABLE);
+#endif /* !FX_PACKEDCOLOR */
              /* don't advertise new state */
              fxMesa->new_state = 0;
              break;
@@ -1529,7 +1610,11 @@ GLboolean fxMultipass_ColorSum (GLcontext *ctx, GLuint pass)
              ctx->Texture.Unit[0]._ReallyEnabled = t0;
              ctx->Texture.Unit[1]._ReallyEnabled = t1;
              /* revert to primary colors */
+#if FX_PACKEDCOLOR
              grVertexLayout(GR_PARAM_PARGB, GR_VERTEX_PARGB_OFFSET << 2, GR_PARAM_ENABLE);
+#else  /* !FX_PACKEDCOLOR */
+             grVertexLayout(GR_PARAM_RGB, GR_VERTEX_RGB_OFFSET << 2, GR_PARAM_ENABLE);
+#endif /* !FX_PACKEDCOLOR */
              break;
         default:
              assert(0); /* NOTREACHED */

@@ -87,6 +87,10 @@ static void i830_render_start( intelContextPtr intel )
       intel->coloroffset = 3;
    }
 
+   if (index & _TNL_BIT_POINTSIZE) {
+      EMIT_ATTR( _TNL_ATTRIB_POINTSIZE, EMIT_1F, VFT0_POINT_WIDTH );
+   }
+
    EMIT_ATTR( _TNL_ATTRIB_COLOR0, EMIT_4UB_4F_BGRA, VFT0_DIFFUSE );
       
    intel->specoffset = 0;
@@ -117,10 +121,14 @@ static void i830_render_start( intelContextPtr intel )
 	    switch (sz) {
 	    case 1: 
 	    case 2: 
-	    case 3:		/* XXX: fix for CUBE/VOLUME textures */
 	       emit = EMIT_2F; 
 	       sz = 2; 
 	       mcs |= TEXCOORDTYPE_CARTESIAN; 
+	       break;
+	    case 3:
+	       emit = EMIT_3F; 
+	       sz = 3;
+	       mcs |= TEXCOORDTYPE_VECTOR;
 	       break;
 	    case 4: 
 	       emit = EMIT_3F_XYW; 

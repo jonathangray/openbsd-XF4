@@ -51,6 +51,16 @@ Exit(int status)
     exit (status);
 }
 
+void *
+chk_malloc(size_t n_bytes)
+{
+    void *buf = malloc(n_bytes);
+    if (!buf) {
+	fprintf(stderr, "%s: Could not allocate %d bytes\n", ProgramName, (int)n_bytes);
+	Exit(-1);
+    }
+    return buf;
+}
 
 static char *help_message[] = {
 "\nwhere options include:",
@@ -244,9 +254,10 @@ main(int argc, char *argv[])
 	      case 's':
 	      case 'l':
 	      case 'c': {
-		  char cmd[80];		/* big enough to hold line */
+		  char *cmd;
 		  didAnything = True;
 		  if (++i >= argc) usage ();
+		  cmd = chk_malloc (strlen ("remove control = ") + strlen (argv[i]) + 1);
 		  (void) sprintf (cmd, "remove %s = %s",
 				  ((arg[1] == 's') ? "shift" :
 				   ((arg[1] == 'l') ? "lock" :
@@ -265,10 +276,10 @@ main(int argc, char *argv[])
 	      case '3':
 	      case '4':
 	      case '5': {
-		  char cmd[80];		/* big enough to hold line */
+		  char *cmd;
 		  didAnything = True;
 		  if (++i >= argc) usage ();
-
+		  cmd = chk_malloc (strlen ("add modX = ") + strlen (argv[i]) + 1);
 		  (void) sprintf (cmd, "add mod%c = %s", arg[1], argv[i]);
 		  process_line (cmd);
 		  continue;
@@ -281,9 +292,10 @@ main(int argc, char *argv[])
 	      case 's':
 	      case 'l':
 	      case 'c': {
-		  char cmd[80];		/* big enough to hold line */
+		  char *cmd;
 		  didAnything = True;
 		  if (++i >= argc) usage ();
+		  cmd = chk_malloc (strlen ("add control = ") + strlen (argv[i]) + 1);
 		  (void) sprintf (cmd, "add %s = %s",
 				  ((arg[1] == 's') ? "shift" :
 				   ((arg[1] == 'l') ? "lock" :

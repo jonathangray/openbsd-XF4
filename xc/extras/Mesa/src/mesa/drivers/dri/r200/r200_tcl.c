@@ -101,7 +101,7 @@ static GLboolean discrete_prim[0x10] = {
 };
    
 
-#define LOCAL_VARS r200ContextPtr rmesa = R200_CONTEXT(ctx)
+#define LOCAL_VARS r200ContextPtr rmesa = R200_CONTEXT(ctx); (void)rmesa
 #define ELT_TYPE  GLushort
 
 #define ELT_INIT(prim, hw_prim) \
@@ -140,32 +140,48 @@ static GLboolean discrete_prim[0x10] = {
 
 static GLushort *r200AllocElts( r200ContextPtr rmesa, GLuint nr ) 
 {
-   if (rmesa->dma.flush)
-      rmesa->dma.flush( rmesa );
+   if (rmesa->dma.flush == r200FlushElts &&
+       rmesa->store.cmd_used + nr*2 < R200_CMD_BUF_SZ) {
 
-   r200EnsureCmdBufSpace( rmesa, AOS_BUFSZ(rmesa->tcl.nr_aos_components) +
-			  rmesa->hw.max_state_size + ELTS_BUFSZ(nr) );
-   
-   r200EmitAOS( rmesa,
-		rmesa->tcl.aos_components,
-		rmesa->tcl.nr_aos_components, 0 );
+      GLushort *dest = (GLushort *)(rmesa->store.cmd_buf +
+				    rmesa->store.cmd_used);
 
-   return r200AllocEltsOpenEnded( rmesa, rmesa->tcl.hw_primitive, nr );
+      rmesa->store.cmd_used += nr*2;
+
+      return dest;
+   }
+   else {
+      if (rmesa->dma.flush)
+	 rmesa->dma.flush( rmesa );
+
+      r200EnsureCmdBufSpace( rmesa, AOS_BUFSZ(rmesa->tcl.nr_aos_components) +
+			     rmesa->hw.max_state_size + ELTS_BUFSZ(nr) );
+
+      r200EmitAOS( rmesa,
+		   rmesa->tcl.aos_components,
+		   rmesa->tcl.nr_aos_components, 0 );
+
+      return r200AllocEltsOpenEnded( rmesa, rmesa->tcl.hw_primitive, nr );
+   }
 }
 
 
-#define CLOSE_ELTS()  R200_NEWPRIM( rmesa )
+#define CLOSE_ELTS() 				\
+do {						\
+   if (0) R200_NEWPRIM( rmesa );		\
+}						\
+while (0)
 
 
 /* TODO: Try to extend existing primitive if both are identical,
  * discrete and there are no intervening state changes.  (Somewhat
  * duplicates changes to DrawArrays code)
  */
-static void EMIT_PRIM( GLcontext *ctx, 
-		       GLenum prim, 
-		       GLuint hwprim, 
-		       GLuint start, 
-		       GLuint count)	
+static void r200EmitPrim( GLcontext *ctx, 
+		          GLenum prim, 
+		          GLuint hwprim, 
+		          GLuint start, 
+		          GLuint count)	
 {
    r200ContextPtr rmesa = R200_CONTEXT( ctx );
    r200TclPrimitive( ctx, prim, hwprim );
@@ -185,7 +201,9 @@ static void EMIT_PRIM( GLcontext *ctx,
 		     count - start );
 }
 
-
+#define EMIT_PRIM(ctx, prim, hwprim, start, count) do {         \
+   r200EmitPrim( ctx, prim, hwprim, start, count );             \
+   (void) rmesa; } while (0)
 
 /* Try & join small primitives
  */
@@ -205,9 +223,12 @@ static void EMIT_PRIM( GLcontext *ctx,
 #define EMIT_ELT(dest, offset, x) do {                                \
         int off = offset + ( ( (GLuint)dest & 0x2 ) >> 1 );     \
         GLushort *des = (GLushort *)( (GLuint)dest & ~0x2 );    \
-        (des)[ off + 1 - 2 * ( off & 1 ) ] = (GLushort)(x); } while (0)
+        (des)[ off + 1 - 2 * ( off & 1 ) ] = (GLushort)(x);	\
+	(void)rmesa; } while (0)
 #else
-#define EMIT_ELT(dest, offset, x) (dest)[offset] = (GLushort) (x)
+#define EMIT_ELT(dest, offset, x) do {				\
+	(dest)[offset] = (GLushort) (x);			\
+	(void)rmesa; } while (0)
 #endif
 
 #define EMIT_TWO_ELTS(dest, offset, x, y)  *(GLuint *)((dest)+offset) = ((y)<<16)|(x);

@@ -1,4 +1,4 @@
-<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" '/usr/share/sgml/docbook_4.2/docbook.dtd'>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" 'http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd'>
 
 <!-- Process this file with docbook-to-man to generate an nroff manual
      page: 'docbook-to-man manpage.sgml > manpage.1'.  You may view
@@ -174,7 +174,7 @@ HTML generation can be done like this:
     </para>
     <para>
       In order of importance for configuration by a system administrator, the
-      configuration files for a "C" locale are as follows (see <citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry> for more
+      configuration files for a "C" locale are as follows (see <citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry> for more
       details (including support for non-"C" locales)):
       <variablelist>
         <varlistentry>
@@ -264,7 +264,7 @@ HTML generation can be done like this:
       </variablelist>
       
       More information in how to configure and customize the X print server can be found in the
-      <citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry>
       manual page.
     </para>
   </refsect1>
@@ -594,15 +594,15 @@ HTML generation can be done like this:
         <member><citerefentry><refentrytitle>Xprint</refentrytitle><manvolnum>__miscmansuffix__</manvolnum></citerefentry></member>
 -->
         <member><citerefentry><refentrytitle>X11</refentrytitle><manvolnum>__miscmansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xplsprinters</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xprehashprinterlist</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xphelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpxmhelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpawhelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpxthelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpsimplehelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>Xserver</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xplsprinters</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xprehashprinterlist</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xphelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpxmhelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpawhelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpxthelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpsimplehelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>Xserver</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
         <!-- ToDO: Add manual pages for the single Xprint DDX implementations (PostScript/PDF/PCL/PCL-MONO/Raster/etc.) -->
         <member><citerefentry><refentrytitle>libXp</refentrytitle><manvolnum>__libmansuffix__</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>libXprintUtils</refentrytitle><manvolnum>__libmansuffix__</manvolnum></citerefentry></member>

@@ -508,7 +508,7 @@ static __inline void radeonEltPrimitive( radeonContextPtr rmesa, GLenum prim )
 
 
 
-#define LOCAL_VARS radeonContextPtr rmesa = RADEON_CONTEXT(ctx)
+#define LOCAL_VARS radeonContextPtr rmesa = RADEON_CONTEXT(ctx); (void)rmesa
 #define ELTS_VARS( buf )  GLushort *dest = buf
 #define INIT( prim ) radeonDmaPrimitive( rmesa, prim )
 #define ELT_INIT(prim) radeonEltPrimitive( rmesa, prim )
@@ -564,9 +564,12 @@ static void *radeon_alloc_elts( radeonContextPtr rmesa, int nr )
 #define EMIT_ELT(offset, x) do {				\
 	int off = offset + ( ( (GLuint)dest & 0x2 ) >> 1 );	\
 	GLushort *des = (GLushort *)( (GLuint)dest & ~0x2 );	\
-	(des)[ off + 1 - 2 * ( off & 1 ) ] = (GLushort)(x); } while (0)
+	(des)[ off + 1 - 2 * ( off & 1 ) ] = (GLushort)(x); 	\
+	(void)rmesa; } while (0)
 #else
-#define EMIT_ELT(offset, x) (dest)[offset] = (GLushort) (x)
+#define EMIT_ELT(offset, x) do {				\
+	(dest)[offset] = (GLushort) (x);			\
+	(void)rmesa; } while (0)
 #endif
 #define EMIT_TWO_ELTS(offset, x, y)  *(GLuint *)(dest+offset) = ((y)<<16)|(x);
 #define INCR_ELTS( nr ) dest += nr

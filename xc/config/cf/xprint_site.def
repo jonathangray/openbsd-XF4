@@ -90,7 +90,6 @@
 #define BuildGlxExt                    NO
 #define BuildXIE                       NO
 /* X extensions not needed */
-#define BuildDBE	               NO
 #define BuildXKB	               NO
 #define BuildRECORD	               NO
 #define BuildDPMS	               NO
@@ -136,7 +135,7 @@
 #endif /* BuildXprintAppsOnly */
 
 /* Set our own XVendorString/XVendorRelease
- * (and to avoid that xfree86.cf sets it's own stuff here) */
+ * (and to avoid that xorg.cf sets it's own stuff here) */
 #define XVendorString "xprint.mozdev.org"
 #define XVendorRelease 100000
 

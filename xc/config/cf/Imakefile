@@ -26,7 +26,8 @@ xf86site.def \
 xorgsite.def \
 $(VERSIONDEFFILES) \
 $(HOSTDEFFILES) \
-site.def
+site.def \
+xorgversion.def  
 
 RULEFILES = \
 Imake.rules \

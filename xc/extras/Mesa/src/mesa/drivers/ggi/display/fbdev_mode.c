@@ -50,15 +50,13 @@
 
 int GGIMesa_fbdev_getapi(ggi_visual *vis, int num, char *apiname, char *arguments)
 {
-	struct fbdev_priv_mesa *priv = GGIMESA_PRIVATE(vis);
+	struct fbdev_priv_mesa *priv = GGIMESA_PRIV(vis);
 	
-	strcpy(arguments, "");
+	arguments = '\0';
 
-	switch(num) 
-	{
-		case 0:
-		if (priv->oldpriv->have_accel) 
-		{
+	switch(num) {
+	case 0:
+		if (priv->oldpriv->have_accel) {
 			strcpy(apiname, priv->oldpriv->accel);
 			return 0;
 		}
@@ -70,35 +68,33 @@ int GGIMesa_fbdev_getapi(ggi_visual *vis, int num, char *apiname, char *argument
 
 static int do_setmode(ggi_visual *vis)
 {
-	struct fbdev_priv_mesa *priv = GGIMESA_PRIVATE(vis);
+	struct fbdev_priv_mesa *priv = GGIMESA_PRIV(vis);
 	int err, id;
-	char libname[256], libargs[256];
+	char libname[GGI_API_MAXLEN], libargs[GGI_API_MAXLEN];
 	ggi_graphtype gt;
 
 	_ggiZapMode(vis, ~GGI_DL_OPDISPLAY);
 	priv->have_accel = 0;
-	for (id = 1; GGIMesa_fbdev_getapi(vis, id, libname, libargs) == 0; id++) 
-	{
-		if (_ggiOpenDL(vis, libname, libargs, NULL) == 0) 
-		{
-			fprintf(stderr, "display-fbdev-mesa: Error opening the "
+
+	for (id = 1; GGIMesa_fbdev_getapi(vis, id, libname, libargs) == 0; id++) {
+		if (_ggiOpenDL(vis, libname, libargs, NULL) == 0) {
+			GGIMESADPRINT_LIBS(stderr, "display-fbdev-mesa: Error opening the "
 				"%s (%s) library.\n", libname, libargs);
 			return GGI_EFATAL;
 		}
 
-		GGIMESADPRINT_CORE("Success in loading %s (%s)\n", libname, libargs);
+		GGIMESADPRINT_CORE("Success in loading %s (%s)\n",
+			libname, libargs);
 	}
 
 	if (priv->oldpriv->accel &&
 	    _ggiOpenDL(vis, priv->accel, NULL, NULL) != 0) {
 		priv->have_accel = 1;
-	} 
-	else 
-	{
+	} else {
 		priv->have_accel = 0;
 	}
 	vis->accelactive = 0;
-	
+
 	ggiIndicateChange(vis, GGI_CHG_APILIST);
 
 	GGIMESADPRINT_CORE("display-fbdev-mesa: do_setmode SUCCESS\n");

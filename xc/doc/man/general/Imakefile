@@ -8,8 +8,16 @@ MANDIR = $(MISCMANDIR)
 MANSUFFIX = $(MISCMANSUFFIX)
 
 InstallManPage(X,$(MANDIR))
+InstallManPage(Xprint,$(MANDIR))
 InstallManPageLong(Consortium,$(MANDIR),XConsortium)
 InstallManPageLong(Standards,$(MANDIR),XStandards)
 InstallManPageLong(XProjectTeam,$(MANDIR),XProjectTeam)
 InstallManPageAliases(XProjectTeam,$(MANDIR),X.Org)
 InstallManPageLong(security,$(MANDIR),Xsecurity)
+
+#ifdef HasDocBookTools
+all:: Xprint.man Xprint.html
+
+ConvertDocBookToManPage(Xprint.sgml, Xprint.man)
+ConvertDocBookToHTML(Xprint.sgml, Xprint.html)
+#endif /* HasDocBookTools */

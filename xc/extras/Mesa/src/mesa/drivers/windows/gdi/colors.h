@@ -24,6 +24,9 @@
 
 /*
  * $Log: colors.h,v $
+ * Revision 1.2  2004/12/19 17:44:49  matthieu
+ * Sync with X.Org 6.8.2 RC1. Detailled change log in XF4/xc/ChangeLog.
+ *
  * Revision 1.1  2004/11/02 23:26:26  matthieu
  * merge X.Org R6.8.1
  *
@@ -55,6 +58,9 @@
 
 /*
  * $Log: colors.h,v $
+ * Revision 1.2  2004/12/19 17:44:49  matthieu
+ * Sync with X.Org 6.8.2 RC1. Detailled change log in XF4/xc/ChangeLog.
+ *
  * Revision 1.1  2004/11/02 23:26:26  matthieu
  * merge X.Org R6.8.1
  *
@@ -86,6 +92,9 @@
  
 /*
  * $Log: colors.h,v $
+ * Revision 1.2  2004/12/19 17:44:49  matthieu
+ * Sync with X.Org 6.8.2 RC1. Detailled change log in XF4/xc/ChangeLog.
+ *
  * Revision 1.1  2004/11/02 23:26:26  matthieu
  * merge X.Org R6.8.1
  *
@@ -159,7 +168,7 @@ char ColorMap16[] = {
 0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,
 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
 
-#define BGR8(r,g,b)		(unsigned)(((BYTE)(b & 0xc0 | (g & 0xe0)>>2 | (r & 0xe0)>>5)))
+#define BGR8(r,g,b)		(unsigned)(((BYTE)((b & 0xc0) | ((g & 0xe0)>>2) | ((r & 0xe0)>>5))))
 #ifdef DDRAW
 #define BGR16(r,g,b)	((WORD)(((BYTE)(ColorMap16[b]) | ((BYTE)(g&0xfc) << 3)) | (((WORD)(BYTE)(ColorMap16[r])) << 11)))
 #else

@@ -126,7 +126,12 @@ FX_setupGrVertexLayout(void)
 
    grCoordinateSpace(GR_WINDOW_COORDS);
    grVertexLayout(GR_PARAM_XY, GR_VERTEX_X_OFFSET << 2, GR_PARAM_ENABLE);
+#if FX_PACKEDCOLOR
    grVertexLayout(GR_PARAM_PARGB, GR_VERTEX_PARGB_OFFSET << 2, GR_PARAM_ENABLE);
+#else  /* !FX_PACKEDCOLOR */
+   grVertexLayout(GR_PARAM_RGB, GR_VERTEX_RGB_OFFSET << 2, GR_PARAM_ENABLE);
+   grVertexLayout(GR_PARAM_A, GR_VERTEX_A_OFFSET << 2, GR_PARAM_ENABLE);
+#endif /* !FX_PACKEDCOLOR */
    grVertexLayout(GR_PARAM_Q, GR_VERTEX_OOW_OFFSET << 2, GR_PARAM_ENABLE);
    grVertexLayout(GR_PARAM_Z, GR_VERTEX_OOZ_OFFSET << 2, GR_PARAM_ENABLE);
    grVertexLayout(GR_PARAM_ST0, GR_VERTEX_SOW_TMU0_OFFSET << 2,
@@ -210,7 +215,7 @@ FX_grSstQueryHardware(GrHwConfiguration * config)
          config->SSTs[i].type = GR_SSTTYPE_VOODOO;
       }
 
-      grGet(GR_MEMORY_FB, 4, &result); /* ZZZ: differs after grSstWinOpen */
+      grGet(GR_MEMORY_FB, 4, &result);
       config->SSTs[i].fbRam = result / (1024 * 1024);
 
       grGet(GR_NUM_TMU, 4, &result);
@@ -220,7 +225,7 @@ FX_grSstQueryHardware(GrHwConfiguration * config)
       config->SSTs[i].fbiRev = result;
 
       for (j = 0; j < config->SSTs[i].nTexelfx; j++) {
-	 grGet(GR_MEMORY_TMU, 4, &result); /* ZZZ: differs after grSstWinOpen */
+	 grGet(GR_MEMORY_TMU, 4, &result);
 	 config->SSTs[i].tmuConfig[j].tmuRam = result / (1024 * 1024);
 	 grGet(GR_REVISION_TMU, 4, &result);
 	 config->SSTs[i].tmuConfig[j].tmuRev = result;

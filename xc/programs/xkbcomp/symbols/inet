@@ -16,7 +16,7 @@
 // setxkbmap 'my_kb_layout' -variant 'my_kb_variant' -model 'my_eak_type'
 
 // All keyboards listed here should be also mentioned in
-// xc/programs/xkbcomp/rules/xfree86, xfree86.lst and xfree86.xml.
+// xc/programs/xkbcomp/rules: xorg, xorg.lst and xorg.xml.
 
 // Acer
 

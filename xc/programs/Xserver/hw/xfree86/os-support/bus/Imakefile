@@ -129,8 +129,8 @@ PCIARCHSRC = sparcPci.c
 PCIARCHOBJ = sparcPci.o
 # endif
 #elif defined(ia64Architecture)
-PCIARCHSRC = ia64Pci.c 460gxPCI.c e8870PCI.c zx1PCI.c
-PCIARCHOBJ = ia64Pci.o 460gxPCI.o e8870PCI.o zx1PCI.o
+PCIARCHSRC = 460gxPCI.c e8870PCI.c zx1PCI.c
+PCIARCHOBJ = 460gxPCI.o e8870PCI.o zx1PCI.o
 #endif
 
 SRCS = Pci.c $(PCIDRVRSRC) $(SBUSDRVSRC) $(PCIARCHSRC)

@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.6 2004/08/31 01:36:13 kem Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.8 2004/12/06 21:51:11 herrb Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.8 2003/11/03 05:11:47 tsi Exp $ */
 
 /*
@@ -12,7 +12,7 @@
  * xf86Events.c and xf86Io.c which are
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  */
-/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.6 2004/08/31 01:36:13 kem Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.8 2004/12/06 21:51:11 herrb Exp $ */
   
 #define NEED_EVENTS
 #include "X.h"

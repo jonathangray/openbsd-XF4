@@ -8,6 +8,11 @@ XCOMM $XFree86: xc/lib/GL/mesa/src/OSmesa/Imakefile,v 1.16 2002/11/25 14:04:50 e
 #define DoDebugLib DebugLibGlx
 #define DoProfileLib ProfileLibGlx
 
+/* Large PIC tables needed for Solaris SPARC builds */
+#if (defined(SunArchitecture) && defined(SparcArchitecture))
+# define LargePICTable YES
+#endif
+
 #include "../../array_cache/Imakefile.inc"
 #include "../../math/Imakefile.inc"
 #include "../../main/Imakefile.inc"

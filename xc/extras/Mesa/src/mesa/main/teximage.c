@@ -330,6 +330,9 @@ static GLboolean
 is_color_format(GLenum format)
 {
    switch (format) {
+      case GL_RED:
+      case GL_GREEN:
+      case GL_BLUE:
       case GL_ALPHA:
       case GL_ALPHA4:
       case GL_ALPHA8:
@@ -481,6 +484,7 @@ is_ycbcr_format(GLenum format)
 static GLboolean
 is_compressed_format(GLcontext *ctx, GLenum internalFormat)
 {
+   (void) ctx;
    switch (internalFormat) {
       case GL_COMPRESSED_RGB_FXT1_3DFX:
       case GL_COMPRESSED_RGBA_FXT1_3DFX:
@@ -881,11 +885,9 @@ _mesa_max_texture_levels(GLcontext *ctx, GLenum target)
    case GL_TEXTURE_CUBE_MAP_ARB:
    case GL_PROXY_TEXTURE_CUBE_MAP_ARB:
       return ctx->Const.MaxCubeTextureLevels;
-      break;
    case GL_TEXTURE_RECTANGLE_NV:
    case GL_PROXY_TEXTURE_RECTANGLE_NV:
       return 1;
-      break;
    default:
       return 0; /* bad target */
    }
@@ -1978,6 +1980,9 @@ _mesa_GetTexImage( GLenum target, GLint level, GLenum format,
       return;
    }
 
+   /*
+    * XXX Move this code into a new driver fall-back function
+    */
    {
       const GLint width = texImage->Width;
       const GLint height = texImage->Height;
@@ -2395,7 +2400,7 @@ _mesa_TexSubImage1D( GLenum target, GLint level,
    texImage = _mesa_select_tex_image(ctx, texUnit, target, level);
    assert(texImage);
 
-   if (width == 0 || !pixels)
+   if (width == 0)
       return;  /* no-op, not an error */
 
    /* If we have a border, xoffset=-1 is legal.  Bias by border width */
@@ -2442,7 +2447,7 @@ _mesa_TexSubImage2D( GLenum target, GLint level,
    texImage = _mesa_select_tex_image(ctx, texUnit, target, level);
    assert(texImage);
 
-   if (width == 0 || height == 0 || !pixels)
+   if (width == 0 || height == 0)
       return;  /* no-op, not an error */
 
    /* If we have a border, xoffset=-1 is legal.  Bias by border width */
@@ -2484,7 +2489,7 @@ _mesa_TexSubImage3D( GLenum target, GLint level,
    texImage = _mesa_select_tex_image(ctx, texUnit, target, level);
    assert(texImage);
 
-   if (width == 0 || height == 0 || height == 0 || !pixels)
+   if (width == 0 || height == 0 || height == 0)
       return;  /* no-op, not an error */
 
    /* If we have a border, xoffset=-1 is legal.  Bias by border width */
@@ -2794,6 +2799,9 @@ compressed_texture_error_check(GLcontext *ctx, GLint dimensions,
    if (!is_compressed_format(ctx, internalFormat))
       return GL_INVALID_ENUM;
 
+   if (_mesa_base_tex_format(ctx, internalFormat) < 0)
+      return GL_INVALID_ENUM;
+
    if (border != 0)
       return GL_INVALID_VALUE;
 
@@ -2846,6 +2854,7 @@ compressed_subtexture_error_check(GLcontext *ctx, GLint dimensions,
                                   GLenum format, GLsizei imageSize)
 {
    GLint expectedSize, maxLevels = 0, maxTextureSize;
+   (void) zoffset;
 
    if (dimensions == 1) {
       /* 1D compressed textures not allowed */
@@ -3193,7 +3202,7 @@ _mesa_CompressedTexSubImage1DARB(GLenum target, GLint level, GLint xoffset,
       return;
    }
       
-   if (width == 0 || !data)
+   if (width == 0)
       return;  /* no-op, not an error */
 
    if (ctx->Driver.CompressedTexSubImage1D) {
@@ -3244,7 +3253,7 @@ _mesa_CompressedTexSubImage2DARB(GLenum target, GLint level, GLint xoffset,
       return;
    }
       
-   if (width == 0 || height == 0 || !data)
+   if (width == 0 || height == 0)
       return;  /* no-op, not an error */
 
    if (ctx->Driver.CompressedTexSubImage2D) {
@@ -3295,7 +3304,7 @@ _mesa_CompressedTexSubImage3DARB(GLenum target, GLint level, GLint xoffset,
       return;
    }
       
-   if (width == 0 || height == 0 || depth == 0 || !data)
+   if (width == 0 || height == 0 || depth == 0)
       return;  /* no-op, not an error */
 
    if (ctx->Driver.CompressedTexSubImage3D) {

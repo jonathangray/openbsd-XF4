@@ -26,6 +26,11 @@ XCOMM $XFree86: xc/lib/GL/mesa/src/Imakefile,v 1.30tsi Exp $
 #define DoProfileLib NO
 #endif
 
+/* Large PIC tables needed for Solaris SPARC builds */
+#if (defined(SunArchitecture) && defined(SparcArchitecture))
+# define LargePICTable YES
+#endif
+
 #if Malloc0ReturnsNull
 ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 #endif

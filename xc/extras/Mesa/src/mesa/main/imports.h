@@ -1,6 +1,6 @@
 /*
  * Mesa 3-D graphics library
- * Version:  6.1
+ * Version:  6.2
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -224,7 +224,7 @@ extern void _ext_mesa_free_pixelbuffer( void *pb );
  ***/
 #if defined(__i386__) || defined(__386__) || defined(__sparc__) || \
     defined(__s390x__) || defined(__powerpc__) || \
-    defined(__AMD64__) || defined(__amd64__) || \
+    defined(__amd64__) || \
     defined(ia64) || defined(__ia64__) || \
     defined(__hppa__) || defined(hpux) || \
     defined(__mips) || defined(_MIPS_ARCH) || \
@@ -378,7 +378,8 @@ static INLINE int iround(float f)
    return r;
 }
 #define IROUND(x)  iround(x)
-#elif defined(USE_X86_ASM) && defined(__GNUC__) && defined(__i386__)
+#elif defined(USE_X86_ASM) && defined(__GNUC__) && defined(__i386__) && \
+			(!defined(__BEOS__) || (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95)))
 static INLINE int iround(float f)
 {
    int r;
@@ -556,7 +557,7 @@ static INLINE int iceil(float f)
  ***/
 #if defined(USE_IEEE) && !defined(DEBUG)
 #define COPY_FLOAT( dst, src )					\
-	((fi_type *) &(dst))->i = ((fi_type *) &(src))->i
+	((fi_type *) &(dst))->i = ((fi_type *) (void *) &(src))->i
 #else
 #define COPY_FLOAT( dst, src )		(dst) = (src)
 #endif

@@ -491,10 +491,8 @@ struct r200_state_atom {
 
 
 struct r200_hw_state {
-   /* All state should be on one of these lists:
-    */
-   struct r200_state_atom dirty; /* dirty list head placeholder */
-   struct r200_state_atom clean; /* clean list head placeholder */
+   /* Head of the linked list of state atoms. */
+   struct r200_state_atom atomlist;
 
    /* Hardware state, stored as cmdbuf commands:  
     *   -- Need to doublebuffer for
@@ -530,6 +528,7 @@ struct r200_hw_state {
    struct r200_state_atom glt; 
 
    int max_state_size;	/* Number of bytes necessary for a full state emit. */
+   GLboolean is_dirty, all_dirty;
 };
 
 struct r200_state {
@@ -825,8 +824,6 @@ struct r200_vbinfo {
 };
 
 
-
-
 struct r200_context {
    GLcontext *glCtx;			/* Mesa context */
 
@@ -854,6 +851,10 @@ struct r200_context {
    struct r200_ioctl ioctl;
    struct r200_dma dma;
    struct r200_store store;
+   /* A full state emit as of the first state emit in the main store, in case
+    * the context is lost.
+    */
+   struct r200_store backup_store;
 
    /* Page flipping
     */
@@ -876,6 +877,7 @@ struct r200_context {
    drm_clip_rect_t *pClipRects;
    unsigned int lastStamp;
    GLboolean lost_context;
+   GLboolean save_on_next_emit;
    r200ScreenPtr r200Screen;	/* Screen private DRI data */
    drm_radeon_sarea_t *sarea;		/* Private SAREA data */
 

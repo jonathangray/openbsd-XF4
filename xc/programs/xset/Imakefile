@@ -16,12 +16,12 @@ XCOMM $XFree86: xc/programs/xset/Imakefile,v 3.10 2001/01/17 23:46:27 dawes Exp 
 #if BuildXprintLib && BuildXprintClients
     DEPXPRINTLIBS = $(DEPXPRINTLIB)
        XPRINTLIBS = $(XPLIB)
-    XPRINTDEFINES = -DINCLUDE_XPRINT_SUPPORT
+    XPRINTDEFINES = -DBUILD_PRINTSUPPORT
 #endif
 
         DEFINES = ExtensionDefines DPMSDefines \
 		  FontCacheExtensionDefines \
-		  XkbDefines
+		  XkbDefines $(XPRINTDEFINES)
         DEPLIBS = $(DEPXMUULIB) $(DEPXLIB) $(DEPXF86LIBS) $(DEPFONTLIBS)
 LOCAL_LIBRARIES = $(XMUULIB) $(XF86LIBS) $(FONTLIBS) $(XPRINTLIBS) $(XLIB)
 

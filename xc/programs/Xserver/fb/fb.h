@@ -647,7 +647,7 @@ typedef struct {
 	((WindowPtr) (pWin))->devPrivates[fbGetWinPrivateIndex()].ptr)
 #endif
 
-#if defined(__DARWIN__)||defined(__CYGWIN__)
+#ifdef ROOTLESS
 #define __fbPixOriginX(pPix)	((pPix)->drawable.x)
 #define __fbPixOriginY(pPix)	((pPix)->drawable.y)
 #else

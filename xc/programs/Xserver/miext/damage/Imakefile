@@ -8,8 +8,7 @@ XFMODOBJ = damage.o
 #endif
 #endif
 
-#if (defined(XWinServer) && XWinServer && BuildXWinMultiWindowExtWM) || \
-    (defined(XDarwinServer) && XDarwinServer && DarwinQuartzSupport)
+#if BuildRootless
 DEFINES = -DROOTLESS_WORKAROUND
 #endif
 

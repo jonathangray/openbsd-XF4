@@ -1,6 +1,6 @@
 /*
  * Mesa 3-D graphics library
- * Version:  6.1
+ * Version:  6.2
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -104,7 +104,7 @@
 static int
 generic_noop(void)
 {
-   _mesa_problem(NULL, "User called no-op dispatch function (not part of Mesa subset?)");
+   _mesa_problem(NULL, "User called no-op dispatch function (an unsupported extension function?)");
    return 0;
 }
 
@@ -119,10 +119,11 @@ generic_noop(void)
 void
 _mesa_init_no_op_table(struct _glapi_table *table, GLuint tableSize)
 {
+   typedef void (*func_ptr_t)(void);
    GLuint i;
-   void **dispatch = (void **) table;
+   func_ptr_t *dispatch = (func_ptr_t *) table;
    for (i = 0; i < tableSize; i++) {
-      dispatch[i] = (void *) generic_noop;
+      dispatch[i] = (func_ptr_t)generic_noop;
    }
 }
 

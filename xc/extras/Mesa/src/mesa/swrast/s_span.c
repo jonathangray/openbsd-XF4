@@ -1,6 +1,6 @@
 /*
  * Mesa 3-D graphics library
- * Version:  6.1
+ * Version:  6.3
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -151,6 +151,7 @@ interpolate_colors(GLcontext *ctx, struct sw_span *span)
    const GLuint n = span->end;
    GLchan (*rgba)[4] = span->array->rgba;
    GLuint i;
+   (void) ctx;
 
    ASSERT((span->interpMask & SPAN_RGBA)  &&
 	  !(span->arrayMask & SPAN_RGBA));
@@ -211,6 +212,7 @@ interpolate_indexes(GLcontext *ctx, struct sw_span *span)
    const GLuint n = span->end;
    GLuint *indexes = span->array->index;
    GLuint i;
+   (void) ctx;
    ASSERT((span->interpMask & SPAN_INDEX)  &&
 	  !(span->arrayMask & SPAN_INDEX));
 
@@ -236,6 +238,7 @@ interpolate_indexes(GLcontext *ctx, struct sw_span *span)
 static void
 interpolate_specular(GLcontext *ctx, struct sw_span *span)
 {
+   (void) ctx;
    if (span->interpMask & SPAN_FLAT) {
       /* constant color */
       const GLchan r = FixedToChan(span->specRed);
@@ -1470,15 +1473,17 @@ _swrast_write_texture_span( GLcontext *ctx, struct sw_span *span)
 
    ASSERT(span->arrayMask & SPAN_RGBA);
 
-   /* Add base and specular colors */
-   if (ctx->Fog.ColorSumEnabled ||
-       (ctx->Light.Enabled &&
-        ctx->Light.Model.ColorControl == GL_SEPARATE_SPECULAR_COLOR)) {
-      if (span->interpMask & SPAN_SPEC) {
-         interpolate_specular(ctx, span);
+   if (!ctx->FragmentProgram._Enabled) {
+      /* Add base and specular colors */
+      if (ctx->Fog.ColorSumEnabled ||
+          (ctx->Light.Enabled &&
+           ctx->Light.Model.ColorControl == GL_SEPARATE_SPECULAR_COLOR)) {
+         if (span->interpMask & SPAN_SPEC) {
+            interpolate_specular(ctx, span);
+         }
+         ASSERT(span->arrayMask & SPAN_SPEC);
+         add_colors( span->end, span->array->rgba, span->array->spec );
       }
-      ASSERT(span->arrayMask & SPAN_SPEC);
-      add_colors( span->end, span->array->rgba, span->array->spec );
    }
 
    /* Fog */

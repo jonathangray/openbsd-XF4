@@ -7,6 +7,128 @@
 <H1>News</H1>
 
 
+<h2>December 9, 2004</h2>
+<p>
+Mesa 6.2.1 has been released.
+This is a stable release which just fixes bugs since the 6.2 release.
+</p>
+<pre>
+    Bug fixes:
+	- don't apply regular fog or color sum when using a fragment program
+	- glProgramEnvParameter4fARB always generated an error on
+	  GL_FRAGMENT_PROGRAM_ARB (fdo bug 1645)
+	- glVertexAttrib3svNV and glVertexAttrib3svARB were broken
+	- fixed width/height mix-up in glSeparableFilter2D()
+	- fixed regression in glCopyPixels + convolution
+	- glReadPixels from a clipped front color buffer didn't always work
+	- glTexImage didn't accept GL_RED/GREEN/BLUE as the format
+	- Attempting queries/accesses of VBO 0 weren't detected as errors
+	- paletted textures failed if the palette had fewer that 256 entries
+    Changes:
+	- fixed a bunch of compiler warnings found with gcc 3.4
+	- bug reports should to go bugzilla.freedesktop.org
+</pre>
+<p>
+The MD5 checksums are:
+</p>
+<pre>
+tbd
+</pre>
+
+
+<h2>October 2, 2004</h2>
+<p>
+Mesa 6.2 has been released.
+This is a stable release which just fixes bugs since the 6.1 release.
+</p>
+<pre>
+    New:
+	- enabled GL_ARB_texture_rectangle (same as GL_NV_texture_rectangle)
+	- updated Doxygen support (Jose Fonseca)
+    Changes:
+	- some GGI driver updates (Christoph Egger, bug 1025977)
+    Bug fixes:
+	- Omit GL_ARB_texture_non_power_of_two from list of OpenGL 1.5 features
+	- fixed a few compilation issues on IRIX
+	- fixed a matrix classification bug (reported by Wes Bethel)
+	- we weren't reseting the vertex/fragment program error state
+	  before parsing (Dave Reveman)
+	- adjust texcoords for sampling texture rectangles (Dave Reveman)
+	- glGet*(GL_MAX_VERTEX_ATTRIBS_ARB) wasn't implemented
+	- repeated calls to glDeleteTexture(t) could lead to a crash
+	- fixed potential ref count bugs in VBOs and vertex/fragment programs
+	- spriteblast demo didn't handle window size changes correctly
+	- glTexSubImage didn't handle pixels=NULL correctly for PBOs
+	- fixed color index mode glDrawPixels bug (Karl Schultz)
+</pre>
+<p>
+The MD5 checksums are:
+</p>
+<pre>
+9e8f34b059272dbb8e1f2c968b33bbf0  MesaLib-6.2.tar.gz
+3d6a6362390b6a37d3cb2e615f3ac7db  MesaLib-6.2.tar.bz2
+6cfd7895d28e695c0dbbed9469564091  MesaLib-6.2.zip
+3e06e33b0809f09855cb60883b8bdfef  MesaDemos-6.2.tar.gz
+9d160009c3dfdb35fe7e4088c9ba8f85  MesaDemos-6.2.tar.bz2
+856f7ec947122eb3c8985ebc2f654dcd  MesaDemos-6.2.zip
+</pre>
+
+
+<h2>August 18, 2004</h2>
+<p>
+Mesa 6.1 has been released.
+This is a new development release (version 6.2 will be a stabilization
+release).
+</p>
+<pre>
+    New:
+	- Revamped Makefile system
+	- glXUseRotatedXFont() utility (see xdemos/xuserotfont.c)
+	- internal driver interface changes related to texture object
+	  allocation, vertex/fragment programs, BlendEquationSeparate, etc.
+	- option to walk triangle edges with double-precision floats
+	  (Justin Novosad of Discreet) (see config.h file)
+	- support for AUX buffers in software GLX driver
+	- updated glext.h to version 24 and glxext.h to version 6
+	- new MESA_GLX_FORCE_ALPHA and MESA_GLX_DEPTH_BITS env vars
+	- updated BeOS support (Philippe Houdoin)
+    Changes:
+	- fragment fog interpolation is perspective corrected now
+	- new glTexImage code, much cleaner, may be a bit faster
+    Bug fixes:
+	- glArrayElement in display lists didn't handle generic vertex attribs
+	- glFogCoord didn't always work properly
+	- ARB_fragment_program fog options didn't work
+	- frag prog TEX instruction no longer incorrectly divides s,t,r by q
+	- ARB frag prog TEX and TEXP instructions now use LOD=0
+	- glTexEnviv in display lists didn't work
+	- glRasterPos didn't do texgen or apply texture matrix
+	- GL_DOUBLE-valued vertex arrays were broken in some cases
+	- fixed texture rectangle edge/border sampling bugs
+	- sampling an incomplete texture in a fragment program would segfault
+	- glTexImage was missing a few error checks
+	- fixed some minor glGetTexParameter glitches
+	- GL_INTENSITY was mistakenly accepted as a <format> to glTexImage
+	- fragment program writes to RC/HC register were broken
+	- fixed a few glitches in GL_HP_occlusion_test extension
+	- glBeginQueryARB and glEndQueryARB didn't work inside display lists
+	- vertex program state references were broken
+	- fixed triangle color interpolation bug on AIX (Shane Blackett)
+	- fixed a number of minor memory leaks (bug #1002030)
+</pre>
+The MD5 checksums are:
+</p>
+<pre>
+c9284d295ebcd2e0486cc3cd54e5863c  MesaLib-6.1.tar.gz
+5de1f53ec0709f60fc68fdfed57351f3  MesaLib-6.1.tar.bz2
+483e77cac4789a5d36c42f3c0136d6d8  MesaLib-6.1.zip
+8c46cfa6f9732acc6f6c25724aad0246  MesaDemos-6.1.tar.gz
+89bfe0f6c69b39fd0ebd9fff481a4e9b  MesaDemos-6.1.tar.bz2
+161268531fcc6f0c5a056430ee97e0c1  MesaDemos-6.1.zip
+</pre>
+
+
+
 <h2>April 2, 2004</h2>
 
 <p>
@@ -831,6 +953,6 @@ source code</a>.</p>
 
 
 <hr>
-$Id: news.html,v 1.1 2004/11/02 23:26:09 matthieu Exp $
+$Id: news.html,v 1.2 2004/12/19 17:44:37 matthieu Exp $
 </body>
 </html>

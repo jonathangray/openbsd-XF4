@@ -302,6 +302,10 @@ int do_hello_world( int argc, char *argv[], const char *printername, const char 
     if( doPrint )
     {
       n = 0;
+      /* Override any geometry resource settings as XawPrintShell adjusts it's size
+       * to the current page siue when |XawPrintLAYOUTMODE_DRAWABLEAREA| or
+       * |XawPrintLAYOUTMODE_PAGESIZE| are used. */
+      XtSetArg(args[n], XtNgeometry,    "+0+0");                          n++;
       XtSetArg(args[n], XawNlayoutMode, XawPrintLAYOUTMODE_DRAWABLEAREA); n++;
       print_shell = XtCreatePopupShell("myprintshell", 
                                        xawPrintShellWidgetClass, 

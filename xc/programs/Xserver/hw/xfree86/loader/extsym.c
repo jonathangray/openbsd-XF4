@@ -66,7 +66,6 @@ LOOKUP extLookupTab[] = {
 #ifdef PANORAMIX
     SYMFUNC(XineramaRegisterConnectionBlockCallback)
     SYMFUNC(XineramaDeleteResource)
-    SYMVAR(noPanoramiXExtension)
     SYMVAR(PanoramiXNumScreens)
     SYMVAR(panoramiXdataPtr)
     SYMVAR(PanoramiXVisualTable)

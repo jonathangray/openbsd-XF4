@@ -26,6 +26,10 @@ XCOMM $XFree86: xc/lib/GL/mesa/src/tnl/Imakefile,v 1.8 2002/11/25 12:58:55 tsi E
 #define DoProfileLib NO
 #endif
 
+/* Large PIC tables needed for Solaris SPARC builds */
+#if (defined(SunArchitecture) && defined(SparcArchitecture))
+# define LargePICTable YES
+#endif
 
 #define MesaTnlBuildDir /**/
 #define NeedToLinkMesaSrc

@@ -1505,6 +1505,8 @@ static int __glXQueryContextInfo(Display *dpy, GLXContext ctx)
     if ( (priv->majorVersion > 1) || (priv->minorVersion >= 3) ) {
 	xGLXQueryContextReq * req;
 
+	GetReq(GLXQueryContext, req);
+
 	req->reqType = opcode;
 	req->glxCode = X_GLXQueryContext;
 	req->context = (unsigned int)(ctx->xid);

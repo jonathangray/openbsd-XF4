@@ -1,4 +1,4 @@
-<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" '/usr/share/sgml/docbook_4.2/docbook.dtd'>
+<#doc><!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" '/usr/share/sgml/docbook_4.2/docbook.dtd'>
 
 <!-- Process this file with DocBook tools to generate the output format
 (such as manual pages or HTML documents).
@@ -15,7 +15,7 @@ manual volume numbers.
 <refentry>
   <refmeta>
     <refentrytitle>xphelloworld</refentrytitle>
-    <manvolnum>__mansuffix__</manvolnum>
+    <manvolnum>__appmansuffix__</manvolnum>
   </refmeta>
   <refnamediv>
     <refname>xphelloworld</refname>
@@ -159,16 +159,16 @@ manual volume numbers.
         <!-- Xprint general references -->
         <member><citerefentry><refentrytitle>Xprint</refentrytitle><manvolnum>__miscmansuffix__</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>X11</refentrytitle><manvolnum>__miscmansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xplsprinters</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xplsprinters</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
 <!--
-        <member><citerefentry><refentrytitle>xphelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xphelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
 -->
-        <member><citerefentry><refentrytitle>xpxmhelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpawhelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpxthelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>xpsimplehelloworld</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>Xserver</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__mansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpxmhelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpawhelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpxthelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>xpsimplehelloworld</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>Xserver</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>Xprt</refentrytitle><manvolnum>__appmansuffix__</manvolnum></citerefentry></member>
         <!-- ToDO: Add manual pages for the single Xprint DDX implementations (PostScript/PDF/PCL/PCL-MONO/Raster/etc.) -->
         <member><citerefentry><refentrytitle>libXp</refentrytitle><manvolnum>__libmansuffix__</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>libXprintUtils</refentrytitle><manvolnum>__libmansuffix__</manvolnum></citerefentry></member>

@@ -87,8 +87,12 @@ void process_line (buffer)
     int i;
     char *cp;
 
-    len = strlen (buffer);
-
+    /* copy buffer since it may point to unwritable date */
+    len = strlen(buffer);
+    cp = chk_malloc(len + 1);
+    strcpy(cp, buffer);
+    buffer = cp;
+    
     for (i = 0; i < len; i++) {		/* look for blank lines */
 	register char c = buffer[i];
 	if (!(isspace(c) || c == '\n')) break;

@@ -680,6 +680,10 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #define BuildXevieLibrary	!BuildServersOnly
 #endif
 
+#ifndef BuildRootless
+#define BuildRootless	NO
+#endif
+
 #ifndef BuildXterm
 #define BuildXterm		BuildClients
 #endif
@@ -1234,6 +1238,14 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 #endif
 
+#ifndef RootlessDefines
+#if BuildRootless
+#define RootlessDefines -DROOTLESS
+#else
+#define RootlessDefines /**/
+#endif
+#endif
+
 #ifndef SitePervasiveExtensionDefines
 #define SitePervasiveExtensionDefines /**/
 #endif
@@ -1244,7 +1256,8 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 	XF86BigfontExtensionDefines DPMSDefines \
 	LowMemDefines XprintDefines XineramaDefines \
 	SitePervasiveExtensionDefines RenderDefines RandRDefines \
-	XfixesDefines XDamageDefines CompositeDefines XevieDefines
+	XfixesDefines XDamageDefines CompositeDefines XevieDefines \
+	RootlessDefines
 #endif
 #ifndef SiteExtensionDefines
 #define SiteExtensionDefines /**/

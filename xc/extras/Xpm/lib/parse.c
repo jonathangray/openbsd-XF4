@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/extras/Xpm/lib/parse.c,v 1.2.4.1 2004/09/15 15:47:39 daniel Exp $ */
+/* $XdotOrg: xc/extras/Xpm/lib/parse.c,v 1.4 2004/11/25 21:19:11 herrb Exp $ */
 /*
  * Copyright (C) 1989-95 GROUPE BULL
  *

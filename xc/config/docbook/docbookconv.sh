@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#set -x
+
 fatal_error()
 {
     echo "$1" 1>&2
@@ -97,8 +99,15 @@ MYCURRDIR="${PWD}"
         fi
         ;;
     "man")
-        cp "${MYCURRDIR}/${infile}" "${infile}.tmp"
-        ${docbook2man} "${infile}.tmp"
+        if [ "${infile}" != "${infile%.sgml}" ] ; then
+          #cp "${MYCURRDIR}/${infile}" "${infile%.sgml}.xml"
+          #${docbook2man} --network "${infile%.sgml}.xml"
+          cp "${MYCURRDIR}/${infile}" "${infile}.tmp"
+          ${docbook2man} --network "${infile}.tmp"
+        else
+          cp "${MYCURRDIR}/${infile}" "${infile}.tmp"
+          ${docbook2man} --network "${infile}.tmp"
+        fi
         manfile="$(ls -1 ${infile%.*}.__*)"
 
         verbose_echo "manfile=${manfile}"
