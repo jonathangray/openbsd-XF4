@@ -1,6 +1,7 @@
 .\" Record Extension Protocol, v1.13
 .\" Use tbl, -ms and macros.t
 .\" $Xorg: record.ms,v 1.3 2000/08/17 19:42:36 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/Xext/record.ms,v 1.3 2004/09/03 16:18:21 kem Exp $
 .\" -----------------------------------------------
 .de Ip
 .IP \(bu 3
@@ -38,7 +39,7 @@
 .sp
 \fBX Consortium Standard\fP
 .sp
-\fBX Version 11, Release 6.4\fP
+\fBX Version 11, Release 6.8\fP
 .sp 6
 Martha Zimet
 Network Computing Devices, Inc.
@@ -97,8 +98,8 @@ from the X Consortium.
 .nr LT 6.5i
 .nr FL 6.5i
 .ll 6.5i
-.EH '\fBRecord Extension Protocol, Version 1.13\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX11, Release 6.4\fP''\fBRecord Extension Protocol, Version 1.13\fP'
+.EH '\fBRecord Extension Protocol, Version 1.13\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX11, Release 6.8\fP''\fBRecord Extension Protocol, Version 1.13\fP'
 .bp 1
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
@@ -114,7 +115,7 @@ Several proposals have been written over the past few years that address some
 of the issues surrounding the recording and playback of user actions
 in the X Window System\**:
 .FS
-\fIX Window System\fP is a trademark of X Consortium, Inc.
+\fIX Window System\fP is a trademark of The Open Group.
 .FE
 .Ip
 \fISome Proposals for a Minimal X11 Testing Extension\fP,

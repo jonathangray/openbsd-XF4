@@ -1,40 +1,12 @@
+.\" $XdotOrg: xc/doc/specs/CTEXT/ctext.tbl.ms,v 1.3 2004/09/03 16:18:19 kem Exp $
 .\" Use tbl and -ms
-.\"
-.\" $XFree86: xc/doc/specs/CTEXT/ctext.tbl.ms,v 1.2 2000/12/11 19:39:40 dawes Exp $
-.\"
-.\" --- bP --- bulleted paragraph macro
-.\"
-.de bP
-.IP \(bu 4
-..
-.\"
-.\" --- cT --- centered title; centers $1, adds TOC entry unless $2 is "no"
-.\"
-.de cT
-\\&		\" filler so that the following .sp really leaves a space
-.sp 1
-.ce 1
-\\s+1\\fB\\$1\\fP\\s-1
-.sp 1
-.if !'\\$2'no' \{\
-.XS \\n(PN
-\\$1
-.XE
-\}
-..
 .sp 8
-.ce 9
+.ce 5
 \s+2\fBCompound Text Encoding\fP\s-2
-.sp 6p
-Version 1.1.xf86.1
-XFree86 4.0.2
-XFree86, Inc.
-.sp 6p
-.I "based on"
 .sp 6p
 Version 1.1
 X Consortium Standard
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 Robert W. Scheifler
 .sp 2
 .LP
@@ -249,7 +221,7 @@ _
 .sp 4p
 _
 .sp 6p
-04/02	94	7-bit ASCII graphics (ANSI X3.4-1968),
+4/02	94	7-bit ASCII graphics (ANSI X3.4-1968),
 		Left half of ISO 8859 sets
 04/09	94	Right half of JIS X0201-1976 (reaffirmed 1984),
 		8-Bit Alphanumeric-Katakana Code
@@ -265,16 +237,10 @@ _
 04/08	96	Right half of ISO 8859-8, Latin/Hebrew alphabet
 04/12	96	Right half of ISO 8859-5, Latin/Cyrillic alphabet
 04/13	96	Right half of ISO 8859-9, Latin alphabet No. 5
-05/06	96	Right half of ISO 8859-10, Latin alphabet No. 6
-05/09	96	Right half of ISO 8859-13, Latin alphabet No. 7 (Baltic Rim)
-05/15	96	Right half of ISO 8859-14, Latin alphabet No. 8 (Celtic)
-06/02	96	Right half of ISO 8859-15, Latin alphabet No. 9
-06/06	96	Right half of ISO 8859-16, Latin alphabet No. 10
 .sp 6p
 04/01	94\u\s-22\s+2\d	GB2312-1980, China (PRC) Hanzi
-04/02	94\u\s-22\s+2\d	JIS X0208-1983/1990, Japanese Graphic Character Set
+04/02	94\u\s-22\s+2\d	JIS X0208-1983, Japanese Graphic Character Set
 04/03	94\u\s-22\s+2\d	KS C5601-1987, Korean Graphic Character Set
-04/02	94\u\s-22\s+2\d	JIS X0212-1990, Supplementary Japanese Graphic Character Set
 .sp 6p
 _
 .TE
@@ -335,32 +301,8 @@ for example,
 they may contain octets in the C0 and C1 ranges, including 00/00, and
 octets comprising a given character may differ in their most significant bit.
 .LP
-[Except for UTF-8,
-ISO-registered ``other coding systems'' are not used in Compound Text;
+[ISO-registered ``other coding systems'' are not used in Compound Text;
 extended segments are the only mechanism for non-2022 encodings.]
-.NH 1
-The UTF-8 encoding
-.LP
-Unicode characters that are not contained in one of the approved standard
-encodings can be encoded using the UTF-8 encoding. The following escape
-sequences are used:
-.RS
-.TS
-l l.
-01/11 02/05 04/07	switch into UTF-8 mode
-01/11 02/05 04/00	return from UTF-8 mode
-.TE
-.RE
-.LP
-The first is the ISO registered sequence for UTF-8 (ISO-IR-196), the second
-is the ISO-2022 ``standard return'' sequence. While in UTF-8 mode, the UTF-8
-encoding replaces the currently designated GL and GR encodings. After return
-from UTF-8 mode, the previously designated GL and GR encodings are
-reactivated.
-.LP
-[This is the only ``other coding system'' used in Compound Text.]
-.LP
-[This is an XFree86 extension introduced in XFree86 4.0.2.]
 .NH 1
 Directionality
 .LP
@@ -434,16 +376,9 @@ ISO8859-6	ISO 8859-6	Latin/Arabic alphabet
 ISO8859-7	ISO 8859-7	Latin/Greek alphabet
 ISO8859-8	ISO 8859-8	Latin/Hebrew alphabet
 ISO8859-9	ISO 8859-9	Latin alphabet No. 5
-ISO8859-10	ISO 8859-10	Latin alphabet No. 6
-ISO8859-13	ISO 8859-13	Latin alphabet No. 7 (Baltic Rim)
-ISO8859-14	ISO 8859-14	Latin alphabet No. 8 (Celtic)
-ISO8859-15	ISO 8859-15	Latin alphabet No. 9
-ISO8859-16	ISO 8859-16	Latin alphabet No. 10
 JISX0201.1976-0	JIS X0201-1976 (reaffirmed 1984)	8-bit Alphanumeric-Katakana Code
 GB2312.1980-0	GB2312-1980, GL encoding	China (PRC) Hanzi
 JISX0208.1983-0	JIS X0208-1983, GL encoding	Japanese Graphic Character Set
-JISX0208.1990-0	JIS X0208-1990, GL encoding	Japanese Graphic Character Set
-JISX0212.1990-0	JIS X0212-1990, GL encoding	Supplementary Japanese Graphic Character Set
 KSC5601.1987-0	KS C5601-1987, GL encoding	Korean Graphic Character Set
 .sp 6p
 _
@@ -513,28 +448,3 @@ If a Compound Text string does not match the specification here (e.g., uses
 undefined control characters, or undefined control sequences, or incorrectly
 formatted extended segments), it is best to treat the entire string as invalid,
 except as indicated by a version control sequence.
-.bp
-.\" Set registers to number the appendixes A.1, B.1, C.1, ...
-.nr H1 0
-.af H1 A
-.cT "Appendix A" no
-.nH 1 "Revision History"
-.LP
-This appendix describes the revision history of this document and
-summarizes the incompatibilities between this and earlier versions.
-.nH 2 "Version 1.1"
-.LP
-Version 1.1 is the original X11 specification.
-.nH 2 "Version 1.1.xf86.1"
-.LP
-Version 1.1.xf86.1 was released with XFree86 4.0.2 in December 2000.
-It adds the following changes:
-.bP
-Added ISO 8859-10,13,14,15,16 and JIS X0212 to the list of standard
-encodings. Mention the 1990 revision of JIS X0208 as an alternative to
-the 1983 edition.
-.bP
-Added ISO8859-10, ISO8859-13, ISO8859-14, ISO8859-15, ISO8859-16,
-JISX0208.1990-0, JISX0212.1990-0 to the list of font charsets.
-.bP
-The section about UTF-8 encoding was added.

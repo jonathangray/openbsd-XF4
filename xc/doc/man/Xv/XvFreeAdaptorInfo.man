@@ -1,5 +1,5 @@
 .TH XvFreeAdaptorInfo 3X __vendorversion__
-.\" $XFree86: xc/doc/man/Xv/XvFreeAdaptorInfo.man,v 1.5 2001/01/27 18:20:35 dawes Exp $
+.\" $XFree86: xc/doc/man/Xv/XvFreeAdaptorInfo.man,v 1.4 1999/03/02 11:49:13 dawes Exp $
 .SH Name
 XvFreeAdaptorInfo \- free adaptor information 
 .\"

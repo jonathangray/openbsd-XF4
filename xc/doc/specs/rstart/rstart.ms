@@ -1,4 +1,4 @@
-.\" $XFree86: xc/doc/specs/rstart/rstart.ms,v 1.2 2001/05/29 18:14:12 dawes Exp $
+.\" $XFree86$
 .ds iL Brown
 .ds iI J.
 .ds iO Quarterdeck Office Systems

@@ -1,4 +1,5 @@
 .\" $Xorg: protocol.ms,v 1.3 2000/08/17 19:42:40 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/Xi/protocol.ms,v 1.3 2004/09/03 16:18:22 kem Exp $
 .\" Input Extension
 .EH ''''
 .OH ''''
@@ -17,7 +18,7 @@ Version 1.0
 .sp 1
 X Consortium Standard
 .sp 1
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .sp 16
 .ps 15
 \fBMark Patrick\0\0\0\0Ardent Computer
@@ -62,12 +63,12 @@ Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 .sp 3
-\fIX Window System\fP is a trademark of X Consortium, Inc.
+\fIX Window System\fP is a trademark of The Open Group.
 .ps
 .vs
 .bp 1
-.EH '\fBX Input Extension Protocol Specification\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Input Extension Protocol Specification\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Input Extension Protocol Specification\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Input Extension Protocol Specification\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
 .\"  Force the heading counter for level 1 to one

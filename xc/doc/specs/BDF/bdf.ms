@@ -6,9 +6,9 @@
 
 \s+1\fBVersion 2.1\fP\s-1
 
-X Consortium Standard
+X Window System Standard
 
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .sp 3
 Copyright 1984, 1987, 1988 Adobe Systems, Inc.
 .sp 1

@@ -1,5 +1,4 @@
 .\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
-.\" Copyright \(co 2000  The XFree86 Project, Inc.
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -40,8 +39,6 @@
 .\" Digital and Tektronix makes no representations about the suitability
 .\" of this documentation for any purpose.
 .\" It is provided ``as is'' without express or implied warranty.
-.\"
-.\" $XFree86: xc/doc/specs/X11/CH13,v 1.5 2000/12/04 18:49:17 dawes Exp $
 .\" 
 \&
 .sp 1
@@ -348,9 +345,6 @@ Encoding of supplied/returned
 T}
 		text (some WM_ property
 		text in environment locale)
-	T{
-.PN Xutf8SetWMProperties
-T}
 .sp 6p
 T{
 .PN setlocale
@@ -363,16 +357,10 @@ T}
 .PN XwcTextPropertyToTextList
 T}
 	T{
-.PN Xutf8TextPropertyToTextList
-T}
-	T{
 .PN XmbTextListToTextProperty
 T}
 	T{
 .PN XwcTextListToTextProperty
-T}
-	T{
-.PN Xutf8TextListToTextProperty
 T}
 .sp
 	Text Input:
@@ -419,9 +407,6 @@ T}
 T}	T{
 Encoding of returned text
 T}
-	T{
-.PN Xutf8LookupString
-T}
 .sp
 	Text Drawing:
 .sp 6p
@@ -465,12 +450,6 @@ T}	T{
 Locale of supplied text
 T}
 	T{
-.PN Xutf8DrawText ,
-and so on
-T}	T{
-Locale-dependent metrics
-T}
-	T{
 .PN XExtentsOfFontSet ,
 and so on
 T}	T{
@@ -480,10 +459,7 @@ T}
 .PN XmbTextExtents ,
 T}
 	T{
-.PN XwcTextExtents ,
-T}
-	T{
-.PN Xutf8TextExtents , 
+.PN XwcTextExtents , 
 and so on
 T}
 .sp
@@ -771,11 +747,7 @@ function presents a variable argument list programming interface
 for setting properties or features of the specified output method.
 This function returns NULL if it succeeds;
 otherwise,
-it returns the name of the first argument that could not be set.
-Xlib does not attempt to set arguments from the supplied list that
-follow the failed argument;
-all arguments in the list preceding the failed argument have been set
-correctly.
+it returns the name of the first argument that could not be obtained.
 .LP
 No standard arguments are currently defined by Xlib.
 .LP
@@ -1856,7 +1828,7 @@ returns a valid
 .PN XFontSet
 to font_set.
 .LP
-When an Xmb/wc/utf8 drawing or measuring function is called with an
+When an Xmb/wc drawing or measuring function is called with an
 .PN XFontSet
 that has missing charsets, some characters in the locale will not be
 drawable.
@@ -1929,7 +1901,7 @@ The
 .PN XFontsOfFontSet
 function returns a list of one or more 
 .PN XFontStructs
-and font names for the fonts used by the Xmb/wc/utf8 layer
+and font names for the fonts used by the Xmb and Xwc layers
 for the given font set.
 A list of pointers to the
 .PN XFontStruct
@@ -2108,10 +2080,9 @@ Regardless of the character rendering order,
 the origins of all characters are on the primary draw direction side
 of the drawing origin.
 The screen location of a particular character image may be determined with
-.PN XmbTextPerCharExtents ,
-.PN XwcTextPerCharExtents
+.PN XmbTextPerCharExtents
 or
-.PN Xutf8TextPerCharExtents .
+.PN XwcTextPerCharExtents .
 .LP
 The drawing functions are allowed to implement context-dependent
 rendering, where the glyphs drawn for a string are not simply a
@@ -2225,10 +2196,9 @@ The max_ink_extent member gives the maximum extent, over all drawable characters
 the rectangles that bound the character glyph image drawn in the
 foreground color, relative to a constant origin.
 See 
-.PN XmbTextExtents ,
-.PN XwcTextExtents
+.PN XmbTextExtents
 and
-.PN Xutf8TextExtents
+.PN XwcTextExtents
 for detailed semantics.
 .LP
 The max_logical_extent member gives the maximum extent,
@@ -2247,10 +2217,9 @@ the string's extent by an amount other than that character's
 individual extent.
 .LP
 The rectangles for a given character in a string can be obtained from
-.PN XmbPerCharExtents ,
-.PN XwcPerCharExtents
+.PN XmbPerCharExtents
 or
-.PN Xutf8PerCharExtents .
+.PN XwcPerCharExtents .
 .LP
 .sp
 To obtain the maximum extents structure given an
@@ -2272,7 +2241,7 @@ The
 .PN XExtentsOfFontSet
 function returns an
 .PN XFontSetExtents
-structure for the fonts used by the Xmb/wc/utf8 layer
+structure for the fonts used by the Xmb and Xwc layers
 for the given font set.
 .LP
 The 
@@ -2288,13 +2257,11 @@ Until freed, its contents will not be modified by Xlib.
 .sp
 To obtain the escapement in pixels of the specified text as a value,
 use
-.PN XmbTextEscapement ,
-.PN XwcTextEscapement
+.PN XmbTextEscapement
 or 
-.PN Xutf8TextEscapement .
+.PN XwcTextEscapement .
 .IN "XmbTextEscapement" "" "@DEF@"
 .IN "XwcTextEscapement" "" "@DEF@"
-.IN "Xutf8TextEscapement" "" "@DEF@"
 .sM
 .FD 0
 int XmbTextEscapement\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
@@ -2314,15 +2281,6 @@ int XwcTextEscapement\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_wchars\fP\^)
 .br
       int \fInum_wchars\fP\^;
 .FN
-.FD 0
-int Xutf8TextEscapement\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
-.br
-      XFontSet \fIfont_set\fP\^;
-.br
-      char *\fIstring\fP\^;
-.br
-      int \fInum_bytes\fP\^;
-.FN
 .IP \fIfont_set\fP 1i
 Specifies the font set.
 .IP \fIstring\fP 1i
@@ -2334,10 +2292,9 @@ Specifies the number of characters in the string argument.
 .LP
 .eM
 The
-.PN XmbTextEscapement ,
-.PN XwcTextEscapement
+.PN XmbTextEscapement
 and
-.PN Xutf8TextEscapement
+.PN XwcTextEscapement
 functions return the escapement in pixels of the specified string as a value,
 using the fonts loaded for the specified font set.
 The escapement is the distance in pixels in the primary draw
@@ -2348,23 +2305,15 @@ dependent on the supplied string.
 Regardless of the character rendering order,
 the escapement is always positive.
 .LP
-The function
-.PN Xutf8TextEscapement
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
-.LP
 .sp
 To obtain the overall_ink_return and overall_logical_return arguments,
 the overall bounding box of the string's image, and a logical bounding box,
 use
-.PN XmbTextExtents ,
-.PN XwcTextExtents
-or
-.PN Xutf8TextExtents .
+.PN XmbTextExtents
+ or
+.PN XwcTextExtents .
 .IN "XmbTextExtents" "" "@DEF@"
 .IN "XwcTextExtents" "" "@DEF@"
-.IN "Xutf8TextExtents" "" "@DEF@"
 .sM
 .FD 0
 int XmbTextExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^, \fIoverall_ink_return\fP\^, \fIoverall_logical_return\fP\^)
@@ -2393,19 +2342,6 @@ int XwcTextExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_wchars\fP\^,
 .br
       XRectangle *\fIoverall_logical_return\fP\^;
 .FN
-.FD 0
-int Xutf8TextExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^, \fIoverall_ink_return\fP\^, \fIoverall_logical_return\fP\^)
-.br
-      XFontSet \fIfont_set\fP\^;
-.br
-      char *\fIstring\fP\^;
-.br
-      int \fInum_bytes\fP\^;
-.br
-      XRectangle *\fIoverall_ink_return\fP\^;
-.br
-      XRectangle *\fIoverall_logical_return\fP\^;
-.FN
 .IP \fIfont_set\fP 1i
 Specifies the font set.
 .IP \fIstring\fP 1i
@@ -2422,19 +2358,17 @@ Returns the overall logical \*(Ov.
 .LP
 .eM
 The
-.PN XmbTextExtents ,
-.PN XwcTextExtents
+.PN XmbTextExtents
 and
-.PN Xutf8TextExtents
+.PN XwcTextExtents
 functions set the components of the specified overall_ink_return and
 overall_logical_return
 arguments to the overall bounding box of the string's image
 and a logical bounding box for spacing purposes, respectively.
 They return the value returned by 
-.PN XmbTextEscapement ,
-.PN XwcTextEscapement
+.PN XmbTextEscapement
 or
-.PN Xutf8TextEscapement .
+.PN XwcTextEscapement .
 These metrics are relative to the drawing origin of the string,
 using the fonts loaded for the specified font set.
 .LP
@@ -2475,22 +2409,14 @@ or to justify words, but for context-dependent rendering,
 the client should not assume that it can redraw the character by itself
 and get the same rendering.
 .LP
-The function
-.PN Xutf8TextExtents
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
-.LP
 .sp
 To obtain per-character information for a text string,
 use
-.PN XmbTextPerCharExtents ,
-.PN XwcTextPerCharExtents
+.PN XmbTextPerCharExtents
 or
-.PN Xutf8TextPerCharExtents .
+.PN XwcTextPerCharExtents .
 .IN "XmbTextPerCharExtents" "" "@DEF@"
 .IN "XwcTextPerCharExtents" "" "@DEF@"
-.IN "Xutf8TextPerCharExtents" "" "@DEF@"
 .sM
 .FD 0
 Status XmbTextPerCharExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^, \fIink_array_return\fP\^,
@@ -2538,29 +2464,6 @@ Status XwcTextPerCharExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_wchars
 .br
       XRectangle *\fIoverall_logical_return\fP\^;
 .FN
-.FD 0
-Status Xutf8TextPerCharExtents\^(\^\fIfont_set\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^, \fIink_array_return\fP\^,
-.br
-           \fIlogical_array_return\fP\^, \fIarray_size\fP\^, \fInum_chars_return\fP\^, \fIoverall_ink_return\fP\^, \fIoverall_logical_return\fP\^)
-.br
-      XFontSet \fIfont_set\fP\^;
-.br
-      char *\fIstring\fP\^;
-.br
-      int \fInum_bytes\fP\^;
-.br
-      XRectangle *\fIink_array_return\fP\^;
-.br
-      XRectangle *\fIlogical_array_return\fP\^;
-.br
-      int \fIarray_size\fP\^;
-.br
-      int *\fInum_chars_return\fP\^;
-.br
-      XRectangle *\fIoverall_ink_return\fP\^;
-.br
-      XRectangle *\fIoverall_logical_return\fP\^;
-.FN
 .IP \fIfont_set\fP 1i
 Specifies the font set.
 .IP \fIstring\fP 1i
@@ -2586,10 +2489,9 @@ Returns the overall logical \*(Ov.
 .LP
 .eM
 The
-.PN XmbTextPerCharExtents ,
-.PN XwcTextPerCharExtents
+.PN XmbTextPerCharExtents
 and
-.PN Xutf8TextPerCharExtents
+.PN XwcTextPerCharExtents
 functions return the text dimensions of each character of the specified text,
 using the fonts loaded for the specified font set.
 Each successive element of ink_array_return and logical_array_return
@@ -2632,22 +2534,14 @@ and num_chars_return is set to the number of rectangles required.
 Otherwise, the functions return a nonzero value.
 .LP
 If the overall_ink_return or overall_logical_return argument is non-NULL,
-.PN XmbTextPerCharExtents ,
-.PN XwcTextPerCharExtents
+.PN XmbTextPerCharExtents
 and 
-.PN Xutf8TextPerCharExtents
+.PN XwcTextPerCharExtents
 return the maximum extent of the string's metrics to overall_ink_return
 or overall_logical_return, as returned by 
-.PN XmbTextExtents ,
-.PN XwcTextExtents
+.PN XmbTextExtents
 or 
-.PN Xutf8TextExtents .
-.LP
-The function
-.PN Xutf8TextPerCharExtents
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
+.PN XwcTextExtents .
 .NH 3
 Drawing Text Using Font Sets
 .XS
@@ -2663,8 +2557,6 @@ and
 .PN XDrawImageString
 except that they work with font sets instead of single fonts
 and interpret the text based on the locale of the font set
-(for functions whose name starts with Xmb or Xwc) or as UTF-8 encoded
-text (for functions whose name starts with Xutf8),
 instead of treating the bytes of the string as direct font indexes.
 See section 8.6 for details of the use of Graphics Contexts (GCs)
 and possible protocol errors.
@@ -2678,10 +2570,9 @@ the font in the GC is ignored and may be modified by the functions.
 No validation that all fonts conform to some width rule is performed.
 .LP
 The text functions
-.PN XmbDrawText ,
-.PN XwcDrawText
+.PN XmbDrawText
 and
-.PN Xutf8DrawText
+.PN XwcDrawText
 use the following structures:
 .LP
 .IN "XmbTextItem" "" "@DEF@"
@@ -2712,13 +2603,11 @@ typedef struct {
 .eM
 .sp
 To draw text using multiple font sets in a given drawable, use
-.PN XmbDrawText ,
-.PN XwcDrawText
+.PN XmbDrawText
 or
-.PN Xutf8DrawText .
+.PN XwcDrawText .
 .IN "XmbDrawText" "" "@DEF@"
 .IN "XwcDrawText" "" "@DEF@"
-.IN "Xutf8DrawText" "" "@DEF@"
 .sM
 .FD 0
 void XmbDrawText\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIitems\fP\^, \fInitems\fP\^)
@@ -2750,21 +2639,6 @@ void XwcDrawText\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\
 .br
       int \fInitems\fP\^;
 .FN
-.FD 0
-void Xutf8DrawText\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIitems\fP\^, \fInitems\fP\^)
-.br
-      Display *\fIdisplay\fP\^;
-.br
-      Drawable \fId\fP\^;
-.br
-      GC \fIgc\fP\^;
-.br
-      int \fIx\fP\^, \fIy\fP\^;
-.br
-      XmbTextItem *\fIitems\fP\^;
-.br
-      int \fInitems\fP\^;
-.FN
 .IP \fIdisplay\fP 1i
 Specifies the connection to the X server.
 .IP \fId\fP 1i
@@ -2784,10 +2658,9 @@ Specifies the number of text items in the array.
 .LP
 .eM
 The
-.PN XmbDrawText ,
-.PN XwcDrawText 
+.PN XmbDrawText
 and 
-.PN Xutf8DrawText 
+.PN XwcDrawText 
 functions allow complex spacing and font set shifts between text strings.
 Each text item is processed in turn, with the origin of a text
 element advanced in the primary draw direction by the escapement of the
@@ -2802,19 +2675,18 @@ Leading text items with a font_set member set to
 .PN None
 will not be drawn.
 .LP
-.PN XmbDrawText ,
-.PN XwcDrawText
+.PN XmbDrawText
 and
-.PN Xutf8DrawText
+.PN XwcDrawText
 do not perform any context-dependent rendering between text segments.
 Clients may compute the drawing metrics by passing each text segment to
-.PN XmbTextExtents ,
-.PN XwcTextExtents ,
-.PN Xutf8TextExtents
-or
-.PN XmbTextPerCharExtents ,
+.PN XmbTextExtents
+and
+.PN XwcTextExtents
+or 
+.PN XmbTextPerCharExtents
+and
 .PN XwcTextPerCharExtents .
-.PN Xutf8TextPerCharExtents .
 When the 
 .PN XFontSet
 has missing charsets, each unavailable character is drawn 
@@ -2822,21 +2694,13 @@ with the default string returned by
 .PN XCreateFontSet .
 The behavior for an invalid codepoint is undefined.
 .LP
-The function
-.PN Xutf8DrawText
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
-.LP
 .sp
 To draw text using a single font set in a given drawable, use
-.PN XmbDrawString ,
-.PN XwcDrawString
+.PN XmbDrawString
 or
-.PN Xutf8DrawString .
+.PN XwcDrawString .
 .IN "XmbDrawString" "" "@DEF@"
 .IN "XwcDrawString" "" "@DEF@"
-.IN "Xutf8DrawString" "" "@DEF@"
 .sM
 .FD 0
 void XmbDrawString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
@@ -2872,23 +2736,6 @@ void XwcDrawString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^,
 .br
       int \fInum_wchars\fP\^;
 .FN
-.FD 0
-void Xutf8DrawString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
-.br
-      Display *\fIdisplay\fP\^;
-.br
-      Drawable \fId\fP\^;
-.br
-      XFontSet \fIfont_set\fP\^;
-.br
-      GC \fIgc\fP\^;
-.br
-      int \fIx\fP\^, \fIy\fP\^;
-.br
-      char *\fIstring\fP\^;
-.br
-      int \fInum_bytes\fP\^;
-.FN
 .IP \fIdisplay\fP 1i
 Specifies the connection to the X server.
 .IP \fId\fP 1i
@@ -2912,10 +2759,9 @@ Specifies the number of characters in the string argument.
 .LP
 .eM
 The
-.PN XmbDrawString ,
-.PN XwcDrawString
+.PN XmbDrawString
 and
-.PN Xutf8DrawString
+.PN XwcDrawString
 functions draw the specified text with the foreground pixel.
 When the 
 .PN XFontSet
@@ -2924,21 +2770,13 @@ with the default string returned by
 .PN XCreateFontSet .
 The behavior for an invalid codepoint is undefined.
 .LP
-The function
-.PN Xutf8DrawString
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
-.LP
 .sp
 To draw image text using a single font set in a given drawable, use
-.PN XmbDrawImageString ,
-.PN XwcDrawImageString
+.PN XmbDrawImageString
 or
-.PN Xutf8DrawImageString .
+.PN XwcDrawImageString .
 .IN "XmbDrawImageString" "" "@DEF@"
 .IN "XwcDrawImageString" "" "@DEF@"
-.IN "Xutf8DrawImageString" "" "@DEF@"
 .sM
 .FD 0
 void XmbDrawImageString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
@@ -2974,23 +2812,6 @@ void XwcDrawImageString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\
 .br
       int \fInum_wchars\fP\^;
 .FN
-.FD 0
-void Xutf8DrawImageString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
-.br
-      Display *\fIdisplay\fP\^;
-.br
-      Drawable \fId\fP\^;
-.br
-      XFontSet \fIfont_set\fP\^;
-.br
-      GC \fIgc\fP\^;
-.br
-      int \fIx\fP\^, \fIy\fP\^;
-.br
-      char *\fIstring\fP\^;
-.br
-      int \fInum_bytes\fP\^;
-.FN
 .IP \fIdisplay\fP 1i
 Specifies the connection to the X server.
 .IP \fId\fP 1i
@@ -3014,17 +2835,15 @@ Specifies the number of characters in the string argument.
 .LP
 .eM
 The
-.PN XmbDrawImageString ,
-.PN XwcDrawImageString
+.PN XmbDrawImageString
 and
-.PN Xutf8DrawImageString
+.PN XwcDrawImageString
 functions fill a destination rectangle with the background pixel defined
 in the GC and then paint the text with the foreground pixel.
 The filled rectangle is the rectangle returned to overall_logical_return by
-.PN XmbTextExtents ,
-.PN XwcTextExtents
+.PN XmbTextExtents
 or 
-.PN Xutf8TextExtents
+.PN XwcTextExtents
 for the same text and 
 .PN XFontSet .
 .LP
@@ -3034,12 +2853,6 @@ has missing charsets, each unavailable character is drawn
 with the default string returned by 
 .PN XCreateFontSet .
 The behavior for an invalid codepoint is undefined.
-.LP
-The function
-.PN Xutf8TextExtents
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
 .NH 2
 Input Methods
 .XS
@@ -3382,10 +3195,9 @@ Getting Keyboard Input
 .LP
 To obtain characters from an input method,
 a client must call the function
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or 
-.PN Xutf8LookupString
+.PN XwcLookupString
 with an input context created from that input method.
 Both a locale and display are bound to an input method when it is opened,
 and an input context inherits this locale and display.
@@ -3393,9 +3205,7 @@ Any strings returned by
 .PN XmbLookupString
 or
 .PN XwcLookupString
-will be encoded in that locale. Strings returned by
-.PN Xutf8LookupString
-are encoded in UTF-8.
+will be encoded in that locale. 
 .NH 4 
 Focus Management
 .XS
@@ -3403,10 +3213,9 @@ Focus Management
 .XE
 .LP
 For each text entry area in which the
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString
+.PN XwcLookupString
 functions are used,
 there will be an associated input context.
 .LP
@@ -3538,10 +3347,9 @@ Event Filtering
 A filtering mechanism is provided to allow input methods
 to capture X events transparently to clients.
 It is expected that toolkits (or clients) using
-.PN XmbLookupString ,
-.PN XwcLookupString 
+.PN XmbLookupString
 or
-.PN Xutf8LookupString
+.PN XwcLookupString 
 will call this filter at some point in the event processing mechanism
 to make sure that events needed by an input method can be filtered
 by that input method.
@@ -3578,10 +3386,9 @@ by the client itself, tightly coupled with the input method logic.
 .LP
 When the user enters a keystroke,
 the client calls
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString .
+.PN XwcLookupString .
 At this point, in the on-the-spot case,
 the echo of the keystroke in the preedit has not yet been done.
 Before returning to the client logic that handles the input characters,
@@ -3629,10 +3436,9 @@ As highlighted before, the input method architecture provides
 preediting, which supports a type of preprocessor input composition.
 In this case, composition consists of interpreting a sequence
 of key events and returning a committed string via 
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString .
+.PN XwcLookupString .
 This provides the basics for input methods.
 .LP
 In addition to preediting based on key events, a general framework
@@ -3703,10 +3509,9 @@ and starts editing again.
 .sp
 For this reason, an input method supporting this type of conversion
 should take notice of when the client calls
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 or
-.PN Xutf8ResetIC ,
+.PN XwcResetIC ,
 which is usually an indication of a context change.  
 .LP
 Context-sensitive conversions just need a copy of the client's text,
@@ -3714,10 +3519,9 @@ while other conversions replace the client's text with new text
 to achieve the reconversion or transliteration.   Yet in all
 cases the result of a conversion, either immediately or via preediting,
 is returned by the
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 and
-.PN Xutf8LookupString
+.PN XwcLookupString
 functions.
 .LP
 String conversion support is dependent on the availability of the 
@@ -4884,13 +4688,11 @@ events from the input method that are directed to the focus window.
 .LP
 .sp
 To reset the state of an input context to its initial state, use
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 or
-.PN Xutf8ResetIC .
+.PN XwcResetIC .
 .IN "XmbResetIC" "" "@DEF@"
 .IN "XwcResetIC" "" "@DE@"
-.IN "Xutf8ResetIC" "" "@DE@"
 .sM
 .FD 0
 char * XmbResetIC\^(\^\fIic\fP\^)
@@ -4902,11 +4704,6 @@ wchar_t * XwcResetIC\^(\^\fIic\fP\^)
 .br
       XIC \fIic\fP\^; 
 .FN
-.FD 0
-char * Xutf8ResetIC\^(\^\fIic\fP\^)
-.br
-      XIC \fIic\fP\^;
-.FN
 .IP \fIic\fP 1i
 Specifies the input context.
 .LP
@@ -4915,10 +4712,9 @@ When
 .PN XNResetState
 is set to
 .PN XIMInitialState ,
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 and
-.PN Xutf8ResetIC
+.PN XwcResetIC
 reset an input context to its initial state;
 when
 .PN XNResetState
@@ -4929,21 +4725,14 @@ In both cases, any input pending on that context is deleted.
 The input method is required to clear the preedit area, if any,
 and update the status accordingly.
 Calling 
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 or
-.PN Xutf8ResetIC
+.PN XwcResetIC
 does not change the focus.
 .LP
 The return value of
 .PN XmbResetIC
 is its current preedit string as a multibyte string.
-The return value of
-.PN XwcResetIC
-is its current preedit string as a wide character string.
-The return value of
-.PN Xutf8ResetIC
-is its current preedit string as an UTF-8 string.
 If there is any preedit text drawn or visible to the user,
 then these procedures must return a non-NULL string.
 If there is no visible preedit text, 
@@ -4952,12 +4741,6 @@ whether these procedures return a non-NULL string or NULL.
 .LP
 The client should free the returned string by calling
 .PN XFree .
-.LP
-The function
-.PN Xutf8ResetIC
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
 .LP
 .sp
 To get the input method associated with an input context, use
@@ -5493,10 +5276,9 @@ Reset State
 The
 .PN XNResetState
 argument specifies the state the input context will return to after calling
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 or
-.PN Xutf8ResetIC .
+.PN XwcResetIC .
 .LP
 The XIC state may be set to its initial state, as specified by the
 .PN XNPreeditState
@@ -5537,10 +5319,9 @@ T}
 If
 .PN XIMInitialState
 is set, then
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 and
-.PN Xutf8ResetIC
+.PN XwcResetIC
 will return to the initial
 .PN XNPreeditState
 state of the XIC.
@@ -5548,10 +5329,9 @@ state of the XIC.
 If
 .PN XIMPreserveState
 is set, then 
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 and
-.PN Xutf8ResetIC
+.PN XwcResetIC
 will preserve the current state of the XIC.
 .LP
 If
@@ -6025,10 +5805,9 @@ is set to
 the
 .PN XNPreeditState
 value specified at the creation time will be reflected as the initial state for
-.PN XmbResetIC ,
-.PN XwcResetIC
+.PN XmbResetIC
 and
-.PN Xutf8ResetIC .
+.PN XwcResetIC .
 .LP
 Because this XIC value is optional, a client should call
 .PN XGetIMValues
@@ -7225,13 +7004,11 @@ Getting Keyboard Input
 .LP
 To get composed input from an input method,
 use
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString .
+.PN XwcLookupString .
 .IN "XmbLookupString" "" "@DEF@"
 .IN "XwcLookupString" "" "@DEF@"
-.IN "Xutf8LookupString" "" "@DEF@"
 .sM
 .FD 0
 int XmbLookupString\^(\^\fIic\fP\^, \fIevent\fP\^, \fIbuffer_return\fP\^, \fIbytes_buffer\fP\^, \fIkeysym_return\fP\^, \fIstatus_return\fP\^)
@@ -7263,21 +7040,6 @@ int XwcLookupString\^(\^\fIic\fP\^, \fIevent\fP\^, \fIbuffer_return\fP\^, \fIbyt
 .br
       Status *\fIstatus_return\fP\^;
 .FN
-.FD 0
-int Xutf8LookupString\^(\^\fIic\fP\^, \fIevent\fP\^, \fIbuffer_return\fP\^, \fIbytes_buffer\fP\^, \fIkeysym_return\fP\^, \fIstatus_return\fP\^)
-.br
-      XIC \fIic\fP\^;
-.br
-      XKeyPressedEvent *\fIevent\fP;
-.br
-      char *\fIbuffer_return\fP\^;
-.br
-      int \fIbytes_buffer\fP\^;
-.br
-      KeySym *\fIkeysym_return\fP\^;
-.br
-      Status *\fIstatus_return\fP\^;
-.FN
 .IP \fIic\fP 1i
 Specifies the input context.
 .ds Ev key event to be used
@@ -7298,10 +7060,9 @@ Returns a value indicating what kind of data is returned.
 .LP
 .eM
 The
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 and
-.PN Xutf8LookupString
+.PN XwcLookupString
 functions return the string from the input method specified
 in the buffer_return argument.
 If no string is returned,
@@ -7314,9 +7075,7 @@ If both a string and a KeySym are returned,
 the KeySym value does not necessarily correspond to the string returned.
 .LP
 .PN XmbLookupString
-and
-.PN Xutf8LookupString
-return the length of the string in bytes, and
+returns the length of the string in bytes, and
 .PN XwcLookupString
 returns the length of the string in characters.
 Both
@@ -7324,9 +7083,7 @@ Both
 and
 .PN XwcLookupString
 return text in the encoding of the locale bound to the input method
-of the specified input context, and
-.PN Xutf8LookupString
-returns text in UTF-8 encoding.
+of the specified input context.
 .LP
 Each string returned by
 .PN XmbLookupString
@@ -7335,14 +7092,13 @@ and
 begins in the initial state of the encoding of the locale
 (if the encoding of the locale is state-dependent).
 .NT
-To ensure proper input processing,
+To insure proper input processing,
 it is essential that the client pass only 
 .PN KeyPress
 events to
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 and
-.PN Xutf8LookupString .
+.PN XwcLookupString .
 Their behavior when a client passes a 
 .PN KeyRelease
 event is undefined.
@@ -7350,7 +7106,7 @@ event is undefined.
 .LP
 Clients should check the status_return argument before
 using the other returned values.
-These three functions each return a value to status_return 
+These two functions both return a value to status_return 
 that indicates what has been returned in the other arguments.
 The possible values returned are:
 .TS
@@ -7359,10 +7115,9 @@ T{
 .PN XBufferOverflow
 T}	T{
 The input string to be returned is too large for the supplied buffer_return.
-The required size (for
-.PN XmbLookupString ,
-.PN Xutf8LookupString
-in bytes; for
+The required size
+.Pn ( XmbLookupString
+in bytes;
 .PN XwcLookupString
 in characters) is returned as the value of the function,
 and the contents of buffer_return and keysym_return are not modified.
@@ -7380,9 +7135,9 @@ T{
 .PN XLookupChars
 T}	T{
 Some input characters have been composed.
-They are placed in the buffer_return argument, using the encoding
-described above,
+They are placed in the buffer_return argument,
 and the string length is returned as the value of the function.
+The string is encoded in the locale bound to the input context.
 The content of the keysym_return argument is not modified.
 T}
 T{
@@ -7405,24 +7160,16 @@ T}
 .TE
 .LP
 It does not make any difference if the input context passed as an argument to
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 and
-.PN Xutf8LookupString
+.PN XwcLookupString
 is the one currently in possession of the focus or not.
 Input may have been composed within an input context before it lost the focus,
 and that input may be returned on subsequent calls to
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString
+.PN XwcLookupString
 even though it does not have any more keyboard focus.
-.LP
-The function
-.PN Xutf8LookupString
-is an XFree86 extension introduced in XFree86 4.0.2. Its presence is
-indicated by the macro
-.PN X_HAVE_UTF8_STRING .
 .NH 3
 Input Method Conventions
 .XS
@@ -7455,10 +7202,9 @@ A
 .PN KeyPress
 event with a KeyCode of zero is used exclusively as a
 signal that an input method has composed input that can be returned by
-.PN XmbLookupString ,
-.PN XwcLookupString
+.PN XmbLookupString
 or
-.PN Xutf8LookupString .
+.PN XwcLookupString .
 No other use is made of a 
 .PN KeyPress
 event with KeyCode of zero.

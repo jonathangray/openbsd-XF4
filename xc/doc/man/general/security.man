@@ -1,32 +1,36 @@
 .\" $Xorg: security.cpp,v 1.3 2000/08/17 19:42:05 cpqbld Exp $
+.\" $XdotOrg: xc/doc/man/general/security.man,v 1.3 2004/08/20 01:55:35 alanc Exp $
 .\" Copyright (c) 1993, 1994  X Consortium
+.\" Copyright 2004 Sun Microsystems, Inc.
 .\" 
-.\" Permission is hereby granted, free of charge, to any person obtaining
-.\" a copy of this software and associated documentation files (the
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the
 .\" "Software"), to deal in the Software without restriction, including
 .\" without limitation the rights to use, copy, modify, merge, publish,
-.\" distribute, sublicense, and/or sell copies of the Software, and to
-.\" permit persons to whom the Software is furnished to do so, subject to
-.\" the following conditions:
+.\" distribute, and/or sell copies of the Software, and to permit persons
+.\" to whom the Software is furnished to do so, provided that the above
+.\" copyright notice(s) and this permission notice appear in all copies of
+.\" the Software and that both the above copyright notice(s) and this
+.\" permission notice appear in supporting documentation.
 .\" 
-.\" The above copyright notice and this permission notice shall be
-.\" included in all copies or substantial portions of the Software.
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+.\" OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+.\" OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+.\" HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+.\" INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
+.\" FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+.\" NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+.\" WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\" 
-.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-.\" EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-.\" IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR
-.\" OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-.\" ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-.\" OTHER DEALINGS IN THE SOFTWARE.
+.\" Except as contained in this notice, the name of a copyright holder
+.\" shall not be used in advertising or otherwise to promote the sale, use
+.\" or other dealings in this Software without prior written authorization
+.\" of the copyright holder.
 .\" 
-.\" Except as contained in this notice, the name of the X Consortium shall
-.\" not be used in advertising or otherwise to promote the sale, use or
-.\" other dealings in this Software without prior written authorization
-.\" from the X Consortium.
+.\" X Window System is a trademark of The Open Group.
 .\"
-.\"
-.\" $XFree86: xc/doc/man/general/security.man,v 1.5 2003/07/09 15:27:25 tsi Exp $
+.\" $XFree86: xc/doc/man/general/security.man,v 1.4tsi Exp $
 .\"
 .nr )S 12
 .TH XSECURITY __miscmansuffix__ __xorgversion__
@@ -35,7 +39,7 @@ Xsecurity \- X display access control
 .SH SYNOPSIS
 .PP
 X provides mechanism for implementing many access control systems.
-The sample implementation includes five mechanisms:
+The sample implementation includes six mechanisms:
 .nf
 .br
 .ta 3.4i
@@ -44,7 +48,9 @@ The sample implementation includes five mechanisms:
     XDM-AUTHORIZATION-1	Secure DES based private-keys.
     SUN-DES-1	Based on Sun's secure rpc system.
     MIT-KERBEROS-5	Kerberos Version 5 user-to-user.
+    Server Interpreted	Server-dependent methods of access control
 .fi
+Not all of these are available in all builds or implementations.
 .SH "ACCESS SYSTEM DESCRIPTIONS"
 .IP "Host Access"
 Any client on a host in the host access control list is allowed access to
@@ -54,10 +60,14 @@ to a given machine, and is easy to use when the list of hosts used is small.
 This system does not work well when multiple people can log in to a single
 machine and mutual trust does not exist.
 The list of allowed hosts is stored in the X server and can be changed with
-the \fIxhost\fP command.
+the \fIxhost\fP command.   The list is stored in the server by network 
+address, not host names, so is not automatically updated if a host changes
+address while the server is running.
 When using the more secure mechanisms listed below, the host list is
 normally configured to be the empty list, so that only authorized
-programs can connect to the display.
+programs can connect to the display.   See the GRANTING ACCESS section of
+the \fIXserver\fP man page for details on how this list is initialized at
+server startup.
 .IP "MIT-MAGIC-COOKIE-1"
 When using MIT-MAGIC-COOKIE-1,
 the client sends a 128 bit "cookie"
@@ -158,9 +168,20 @@ For example,
 .fi
 adds "judy" from the Kerberos realm of the local machine, and "gildea"
 from the "x.org" realm.
+.IP "Server Interpreted"
+The Server Interpreted method provides two strings to the X server for
+entry in the access control list.  The first string represents the type 
+of entry, and the second string contains the value of the entry.  These
+strings are interpreted by the server and different implementations and
+builds may support different types of entries.  The types supported in
+the sample implementation are defined in the SERVER INTERPRETED ACCESS
+TYPES section below.   Entries of this type can be manipulated via
+\fIxhost\fP.  For example to add a Server Interpreted entry of type
+localuser with a value of root, the command is \fBxhost +si:localuser:root\fP.
 .SH "THE AUTHORIZATION FILE"
 .PP
-Except for Host Access control, each of these systems uses data stored in
+Except for Host Access control and Server Interpreted Access Control, each of 
+these systems uses data stored in
 the \fI.Xauthority\fP file to generate the correct authorization information
 to pass along to the X server at connection setup.  MIT-MAGIC-COOKIE-1 and
 XDM-AUTHORIZATION-1 store secret data in the file; so anyone who can read
@@ -230,6 +251,39 @@ The data of the MIT-KERBEROS-5 entry is the credentials cache name and
 has the form ``UU:FILE:\fIfilename\fP'', where \fIfilename\fP is the
 name of the credentials cache file created by xdm.  Note again that
 this form is \fInot\fP used by clients.
+.SH "SERVER INTERPRETED ACCESS TYPES"
+The sample implementation includes several Server Interpreted mechanisms:
+.nf
+.br
+.ta 3.4i
+    IPv6	IPv6 literal addresses
+    hostname	Network host name
+    localuser	Local connection user id
+    localgroup	Local connection group id
+.fi
+.IP "IPv6"
+A literal IPv6 address as defined in IETF RFC 3513.
+.IP "hostname"
+The value must be a hostname as defined in IETF RFC 2396. Due to Mobile IP
+and dynamic DNS, the name service is consulted at connection
+authentication time, unlike the traditional host access control list
+which only contains numeric addresses and does not automatically update when
+a host's address changes.  Note that this definition of hostname does
+not allow use of literal IP addresses.
+.IP "localuser & localgroup"
+On systems which can determine in a secure fashion the credentials of a client
+process, the "localuser" and "localgroup" authentication methods provide access
+based on those credentials.  The format of the values provided is platform
+specific.  For POSIX & UNIX platforms, if the value starts with the 
+character '#', the rest of the string is treated as a decimal uid or gid, 
+otherwise the string is defined as a user name or group name.
+.IP
+If your system supports this method and you use it, be warned that some
+programs that proxy connections and are setuid or setgid may get authenticated 
+as the uid or gid of the proxy process.  For instance, some versions of ssh
+will be authenticated as the user root, no matter what user is running the
+ssh client, so on systems with such software, adding access for localuser:root
+may allow wider access than intended to the X display.
 .SH FILES
 \&.Xauthority
 .SH "SEE ALSO"

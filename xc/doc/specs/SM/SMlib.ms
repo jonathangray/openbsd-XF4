@@ -1,4 +1,5 @@
 .\" $Xorg: SMlib.ms,v 1.3 2000/08/17 19:42:19 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/SM/SMlib.ms,v 1.3 2004/09/03 16:18:20 kem Exp $
 .\" 
 .\" Use tbl, -ms, and macros.t
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/18/96
@@ -28,7 +29,7 @@ Version 1.0
 .sp
 X Consortium Standard
 .sp
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .AU
 Ralph Mor
 .AI
@@ -60,11 +61,11 @@ Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 .sp 3
-X Window System is a trademark of X Consortium, Inc.
+X Window System is a trademark of The Open Group.
 .bp
 .bp 1
-.EH '\fBX Session Management Library\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Session Management Library\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Session Management Library\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Session Management Library\fP''\fBX11, Release 6.8\fP'
 .EF ''\- \\\\n(PN \-''
 .OF ''\- \\\\n(PN \-''
 .NH 1

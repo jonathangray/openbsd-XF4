@@ -1,4 +1,5 @@
 .\" Use tbl macros.t ice.ms | troff -ms
+.\" $XdotOrg: xc/doc/specs/ICE/ice.ms,v 1.3 2004/09/03 16:18:19 kem Exp $
 .\"
 .\" TODO:
 .\" Think about connector/listener originator/answerer terminology.
@@ -88,7 +89,7 @@ Version 1.1
 .sp
 X Consortium Standard
 .sp
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 
 
 
@@ -150,9 +151,9 @@ Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 .sp 5
-X Window System is a trademark of X Consortium, Inc.
-.EH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.4\fP'
-.OH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.4\fP'
+X Window System is a trademark of The Open Group.
+.EH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.8\fP'
+.OH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.8\fP'
 .bp 1
 .EF ''\fB % \fP''
 .OF ''\fB % \fP''

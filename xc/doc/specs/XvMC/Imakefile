@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/doc/specs/XvMC/Imakefile,v 1.1 2002/01/16 18:36:00 dawes Exp $
+XCOMM $XFree86: xc/doc/specs/Xv/Imakefile,v 1.2 2000/03/09 22:10:07 dawes Exp $
 
 InstallDoc(XvMC_API,XvMC_API.txt)
 

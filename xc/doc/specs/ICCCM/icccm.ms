@@ -1,10 +1,5 @@
 .\" $Xorg: icccm.ms,v 1.3 2000/08/17 19:42:08 cpqbld Exp $
-.\"
-.\"
-.\"
-.\"
-.\" $XFree86: xc/doc/specs/ICCCM/icccm.ms,v 1.3 2001/01/17 16:57:41 dawes Exp $
-.\"
+.\" $XdotOrg: xc/doc/specs/ICCCM/icccm.ms,v 1.3 2004/09/03 16:18:19 kem Exp $
 .\" Use tbl, eqn, -ms, and macros.t
 .\" @(#)icccm.ms	1.50	16 Apr 1994	14:13:55
 .EH ''''
@@ -45,19 +40,11 @@
 .B
 \s+2Inter-Client Communication Conventions Manual\s0
 
-Version 2.0.xf86.1
-
-XFree86 4.0.2
-
-XFree86, Inc.
-
-.I "based on"
-
 Version 2.0
 
 X Consortium Standard
 
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .R
 .ce 0
 .sp 6
@@ -76,7 +63,7 @@ X Version 11, Release 6.4
 .nr PS 9
 .sp 8
 .LP
-X Window System is a trademark of X Consortium, Inc.
+X Window System is a trademark of The Open Group
 .LP             
 .LP
 Copyright \(co 1988, 1991, 1993, 1994
@@ -228,8 +215,8 @@ John Interrante	John Thomas
 .De
 .bp 1
 .af PN 1
-.EH '\fBInter-Client Communication Conventions\fP''\fBX11, Release 6.4\fP'
-.OH '\fBInter-Client Communication Conventions\fP''\fBX11, Release 6.4\fP'
+.EH '\fBInter-Client Communication Conventions\fP''\fBX11, Release 6.8\fP'
+.OH '\fBInter-Client Communication Conventions\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB % \fP''
 .OF ''\fB % \fP''
 .nH 1 Introduction
@@ -1403,9 +1390,6 @@ T}
 USER	TEXT	T{
 The name of the user running the owner
 T}
-UTF8_STRING	TEXT	T{
-UTF-8 text
-T}
 .sp 6p
 _
 .TE
@@ -1682,7 +1666,6 @@ T}
 PIXMAP	32	Fixed-size
 SPAN	32	Fixed-size
 STRING	8	Zero
-UTF8_STRING	8	Zero
 WINDOW	32	Fixed-size
 .sp 6p
 _
@@ -1717,16 +1700,13 @@ The type would not actually be TEXT;
 it would be STRING or some other ATOM naming the encoding chosen by the owner.
 .LP
 STRING as a type or a target specifies the ISO Latin-1 character set plus the
-control characters TAB (hex 09) and NEWLINE (hex 0A).
+control characters TAB (octal 11) and NEWLINE (octal 12).
 The spacing interpretation of TAB is context dependent.
 Other ASCII control characters are explicitly not included in STRING 
 at the present time.
 .LP
 COMPOUND_TEXT as a type or a target specifies the Compound Text interchange
 format; see the \fICompound Text Encoding\fP.
-.LP
-UTF8_STRING as a type or a target specifies an UTF-8 encoded string, with
-NEWLINE (U+000A, hex 0A) as end-of-line marker.
 .LP
 There are some text objects where the source or intended user, as the
 case may be, does not have a specific character set for the text, but
@@ -1750,9 +1730,9 @@ way to treat them as the same. Thus no character-set based
 property type is suitable.
 .NE
 .LP
-Type STRING, COMPOUND_TEXT, UTF8_STRING, and C_STRING properties will
-consist of a list of elements separated by null characters; other encodings
-will need to specify an appropriate list format.
+Type STRING, COMPOUND_TEXT, and C_STRING properties will consist of a list
+of elements separated by null characters; other encodings will need to
+specify an appropriate list format.
 .nH 3 "INCR Properties"
 .LP
 Requestors may receive a property of type INCR\**
@@ -5221,10 +5201,11 @@ delim off
 .DE
 or to
 .DS
-	Registry
-	X Consortium
-	201 Broadway
-	Cambridge, MA 02139-1955
+        The X.Org Group -- X11 Registry
+        c/o Ienup Sung
+        Sun Microsystems, Inc.
+        4150 Network Circle, MS SJC07-201
+        Santa Clara, CA 95054
 	USA
 .DE
 Electronic mail will be acknowledged upon receipt.  Please allow up to 4

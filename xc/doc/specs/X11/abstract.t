@@ -1,4 +1,4 @@
-.\" $XFree86: xc/doc/specs/X11/abstract.t,v 1.3 2003/12/11 21:24:37 herrb Exp $
+.\" $XFree86: xc/doc/specs/X11/abstract.t,v 1.2 2003/07/09 15:27:26 tsi Exp $
 .EH ''''
 .OH ''''
 .EF ''''
@@ -10,9 +10,9 @@
 .ce 6
 \s+2\fBXlib \- C Language X Interface\fP\s-2
 
-\s+1\fBX Consortium Standard\fP\s-1
+\s+1\fBX Window System Standard\fP\s-1
 
-\s+1\fBX Version 11, Release 6.7 DRAFT\fP\s-1
+\s+1\fBX Version 11, Release 6.8\fP\s-1
 .sp 6
 .ce 4
 \s-1James Gettys

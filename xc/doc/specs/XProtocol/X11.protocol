@@ -1,9 +1,10 @@
 .\" $Xorg: X11.protocol,v 1.4 $
+.\" $XdotOrg: xc/doc/specs/XProtocol/X11.protocol,v 1.3 2004/09/03 16:18:20 kem Exp $
 .\"
 .\"
 .\"
 .\"
-.\" $XFree86: xc/doc/specs/XProtocol/X11.protocol,v 1.5 2003/12/11 21:24:37 herrb Exp $
+.\" $XFree86: xc/doc/specs/XProtocol/X11.protocol,v 1.4 2003/07/09 15:27:26 tsi Exp $
 .EH ''''
 .OH ''''
 .EF ''''
@@ -17,7 +18,7 @@
 
 \s+1\fBX Consortium Standard\fP\s-1
 
-\s+1\fBX Version 11, Release 6.7 DRAFT\fP\s-1
+\s+1\fBX Version 11, Release 6.8\fP\s-1
 .sp 6
 .ce 5
 \s-1Robert W. Scheifler
@@ -31,7 +32,7 @@ X Consortium, Inc.
 .LP
 X Window System is a trademark of The Open Group.
 .LP
-Copyright \(co 1986, 1987, 1988, 1994, 2002 The Open Group
+Copyright \(co 1986, 1987, 1988, 1994, 2004 The Open Group
 .LP
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the ``Software''), to deal
@@ -124,8 +125,8 @@ Robert W. Scheifler
 X Consortium, Inc.
 .De
 .bp 1
-.EH '\fBX Protocol\fP''\fBX11, Release 6.7 DRAFT\fP'
-.OH '\fBX Protocol\fP''\fBX11, Release 6.7 DRAFT\fP'
+.EH '\fBX Protocol\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Protocol\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB % \fP''
 .OF ''\fB % \fP''
 .NH 1
@@ -533,6 +534,7 @@ HOST	T{
 [family: 
 .Pn { Internet , 
 .PN InternetV6 , 
+.PN ServerInterpreted ,
 .PN DECnet , 
 .PN Chaos }
 T}
@@ -941,7 +943,7 @@ requests in most applications.
 Note that they are predefined only in the sense of having numeric values, 
 not in the sense of having required semantics.
 The core protocol imposes no semantics on these names,
-but semantics are specified in other X.Org standards,
+but semantics are specified in other X Window System standards,
 such as the \fIInter-Client Communication Conventions Manual\fP
 and the \fIX Logical Font Description Conventions\fP.
 .LP
@@ -8708,16 +8710,6 @@ or an improper address length within a supported family results in a
 .PN Value 
 error.
 .LP
-Note that use of a host address in the ChangeHosts request is deprecated.
-It is only useful when a host has a unique, constant address, a requirement
-that is increasingly unmet as sites adopt dynamically assigned
-addresses, network address translation gateways, IPv6 link local
-addresses, and various other technologies.  It also assumes all users of
-a host share equivalent access rights, and as such has never been
-suitable for many multi-user machine environments.  Instead, more
-secure forms of authentication, such as those based on shared secrets
-or public key encryption, are recommended.
-.LP
 For the Internet family, 
 the address must be four bytes long.
 The address bytes are in standard IP order;
@@ -8742,6 +8734,26 @@ the address must be two bytes long.
 The host number is always the first byte in the address, 
 and the subnet number is always the second byte.
 The server performs no automatic swapping on the address bytes.
+.LP
+For the ServerInterpreted family, the address may be of any
+length up to 65535 bytes.  The address consists of two strings
+of ASCII characters, separated by a byte with a value of 0.
+The first string represents the type of address, and the second
+string contains the address value.  Address types and the syntax
+for their associated values will be registered via the X.Org Registry.
+Implementors who wish to add implementation specific types may register
+a unique prefix with the X.Org registry to prevent namespace
+collisions. 
+.LP
+Use of a host address in the ChangeHosts request is deprecated.  It is
+only useful when a host has a unique, constant address, a requirement
+that is increasingly unmet as sites adopt dynamically assigned
+addresses, network address translation gateways, IPv6 link local
+addresses, and various other technologies.  It also assumes all users of
+a host share equivalent access rights, and as such has never been
+suitable for many multi-user machine environments.  Instead, more
+secure forms of authentication, such as those based on shared secrets
+or public key encryption, are recommended.
 .sp
 .LP
 .sM

@@ -1,6 +1,5 @@
 .\" Use tbl, -ms, and macros.t
 .\" $Xorg: xsmp.ms,v 1.3 2000/08/17 19:42:19 cpqbld Exp $
-.\" $XFree86: xc/doc/specs/SM/xsmp.ms,v 1.2 2003/07/09 15:27:25 tsi Exp $
 .EH ''''
 .OH ''''
 .EF ''''
@@ -13,7 +12,7 @@
 .sp
 X.Org Standard
 .sp
-X Version 11, Release 6.7
+X Version 11, Release 6.8
 .AU
 Mike Wexler
 .AI
@@ -59,8 +58,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 .OF ''\\\\n(PN''
 .bp 1
 .af PN 1
-.EH '\fBX Session Management Protocol\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Session Management Protocol\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Session Management Protocol\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Session Management Protocol\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
 .nH 1 "Acknowledgements"

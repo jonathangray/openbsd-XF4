@@ -1,4 +1,4 @@
-.\" $XFree86: xc/doc/specs/xtrans/Xtrans.mm,v 1.3 2003/11/16 16:40:19 herrb Exp $
+.\" $XFree86: xc/doc/specs/xtrans/Xtrans.mm,v 1.2 2003/07/09 15:27:27 tsi Exp $
 '\".nr Ej 1
 .PH "'''"
 .ce

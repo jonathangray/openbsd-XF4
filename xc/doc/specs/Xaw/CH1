@@ -3,7 +3,7 @@
 .nr PS 11
 .ds LH \fBAthena Widget Set\fP
 .ds CH
-.ds RH \fBX11, Release 6.4\fP
+.ds RH \fBX11, Release 6.8\fP
 .bp 1
 .af PN 1
 \&

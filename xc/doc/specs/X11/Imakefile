@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/doc/specs/X11/Imakefile,v 1.2 2001/04/23 15:53:50 dawes Exp $
+XCOMM $XFree86$
 
 SRCS = 	abstract.t \
 	credits.t \

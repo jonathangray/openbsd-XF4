@@ -1,6 +1,3 @@
-.\"
-.\" $XFree86: xc/doc/specs/X11/glossary,v 1.2 2000/11/28 18:49:19 dawes Exp $
-.\"
 \&
 .sp 1
 .ce 1
@@ -405,7 +402,7 @@ characters.
 The representations do not have to be of uniform length.
 Examples are an ISO2022 graphic set, a state-independent 
 or state-dependent combination of graphic sets, possibly including control
-sets, the X Compound Text encoding, and the UTF-8 ISO10646/Unicode encoding.
+sets, and the X Compound Text encoding.
 .IP
 In X, encodings are identified by a string
 which appears as: the

@@ -1,4 +1,5 @@
 .\" $Xorg: LocaleDB.ms,v 1.3 2000/08/17 19:42:49 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/i18n/LocaleDB.ms,v 1.3 2004/09/03 16:18:22 kem Exp $
 .\" To print this out, type tbl macros.t ThisFile | troff -ms
 .EH ''''
 .OH ''''
@@ -66,13 +67,13 @@ Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 .sp 3
-\fIX Window System\fP is a trademark of X Consortium, Inc.
+\fIX Window System\fP is a trademark of The Open Group.
 .LP
 .bp 1
 .ps 11
 .nr PS 11
-.EH '\fBX Locale Database Definition\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Locale Database Definition\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Locale Database Definition\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Locale Database Definition\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB % \fP''
 .OF ''\fB % \fP''
 .NH 1

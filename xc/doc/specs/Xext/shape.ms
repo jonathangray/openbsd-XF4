@@ -1,5 +1,6 @@
 .\" Use -ms and macros.t
 .\" $Xorg: shape.ms,v 1.3 2000/08/17 19:42:36 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/Xext/shape.ms,v 1.3 2004/09/03 16:18:21 kem Exp $
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/1/96
 .EH ''''
 .OH ''''
@@ -15,9 +16,9 @@
 Shape Extension Protocol\fP\s-2
 .sp 3
 .ce 3
-Version 1.0
-X Consortium Standard
-X Version 11, Release 6.4
+Version 1.0.1
+X.Org Standard
+X Version 11, Release 6.8
 .sp 6
 .ce 4
 \s-1Keith Packard
@@ -27,7 +28,7 @@ MIT X Consortium
 .nr PS 9
 .sp 8
 .LP
-Copyright \(co 1989 X Consortium
+Copyright \(co 1989, 2004 The Open Group
 .LP
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the ``Software''), to deal
@@ -42,13 +43,13 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 .LP
-Except as contained in this notice, the name of the X Consortium shall not be
+Except as contained in this notice, the name of the Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the X Consortium.
+in this Software without prior written authorization from the Open Group.
 .ps 10
 .nr PS 10
 .bp 1
@@ -736,7 +737,7 @@ Requests
 .PN ShapeInputSelected
 .sp 6p
 	1	CARD8		opcode
-	1	6		shape opcode
+	1	7		shape opcode
 	2	2		request length
 	4	WINDOW		destination window
 .De
@@ -759,7 +760,7 @@ Requests
 .PN ShapeGetRectangles
 .sp 6p
 	1	CARD8		opcode
-	1	7		shape opcode
+	1	8		shape opcode
 	2	3		request length
 	4	WINDOW		window
 	1	SHAPE_KIND		source kind
@@ -877,3 +878,10 @@ the default clip region, the client clip region (if any) and the client
 bounding region (if any).  Otherwise, the effective clip region is the
 same as the default clip region.
 .KE
+.NH 1
+Revision History
+.LP
+1.0 - 1989 - Original Revision
+.LP
+1.0.1 - March 2004 - Corrected misnumbering of \fIShapeInputSelected\fP 
+and \fIShapeGetRectangles\fP requests in encoding section.

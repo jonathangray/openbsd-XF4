@@ -1,17 +1,21 @@
+XCOMM $XdotOrg: xc/doc/specs/programs/Imakefile,v 1.2 2004/04/23 18:42:19 eich Exp $
 XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:42:50 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/doc/specs/programs/Imakefile,v 1.23 2003/11/23 05:40:35 dawes Exp $
+XCOMM $XFree86: xc/doc/specs/programs/Imakefile,v 1.22 2003/11/12 04:56:57 dawes Exp $
 
 /* does not include manual pages under util (not X programs)
    or any of the library function manual pages under doc/man */
 
+XCONFIGFILE = XConfigFile
+XSERVERNAME = XServerName
+
 XFREE86_MANUALS = \
-  $(TOP)/programs/Xserver/hw/xfree86/XFree86.man \
-  $(TOP)/programs/Xserver/hw/xfree86/XF86Config.man \
-  $(TOP)/programs/Xserver/hw/xfree86/xf86config/xf86config.man \
-  $(TOP)/programs/Xserver/hw/xfree86/xf86cfg/xf86cfg.man \
+  $(TOP)/programs/Xserver/hw/xfree86/$(XSERVERNAME).man \
+  $(TOP)/programs/Xserver/hw/xfree86/$(XCONFIGFILE).man \
+  $(TOP)/programs/Xserver/hw/xfree86/xf86config/xorgconfig.man \
+  $(TOP)/programs/Xserver/hw/xfree86/xf86cfg/xorgcfg.man \
   $(TOP)/programs/Xserver/hw/xfree86/reconfig/reconfig.man \
   $(TOP)/programs/Xserver/hw/xfree86/getconfig/getconfig.man \
   $(TOP)/programs/Xserver/hw/xfree86/getconfig/cfg.man \
@@ -80,9 +84,6 @@ XFREE86_MANUALS = \
   $(TOP)/programs/Xserver/hw/xfree86/input/wacom/wacom.man \
   $(TOP)/programs/Xserver/hw/darwin/XDarwin.man \
   $(TOP)/programs/Xserver/hw/darwin/utils/dumpkeymap.man \
-  $(TOP)/programs/Xserver/hw/kdrive/Xkdrive.man \
-  $(TOP)/programs/Xserver/hw/kdrive/vesa/Xvesa.man \
-  $(TOP)/programs/Xserver/hw/kdrive/fbdev/Xfbdev.man \
   $(TOP)/lib/Xxf86dga/XDGA.man \
   $(TOP)/programs/Xserver/hw/xfree86/doc/man/XF86Misc.man \
   $(TOP)/programs/Xserver/hw/xfree86/doc/man/XF86VM.man
@@ -90,8 +91,7 @@ XFREE86_MANUALS = \
 EXTRA_MANUALS = \
   $(TOP)/extras/rman/rman.1
 
-MANUALS = \
-  $(XFREE86_MANUALS) \
+MANUALS = $(XFREE86_MANUALS) \
   $(TOP)/doc/man/general/X.man \
   $(TOP)/doc/man/general/Standards.man \
   $(TOP)/doc/man/general/Consortium.man \
@@ -110,9 +110,7 @@ MANUALS = \
   $(TOP)/programs/dpsinfo/dpsinfo.man \
   $(TOP)/programs/editres/editres.man \
   $(TOP)/extras/fontconfig/fc-cache/fc-cache.man \
-  $(TOP)/extras/fontconfig/fc-lang/fc-lang.man \
   $(TOP)/extras/fontconfig/fc-list/fc-list.man \
-  $(TOP)/extras/fontconfig/src/fontconfig.man \
   $(TOP)/programs/fslsfonts/fslsfonts.man \
   $(TOP)/programs/fstobdf/fstobdf.man \
   $(TOP)/config/util/gccmakedep.man \
@@ -180,8 +178,7 @@ MANUALS = \
   $(TOP)/programs/xfsinfo/xfsinfo.man \
   $(TOP)/programs/xfwp/xfwp.man \
   $(TOP)/programs/xgamma/xgamma.man \
-  $(TOP)/programs/xgc/xgc.man \
-  $(TOP)/programs/xhost/xhost.man \
+  $(TOP)/programs/xgc/xgc.man   $(TOP)/programs/xhost/xhost.man \
   $(TOP)/programs/xinit/xinit.man \
   $(TOP)/programs/xkbcomp/xkbcomp.man \
   $(TOP)/programs/xkbevd/xkbevd.man \
@@ -200,8 +197,7 @@ MANUALS = \
   $(TOP)/programs/xmodmap/xmodmap.man \
   $(TOP)/programs/Xserver/hw/xnest/Xnest.man \
   $(TOP)/programs/scripts/xon.man \
-  $(TOP)/programs/xprop/xprop.man \
-  $(TOP)/programs/xrandr/xrandr.man \
+  $(TOP)/programs/xprop/xprop.man   $(TOP)/programs/xrandr/xrandr.man \
   $(TOP)/programs/xrdb/xrdb.man \
   $(TOP)/programs/xrefresh/xrefresh.man \
   $(TOP)/programs/xrx/helper/xrx.man \
@@ -223,6 +219,9 @@ MANUALS = \
   $(TOP)/programs/xwud/xwud.man \
   $(EXTRA_MANUALS)
 
+
+
+
 XCOMM Sun's -man macros use the D and C registers
 MANUALFLAGS = -rD1 -rC1
 
@@ -236,10 +235,13 @@ man.$(MANSRCSUFFIX): $(MANUALS)
 EXTRAMANDEFS = -D__logdir__=$(LOGDIRECTORY) -D__xinitdir__=$(XINITDIR)
 
 CppManTarget(man,$(EXTRAMANDEFS))
-
 MSMACROS = $(MANMACROS) $(MANUALFLAGS)
 
+#if 0
 MakeSimpleDoc(man,man.$(MANNEWSUFFIX))
 
 InstallRoffDoc(man)
-
+#endif
+clean::
+	RemoveFile(man.man)
+	RemoveFile(man_drivers.man)

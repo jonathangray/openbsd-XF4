@@ -1,4 +1,5 @@
 .\" $Xorg: protocol.ms,v 1.3 2000/08/17 19:42:07 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/FSProtocol/protocol.ms,v 1.3 2004/09/03 16:18:19 kem Exp $
 .\" Use tbl, -ms, and macros.t
 .EH ''''
 .OH ''''
@@ -12,9 +13,9 @@
 \s+3\fBThe X Font Service Protocol\fP\s-3
 .sp
 \fBVersion 2.0\fP
-\fBX Consortium Standard\fR
+\fBX Window System Standard\fR
 .sp
-\fBX Version 11, Release 6.4\fR
+\fBX Version 11, Release 6.8\fR
 .sp 6
 Jim Fulton
 Network Computing Devices, Inc.
@@ -63,8 +64,8 @@ in this Software without prior written authorization from the X Consortium.
 .ps 11
 .nr PS 11
 .bp 1
-.EH '\fBX Font Service Protocol\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Font Service Protocol\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Font Service Protocol\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Font Service Protocol\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
 .NH 1
@@ -76,7 +77,7 @@ Introduction
 The management of fonts in large, heterogeneous environments is one of the
 hardest aspects of using the X Window System.*
 .FS
-* \fIX Window System\fP is a trademark of X Consortium, Inc.
+* \fIX Window System\fP is a trademark of The Open Group.
 .FE
 Multiple formats and the lack of
 a consistent mechanism for exporting font data to all displays on a network

@@ -1,31 +1,39 @@
 .\" $Xorg: X.cpp,v 1.3 2000/08/17 19:42:04 cpqbld Exp $
-.\" Copyright (c) 1994  X Consortium
+.\" $XdotOrg: xc/doc/man/general/X.man,v 1.4 2004/09/03 16:18:18 kem Exp $
+.\"
+.\" Copyright (c) 1994, 2004  The Open Group
 .\" Copyright \(co 2000  The XFree86 Project, Inc.
 .\" 
-.\" Permission is hereby granted, free of charge, to any person obtaining a
-.\" copy of this software and associated documentation files (the "Software"), 
-.\" to deal in the Software without restriction, including without limitation 
-.\" the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-.\" and/or sell copies of the Software, and to permit persons to whom the 
-.\" Software furnished to do so, subject to the following conditions:
-.\" 
-.\" The above copyright notice and this permission notice shall be included in
-.\" all copies or substantial portions of the Software.
-.\" 
-.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-.\" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-.\" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
-.\" THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-.\" WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF 
-.\" OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
-.\" SOFTWARE.
-.\" 
-.\" Except as contained in this notice, the name of the X Consortium shall not 
-.\" be used in advertising or otherwise to promote the sale, use or other 
-.\" dealing in this Software without prior written authorization from the 
-.\" X Consortium.
+.\" All rights reserved.
 .\"
-.\" $XFree86: xc/doc/man/general/X.man,v 1.8 2002/10/12 16:06:41 herrb Exp $
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the
+.\" "Software"), to deal in the Software without restriction, including
+.\" without limitation the rights to use, copy, modify, merge, publish,
+.\" distribute, and/or sell copies of the Software, and to permit persons
+.\" to whom the Software is furnished to do so, provided that the above
+.\" copyright notice(s) and this permission notice appear in all copies of
+.\" the Software and that both the above copyright notice(s) and this
+.\" permission notice appear in supporting documentation.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+.\" OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+.\" MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+.\" OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+.\" HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+.\" INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
+.\" FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+.\" NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+.\" WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.\" Except as contained in this notice, the name of a copyright holder
+.\" shall not be used in advertising or otherwise to promote the sale, use
+.\" or other dealings in this Software without prior written authorization
+.\" of the copyright holder.
+.\"
+.\" X Window System is a trademark of The Open Group.
+.\"
+.\" $XFree86: xc/doc/man/general/X.man,v 1.7 2001/10/01 13:43:56 eich Exp $
 .\"
 .TH X __miscmansuffix__ __vendorversion__
 .SH NAME
@@ -34,11 +42,11 @@ X \- a portable, network-transparent window system
 .PP
 The X Window System is a network transparent window system which runs
 on a wide range of computing and graphics machines.  It should be
-relatively straightforward to build the X Consortium software
+relatively straightforward to build the X.Org Foundation software
 distribution on most ANSI C and POSIX compliant systems.  Commercial
 implementations are also available for a wide range of platforms.
 .PP
-The X Consortium requests that the following names be used when
+The X.Org Foundation requests that the following names be used when
 referring to this software:
 .sp
 .ce 5
@@ -53,7 +61,7 @@ X Window System, Version 11
 X11
 .PP
 .I "X Window System"
-is a trademark of X Consortium, Inc.
+is a trademark of The Open Group.
 .SH DESCRIPTION
 X Window System servers run on computers with bitmap displays.
 The server distributes user input to and accepts output requests from various
@@ -74,7 +82,7 @@ the \fIX Toolkit Intrinsics - C Language Interface\fP manual,
 and various toolkit documents.
 .PP
 The number of programs that use \fIX\fP is quite large.
-Programs provided in the core X Consortium distribution include:
+Programs provided in the core X.Org Foundation distribution include:
 a terminal emulator, \fIxterm\fP;
 a window manager, \fItwm\fP; 
 a display manager, \fIxdm\fP;
@@ -94,8 +102,8 @@ screen image manipulation utilities, \fIxwd\fP, \fIxwud\fP, and \fIxmag\fP;
 a performance measurement utility, \fIx11perf\fP;
 a font compiler, \fIbdftopcf\fP;
 a font server and related utilities, \fIxfs\fP, \fIfsinfo\fP, \fIfslsfonts\fP, \fIfstobdf\fP;
-an X Image Extension exerciser, \fIxieperf\fP;
 a display server and related utilities, \fIXserver\fP, \fIrgb\fP, \fImkfontdir\fP;
+a print server and related utilities, \fIXprt\fP, \fIxplsprinters\fP;
 remote execution utilities, \fIrstart\fP and \fIxon\fP;
 a clipboard manager, \fIxclipboard\fP;
 keyboard description compiler and related utilities, \fIxkbcomp\fP, 
@@ -110,7 +118,7 @@ an RX MIME-type helper program, \fIxrx\fP;
 and a utility to cause part or all of the screen to be redrawn, \fIxrefresh\fP. 
 .PP
 Many other utilities, window managers, games, toolkits, etc. are included
-as user-contributed software in the X Consortium distribution, or are
+as user-contributed software in the X.Org Foundation distribution, or are
 available using anonymous ftp on the Internet.
 See your site administrator for details.
 .SH "STARTING UP"
@@ -364,12 +372,12 @@ to explicitly draw the window's region on the screen with the pointer, for
 example).
 .PP
 Since window managers are regular (albeit complex) client programs,
-a variety of different user interfaces can be built.  The X Consortium distribution
+a variety of different user interfaces can be built.  The X.Org Foundation distribution
 comes with a window manager named \fItwm\fP which supports overlapping windows,
 popup menus, point-and-click or click-to-type input models, title bars, nice
 icons (and an icon manager for those who don't like separate icon windows).
 .PP
-See the user-contributed software in the X Consortium distribution for other
+See the user-contributed software in the X.Org Foundation distribution for other
 popular window managers.
 .SH "FONT NAMES"
 Collections of characters for displaying text and symbols in X are known as
@@ -505,7 +513,7 @@ implementation dependent.
 If the name is not found, the color is looked up in the
 X server's database.
 The text form of this database is commonly stored in the file
-\fI__projectroot__/lib/X11/rgb.txt\fP.
+\fI\__projectroot__/lib/X11/rgb.txt\fP.
 .PP
 A numerical color specification
 consists of a color space name and a set of values in the following syntax:
@@ -1016,12 +1024,12 @@ to enable a particular input method. See
 .B XLOCALEDIR
 This must point to a directory containing the locale.alias file and
 Compose and XLC_LOCALE file hierarchies for all locales. The default value
-is \fI__projectroot__/lib/X11/locale\fP.
+is\fI __projectroot__/lib/X11/locale\fP.
 .TP
 .SM
 .B XENVIRONMENT
 This must point to a file containing X resources. The default is
-\fI$HOME/.Xdefaults-<hostname>\fP. Unlike \fI__projectroot__/lib/X11/Xresources\fP,
+\fI$HOME/.Xdefaults-<hostname>\fP. Unlike\fI __projectroot__/lib/X11/Xresources\fP,
 it is consulted each time an X application starts.
 .TP
 .SM
@@ -1094,17 +1102,17 @@ XUSERFILESEARCHPATH is not set.
 .SM
 .B XKEYSYMDB
 This must point to a file containing nonstandard keysym definitions.
-The default value is \fI__projectroot__/lib/X11/XKeysymDB\fP.
+The default value is\fI __projectroot__/lib/X11/XKeysymDB\fP.
 .TP
 .SM
 .B XCMSDB
 This must point to a color name database file. The default value is
-\fI__projectroot__/lib/X11/Xcms.txt\fP.
+\fI\__projectroot__/lib/X11/Xcms.txt\fP.
 .TP
 .SM
 .B XFT_CONFIG
 This must point to a configuration file for the Xft library. The default
-value is \fI__projectroot__/lib/X11/XftConfig\fP.
+value is\fI __projectroot__/lib/X11/XftConfig\fP.
 .TP
 .SM
 .B RESOURCE_NAME
@@ -1186,7 +1194,7 @@ A wide variety of error messages are generated from various programs.
 The default error handler in \fIXlib\fP (also used by many toolkits) uses
 standard resources to construct diagnostic messages when errors occur.  The
 defaults for these messages are usually stored in
-\fI__projectroot__/lib/X11/XErrorDB\fP.  If this file is not present,
+\fI\__projectroot__/lib/X11/XErrorDB\fP.  If this file is not present,
 error messages will be rather terse and cryptic.
 .PP
 When the X Toolkit Intrinsics encounter errors converting resource strings to
@@ -1221,6 +1229,7 @@ the appropriate instance name can be placed before the asterisk:
 .BR XProjectTeam (__miscmansuffix__),
 .BR XStandards (__miscmansuffix__),
 .BR Xsecurity (__miscmansuffix__),
+.BR Xprint (__miscmansuffix__),
 .\" clients, utilities, and demos
 .BR appres (1),
 .BR bdftopcf (1),
@@ -1232,6 +1241,7 @@ the appropriate instance name can be placed before the asterisk:
 .BR iceauth (1),
 .BR imake (1),
 .BR lbxproxy (1),
+.BR kbd_mode (1),
 .BR makedepend (1),
 .BR mkfontdir (1),
 .BR oclock (1),
@@ -1255,7 +1265,6 @@ the appropriate instance name can be placed before the asterisk:
 .BR xfs (1),
 .BR xfwp (1),
 .BR xhost (1),
-.BR xieperf (1),
 .BR xinit (1),
 .BR xkbbell (1),
 .BR xkbcomp (1),
@@ -1272,6 +1281,7 @@ the appropriate instance name can be placed before the asterisk:
 .BR xmh (1),
 .BR xmodmap (1),
 .BR xon (1),
+.BR xplsprinters (1),
 .BR xprop (1),
 .BR xrdb (1),
 .BR xrefresh (1),
@@ -1291,30 +1301,33 @@ the appropriate instance name can be placed before the asterisk:
 .BR Xsun (1),
 .BR Xnest (1),
 .BR Xvfb (1),
-.BR XFree86 (1),
+.BR Xorg (1),
 .BR XDarwin (1),
-.BR kbd_mode (1),
+.BR Xprt (1).
 .\" specifications
 .I "Xlib \- C Language X Interface\fR,\fP"
 and
 .I "X Toolkit Intrinsics \- C Language Interface"
 .SH TRADEMARKS
 .PP
-X Window System is a trademark of X Consortium, Inc.
+X Window System is a trademark of The Open Group.
 .SH AUTHORS
 .PP
-A cast of thousands, literally.  The Release 6.3 distribution is 
-brought to you by X Consortium, Inc.  The names of all people who 
+A cast of thousands, literally.  The Release 6.8 distribution is 
+brought to you by the X.Org Foundation, LLC. The names of all people who 
 made it a reality will be found in the individual documents and 
-source files.  The staff members at the X Consortium responsible
-for this release are: Donna Converse (emeritus), Stephen Gildea 
-(emeritus), Kaleb Keithley, Matt Landau (emeritus), Ralph Mor 
-(emeritus), Janet O'Halloran, Bob Scheifler, Ralph Swick, Dave 
-Wiggins (emeritus), and Reed Augliere.
+source files.
+.PP
+Releases 6.6 and 6.5 were done by The X.Org Group.  Release 6.4 was done by
+The X Project Team.  The Release 6.3 distribution was from The X Consortium,
+Inc.  The staff members at the X Consortium responsible for that release
+were: Donna Converse (emeritus), Stephen Gildea (emeritus), Kaleb Keithley,
+Matt Landau (emeritus), Ralph Mor (emeritus), Janet O'Halloran, Bob
+Scheifler, Ralph Swick, Dave Wiggins (emeritus), and Reed Augliere.
 .PP
 The X Window System standard was originally developed at the
 Laboratory for Computer Science at the Massachusetts Institute 
 of Technology, and all rights thereto were assigned to the X Consortium 
 on January 1, 1994.
 X Consortium, Inc. closed its doors on December 31, 1996.  All rights to the
-X Window System have been assigned to the Open Software Foundation.
+X Window System have been assigned to The Open Group.

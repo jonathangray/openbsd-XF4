@@ -1,5 +1,6 @@
 .\" Use tbl and -ms and macros.t	-*- Nroff -*-
 .\" $Xorg: xlfd.tbl.ms,v 1.3 2000/08/17 19:42:22 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/XLFD/xlfd.tbl.ms,v 1.3 2004/09/03 16:18:20 kem Exp $
 .nr sM 4		\" section on Matrix Transformations
 .nr sS 5		\" section on Scalable fonts
 .nr sP 6		\" section on Polymorphic font support
@@ -19,7 +20,7 @@
 
 \fBX Consortium Standard\fP
 
-\fBX Version 11, Release 6.4\fP
+\fBX Version 11, Release 6.8\fP
 .sp 6
 \s+1Jim Flowers\s-1
 .sp 6p
@@ -35,7 +36,7 @@
 .nr PS 9
 .sp 8
 .LP
-\fIX Window System\fP is a trademark of X Consortium, Inc.
+\fIX Window System\fP is a trademark of The Open Group.
 .LP             
 Helvetica and Times are registered trademarks of Linotype Company.
 .LP
@@ -88,8 +89,8 @@ This documentation is provided as is without express or implied warranty.
 .ps 11
 .nr PS 11
 .bp 1
-.EH '\fBX Logical Font Description Conventions\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Logical Font Description Conventions\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Logical Font Description Conventions\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Logical Font Description Conventions\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
 .NH 1 

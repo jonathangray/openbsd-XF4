@@ -1,4 +1,5 @@
 .\" $Xorg: library.ms,v 1.3 2000/08/17 19:42:38 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/Xi/library.ms,v 1.3 2004/09/03 16:18:21 kem Exp $
 .\" Input Extension			now coded to macros.t
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/5/96
 .EH ''''
@@ -16,7 +17,7 @@
 .sp 2
 X Consortium Standard
 .sp 1
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .sp 16
 .ps 15
 \fBMark Patrick\0\0\0\0Ardent Computer
@@ -61,12 +62,12 @@ Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 .sp 3
-\fIX Window System\fP is a trademark of X Consortium, Inc.
+\fIX Window System\fP is a trademark of The Open Group.
 .ps
 .vs
 .bp 1
-.EH '\fBX Input Extension Library\fP''\fBX11, Release 6.4\fP'
-.OH '\fBX Input Extension Library\fP''\fBX11, Release 6.4\fP'
+.EH '\fBX Input Extension Library\fP''\fBX11, Release 6.8\fP'
+.OH '\fBX Input Extension Library\fP''\fBX11, Release 6.8\fP'
 .EF ''\fB\\\\n(PN\fP''
 .OF ''\fB\\\\n(PN\fP''
 .\"  Force the heading counter for level 1 to one

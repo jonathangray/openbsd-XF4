@@ -1,5 +1,6 @@
 .\" Use -ms and macros.t
 .\" $Xorg: tog-cup.ms,v 1.3 2000/08/17 19:42:37 cpqbld Exp $
+.\" $XdotOrg: xc/doc/specs/Xext/tog-cup.ms,v 1.3 2004/09/03 16:18:21 kem Exp $
 .EH ''''
 .OH ''''
 .EF ''''
@@ -16,7 +17,7 @@
 .ce 3
 Version 1.0
 X Project Team Standard
-X Version 11, Release 6.4
+X Version 11, Release 6.8
 .sp 6 
 .ce 4
 Kaleb S. KEITHLEY

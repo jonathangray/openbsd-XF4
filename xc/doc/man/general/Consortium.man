@@ -24,7 +24,7 @@
 .\" dealing in this Software without prior written authorization from the 
 .\" X Consortium.
 .\"
-.\" $XFree86: xc/doc/man/general/Consortium.man,v 1.4 2001/01/27 18:20:38 dawes Exp $
+.\" $XFree86$
 .\"
 .TH XCONSORTIUM __miscmansuffix__ __xorgversion__
 .SH NAME
