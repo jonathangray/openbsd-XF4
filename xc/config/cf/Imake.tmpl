@@ -392,6 +392,8 @@ XCOMM the platform-specific parameters - edit site.def to change
 #define ByteOrder		X_LITTLE_ENDIAN
 #elif defined(SparcArchitecture)
 #define ByteOrder		X_BIG_ENDIAN
+#elif defined(Sparc64Architecture)
+#define ByteOrder		X_BIG_ENDIAN
 #elif defined(AlphaArchitecture)
 #define ByteOrder		X_LITTLE_ENDIAN
 #elif defined(Mc68000Architecture)
