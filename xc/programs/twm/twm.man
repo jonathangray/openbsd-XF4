@@ -1092,8 +1092,10 @@ This function displays an outline of the selected window.  Crossing a border
 rubber band until the invoking button is released.  To abort a resize,
 press another button before releasing the first button.
 .IP "\fBf.restart\fP" 8
-
 This function kills and restarts \fItwm\fP.
+.IP "\fBf.startwm\fP \fIstring\fP" 8
+This function kills \fItwm\fP and starts another window manager, as
+specified by \fIstring\fP.
 .IP "\fBf.righticonmgr\fI" 8
 This function is similar to \fBf.nexticonmgr\fP except that wrapping does
 not change rows.
