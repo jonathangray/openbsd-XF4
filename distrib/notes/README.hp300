@@ -1,0 +1,22 @@
+Post-installation instructions for XFree86 on OpenBSD/hp300
+-----------------------------------------------------------
+
+1. HP300 setup is easy:
+
+Typical XFree86 use on HP300 machines requires no special configuration.
+However, you will need to deal with the X11R5 X server provided in 1 of 2 ways
+
+a) decompress all fonts:	cd /usr/X11R6/lib/X11/fonts
+                         	find . -name '*gz' -exec gzip -d '{}' ';'
+b) run the X11R6 font server:	xfs
+   then, either:
+   1) point the Xserver to it:	X -fp tcp/localhost:7100
+   2) add '-fp tcp/localhost:7100' to /usr/X11R6/lib/X11/xdm/Xservers:
+	:0 local /usr/X11R6/bin/X -fp tcp/localhost:7100 vt05
+      .. then start xdm as below.
+
+2. Start xdm, the X display manager by activating the xdm_flags option
+   in /etc/rc.conf.  You may need to disable the console getty.
+
+If you encounter a problem, you can browse the entire documentation at
+http://www.xfree86.org/4.0.3/
