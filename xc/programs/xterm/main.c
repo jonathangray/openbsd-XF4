@@ -4604,7 +4604,6 @@ static SIGNAL_T reapchild (int n GCC_UNUSED)
 {
     int olderrno = errno;
     int pid;
-    int olderrno = errno;
 
     pid = wait(NULL);
 
