@@ -272,12 +272,6 @@ struct greet_info {
 	Boolean		allow_root_login; /* allow direct root login */
 };
 
-/* setgroups is not covered by POSIX, arg type varies */
-#if defined(SYSV) || defined(SVR4) || defined(__osf__) || defined(linux) || defined(__GNU__)
-#define GID_T gid_t
-#else
-#define GID_T int
-#endif
 
 typedef void (*ChooserFunc)(CARD16 connectionType, ARRAY8Ptr addr, char *closure);
 typedef void (*ListenFunc)(ARRAY8Ptr addr, void **closure);
