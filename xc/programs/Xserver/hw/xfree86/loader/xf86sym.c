@@ -1021,7 +1021,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMVAR(res8514Shared)
    SYMVAR(PciAvoid)
 
-#if defined(__powerpc__) && (!defined(NO_INLINE) || defined(Lynx)) && !defined(__OpenBSD__)
+#if defined(__powerpc__) && (!defined(NO_INLINE) || defined(Lynx))
    SYMVAR(ioBase)
 #endif
 
