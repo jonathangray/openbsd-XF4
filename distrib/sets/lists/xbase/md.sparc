@@ -556,7 +556,7 @@
 ./usr/X11R6/lib/libXfont.so.2.0
 ./usr/X11R6/lib/libXfontcache_pic.a
 ./usr/X11R6/lib/libXft.a
-./usr/X11R6/lib/libXft.so.2.0
+./usr/X11R6/lib/libXft.so.3.0
 ./usr/X11R6/lib/libXft1.so.1.2
 ./usr/X11R6/lib/libXi.a
 ./usr/X11R6/lib/libXi.so.7.0
@@ -565,8 +565,8 @@
 ./usr/X11R6/lib/libXmuu.so.2.0
 ./usr/X11R6/lib/libXp.so.7.0
 ./usr/X11R6/lib/libXpm.so.5.0
-./usr/X11R6/lib/libXrandr.so.2.0
-./usr/X11R6/lib/libXrender.so.2.0
+./usr/X11R6/lib/libXrandr.so.3.0
+./usr/X11R6/lib/libXrender.so.2.1
 ./usr/X11R6/lib/libXss_pic.a
 ./usr/X11R6/lib/libXt.so.7.0
 ./usr/X11R6/lib/libXtst.so.7.0
@@ -584,7 +584,7 @@
 ./usr/X11R6/lib/libfontconfig.so.1.0
 ./usr/X11R6/lib/libfontenc_pic.a
 ./usr/X11R6/lib/libfreetype.a
-./usr/X11R6/lib/libfreetype.so.9.0
+./usr/X11R6/lib/libfreetype.so.10.0
 ./usr/X11R6/lib/liboldX.so.7.0
 ./usr/X11R6/lib/libpsres.so.2.0
 ./usr/X11R6/lib/libxkbfile_pic.a
