@@ -1,4 +1,4 @@
-
+/* $OpenBSD: macppcFbs.c,v 1.2 2001/09/09 13:44:27 matthieu Exp $ */
 /* $XConsortium: sunFbs.c,v 1.8 94/08/16 13:45:30 dpw Exp $ */
 
 /*
@@ -73,6 +73,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /****************************************************************/
 
 #include "macppc.h"
+#include "screenint.h"
 #include <sys/mman.h>
 #include <stdio.h>
 
@@ -80,10 +81,8 @@ int macppcScreenIndex;
 
 static unsigned long generation = 0;
 
-pointer macppcMemoryMap (
-    size_t	len,
-    off_t	off,
-    int		fd)
+pointer
+macppcMemoryMap(size_t	len, off_t off, int fd)
 {
     int		pagemask, mapsize;
     caddr_t	addr;
@@ -109,16 +108,10 @@ pointer macppcMemoryMap (
     return mapaddr;
 }
 
-#if NeedFunctionPrototypes
-Bool macppcScreenAllocate (
-    ScreenPtr	pScreen)
-#else
-Bool macppcScreenAllocate (pScreen)
-    ScreenPtr	pScreen;
-#endif
+Bool 
+macppcScreenAllocate(ScreenPtr pScreen)
 {
     macppcScreenPtr    pPrivate;
-    extern int AllocateScreenPrivateIndex();
 
     if (generation != serverGeneration)
     {
@@ -135,15 +128,8 @@ Bool macppcScreenAllocate (pScreen)
     return TRUE;
 }
 
-#if NeedFunctionPrototypes
-Bool macppcSaveScreen (
-    ScreenPtr	pScreen,
-    int		on)
-#else
-Bool macppcSaveScreen (pScreen, on)
-    ScreenPtr	pScreen;
-    int		on;
-#endif
+Bool 
+macppcSaveScreen(ScreenPtr pScreen, int	on)
 {
     int state;
 
@@ -159,9 +145,8 @@ Bool macppcSaveScreen (pScreen, on)
     return TRUE;
 }
 
-static Bool closeScreen (i, pScreen)
-    int		i;
-    ScreenPtr	pScreen;
+static Bool 
+closeScreen(int i, ScreenPtr pScreen)
 {
     SetupScreen(pScreen);
     Bool    ret;
@@ -199,18 +184,15 @@ static Bool closeScreen (i, pScreen)
     return ret;
 }
 
-#if NeedFunctionPrototypes
-Bool macppcScreenInit (
-    ScreenPtr	pScreen)
-#else
-Bool macppcScreenInit (pScreen)
-    ScreenPtr	pScreen;
-#endif
+Bool 
+macppcScreenInit(ScreenPtr pScreen)
 {
     SetupScreen(pScreen);
+#if 0
     extern void   macppcBlockHandler();
     extern void   macppcWakeupHandler();
     static ScreenPtr autoRepeatScreen;
+#endif
     extern miPointerScreenFuncRec macppcPointerScreenFuncs;
 
     pPrivate->installedMap = 0;
