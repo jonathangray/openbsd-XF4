@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.93 2002/05/24 20:48:02 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.94 2002/05/26 10:27:55 matthieu Exp $
 
 
 
@@ -145,6 +145,19 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define GccGasOption 		-DGCCUSESGAS
 #define AsmDefines 		-DUSE_GAS
+
+#ifndef DefaultCCOptions
+# if defined(UseInstalled)
+   /* conform to OpenBSD's habits */
+#  define DefaultCCOptions	$(COPTS)
+# else
+#  ifdef  PpcArchitecture
+#    define DefaultCCOptions	-ansi -fsigned-char GccWarningOptions
+#  else
+#    define DefaultCCOptions 	-ansi GccWarningOptions
+#  endif
+# endif
+#endif
 
 #define StandardDefines	-DCSRG_BASED
 #define XawI18nDefines	-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
@@ -774,26 +787,8 @@ install:: fonts.alias							@@\
  * which can be overridden by architecture specific sections above
  */
 
-#ifndef DefaultCCOptions
-# if defined(UseInstalled)
-   /* conform to OpenBSD's habits */
-#  define DefaultCCOptions     $(COPTS)
-# else
-#  ifdef  PpcArchitecture
-#    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm \
-				GccWarningOptions
-#  else
-#    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
-#  endif
-# endif
-#endif
-
 #if !defined(OptimizedCDebugFlags)
 # define OptimizedCDebugFlags	-O2
-#endif
-
-#if !defined(GccWarningOptions)
-# define GccWarningOptions -Wall -Wpointer-arith
 #endif
 
 #ifndef ServerOSDefines
