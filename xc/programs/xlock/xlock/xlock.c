@@ -296,13 +296,13 @@ pre_merge_options(void)
 
 	/* Put on the PROGCLASS.background/foreground resources. */
 	s = (char *) malloc(50);
-	(void) strcpy(s, progclass);
-	(void) strcat(s, ".background: black");
+	(void) strlcpy(s, progclass, 50);
+	(void) strlcat(s, ".background: black", 50);
 	defaults[i++] = s;
 
 	s = (char *) malloc(50);
-	(void) strcpy(s, progclass);
-	(void) strcat(s, ".foreground: white");
+	(void) strlcpy(s, progclass, 50);
+	(void) strlcat(s, ".foreground: white", 50);
 	defaults[i++] = s;
 
 	/* Copy the lines out of the `app_defaults' var and into this array. */
@@ -944,7 +944,7 @@ error(const char *buf)
 #if defined( HAVE_SYSLOG_H ) && defined( USE_SYSLOG )
 	extern Display *dsp;
 
-	syslog(SYSLOG_WARNING, buf);
+	syslog(SYSLOG_WARNING, "%s", buf);
 	if (!nolock) {
 		if (strstr(buf, "unable to open display") == NULL)
 			syslogStop(XDisplayString(dsp));
@@ -953,7 +953,7 @@ error(const char *buf)
 		closelog();
 	}
 #else
-	(void) fprintf(stderr, buf);
+	(void) fprintf(stderr, "%s", buf);
 #endif
 	exit(1);
 }
@@ -2843,6 +2843,9 @@ main(int argc, char **argv)
 	(void) signal(SIGUSR1, SigUsr1);
 	(void) signal(SIGUSR2, SigUsr2);
 
+    printf("uid: %d euid %d\n", getuid(), geteuid());
+    printf("ruid: %d\n", ruid);
+
 #if defined( __FreeBSD__ ) && !defined( DEBUG )
 	/* do not exit on FPE */
 	fpsetmask(0);
@@ -2943,6 +2946,7 @@ main(int argc, char **argv)
 #ifdef BAD_PAM
 /* BAD_PAM must have root access to authenticate against shadow passwords */
       (void) seteuid(ruid);
+      printf("seteuid(ruid)\n");
 /* for BAD_PAM to use shadow passwords, must call seteuid() later */
 #else
 
@@ -2957,7 +2961,8 @@ main(int argc, char **argv)
 	if (!vtlock)
 #endif
 		(void) setuid(ruid);
-
+    printf("uid: %d euid %d\n", getuid(), geteuid());
+    printf("ruid: %d\n", ruid);
 #if 0
 	/* synchronize -- so I'm aware of errors immediately */
 	/* Too slow only for debugging */

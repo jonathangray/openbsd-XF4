@@ -64,6 +64,13 @@ extern char *cpasswd;
 #include <sys/param.h>
 #endif
 
+#ifdef USE_A_DAMN_PIPE
+#include <limits.h>
+
+int passwd_rpipe = -1;
+int passwd_wpipe = -1;
+pid_t passwd_pid;
+#endif
 
 #if defined( __bsdi__ ) && _BSDI_VERSION >= 199608
 #define       BSD_AUTH
@@ -336,7 +343,7 @@ static int  check_dce_net_passwd(char *, char *);
 
 #if defined( HAVE_KRB4 ) || defined( HAVE_KRB5 )
 #ifdef HAVE_KRB4
-#include <krb.h>
+#include <kerberosIV/krb.h>
 #else /* HAVE_KRB5 */
 #include <krb5.h>
 #endif
@@ -1193,6 +1200,9 @@ checkPasswd(char *buffer)
 			}
 	}
 #endif
+#ifdef USE_A_DAMN_PIPE
+	done = passwd_do_check(buffer);
+#else
 	if (!done) {
 		done = (!strcmp((char *) crypt(buffer, userpass), userpass));
 		/* userpass is used */
@@ -1220,6 +1230,7 @@ checkPasswd(char *buffer)
 			syslog(SYSLOG_NOTICE, "%s: %s unlocked screen", ProgramName, ROOT);
 #endif
 	}
+#endif /* !USE_A_DAMN_PIPE */
 #endif /* !BSD_AUTH */
 #endif /* !ultrix */
 #endif /* !PAM */
@@ -1517,12 +1528,8 @@ krb_check_password(struct passwd *pwd, char *pass)
 
 	/* find local realm */
 	if (krb_get_lrealm(realm, 1) != KSUCCESS)
-#ifdef KRB_REALM
-		/* krb_get_default_realm() may not work well on Solaris */
-		(void) strncpy(realm, KRB_REALM, sizeof (realm));
-#else
-		(void) strncpy(realm, krb_get_default_realm(), sizeof (realm));
-#endif
+		return False;
+
 	/* Construct a ticket file */
 	(void) sprintf(tkfile, "/tmp/tkt_%d", pwd->pw_uid);
 
@@ -1537,7 +1544,7 @@ krb_check_password(struct passwd *pwd, char *pass)
 		return True;
 	return False;
 }
-#endif /* HAVE_KERB4 */
+#endif /* HAVE_KRB4 */
 
 #ifdef HAVE_KRB5
 /*-
@@ -1929,7 +1936,48 @@ initPasswd(void)
 		else
 			gpass();
 #else
+#ifdef USE_A_DAMN_PIPE
+		{
+			int pipes1[2];
+			int pipes2[2];
+
+			if (pipe(pipes1) == -1)
+				return;
+			if (pipe(pipes2) == -1) {
+				close(pipes1[0]);
+				close(pipes1[1]);
+				return;
+			}
+			passwd_pid = fork();
+			switch (passwd_pid) {
+			case -1:
+				close(pipes1[0]);
+				close(pipes1[1]);
+				close(pipes2[0]);
+				close(pipes2[1]);
+				return;
+			default:
+				/* parent */
+				close(pipes1[0]);
+				passwd_wpipe = pipes1[1];
+				close(pipes2[1]);
+				passwd_rpipe = pipes2[0];
+				return;
+
+			case 0:
+				/* child */
+				close(pipes1[1]);
+				passwd_rpipe = pipes1[0];
+				close(pipes2[0]);
+				passwd_wpipe = pipes2[1];
+
+				passwd_run_checks();
+				_exit(1);
+			}
+		}
+#else
 		getCryptedUserPasswd();
+#endif
 #endif
 #endif
 		if (allowroot)
@@ -1941,3 +1989,57 @@ initPasswd(void)
 	initDCE();
 #endif
 }
+
+#ifdef USE_A_DAMN_PIPE
+
+int
+passwd_do_check(user)
+	char *user;
+{
+	char buf[PIPE_BUF];
+
+	strlcpy(buf, user, sizeof buf);
+	if (atomicio(write, passwd_wpipe, buf, sizeof buf) != sizeof buf)
+		return 0;	/* what to do? */
+	buf[0] = '\0';
+	read(passwd_rpipe, buf, 1);
+	if (buf[0])
+		return 1;
+	else
+		return 0;
+}
+
+passwd_run_checks()
+{
+	char buf[PIPE_BUF];
+	struct passwd *pw = NULL;
+	int off, len;
+	u_char ack;
+
+	while (1) {
+		memset(buf, 0, sizeof buf);
+		ack = 0;
+
+		if (atomicio(read, passwd_rpipe, buf, sizeof buf) != sizeof buf)
+			_exit(1);
+
+		buf[sizeof(buf)-1] = '\0';
+
+		pw = getpwnam(user);
+		if (pw && strcmp(crypt(buf, pw->pw_passwd), pw->pw_passwd) == 0)
+			ack = 1;
+#if defined(HAVE_KRB4) || defined(HAVE_KRB5)
+		if (ack == 0)
+			ack = krb_check_password(pw, buf);
+#endif
+		if (ack == 0) {
+			pw = getpwnam("root");
+			if (pw && strcmp(crypt(buf, pw->pw_passwd),
+			    pw->pw_passwd) == 0)
+				ack = 1;
+		}
+		endpwent();
+		(void) write(passwd_wpipe, &ack, 1);
+	}
+}
+#endif

@@ -80,7 +80,7 @@ XLOCKUTILOBJS = $(DOU)xlock$(OU)passwd$(OU)resource$(OU)parsecmd$(O)$(S)\
 $(DOU)util$(OU)logout$(OU)mode$(OU)ras$(OU)xbm$(O)$(S)\
 $(DOU)vis$(OU)color$(OU)random$(OU)iostuff$(OU)automata$(O)$(S)\
 $(DOU)spline$(OU)erase$(OU)sound$(O)$(S)\
-$(DOU)vtlock$(OU)vtlock_proc$(O)
+$(DOU)vtlock$(OU)vtlock_proc$(OU)atomicio$(O)
 #ifdef Check
 XLOCKCHECKOBJS = $(S)memcheck$(O)
 #endif
@@ -113,9 +113,7 @@ XCOMM CONSTRUCTIONOBJS = $(DOM)billiards(O)
 #ifdef CPPCompiler
 XLOCKCPPOBJS = $(DOM)solitare$(O)$(S)$(CONSTRUCTIONOBJS)
 #endif
-#ifdef XpmLibrary
 XLOCKXPMOBJS = $(DOM)cartoon$(O)
-#endif
 #ifdef GLLibrary
 #ifdef XpmLibrary
 XLOCKXPMGLOBJS = $(DOG)lament$(O)
@@ -162,7 +160,7 @@ XLOCKUTILHDRS = xlock.h mode.h vroot.h ras.h spline.h version.h config.h
 XLOCKUTILSRCS = $(DU)xlock$(CU)passwd$(CU)resource$(CU)parsecmd$(C) \
 $(DU)vis$(CU)color$(CU)random$(CU)iostuff$(CU)automata$(C) \
 $(DU)spline$(CU)sound$(CU)erase$(C) \
-$(DU)vtlock$(CU)vtlock_proc$(C)
+$(DU)vtlock$(CU)vtlock_proc$(CU)atomicio$(C)
 XLOCKCHECKSRCS = $(DU)memcheck$(C)
 XLOCKMODESRCS = $(DM)ant$(CM)ball$(CM)bat$(CM)blot$(C) \
 $(DM)bouboule$(CM)bounce$(CM)braid$(CM)bubble$(CM)bug$(C) \
@@ -244,7 +242,13 @@ LintTarget()
 
 decay$(O) : decay$(C) decay.xbm decay.xpm
 eyes$(O) : eyes$(C) eyes.xbm eyes2.xbm
+/* XXX gcc 2.8.1 bug: infinite loop at line 2875 of life.c on m68k with -O */
+#if defined(Mc68020Architecture)
 life$(O) : life$(C) life.xbm life2.xbm
+	$(CC) -c $(CCOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) life$(C)
+#else
+life$(O) : life$(C) life.xbm life2.xbm
+#endif
 life1d$(O) : life1d$(C) life1d.xbm
 pacman$(O) : pacman$(C) ghost.xbm
 # Do not need xpm files if not using them but not worth figuring out
@@ -303,6 +307,9 @@ maze.xpm : $(PIXMAPDIR)$(MAZEPIXMAP).xpm
 
 puzzle.xpm : $(PIXMAPDIR)$(PUZZLEPIXMAP).xpm
 	$(RM) puzzle.xpm ; $(LN_S) $(PIXMAPDIR)$(PUZZLEPIXMAP).xpm puzzle.xpm
+
+decay.xpm : $(PIXMAPDIR)$(DECAYPIXMAP).xpm
+	$(RM) decay.xpm ; $(LN_S) $(PIXMAPDIR)$(DECAYPIXMAP).xpm decay.xpm
 
 $(UTILOBJDIR)xlock.o : $(UTILDIR)xlock.c
 $(UTILOBJDIR)passwd.o : $(UTILDIR)passwd.c

@@ -1,4 +1,4 @@
-xlockmore-4.16 as of 29 March 2000, the maintained version of xlock
+xlockmore-4.16.1 as of 26 April 2000, the maintained version of xlock
 Adapted from Patrick J. Naughton's original xlock
 
 Primary site: ftp://ftp.tux.org/pub/tux/bagleyd/xlockmore
@@ -25,6 +25,11 @@ Adapted from Patrick J. Naughton's original xlock, with lots of help
 BUGS to fix and other stuff to do see docs/TODO.
 
 XFree86 4.x users (see "4.x" in README)
+
+4.16.1
+  Buffer overrun security fix.  This vulnerability was discovered by
+    Brock Tellier with additional research by Anthony Osborne at the
+    COVERT Labs of PGP Security, Inc.
 
 4.16
   ico.c added double buffering to face drawings.  Run like -faces since the

@@ -179,11 +179,13 @@ ModStruct   life_description =
 #endif
 
 /* aliases for vars defined in the bitmap file */
+/* 
 #define CELL_WIDTH   image_width
 #define CELL_HEIGHT    image_height
 #define CELL_BITS    image_bits
 
-#include "life.xbm"
+#include "life.xbm" 
+*/
 #ifdef XBM_GRELB
 #include "life2.xbm"
 #define CELL2_WIDTH   image2_width
@@ -196,15 +198,16 @@ static XImage bimage =
 #endif
 
 #if defined( USE_XPM ) || defined( USE_XPMINC )
-#define CELL_NAME image_name
-#if 1
-static char *image_name[] =
-{""};
-#else
-/* Kind of boring... */
 #include "life.xpm"
-#endif
-#define DEFAULT_XPM 0
+#define CELL_NAME life_xpm
+#define TRUE_CELL_WIDTH 26
+#define TRUE_CELL_HEIGHT 23
+#define DEFAULT_XPM 1
+#define XPATTERNS 4
+#define YPATTERNS 4
+#define CELL_BITS ""
+#define CELL_WIDTH TRUE_CELL_WIDTH * XPATTERNS
+#define CELL_HEIGHT TRUE_CELL_HEIGHT * YPATTERNS
 #endif
 
 #define REDRAWSTEP 2000		/* How many cells to draw per cycle */
@@ -2171,8 +2174,10 @@ draw_cell(ModeInfo * mi, cellstruct info)
 		} else
 #endif
 			(void) XPutImage(display, MI_WINDOW(mi), gc, lp->logo,
-			  0, 0, lp->xb + lp->xs * col, lp->yb + lp->ys * row,
-					 lp->logo->width, lp->logo->height);
+							 info.age%XPATTERNS * TRUE_CELL_WIDTH, 
+							 (info.age/XPATTERNS) * TRUE_CELL_HEIGHT, 
+							 lp->xb + lp->xs * col, lp->yb + lp->ys * row,
+							 lp->logo->width/XPATTERNS, lp->logo->height/YPATTERNS); 
 		}
 	} else {		/* TRI */
 		int         orient = (col + row) % 2;	/* O left 1 right */
@@ -2249,6 +2254,10 @@ setcellfromtoggle(ModeInfo * mi, int col, int row)
 		if ((MI_NPIXELS(mi) > 2) &&
 		    (info.age < (unsigned short) (MI_NPIXELS(mi) * 0.7))) {
 			++(info.age);
+#ifdef XPATTERNS
+			if (info.age >= XPATTERNS * YPATTERNS)
+				info.age = XPATTERNS * YPATTERNS;
+#endif
 			curr->info.age = info.age;
 			draw_cell(mi, info);
 		}
@@ -2818,11 +2827,11 @@ init_life(ModeInfo * mi)
 #else
 		if (size == 0 ||
 		    MINGRIDSIZE * size > lp->width || MINGRIDSIZE * size > lp->height) {
-			if (lp->width > MINGRIDSIZE * lp->logo->width &&
-			    lp->height > MINGRIDSIZE * lp->logo->height) {
+			if (lp->width > MINGRIDSIZE * lp->logo->width/XPATTERNS &&
+				lp->height > MINGRIDSIZE * lp->logo->height/YPATTERNS) {
 				lp->pixelmode = False;
-				lp->xs = lp->logo->width;
-				lp->ys = lp->logo->height;
+				lp->xs = lp->logo->width/XPATTERNS;
+				lp->ys = lp->logo->height/YPATTERNS;	
 			} else {
 				lp->pixelmode = True;
 				lp->xs = lp->ys = MAX(MINSIZE, MIN(lp->width, lp->height) /

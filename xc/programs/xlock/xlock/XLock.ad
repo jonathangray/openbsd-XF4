@@ -54,10 +54,10 @@ XLock.both3d: Magenta
 
 ! For marquee & nose modes
 !XLock.program: fortune -o
-XLock.program: fortune -s
+!XLock.program: fortune -s
 !XLock.program: fortune
 !XLock.program: /usr/games/fortune -o
-!XLock.program: /usr/games/fortune -s
+XLock.program: /usr/games/fortune -s
 !XLock.program: /usr/games/fortune
 !XLock.program: finger
 !XLock.messagesfile: fortune.dat

@@ -13,7 +13,7 @@
 XCOMM !!!WARNING!!! Known security hole with MesaGL < 3.0 if setuid root
 XCOMM Define these now or down further below, see below for explaination.
 XCOMM  #define CPPCompiler
-XCOMM  #define XpmLibrary
+XCOMM  #define XpmLibrary /* On OpenBSD this is HasXpm */
 XCOMM  #define XmLibrary
 XCOMM  #define XawLibrary
 XCOMM  #define GLLibrary
@@ -69,22 +69,20 @@ XCOMM modes use this.
 XCOMM If your system has libXpm, remove the 'XCOMM  ' from the next line.
 XCOMM  #define XpmLibrary
 
-#ifdef XpmLibrary
 XPMDEF = -DUSE_XPM
 XCOMM Use the following if your xpm.h file is not in an X11 directory
 XCOMM  XPMDEF = -DUSE_XPMINC
 
 XCOMM If you get an error "Cannot find xpm.h" while compiling, set
 XCOMM XPMINC to the directory X11/xpm.h is in.  Below is a guess.
-XPMINC = -I/usr/local/include
+XCOMM XPMINC = -I/usr/local/include
 XCOMM SGI's ViewKit (use with -DUSE_XPMINC)
 XCOMM  XPMINC = -I/usr/include/Vk
 
 XCOMM If you get an error "Cannot find libXpm" while linking, set XPMLIBPATH
 XCOMM to the directory libXpm.* is in.  Below is a guess.
-XPMLIB = -L/usr/local/lib -lXpm
+XCOMM XPMLIB = XpmLibrary
 
-#endif
 
 XCOMM   *** END XPM CONFIG SECTION ***
 
@@ -313,6 +311,10 @@ UNSTABLEDEF = -DUSE_UNSTABLE
 
 XCOMM      *** END DEBUG CHECK SECTION ***
 
+XCOMM      *** DEFINE THIS TO USE A SEPARATE PROCESS (SAFER) ***
+XCOMM      *** TO VALIDATE PASSWORDS                         ***
+PIPEDEF = -DUSE_A_DAMN_PIPE
+
 #ifndef __QNX__
 #ifndef MathLibrary
 #define MathLibrary -lm
@@ -323,10 +325,13 @@ PASSWDDEF = -DHAVE_SHADOW -Dlinux
 PASSWDLIB = -l/src/util/Lib/util
 #endif
 
+#if HasKrbIV
 XCOMM KERBEROS Ver. 4
-XCOMM  PASSWDDEF = -DHAVE_KRB4
+PASSWDDEF = -DHAVE_KRB4
 XCOMM  PASSWDINC = -I/usr/athena/include
 XCOMM  PASSWDLIB = -L/usr/athena/lib -lkrb -ldes -lresolv
+PASSWDLIB = -lkrb -ldes
+#endif
 XCOMM
 XCOMM KERBEROS Ver. 5
 XCOMM  PASSWDDEF = -DHAVE_KRB5
@@ -404,11 +409,10 @@ PASSWDDEF = -DHAVE_SHADOW
 BITMAPTYPE = x11
 PIXMAPTYPE = x11
 #else
-#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture)
+#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(OpenBSDArchitecture) || defined(i386BsdArchitecture)
 SLEEPDEF = -DHAVE_USLEEP
 BITMAPTYPE = bsd
 PIXMAPTYPE = bsd
-INSTPGMFLAGS = -s -o root -m 4111
 #else
 #ifdef LinuxArchitecture
 SLEEPDEF = -DHAVE_USLEEP
@@ -501,7 +505,7 @@ XCOMM -DSTAFF_FILE=\"/etc/xlock.staff\"  File of staff who are exempt
 XCOMM -DSTAFF_NETGROUP=\"/etc/xlock.netgroup\"  Netgroup that is exempt
 
 XCOMM May have to combine in one long line if "+=" does not work
-OPTDEF = -DUSE_VROOT -DALWAYS_ALLOW_ROOT -DUSE_BOMB
+OPTDEF = -DUSE_VROOT -DALWAYS_ALLOW_ROOT -DUSE_BOMB -DCOMPLIANT_COLORMAP
 XCOMM  OPTDEF += -DUSE_UNSTABLE
 XCOMM  OPTDEF += -DUSE_SYSLOG -DSYSLOG_FACILITY=LOG_AUTH
 XCOMM  OPTDEF += -DSYSLOG_WARNING=LOG_WARNING
@@ -520,15 +524,15 @@ XCOMM  OPTDEF += -DSTAFF_FILE=\"/etc/xlock.staff\"
 XCOMM  OPTDEF += -DSTAFF_NETGROUP=\"/etc/xlock.netgroup\"
 
 DEFINES = -DDEF_FILESEARCHPATH=\"$(LIBDIR)/%T/%N%S\" \
-$(SYSTEMDEF) $(EDITRESDEF) $(SLEEPDEF) $(OPTDEF) $(RANDDEF) \
+$(PIPEDEF) $(SYSTEMDEF) $(EDITRESDEF) $(SLEEPDEF) $(OPTDEF) $(RANDDEF) \
 $(MODULEDEF) $(CHECKDEF) $(UNSTABLEDEF) $(PASSWDDEF) $(XMINC) $(XAWINC) \
 $(CPPDEF) $(XPMDEF) $(GLDEF) $(DTSAVERDEF) $(DPMSDEF) \
 $(SOUNDDEF) $(PASSWDINC) $(XPMINC) $(GLINC) $(DTSAVERINC) $(DPMSINC) \
 $(SOUNDINC) $(XLOCKINC)
 
 DEPLIBS = $(DEPXLIB)
-LOCAL_LIBRARIES = $(MODULELIB) $(XLIB) \
-$(XPMLIB) $(GLLIB) $(DTSAVERLIB) $(DPMSLIB) $(SOUNDLIB)
+LOCAL_LIBRARIES = $(MODULELIB) $(XPMLIB) $(GLLIB) $(DTSAVERLIB) \
+$(DPMSLIB) $(XLIB) $(SOUNDLIB)
 MLIBS = $(XPMLIB) $(XMLIB) $(EDITRESLIB) -lXt $(XLIB) $(SMLIB) $(ICELIB)
 ALIBS = $(XAWLIB) -lXt $(XLIB) $(SMLIB) $(ICELIB)
 LINTLIBS = $(LINTXLIB)

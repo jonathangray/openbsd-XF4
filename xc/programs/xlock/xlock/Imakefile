@@ -19,7 +19,7 @@ XLOCKUTILOBJS = $(DOU)xlock$(OU)passwd$(OU)resource$(OU)parsecmd$(O)$(S)\
 $(DOU)util$(OU)logout$(OU)mode$(OU)ras$(OU)xbm$(O)$(S)\
 $(DOU)vis$(OU)color$(OU)random$(OU)iostuff$(OU)automata$(O)$(S)\
 $(DOU)spline$(OU)sound$(OU)erase$(O)$(S)\
-$(DOU)vtlock$(OU)vtlock_proc$(O)
+$(DOU)vtlock$(OU)vtlock_proc$(OU)atomicio$(O)
 #ifdef Check
 XLOCKCHECKOBJS = $(S)memcheck$(O)
 #endif
@@ -30,7 +30,7 @@ XLOCKUTILSRCS = $(DU)xlock$(CU)passwd$(CU)resource$(CU)parsecmd$(C) \
 $(DU)util$(CU)logout$(CU)mode$(CU)ras$(CU)xbm$(C) \
 $(DU)vis$(CU)color$(CU)random$(CU)iostuff$(CU)automata$(C) \
 $(DU)spline$(CU)sound$(CU)erase$(C) \
-$(DU)vtlock$(CU)vtlock_proc$(C)
+$(DU)vtlock$(CU)vtlock_proc$(CU)atomicio$(C)
 XLOCKCHECKSRCS = $(DU)memcheck$(C)
 
 XCOMM default target
@@ -40,7 +40,7 @@ all:: $(XLOCKUTILOBJS) $(XLOCKDEBUGOBJS)
 DependTarget()
 LintTarget()
 
-InstallProgram(xlock,$(BINDIR))
+InstallProgramWithFlags(xlock,$(BINDIR),$(INSTUIDFLAGS))
 InstallAppDefaults(XLock)
 InstallManPage(xlock,$(MANDIR))
 
