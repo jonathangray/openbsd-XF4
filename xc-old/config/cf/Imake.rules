@@ -1354,6 +1354,48 @@ step:: list								@@\
 	for i in list; do (set -x; RemoveFile($$i); $(LN) sub/$$i .); done
 #endif
 
+/*
+ * LinkConfDirectoryLong
+ *
+ * Make links from opath (usually <ProjectRoot>/lib/X11) to npath
+ * For example /usr/X11R6/lib/X11/xdm ==> /etc/X11/xdm so that X 
+ * binaries can be mounted from a read-only volume like a CD-ROM;
+ * but files that may need to be edited can be stored locally on 
+ * read-write media. If someone has an existing installation, be
+ * careful and move existing files to the new location in /etc.
+ * XXX Need to make the installation script do this when installing
+ * binary distributions.
+ *
+ * Since the link is used in the installation process, we need to
+ * make the link relative in order to honor $(DESTDIR) if it is set.
+ */
+#ifndef LinkConfDirectoryLong
+#if UseSeparateConfDir && HasSymLinks
+#define LinkConfDirectoryLong(mdir,cdir,rdir,ldir,opath,npath)		@@\
+install::								@@\
+	MakeDir(Concat($(DESTDIR),opath/cdir))				@@\
+	MakeDir(Concat($(DESTDIR),npath/mdir))				@@\
+	@MakeFlagsToShellFlags(i,set +e); \				@@\
+	if [ -d Concat($(DESTDIR),opath/cdir) ]; then \			@@\
+	  RELPATH=`echo opath/cdir | \					@@\
+		sed -e 's:^.::' -e 's:[^/.][^/]*:..:'g`; \		@@\
+	  cd Concat($(DESTDIR),opath/cdir); \				@@\
+	  if [ -d rdir -a ! -h rdir ]; then \ 				@@\
+	    (cd rdir; tar cf - . | \					@@\
+		(cd Concat($(DESTDIR),npath/mdir); \			@@\
+		 tar xf -; exit 0); exit 0); \				@@\
+	  fi; \								@@\
+	  $(RM) -r rdir; \						@@\
+	  $(LN) Concat($${RELPATH},npath/mdir) ldir; \			@@\
+	fi
+#else
+#define LinkConfDirectoryLong(mdir,cdir,rdir,ldir,opath,npath)
+#endif
+#endif
+
+#ifndef LinkConfDirectory
+#define LinkConfDirectory(mdir,cdir,rdir,ldir) LinkConfDirectoryLong(mdir,cdir,rdir,ldir,$(LIBDIR),$(CONFDIR))
+#endif
 
 /*
  * LinkVarDirectory
