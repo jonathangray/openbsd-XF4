@@ -41,6 +41,8 @@ SHARED_CFLAGS = PositionIndependentCFlags
 #elif defined(OpenBSDArchitecture) 
 # if defined(i386Architecture) 
   IOPERMDEFINES = -DUSE_I386_IOPL
+# elif defined(AMD64Architecture)
+  IOPERMDEFINES = -DUSE_AMD64_IOPL
 # else
   IOPERM_SRC = ioperm_noop.c
   IOPERM_OBJ = ioperm_noop.o

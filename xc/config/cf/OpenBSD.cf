@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.132 2004/02/24 23:30:49 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.133 2004/02/28 13:56:40 matthieu Exp $
 
 
 
@@ -216,8 +216,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # define OverrideShlibRevs     HasGccStackProtector
 #endif
 
-
-#define StandardDefines	-DCSRG_BASED
 #define XawI18nDefines	-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
 
 
@@ -459,12 +457,46 @@ install:: fonts.alias							@@\
  */
 #ifdef AMD64Architecture
 
-# define HasWeakSymbols		NO /* XXX */
+# define HasWeakSymbols		YES
 # define HasSharedLibraries	YES
 # define HasDlopen		YES
 
-# define XF86Server		NO
+# define XF86Server		YES
 
+# ifndef DoLoadableServer
+#  define DoLoadableServer	NO
+# endif
+
+# ifndef HasNetBSDApertureDriver
+#  define HasNetBSDApertureDriver	YES
+# endif
+
+# define HasAgpGart		YES
+
+# define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME
+
+# define ServerExtraSysLibs	-lamd64
+# define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
+
+# ifndef XFree86ConsoleDefines
+#  define XFree86ConsoleDefines	-DWSCONS_SUPPORT -DPCVT_SUPPORT
+# endif
+
+# ifndef UsbMouseSupport
+#  define UsbMouseSupport	YES
+# endif
+
+# ifndef OSXInputDrivers
+#   define OSXInputDrivers	usbtablet
+# endif
+
+# ifndef HasMMXSupport
+#   define HasMMXSupport	YES
+# endif
+
+# ifndef HasX86Support
+#  define HasX86Support		YES
+# endif
 # include <xfree86.cf>
 
 #endif /* AMD64Architecture */
@@ -983,6 +1015,10 @@ install:: fonts.alias							@@\
  * Generic settings for all architectures
  * which can be overridden by architecture specific sections above
  */
+
+#ifndef StandardDefines
+# define StandardDefines	-DCSRG_BASED 
+#endif
 
 #if !defined(OptimizedCDebugFlags)
 # define OptimizedCDebugFlags	-O2

@@ -532,7 +532,7 @@ extern int errno;
 # endif
 # endif /* __bsdi__ */
 
-#ifdef USE_I386_IOPL
+#if defined(USE_I386_IOPL) || defined(USE_AMD64_IOPL)
 #include <machine/sysarch.h>
 #endif
 

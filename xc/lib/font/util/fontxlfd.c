@@ -197,7 +197,7 @@ xlfd_round_double(double x)
     defined(ia64) || defined(__ia64__) || \
     defined(__alpha__) || defined(__alpha) || \
     defined(__hppa__) || \
-    defined(__AMD64__) || defined(__AMD64) || \
+    defined(__AMD64__) || defined(__AMD64) || defined(__amd64__) || \
     defined(sgi)
 #if !defined(__UNIXOS2__)
 #include <float.h>
