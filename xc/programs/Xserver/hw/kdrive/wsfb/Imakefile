@@ -1,0 +1,14 @@
+XCOMM $XFree86$
+
+KDRIVE=.. 
+#include "../Kdrive.tmpl"
+
+SRCS= wsfb.c wsfbinit.c wsmouse.c wskbd.c
+OBJS= wsfb.o wsfbinit.o wsmouse.o wskbd.o
+
+INCLUDES= -I. $(KDINCS)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(wsfb,$(OBJS))
+InstallManPage(Xwsfb,$(MANDIR))
+DependTarget()

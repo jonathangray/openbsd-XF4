@@ -1,0 +1,23 @@
+.\" $XFree86$
+.TH Xwsfb 1 __vendorversion__
+.SH NAME
+Xwsfb \- Wscons tiny X server
+.SH SYNOPSIS
+.B Xwsfb
+.RI [ :display ]
+.RI [ option ]
+.SH DESCRIPTION
+.B Xwsfb
+is a generic X server for OpenBSD.
+.B Xwsfb
+doesn't know about any particular hardware, and uses the video mode
+set by the wscons console driver. 
+.SH OPTIONS
+None for now.
+.SH BUGS
+Many for now. 
+.SH SEE ALSO
+X(__miscmansuffix__), Xserver(1), Xkdrive(1), xdm(1), xinit(1).
+.SH AUTHORS
+The wsfb driver was written by Matthieu Herrb for the OpenBSD
+Project. 
