@@ -250,9 +250,16 @@
 ./usr/X11R6/include/X11/extensions/xf86mscstr.h
 ./usr/X11R6/include/X11/extensions/xf86vmode.h
 ./usr/X11R6/include/X11/extensions/xf86vmstr.h
+./usr/X11R6/include/X11/fonts/codeconv/cconvversion.h
+./usr/X11R6/include/X11/fonts/codeconv/xttcap.h
+./usr/X11R6/include/X11/fonts/codeconv/xttcconv.h
+./usr/X11R6/include/X11/fonts/codeconv/xttcconvP.h
+./usr/X11R6/include/X11/fonts/codeconv/xttcommon.h
+./usr/X11R6/include/X11/fonts/codeconv/xttversion.h
 ./usr/X11R6/lib/X11/fonts/PEX
 ./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
 ./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
+./usr/X11R6/lib/X11/fonts/local/fonts.dir
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libGL.so.1.2
 ./usr/X11R6/lib/libGLU.so.1.3

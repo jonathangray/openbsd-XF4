@@ -454,12 +454,6 @@
 ./usr/X11R6/include/X11/fonts/FS.h
 ./usr/X11R6/include/X11/fonts/FSlib.h
 ./usr/X11R6/include/X11/fonts/FSproto.h
-./usr/X11R6/include/X11/fonts/codeconv/cconvversion.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcap.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcconv.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcconvP.h
-./usr/X11R6/include/X11/fonts/codeconv/xttcommon.h
-./usr/X11R6/include/X11/fonts/codeconv/xttversion.h
 ./usr/X11R6/include/X11/fonts/fsmasks.h
 ./usr/X11R6/include/X11/keysym.h
 ./usr/X11R6/include/X11/keysymdef.h
