@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.121 2003/05/08 21:05:08 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.122 2003/05/14 09:18:04 mho Exp $
 
 
 
@@ -62,7 +62,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasSetProcTitle		YES
 #define HasZlib			YES
 #ifndef HasKrbIV
-#define HasKrbIV		YES
+#define HasKrbIV		NO
 #endif
 #define HasUsableFileMmap	YES
 #define HasShadowPasswd		NO
