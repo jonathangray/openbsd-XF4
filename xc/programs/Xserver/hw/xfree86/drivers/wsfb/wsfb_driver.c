@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.24 2005/01/17 22:30:05 drahn Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.25 2005/01/22 22:37:00 miod Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -514,8 +514,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	pScrn->progClock = TRUE;
 	pScrn->rgbBits   = 8;
 	pScrn->chipset   = "wsfb";
-	pScrn->videoRam  = fPtr->linebytes * fPtr->info.height
-		* fPtr->info.depth;
+	pScrn->videoRam  = fPtr->linebytes * fPtr->info.height;
 
 	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Vidmem: %dk\n",
 		   pScrn->videoRam/1024);
@@ -536,7 +535,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 		if (xf86ReturnOptValBool(fPtr->Options,
 					 OPTION_SHADOW_FB, FALSE)) {
 			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-				   "Shadow FB option ignored on depth 1");
+				   "Shadow FB option ignored on depth < 8");
 		}
 
 	/* rotation */
@@ -568,7 +567,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 			}
 		} else {
 			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			    "Option \"Rotate\" ignored on depth 1");
+			    "Option \"Rotate\" ignored on depth < 8");
 		}
 	}
 	/* fake video mode struct */
@@ -665,6 +664,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 #endif
 	switch (fPtr->info.depth) {
 	case 1:
+	case 4:
 	case 8:
 		len = fPtr->linebytes*fPtr->info.height;
 		break;
@@ -750,13 +750,13 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		ret = xf1bppScreenInit(pScreen, fPtr->fbstart,
 				       width, height,
 				       pScrn->xDpi, pScrn->yDpi,
-				       pScrn->displayWidth);
+				       fPtr->linebytes * 8);
 		break;
 	case 4:
 		ret = xf4bppScreenInit(pScreen, fPtr->fbstart,
 				       width, height,
 				       pScrn->xDpi, pScrn->yDpi,
-				       pScrn->displayWidth);
+				       fPtr->linebytes * 2);
 		break;
 	case 8:
 	case 16:
@@ -840,7 +840,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	/* colormap */
 	if (!miCreateDefColormap(pScreen))
 		return FALSE;
-		flags = CMAP_RELOAD_ON_MODE_SWITCH;
+	flags = CMAP_RELOAD_ON_MODE_SWITCH;
 	if(!xf86HandleColormaps(pScreen, 256, 8, WsfbLoadPalette,
 				NULL, flags))
 		return FALSE;
@@ -1022,7 +1022,7 @@ WsfbLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 		if (ioctl(fPtr->fd,WSDISPLAYIO_PUTCMAP, &cmap) == -1)
 			ErrorF("ioctl FBIOPUTCMAP: %s\n", strerror(errno));
 	} else {
-		/* Change all colors in 2 syscalls */
+		/* Change all colors in 2 ioctls */
 		/* and limit the data to be transfered */
 		for (i = 0; i < numColors; i++) {
 			if (indices[i] < indexMin)
@@ -1079,7 +1079,7 @@ WsfbSave(ScrnInfoPtr pScrn)
 
 	TRACE_ENTER("WsfbSave");
 	fPtr->saved_cmap.index = 0;
-	fPtr->saved_cmap.count = 256;
+	fPtr->saved_cmap.count = fPtr->info.cmsize;
 	fPtr->saved_cmap.red = fPtr->saved_red;
 	fPtr->saved_cmap.green = fPtr->saved_green;
 	fPtr->saved_cmap.blue = fPtr->saved_blue;
@@ -1101,7 +1101,7 @@ WsfbRestore(ScrnInfoPtr pScrn)
 
 	/* reset colormap for text mode */
 	fPtr->saved_cmap.index = 0;
-	fPtr->saved_cmap.count = 256;
+	fPtr->saved_cmap.count = fPtr->info.cmsize;
 	fPtr->saved_cmap.red = fPtr->saved_red;
 	fPtr->saved_cmap.green = fPtr->saved_green;
 	fPtr->saved_cmap.blue = fPtr->saved_blue;
