@@ -1,4 +1,4 @@
-/* $OpenBSD: main.c,v 1.5 2002/12/31 17:41:02 matthieu Exp $ */
+/* $OpenBSD: main.c,v 1.6 2004/01/23 22:19:47 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -30,13 +30,26 @@
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/param.h>
+
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
+
+#include <err.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "callbacks.h"
 #include "interface.h"
 #include "policy.h"
+
+#define CRADLE_UI "cradle_ui"
 
 extern char *__progname;
 
@@ -148,6 +161,36 @@ main(int argc, char *argv[])
 	if (nres.timeout_secs)
 		XtAppAddTimeOut(appContext, 1000*nres.timeout_secs,
 		    timeOut, NULL);
+
+	if (argc == 2 && strcmp(argv[1], "-C") == 0) {
+		struct sockaddr_un sun;
+                int s;
+                char path[MAXPATHLEN];
+
+                snprintf(path, sizeof(path), "/tmp/systrace-%d/%s",
+                    getuid(), CRADLE_UI);
+
+                s = socket(AF_UNIX, SOCK_STREAM, 0);
+                if (s == -1)
+                        err(1, "socket()");
+
+                memset(&sun, 0, sizeof(sun));
+                sun.sun_family = AF_UNIX;
+
+                if (strlcpy(sun.sun_path, path, sizeof(sun.sun_path)) >
+                    sizeof(sun.sun_path))
+                        errx(1, "Path too long: %s", path);
+
+                if (connect(s, (struct sockaddr *)&sun, sizeof(sun)) == -1)
+                        err(1, "connect()");
+
+                if (dup2(s, fileno(stdin)) == -1)
+                        err(1, "dup2");
+                if (dup2(s, fileno(stdout)) == -1)
+                        err(1, "dup2");
+
+	
+	}
 
 	setvbuf(stdin, NULL, _IOLBF, 0);
 	setvbuf(stdout, NULL, _IOLBF, 0);

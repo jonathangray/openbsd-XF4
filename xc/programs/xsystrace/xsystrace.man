@@ -1,4 +1,4 @@
-.\" $OpenBSD: xsystrace.man,v 1.1 2002/06/04 21:23:41 matthieu Exp $
+.\" $OpenBSD: xsystrace.man,v 1.2 2004/01/23 22:19:47 matthieu Exp $
 .\"
 .\" Copyright (c) 2002 Matthieu Herrb
 .\" All rights reserved.
@@ -31,12 +31,19 @@
 .SH NAME
 Xsystrace \- user notification interface for systrace(1)
 .SH SYNOPSIS
-Xsystrace is not meant to be called directly. It is started by
+Xsystrace is normally started by
 .I systrace(1).
+Xsystrace can also be used for attaching to 
+.I systrace(1)
+instances running in cradle mode.
 .SH DESCRIPTION
 .B Xsystrace 
 is the notification user interface for 
 .I systrace(1)
+.SH OPTIONS
+.TP 8
+.B "-C"
+Attach onto existing systrace session running in cradle mode
 .SH RESOURCES
 Many. 
 .SH "SEE ALSO"
