@@ -194,6 +194,7 @@
 #define KEY_F17          /* F17                   0x72  */  114
 #define KEY_KP_DEC       /* KP_DEC                0x73  */  115
 #define KEY_BSlash2      /* \           _         0x73  */  115
+#define KEY_KP_Equal     /* Equal (Keypad)        0x7e  */  118
 #define KEY_XFER         /* Kanji Transfer        0x79  */  121
 #define KEY_NFER         /* No Kanji Transfer     0x7b  */  123
 #define KEY_Yen          /* Yen                   0x7d  */  125
