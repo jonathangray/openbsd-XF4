@@ -1,6 +1,6 @@
 XCOMM!/bin/sh
 XCOMM $Xorg: xinitrc.cpp,v 1.3 2000/08/17 19:54:30 cpqbld Exp $
-XCOMM $OpenBSD: xinitrc.cpp,v 1.6 2001/06/04 12:42:30 matthieu Exp $
+XCOMM $OpenBSD: xinitrc.cpp,v 1.7 2004/09/21 04:01:25 david Exp $
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -38,7 +38,7 @@ fi
 XCOMM start some nice programs
 
 xclock -geometry 50x50-1+1 &
-xconsole &
+xconsole -iconic &
 xterm -geometry 80x24 &
 fvwm || xterm
 
