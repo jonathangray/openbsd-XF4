@@ -1,0 +1,64 @@
+/*
+ *  Imakefile for xautolock. Edit to your likings.
+ */
+
+#define HasScreenSaver 1  /* by default assume to have MIT ScreenSaver */
+#define HasXidle       0  /* by default assume not to have Xidle       */
+
+
+/*
+ *  No need to modify these, Imake fill take care of them.
+ */
+#if HasPrototypes
+     PROTOTYPES = -DHasPrototypes 
+#endif
+
+#if HasVFork
+          VFORK = -DHasVFork
+#endif 
+
+#if HasVoidSignalReturn
+     VOIDSIGNAL = -DHasVoidSignalReturn
+#endif 
+
+
+/*
+ *  This solves the wait() problems on DEC OSF/1, but there has to 
+ *  be a more general fix. DEC OSF/1 also has problems with getenv.
+ */
+#ifdef OSF
+  EXTRA_DEFINES = -DSYSV
+#endif 
+
+
+/*
+ *  If DEC needs a special option, for sure HP cannot lag behind... :-)
+ */
+#ifdef HPArchitecture
+      CCOPTIONS = -Ae
+#endif
+
+           SRCS = xautolock.c 
+           OBJS = $(SRCS:.c=.o)
+
+#if HasXidle
+       HASXIDLE = -DHasXidle
+/*
+ *  Since Xidle is rather rare, I don't know of a generic way to
+ *  refer to the required libraries and include files. Users of
+ *  xidle will thus have to tweak things by hand here.
+ */
+#endif
+
+#if HasScreenSaver
+       HASSAVER = -DHasScreenSaver
+       SAVERLIB = $(XSSLIB)
+    DEPSAVERLIB = $(DEPXSSLIB)
+#endif
+
+LOCAL_LIBRARIES = $(SAVERLIB) $(XLIB)
+        DEPLIBS = $(DEPSAVERLIB) $(DEPXLIB)
+        DEFINES = $(PROTOTYPES) $(VOIDSIGNAL) $(VFORK) \
+	          $(HASXIDLE) $(HASSAVER)
+
+SimpleProgramTarget(xautolock)
