@@ -240,7 +240,7 @@ XPFBLIBS = dix/LibraryTargetName(xpstubs)
            FONT = $(LDPRELIB) $(XFONTLIB) $(FREETYPE2LIB)
 #endif
        FONTLIBS = $(FONT) $(XPFBLIBS)
-#if !HasLibUsb
+#if !HasLibUsbHid
             USB = $(XF86OSSRC)/bsd/libusb/LibraryTargetName(usb)
 #else
             USB = UsbHidLib

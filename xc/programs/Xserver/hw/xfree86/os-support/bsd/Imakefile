@@ -80,18 +80,15 @@ MTRRDEFINES = -DHAS_MTRR_BUILTIN
 SYSVIPCDEFINES = -DHAVE_SYSV_IPC
 
 #if UsbMouseSupport
-USBMOUSEDEFINES1 = -DUSBMOUSE_SUPPORT
-#if !HasLibUsb
+#if HasLibUsbHid
+LIBUSBHIDDEFINES = -DHAS_LIB_USB_HID
+#else
 LIBUSBINCLUDES = -Ilibusb
 #define IHaveSubdirs
 SUBDIRS = libusb
-#else
-#if HasLibUsbHid
-USBMOUSEDEFINES2 = -DHAS_LIB_USB_HID
 #endif
+USBMOUSEDEFINES =  -DUSBMOUSE_SUPPORT $(LIBUSBHIDDEFINES)
 #endif
-#endif
-USBMOUSEDEFINES = $(USBMOUSEDEFINES1) $(USBMOUSEDEFINES2)
 
 #if (defined(OpenBSDArchitecture) || defined(NetBSDArchitecture)) && defined(i386Architecture)
 # if !defined(HasApmKqueue) || !HasApmKqueue

@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.139 2004/09/25 08:20:19 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.140 2004/10/10 14:47:28 matthieu Exp $
 
 
 
@@ -133,17 +133,13 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # define HasApmKqueue		YES
 #endif
 
-/* OpenBSD 3.0 has libusb, next versions have libusbhid */
-#if OSMajorVersion >= 3 
-# define HasLibUsb		YES
-# ifndef HasLibUsbHid
-#  if OSMajorVersion == 3 && OSMinorVersion > 0 || OSMajorVersion > 3
-#   define HasLibUsbHid		YES
-#   define UsbHidLib 		-lusbhid
-#  else
-#   define HasLibUsbHid		NO
-#   define UsbHidLib		-lusb
-#  endif
+/* OpenBSD 3.1 and later have libusbhid */
+#ifndef HasLibUsbHid
+# if OSMajorVersion == 3 && OSMinorVersion > 0 || OSMajorVersion > 3
+#  define HasLibUsbHid		YES
+#  define UsbHidLib		-lusbhid
+# else
+#  define HasLibUsbHid		NO
 # endif
 #endif
 
@@ -619,7 +615,7 @@ install:: fonts.alias							@@\
 
 /* Usb Tablets */
 # ifndef OSXInputDrivers
-#  if HasLibUsb
+#  if HasLibUsbHid
 #   define OSXInputDrivers	usbtablet
 #  endif
 # endif
