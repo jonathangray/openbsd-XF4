@@ -8,7 +8,7 @@
 #define NV_DRIVER_NAME "nv"
 #define NV_MAJOR_VERSION 1
 #define NV_MINOR_VERSION 0
-#define NV_PATCHLEVEL 0
+#define NV_PATCHLEVEL 1
 
 #define NV_USE_FB
 
