@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.141 2004/11/02 23:08:23 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.142 2005/01/25 21:15:03 drahn Exp $
 XCOMM
 
 #ifndef OSName
@@ -801,7 +801,7 @@ install:: fonts.alias							@@\
 
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 # ifndef XFree86ConsoleDefines
-#   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
+#   define XFree86ConsoleDefines	-DWSCONS_SUPPORT -DPCVT_SUPPORT
 # endif
 
 # if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
