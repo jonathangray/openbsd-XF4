@@ -376,6 +376,7 @@ GenerateAuthorization(
    than that shipped with some systems.
    This code is taken from the C standard. */
 
+#ifndef ARC4_RANDOM
 static unsigned long int next = 1;
 
 static int
@@ -390,10 +391,12 @@ xdm_srand(unsigned int seed)
 {
     next = seed;
 }
+#endif
 
 void
 GenerateRandomData (int len, char *buf)
 {
+#ifndef ARC4_RANDOM
     static int seed;
     int value;
     int i;
@@ -407,6 +410,15 @@ GenerateRandomData (int len, char *buf)
     }
 
     /* XXX add getrusage, popen("ps -ale") */
+#else
+    u_int32_t *rnd = (u_int32_t *)buf;
+    int i;
+
+    for (i = 0; i < len; i += 4)
+	rnd[i / 4] = arc4random();
+    for (i = (len / 4) * 4; i < len; i++)
+	buf[i] = arc4random() & 0xff;
+#endif    
 }
 
 #endif /* XCSECURITY */

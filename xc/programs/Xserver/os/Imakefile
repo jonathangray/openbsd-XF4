@@ -28,6 +28,10 @@ XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.38 2002/11/14 21:01:21 tsi 
 #define OtherObjects
 #endif
 
+#ifdef OpenBSDArchitecture
+RANDOM_DEFINES = -DARC4_RANDOM
+#endif
+
 #if HasXdmAuth
 XDMAUTHDEFS = -DHASXDMAUTH
 XDMAUTHOBJS = xdmauth.o
@@ -121,7 +125,8 @@ BOOTSTRAPCFLAGS =
 #endif
         DEFINES = -DXSERV_t -DTRANS_SERVER $(CONNECTION_FLAGS) $(MEM_DEFINES) \
 		  $(XDMAUTHDEFS) $(RPCDEFS) $(SIGNAL_DEFINES) $(OS_DEFINES) \
-		  $(KRB5_DEFINES) $(RGB_DEFINES) $(GETPEEREID_DEFINES)
+		  $(KRB5_DEFINES) $(RGB_DEFINES) $(GETPEEREID_DEFINES) \
+		  $(RANDOM_DEFINES)
        INCLUDES = -I. -I../include -I$(XINCLUDESRC) -I$(EXTINCSRC) \
 		  -I$(SERVERSRC)/Xext -I$(FONTINCSRC) -I$(SERVERSRC)/render \
 		  -I$(TOP)/lib/Xau -I../lbx Krb5Includes
