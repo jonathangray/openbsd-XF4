@@ -62,8 +62,6 @@
 #include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
-#include "xf86_OSlib.h"
-#include "xf86OSpriv.h"
 
 #ifdef HAS_MTRR_SUPPORT
 #ifndef __NetBSD__
@@ -77,8 +75,14 @@
 #ifdef __alpha__
 #include <sys/param.h>
 #include <sys/sysctl.h>
+#ifdef __OpenBSD__
+#include <machine/cpu.h>
+#endif
 #include "xf86Axp.h"
 #endif
+
+#include "xf86_OSlib.h"
+#include "xf86OSpriv.h"
 
 #ifdef __arm32__
 #include "machine/devmap.h"
@@ -127,7 +131,9 @@ struct memAccess ioMemInfo = { CONSOLE_GET_IO_INFO, NULL, NULL,
 
 #ifdef __alpha__
 
+#ifndef __OpenBSD__
 extern unsigned long dense_base(void);
+#endif
 
 static int axpSystem = -1;
 static unsigned long hae_thresh;
@@ -143,13 +149,46 @@ memory_base(void)
     if (base == 0) {
 	size_t len = sizeof(base);
 	int error;
+#ifdef __OpenBSD__
+	int mib[3];
+
+	mib[0] = CTL_MACHDEP;
+	mib[1] = CPU_CHIPSET;
+	mib[2] = CPU_CHIPSET_MEM;
+
+	if ((error = sysctl(mib, 3, &base, &len, NULL, 0)) < 0)
+#else
 	if ((error = sysctlbyname("hw.chipset.memory", &base, &len,
 				  0, 0)) < 0)
+#endif
 	    FatalError("xf86MapVidMem: can't find memory\n");
     }
 
     return base;
 }
+
+#ifdef __OpenBSD__
+static unsigned long
+dense_base(void)
+{
+    static unsigned long base = 0;
+
+    if (base == 0) {
+	size_t len = sizeof(base);
+	int error;
+	int mib[3];
+
+	mib[0] = CTL_MACHDEP;
+	mib[1] = CPU_CHIPSET;
+	mib[2] = CPU_CHIPSET_DENSE;
+
+	if ((error = sysctl(mib, 3, &base, &len, NULL, 0)) < 0)
+	    FatalError("xf86MapVidMem: can't find dense memory\n");
+    }
+
+    return base;
+}
+#endif
 
 static int
 has_bwx(void)
@@ -157,11 +196,23 @@ has_bwx(void)
     static int bwx = 0;
     size_t len = sizeof(bwx);
     int error;
+#ifdef __OpenBSD__
+    int mib[3];
+
+    mib[0] = CTL_MACHDEP;
+    mib[1] = CPU_CHIPSET;
+    mib[2] = CPU_CHIPSET_BWX;
+
+    if ((error = sysctl(mib, 3, &bwx, &len, NULL, 0)) < 0)
+#else
     if ((error = sysctlbyname("hw.chipset.bwx", &bwx, &len, 0, 0)) < 0)
+#endif
 	return FALSE;
     else
 	return bwx;
 }
+
+
 
 #define BUS_BASE	dense_base()
 #define BUS_BASE_BWX	memory_base()
@@ -1408,7 +1459,7 @@ undoWC(int screenNum, pointer list)
 
 #endif /* HAS_MTRR_SUPPORT */
 
-#if defined(__FreeBSD__) && defined(__alpha__)
+#if (defined(__FreeBSD__) || defined(__OpenBSD__)) && defined(__alpha__)
 
 #define vuip    volatile unsigned int *
 
@@ -1448,6 +1499,7 @@ writeSparse16(int Value, pointer Base, register unsigned long Offset);
 static void
 writeSparse32(int Value, pointer Base, register unsigned long Offset);
 
+#ifndef __OpenBSD__
 #include <machine/sysarch.h>
 
 extern int sysarch(int, char *);
@@ -1463,6 +1515,15 @@ sethae(u_int64_t hae)
 	p.hae = hae;
 	return (sysarch(ALPHA_SETHAE, (char *)&p));
 }
+#else
+
+static int
+sethae(u_int64_t hae)
+{
+    /* TBD */
+}
+
+#endif
 
 static pointer
 mapVidMemSparse(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
@@ -1670,3 +1731,40 @@ int  (*xf86ReadMmio32)(pointer Base, unsigned long Offset)
      = readDense32;
 
 #endif /* __FreeBSD__ && __alpha__ */
+
+#ifdef __OpenBSD__
+
+/* XXXX */
+__inline__ void outb(unsigned int port, unsigned char val)
+{
+    /* TBD */
+}
+__inline__ void outw(unsigned int port, unsigned short val)
+{
+    /* TBD */
+}
+
+__inline__ void outl(unsigned int port, unsigned int val)
+{
+    /* TBD */
+}
+
+__inline__ unsigned char inb(unsigned int port)
+{
+    /* TBD */
+    return 0;
+}
+
+__inline__ unsigned short inw(unsigned int port)
+{
+    /* TBD */
+    return 0;
+}
+
+__inline__ unsigned int inl(unsigned int port)
+{
+    /* TBD */
+    return 0;
+}
+
+#endif
