@@ -1,7 +1,8 @@
 XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:13 cpqbld Exp $
 
-#if ((LinuxCLibMajorVersion == 6) && (LinuxCLibMinorVersion < 1)) || \
-	defined(OpenBSDArchitecture)
+#if (defined(LinuxCLibMajorVersion) && \
+	(LinuxCLibMajorVersion == 6) && (LinuxCLibMinorVersion < 1)) || \
+     defined(OpenBSDArchitecture)
          PTYLIB = -lutil
 #endif
 
