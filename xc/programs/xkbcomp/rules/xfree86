@@ -34,6 +34,7 @@
   rapidaccess2	=       xfree86         pc(pc104)
   chicony	=       xfree86         pc(pc104)
   dell		=	xfree86		pc(pc104)
+  sun		=       xfree86		sun(type4)
   macintosh	=	xfree86		macintosh(macintosh)
   macintosh_old	=	macintosh	macintosh(macintosh)
   powerpcps2	=	powerpcps2	pc(pc104)
@@ -133,6 +134,9 @@
   powerpcps2	us	=	us(pc104)
   powerpcps2	en_US	=	en_US(pc104)
   powerpcps2	*	=	en_US(pc104)+%l%(v)
+  sun		us	= 	us(pc104)+sun/lkeys
+  sun		en_US	=	en_US(pc104)+sun/lkeys
+  sun		*	=	en_US(pc104)+sun/lkeys+%l%(v)
   *		us	=	us(pc101)
   *		en_US	=	en_US(pc101)
   *		intl	=	us(pc101compose)
@@ -186,3 +190,4 @@
   caps:internal_nocancel	=	+caps(internal_nocancel)
   caps:shift			=	+caps(shift)
   caps:shift_nocancel		=	+caps(shift_nocancel)
+

@@ -199,6 +199,20 @@
 #define KEY_NFER         /* No Kanji Transfer     0x7b  */  123
 #define KEY_Yen          /* Yen                   0x7d  */  125
 
+/*
+ * Pseudo scan codes for Sun keyboards 
+ */
+#define KEY_Stop  /* Stop */ 110
+#define KEY_Again /* Again */ 111
+#define KEY_Props /* Props */ 112
+#define KEY_Undo  /* Undo */ 113
+#define KEY_Front /* Front */ 114 
+#define KEY_Copy /* Copy */ 115
+#define KEY_Open /* Open */ 116
+#define KEY_Paste /* Paste */ 117
+#define KEY_Find /* Find */ 118
+#define KEY_Cut /* Cut */ 119
+
 /* These are for "notused" and "unknown" entries in translation maps. */
 #define KEY_NOTUSED	  0
 #define KEY_UNKNOWN	255

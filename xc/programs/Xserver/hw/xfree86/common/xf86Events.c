@@ -286,7 +286,7 @@ xf86PostKbdEvent(unsigned key)
 #if defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
   static Bool first_time = TRUE;
 #endif
-#if defined(__sparc__)
+#if defined(__sparc__) && defined(Linux)
   static int  kbdSun = -1;
 #endif
 
@@ -299,7 +299,7 @@ xf86PostKbdEvent(unsigned key)
   }
 #endif
 
-#if defined (__sparc__)
+#if defined (__sparc__) && defined(Linux)
   if (kbdSun == -1) {
     if ((xf86Info.xkbmodel && !strcmp(xf86Info.xkbmodel, "sun"))
 	|| (xf86Info.xkbrules && !strcmp(xf86Info.xkbrules, "sun")))
@@ -461,7 +461,7 @@ customkeycodes:
     }
   }
 #endif
-#if defined (__sparc__)
+#if defined (__sparc__) && defined(Linux)
 special:
   if (kbdSun) {
     switch (scanCode) {

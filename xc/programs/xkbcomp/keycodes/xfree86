@@ -161,6 +161,18 @@ xkb_keycodes "basic" {
     // Keys that are generated on Japanese and Brazillian keyboards
     alias <AC12> = <BKSL>;
 
+    // Keys from Sun Keyboards 
+    alias <STOP> = <FK13>;
+    alias <AGAI> = <FK14>;
+    alias <PROP> = <FK15>;
+    alias <UNDO> = <FK16>;
+    alias <FRNT> = <FK17>;
+    alias <COPY> = <KPDC>;
+    <OPEN> = 124;
+    <PAST> = 125;
+    alias <FIND> = <KPEQ>;
+    <CUT>  = 127;
+
     // Extended keys that may be generated on "Internet" keyboards.
     // These are not standardised, hence the meaningless names.
     // The entries commented out are never generated because the raw codes
