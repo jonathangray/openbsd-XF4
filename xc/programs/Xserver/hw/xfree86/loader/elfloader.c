@@ -2467,9 +2467,7 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
 	    val = symval - (unsigned long)dest32 + val;
 	    val >>= 2;
 	    *dest32 = (*dest32 & 0xff000000) | (val & 0x00ffffff);
-#ifdef NOTYET
 	    arm_flush_cache(dest32);
-#endif
 	}
 	break;
 

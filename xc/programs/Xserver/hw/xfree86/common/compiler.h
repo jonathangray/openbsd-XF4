@@ -910,6 +910,13 @@ static __inline__ void stw_u(unsigned long val, unsigned short *p)
 #    else
 #     define PORT_SIZE short
 #    endif
+#    if defined(__arm32__) && defined(__OpenBSD__)
+/*
+#     include <machine/sysarch.h>
+*/
+	int arm_sync_icache(long addr, int len);
+#     define arm_flush_cache(addr)	arm_sync_icache((long)(addr), 4);
+#    endif
 
 unsigned int IOPortBase;  /* Memory mapped I/O port area */
 
