@@ -3,55 +3,63 @@ Post-installation instructions for XFree86[tm] on OpenBSD/i386
 
 1. Make sure your system has support for X enabled:
 
-You must have 'option APERTURE' in your kernel configuration and
-uncomment the line that says:  
+   You must have 'option APERTURE' in your kernel configuration and
+   uncomment the line that says:  
 
 	machdep.allowaperture=1
 
-or
+   or
 
 	machdep.allowaperture=2
 
-in /etc/sysctl.conf.  See xf86(4) for more details about security
-issues related to this.  After changing this variable in rc.conf, you
-will need to reboot for the change to take effect. Most drivers for
-XFree86  4.0.x servers require this value set to 2.
+   in /etc/sysctl.conf.  See xf86(4) for more details about security
+   issues related to this.  After changing this variable in rc.conf, you
+   will need to reboot for the change to take effect. Most drivers for
+   XFree86 4.0.x servers require this value set to 2.
 
 2. Find out about your hardware:
 
-Run SuperProbe to find out what chipset is used by your video board.
-Write this information down. The `dmesg' command output is useful too.
+   Run SuperProbe to find out what chipset is used by your video board.
+   Write this information down. The `dmesg' command output is useful too.
 
-You need to decide if you can use the XFree86 4 server (XFree86) or if
-you have some legacy VGA card supported only by an XFree86 3.3.x server
-(XF86_*). 
+   You need to decide if you can use the XFree86 4 server (XFree86) or if
+   you have some legacy VGA card supported only by an XFree86 3.3.x server
+   (XF86_*). 
 
-What kind of mouse do you have, which port is it connected to? The 2
-most common cases are a serial mouse, connected to /dev/tty00 (MS
-Windows COM1: port) or /dev/tty01 (COM2: port) and a PS/2 style
-mouse, for which OpenBSD uses the wsmouse protocol with the
-/dev/wsmouse0 device
+   What kind of mouse do you have, which port is it connected to? The 2
+   most common cases are a serial mouse, connected to /dev/tty00 (MS
+   Windows COM1: port) or /dev/tty01 (COM2: port) and a PS/2 style
+   mouse, for which OpenBSD uses the wsmouse protocol with the
+   /dev/wsmouse0 device
 
 
-3a. Run XF86Setup for the XFree86 3.3.x server
+3. Create the XF86Config file for your server.  You must choose one of the,
+   below options.  If it does not work, try the other.
 
-This will make the /etc/XF86Config file.  If for some reason XF86Setup
-don't work on your hardware, try the alternate program xf86config.
-See the XF86Config user's guide in /usr/X11R6/lib/X11/doc/QuickStart.doc
+    a. For the XFree86 4.0.x server, run ``xf86cfg''.
 
-For manual configuration information, see XF86Config(4).
+       This will produce the /etc/X11/XF86Config file. 
 
-4. Start xdm, the X display manager by activating the xdm_flags option
-   in /etc/rc.conf.  You do not need to disable the console getty.
+    b. For the XFree86 3.3.x server, run XF86Setup.
 
-5. Optionally, if you want to be able to rebuild your server from the
-   XFree86 link kit, install the xlink24.tar.gz from the CD and follow
-   the instructions in /usr/X11R6/lib/Server/README.
+       This will make the /etc/XF86Config file.  If for some reason
+       XF86Setup don't work on your hardware, try the alternate program
+       xf86config.
+
+       See the XF86Config user's guide in /usr/X11R6/lib/X11/doc/QuickStart.doc
+
+   For manual configuration information, see XF86Config(4).
+
+4. Start either xdm or startx.
+
+   a. Start xdm(1), the X display manager by activating the xdm_flags option
+      in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You do not need to disable
+      the console getty.
+
+   b. Start startx(1) from a console shell.  It is the X script that starts
+      the X server and a few X applications, including a window manager.
 
 If you encounter a problem, you can browse the entire documentation 
 in /usr/X11R6/lib/X11/doc or at 
-http://www.xfree86.org/XFree86/3.3.6/
+http://www.xfree86.org/4.0.3/ or http://www.xfree86.org/3.3.6/.
 
-3b. Run xf86cfg for the XFree86 4.0.x server
-
-This will produce the /etc/X11/XF86Config file. 
