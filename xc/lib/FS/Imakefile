@@ -10,7 +10,6 @@ XCOMM $XFree86: xc/lib/FS/Imakefile,v 3.6 2001/04/23 16:17:06 tsi Exp $
 #define DoExtraLib SharedLibFS
 #define DoDebugLib DebugLibFS
 #define DoProfileLib ProfileLibFS
-#define DoPicLib HasSharedLibraries && !SharedLibFS
 #define LibName FS
 #define SoRev SOFSREV
 #define IncSubdir X11

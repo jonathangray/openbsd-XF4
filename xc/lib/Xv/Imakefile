@@ -4,7 +4,6 @@ XCOMM $XFree86: xc/lib/Xv/Imakefile,v 1.8 2003/01/04 02:48:24 dawes Exp $
 #define DoSharedLib SharedLibXv
 #define DoDebugLib DebugLibXv
 #define DoProfileLib ProfileLibXv
-#define DoPicLib HasSharedLibraries && !SharedLibXv
 #define LibName Xv
 #define SoRev SOXVREV
 #define LibHeaders NO
