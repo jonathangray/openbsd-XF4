@@ -2108,7 +2108,8 @@ ComputeSelect(int startRow,
 	    endCol--;
     }
 
-    if (iswide(XTERM_CELL(endRow, endCol - 1))
+    if (endCol > 1 
+	&& iswide(XTERM_CELL(endRow, endCol - 1))
 	&& XTERM_CELL(endRow, endCol) == HIDDEN_CHAR) {
 	endCol += 1;
     }
