@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.58 2001/10/04 19:48:12 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.59 2001/10/06 23:01:26 matthieu Exp $
 
 
 
@@ -325,39 +325,6 @@ install:: fonts.alias							@@\
  * Architecture specific sections - put all architecture dependent
  * options and setting here into the correct section
  */
-
-/*
- * Definitions for the sparc64 architecture
- */
-
-#ifdef Sparc64Architecture
-
-# define OptimizedCDebugFlags	-O2
-
-# define HasWeakSymbols		NO
-# define UseElfFormat		YES
-# define HasSharedLibraries	YES
-
-# ifdef XnestServer
-#  undef XnestServer
-# endif
-# define XnestServer		NO
-# ifdef XVirtualFramebufferServer
-#  undef XVirtualFramebufferServer
-# endif
-# define XVirtualFramebufferServer	NO
-
-# ifndef XF86Server
-#  define XF86Server		NO
-# endif
-
-/* FreeType2 don't work on 64bit machines */
-# define BuildFreetype2Library  NO
-# define BuildXftLibrary	NO
-
-# include <xfree86.cf>
-
-#endif /* Sparc64Architecture */
 
 /*
  * Definitions for the alpha architecture
@@ -770,6 +737,33 @@ install:: fonts.alias							@@\
 # include <xfree86.cf>
 
 #endif /* SparcArchitecture */
+
+/*
+ * Definitions for the sparc64 architecture
+ */
+
+#ifdef Sparc64Architecture
+
+# define OptimizedCDebugFlags	-O2
+
+# define HasWeakSymbols		NO
+# define UseElfFormat		YES
+# define HasSharedLibraries	YES
+
+# ifndef XF86Server
+#  define XF86Server		NO
+# endif
+
+# define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
+# define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME
+
+/* FreeType2 don't work on 64bit machines */
+# define BuildFreetype2Library  NO
+# define BuildXftLibrary	NO
+
+# include <xfree86.cf>
+
+#endif /* Sparc64Architecture */
 
 /* End or architecture specific section */
 
