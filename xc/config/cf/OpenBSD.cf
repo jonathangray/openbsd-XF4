@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.99 2002/07/17 21:57:48 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.100 2002/07/27 22:36:12 matthieu Exp $
 
 
 
@@ -754,6 +754,10 @@ install:: fonts.alias							@@\
 # endif
 # ifndef XsunMonoServer
 #  define XsunMonoServer	YES
+# endif
+
+# ifndef InstallXserverSetUID
+#  define InstallXserverSetUID NO
 # endif
 
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
