@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/i386_video.c,v 1.5 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: i386_video.c,v 1.12 2004/02/28 13:56:41 matthieu Exp $ */
+/* $OpenBSD: i386_video.c,v 1.13 2004/02/29 13:40:03 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -44,6 +44,11 @@
 #include <machine/mtrr.h>
 #include <machine/sysarch.h>
 #include <sys/queue.h>
+#endif
+
+#if defined(__OpenBSD__) && defined(__amd64__)
+#include <machine/mtrr.h>
+#include <machine/sysarch.h>
 #endif
 
 #include "xf86_OSlib.h"
@@ -93,6 +98,11 @@ static Bool cleanMTRR(void);
 static pointer NetBSDsetWC(int, unsigned long, unsigned long, Bool,
 			   MessageType);
 static void NetBSDundoWC(int, pointer);
+#endif
+#if defined(__amd64__) && defined(__OpenBSD__)
+static pointer amd64setWC(int, unsigned long, unsigned long, Bool, 
+    MessageType);
+static void amd64undoWC(int, pointer);
 #endif
 
 /*
@@ -190,6 +200,10 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 #if defined(HAS_MTRR_BUILTIN) && defined(__NetBSD__)
 	pVidMem->setWC = NetBSDsetWC;
 	pVidMem->undoWC = NetBSDundoWC;
+#endif
+#if defined(__amd64__) && defined(__OpenBSD__)
+	pVidMem->setWC = amd64setWC;
+	pVidMem->undoWC = amd64undoWC;
 #endif
 	pVidMem->initialised = TRUE;
 }
@@ -858,6 +872,7 @@ undoWC(int screenNum, pointer list)
 
 #endif /* HAS_MTRR_SUPPORT */
 
+
 #if defined(HAS_MTRR_BUILTIN) && defined(__NetBSD__)
 static pointer
 NetBSDsetWC(int screenNum, unsigned long base, unsigned long size, Bool enable,
@@ -908,6 +923,57 @@ NetBSDundoWC(int screenNum, pointer list)
 	xfree(mtrrp);
 }
 #endif
+
+#if defined(__OpenBSD__) && defined(__amd64__)
+static pointer
+amd64setWC(int screenNum, unsigned long base, unsigned long size, Bool enable,
+	    MessageType from)
+{
+	struct mtrr *mtrrp;
+	int n;
+
+	xf86DrvMsg(screenNum, X_WARNING,
+		   "%s MTRR %lx - %lx\n", enable ? "set" : "remove",
+		   base, (base + size));
+
+	mtrrp = xnfalloc(sizeof (struct mtrr));
+	mtrrp->base = base;
+	mtrrp->len = size;
+	mtrrp->type = MTRR_TYPE_WC;
+
+	/*
+	 * MTRR_PRIVATE will make this MTRR get reset automatically
+	 * if this process exits, so we have no need for an explicit
+	 * cleanup operation when starting a new server.
+	 */
+
+	if (enable)
+		mtrrp->flags = MTRR_VALID | MTRR_PRIVATE;
+	else
+		mtrrp->flags = 0;
+	n = 1;
+
+	if (amd64_set_mtrr(mtrrp, &n) < 0) {
+		xfree(mtrrp);
+		return NULL;
+	}
+	return mtrrp;
+}
+
+static void
+amd64undoWC(int screenNum, pointer list)
+{
+	struct mtrr *mtrrp = (struct mtrr *)list;
+	int n;
+
+	if (mtrrp == NULL)
+		return;
+	n = 1;
+	mtrrp->flags &= ~MTRR_VALID;
+	amd64_set_mtrr(mtrrp, &n);
+	xfree(mtrrp);
+}
+#endif /* OpenBSD/amd64 */
 
 /*
  * Do all things that need root privileges early 
