@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.10 2002/12/31 17:41:02 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.11 2005/02/09 05:44:32 pat Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -227,17 +227,14 @@ getInput(XtPointer clientData, int *file, XtInputId *inputId)
 		pl = SIMPLEQ_FIRST(items);
 		on_filter_select(filterText, pl->line,
 				 NULL);
-		SIMPLEQ_FOREACH(pl, items, next) {
+		for (pl = SIMPLEQ_FIRST(items); pl != SIMPLEQ_END(items);
+		     pl = next) {
+			next = SIMPLEQ_NEXT(pl, next);
 			sme = XtCreateManagedWidget(pl->line,
 			    smeBSBObjectClass, filterPopup, NULL, 0);
 			XtAddCallback(sme, XtNcallback, on_filter_select,
 			    (XtPointer)XtNewString(pl->line));
-			free(pl->line);
-		}
-		for (pl = SIMPLEQ_FIRST(items); pl != SIMPLEQ_END(items);
-		     pl = next) {
-			next = SIMPLEQ_NEXT(pl, next);
-			free(pl);
+			free_policy(pl);
 		}
 		free(items);
 

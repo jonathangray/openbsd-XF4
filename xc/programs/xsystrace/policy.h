@@ -1,4 +1,4 @@
-/* $OpenBSD: policy.h,v 1.1 2002/12/31 16:31:30 matthieu Exp $ */
+/* $OpenBSD: policy.h,v 1.2 2005/02/09 05:44:32 pat Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -37,5 +37,6 @@ struct policy_list {
 
 SIMPLEQ_HEAD(plist, policy_list);
 
+extern void free_policy(struct policy_list *);
 extern void parameters(void);
 extern struct plist *make_policy_suggestion(char *);

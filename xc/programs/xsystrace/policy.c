@@ -1,4 +1,4 @@
-/* $OpenBSD: policy.c,v 1.2 2002/12/31 17:41:02 matthieu Exp $ */
+/* $OpenBSD: policy.c,v 1.3 2005/02/09 05:44:32 pat Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -58,6 +58,13 @@ alloc_policy(char *p)
 	if (np->line == NULL)
 		errx(1, "alloc_policy: cannot allocate memory");
 	return (np);
+}
+
+void
+free_policy(struct policy_list *p)
+{
+	free(p->line);
+	free(p);
 }
 
 static char *
