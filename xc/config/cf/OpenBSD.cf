@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.62 2001/10/24 15:03:28 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.63 2001/11/20 07:41:03 matthieu Exp $
 
 
 
@@ -878,10 +878,8 @@ install:: fonts.alias							@@\
 # endif
 #endif
 
-#if !UseElfFormat
+#ifndef DlLibrary
 #  define DlLibrary		/**/
-#else 
-#  define DlLibrary		-ldl
 #endif
 
 #  if !defined(GccWarningOptions)
