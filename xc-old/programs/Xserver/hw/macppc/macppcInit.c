@@ -65,10 +65,17 @@ macppcFbDataRec macppcFbData[] = {
  * a list of devices to try if there is no environment or command
  * line list of devices
  */
+#if defined(__OpenBSD__)
 static char *fallbackList[] = {
     "/dev/ttyC0", "/dev/ttyC1", "/dev/ttyC2", "/dev/ttyC3",
     "/dev/ttyC4", "/dev/ttyC5", "/dev/ttyC6", "/dev/ttyC7",
 };
+#else
+static char *fallbackList[] = {
+    "/dev/ttyE0", "/dev/ttyE1", "/dev/ttyE2", "/dev/ttyE3",
+    "/dev/ttyE4", "/dev/ttyE5", "/dev/ttyE6", "/dev/ttyE7",
+};
+#endif
 #define FALLBACK_LIST_LEN sizeof fallbackList / sizeof fallbackList[0]
 
 fbFd macppcFbs[MAXSCREENS];
