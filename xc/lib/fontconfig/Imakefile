@@ -1,5 +1,5 @@
 XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.18 2003/12/08 17:11:21 dawes Exp $
-
+XCOMM $OpenBSD: Imakefile,v 1.7 2004/07/21 19:12:03 matthieu Exp $
 #define DoNormalLib NormalLibFontconfig
 #define DoSharedLib SharedLibFontconfig
 #define DoExtraLib SharedLibFontconfig
@@ -226,7 +226,7 @@ InstallNamedTargetBackup(install,file,$(INSTDATFLAGS),dest,file)
 #endif /* InstallNonExecFileBackup */
 
 InstallNonExecFileBackup(fonts.conf,$(FONTCONFIGFONTSCONFDIR))
-InstallNonExecFileBackup(local.conf,$(FONTCONFIGFONTSCONFDIR))
+InstallNonExecFileNoClobber(local.conf,$(FONTCONFIGFONTSCONFDIR))
 InstallNonExecFile(fonts.dtd,$(FONTCONFIGFONTSCONFDIR))
 
 all:: fonts.conf
