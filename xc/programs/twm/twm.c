@@ -95,7 +95,7 @@ ScreenInfo **ScreenList;	/* structures for each screen */
 ScreenInfo *Scr = NULL;		/* the cur and prev screens */
 int PreviousScreen;		/* last screen that we were on */
 int FirstScreen;		/* TRUE ==> first screen of display */
-Bool TimeToYield = FALSE;	/* TRUE ==> exit requested */
+volatile Bool TimeToYield = FALSE;	/* TRUE ==> exit requested */
 Bool PrintErrorMessages = False;	/* controls error messages */
 static int RedirectError;	/* TRUE ==> another window manager running */
 static int TwmErrorHandler ( Display *dpy, XErrorEvent *event );	/* for settting RedirectError */

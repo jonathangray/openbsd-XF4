@@ -403,7 +403,7 @@ extern void NewBitmapCursor ( Cursor *cp, char *source, char *mask );
 extern Pixmap CreateMenuIcon ( int height, unsigned int *widthp, unsigned int *heightp );
 
 extern Bool ErrorOccurred;
-extern Bool TimeToYield;
+extern volatile Bool TimeToYield;
 extern XErrorEvent LastErrorEvent;
 
 #define ResetError() (ErrorOccurred = False)
