@@ -265,7 +265,6 @@
 ./usr/X11R6/lib/liboldX.so.6.0
 ./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/lib/libxkbui.a
-./usr/X11R6/man/cat1/Xmac68k.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xvidtune.0
