@@ -6,10 +6,15 @@ LinkSourceFile(glext.h, ../../extras/Mesa/include/GL)
 LinkSourceFile(osmesa.h, ../../extras/Mesa/include/GL)
 
 #if BuildGLXLibrary
-GLXHEADERS = gl.h glext.h glx.h glxint.h glxtokens.h osmesa.h
+GLXHEADERS = gl.h glext.h glx.h glxint.h glxmd.h glxproto.h \
+	     glxtokens.h osmesa.h
 #endif
 
-HEADERS = $(GLXHEADERS)
+#if BuildGLULibrary
+GLUHEADERS = glu.h
+#endif
+
+HEADERS = $(GLXHEADERS) $(GLUHEADERS)
 
 all::
 
