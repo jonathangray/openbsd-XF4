@@ -302,9 +302,9 @@ configureInputSection (void)
 	}
 #endif
 #ifdef WSCONS_SUPPORT
-	fd = open("/dev/wsmouse0", 0);
+	fd = open("/dev/wsmouse", 0);
 	if (fd > 0) {
-	    DFLT_MOUSE_DEV = "/dev/wsmouse0";
+	    DFLT_MOUSE_DEV = "/dev/wsmouse";
 	    DFLT_MOUSE_PROTO = "wsmouse";
 	    close(fd);
 	}
