@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.52 2001/09/06 22:07:51 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.53 2001/09/06 22:16:38 matthieu Exp $
 
 
 
@@ -653,10 +653,10 @@ install:: fonts.alias							@@\
 # endif
 
 # ifndef XmacppcServer
-#   define XmacppcServer	YES
+#   define XmacppcServer	NO
 # endif
 # ifndef XF86Server
-#   define XF86Server		NO
+#   define XF86Server		YES
 # endif
 
 /* Definitions for building the Xmacppc server */
