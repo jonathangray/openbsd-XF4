@@ -131,6 +131,9 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 # endif
 # if defined(__mips__) || defined(mips)
 #   define MipsArchitecture
+#   ifdef __LP64__
+#     define Mips64Architecture
+#   endif
 #   ifdef arc
 #     define ArcArchitecture
 #     undef arc
@@ -139,7 +142,12 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 #     define PmaxArchitecture
 #     undef pmax
 #   endif
+#   ifdef sgi
+#     define SGIArchitecture
+#     undef sgi
+#   endif
 #   undef mips
+#   undef __mips__
 # endif
 # if defined(__alpha__) || defined(alpha)
 #   define AlphaArchitecture
