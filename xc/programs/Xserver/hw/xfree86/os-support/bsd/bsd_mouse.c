@@ -16,7 +16,11 @@
 #include <dev/wscons/wsconsio.h>
 #endif
 #ifdef USBMOUSE_SUPPORT
+#ifdef HAS_LIB_USB_HID
+#include <usbhid.h>
+#else
 #include "usb.h"
+#endif
 
 #define HUP_GENERIC_DESKTOP     0x0001
 #define HUP_BUTTON              0x0009

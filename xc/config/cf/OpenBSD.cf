@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.65 2001/11/28 23:10:56 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.66 2001/12/31 18:13:24 matthieu Exp $
 
 
 
@@ -54,6 +54,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define SetTtyGroup     	YES
 #define DBMLibrary		/**/
 #define HasLibCrypt		NO
+#define HasPosixSignals		YES
 #define HasShm          	YES
 #define HasWChar32		YES
 #define HasMkstemp		YES
@@ -96,8 +97,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasBSDAuth		YES
 
 /* OpenBSD 3.0 has libusb */
-#if OSMajorVersion >= 3 
-# define HasLibUsb		YES
+#define HasLibUsb		YES
+/* OpenBSD > 3.0 has libusbhid */
+#ifndef HasLibUsbHid
+# define HasLibUsbHid		YES
+# define UsbHidLib		-lusbhid
 #endif
 
 /*

@@ -66,14 +66,18 @@ MTRRDEFINES = -DHAS_MTRR_SUPPORT
 #endif
 
 #if UsbMouseSupport
-USBMOUSEDEFINES = -DUSBMOUSE_SUPPORT
+USBMOUSEDEFINES1 = -DUSBMOUSE_SUPPORT
 #if !HasLibUsb
 LIBUSBINCLUDES = -Ilibusb
 #define IHaveSubdirs
 SUBDIRS = libusb
+#else
+#if HasLibUsbHid
+USBMOUSEDEFINES2 = -DHAS_LIB_USB_HID
 #endif
 #endif
-
+#endif
+USBMOUSEDEFINES = $(USBMOUSEDEFINES1) $(USBMOUSEDEFINES2)
 
 #if defined(NetBSDArchitecture) && defined(i386Architecture)
 APMSRC = bsd_apm.c
