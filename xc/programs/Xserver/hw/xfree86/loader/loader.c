@@ -477,7 +477,7 @@ _LoaderFileToMem(int fd, unsigned long offset,int size, char *label)
     if(read(fd,ptr,size)!=size)
 	FatalError("\n_LoaderFileToMem() read() failed: %s\n",strerror(errno));
 
-#if defined(linux) && defined(__powerpc__) 
+#if (defined(linux) || defined __OpenBSD__) && defined(__powerpc__) 
     /*
      * Keep the instruction cache in sync with changes in the
      * main memory.
