@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.123 2003/11/24 19:01:16 mickey Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.124 2003/12/14 15:42:00 matthieu Exp $
 
 
 
@@ -55,7 +55,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define SetTtyGroup     	YES
 #define DBMLibrary		/**/
 #define HasLibCrypt		NO
-#define HasPosixSignals		YES
 #define HasShm          	YES
 #define HasWChar32		YES
 #define HasMkstemp		YES
