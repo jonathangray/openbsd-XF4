@@ -377,6 +377,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasUsableFileMmap
 #define HasUsableFileMmap	NO	/* assume not */
 #endif
+#ifndef HasGetIfAddrs
+#define HasGetIfAddrs		NO	/* assume not */
+#endif
 #ifndef HasStickyDirBit
 #define HasStickyDirBit		YES
 #endif
@@ -402,8 +405,6 @@ XCOMM the platform-specific parameters - edit site.def to change
 #elif defined(ia64Architecture)
 #define ByteOrder		X_LITTLE_ENDIAN
 #elif defined(SparcArchitecture) || defined(Sparc64Architecture)
-#define ByteOrder		X_BIG_ENDIAN
-#elif defined(Sparc64Architecture)
 #define ByteOrder		X_BIG_ENDIAN
 #elif defined(AlphaArchitecture)
 #define ByteOrder		X_LITTLE_ENDIAN

@@ -57,6 +57,10 @@ KRB5SRCS = k5auth.c k5encode.c
    SOCK_DEFINES = -DBSD44SOCKETS
 #endif
 
+#if HasGetIfAddrs
+   IFADDRS_DEFINES = -DHAS_GETIFADDRS
+#endif
+
 #if BuildLBX
    LBX_SRCS = lbxio.c
    LBX_OBJS = lbxio.o
@@ -138,7 +142,7 @@ alloca.o:  $(PWLIB)
 	ar x $(PWLIB) alloca.o
 #endif /* NEED_ALLOCA_FROM_LIBPW */
 
-SpecialCObjectRule(access,$(ICONFIGFILES),$(XDMCP_DEFINES) $(SOCK_DEFINES))
+SpecialCObjectRule(access,$(ICONFIGFILES),$(XDMCP_DEFINES) $(SOCK_DEFINES) $(IFADDRS_DEFINES))
 SpecialCObjectRule(auth,$(ICONFIGFILES),$(XDMCP_DEFINES))
 SpecialCObjectRule(xdmauth,$(ICONFIGFILES),$(XDMCP_DEFINES))
 SpecialCObjectRule(xdmcp,$(ICONFIGFILES),$(SOCK_DEFINES) $(XDMCP_DEFINES))
