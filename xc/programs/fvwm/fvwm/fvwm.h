@@ -52,12 +52,6 @@
 
 #include <X11/Intrinsic.h>
 
-#if RETSIGTYPE != void
-#define SIGNAL_RETURN return 0
-#else
-#define SIGNAL_RETURN return
-#endif
-
 #define BW 1			/* border width */
 #define BOUNDARY_WIDTH 7    	/* border width */
 #define CORNER_WIDTH 16    	/* border width */
