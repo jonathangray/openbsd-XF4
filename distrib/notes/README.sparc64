@@ -1,10 +1,19 @@
 Post-installation instructions for XFree86 on OpenBSD/sparc64
 -------------------------------------------------------------
 
-- Sparc64 installation is pretty easy since there are not too many
-choices available.  The big determination is where to get mouse
-input from.  A default XF86Config is given at the bottom of this
-file, but it will need to be modified to fit the machine.
+Contents
+--------
+	Single, unaccelerated display
+	Single, accelerated display
+	Dual, unaccelerated display
+
+Single, unaccelerated display
+-------------------------------------
+This setup is by far the easiest to configure and is supported on just
+about every machine OpenBSD/sparc64 runs on (both PCI and SBUS based
+machines).  A sample XFConfig is given at the end of this section, but
+it may need to be customized to fit the machine.  Mostly these just
+entails configuring where mouse input comes from.
 
 - For systems with serial mice on Zilog ports (zstty), the following
 'ServerLayout' section should be used in place of the one provided:
@@ -39,7 +48,9 @@ EndSection
 - What follows is the whole X config.
 
 -- Cut Here --
-
+#
+# Unaccelerated, single display configuration
+#
 Section "ServerLayout"
 	Identifier	"wsfb"
 	Screen	0	"Screen0" 0 0
@@ -132,9 +143,117 @@ Section "Screen"
 		Depth     24
 	EndSubSection
 EndSection
+#
+# EOF
+#
 -- Cut Here --
 
+Single, accelerated display
+---------------------------
+Accelerated access to the framebuffer is only supportted on machines with
+PCI VGA framebuffers.  To use it, retrieve the PCI bus, device and function
+of the video card, eg:
+
+	blade$ dmesg | grep vgafb
+	vgafb0 at pci0 dev 19 function 0 "ATI Rage XL" rev 0x27
+	wsdisplay0 at vgafb0: console (sun, sun emulation), using wskbd0
+
+The framebuffer is on bus 0, device 19, function 0.  Now, using the
+configuration in the first section as a guide, replace the "Device" section
+with something like the following (replace 0:19:0 with the bus:dev:func
+of the framebuffer):
+
+	Section "Device"
+		Identifier	"Card0"
+		Driver		"ati"
+		BusID		"PCI:0:19:0"
+	EndSection
+
+It is also important that you modify the Monitor section and change the
+HorizSync and VertRefresh parameters with those of the monitor in use.
+Finally, customization of the Screen section will allow switching of
+resolutions and setting the default bit depth, eg.:
+
+Section "Screen"
+	Identifier	"Screen0"
+	Device		"Card0"
+	Monitor		"Monitor"
+	DefaultDepth	24
+	SubSection "Display"
+		Depth	8
+		Modes	"640x480" "800x600" "1024x768"
+	EndSubSection
+	SubSection "Display"
+		Depth	16
+		Modes	"640x480" "800x600" "1024x768"
+	EndSubSection
+	SubSection "Display"
+		Depth	24
+		Modes	"640x480" "800x600" "1024x768"
+	EndSubSection
+EndSection
+
+See XF86Config(5) for more options.
+
+Dual, unaccelerated display
+---------------------------
+Dual-headed displays are only supported on machines with SBUS cgsix(4) or
+cgthree(4) framebuffers.  Starting with the configuration in the first
+section, three additional sections are added for the second framebuffer:
+
+Section "Device"
+	Identifier      "Wsdisplay1"
+	Driver          "wsfb"
+	Option          "device" "/dev/ttyD0"
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor1"
+	VendorName   "Unknown"
+	ModelName    "Unknown"
+# Adjust those to your monitor before using another device than wsfb
+# or you can destroy it !!
+	HorizSync    31.5-60
+	VertRefresh  50-70
+EndSection
+
+Section "Screen"
+	Identifier "Screen1"
+	Device     "Wsdisplay1"
+	Monitor    "Monitor1"
+	DefaultDepth 8
+	SubSection "Display"
+		Depth     8
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+	EndSubSection
+EndSection
+
+The ServerLayout section is also changed to include the second framebuffer
+and it's logical location relative to the first, eg:
+
+Section "ServerLayout"
+	Identifier	"wsfb"
+	Screen  0       "Screen1" 0 0
+	Screen  1       "Screen0" RightOf "Screen1"
+	InputDevice	"zsmouse0" "CorePointer"
+	InputDevice	"Keyboard0" "CoreKeyboard"
+EndSection
+
+Finally, a virtual terminal must be created on the second framebuffer.
+The following command creates the terminal:
+	wsconscfg -f /dev/ttyDcfg -e sun 0
+This command can be put in /etc/rc.local so that it is run everytime
+the machine is booted.
+
+See XF86Config(5) for more options.
+
+------------------------
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.5 2002/02/19 04:31:54 jason Exp $
+$OpenBSD: README.sparc64,v 1.6 2002/04/09 16:23:13 jason Exp $
