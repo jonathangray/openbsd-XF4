@@ -114,10 +114,17 @@ from The Open Group.
 
 /* notifyDone interface definition */
 
+#ifndef __OpenBSD__
 #define NAME_LEN	32
+#define PASSWORD_LEN	32
+#else
+#include <pwd.h>
+#define NAME_LEN	(_PW_NAME_LEN + 2)
+#define PASSWORD_LEN	(_PASSWORD_LEN + 2)
+#endif
 
 typedef struct _LoginData { 
-	char	name[NAME_LEN], passwd[NAME_LEN];
+	char	name[NAME_LEN], passwd[PASSWORD_LEN];
 } LoginData;
 
 # define NOTIFY_OK	0

@@ -147,7 +147,7 @@ GreetDone (
     case NOTIFY_OK:
 	strcpy (name, data->name);
 	strcpy (password, data->passwd);
-	bzero (data->passwd, NAME_LEN);
+	bzero (data->passwd, PASSWORD_LEN);
 	code = 0;
 	done = 1;
 	break;
