@@ -623,7 +623,7 @@ configFiles(XF86ConfFilesPtr fileconf)
   /* If defaultFontPath is still empty, exit here */
 
   if (! *defaultFontPath)
-    FatalError("No valid FontPath could be found\n");
+    FatalError("No valid FontPath could be found.");
 
   xf86Msg(pathFrom, "FontPath set to \"%s\"\n", defaultFontPath);
 
