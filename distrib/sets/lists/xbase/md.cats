@@ -385,6 +385,7 @@
 ./etc/X11/xkb/symbols/xfree68/amiga
 ./etc/X11/xkb/symbols/xfree68/ataritt
 ./etc/X11/xkb/symbols/yu
+./etc/X11/xkb/symbols/zaurus
 ./etc/X11/xkb/types
 ./etc/X11/xkb/types.dir
 ./etc/X11/xkb/types/README
