@@ -280,9 +280,6 @@ ATGASUBDIRS = $(STDDIRS) $(MFBDIR) $(CFB8DIR) $(CFB32DIR) $(DDXDIR1) $(DEPDIRS)
 ATGALIBS = hw/dec/tga/tga/libalphaTga.a hw/dec/tga/libalpha.a CFB32Libs CFB8Libs
 ATGASYSLIBS = $(CBRT) $(SYSLIBS)
 ServerTarget(Xtga,$(ATGASUBDIRS),$(ATGAOBJS),$(ATGALIBS),$(ATGASYSLIBS))
-#ifndef ServerToInstall
-#define ServerToInstall Xtga
-#endif
 #endif	/* XalphaTGAServer */
 
 #ifdef XFree86Version
