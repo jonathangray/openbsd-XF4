@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxscreens.c,v 1.10 2002/04/04 14:05:36 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/glx/glxscreens.c,v 1.11 2003/06/23 17:35:44 eich Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -93,80 +93,6 @@ __GLXscreenInfo *__glXActiveScreens;
 GLint __glXNumActiveScreens;
 
 RESTYPE __glXDrawableRes;
-
-static int
-CountBits(unsigned long mask)
-{
-    int count = 0;
-
-    while(mask) {
-	count += (mask&1);
-	mask >>= 1;
-    }
-
-    return count;
-}
-
-#if 0
-/*
-** A typical implementation would not probably not run through the screen's
-** visuals to find ones that match the visual configs supplied by the DDX
-** Sample OpenGL as we do here; we have done this to make this code easy to
-** drop into an existing X server.
-*/
-static int matchVisuals(__GLXvisualConfig *pGlxVisual, int numVisuals,
-			 int screen)
-{
-    int i, j;
-    __GLXvisualConfig *pvis = pGlxVisual;
-    ScreenPtr pScreen = screenInfo.screens[screen];
-    VisualPtr pVisual;
-    int numMatchingVisuals = 0; 
-    int *used;
-
-    used = (int *)__glXMalloc(pScreen->numVisuals*sizeof(int));
-    __glXMemset(used, 0, pScreen->numVisuals*sizeof(int));
-
-    for (i=0; i < numVisuals; i++, pvis++) {
-	/*
-	** Look through all the server's visuals to see which match.
-	*/
-	pvis->vid = 0;
-	pVisual = pScreen->visuals;
-	for (j=0; j < pScreen->numVisuals; j++, pVisual++) {
-	    if (pvis->class == pVisual->class &&
-		pvis->bufferSize == pVisual->nplanes &&
-		!used[j]) {
-		int rBits, gBits, bBits, aBits;
-
-		/* count bits per rgb */
-		rBits = CountBits(pVisual->redMask);
-		gBits = CountBits(pVisual->greenMask);
-		bBits = CountBits(pVisual->blueMask);
-		aBits = 0;
-		if ((pvis->redSize == rBits) &&
-		    (pvis->greenSize == gBits) &&
-		    (pvis->blueSize == bBits) &&
-		    (pvis->alphaSize == aBits)) {
-		    /*
-		    ** We'll consider this a match.
-		    */
-		    pvis->vid = pVisual->vid;
-		    pvis->redMask = pVisual->redMask;
-		    pvis->greenMask = pVisual->greenMask;
-		    pvis->blueMask = pVisual->blueMask;
-		    pvis->alphaMask = 0;
-		    numMatchingVisuals++;
-		    used[j] = 1;
-		    break;
-		}
-	    }
-	}
-    }
-    __glXFree(used);
-    return numMatchingVisuals;
-}
-#endif
 
 /*
 ** Destroy routine that gets called when a drawable is freed.  A drawable
