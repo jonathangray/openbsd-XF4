@@ -70,4 +70,4 @@ XmlParseXmlDeclNS
 XmlSizeOfUnknownEncoding
 XmlUtf16Encode
 XmlUtf8Encode
-/* $XFree86: xc/lib/expat/expat-def.cpp,v 1.1 2002/04/07 15:19:45 alanh Exp $ */
+/* $XFree86$ */

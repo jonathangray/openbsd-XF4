@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/xkbdraw.c,v 1.4 2003/11/17 22:20:23 dawes Exp $ */
+/* $XFree86: xc/lib/xkbfile/xkbdraw.c,v 1.3 2001/07/29 05:01:13 tsi Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>

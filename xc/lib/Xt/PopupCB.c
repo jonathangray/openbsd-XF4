@@ -50,20 +50,20 @@ SOFTWARE.
 #include "IntrinsicI.h"
 
 /* ARGSUSED */
-void XtCallbackNone(
-    Widget  widget,
-    XtPointer closure,
-    XtPointer call_data)
+void XtCallbackNone(widget, closure, call_data)
+    Widget  widget;
+    XtPointer closure;
+    XtPointer call_data;
 {
     XtSetSensitive(widget, FALSE);
     _XtPopup((Widget) closure, XtGrabNone, FALSE);
 } /* XtCallbackNone */
 
 /* ARGSUSED */
-void XtCallbackNonexclusive(
-    Widget  widget,
-    XtPointer closure,
-    XtPointer call_data)
+void XtCallbackNonexclusive(widget, closure, call_data)
+    Widget  widget;
+    XtPointer closure;
+    XtPointer call_data;
 {
 
     XtSetSensitive(widget, FALSE);
@@ -71,10 +71,10 @@ void XtCallbackNonexclusive(
 } /* XtCallbackNonexclusive */
 
 /* ARGSUSED */
-void XtCallbackExclusive(
-    Widget  widget,
-    XtPointer closure,
-    XtPointer call_data)
+void XtCallbackExclusive(widget, closure, call_data)
+    Widget  widget;
+    XtPointer closure;
+    XtPointer call_data;
 {
     XtSetSensitive(widget, FALSE);
     _XtPopup((Widget) closure, XtGrabExclusive, FALSE);

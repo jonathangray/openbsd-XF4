@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftdir.c,v 1.3 2002/05/22 04:16:40 keithp Exp $
+ * $XFree86: xc/lib/Xft1/xftdir.c,v 1.2 2002/03/01 01:00:53 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

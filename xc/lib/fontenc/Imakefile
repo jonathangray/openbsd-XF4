@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/fontenc/Imakefile,v 1.9 2003/11/18 19:04:54 torrey Exp $
+XCOMM $XFree86: xc/lib/fontenc/Imakefile,v 1.8 2003/11/17 15:30:11 tsi Exp $
 
    INCLUDES = -I$(FONTINCSRC) -I$(FONTLIBSRC)/include -I$(FONTLIBSRC)/fontfile \
 	      -I$(INCLUDESRC)

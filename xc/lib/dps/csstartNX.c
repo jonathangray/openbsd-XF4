@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/csstartNX.c,v 1.7 2002/05/31 18:45:48 dawes Exp $ */
+/* $XFree86: xc/lib/dps/csstartNX.c,v 1.6 2001/10/28 03:32:43 tsi Exp $ */
 
 #include <sys/param.h>
 #include <X11/X.h>

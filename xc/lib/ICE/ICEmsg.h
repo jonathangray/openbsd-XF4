@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/ICEmsg.h,v 1.5 2003/11/17 22:20:05 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/ICEmsg.h,v 1.4 2001/12/20 19:40:59 tsi Exp $ */
 
 #ifndef _ICEMSG_H_
 #define _ICEMSG_H_

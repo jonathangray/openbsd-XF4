@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftdbg.c,v 1.2 2002/03/01 01:00:53 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftdbg.c,v 1.3 2001/03/31 01:57:20 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

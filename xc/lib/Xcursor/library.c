@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xcursor/library.c,v 1.4 2003/11/11 01:17:54 dawes Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -32,8 +31,8 @@
 
 #define CURSORPATH "~/.icons:/usr/share/icons:/usr/share/pixmaps:"ICONDIR
 
-static const char *
-_XcursorLibraryPath (void)
+const char *
+XcursorLibraryPath (void)
 {
     static const char	*path;
 
@@ -101,19 +100,16 @@ _XcursorBuildThemeDir (const char *dir, const char *theme)
 	if (!home)
 	    return 0;
 	homelen = strlen (home);
-	/* A '/' gets prepended if $HOME doesn't start with one. */
-	if (home[0] != '/')
-	    homelen++;
 	dir++;
 	dirlen--;
     }
 
-    len = homelen + dirlen + 1 + themelen + 1;
+    /*
+     * add space for any needed directory separators, one per component,
+     * and one for the trailing null
+     */
+    len = 1 + homelen + 1 + dirlen + 1 + themelen + 1;
     
-    /* A '/' gets inserted if dir doesn't start with one. */
-    if (dir[0] != '/')
-	len++;
-
     full = malloc (len);
     if (!full)
 	return 0;
@@ -222,7 +218,7 @@ XcursorScanTheme (const char *theme, const char *name)
     /*
      * Scan this theme
      */
-    for (path = _XcursorLibraryPath ();
+    for (path = XcursorLibraryPath ();
 	 path && f == 0;
 	 path = _XcursorNextPath (path))
     {
@@ -292,6 +288,8 @@ XcursorLibraryLoadImages (const char *file, const char *theme, int size)
     if (f)
     {
 	images = XcursorFileLoadImages (f, size);
+	if (images)
+	    XcursorImagesSetName (images, file);
 	fclose (f);
     }
     return images;
@@ -316,6 +314,9 @@ XcursorLibraryLoadCursor (Display *dpy, const char *file)
     }
     cursor = XcursorImagesLoadCursor (dpy, images);
     XcursorImagesDestroy (images);
+#if defined HAVE_XFIXES && XFIXES_MAJOR >= 2
+    XFixesSetCursorName (dpy, cursor, file);
+#endif
     return cursor;
 }
 

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xcursor/xcursorint.h,v 1.4 2003/01/26 03:22:42 eich Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -25,10 +24,20 @@
 #ifndef _XCURSORINT_H_
 #define _XCURSORINT_H_
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+ 
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/Xrender.h>
+
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#endif
+
 #include "Xcursor.h"
+#include "config.h"
 
 typedef struct _XcursorFontInfo {
     struct _XcursorFontInfo	*next;

@@ -49,7 +49,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/bitmap/snfread.c,v 1.13 2003/11/18 01:17:04 dawes Exp $ */
+/* $XFree86: xc/lib/font/bitmap/snfread.c,v 1.12 2003/11/17 22:20:22 dawes Exp $ */
 
 #ifndef FONTMODULE
 #include <ctype.h>

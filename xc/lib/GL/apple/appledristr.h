@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/GL/apple/appledristr.h,v 1.2 2003/11/17 22:20:05 dawes Exp $ */
+/* $XFree86: xc/lib/GL/apple/appledristr.h,v 1.1 2003/06/30 01:45:10 torrey Exp $ */
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.

@@ -1,4 +1,5 @@
-XCOMM $XFree86: xc/lib/Xxf86dga/Imakefile,v 3.7 2003/11/22 01:33:31 dawes Exp $
+XCOMM $XdotOrg: xc/lib/Xxf86dga/Imakefile,v 1.2 2004/04/23 18:43:55 eich Exp $
+XCOMM $XFree86: xc/lib/Xxf86dga/Imakefile,v 3.6 2003/05/05 20:42:30 tsi Exp $
 
 #define DoNormalLib NormalLibXxf86dga
 #define DoSharedLib SharedLibXxf86dga

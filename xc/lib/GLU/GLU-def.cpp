@@ -163,4 +163,4 @@ gluSphere
 gluCheckExtension
 gluGetString
 
-/* $XFree86: xc/lib/GLU/GLU-def.cpp,v 1.1 2001/02/13 19:19:11 dawes Exp $ */
+/* $XFree86$ */

@@ -2010,4 +2010,4 @@ EXPORTS
 #endif
 
 /* $Xorg: X11-def.cpp,v 1.3 2000/08/17 19:44:59 cpqbld Exp $ */
-/* $XFree86: xc/lib/X11/X11-def.cpp,v 1.15 2003/06/10 17:03:51 dawes Exp $ */
+/* $XFree86: xc/lib/X11/X11-def.cpp,v 1.14 2003/03/25 04:18:09 dawes Exp $ */

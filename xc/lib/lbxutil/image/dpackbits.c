@@ -22,7 +22,7 @@
  * LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
  * OF THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/lbxutil/image/dpackbits.c,v 1.4 2001/01/17 19:43:35 dawes Exp $ */
+/* $XFree86: xc/lib/lbxutil/image/dpackbits.c,v 1.3 2000/05/18 23:46:16 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/Xfuncproto.h>

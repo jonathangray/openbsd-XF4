@@ -1,8 +1,8 @@
-.\" $XFree86: xc/lib/Xxf86dga/XDGA.man,v 1.1 2003/11/22 01:33:31 dawes Exp $
+.\" $XFree86$
 .\" 
-.TH XDGA 3 __vendorversion__ "XFree86"
+.TH XDGA 3 __vendorversion__
 .SH NAME
-XDGA \- XFree86 DGA extension client library
+XDGA \- Client library for the XFree86-DGA extension.
 .SH SYNOPSIS
 .B #include <X11/extensions/xf86dga.h>
 .HP
@@ -217,9 +217,7 @@ extension's existence are now better served in other ways.  Further
 development of this extension is not expected, and it may be deprecated
 in a future release.  The features that continue to be useful will either
 be provided through other existing mechanisms, or through an extension
-that address those needs more specifically.  Discussion of these issue
-is encouraged in the XFree86 developer forum
-.RI < devel@xfree86.org >.
+that address those needs more specifically.
 .PP
 .B XFree86-DGA
 is initialized by passing a number corresponding to a valid
@@ -280,7 +278,7 @@ A unique identifying number
 > 0) for the mode.  This is the number referenced when initializing the mode.
 .TP 8
 .I name
-The name of the corresponding modeline as given in the XF86Config file.
+The name of the corresponding modeline as given in the __xconfigfile__ file.
 .TP 8
 .I verticalRefresh
 The vertical refresh rate for the modeline (in Hz).
@@ -667,7 +665,7 @@ flag is not set in the
 field since concurrent access by the server and client may result in a
 system lockup.
 .SH SEE ALSO
-XFree86(1), XF86Config(__filemansuffix__)
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__)
 .SH AUTHORS
 .B XFree86-DGA
 version 2 was written by Mark Vojkovich.  Version 1 was written by Jon

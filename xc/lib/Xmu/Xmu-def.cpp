@@ -142,4 +142,4 @@ XmuScanlineAnd
 XmuScanlineOr
 #endif
 
-/* $XFree86: xc/lib/Xmu/Xmu-def.cpp,v 1.2 2002/05/31 18:45:45 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/Xmu-def.cpp,v 1.1 2000/08/09 23:40:13 dawes Exp $ */

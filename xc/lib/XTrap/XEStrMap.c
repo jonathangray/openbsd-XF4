@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/XTrap/XEStrMap.c,v 1.2 2001/11/08 04:00:12 tsi Exp $ */
+/* $XFree86: xc/lib/XTrap/XEStrMap.c,v 1.1 2001/11/02 23:29:27 dawes Exp $ */
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991, 1992, 1994 by Digital Equipment Corp., 
 Maynard, MA

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Tri.c,v 1.3 2002/11/05 23:22:35 keithp Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -35,7 +34,7 @@ XRenderCompositeTriangles (Display		*dpy,
 			   _Xconst XTriangle	*triangles,
 			   int			ntriangle)
 {
-    XExtDisplayInfo         *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo         *info = XRenderFindDisplay (dpy);
     xRenderTrianglesReq	    *req;
     int			    n;
     long    		    len;
@@ -80,7 +79,7 @@ XRenderCompositeTriStrip (Display		*dpy,
 			  _Xconst XPointFixed	*points,
 			  int			npoint)
 {
-    XExtDisplayInfo         *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo         *info = XRenderFindDisplay (dpy);
     xRenderTriStripReq	    *req;
     int			    n;
     long    		    len;
@@ -125,7 +124,7 @@ XRenderCompositeTriFan (Display			*dpy,
 			_Xconst XPointFixed	*points,
 			int			npoint)
 {
-    XExtDisplayInfo         *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo         *info = XRenderFindDisplay (dpy);
     _Xconst XPointFixed	    *first = points;
     xPointFixed		    *p;
     xRenderTriFanReq	    *req;

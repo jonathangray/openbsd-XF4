@@ -6,4 +6,4 @@ EXPORTS
  FontCacheGetCacheStatistics
  FontCacheQueryExtension
  FontCacheQueryVersion
-/* $XFree86: xc/lib/Xfontcache/Xfontcache-def.cpp,v 1.1 2003/10/15 21:18:51 herrb Exp $ */
+/* $XFree86$ */

@@ -33,4 +33,4 @@ XRRConfigCurrentRate
 XRRConfigRates
 XRRSetScreenConfigAndRate
 #endif  /* __UNIXOS2__
-/* $XFree86: xc/lib/Xrandr/Xrandr-def.cpp,v 1.2 2003/03/25 04:18:12 dawes Exp $ */
+/* $XFree86: xc/lib/Xrandr/Xrandr-def.cpp,v 1.1 2001/08/19 15:22:58 alanh Exp $ */

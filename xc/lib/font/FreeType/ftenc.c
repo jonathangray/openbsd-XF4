@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/lib/font/FreeType/ftenc.c,v 1.25 2003/11/20 22:36:34 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftenc.c,v 1.24 2003/10/19 18:53:49 dawes Exp $ */
 
 #ifndef FONTMODULE
 #include <string.h>

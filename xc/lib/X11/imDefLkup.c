@@ -26,7 +26,7 @@ PERFORMANCE OF THIS SOFTWARE.
                                fujiwara@a80.tech.yk.fujitsu.co.jp
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/imDefLkup.c,v 3.12 2003/11/17 22:20:11 dawes Exp $ */
+/* $XFree86: xc/lib/X11/imDefLkup.c,v 3.11 2003/06/23 17:35:43 eich Exp $ */
 
 #include <X11/Xatom.h>
 #define  NEED_EVENTS
@@ -463,7 +463,7 @@ _XimGetWindowEventmask(
     Xim			im = (Xim )ic->core.im;
     XWindowAttributes	atr;
 
-    if (!XGetWindowAttributes(im->core.display, ic->core.focus_window, &atr))
+    if (!_XGetWindowAttributes(im->core.display, ic->core.focus_window, &atr))
 	return 0;
     return (EVENTMASK)atr.your_event_mask;
 }

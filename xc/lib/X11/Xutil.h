@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/Xutil.h,v 3.7 2003/11/17 22:20:11 dawes Exp $ */
+/* $XFree86: xc/lib/X11/Xutil.h,v 3.6 2003/04/13 19:22:20 dawes Exp $ */
 
 #ifndef _XUTIL_H_
 #define _XUTIL_H_
@@ -247,12 +247,19 @@ typedef struct _XComposeStatus {
 #define IsMiscFunctionKey(keysym) \
   (((KeySym)(keysym) >= XK_Select)   && ((KeySym)(keysym) <= XK_Break))
 
+#ifdef XK_XKB_KEYS
 #define IsModifierKey(keysym) \
   ((((KeySym)(keysym) >= XK_Shift_L) && ((KeySym)(keysym) <= XK_Hyper_R)) \
    || (((KeySym)(keysym) >= XK_ISO_Lock) && \
        ((KeySym)(keysym) <= XK_ISO_Last_Group_Lock)) \
    || ((KeySym)(keysym) == XK_Mode_switch) \
    || ((KeySym)(keysym) == XK_Num_Lock))
+#else
+#define IsModifierKey(keysym) \
+  ((((KeySym)(keysym) >= XK_Shift_L) && ((KeySym)(keysym) <= XK_Hyper_R)) \
+   || ((KeySym)(keysym) == XK_Mode_switch) \
+   || ((KeySym)(keysym) == XK_Num_Lock))
+#endif
 /*
  * opaque reference to Region data type 
  */

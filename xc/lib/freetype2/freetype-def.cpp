@@ -205,6 +205,7 @@ FT_Get_BDF_Property
 FT_Activate_Size
 FT_Get_X11_Font_Format
 FT_Get_BDF_Charset_ID
+FT_Get_Postscript_Name
 #endif
 
 /* $XFree86: xc/lib/freetype2/freetype-def.cpp,v 1.6 2003/11/06 03:25:41 dawes Exp $ */

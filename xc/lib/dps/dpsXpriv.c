@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/dpsXpriv.c,v 1.8 2002/10/21 13:32:53 alanh Exp $ */
+/* $XFree86: xc/lib/dps/dpsXpriv.c,v 1.7 2002/03/05 21:50:14 herrb Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>

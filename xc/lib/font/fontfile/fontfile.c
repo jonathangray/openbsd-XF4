@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/lib/font/fontfile/fontfile.c,v 1.2 2004/04/23 18:44:21 eich Exp $ */
 /* $Xorg: fontfile.c,v 1.4 2001/02/09 02:04:03 xorgcvs Exp $ */
 
 /*
@@ -25,7 +26,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/fontfile/fontfile.c,v 3.22 2004/02/11 21:11:20 dawes Exp $ */
+/* $XFree86: xc/lib/font/fontfile/fontfile.c,v 3.21 2003/12/02 19:50:40 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

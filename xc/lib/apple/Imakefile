@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/apple/Imakefile,v 1.1 2003/08/12 23:47:10 torrey Exp $
+XCOMM $XFree86: xc/lib/Xrandr/Imakefile,v 1.2 2002/10/02 16:55:41 keithp Exp $
 
 
 #define DoNormalLib NormalLibAppleWM

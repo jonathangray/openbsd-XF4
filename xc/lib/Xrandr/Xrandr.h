@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xrandr/Xrandr.h,v 1.11 2002/10/14 18:01:39 keithp Exp $
+ * $XFree86: xc/lib/Xrandr/Xrandr.h,v 1.9 2002/09/29 23:39:44 keithp Exp $
  *
  * Copyright © 2000 Compaq Computer Corporation, Inc.
  * Copyright © 2002 Hewlett-Packard Company, Inc.

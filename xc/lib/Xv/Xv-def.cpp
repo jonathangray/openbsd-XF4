@@ -24,4 +24,4 @@ XvShmCreateImage
 XvShmPutImage
 XvStopVideo
 XvUngrabPort
-/* $XFree86: xc/lib/Xv/Xv-def.cpp,v 1.1 2002/09/30 22:02:17 alanh Exp $ */
+/* $XFree86$ */

@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/apple/applewmstr.h,v 1.2 2003/09/16 00:36:09 torrey Exp $ */
+/* $XFree86: xc/lib/apple/applewmstr.h,v 1.1 2003/08/12 23:47:10 torrey Exp $ */
 /**************************************************************************
 
 Copyright (c) 2002 Apple Computer, Inc.

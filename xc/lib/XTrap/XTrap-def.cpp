@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/XTrap/XTrap-def.cpp,v 1.1 2001/11/15 12:56:17 alanh Exp $ */
+/* $XFree86$ */
 LIBRARY XTrap
 VERSION LIBRARY_VERSION
 EXPORTS

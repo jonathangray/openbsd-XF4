@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Xrenderint.h,v 1.4 2002/11/05 23:22:35 keithp Exp $
  *
- * Copyright © 2000 SuSE, Inc.
+ * Copyright Â© 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,14 +25,13 @@
 #ifndef _XRENDERINT_H_
 #define _XRENDERINT_H_
 
+#include "config.h"
 #define NEED_EVENTS
 #define NEED_REPLIES
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
-#include "Xext.h"			/* in ../include */
-#include "extutil.h"			/* in ../include */
+#include <X11/extensions/renderproto.h>
 #include "Xrender.h"
-#include "renderproto.h"
 
 typedef struct {
     Visual		*visual;
@@ -72,17 +70,34 @@ typedef struct _XRenderInfo {
     int			nfilter_alias;
 } XRenderInfo;
 
-extern XExtensionInfo XRenderExtensionInfo;
+/* replaces XRenderExtDisplayInfo */
+typedef struct _XRenderExtDisplayInfo {
+    struct _XRenderExtDisplayInfo *next;    /* keep a linked list */
+    Display                       *display; /* which display this is */
+    XExtCodes                     *codes;   /* the extension protocol codes */
+    XRenderInfo                   *info;    /* extra data for the extension to use */
+} XRenderExtDisplayInfo;
+
+/* replaces XExtensionInfo */
+typedef struct _XRenderExtInfo {
+    XRenderExtDisplayInfo  *head;           /* start of the list */
+    XRenderExtDisplayInfo  *cur;            /* most recently used */
+    int                     ndisplays;      /* number of displays */
+} XRenderExtInfo;
+
+extern XRenderExtInfo XRenderExtensionInfo;
 extern char XRenderExtensionName[];
 
+XRenderExtDisplayInfo *
+XRenderFindDisplay (Display *dpy);
+
+#define RenderHasExtension(i) ((i) && ((i)->codes))
+
 #define RenderCheckExtension(dpy,i,val) \
-  XextCheckExtension (dpy, i, XRenderExtensionName, val)
+  if (!RenderHasExtension(i)) { return val; }
 
 #define RenderSimpleCheckExtension(dpy,i) \
-  XextSimpleCheckExtension (dpy, i, XRenderExtensionName)
-
-XExtDisplayInfo *
-XRenderFindDisplay (Display *dpy);
+  if (!RenderHasExtension(i)) { return; }
 
 /*
  * Xlib uses long for 32-bit values.  Xrender uses int.  This

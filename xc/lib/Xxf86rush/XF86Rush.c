@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xxf86rush/XF86Rush.c,v 1.6 2002/10/16 00:37:34 dawes Exp $ */
+/* $XFree86: xc/lib/Xxf86rush/XF86Rush.c,v 1.5 2000/09/26 15:56:59 tsi Exp $ */
 /*
 
 Copyright (c) 1998 Daryll Strauss

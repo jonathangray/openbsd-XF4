@@ -41,7 +41,8 @@ interest in or to any trademark, service mark, logo or trade name of
 Sun Microsystems, Inc. or its licensors is granted.
 
 */
-/* $XFree86: xc/lib/X11/XlcDL.c,v 1.13 2003/11/17 22:20:10 dawes Exp $ */
+/* $XFree86: xc/lib/X11/XlcDL.c,v 1.12 2003/04/13 19:22:19 dawes Exp $ */
+/* $XdotOrg: xc/lib/X11/XlcDL.c,v 1.2 2004/04/23 18:43:24 eich Exp $ */
 
 #include <stdio.h>
 #if defined(hpux)

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftmatrix.c,v 1.1.1.1 2002/02/15 01:26:16 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftmatrix.c,v 1.1 2001/03/30 18:50:18 keithp Exp $
  *
  * Copyright © 2000 Tuomas J. Lukka
  *

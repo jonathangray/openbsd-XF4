@@ -26,23 +26,21 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/PutBEvent.c,v 1.4 2001/12/14 19:54:03 dawes Exp $ */
+/* $XFree86: xc/lib/X11/PutBEvent.c,v 1.3 2001/01/17 19:41:41 dawes Exp $ */
 
 /* XPutBackEvent puts an event back at the head of the queue. */
 #define NEED_EVENTS
 #include "Xlibint.h"
 
 int
-XPutBackEvent (dpy, event)
-	register Display *dpy;
-	register XEvent *event;
+_XPutBackEvent (
+    register Display *dpy, 
+    register XEvent *event)
 	{
 	register _XQEvent *qelt;
 
-	LockDisplay(dpy);
 	if (!dpy->qfree) {
     	    if ((dpy->qfree = (_XQEvent *) Xmalloc (sizeof (_XQEvent))) == NULL) {
-		UnlockDisplay(dpy);
 		return 0;
 	    }
 	    dpy->qfree->next = NULL;
@@ -56,6 +54,18 @@ XPutBackEvent (dpy, event)
 	if (dpy->tail == NULL)
 	    dpy->tail = qelt;
 	dpy->qlen++;
-	UnlockDisplay(dpy);
 	return 0;
+	}
+
+int
+XPutBackEvent (
+    register Display * dpy, 
+    register XEvent *event)
+	{
+	int ret;
+
+	LockDisplay(dpy);
+	ret = _XPutBackEvent(dpy, event);
+	UnlockDisplay(dpy);
+	return ret;
 	}

@@ -50,7 +50,7 @@ from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.h,v 1.10 2001/12/14 19:57:00 dawes Exp $ */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.h,v 1.9 2001/08/27 19:01:07 dawes Exp $ */
 
 #include "zlib.h"
 #include "Xfuncproto.h"

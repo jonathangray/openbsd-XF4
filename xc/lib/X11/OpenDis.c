@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/OpenDis.c,v 3.17 2003/11/17 22:20:08 dawes Exp $ */
+/* $XFree86: xc/lib/X11/OpenDis.c,v 3.16 2003/07/04 16:24:23 eich Exp $ */
 
 #define NEED_REPLIES
 #define NEED_EVENTS
@@ -570,6 +570,12 @@ XOpenDisplay (
 			u.vp = (xVisualType *) (((char *) u.vp) +
 						sz_xVisualType);
 		    }
+		    if (dp->depth == 32 && getenv ("XLIB_SKIP_ARGB_VISUALS"))
+		    {
+			Xfree (dp->visuals);
+			dp->visuals = NULL;
+			dp->nvisuals = 0;
+		    }
 		} else {
 		    dp->visuals = (Visual *) NULL;
 		}
@@ -761,7 +767,8 @@ void _XFreeDisplayStructure(dpy)
 	if (dpy->xkb_info)
 	   (*dpy->free_funcs->xkb)(dpy);
 
-	if (dpy->db)
+	/* if RM database was allocated by XGetDefault() free it */
+	if (dpy->db && (dpy->flags & XlibDisplayDfltRMDB))
 	    XrmDestroyDatabase(dpy->db);
 
 	if (dpy->screens) {

@@ -141,4 +141,4 @@ EXPORTS
  _XawTextNeedsUpdating
 #endif
 /* $Xorg: Xaw-def.cpp,v 1.3 2000/08/17 19:45:44 cpqbld Exp $ */
-/* $XFree86: xc/lib/Xaw6/Xaw-def.cpp,v 1.1 2002/05/31 18:45:44 dawes Exp $ */
+/* $XFree86$ */

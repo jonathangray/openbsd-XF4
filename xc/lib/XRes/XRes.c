@@ -1,7 +1,7 @@
 /*
    Copyright (c) 2002  XFree86 Inc
 */
-/* $XFree86: xc/lib/XRes/XRes.c,v 1.4 2002/10/16 00:37:26 dawes Exp $ */
+/* $XFree86: xc/lib/XRes/XRes.c,v 1.3 2002/03/10 22:06:53 mvojkovi Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES

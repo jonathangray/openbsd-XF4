@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
-/* $XFree86: xc/lib/font/bitmap/bitmapfunc.c,v 3.18 2002/09/24 20:48:52 tsi Exp $ */
+/* $XFree86: xc/lib/font/bitmap/bitmapfunc.c,v 3.17 2002/09/19 13:21:58 tsi Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

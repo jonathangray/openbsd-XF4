@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Filter.c,v 1.1 2002/09/26 02:56:52 keithp Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -27,7 +26,7 @@
 XFilters *
 XRenderQueryFilters (Display *dpy, Drawable drawable)
 {
-    XExtDisplayInfo		*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		*info = XRenderFindDisplay (dpy);
     XRenderInfo			*xri;
     xRenderQueryFiltersReq	*req;
     xRenderQueryFiltersReply	rep;
@@ -37,13 +36,13 @@ XRenderQueryFilters (Display *dpy, Drawable drawable)
     int				i;
     long			nbytes, nbytesAlias, nbytesName;
     
-    if (!XextHasExtension (info))
+    if (!RenderHasExtension (info))
 	return 0;
 
     if (!XRenderQueryFormats (dpy))
 	return 0;
 
-    xri = (XRenderInfo *) info->data;
+    xri = info->info;
     if (xri->minor_version < 6)
 	return 0;
     
@@ -131,7 +130,7 @@ XRenderSetPictureFilter  (Display   *dpy,
 			  XFixed    *params,
 			  int	    nparams)
 {
-    XExtDisplayInfo		*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		*info = XRenderFindDisplay (dpy);
     xRenderSetPictureFilterReq	*req;
     int				nbytes = strlen (filter);
 

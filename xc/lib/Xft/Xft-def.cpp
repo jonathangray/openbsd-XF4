@@ -181,4 +181,4 @@ XftCharExists
 XftDrawCharSpec
 #endif  /* __UNIXOS2__ */
 
-/* $XFree86: xc/lib/Xft/Xft-def.cpp,v 1.6 2003/06/18 16:17:34 eich Exp $ */
+/* $XFree86: xc/lib/Xft/Xft-def.cpp,v 1.4 2002/09/18 01:25:00 dawes Exp $ */

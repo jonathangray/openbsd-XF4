@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftxlfd.c,v 1.2 2003/05/27 22:26:41 tsi Exp $
+ * $XFree86: xc/lib/Xft1/xftxlfd.c,v 1.1.1.1tsi Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

@@ -50,7 +50,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/FS/FSConnServ.c,v 3.11 2001/12/14 19:53:32 dawes Exp $ */
+/* $XFree86: xc/lib/FS/FSConnServ.c,v 3.10 2001/10/28 03:32:27 tsi Exp $ */
 
 #include	<stdio.h>
 #include	"FSlibint.h"

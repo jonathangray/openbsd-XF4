@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/SM/sm_auth.c,v 1.4 2003/10/23 21:38:22 tsi Exp $ */
+/* $XFree86$ */
 
 /*
  * Author: Ralph Mor, X Consortium

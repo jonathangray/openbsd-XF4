@@ -45,7 +45,7 @@ in this Software without prior written authorization from The Open Group.
  *         XSetExtensionErrorHandler	establish an extension error handler
  *         XMissingExtension		raise an error about missing ext
  */
-/* $XFree86: xc/lib/Xext/extutil.c,v 1.6 2003/11/17 22:20:21 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/extutil.c,v 1.5 2002/10/16 00:37:27 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Xlibint.h>

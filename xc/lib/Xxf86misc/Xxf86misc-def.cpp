@@ -11,4 +11,4 @@ EXPORTS
 ;	XF86MiscGetSaver 
 
 
-/* $XFree86: xc/lib/Xxf86misc/Xxf86misc-def.cpp,v 1.2 2002/11/20 04:04:58 dawes Exp $ */
+/* $XFree86: xc/lib/Xxf86misc/Xxf86misc-def.cpp,v 1.1 2000/08/09 23:40:14 dawes Exp $ */

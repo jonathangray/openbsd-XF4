@@ -32,7 +32,6 @@ in this Software without prior written authorization from The Open Group.
 
 #include <X11/SM/SMlib.h>
 #include "SMlibint.h"
-#include <X11/Xtrans.h>
 
 #ifdef __USLC__
 #undef shutdown
@@ -166,13 +165,16 @@ char	   **failureReasonRet;
 
 
 
+/* Using private API from libICE. */
+extern char *_IceGetPeerName (IceConn /* iceConn */);
+
 char *
 SmsClientHostName (smsConn)
 
 SmsConn smsConn;
 
 {
-    return (_IceTransGetPeerNetworkId (smsConn->iceConn->trans_conn));
+    return (_IceGetPeerName (smsConn->iceConn));
 }
 
 

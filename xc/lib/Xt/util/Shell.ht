@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/util/Shell.ht,v 3.5 2001/12/14 19:56:39 dawes Exp $ */
+/* $XFree86: xc/lib/Xt/util/Shell.ht,v 3.4 2001/07/29 05:01:12 tsi Exp $ */
 
 #ifndef _XtShell_h
 #define _XtShell_h

@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/Xct.c,v 1.9 2001/12/14 19:55:58 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/Xct.c,v 1.8 2001/07/25 15:04:50 dawes Exp $ */
 
 #include <X11/Xfuncs.h>
 #include "Xct.h"

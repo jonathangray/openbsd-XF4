@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/XDPS.c,v 1.5 2003/10/24 15:50:20 tsi Exp $ */
+/* $XFree86: xc/lib/dps/XDPS.c,v 1.4tsi Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES

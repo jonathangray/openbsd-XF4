@@ -35,7 +35,7 @@
  *
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/cslibext.c,v 1.5 2003/05/27 22:26:44 tsi Exp $ */
+/* $XFree86: xc/lib/dps/cslibext.c,v 1.4tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

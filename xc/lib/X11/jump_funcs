@@ -3,7 +3,7 @@
 #
 #
 #
-# $XFree86: xc/lib/X11/jump_funcs,v 3.11 2001/01/17 19:41:52 dawes Exp $
+# $XFree86: xc/lib/X11/jump_funcs,v 3.10 1998/10/03 08:41:36 dawes Exp $
 #
 00000000 T _XSaveContext        libX11         Context
 00000000 T _XFindContext        libX11         Context

@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
-/* $XFree86: xc/lib/Xmu/WidgetNode.c,v 1.13 2002/09/24 18:55:21 alanh Exp $ */
+/* $XFree86: xc/lib/Xmu/WidgetNode.c,v 1.12 2002/09/19 13:21:58 tsi Exp $ */
 
 /*
  * Author:  Jim Fulton, MIT X Consortium
@@ -38,7 +38,6 @@ in this Software without prior written authorization from The Open Group.
 #include <stdlib.h>
 #include <X11/Xos.h>
 #include <X11/IntrinsicP.h>
-#include <X11/Xaw/Cardinals.h>
 #include <X11/Xmu/CharSet.h>
 #include <X11/Xmu/WidgetNode.h>
 
@@ -218,7 +217,7 @@ XmuWnFetchResources(XmuWidgetNode *node, Widget toplevel,
     if (node->have_resources) return;
 
     dummy = XtCreateWidget (node->label, XmuWnClass(node), toplevel,
-			    NULL, ZERO);
+			    NULL, 0);
     if (dummy) XtDestroyWidget (dummy);
 
 

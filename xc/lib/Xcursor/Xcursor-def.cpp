@@ -41,15 +41,14 @@ XcursorImageCreate
 XcursorImageDestroy
 XcursorImagesCreate
 XcursorImagesDestroy
-XcursorImageHash
 XcursorXcFileLoad
 XcursorXcFileLoadAllImages
 XcursorXcFileLoadImage
 XcursorXcFileLoadImages
 XcursorXcFileSave
+XcursorLibraryPath
 XcursorLibraryLoadImage
 XcursorLibraryLoadImages
 XcursorShapeLoadImage
 XcursorShapeLoadImages
 XcursorTryShapeCursor
-/* $XFree86: xc/lib/Xcursor/Xcursor-def.cpp,v 1.3 2004/01/13 19:08:04 dawes Exp $ */

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xcursor/file.c,v 1.2 2002/09/18 17:11:42 tsi Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -61,6 +60,7 @@ XcursorImagesCreate (int size)
 	return 0;
     images->nimage = 0;
     images->images = (XcursorImage **) (images + 1);
+    images->name = 0;
     return images;
 }
 
@@ -71,7 +71,22 @@ XcursorImagesDestroy (XcursorImages *images)
 
     for (n = 0; n < images->nimage; n++)
 	XcursorImageDestroy (images->images[n]);
+    if (images->name)
+	free (images->name);
     free (images);
+}
+
+void
+XcursorImagesSetName (XcursorImages *images, const char *name)
+{
+    char    *new = malloc (strlen (name) + 1);
+
+    if (!new)
+	return;
+    strcpy (new, name);
+    if (images->name)
+	free (images->name);
+    images->name = new;
 }
 
 XcursorComment *
@@ -185,7 +200,7 @@ _XcursorFileHeaderCreate (int ntoc)
 	return 0;
     fileHeader->magic = XCURSOR_MAGIC;
     fileHeader->header = XCURSOR_FILE_HEADER_LEN;
-    fileHeader->version = XCURSOR_VERSION;
+    fileHeader->version = XCURSOR_FILE_VERSION;
     fileHeader->ntoc = ntoc;
     fileHeader->tocs = (XcursorFileToc *) (fileHeader + 1);
     return fileHeader;

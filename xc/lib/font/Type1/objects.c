@@ -26,7 +26,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/font/Type1/objects.c,v 1.11 2003/05/27 22:26:45 tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/objects.c,v 1.10tsi Exp $ */
  /* OBJECTS  CWEB         V0025 ********                             */
 /*
 :h1.OBJECTS Module - TYPE1IMAGER Objects Common Routines
@@ -58,7 +58,6 @@ you do do not need to include these header files.
 #include  <string.h>
 #include  <ctype.h>
 #include  <stdarg.h>
-#include  "os.h"
 #else
 #include "Xdefs.h"	/* Bool declaration */
 #include "Xmd.h"	/* INT32 declaration */

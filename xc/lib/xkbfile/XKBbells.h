@@ -27,7 +27,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/XKBbells.h,v 3.3 2003/11/17 22:20:23 dawes Exp $ */
+/* $XFree86$ */
 
 #define	XkbBN_Info			"Info"
 #define	XkbBN_Warning			"Warning"

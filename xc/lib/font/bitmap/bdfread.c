@@ -50,7 +50,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/bitmap/bdfread.c,v 1.13 2003/05/27 22:26:48 tsi Exp $ */
+/* $XFree86: xc/lib/font/bitmap/bdfread.c,v 1.12tsi Exp $ */
 
 #ifndef FONTMODULE
 #include <ctype.h>

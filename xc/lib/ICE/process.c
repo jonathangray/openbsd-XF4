@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/process.c,v 3.10 2003/10/23 21:31:49 tsi Exp $ */
+/* $XFree86: xc/lib/ICE/process.c,v 3.9tsi Exp $ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"

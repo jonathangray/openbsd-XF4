@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/font/stubs/stubs.h,v 1.4 2003/09/13 21:33:03 dawes Exp $ */
+/* $XFree86: xc/lib/font/stubs/stubs.h,v 1.3 1999/12/15 01:14:36 robin Exp $ */
 
 /* This directory includes dummy entry for bdftopcf and mkfontdir */
 

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xcursor/cursor.c,v 1.5 2003/01/26 03:22:42 eich Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -689,14 +688,14 @@ XcursorImagesLoadCursors (Display *dpy, const XcursorImages *images)
 Cursor
 XcursorImagesLoadCursor (Display *dpy, const XcursorImages *images)
 {
+    Cursor  cursor;
     if (images->nimage == 1 || !XcursorSupportsAnim (dpy))
-	return XcursorImageLoadCursor (dpy, images->images[0]);
+	cursor = XcursorImageLoadCursor (dpy, images->images[0]);
     else
     {
 	XcursorCursors	*cursors = XcursorImagesLoadCursors (dpy, images);
 	XAnimCursor	*anim;
 	int		n;
-	Cursor		cursor;
 	
 	if (!cursors)
 	    return 0;
@@ -713,8 +712,12 @@ XcursorImagesLoadCursor (Display *dpy, const XcursorImages *images)
 	}
 	cursor = XRenderCreateAnimCursor (dpy, cursors->ncursor, anim);
 	free (anim);
-	return cursor;
     }
+#if defined HAVE_XFIXES && XFIXES_MAJOR >= 2
+    if (images->name)
+	XFixesSetCursorName (dpy, cursor, images->name);
+#endif
+    return cursor;
 }
 
 

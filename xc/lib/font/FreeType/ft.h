@@ -21,12 +21,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/ft.h,v 1.23 2003/10/19 18:53:49 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ft.h,v 1.22 2003/06/08 15:41:13 herrb Exp $ */
 
 #ifndef _FT_H_
 #define _FT_H_
 
 #include <X11/Xfuncproto.h>
+
+#define FREETYPE_VERSION (FREETYPE_MAJOR * 1000000 + FREETYPE_MINOR * 1000 + FREETYPE_PATCH)
 
 #undef DEBUG_TRUETYPE
 

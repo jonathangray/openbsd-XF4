@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Vendor.c,v 1.8 2003/12/22 21:10:25 dickey Exp $ */
+/* $XFree86: xc/lib/Xt/Vendor.c,v 1.7 2002/05/31 18:45:46 dawes Exp $ */
 
 /* Make sure all wm properties can make it out of the resource manager */
 

@@ -29,13 +29,13 @@ Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Popup.c,v 1.5 2004/05/05 00:07:03 dickey Exp $ */
+/* $XFree86$ */
 
 #include "IntrinsicI.h"
 #include "ShellP.h"
@@ -105,7 +105,7 @@ void XtPopup (Widget widget, XtGrabKind grab_kind)
 		(String *)NULL, (Cardinal *)NULL);
 	grab_kind = XtGrabNone;
     }
-
+	
     _XtPopup(widget, grab_kind, FALSE);
 
     hookobj = XtHooksOfDisplay(XtDisplay(widget));
@@ -115,14 +115,14 @@ void XtPopup (Widget widget, XtGrabKind grab_kind)
 	call_data.type = XtHpopup;
 	call_data.widget = widget;
 	call_data.event_data = (XtPointer)grab_kind;
-	XtCallCallbackList(hookobj,
-		((HookObject)hookobj)->hooks.changehook_callbacks,
+	XtCallCallbackList(hookobj, 
+		((HookObject)hookobj)->hooks.changehook_callbacks, 
 		(XtPointer)&call_data);
     }
 } /* XtPopup */
 
-void XtPopupSpringLoaded (
-    Widget widget)
+void XtPopupSpringLoaded (widget)
+    Widget widget;
 {
     Widget hookobj;
 
@@ -134,14 +134,14 @@ void XtPopupSpringLoaded (
 
 	call_data.type = XtHpopupSpringLoaded;
 	call_data.widget = widget;
-	XtCallCallbackList(hookobj,
-		((HookObject)hookobj)->hooks.changehook_callbacks,
+	XtCallCallbackList(hookobj, 
+		((HookObject)hookobj)->hooks.changehook_callbacks, 
 		(XtPointer)&call_data);
     }
 }
 
-void XtPopdown(
-    Widget  widget)
+void XtPopdown(widget)
+    Widget  widget;
 {
     /* Unmap a shell widget if it is mapped, and remove from grab list */
     Widget hookobj;
@@ -174,17 +174,17 @@ void XtPopdown(
 
 	call_data.type = XtHpopdown;
 	call_data.widget = widget;
-	XtCallCallbackList(hookobj,
-		((HookObject)hookobj)->hooks.changehook_callbacks,
+	XtCallCallbackList(hookobj, 
+		((HookObject)hookobj)->hooks.changehook_callbacks, 
 		(XtPointer)&call_data);
     }
 } /* XtPopdown */
 
 /* ARGSUSED */
-void XtCallbackPopdown(
-    Widget  widget,
-    XtPointer closure,
-    XtPointer call_data)
+void XtCallbackPopdown(widget, closure, call_data)
+    Widget  widget;
+    XtPointer closure;
+    XtPointer call_data;
 {
     register XtPopdownID id = (XtPopdownID) closure;
 
@@ -193,3 +193,6 @@ void XtCallbackPopdown(
 	XtSetSensitive(id->enable_widget, TRUE);
     }
 } /* XtCallbackPopdown */
+
+
+

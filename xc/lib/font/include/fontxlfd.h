@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/include/fontxlfd.h,v 1.6 2001/12/14 19:56:55 dawes Exp $ */
+/* $XFree86: xc/lib/font/include/fontxlfd.h,v 1.5 2001/01/17 19:43:32 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/lib/Xdmcp/Alloc.c,v 3.5 2001/12/14 19:54:54 dawes Exp $ */
+/* $XFree86: xc/lib/Xdmcp/Alloc.c,v 3.4 2001/07/25 15:04:50 dawes Exp $ */
 
 /* stubs for use when Xalloc, Xrealloc and Xfree are not defined */
 

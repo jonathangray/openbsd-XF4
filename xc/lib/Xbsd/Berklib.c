@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.9 2001/12/14 19:54:54 dawes Exp $ */
+/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.8 2001/07/25 15:04:49 dawes Exp $ */
 
 
 /*

@@ -26,7 +26,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/font/Type1/hints.c,v 1.8 2003/05/27 22:26:45 tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/hints.c,v 1.7tsi Exp $ */
 
  /* HINTS    CWEB         V0006 ********                             */
 /*
@@ -40,8 +40,9 @@ W. Pryor, Jr.
  
 The included files are:
 */
- 
-#include "os.h" 
+#ifdef FONTMODULE
+# include "os.h"
+#endif
 #include "objects.h"
 #include "spaces.h"
 #include "paths.h"

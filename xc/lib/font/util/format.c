@@ -50,7 +50,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/util/format.c,v 1.5 2001/12/14 19:56:57 dawes Exp $ */
+/* $XFree86: xc/lib/font/util/format.c,v 1.4 2001/01/17 19:43:33 dawes Exp $ */
 
 #include	"FSproto.h"
 #include	"font.h"

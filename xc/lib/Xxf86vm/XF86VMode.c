@@ -1,5 +1,5 @@
 /* $XConsortium: XF86VMode.c /main/2 1995/11/14 18:17:58 kaleb $ */
-/* $XFree86: xc/lib/Xxf86vm/XF86VMode.c,v 3.34 2002/12/22 00:46:51 dawes Exp $ */
+/* $XFree86: xc/lib/Xxf86vm/XF86VMode.c,v 3.33 2002/10/16 00:37:34 dawes Exp $ */
 /*
 
 Copyright (c) 1995  Kaleb S. KEITHLEY

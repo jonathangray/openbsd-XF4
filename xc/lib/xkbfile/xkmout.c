@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/xkmout.c,v 1.6 2003/11/17 22:20:24 dawes Exp $ */
+/* $XFree86: xc/lib/xkbfile/xkmout.c,v 1.5 2001/07/25 15:04:58 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>

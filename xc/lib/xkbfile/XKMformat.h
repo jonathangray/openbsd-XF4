@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/XKMformat.h,v 1.2 2001/08/01 00:44:44 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _XKMFORMAT_H_
 #define	_XKMFORMAT_H_ 1

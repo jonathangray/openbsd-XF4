@@ -1,18 +1,11 @@
-XCOMM $XFree86: xc/lib/GL/dri/drm/Imakefile,v 1.23 2003/12/02 13:02:37 alanh Exp $
+XCOMM $XdotOrg: xc/lib/GL/dri/drm/Imakefile,v 1.4 2004/08/27 03:22:12 kem Exp $
+XCOMM $XFree86: xc/lib/GL/dri/drm/Imakefile,v 1.22 2003/09/28 20:15:00 alanh Exp $
 
-#if GlxUseBuiltInDRIDriver
 #define DoNormalLib (NormalLibGlx || SharedLibGlxWithoutPIC)
 #define DoSharedLib (SharedLibGlx && !SharedLibGlxWithoutPIC)
 #define DoExtraLib SharedLibGlx
 #define DoDebugLib DebugLibGlx
 #define DoProfileLib ProfileLibGlx
-#else
-#define DoNormalLib SharedLibGlxWithoutPIC
-#define DoSharedLib !SharedLibGlxWithoutPIC
-#define DoExtraLib NO
-#define DoDebugLib NO
-#define DoProfileLib NO
-#endif
 
 #if Malloc0ReturnsNull
 ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
@@ -21,9 +14,9 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
       DEFINES = $(ALLOC_DEFINES)
      INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC) \
 		-I$(XF86OSSRC)/$(OS_SUBDIR)/drm \
-		-I$(XF86OSSRC)/$(OS_SUBDIR)/drm/kernel \
-		-I$(XF86OSSRC)/$(OS_SUBDIR2)/drm/kernel \
-		-I$(XF86OSSRC)
+		-I$(DRMSRCDIR)/$(OS_SUBDIR) \
+		-I$(DRMSRCDIR)/$(OS_SUBDIR2) \
+		-I$(XF86OSSRC) -I$(DRMSRCDIR)/shared
          SRCS = xf86drm.c xf86drmHash.c xf86drmRandom.c xf86drmSL.c
          OBJS = xf86drm.o xf86drmHash.o xf86drmRandom.o xf86drmSL.o
 
@@ -45,7 +38,7 @@ LinkSourceFile(xf86drmHash.c,$(XF86OSSRC)/$(OS_SUBDIR2)/drm)
 LinkSourceFile(xf86drmRandom.c,$(XF86OSSRC)/$(OS_SUBDIR2)/drm)
 LinkSourceFile(xf86drmSL.c,$(XF86OSSRC)/$(OS_SUBDIR2)/drm)
 
-LinkSourceFile(drm.h,$(XF86OSSRC)/$(OS_SUBDIR3)/drm/kernel)
+LinkSourceFile(drm.h,$(DRMSRCDIR)/$(OS_SUBDIR3))
 
 #include <Library.tmpl>
 
@@ -55,3 +48,5 @@ SubdirLibraryRule($(OBJS))
 NormalLintTarget($(SRCS))
 
 DependTarget()
+
+InstallDriverSDKNonExecFile(drm.h,$(DRIVERSDKINCLUDEDIR))

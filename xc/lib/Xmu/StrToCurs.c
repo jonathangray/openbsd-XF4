@@ -50,7 +50,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-/* $XFree86: xc/lib/Xmu/StrToCurs.c,v 1.12 2002/09/24 18:55:21 alanh Exp $ */
+/* $XFree86: xc/lib/Xmu/StrToCurs.c,v 1.11 2002/09/19 13:21:58 tsi Exp $ */
 
 #include	<X11/Intrinsic.h>
 #include	<X11/StringDefs.h>

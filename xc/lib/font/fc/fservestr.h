@@ -23,7 +23,7 @@
  *
  * Author:  	Dave Lemke, Network Computing Devices, Inc
  */
-/* $XFree86: xc/lib/font/fc/fservestr.h,v 3.4 2001/07/25 15:04:56 dawes Exp $ */
+/* $XFree86: xc/lib/font/fc/fservestr.h,v 3.3 2001/01/17 19:43:29 dawes Exp $ */
 
 #ifndef _FSERVESTR_H_
 #define _FSERVESTR_H_

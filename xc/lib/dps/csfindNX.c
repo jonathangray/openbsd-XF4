@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/csfindNX.c,v 1.8 2003/05/27 22:26:44 tsi Exp $ */
+/* $XFree86: xc/lib/dps/csfindNX.c,v 1.7tsi Exp $ */
 
 #include <sys/param.h>				/* for MAXHOSTNAMELEN */
 #include <stdlib.h>

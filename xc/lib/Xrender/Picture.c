@@ -1,5 +1,4 @@
 /*
- * $XFree86: xc/lib/Xrender/Picture.c,v 1.9 2002/09/26 02:56:52 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -76,7 +75,7 @@ XRenderCreatePicture (Display			*dpy,
 		      unsigned long		valuemask,
 		      _Xconst XRenderPictureAttributes	*attributes)
 {
-    XExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
     Picture		    pid;
     xRenderCreatePictureReq *req;
 
@@ -104,7 +103,7 @@ XRenderChangePicture (Display                   *dpy,
 		      unsigned long             valuemask,
 		      _Xconst XRenderPictureAttributes  *attributes)
 {
-    XExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
     xRenderChangePictureReq *req;
     
     RenderSimpleCheckExtension (dpy, info);
@@ -124,7 +123,7 @@ XRenderChangePicture (Display                   *dpy,
 
 static void
 _XRenderSetPictureClipRectangles (Display	    *dpy,
-				  XExtDisplayInfo   *info,
+				  XRenderExtDisplayInfo   *info,
 				  Picture	    picture,
 				  int		    xOrigin,
 				  int		    yOrigin,
@@ -154,7 +153,7 @@ XRenderSetPictureClipRectangles (Display	*dpy,
 				 _Xconst XRectangle	*rects,
 				 int		n)
 {
-    XExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo	    *info = XRenderFindDisplay (dpy);
     
     RenderSimpleCheckExtension (dpy, info);
     LockDisplay(dpy);
@@ -169,7 +168,7 @@ XRenderSetPictureClipRegion (Display	    *dpy,
 			     Picture	    picture,
 			     Region	    r)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     int		    i;
     XRectangle	    *xr, *pr;
     BOX		    *pb;
@@ -200,7 +199,7 @@ XRenderSetPictureTransform (Display	*dpy,
 			    Picture	picture,
 			    XTransform	*transform)
 {
-    XExtDisplayInfo		    *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		    *info = XRenderFindDisplay (dpy);
     xRenderSetPictureTransformReq   *req;
     
     RenderSimpleCheckExtension (dpy, info);
@@ -227,7 +226,7 @@ void
 XRenderFreePicture (Display                   *dpy,
 		    Picture                   picture)
 {
-    XExtDisplayInfo         *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo         *info = XRenderFindDisplay (dpy);
     xRenderFreePictureReq   *req;
 
     RenderSimpleCheckExtension (dpy, info);

@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/connect.c,v 3.10 2002/12/02 21:50:29 tsi Exp $ */
+/* $XFree86: xc/lib/ICE/connect.c,v 3.9 2001/12/14 19:53:35 dawes Exp $ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"

@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  *
  */
-/* $XFree86: xc/lib/Xext/MITMisc.c,v 1.4 2002/10/16 02:19:22 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/MITMisc.c,v 1.3 2002/10/16 00:37:27 dawes Exp $ */
 
 /* RANDOM CRUFT! THIS HAS NO OFFICIAL X CONSORTIUM BLESSING */
 

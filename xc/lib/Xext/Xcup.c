@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xext/Xcup.c,v 1.9 2003/11/17 22:20:21 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/Xcup.c,v 1.8 2002/10/16 02:19:22 dawes Exp $ */
 /*
 
 Copyright 1987, 1988, 1998  The Open Group

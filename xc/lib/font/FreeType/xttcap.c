@@ -102,7 +102,7 @@ static SPropertyRecord const validRecords[] =
     { "FaceNumber",             eRecTypeString },
     { "AutoItalic",             eRecTypeDouble  },
     { "DoubleStrike",           eRecTypeString  },
-    { "ForceProportional",      eRecTypeBool    },
+    { "FontProperties",         eRecTypeBool    },
     { "ForceSpacing",           eRecTypeString  },
     { "ScaleBBoxWidth",         eRecTypeString  },
     { "ScaleWidth",             eRecTypeDouble  },
@@ -126,13 +126,8 @@ static struct {
 } const correspondRelations[] = {
     { "fn", "FaceNumber" },
     { "ai", "AutoItalic" },
-#if True /* obsoleted - pointed out by mrt ->->-> */
-    { "ab", "DoubleStrike" },
-#endif /* <-<-<- obsoleted */
     { "ds", "DoubleStrike" },
-#if True /* obsoleted ->->-> */
-    { "fp", "ForceProportional" },
-#endif /* <-<-<- obsoleted */
+    { "fp", "FontProperties" },
     { "fs", "ForceSpacing" },
     { "bw", "ScaleBBoxWidth" },
     { "sw", "ScaleWidth" },

@@ -16,7 +16,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86: xc/lib/font/FreeType/module/fttypes.h,v 1.1 2003/11/20 02:35:40 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/fttypes.h,v 1.4 2003/05/29 03:05:08 dawes Exp $ */
 
 #ifndef __FTTYPES_H__
 #define __FTTYPES_H__

@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/GL/glx/size.h,v 1.5 2004/01/28 18:11:43 alanh Exp $ */
+/* $XFree86: xc/lib/GL/glx/size.h,v 1.4 2003/09/28 20:15:04 alanh Exp $ */
 #ifndef _size_h_
 #define _size_h_
 

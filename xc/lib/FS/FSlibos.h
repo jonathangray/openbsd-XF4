@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/lib/FS/FSlibos.h,v 1.2 2004/04/23 18:43:08 eich Exp $ */
 /* $Xorg: FSlibos.h,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
 
 /* @(#)FSlibos.h	4.1	91/05/02
@@ -50,7 +51,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/FS/FSlibos.h,v 3.11 2003/12/19 02:05:37 dawes Exp $ */
+/* $XFree86: xc/lib/FS/FSlibos.h,v 3.10 2003/09/01 20:50:10 herrb Exp $ */
 
 /*
  * FSlib networking & os include file

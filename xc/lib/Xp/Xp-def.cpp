@@ -39,4 +39,4 @@ EXPORTS
  XpStartJob
  XpStartPage
 /* $Xorg: Xp-def.cpp,v 1.3 2000/08/17 19:46:05 cpqbld Exp $ */
-/* $XFree86: xc/lib/Xp/Xp-def.cpp,v 1.3 2001/01/17 19:43:01 dawes Exp $ */
+/* $XFree86: xc/lib/Xp/Xp-def.cpp,v 1.2 2000/08/09 23:40:13 dawes Exp $ */

@@ -1,4 +1,5 @@
-XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.29 2003/11/29 01:31:20 dawes Exp $
+XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.28 2003/11/17 15:18:04 tsi Exp $
+XCOMM $XdotOrg: xc/lib/Xft/Imakefile,v 1.2 2004/04/23 18:43:41 eich Exp $
 
 #define DoNormalLib NormalLibXft
 #define DoSharedLib SharedLibXft
@@ -28,7 +29,7 @@ XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.29 2003/11/29 01:31:20 dawes Exp $
  */
 
 #ifndef SharedFontconfigRev
-#define SharedFontconfigRev 1.0
+#define SharedFontconfigRev 1.0.4
 SharedLibReferences(FONTCONFIG,fontconfig,$(FONTCONFIGLIBSRC),SOFONTCONFIGREV,SharedFontconfigRev)
 #endif
 
@@ -46,7 +47,7 @@ WARNINGS=-Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissin
 INCLUDES=$(FONTCONFIGINCLUDES) $(FREETYPE2INCLUDES) -I$(XBUILDINCDIR) $(WARNINGS)
 DEFINES=$(FREETYPE2DEFINES) $(RENDERDEFINES) -DXFREE86_FT2
 
-XFT_REVISION=0
+XFT_REVISION=2
 
 FREETYPE_LIBS=$(FREETYPE2LIB)
 FREETYPE_CFLAGS=$(FREETYPE2INCLUDES)
@@ -84,7 +85,7 @@ SUBSTVARS=prefix="$(PROJECTROOT)" \
 	  libdir="$(USRLIBDIR)" \
 	  hardcode_libdir_flag_spec="$(RPATH_CFLAG)" \
 	  includedir="$(INCROOT)" \
-	  PACKAGE_VERSION="$(SOXFTREV).$(XFT_REVISION)" \
+	  VERSION="$(SOXFTREV).$(XFT_REVISION)" \
 	  FREETYPE_LIBS="$(FREETYPE_LIBS)" \
 	  FREETYPE_CFLAGS="$(FREETYPE_CFLAGS)" \
 	  XRENDER_LIBS="$(XRENDER_LIBS)" \

@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/ICElibint.h,v 1.7 2003/11/17 22:20:05 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/ICElibint.h,v 1.6 2001/12/14 19:53:35 dawes Exp $ */
 
 #ifndef _ICELIBINT_H_
 #define _ICELIBINT_H_

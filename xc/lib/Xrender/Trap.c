@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Trap.c,v 1.3 2002/11/05 23:22:35 keithp Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -35,7 +34,7 @@ XRenderCompositeTrapezoids (Display		*dpy,
 			    _Xconst XTrapezoid	*traps,
 			    int			ntrap)
 {
-    XExtDisplayInfo         *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo         *info = XRenderFindDisplay (dpy);
     xRenderTrapezoidsReq    *req;
     int			    n;
     long    		    len;

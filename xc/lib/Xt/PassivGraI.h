@@ -51,7 +51,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xt/PassivGraI.h,v 1.4 2003/04/21 16:34:28 herrb Exp $ */
+/* $XFree86: xc/lib/Xt/PassivGraI.h,v 1.3 2001/12/14 19:56:27 dawes Exp $ */
 
 #ifndef _PDI_h_
 #define _PDI_h_

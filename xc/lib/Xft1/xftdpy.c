@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftdpy.c,v 1.3 2003/05/27 22:26:41 tsi Exp $
+ * $XFree86: xc/lib/Xft1/xftdpy.c,v 1.2tsi Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftpat.c,v 1.3 2002/06/07 23:44:23 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftpat.c,v 1.6 2001/03/30 18:50:18 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

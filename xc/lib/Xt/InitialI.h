@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/InitialI.h,v 3.11 2003/04/21 16:34:27 herrb Exp $ */
+/* $XFree86: xc/lib/Xt/InitialI.h,v 3.10 2001/12/14 19:56:18 dawes Exp $ */
 
 #ifndef _XtinitialI_h
 #define _XtinitialI_h

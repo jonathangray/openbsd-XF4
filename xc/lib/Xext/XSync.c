@@ -50,7 +50,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xext/XSync.c,v 1.8 2003/10/23 21:36:09 tsi Exp $ */
+/* $XFree86: xc/lib/Xext/XSync.c,v 1.7tsi Exp $ */
 
 #include <stdio.h>
 #define NEED_EVENTS

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftextent.c,v 1.1.1.1 2002/02/15 01:26:15 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftextent.c,v 1.6 2001/04/01 14:00:01 tsi Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/dpsNXprops.h,v 1.3 2001/07/29 05:01:13 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef DPSNXPROPS_H
 #define DPSNXPROPS_H

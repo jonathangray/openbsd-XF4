@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xfontcache/Xfontcache.man,v 1.1 2003/10/13 21:50:23 herrb Exp $
+.\" $XFree86: xc/lib/Xfontcache/Xfontcache.man,v 1.1 2003/10/13 21:19:28 herrb Exp $
 .\"
 .\" Copyright (C) 2003 The XFree86 Project, Inc.  All Rights Reserved.
 .\" 
@@ -27,7 +27,7 @@
 .\" or other dealings in this Software without prior written authorization
 .\" from the XFree86 Project.
 .\" 
-.TH Xfontcache 3 __vendorversion__
+.TH Xfontcache __libmansuffix__  __vendorversion__
 .SH NAME
 Xfontcache \- X-TrueType font cache extension client library
 .SH SYNOPSIS
@@ -128,7 +128,7 @@ will return
 .I BadValue
 if passed an illegal parameters for lowmark, himark or balance fields.
 .SH "SEE ALSO"
-Xlib(1), X(7)
+X(__miscmansuffix__)
 .SH AUTHOR
 Akio Morita, X-TrueType team, Nozomi Ytow.
 .SH STABILITY

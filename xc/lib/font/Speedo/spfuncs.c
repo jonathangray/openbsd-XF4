@@ -49,7 +49,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/Speedo/spfuncs.c,v 1.8 2001/12/14 19:56:42 dawes Exp $ */
+/* $XFree86: xc/lib/font/Speedo/spfuncs.c,v 1.7 2001/08/27 19:49:51 dawes Exp $ */
 
 #ifndef FONTMODULE
 #include <X11/Xos.h>

@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/StrToLong.c,v 1.9 2001/12/14 19:55:52 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/StrToLong.c,v 1.8 2001/08/23 00:03:21 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>

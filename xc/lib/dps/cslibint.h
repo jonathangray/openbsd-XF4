@@ -47,7 +47,7 @@
  *  
  * Author:  Adobe Systems Incorporated and MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/cslibint.h,v 1.4 2001/07/25 15:04:54 dawes Exp $ */
+/* $XFree86: xc/lib/dps/cslibint.h,v 1.3 2001/06/30 22:41:44 tsi Exp $ */
  
 /*
  *	XlibInternal.h - Header definition and support file for the internal

@@ -3,14 +3,14 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:44:38 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/lib/X11/Imakefile,v 3.53 2003/09/26 01:03:31 dawes Exp $
+XCOMM $XFree86: xc/lib/X11/Imakefile,v 3.52 2003/05/27 16:53:15 tsi Exp $
 
 
 
         HEADERS = Xlib.h Xresource.h Xutil.h cursorfont.h Xlibint.h \
 			Xcms.h Xlocale.h XKBlib.h
 
-#if BuildServersOnly && !XnestServer && !BuildGLXLibrary && !BuildClients
+#if BuildServersOnly && !XWinServer && !XnestServer && !BuildGLXLibrary && !BuildClients && !XdmxServer
 all::
 
 BuildIncludes($(HEADERS),IncSubdir,..)
@@ -49,8 +49,11 @@ REQUIREDX11LIBS = SharedX11Reqs
 #if BuildLoadableXlibI18n
 REQUIREDI18NLIBS = DlLibrary
 #endif
+#ifdef cygwinArchitecture
+EXCLUDE_SYMBOL = -Wl,--exclude-symbol,XdmcpWrap:_XdmcpWrapperToOddParity
+#endif
 
-REQUIREDLIBS=$(REQUIREDX11LIBS) $(REQUIREDI18NLIBS)
+REQUIREDLIBS=$(REQUIREDX11LIBS) $(REQUIREDI18NLIBS) $(EXCLUDE_SYMBOL)
 
 #if defined(MacIIArchitecture) || defined(SequentArchitecture) || defined(i386ScoArchitecture)
 XBSDLIB = /**/
@@ -86,8 +89,8 @@ EXTRA_LIBRARIES = /**/
    POLL_DEFINES = -DUSE_POLL
 #endif
    CONN_DEFINES = $(CONNECTION_FLAGS)
-   XTRANS_X_DEFINES = -DX11_t -DTRANS_CLIENT
-   XTRANS_XIM_DEFINES = -DXIM_t -DTRANS_CLIENT
+   XTRANS_X_DEFINES = -DX11_t -DTRANS_CLIENT $(XTRANS_FAILDEFINES)
+   XTRANS_XIM_DEFINES = -DXIM_t -DTRANS_CLIENT $(XTRANS_FAILDEFINES)
 #if HasBSD44Sockets
    SOCK_DEFINES = -DBSD44SOCKETS
 #endif
@@ -122,6 +125,11 @@ EXTRA_LIBRARIES = /**/
          K5SRCS = k5encode.c
          K5INCL = Krb5Includes
          K5DEFS = Krb5Defines
+#endif
+#if (defined(FreeBSDArchitecture) && OSRelVersion < 500016) || \
+	defined(OpenBSDArchitecture)
+THRSTUBSRCS = UIThrStubs.c
+THRSTUBOBJS = UIThrStubs.o
 #endif
 #if BuildLoadableXlibXcursor
 XCURSOR_DEFINES = -DUSE_DYNAMIC_XCURSOR -DLIBXCURSOR=\"libXcursor.so.$(SOXCURSORREV)\"
@@ -531,7 +539,7 @@ SRCS2 = \
 	Withdraw.c \
 	WMGeom.c \
 	WMProps.c \
-	$(AUTHSRCS) $(XDMAUTHSRCS) $(K5SRCS)
+	$(AUTHSRCS) $(XDMAUTHSRCS) $(K5SRCS) $(THRSTUBSRCS)
 
 OBJS2 = \
 	Macros.o \
@@ -655,7 +663,8 @@ OBJS2 = \
 	WMProps.o \
 	$(AUTHOBJS) \
 	$(XDMAUTHOBJS) \
-	$(K5OBJS)
+	$(K5OBJS) \
+	$(THRSTUBOBJS)
 
 SRCS3 = \
 	Lab.c \
@@ -738,7 +747,7 @@ SRCS3 = \
 	LockDis.c \
 	x11trans.c \
 	ximtrans.c \
-	$(XKBSRCS) $(LCSRCS) $(MISCSRCS) $(XTHRSRCS)
+	$(XKBSRCS) $(LCSRCS) $(MISCSRCS)
 
 OBJS3 = \
 	Lab.o \
@@ -821,7 +830,7 @@ OBJS3 = \
 	LockDis.o \
 	x11trans.o \
 	ximtrans.o \
-	$(XKBOBJS) $(LCOBJS) $(MISCOBJS) $(XTHROBJS)
+	$(XKBOBJS) $(LCOBJS) $(MISCOBJS)
 
 #if BuildLoadableXlibI18n
 LC_DYNDEFINES = -DUSE_DYNAMIC_LC
@@ -986,11 +995,6 @@ MISCSRCS = os2Stubs.c
 MISCOBJS = os2Stubs.o
 #endif
 
-#if NeedUIThrStubs
-XTHRSRCS = UIThrStubs.c
-XTHROBJS = UIThrStubs.o
-#endif
-
 OBJS = $(OBJS1) $(OBJS2) $(OBJS3)
 
 EXTRAUNSHAREDOBJS = $(STATICLCOBJS)
@@ -1062,9 +1066,6 @@ LinkSourceFile(k5encode.c,$(XAUTHSRC))
 LinkSourceFile(Wrap.h,$(XDMCPLIBSRC))
 LinkSourceFile(Wrap.c,$(XDMCPLIBSRC))
 LinkSourceFile(Wraphelp.c,$(XDMCPLIBSRC))
-#endif
-#if NeedUIThrStubs 
-LinkSourceFile(UIThrStubs.c,$(XTHRSTUBLIBSRC))
 #endif
 
 #ifdef QNX4Architecture

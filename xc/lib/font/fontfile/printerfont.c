@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/fontfile/printerfont.c,v 1.6 2003/05/27 22:26:49 tsi Exp $ */
+/* $XFree86: xc/lib/font/fontfile/printerfont.c,v 1.5tsi Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

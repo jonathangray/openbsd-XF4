@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/Initer.c,v 1.7 2001/12/14 19:55:46 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/Initer.c,v 1.6 2001/01/17 19:42:56 dawes Exp $ */
 
 /* Created By:  Chris D. Peterson
  *              MIT X Consortium

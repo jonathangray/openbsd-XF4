@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
-/* $XFree86: xc/lib/Xmu/StrToJust.c,v 1.7 2001/12/14 19:55:52 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/StrToJust.c,v 1.6 2001/01/17 19:42:57 dawes Exp $ */
 
 #include <string.h>
 #include <X11/Intrinsic.h>

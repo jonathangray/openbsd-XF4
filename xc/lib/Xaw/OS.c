@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xaw/OS.c,v 1.2 1998/12/06 11:24:32 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/OS.c,v 1.1 1998/12/06 10:44:34 dawes Exp $ */
 
 /* Some OS-dependent utility code */
 
@@ -11,7 +11,8 @@
 #endif
 
 #if defined(linux)
-#include <asm/page.h>	/* for PAGE_SIZE */
+/* kernel header doesn't work with -ansi */
+/* #include <asm/page.h> *//* for PAGE_SIZE */
 #define HAS_GETPAGESIZE
 #define HAS_SC_PAGESIZE	/* _SC_PAGESIZE may be an enum for Linux */
 #endif

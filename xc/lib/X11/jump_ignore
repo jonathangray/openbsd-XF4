@@ -3,7 +3,7 @@
 #
 #
 #
-# $XFree86: xc/lib/X11/jump_ignore,v 3.11 2001/01/17 19:41:52 dawes Exp $
+# $XFree86: xc/lib/X11/jump_ignore,v 3.10 1999/05/30 02:27:59 dawes Exp $
 # jump_ignore
 00000000 T __XlcAddCT           libX11         lcCT
 00000000 T __XKeycodeToKeysym   libX11         KeyBind

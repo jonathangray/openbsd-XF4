@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftmatch.c,v 1.2 2002/03/01 01:00:53 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftmatch.c,v 1.6 2001/09/21 19:54:53 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/include/fntfilst.h,v 3.9 2002/12/10 22:23:52 tsi Exp $ */
+/* $XFree86: xc/lib/font/include/fntfilst.h,v 3.8 2002/12/09 17:30:00 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

@@ -24,7 +24,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/xkbbells.c,v 1.2 2003/11/17 22:20:23 dawes Exp $ */
+/* $XFree86$ */
 
 #include <X11/Xlib.h>
 #include <X11/XKBlib.h>

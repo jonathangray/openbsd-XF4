@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/lib/X11/Xlib.h,v 1.2 2004/04/23 18:43:24 eich Exp $ */
 /* $Xorg: Xlib.h,v 1.6 2001/02/09 02:03:38 xorgcvs Exp $ */
 /* 
 
@@ -24,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/Xlib.h,v 3.26 2003/12/18 16:38:35 dawes Exp $ */
+/* $XFree86: xc/lib/X11/Xlib.h,v 3.25 2003/11/17 22:20:10 dawes Exp $ */
 
 
 /*
@@ -376,6 +377,16 @@ typedef struct {
 	int length;		/* length of address, in bytes */
 	char *address;		/* pointer to where to find the bytes */
 } XHostAddress;
+
+/*
+ * Data structure for ServerFamilyInterpreted addresses in host routines
+ */
+typedef struct {
+	int typelength;		/* length of type string, in bytes */
+	int valuelength;	/* length of value string, in bytes */
+	char *type;		/* pointer to where to find the type string */
+	char *value;		/* pointer to where to find the address */
+} XServerInterpretedAddress;
 
 /*
  * Data structure for "image" data, used by image manipulation routines.

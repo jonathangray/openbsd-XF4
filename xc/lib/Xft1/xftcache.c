@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftcache.c,v 1.1.1.1 2002/02/15 01:26:15 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftcache.c,v 1.2 2001/06/11 22:53:30 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

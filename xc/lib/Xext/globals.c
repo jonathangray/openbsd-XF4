@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xext/globals.c,v 3.5 2001/12/14 19:55:02 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/globals.c,v 3.4 2001/07/29 05:01:12 tsi Exp $ */
 
 /*
  * This file should contain only those objects which must be predefined.

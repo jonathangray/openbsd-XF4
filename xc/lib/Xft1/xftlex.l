@@ -1,6 +1,6 @@
 %{
 /*
- * $XFree86: xc/lib/Xft1/xftlex.l,v 1.1.1.1 2002/02/15 01:26:15 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftlex.l,v 1.7 2001/05/18 16:03:06 tsi Exp $
  *
  * Copyright (c) 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft1/xftinit.c,v 1.4 2002/05/22 04:16:40 keithp Exp $
+ * $XFree86: xc/lib/Xft1/xftinit.c,v 1.3 2002/03/01 20:33:33 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

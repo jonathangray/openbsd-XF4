@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/dpstk/Imakefile,v 1.6 2000/06/07 22:03:00 tsi Exp $
+XCOMM $XFree86: xc/lib/dpstk/Imakefile,v 1.5 2000/05/23 19:32:52 dawes Exp $
 
 #define DoNormalLib NormalLibDpsTk
 #define DoSharedLib SharedLibDpsTk
@@ -16,6 +16,8 @@ REQUIREDLIBS = SharedDPSTKReqs
         PSWRAP = PsWrap
 
 #if HasMotif
+INCLUDES = $(MOTIFINCLUDES)
+
 MOTIFSRCS = FSBwraps.c FontSample.c FontSB.c FontCreato.c \
 	CSBwraps.c ColorSB.c DSWwraps.c DPSScrollW.c
 MOTIFOBJS = FSBwraps.o FontSample.o FontSB.o FontCreato.o \
@@ -80,7 +82,7 @@ InstallDpsProfiledLibrary(dpstkXm_p,$(USRLIBDIR))
 
 InstallAppDefaults(FontSelect)
 InstallAppDefaults(ColorSelect)
-#endif
+#endif /* HasMotif */
 
 clean ::
 	${RM} $(DERIVED_FILES) $(MOTIFOBJS)

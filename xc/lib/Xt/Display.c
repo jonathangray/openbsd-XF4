@@ -6,13 +6,13 @@ Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the names of Digital or Sun not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -32,7 +32,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Display.c,v 3.17 2004/05/05 00:07:03 dickey Exp $ */
+/* $XFree86: xc/lib/Xt/Display.c,v 3.15 2002/09/18 01:25:01 dawes Exp $ */
 
 /*
 
@@ -68,14 +68,14 @@ in this Software without prior written authorization from The Open Group.
 #include <stdlib.h>
 
 #ifdef XTHREADS
-void (*_XtProcessLock)(void) = NULL;
-void (*_XtProcessUnlock)(void) = NULL;
-void (*_XtInitAppLock)(XtAppContext) = NULL;
+void (*_XtProcessLock)() = NULL;
+void (*_XtProcessUnlock)() = NULL;
+void (*_XtInitAppLock)() = NULL;
 #endif
 
 static String XtNnoPerDisplay = "noPerDisplay";
 
-ProcessContext _XtGetProcessContext(void)
+ProcessContext _XtGetProcessContext()
 {
     static ProcessContextRec processContextRec = {
 	(XtAppContext)NULL,
@@ -88,7 +88,7 @@ ProcessContext _XtGetProcessContext(void)
 }
 
 
-XtAppContext _XtDefaultAppContext(void)
+XtAppContext _XtDefaultAppContext()
 {
     ProcessContext process = _XtGetProcessContext();
     XtAppContext app;
@@ -102,9 +102,9 @@ XtAppContext _XtDefaultAppContext(void)
     return app;
 }
 
-static void AddToAppContext(
-	Display *d,
-	XtAppContext app)
+static void AddToAppContext(d, app)
+	Display *d;
+	XtAppContext app;
 {
 #define DISPLAYS_TO_ADD 4
 
@@ -126,9 +126,9 @@ static void AddToAppContext(
 #undef DISPLAYS_TO_ADD
 }
 
-static void XtDeleteFromAppContext(
-	Display *d,
-	register XtAppContext app)
+static void XtDeleteFromAppContext(d, app)
+	Display *d;
+	register XtAppContext app;
 {
 	register int i;
 
@@ -150,8 +150,8 @@ static void XtDeleteFromAppContext(
 #endif
 }
 
-static XtPerDisplay NewPerDisplay(
-	Display *dpy)
+static XtPerDisplay NewPerDisplay(dpy)
+	Display *dpy;
 {
 	PerDisplayTablePtr pd;
 
@@ -164,11 +164,11 @@ static XtPerDisplay NewPerDisplay(
 	return &(pd->perDpy);
 }
 
-static XtPerDisplay InitPerDisplay(
-    Display *dpy,
-    XtAppContext app,
-    _Xconst char * name,
-    _Xconst char * classname)
+static XtPerDisplay InitPerDisplay(dpy, app, name, classname)
+    Display *dpy;
+    XtAppContext app;
+    String name;
+    String classname;
 {
     XtPerDisplay pd;
 
@@ -218,7 +218,7 @@ static XtPerDisplay InitPerDisplay(
 #if 0
     pd->hook_object = _XtCreate("hooks", "Hooks", hookObjectClass,
 	(Widget)NULL, (Screen*)DefaultScreenOfDisplay(dpy),
-	(ArgList)NULL, 0, (XtTypedArgList)NULL, 0,
+	(ArgList)NULL, 0, (XtTypedArgList)NULL, 0, 
 	(ConstraintWidgetClass)NULL);
 #endif
 
@@ -238,7 +238,8 @@ Display *XtOpenDisplay(
 	XrmOptionDescRec *urlist,
 	Cardinal num_urs,
 	int *argc,
-	String *argv)
+	String *argv
+	)
 {
 	Display *d;
 	XrmDatabase db = 0;
@@ -295,23 +296,23 @@ Display *XtOpenDisplay(
 }
 
 Display *
-_XtAppInit(
-	XtAppContext * app_context_return,
-	String application_class,
-	XrmOptionDescRec *options,
-	Cardinal num_options,
-	int *argc_in_out,
-	String **argv_in_out,
-	String * fallback_resources)
+_XtAppInit(app_context_return, application_class, options, num_options,
+	   argc_in_out, argv_in_out, fallback_resources)
+XtAppContext * app_context_return;
+String application_class;
+XrmOptionDescRec *options;
+Cardinal num_options;
+int *argc_in_out;
+String **argv_in_out, * fallback_resources;
 {
     String *saved_argv;
     int i;
     Display *dpy;
 
 /*
- * Save away argv and argc so we can set the properties later
+ * Save away argv and argc so we can set the properties later 
  */
-
+    
     saved_argv = (String *)
 	__XtMalloc( (Cardinal)((*argc_in_out + 1) * sizeof(String)) );
 
@@ -369,7 +370,7 @@ XtDisplayInitialize(
     UNLOCK_APP(app);
 }
 
-XtAppContext XtCreateApplicationContext(void)
+XtAppContext XtCreateApplicationContext()
 {
 	XtAppContext app = XtNew(XtAppStruct);
 #ifdef XTHREADS
@@ -397,8 +398,8 @@ XtAppContext XtCreateApplicationContext(void)
 	app->input_list = NULL;
 	app->outstandingQueue = NULL;
 	app->errorDB = NULL;
-	_XtSetDefaultErrorHandlers(&app->errorMsgHandler,
-		&app->warningMsgHandler, &app->errorHandler,
+	_XtSetDefaultErrorHandlers(&app->errorMsgHandler, 
+		&app->warningMsgHandler, &app->errorHandler, 
 		&app->warningHandler);
 	app->action_table = NULL;
 	_XtSetDefaultSelectionTimeout(&app->selectionTimeout);
@@ -451,7 +452,8 @@ Boolean XtAppGetExitFlag (
     return retval;
 }
 
-static void DestroyAppContext(XtAppContext app)
+static void DestroyAppContext(app)
+	XtAppContext app;
 {
 	XtAppContext* prev_app;
 
@@ -463,7 +465,7 @@ static void DestroyAppContext(XtAppContext app)
 	_XtFreeActions(app->action_table);
 	if (app->destroy_callbacks != NULL) {
 	    XtCallCallbackList((Widget) NULL,
-			       (XtCallbackList)app->destroy_callbacks,
+			       (XtCallbackList)app->destroy_callbacks, 
 			       (XtPointer)app);
 	    _XtRemoveAllCallbacks(&app->destroy_callbacks);
 	}
@@ -485,7 +487,8 @@ static void DestroyAppContext(XtAppContext app)
 static XtAppContext* appDestroyList = NULL;
 int _XtAppDestroyCount = 0;
 
-void XtDestroyApplicationContext(XtAppContext app)
+void XtDestroyApplicationContext(app)
+	XtAppContext app;
 {
 	LOCK_APP(app);
 	if (app->being_destroyed) {
@@ -510,7 +513,7 @@ void XtDestroyApplicationContext(XtAppContext app)
 	}
 }
 
-void _XtDestroyAppContexts(void)
+void _XtDestroyAppContexts()
 {
 	int i,ii;
 	XtAppContext apps[8];
@@ -535,7 +538,8 @@ void _XtDestroyAppContexts(void)
 	XtStackFree ((XtPointer) pApps, apps);
 }
 
-XrmDatabase XtDatabase(Display *dpy)
+XrmDatabase XtDatabase(dpy)
+	Display *dpy;
 {
     XrmDatabase retval;
     DPY_TO_APPCON(dpy);
@@ -548,7 +552,8 @@ XrmDatabase XtDatabase(Display *dpy)
 
 PerDisplayTablePtr _XtperDisplayList = NULL;
 
-XtPerDisplay _XtSortPerDisplayList(Display *dpy)
+XtPerDisplay _XtSortPerDisplayList(dpy)
+	Display *dpy;
 {
 	register PerDisplayTablePtr pd, opd = NULL;
 
@@ -576,7 +581,8 @@ XtPerDisplay _XtSortPerDisplayList(Display *dpy)
 	return &(pd->perDpy);
 }
 
-XtAppContext XtDisplayToApplicationContext(Display *dpy)
+XtAppContext XtDisplayToApplicationContext(dpy)
+	Display *dpy;
 {
 	XtAppContext retval;
 
@@ -584,13 +590,14 @@ XtAppContext XtDisplayToApplicationContext(Display *dpy)
 	return retval;
 }
 
-static void CloseDisplay(Display *dpy)
+static void CloseDisplay(dpy)
+	Display *dpy;
 {
         register XtPerDisplay xtpd;
 	register PerDisplayTablePtr pd, opd = NULL;
 	XrmDatabase db;
 	int i;
-
+	
 	XtDestroyWidget(XtHooksOfDisplay(dpy));
 
 	LOCK_PROCESS;
@@ -661,7 +668,8 @@ static void CloseDisplay(Display *dpy)
 	UNLOCK_PROCESS;
 }
 
-void XtCloseDisplay(Display *dpy)
+void XtCloseDisplay(dpy)
+	Display *dpy;
 {
 	XtPerDisplay pd;
 	XtAppContext app = XtDisplayToApplicationContext(dpy);
@@ -677,7 +685,7 @@ void XtCloseDisplay(Display *dpy)
 	else {
 	    pd->being_destroyed = TRUE;
 	    app->dpy_destroy_count++;
-	    app->dpy_destroy_list = (Display **)
+	    app->dpy_destroy_list = (Display **) 
 		XtRealloc((char *) app->dpy_destroy_list,
 		    (unsigned) (app->dpy_destroy_count * sizeof(Display *)));
 	    app->dpy_destroy_list[app->dpy_destroy_count-1] = dpy;
@@ -685,7 +693,8 @@ void XtCloseDisplay(Display *dpy)
 	UNLOCK_APP(app);
 }
 
-void _XtCloseDisplays(XtAppContext app)
+void _XtCloseDisplays(
+    XtAppContext app)
 {
 	int i;
 
@@ -699,7 +708,8 @@ void _XtCloseDisplays(XtAppContext app)
 	UNLOCK_APP(app);
 }
 
-XtAppContext XtWidgetToApplicationContext(Widget w)
+XtAppContext XtWidgetToApplicationContext(w)
+	Widget w;
 {
 	XtAppContext retval;
 
@@ -708,10 +718,10 @@ XtAppContext XtWidgetToApplicationContext(Widget w)
 }
 
 
-void XtGetApplicationNameAndClass(
-    Display *dpy,
-    String *name_return,
-    String *class_return)
+void XtGetApplicationNameAndClass(dpy, name_return, class_return)
+    Display *dpy;
+    String *name_return;
+    String *class_return;
 {
     XtPerDisplay pd;
 
@@ -720,7 +730,8 @@ void XtGetApplicationNameAndClass(
     *class_return = XrmQuarkToString(pd->class);
 }
 
-XtPerDisplay _XtGetPerDisplay (Display* display)
+XtPerDisplay _XtGetPerDisplay (
+    Display* display)
 {
     XtPerDisplay retval;
 
@@ -733,7 +744,8 @@ XtPerDisplay _XtGetPerDisplay (Display* display)
     return retval;
 }
 
-XtPerDisplayInputRec* _XtGetPerDisplayInput(Display* display)
+XtPerDisplayInputRec* _XtGetPerDisplayInput(
+    Display* display)
 {
     XtPerDisplayInputRec* retval;
     LOCK_PROCESS;

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Cursor.c,v 1.3 2002/11/24 21:46:15 tsi Exp $
  *
- * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -30,7 +29,7 @@ XRenderCreateCursor (Display	    *dpy,
 		     unsigned int   x,
 		     unsigned int   y)
 {
-    XExtDisplayInfo		*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		*info = XRenderFindDisplay (dpy);
     Cursor			cid;
     xRenderCreateCursorReq	*req;
 
@@ -54,7 +53,7 @@ XRenderCreateAnimCursor (Display	*dpy,
 			 int		ncursor,
 			 XAnimCursor	*cursors)
 {
-    XExtDisplayInfo		*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		*info = XRenderFindDisplay (dpy);
     Cursor			cid;
     xRenderCreateAnimCursorReq	*req;
     long			len;

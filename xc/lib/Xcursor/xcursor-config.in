@@ -5,7 +5,7 @@ exec_prefix="@exec_prefix@"
 libdir="@libdir@"
 hardcode_libdir_flag_spec=@hardcode_libdir_flag_spec@
 includedir="@includedir@"
-version="@PACKAGE_VERSION@"
+version="@VERSION@"
 
 usage()
 {

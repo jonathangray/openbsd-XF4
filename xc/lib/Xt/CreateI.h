@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xt/CreateI.h,v 1.1 2001/08/22 22:52:17 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef _XtcreateI_h
 #define _XtcreateI_h

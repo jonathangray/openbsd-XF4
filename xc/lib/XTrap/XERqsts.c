@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/XTrap/XERqsts.c,v 1.1 2001/11/02 23:29:27 dawes Exp $ */
+/* $XFree86$ */
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991 by Digital Equipment Corp., Maynard, MA
 

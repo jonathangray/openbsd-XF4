@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/GL/glx/xfont.c,v 1.7 2001/10/28 03:32:27 tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/xfont.c,v 1.6 2001/05/02 15:06:02 dawes Exp $ */
 /*
  * Mesa 3-D graphics library
  * Version:  3.1

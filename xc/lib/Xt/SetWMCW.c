@@ -60,10 +60,9 @@ in this Software without prior written authorization from The Open Group.
  */
 
 void
-XtSetWMColormapWindows(
-    Widget widget,
-    Widget *list,
-    Cardinal count)
+XtSetWMColormapWindows(widget, list, count)
+Widget widget, *list;
+Cardinal count;
 {
     Window *data;
     Widget *checked, *top, *temp, hookobj;
@@ -82,7 +81,7 @@ XtSetWMColormapWindows(
 
 
 /*
- * The specification calls for only adding the windows that have unique
+ * The specification calls for only adding the windows that have unique 
  * colormaps to the property to this function, so we will make a pass through
  * the widget list removing all the widgets with non-unique colormaps.
  *
@@ -91,7 +90,7 @@ XtSetWMColormapWindows(
 
     for (checked_count = 0, i = 0; i < count; i++) {
 	if (!XtIsRealized(list[i])) continue;
-
+	    
 	*checked = list[i];
 	match = FALSE;
 
@@ -100,7 +99,7 @@ XtSetWMColormapWindows(
  * to check it against.
  */
 
-	if (checked != top)
+	if (checked != top)	
 	    for (j = 0, temp = top; j < checked_count ; j++, temp++)
 		if ( (*temp)->core.colormap == (*checked)->core.colormap) {
 		    match = TRUE;
@@ -130,7 +129,7 @@ XtSetWMColormapWindows(
     xa_wm_colormap_windows = XInternAtom(XtDisplay(widget),
 					 "WM_COLORMAP_WINDOWS", FALSE);
 
-    XChangeProperty(XtDisplay(widget), XtWindow(widget),
+    XChangeProperty(XtDisplay(widget), XtWindow(widget), 
 		    xa_wm_colormap_windows, XA_WINDOW, 32,
 		    PropModeReplace, (unsigned char *) data, (int) i);
 
@@ -142,8 +141,8 @@ XtSetWMColormapWindows(
 	call_data.widget = widget;
 	call_data.event_data = (XtPointer) list;
 	call_data.num_event_data = count;
-	XtCallCallbackList(hookobj,
-		((HookObject)hookobj)->hooks.changehook_callbacks,
+	XtCallCallbackList(hookobj, 
+		((HookObject)hookobj)->hooks.changehook_callbacks, 
 		(XtPointer)&call_data);
     }
 

@@ -22,7 +22,7 @@
  * LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
  * OF THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/lbxutil/image/lbxfax.h,v 1.5 2001/03/05 01:05:12 tsi Exp $ */
+/* $XFree86$ */
 
 /*
  * This header file contains various constants and tables needed

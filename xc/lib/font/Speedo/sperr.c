@@ -52,7 +52,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/Speedo/sperr.c,v 1.7 2002/05/31 18:45:48 dawes Exp $ */
+/* $XFree86: xc/lib/font/Speedo/sperr.c,v 1.6 2001/12/14 19:56:41 dawes Exp $ */
 
 #include	"spint.h"
 

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/dps/Imakefile,v 1.17 2003/10/21 17:41:45 tsi Exp $
+XCOMM $XFree86: xc/lib/dps/Imakefile,v 1.16tsi Exp $
 
 #define DoNormalLib NormalLibDps
 #define DoSharedLib SharedLibDps
@@ -232,7 +232,7 @@ DERIVED_FILES = $(DPSOPSHEADERFILES) $(PSOPSHEADERFILES) \
 
 HostProgramTargetName($(PSWRAP)):
 	@echo "checking $@ over in $(PSWRAPSRC) first..."; \
-	cd $(PSWRAPSRC) && $(MAKE) pswraponly; \
+	test -d $(PSWRAPSRC) && cd $(PSWRAPSRC) && $(MAKE) pswraponly; \
 	echo "okay, continuing in $(CURRENT_DIR)"
 
 includes :: $(HEADERS)

@@ -1,5 +1,6 @@
-XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.18 2003/12/08 17:11:21 dawes Exp $
-XCOMM $OpenBSD: Imakefile,v 1.7 2004/07/21 19:12:03 matthieu Exp $
+XCOMM $XdotOrg: xc/lib/fontconfig/Imakefile,v 1.2 2004/04/23 18:44:24 eich Exp $
+XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.17 2003/11/19 20:57:37 dawes Exp $
+
 #define DoNormalLib NormalLibFontconfig
 #define DoSharedLib SharedLibFontconfig
 #define DoExtraLib SharedLibFontconfig
@@ -8,20 +9,24 @@ XCOMM $OpenBSD: Imakefile,v 1.7 2004/07/21 19:12:03 matthieu Exp $
 #define HasSharedData YES
 #define LibName fontconfig
 #define SoRev SOFONTCONFIGREV
+#define LibInstall InstallFontconfigLibrary
+#define LibHeaders InstallFontconfigLibrary
 
 #define IncSubdir fontconfig
 
 HEADERS=fcfreetype.h fcprivate.h fontconfig.h
 
 BuildIncludes($(HEADERS),IncSubdir,..)
+#if InstallFontconfigLibrary
 InstallMultipleFlags($(HEADERS),$(INCDIR)/IncSubdir,$(INSTINCFLAGS))
+#endif
 
 #include <Threads.tmpl>
 
 FONTCONFIGSRC=$(TOP)/extras/fontconfig
 
-INCLUDES=$(EXPATINCLUDES) $(FREETYPE2INCLUDES) -I$(FONTCONFIGSRC)/src \
-	-I$(XBUILDINCDIR)
+INCLUDES= $(EXPATINCLUDES) $(FREETYPE2INCLUDES) -I$(FONTCONFIGSRC)/src \
+	-I$(FONTCONFIGSRC) -I$(XBUILDINCDIR)
 
 DEFINES=-DFC_DEFAULT_FONTS='"$(FC_DEFAULT_FONTS)"' -DHAVE_EXPAT -DXFREE86_FT2 \
 	-DFONTCONFIG_PATH='"$(FONTCONFIGFONTSCONFDIR)"'
@@ -29,8 +34,8 @@ DEFINES=-DFC_DEFAULT_FONTS='"$(FC_DEFAULT_FONTS)"' -DHAVE_EXPAT -DXFREE86_FT2 \
 REQUIREDLIBS=$(LDPRELIBS) $(FREETYPE2LIB) $(EXPATLIB)
 
 SRCS=fcatomic.c fcblanks.c fccache.c fccfg.c fccharset.c fcdbg.c \
-     fcdefault.c fcdir.c fcfreetype.c fcfs.c fcinit.c fcint.h fclang.c \
-     fclist.c fcmatch.c fcmatrix.c fcname.c fcpat.c fcstr.c fcxml.c
+     fcdefault.c fcdir.c fcfreetype.c fcfs.c fcinit.c fclang.c fclist.c \
+     fcmatch.c fcmatrix.c fcname.c fcpat.c fcstr.c fcxml.c
 
 OBJS=fcatomic.o fcblanks.o fccache.o fccfg.o fccharset.o fcdbg.o \
      fcdefault.o fcdir.o fcfreetype.o fcfs.o fcinit.o fclang.o fclist.o \
@@ -42,135 +47,12 @@ OBJS=fcatomic.o fcblanks.o fccache.o fccfg.o fccharset.o fcdbg.o \
 SpecialCObjectRule(sharedlib,NullParameter,$(SHLIBDEF))
 #endif
 
+#if 0
 MANSUFFIX = $(LIBMANSUFFIX)
-MSUFF = man
-FCSUFFIX = 3
-InstallManPage(FcAtomicCreate,$(LIBMANDIR))
-InstallManPage(FcAtomicDeleteNew,$(LIBMANDIR))
-InstallManPage(FcAtomicDestroy,$(LIBMANDIR))
-InstallManPage(FcAtomicLock,$(LIBMANDIR))
-InstallManPage(FcAtomicNewFile,$(LIBMANDIR))
-InstallManPage(FcAtomicOrigFile,$(LIBMANDIR))
-InstallManPage(FcAtomicReplaceOrig,$(LIBMANDIR))
-InstallManPage(FcAtomicUnlock,$(LIBMANDIR))
-InstallManPage(FcBlanksAdd,$(LIBMANDIR))
-InstallManPage(FcBlanksCreate,$(LIBMANDIR))
-InstallManPage(FcBlanksDestroy,$(LIBMANDIR))
-InstallManPage(FcBlanksIsMember,$(LIBMANDIR))
-InstallManPage(FcCharSetAddChar,$(LIBMANDIR))
-InstallManPage(FcCharSetCopy,$(LIBMANDIR))
-InstallManPage(FcCharSetCount,$(LIBMANDIR))
-InstallManPage(FcCharSetCreate,$(LIBMANDIR))
-InstallManPage(FcCharSetDestroy,$(LIBMANDIR))
-InstallManPage(FcCharSetEqual,$(LIBMANDIR))
-InstallManPage(FcCharSetFirstPage,$(LIBMANDIR))
-InstallManPage(FcCharSetHasChar,$(LIBMANDIR))
-InstallManPage(FcCharSetIntersect,$(LIBMANDIR))
-InstallManPage(FcCharSetIntersectCount,$(LIBMANDIR))
-InstallManPage(FcCharSetIsSubset,$(LIBMANDIR))
-InstallManPage(FcCharSetNextPage,$(LIBMANDIR))
-InstallManPage(FcCharSetSubtract,$(LIBMANDIR))
-InstallManPage(FcCharSetSubtractCount,$(LIBMANDIR))
-InstallManPage(FcCharSetUnion,$(LIBMANDIR))
-InstallManPage(FcConfigAppFontAddDir,$(LIBMANDIR))
-InstallManPage(FcConfigAppFontAddFile,$(LIBMANDIR))
-InstallManPage(FcConfigAppFontClear,$(LIBMANDIR))
-InstallManPage(FcConfigBuildFonts,$(LIBMANDIR))
-InstallManPage(FcConfigCreate,$(LIBMANDIR))
-InstallManPage(FcConfigDestroy,$(LIBMANDIR))
-InstallManPage(FcConfigFilename,$(LIBMANDIR))
-InstallManPage(FcConfigGetBlanks,$(LIBMANDIR))
-InstallManPage(FcConfigGetCache,$(LIBMANDIR))
-InstallManPage(FcConfigGetConfigDirs,$(LIBMANDIR))
-InstallManPage(FcConfigGetConfigFiles,$(LIBMANDIR))
-InstallManPage(FcConfigGetCurrent,$(LIBMANDIR))
-InstallManPage(FcConfigGetFontDirs,$(LIBMANDIR))
-InstallManPage(FcConfigGetFonts,$(LIBMANDIR))
-InstallManPage(FcConfigGetRescanInverval,$(LIBMANDIR))
-InstallManPage(FcConfigParseAndLoad,$(LIBMANDIR))
-InstallManPage(FcConfigSetCurrent,$(LIBMANDIR))
-InstallManPage(FcConfigSetRescanInverval,$(LIBMANDIR))
-InstallManPage(FcConfigSubstitute,$(LIBMANDIR))
-InstallManPage(FcConfigSubstituteWithPat,$(LIBMANDIR))
-InstallManPage(FcConfigUptoDate,$(LIBMANDIR))
-InstallManPage(FcDefaultSubstitute,$(LIBMANDIR))
-InstallManPage(FcDirCacheValid,$(LIBMANDIR))
-InstallManPage(FcDirSave,$(LIBMANDIR))
-InstallManPage(FcDirScan,$(LIBMANDIR))
-InstallManPage(FcFileScan,$(LIBMANDIR))
-InstallManPage(FcFontList,$(LIBMANDIR))
-InstallManPage(FcFontMatch,$(LIBMANDIR))
-InstallManPage(FcFontRenderPrepare,$(LIBMANDIR))
-InstallManPage(FcFontSetAdd,$(LIBMANDIR))
-InstallManPage(FcFontSetCreate,$(LIBMANDIR))
-InstallManPage(FcFontSetDestroy,$(LIBMANDIR))
-InstallManPage(FcFontSort,$(LIBMANDIR))
-InstallManPage(FcFreeTypeCharIndex,$(LIBMANDIR))
-InstallManPage(FcFreeTypeCharSet,$(LIBMANDIR))
-InstallManPage(FcFreeTypeQuery,$(LIBMANDIR))
-InstallManPage(FcGetVersion,$(LIBMANDIR))
-InstallManPage(FcInit,$(LIBMANDIR))
-InstallManPage(FcInitBringUptoDate,$(LIBMANDIR))
-InstallManPage(FcInitLoadConfig,$(LIBMANDIR))
-InstallManPage(FcInitLoadConfigAndFonts,$(LIBMANDIR))
-InstallManPage(FcInitReinitialize,$(LIBMANDIR))
-InstallManPage(FcMatrixCopy,$(LIBMANDIR))
-InstallManPage(FcMatrixEqual,$(LIBMANDIR))
-InstallManPage(FcMatrixInit,$(LIBMANDIR))
-InstallManPage(FcMatrixMultiply,$(LIBMANDIR))
-InstallManPage(FcMatrixRotate,$(LIBMANDIR))
-InstallManPage(FcMatrixScale,$(LIBMANDIR))
-InstallManPage(FcMatrixShear,$(LIBMANDIR))
-InstallManPage(FcNameConstant,$(LIBMANDIR))
-InstallManPage(FcNameGetConstant,$(LIBMANDIR))
-InstallManPage(FcNameGetObjectType,$(LIBMANDIR))
-InstallManPage(FcNameParse,$(LIBMANDIR))
-InstallManPage(FcNameRegisterConstants,$(LIBMANDIR))
-InstallManPage(FcNameRegisterObjectTypes,$(LIBMANDIR))
-InstallManPage(FcNameUnparse,$(LIBMANDIR))
-InstallManPage(FcNameUnregisterConstants,$(LIBMANDIR))
-InstallManPage(FcNameUnregisterObjectTypes,$(LIBMANDIR))
-InstallManPage(FcObjectSetAdd,$(LIBMANDIR))
-InstallManPage(FcObjectSetBuild,$(LIBMANDIR))
-InstallManPage(FcObjectSetCreate,$(LIBMANDIR))
-InstallManPage(FcObjectSetDestroy,$(LIBMANDIR))
-InstallManPage(FcPatternAdd-Type,$(LIBMANDIR))
-InstallManPage(FcPatternAdd,$(LIBMANDIR))
-InstallManPage(FcPatternAddWeak,$(LIBMANDIR))
-InstallManPage(FcPatternBuild,$(LIBMANDIR))
-InstallManPage(FcPatternCreate,$(LIBMANDIR))
-InstallManPage(FcPatternDel,$(LIBMANDIR))
-InstallManPage(FcPatternDestroy,$(LIBMANDIR))
-InstallManPage(FcPatternEqual,$(LIBMANDIR))
-InstallManPage(FcPatternEqualSubset,$(LIBMANDIR))
-InstallManPage(FcPatternGet-Type,$(LIBMANDIR))
-InstallManPage(FcPatternGet,$(LIBMANDIR))
-InstallManPage(FcPatternHash,$(LIBMANDIR))
-InstallManPage(FcPatternPrint,$(LIBMANDIR))
-InstallManPage(FcStrBasename,$(LIBMANDIR))
-InstallManPage(FcStrCmpIgnoreCase,$(LIBMANDIR))
-InstallManPage(FcStrCopy,$(LIBMANDIR))
-InstallManPage(FcStrCopyFilename,$(LIBMANDIR))
-InstallManPage(FcStrDirname,$(LIBMANDIR))
-InstallManPage(FcStrListCreate,$(LIBMANDIR))
-InstallManPage(FcStrListDone,$(LIBMANDIR))
-InstallManPage(FcStrListNext,$(LIBMANDIR))
-InstallManPage(FcStrSetAdd,$(LIBMANDIR))
-InstallManPage(FcStrSetAddFilename,$(LIBMANDIR))
-InstallManPage(FcStrSetCreate,$(LIBMANDIR))
-InstallManPage(FcStrSetDel,$(LIBMANDIR))
-InstallManPage(FcStrSetDestroy,$(LIBMANDIR))
-InstallManPage(FcStrSetMember,$(LIBMANDIR))
-InstallManPage(FcUcs4ToUtf8,$(LIBMANDIR))
-InstallManPage(FcUtf16Len,$(LIBMANDIR))
-InstallManPage(FcUtf16ToUcs4,$(LIBMANDIR))
-InstallManPage(FcUtf8Len,$(LIBMANDIR))
-InstallManPage(FcUtf8ToUcs4,$(LIBMANDIR))
-InstallManPage(FcValueDestroy,$(LIBMANDIR))
-InstallManPage(FcValueSave,$(LIBMANDIR))
-
-MANSUFFIX = $(FILEMANSUFFIX)
-InstallManPage(fonts-conf,$(FILEMANDIR))
+#if InstallFontconfigLibrary
+InstallManPage(fontconfig,$(LIBMANDIR))
+#endif
+#endif
 
 DependTarget()
 
@@ -190,15 +72,12 @@ FONTCONFIGFONTSCONFDIR=FontconfigFontsConfDir
 MACFONTDIRS = ~/Library/Fonts /Library/Fonts /Network/Library/Fonts \
               /System/Library/Fonts
 #endif
-#ifdef OpenBSDArchitecture
-EXTRAFONTDIRS = /usr/local/lib/X11/fonts \
-		/usr/local/share/fonts
-#endif
 
 #if NothingOutsideProjectRoot
 FONTDIRS=$(FONTDIR)
 #else
-FONTDIRS=/usr/share/fonts $(FONTDIR) $(EXTRAFONTDIRS) $(MACFONTDIRS)
+DEFAULTFONTDIRS=/usr/share/fonts
+FONTDIRS=$(FONTDIR) $(MACFONTDIRS)
 #endif
 
 RPATH_CFLAG = HardCodeLibdirFlag
@@ -206,37 +85,64 @@ RPATH_CFLAG = HardCodeLibdirFlag
 SUBSTVARS=prefix=$(PROJECTROOT) \
           exec_prefix=$(BINDIR) \
           libdir=$(USRLIBDIR) \
-          hardcode_libdir_flag_spec=$(RPATH_CFLAG) \
+	  hardcode_libdir_flag_spec=$(RPATH_CFLAG) \
           includedir=$(INCROOT) \
           VERSION=$(FONTCONFIG_VERSION)
 
-CONFIG_SUBST_PROG=sh $(FONTCONFIGSRC)/config/config-subst
+CONFIG_SUBST_PROG=sh ./config-subst
 
-#ifndef InstallNamedTargetBackup
-#define InstallNamedTargetBackup(step,srcname,flags,dest,dstname)	@@\
+#if (defined(SunArchitecture) && defined(SVR4Architecture)) && !(HasGnuMake)
+XCOMM Required for the config-subst rules to work with Solaris make
+SHELL=/bin/ksh
+#endif
+
+#if InstallFontconfigLibrary
+# ifndef InstallNamedTargetBackup
+#  define InstallNamedTargetBackup(step,srcname,flags,dest,dstname)	@@\
 step:: srcname								@@\
 	MakeDir($(DESTDIR)dest)						@@\
 	MoveToBakFile($(DESTDIR)dest/dstname)				@@\
 	$(INSTALL) $(INSTALLFLAGS) flags srcname $(DESTDIR)dest/dstname
-#endif /* InstallNamedTargetBackup */
+# endif /* InstallNamedTargetBackup */
 
-#ifndef InstallNonExecFileBackup
-#define InstallNonExecFileBackup(file,dest)				@@\
+# ifndef InstallNonExecFileBackup
+#  define InstallNonExecFileBackup(file,dest)				@@\
 InstallNamedTargetBackup(install,file,$(INSTDATFLAGS),dest,file)
-#endif /* InstallNonExecFileBackup */
+# endif /* InstallNonExecFileBackup */
 
 InstallNonExecFileBackup(fonts.conf,$(FONTCONFIGFONTSCONFDIR))
-InstallNonExecFileNoClobber(local.conf,$(FONTCONFIGFONTSCONFDIR))
 InstallNonExecFile(fonts.dtd,$(FONTCONFIGFONTSCONFDIR))
+#endif
 
 all:: fonts.conf
 
-fonts.conf: fonts.conf.in setfontdirs findfonts
+fonts.conf: fonts.conf.in
 	RemoveFile($@)
-	sh ./setfontdirs $(FONTDIRS)
+	DEFAULTFONTDIR=FC_DEFAULT_FONTS=$(DEFAULTFONTDIRS); \
+	FONTDIR=FC_FONTPATH=`for i in  $(FONTDIRS); \
+		do echo -n '<dir>'$$i'</dir> '; done;`; \
+	FONTDIRDATE=FC_FONTDATE=`date;`;\
+	$(CONFIG_SUBST_PROG) "$$DEFAULTFONTDIR" "$$FONTDIR" "$$FONTDIRDATE" \
+		< fonts.conf.in > $@;
 
 clean::
 	RemoveFile(fonts.conf)
+
+#if SharedLibFontconfig
+all:: fontconfig-def.cpp 
+
+fontconfig-def.cpp: fontconfig.def.in
+	RemoveFile($@)
+	MAJ=`expr "$(SOFONTCONFIGREV)" : "\([^\.]*\)\..*"`; \
+	MIN=`expr "$(SOFONTCONFIGREV)" : "[^\.]*\.\([^\.]*\)\.*.*"` || true;\
+	TEEN=`expr "$(SOFONTCONFIGREV)" : "[^\.]*\.[^\.]*\.*\(.*\)"` || true;\
+	CUR=LT_CURRENT=`expr $$MAJ + $$MIN`;\
+	REV=LT_REVISION=$$TEEN;\
+	$(CONFIG_SUBST_PROG) $$CUR $$REV < fontconfig.def.in > $@
+
+clean::
+	RemoveFile(fontconfig-def.cpp)
+#endif
 
 all:: fontconfig.pc
 
@@ -244,18 +150,17 @@ fontconfig.pc: fontconfig.pc.in
 	RemoveFile($@)
 	$(CONFIG_SUBST_PROG) $(SUBSTVARS) < fontconfig.pc.in > $@
 
+#if InstallFontconfigLibrary
 InstallNonExecFile(fontconfig.pc,$(USRLIBDIR)/pkgconfig)
+#endif
 
 clean::
 	RemoveFile(fontconfig.pc)
 
 /* config stuff */
-LinkSourceFile(findfonts,$(FONTCONFIGSRC))
 LinkSourceFile(fontconfig.pc.in,$(FONTCONFIGSRC))
 LinkSourceFile(fonts.conf.in,$(FONTCONFIGSRC))
-LinkSourceFile(local.conf,$(FONTCONFIGSRC))
 LinkSourceFile(fonts.dtd,$(FONTCONFIGSRC))
-LinkSourceFile(setfontdirs,$(FONTCONFIGSRC))
 
 /* Source */
 LinkSourceFile(fcatomic.c,$(FONTCONFIGSRC)/src)
@@ -269,7 +174,6 @@ LinkSourceFile(fcdir.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcfreetype.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcfs.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcinit.c,$(FONTCONFIGSRC)/src)
-LinkSourceFile(fcint.h,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fclang.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fclist.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcmatch.c,$(FONTCONFIGSRC)/src)
@@ -279,135 +183,10 @@ LinkSourceFile(fcpat.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcstr.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fcxml.c,$(FONTCONFIGSRC)/src)
 LinkSourceFile(fontconfig.def.in,$(FONTCONFIGSRC)/src)
+/*LinkSourceFile(fontconfig.man,$(FONTCONFIGSRC)/src)*/
 
 /* Public headers */
 LinkSourceFile(fcfreetype.h,$(FONTCONFIGSRC)/fontconfig)
 LinkSourceFile(fcprivate.h,$(FONTCONFIGSRC)/fontconfig)
 LinkSourceFile(fontconfig.h,$(FONTCONFIGSRC)/fontconfig)
 
-/* Manual Pages */
-LinkFile(FcAtomicCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicCreate.$(FCSUFFIX))
-LinkFile(FcAtomicDeleteNew.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicDeleteNew.$(FCSUFFIX))
-LinkFile(FcAtomicDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicDestroy.$(FCSUFFIX))
-LinkFile(FcAtomicLock.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicLock.$(FCSUFFIX))
-LinkFile(FcAtomicNewFile.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicNewFile.$(FCSUFFIX))
-LinkFile(FcAtomicOrigFile.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicOrigFile.$(FCSUFFIX))
-LinkFile(FcAtomicReplaceOrig.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicReplaceOrig.$(FCSUFFIX))
-LinkFile(FcAtomicUnlock.$(MSUFF), $(FONTCONFIGSRC)/doc/FcAtomicUnlock.$(FCSUFFIX))
-LinkFile(FcBlanksAdd.$(MSUFF), $(FONTCONFIGSRC)/doc/FcBlanksAdd.$(FCSUFFIX))
-LinkFile(FcBlanksCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcBlanksCreate.$(FCSUFFIX))
-LinkFile(FcBlanksDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcBlanksDestroy.$(FCSUFFIX))
-LinkFile(FcBlanksIsMember.$(MSUFF), $(FONTCONFIGSRC)/doc/FcBlanksIsMember.$(FCSUFFIX))
-LinkFile(FcCharSetAddChar.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetAddChar.$(FCSUFFIX))
-LinkFile(FcCharSetCopy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetCopy.$(FCSUFFIX))
-LinkFile(FcCharSetCount.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetCount.$(FCSUFFIX))
-LinkFile(FcCharSetCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetCreate.$(FCSUFFIX))
-LinkFile(FcCharSetDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetDestroy.$(FCSUFFIX))
-LinkFile(FcCharSetEqual.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetEqual.$(FCSUFFIX))
-LinkFile(FcCharSetFirstPage.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetFirstPage.$(FCSUFFIX))
-LinkFile(FcCharSetHasChar.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetHasChar.$(FCSUFFIX))
-LinkFile(FcCharSetIntersect.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetIntersect.$(FCSUFFIX))
-LinkFile(FcCharSetIntersectCount.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetIntersectCount.$(FCSUFFIX))
-LinkFile(FcCharSetIsSubset.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetIsSubset.$(FCSUFFIX))
-LinkFile(FcCharSetNextPage.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetNextPage.$(FCSUFFIX))
-LinkFile(FcCharSetSubtract.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetSubtract.$(FCSUFFIX))
-LinkFile(FcCharSetSubtractCount.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetSubtractCount.$(FCSUFFIX))
-LinkFile(FcCharSetUnion.$(MSUFF), $(FONTCONFIGSRC)/doc/FcCharSetUnion.$(FCSUFFIX))
-LinkFile(FcConfigAppFontAddDir.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigAppFontAddDir.$(FCSUFFIX))
-LinkFile(FcConfigAppFontAddFile.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigAppFontAddFile.$(FCSUFFIX))
-LinkFile(FcConfigAppFontClear.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigAppFontClear.$(FCSUFFIX))
-LinkFile(FcConfigBuildFonts.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigBuildFonts.$(FCSUFFIX))
-LinkFile(FcConfigCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigCreate.$(FCSUFFIX))
-LinkFile(FcConfigDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigDestroy.$(FCSUFFIX))
-LinkFile(FcConfigFilename.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigFilename.$(FCSUFFIX))
-LinkFile(FcConfigGetBlanks.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetBlanks.$(FCSUFFIX))
-LinkFile(FcConfigGetCache.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetCache.$(FCSUFFIX))
-LinkFile(FcConfigGetConfigDirs.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetConfigDirs.$(FCSUFFIX))
-LinkFile(FcConfigGetConfigFiles.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetConfigFiles.$(FCSUFFIX))
-LinkFile(FcConfigGetCurrent.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetCurrent.$(FCSUFFIX))
-LinkFile(FcConfigGetFontDirs.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetFontDirs.$(FCSUFFIX))
-LinkFile(FcConfigGetFonts.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetFonts.$(FCSUFFIX))
-LinkFile(FcConfigGetRescanInverval.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigGetRescanInverval.$(FCSUFFIX))
-LinkFile(FcConfigParseAndLoad.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigParseAndLoad.$(FCSUFFIX))
-LinkFile(FcConfigSetCurrent.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigSetCurrent.$(FCSUFFIX))
-LinkFile(FcConfigSetRescanInverval.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigSetRescanInverval.$(FCSUFFIX))
-LinkFile(FcConfigSubstitute.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigSubstitute.$(FCSUFFIX))
-LinkFile(FcConfigSubstituteWithPat.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigSubstituteWithPat.$(FCSUFFIX))
-LinkFile(FcConfigUptoDate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcConfigUptoDate.$(FCSUFFIX))
-LinkFile(FcDefaultSubstitute.$(MSUFF), $(FONTCONFIGSRC)/doc/FcDefaultSubstitute.$(FCSUFFIX))
-LinkFile(FcDirCacheValid.$(MSUFF), $(FONTCONFIGSRC)/doc/FcDirCacheValid.$(FCSUFFIX))
-LinkFile(FcDirSave.$(MSUFF), $(FONTCONFIGSRC)/doc/FcDirSave.$(FCSUFFIX))
-LinkFile(FcDirScan.$(MSUFF), $(FONTCONFIGSRC)/doc/FcDirScan.$(FCSUFFIX))
-LinkFile(FcFileScan.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFileScan.$(FCSUFFIX))
-LinkFile(FcFontList.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontList.$(FCSUFFIX))
-LinkFile(FcFontMatch.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontMatch.$(FCSUFFIX))
-LinkFile(FcFontRenderPrepare.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontRenderPrepare.$(FCSUFFIX))
-LinkFile(FcFontSetAdd.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontSetAdd.$(FCSUFFIX))
-LinkFile(FcFontSetCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontSetCreate.$(FCSUFFIX))
-LinkFile(FcFontSetDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontSetDestroy.$(FCSUFFIX))
-LinkFile(FcFontSort.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFontSort.$(FCSUFFIX))
-LinkFile(FcFreeTypeCharIndex.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFreeTypeCharIndex.$(FCSUFFIX))
-LinkFile(FcFreeTypeCharSet.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFreeTypeCharSet.$(FCSUFFIX))
-LinkFile(FcFreeTypeQuery.$(MSUFF), $(FONTCONFIGSRC)/doc/FcFreeTypeQuery.$(FCSUFFIX))
-LinkFile(FcGetVersion.$(MSUFF), $(FONTCONFIGSRC)/doc/FcGetVersion.$(FCSUFFIX))
-LinkFile(FcInit.$(MSUFF), $(FONTCONFIGSRC)/doc/FcInit.$(FCSUFFIX))
-LinkFile(FcInitBringUptoDate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcInitBringUptoDate.$(FCSUFFIX))
-LinkFile(FcInitLoadConfig.$(MSUFF), $(FONTCONFIGSRC)/doc/FcInitLoadConfig.$(FCSUFFIX))
-LinkFile(FcInitLoadConfigAndFonts.$(MSUFF), $(FONTCONFIGSRC)/doc/FcInitLoadConfigAndFonts.$(FCSUFFIX))
-LinkFile(FcInitReinitialize.$(MSUFF), $(FONTCONFIGSRC)/doc/FcInitReinitialize.$(FCSUFFIX))
-LinkFile(FcMatrixCopy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixCopy.$(FCSUFFIX))
-LinkFile(FcMatrixEqual.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixEqual.$(FCSUFFIX))
-LinkFile(FcMatrixInit.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixInit.$(FCSUFFIX))
-LinkFile(FcMatrixMultiply.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixMultiply.$(FCSUFFIX))
-LinkFile(FcMatrixRotate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixRotate.$(FCSUFFIX))
-LinkFile(FcMatrixScale.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixScale.$(FCSUFFIX))
-LinkFile(FcMatrixShear.$(MSUFF), $(FONTCONFIGSRC)/doc/FcMatrixShear.$(FCSUFFIX))
-LinkFile(FcNameConstant.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameConstant.$(FCSUFFIX))
-LinkFile(FcNameGetConstant.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameGetConstant.$(FCSUFFIX))
-LinkFile(FcNameGetObjectType.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameGetObjectType.$(FCSUFFIX))
-LinkFile(FcNameParse.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameParse.$(FCSUFFIX))
-LinkFile(FcNameRegisterConstants.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameRegisterConstants.$(FCSUFFIX))
-LinkFile(FcNameRegisterObjectTypes.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameRegisterObjectTypes.$(FCSUFFIX))
-LinkFile(FcNameUnparse.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameUnparse.$(FCSUFFIX))
-LinkFile(FcNameUnregisterConstants.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameUnregisterConstants.$(FCSUFFIX))
-LinkFile(FcNameUnregisterObjectTypes.$(MSUFF), $(FONTCONFIGSRC)/doc/FcNameUnregisterObjectTypes.$(FCSUFFIX))
-LinkFile(FcObjectSetAdd.$(MSUFF), $(FONTCONFIGSRC)/doc/FcObjectSetAdd.$(FCSUFFIX))
-LinkFile(FcObjectSetBuild.$(MSUFF), $(FONTCONFIGSRC)/doc/FcObjectSetBuild.$(FCSUFFIX))
-LinkFile(FcObjectSetCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcObjectSetCreate.$(FCSUFFIX))
-LinkFile(FcObjectSetDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcObjectSetDestroy.$(FCSUFFIX))
-LinkFile(FcPatternAdd-Type.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternAdd-Type.$(FCSUFFIX))
-LinkFile(FcPatternAdd.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternAdd.$(FCSUFFIX))
-LinkFile(FcPatternAddWeak.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternAddWeak.$(FCSUFFIX))
-LinkFile(FcPatternBuild.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternBuild.$(FCSUFFIX))
-LinkFile(FcPatternCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternCreate.$(FCSUFFIX))
-LinkFile(FcPatternDel.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternDel.$(FCSUFFIX))
-LinkFile(FcPatternDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternDestroy.$(FCSUFFIX))
-LinkFile(FcPatternEqual.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternEqual.$(FCSUFFIX))
-LinkFile(FcPatternEqualSubset.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternEqualSubset.$(FCSUFFIX))
-LinkFile(FcPatternGet-Type.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternGet-Type.$(FCSUFFIX))
-LinkFile(FcPatternGet.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternGet.$(FCSUFFIX))
-LinkFile(FcPatternHash.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternHash.$(FCSUFFIX))
-LinkFile(FcPatternPrint.$(MSUFF), $(FONTCONFIGSRC)/doc/FcPatternPrint.$(FCSUFFIX))
-LinkFile(FcStrBasename.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrBasename.$(FCSUFFIX))
-LinkFile(FcStrCmpIgnoreCase.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrCmpIgnoreCase.$(FCSUFFIX))
-LinkFile(FcStrCopy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrCopy.$(FCSUFFIX))
-LinkFile(FcStrCopyFilename.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrCopyFilename.$(FCSUFFIX))
-LinkFile(FcStrDirname.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrDirname.$(FCSUFFIX))
-LinkFile(FcStrListCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrListCreate.$(FCSUFFIX))
-LinkFile(FcStrListDone.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrListDone.$(FCSUFFIX))
-LinkFile(FcStrListNext.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrListNext.$(FCSUFFIX))
-LinkFile(FcStrSetAdd.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetAdd.$(FCSUFFIX))
-LinkFile(FcStrSetAddFilename.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetAddFilename.$(FCSUFFIX))
-LinkFile(FcStrSetCreate.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetCreate.$(FCSUFFIX))
-LinkFile(FcStrSetDel.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetDel.$(FCSUFFIX))
-LinkFile(FcStrSetDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetDestroy.$(FCSUFFIX))
-LinkFile(FcStrSetMember.$(MSUFF), $(FONTCONFIGSRC)/doc/FcStrSetMember.$(FCSUFFIX))
-LinkFile(FcUcs4ToUtf8.$(MSUFF), $(FONTCONFIGSRC)/doc/FcUcs4ToUtf8.$(FCSUFFIX))
-LinkFile(FcUtf16Len.$(MSUFF), $(FONTCONFIGSRC)/doc/FcUtf16Len.$(FCSUFFIX))
-LinkFile(FcUtf16ToUcs4.$(MSUFF), $(FONTCONFIGSRC)/doc/FcUtf16ToUcs4.$(FCSUFFIX))
-LinkFile(FcUtf8Len.$(MSUFF), $(FONTCONFIGSRC)/doc/FcUtf8Len.$(FCSUFFIX))
-LinkFile(FcUtf8ToUcs4.$(MSUFF), $(FONTCONFIGSRC)/doc/FcUtf8ToUcs4.$(FCSUFFIX))
-LinkFile(FcValueDestroy.$(MSUFF), $(FONTCONFIGSRC)/doc/FcValueDestroy.$(FCSUFFIX))
-LinkFile(FcValueSave.$(MSUFF), $(FONTCONFIGSRC)/doc/FcValueSave.$(FCSUFFIX))
-
-LinkFile(fonts-conf.$(MSUFF), $(FONTCONFIGSRC)/doc/fonts-conf.5)

@@ -24,7 +24,7 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/FS/FSClServ.c,v 1.5 2001/12/14 19:53:32 dawes Exp $ */
+/* $XFree86: xc/lib/FS/FSClServ.c,v 1.4 2001/01/17 19:41:27 dawes Exp $ */
 
 /*
 

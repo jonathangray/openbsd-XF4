@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/lib/Xdmcp/GenKey.c,v 3.8 2001/12/14 19:54:54 dawes Exp $ */
+/* $XFree86: xc/lib/Xdmcp/GenKey.c,v 3.7 2001/07/25 15:04:50 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/X.h>

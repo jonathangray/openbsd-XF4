@@ -26,7 +26,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/font/Type1/regions.c,v 3.9 2003/05/27 22:26:46 tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/regions.c,v 3.8tsi Exp $ */
  /* REGIONS  CWEB         V0023 LOTS                                 */
 /*
 :h1 id=regions.REGIONS Module - Regions Operator Handler
@@ -41,7 +41,9 @@ This module is responsible for creating and manipulating regions.
 The included files are:
 */
  
-#include  "os.h"
+#ifdef FONTMODULE
+# include  "os.h"
+#endif
 #include  "objects.h"
 #include  "spaces.h"
 #include  "paths.h"

@@ -26,7 +26,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/font/Type1/arith.c,v 1.7 2003/05/27 22:26:45 tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/arith.c,v 1.6tsi Exp $ */
 
  /* ARITH    CWEB         V0006 ********                             */
 /*
@@ -49,8 +49,10 @@ assembly language, unlike C, will have 64-bit multiply products and
  
 The included files are:
 */
- 
-#include "os.h"
+
+#ifdef FONTMODULE
+# include "os.h"
+#endif
 #include "objects.h"
 #include "spaces.h"
 #include "arith.h"

@@ -50,7 +50,7 @@ from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.c,v 1.10 2001/12/14 19:56:59 dawes Exp $ */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.c,v 1.9 2001/08/27 19:01:07 dawes Exp $ */
 
 #ifdef WIN32
 #define _WILLWINSOCK_

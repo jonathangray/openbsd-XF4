@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/lib/font/include/fontencc.h,v 1.1 2001/08/16 14:33:47 dawes Exp $ */
+/* $XFree86$ */
 
 /* Binary compatibility entry points. */
 

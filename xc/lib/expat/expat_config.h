@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/expat/expat_config.h,v 1.3 2003/05/19 18:12:11 tsi Exp $ */
+/* $XFree86: xc/lib/expat/expat_config.h,v 1.2 2003/04/12 13:50:16 tsi Exp $ */
 /* config.h.  Generated automatically by configure.  */
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 

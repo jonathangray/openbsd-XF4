@@ -50,7 +50,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/FS/FSlibint.h,v 3.9 2003/09/01 20:50:09 herrb Exp $ */
+/* $XFree86: xc/lib/FS/FSlibint.h,v 3.8 2003/08/29 18:01:12 herrb Exp $ */
 
 /*
  * FSlib internal decls

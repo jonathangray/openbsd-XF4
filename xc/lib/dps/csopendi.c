@@ -46,7 +46,7 @@
  *  
  * Author:  Adobe Systems Incorporated and MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/csopendi.c,v 1.3 2001/10/28 03:32:43 tsi Exp $ */
+/* $XFree86$ */
  
 #include <stdlib.h>
 #include <stdio.h>

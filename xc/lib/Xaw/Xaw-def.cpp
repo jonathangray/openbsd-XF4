@@ -154,4 +154,4 @@ EXPORTS
  XawTextLastPosition
 #endif
 /* $Xorg: Xaw-def.cpp,v 1.3 2000/08/17 19:45:44 cpqbld Exp $ */
-/* $XFree86: xc/lib/Xaw/Xaw-def.cpp,v 1.3 2003/03/25 04:18:11 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Xaw-def.cpp,v 1.2 2002/05/31 18:45:44 dawes Exp $ */

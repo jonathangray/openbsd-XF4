@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/XTrap/Imakefile,v 1.1 2001/11/02 23:29:27 dawes Exp $
+XCOMM $XFree86$
 
 #define DoNormalLib NormalLibXTrap
 #define DoSharedLib SharedLibXTrap

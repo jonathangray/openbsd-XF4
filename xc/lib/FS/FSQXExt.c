@@ -24,7 +24,7 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/FS/FSQXExt.c,v 1.8 2003/12/22 17:48:02 tsi Exp $ */
+/* $XFree86: xc/lib/FS/FSQXExt.c,v 1.7tsi Exp $ */
 
 /*
 

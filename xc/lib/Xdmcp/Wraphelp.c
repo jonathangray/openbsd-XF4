@@ -320,7 +320,7 @@ static u_int32_t SPtrans[8][64] = {
 
 static char shifts2[16] = {0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0};
 
-int
+void
 _XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
 {
 	u_int32_t c,d,t,s;
@@ -374,7 +374,7 @@ _XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
 		s=(s<<4)|(s>>28);
 		*(k++)=s;
 	}
-	return(0);
+	return;
 }
 
 #define D_ENCRYPT(L,R,S)	\
@@ -391,7 +391,7 @@ _XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
 		SPtrans[4][(u>>16)&0x3f]| \
 		SPtrans[6][(u>>24)&0x3f];
 
-int
+void
 _XdmcpAuthDoIt(auth_cblock input, auth_cblock output,
     auth_wrapper_schedule ks, int encrypt)
 {
@@ -443,5 +443,5 @@ _XdmcpAuthDoIt(auth_cblock input, auth_cblock output,
 
 	l2c(l,out);
 	l2c(r,out);
-	return(0);
+	return;
 }

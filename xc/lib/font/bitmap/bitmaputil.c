@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/bitmap/bitmaputil.c,v 1.11 2003/02/19 01:22:34 dawes Exp $ */
+/* $XFree86: xc/lib/font/bitmap/bitmaputil.c,v 1.10 2002/09/24 20:52:48 tsi Exp $ */
 
 #include "fntfilst.h"
 #include "bitmap.h"

@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/apple/AppleWM.man,v 1.2 2003/09/16 00:36:08 torrey Exp $
+.\" $XFree86: xc/lib/apple/AppleWM.man,v 1.1 2003/08/12 23:47:10 torrey Exp $
 .\"
 .\" Copyright (c) 2002 Apple Computer, Inc. All Rights Reserved.
 .\" Copyright (c) 2003 Torrey T. Lyons. All Rights Reserved.
@@ -29,7 +29,7 @@
 .ns
 .TP \\$1
 ..
-.TH APPLEWM 3 "Version 1.0" "XFree86"
+.TH APPLEWM __libmansuffix__ __vendorversion__
 
 .SH NAME
  AppleWM \- Apple rootless window management extension.

@@ -46,7 +46,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Composite.h,v 1.4 2003/10/24 15:47:35 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _XtComposite_h
 #define _XtComposite_h
@@ -97,7 +97,7 @@ extern void XtChangeManagedSet(
 
 _XFUNCPROTOEND
 
-#ifndef COMPOSITE
+#ifndef XT_COMPOSITE
 externalref WidgetClass compositeWidgetClass;
 #endif
 

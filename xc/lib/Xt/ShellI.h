@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xt/ShellI.h,v 1.1 2001/08/18 02:41:29 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef _XtShellInternal_h
 #define _XtShellInternal_h

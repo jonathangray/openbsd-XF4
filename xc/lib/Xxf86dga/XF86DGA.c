@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/Xxf86dga/XF86DGA.c,v 3.24 2003/05/05 20:42:30 tsi Exp $ */
+/* $XFree86: xc/lib/Xxf86dga/XF86DGA.c,v 3.23tsi Exp $ */
 /*
 
 Copyright (c) 1995  Jon Tombs
@@ -19,7 +19,8 @@ Copyright (c) 1995,1996  The XFree86 Project, Inc
 #define HAS_MMAP_ANON
 #include <sys/types.h>
 #include <sys/mman.h>
-#include <asm/page.h>   /* PAGE_SIZE */
+/* kernel header doesn't work with -ansi */
+/* #include <asm/page.h> */   /* PAGE_SIZE */
 #define HAS_SC_PAGESIZE /* _SC_PAGESIZE may be an enum for Linux */
 #define HAS_GETPAGESIZE
 #endif /* linux */

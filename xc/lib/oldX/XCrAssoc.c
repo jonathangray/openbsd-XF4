@@ -25,7 +25,7 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
-#include "Xlibint.h"
+#include "X11/Xlibint.h"
 #include "X10.h"
 
 /*

@@ -24,7 +24,7 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/FS/FSlib.h,v 1.7 2001/12/19 21:37:29 dawes Exp $ */
+/* $XFree86: xc/lib/FS/FSlib.h,v 1.6 2001/12/14 19:53:33 dawes Exp $ */
 
 /*
 

@@ -47,7 +47,7 @@
  *  
  * Author:  Adobe Systems Incorporated and MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/cslibint.c,v 1.5 2003/05/23 14:38:28 tsi Exp $ */
+/* $XFree86: xc/lib/dps/cslibint.c,v 1.4tsi Exp $ */
 
 /*
  *	XlibInternal.c - Internal support routines for the C subroutine
@@ -250,7 +250,7 @@ _XEventsQueued (Display *dpy, int mode)
 void _XReadEvents(Display *dpy)
 {
 	char buf[BUFSIZE];
-	int pend; 
+	int pend;
 	register xEvent *ev;
 	Bool not_yet_flushed = True;
 

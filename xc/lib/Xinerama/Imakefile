@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xinerama/Imakefile,v 1.5 2003/01/04 02:48:24 dawes Exp $
+XCOMM $XFree86: xc/lib/Xinerama/Imakefile,v 1.4 2002/10/16 00:37:31 dawes Exp $
 
 #define DoNormalLib NormalLibXinerama
 #define DoSharedLib SharedLibXinerama

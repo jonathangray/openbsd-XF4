@@ -121,6 +121,7 @@ typedef struct _FTInstance {
     FT_Size size;
     FTNormalisedTransformationRec transformation;
     FT_Int32 load_flags;
+    FT_ULong strike_index;
     int spacing;		/* actual spacing */
     double pixel_size;          /* to calc attributes (actual height) */
     double pixel_width_unit_x;  /* to calc horiz. width (cosine) */
@@ -174,8 +175,7 @@ static void FreeTypeFreeXFont(FontPtr pFont, int freeProps);
 static void FreeTypeUnloadXFont(FontPtr pFont);
 static int
 FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info, 
-                      char *fontname, 
-                      int rawAverageWidth);
+                      char *fontname, int rawAverageWidth, Bool font_properties);
 static int FreeTypeFontGetGlyph(unsigned code, int flags, CharInfoPtr *g, FTFontPtr font);
 static int
 FreeTypeLoadFont(FTFontPtr font, FontInfoPtr info, FTFacePtr face,

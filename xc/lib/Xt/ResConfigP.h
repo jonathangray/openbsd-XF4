@@ -52,7 +52,7 @@ dealings in this Software without prior written authorization from the IBM
 Corporation.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/ResConfigP.h,v 3.8 2003/04/21 16:34:28 herrb Exp $ */
+/* $XFree86: xc/lib/Xt/ResConfigP.h,v 3.7 2001/12/20 19:40:59 tsi Exp $ */
 
 #ifndef _RESCONFIGP_H
 #define _RESCONFIGP_H

@@ -1,7 +1,6 @@
 /*
- * $XFree86: xc/lib/Xrender/Xrender.c,v 1.14 2002/11/22 02:10:41 keithp Exp $
  *
- * Copyright © 2000 SuSE, Inc.
+ * Copyright Â© 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -25,59 +24,289 @@
 
 #include "Xrenderint.h"
 
-XExtensionInfo XRenderExtensionInfo;
+XRenderExtInfo XRenderExtensionInfo;
 char XRenderExtensionName[] = RENDER_NAME;
 
-static int XRenderCloseDisplay(Display *dpy, XExtCodes *codes);
+static int XRenderCloseDisplay (Display *dpy, XExtCodes *codes);
 
-static /* const */ XExtensionHooks render_extension_hooks = {
-    NULL,				/* create_gc */
-    NULL,				/* copy_gc */
-    NULL,				/* flush_gc */
-    NULL,				/* free_gc */
-    NULL,				/* create_font */
-    NULL,				/* free_font */
-    XRenderCloseDisplay,		/* close_display */
-    NULL,				/* wire_to_event */
-    NULL,				/* event_to_wire */
-    NULL,				/* error */
-    NULL,				/* error_string */
-};
+/*
+ * XRenderExtFindDisplay - look for a display in this extension; keeps a
+ * cache of the most-recently used for efficiency. (Replaces
+ * XextFindDisplay.)
+ */
+static XRenderExtDisplayInfo *
+XRenderExtFindDisplay (XRenderExtInfo *extinfo, 
+                       Display        *dpy)
+{
+    XRenderExtDisplayInfo *dpyinfo;
 
-XExtDisplayInfo *
+    /*
+     * see if this was the most recently accessed display
+     */
+    if ((dpyinfo = extinfo->cur) && dpyinfo->display == dpy) 
+        return dpyinfo;
+
+    /*
+     * look for display in list
+     */
+    _XLockMutex(_Xglobal_lock);
+    for (dpyinfo = extinfo->head; dpyinfo; dpyinfo = dpyinfo->next) {
+        if (dpyinfo->display == dpy) {
+            extinfo->cur = dpyinfo;     /* cache most recently used */
+            _XUnlockMutex(_Xglobal_lock);
+            return dpyinfo;
+        }
+    }
+    _XUnlockMutex(_Xglobal_lock);
+
+    return NULL;
+}
+
+/*
+ * If the server is missing support for any of the required depths on
+ * any screen, tell the application that Render is not present.
+ */
+
+#define DEPTH_MASK(d)	(1 << ((d) - 1))
+    
+/*
+ * Render requires support for depth 1, 4, 8, 24 and 32 pixmaps
+ */
+
+#define REQUIRED_DEPTHS	(DEPTH_MASK(1) | \
+			 DEPTH_MASK(4) | \
+			 DEPTH_MASK(8) | \
+			 DEPTH_MASK(24) | \
+			 DEPTH_MASK(32))
+    
+typedef struct _DepthCheckRec {
+    struct _DepthCheckRec *next;
+    Display *dpy;
+    CARD32  missing;
+    unsigned long serial;
+} DepthCheckRec, *DepthCheckPtr;
+
+static DepthCheckPtr	depthChecks;
+
+static int
+XRenderDepthCheckErrorHandler (Display *dpy, XErrorEvent *evt)
+{
+    if (evt->request_code == X_CreatePixmap && evt->error_code == BadValue)
+    {
+	DepthCheckPtr	d;
+	_XLockMutex(_Xglobal_lock);
+	for (d = depthChecks; d; d = d->next)
+	    if (d->dpy == dpy)
+	    {
+		if ((long) (evt->serial - d->serial) >= 0)
+		    d->missing |= DEPTH_MASK(evt->resourceid);
+		break;
+	    }
+	_XUnlockMutex (_Xglobal_lock);
+    }
+    return 0;
+}
+
+static Bool
+XRenderHasDepths (Display *dpy)
+{
+    int	s;
+
+    for (s = 0; s < ScreenCount (dpy); s++)
+    {
+	CARD32		    depths = 0;
+	CARD32		    missing;
+	Screen		    *scr = ScreenOfDisplay (dpy, s);
+	int		    d;
+
+	for (d = 0; d < scr->ndepths; d++)
+	    depths |= DEPTH_MASK(scr->depths[d].depth);
+	missing = ~depths & REQUIRED_DEPTHS;
+	if (missing)
+	{
+	    DepthCheckRec   dc, **dp;
+	    XErrorHandler   previousHandler;
+
+	    /*
+	     * Ok, this is ugly.  It should be sufficient at this
+	     * point to just return False, but Xinerama is broken at
+	     * this point and only advertises depths which have an
+	     * associated visual.  Of course, the other depths still
+	     * work, but the only way to find out is to try them.
+	     */
+	    dc.dpy = dpy;
+	    dc.missing = 0;
+	    dc.serial = XNextRequest (dpy);
+	    _XLockMutex(_Xglobal_lock);
+	    dc.next = depthChecks;
+	    depthChecks = &dc;
+	    _XUnlockMutex (_Xglobal_lock);
+	    /*
+	     * I suspect this is not really thread safe, but Xlib doesn't
+	     * provide a lot of options here
+	     */
+	    previousHandler = XSetErrorHandler (XRenderDepthCheckErrorHandler);
+	    /*
+	     * Try each missing depth and see if pixmap creation succeeds
+	     */
+	    for (d = 1; d <= 32; d++)
+		/* don't check depth 1 == Xcursor recurses... */
+		if ((missing & DEPTH_MASK(d)) && d != 1)
+		{
+		    Pixmap  p;
+		    p = XCreatePixmap (dpy, RootWindow (dpy, s), 1, 1, d);
+		    XFreePixmap (dpy, p);
+		}
+	    XSync (dpy, False);
+	    XSetErrorHandler (previousHandler);
+	    /*
+	     * Unhook from the list of depth check records
+	     */
+	    _XLockMutex(_Xglobal_lock);
+	    for (dp = &depthChecks; *dp; dp = &(*dp)->next)
+	    {
+		if (*dp == &dc)
+		{
+		    *dp = dc.next;
+		    break;
+		}
+	    }
+	    _XUnlockMutex (_Xglobal_lock);
+	    if (dc.missing)
+		return False;
+	}
+    }
+    return True;
+}
+
+/*
+ * XRenderExtAddDisplay - add a display to this extension. (Replaces
+ * XextAddDisplay)
+ */
+static XRenderExtDisplayInfo *
+XRenderExtAddDisplay (XRenderExtInfo *extinfo,
+                      Display        *dpy,
+                      char           *ext_name)
+{
+    XRenderExtDisplayInfo *dpyinfo;
+
+    dpyinfo = (XRenderExtDisplayInfo *) Xmalloc (sizeof (XRenderExtDisplayInfo));
+    if (!dpyinfo) return NULL;
+    dpyinfo->display = dpy;
+    dpyinfo->info = NULL;
+
+    if (XRenderHasDepths (dpy))
+	dpyinfo->codes = XInitExtension (dpy, ext_name);
+    else
+	dpyinfo->codes = NULL;
+
+    /*
+     * if the server has the extension, then we can initialize the 
+     * appropriate function vectors
+     */
+    if (dpyinfo->codes) {
+        XESetCloseDisplay (dpy, dpyinfo->codes->extension, 
+                           XRenderCloseDisplay);
+    } else {
+	/* The server doesn't have this extension.
+	 * Use a private Xlib-internal extension to hang the close_display
+	 * hook on so that the "cache" (extinfo->cur) is properly cleaned.
+	 * (XBUG 7955)
+	 */
+	XExtCodes *codes = XAddExtension(dpy);
+	if (!codes) {
+	    XFree(dpyinfo);
+	    return NULL;
+	}
+        XESetCloseDisplay (dpy, codes->extension, XRenderCloseDisplay);
+    }
+
+    /*
+     * now, chain it onto the list
+     */
+    _XLockMutex(_Xglobal_lock);
+    dpyinfo->next = extinfo->head;
+    extinfo->head = dpyinfo;
+    extinfo->cur = dpyinfo;
+    extinfo->ndisplays++;
+    _XUnlockMutex(_Xglobal_lock);
+    return dpyinfo;
+}
+
+
+/*
+ * XRenderExtRemoveDisplay - remove the indicated display from the
+ * extension object. (Replaces XextRemoveDisplay.)
+ */
+static int 
+XRenderExtRemoveDisplay (XRenderExtInfo *extinfo, Display *dpy)
+{
+    XRenderExtDisplayInfo *dpyinfo, *prev;
+
+    /*
+     * locate this display and its back link so that it can be removed
+     */
+    _XLockMutex(_Xglobal_lock);
+    prev = NULL;
+    for (dpyinfo = extinfo->head; dpyinfo; dpyinfo = dpyinfo->next) {
+	if (dpyinfo->display == dpy) break;
+	prev = dpyinfo;
+    }
+    if (!dpyinfo) {
+	_XUnlockMutex(_Xglobal_lock);
+	return 0;		/* hmm, actually an error */
+    }
+
+    /*
+     * remove the display from the list; handles going to zero
+     */
+    if (prev)
+	prev->next = dpyinfo->next;
+    else
+	extinfo->head = dpyinfo->next;
+
+    extinfo->ndisplays--;
+    if (dpyinfo == extinfo->cur) extinfo->cur = NULL;  /* flush cache */
+    _XUnlockMutex(_Xglobal_lock);
+
+    Xfree ((char *) dpyinfo);
+    return 1;
+}
+
+
+
+XRenderExtDisplayInfo *
 XRenderFindDisplay (Display *dpy)
 {
-    XExtDisplayInfo *dpyinfo;
+    XRenderExtDisplayInfo *dpyinfo;
 
-    dpyinfo = XextFindDisplay (&XRenderExtensionInfo, dpy);
+    dpyinfo = XRenderExtFindDisplay (&XRenderExtensionInfo, dpy);
     if (!dpyinfo)
-	dpyinfo = XextAddDisplay (&XRenderExtensionInfo, dpy, 
-				  XRenderExtensionName,
-				  &render_extension_hooks,
-				  0, 0);
+	dpyinfo = XRenderExtAddDisplay (&XRenderExtensionInfo, dpy, 
+                                        XRenderExtensionName);
     return dpyinfo;
 }
 
 static int
 XRenderCloseDisplay (Display *dpy, XExtCodes *codes)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
-    if (info->data) XFree (info->data);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    if (info->info) XFree (info->info);
     
-    return XextRemoveDisplay (&XRenderExtensionInfo, dpy);
+    return XRenderExtRemoveDisplay (&XRenderExtensionInfo, dpy);
 }
     
 /****************************************************************************
  *                                                                          *
- *			    Render public interfaces                         *
+ *			    Render public interfaces                        *
  *                                                                          *
  ****************************************************************************/
 
 Bool XRenderQueryExtension (Display *dpy, int *event_basep, int *error_basep)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
 
-    if (XextHasExtension(info)) {
+    if (RenderHasExtension(info)) {
 	*event_basep = info->codes->first_event;
 	*error_basep = info->codes->first_error;
 	return True;
@@ -91,16 +320,16 @@ Status XRenderQueryVersion (Display *dpy,
 			    int	    *major_versionp,
 			    int	    *minor_versionp)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     XRenderInfo	    *xri;
 
-    if (!XextHasExtension (info))
+    if (!RenderHasExtension (info))
 	return 0;
 
     if (!XRenderQueryFormats (dpy))
 	return 0;
     
-    xri = (XRenderInfo *) info->data; 
+    xri = info->info; 
     *major_versionp = xri->major_version;
     *minor_versionp = xri->minor_version;
     return 1;
@@ -161,7 +390,7 @@ _XRenderVersionHandler (Display	    *dpy,
 Status
 XRenderQueryFormats (Display *dpy)
 {
-    XExtDisplayInfo		*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo		*info = XRenderFindDisplay (dpy);
     _XAsyncHandler		async;
     _XrenderVersionState	async_state;
     xRenderQueryVersionReq	*vreq;
@@ -184,7 +413,7 @@ XRenderQueryFormats (Display *dpy)
     
     RenderCheckExtension (dpy, info, 0);
     LockDisplay (dpy);
-    if (info->data)
+    if (info->info)
     {
 	UnlockDisplay (dpy);
 	return 1;
@@ -316,7 +545,7 @@ XRenderQueryFormats (Display *dpy)
 	xSubpixel++;
 	screen++;
     }
-    info->data = (XPointer) xri;
+    info->info = xri;
     /*
      * Skip any extra data
      */
@@ -332,32 +561,32 @@ XRenderQueryFormats (Display *dpy)
 int
 XRenderQuerySubpixelOrder (Display *dpy, int screen)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     XRenderInfo	    *xri;
 
-    if (!XextHasExtension (info))
+    if (!RenderHasExtension (info))
 	return SubPixelUnknown;
 
     if (!XRenderQueryFormats (dpy))
 	return SubPixelUnknown;
 
-    xri = (XRenderInfo *) info->data;
+    xri = info->info;
     return xri->screen[screen].subpixel;
 }
 
 Bool
 XRenderSetSubpixelOrder (Display *dpy, int screen, int subpixel)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     XRenderInfo	    *xri;
 
-    if (!XextHasExtension (info))
+    if (!RenderHasExtension (info))
 	return False;
 
     if (!XRenderQueryFormats (dpy))
 	return False;
 
-    xri = (XRenderInfo *) info->data;
+    xri = info->info;
     xri->screen[screen].subpixel = subpixel;
     return True;
 }
@@ -365,7 +594,7 @@ XRenderSetSubpixelOrder (Display *dpy, int screen, int subpixel)
 XRenderPictFormat *
 XRenderFindVisualFormat (Display *dpy, _Xconst Visual *visual)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     int		    nv;
     XRenderInfo	    *xri;
     XRenderVisual   *xrv;
@@ -373,7 +602,7 @@ XRenderFindVisualFormat (Display *dpy, _Xconst Visual *visual)
     RenderCheckExtension (dpy, info, 0);
     if (!XRenderQueryFormats (dpy))
         return 0;
-    xri = (XRenderInfo *) info->data;
+    xri = info->info;
     for (nv = 0, xrv = xri->visual; nv < xri->nvisual; nv++, xrv++)
 	if (xrv->visual == visual)
 	    return xrv->format;
@@ -386,14 +615,14 @@ XRenderFindFormat (Display		*dpy,
 		   _Xconst XRenderPictFormat	*template,
 		   int			count)
 {
-    XExtDisplayInfo *info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo *info = XRenderFindDisplay (dpy);
     int		    nf;
     XRenderInfo     *xri;
     
     RenderCheckExtension (dpy, info, 0);
     if (!XRenderQueryFormats (dpy))
 	return 0;
-    xri = (XRenderInfo *) info->data;
+    xri = info->info;
     for (nf = 0; nf < xri->nformat; nf++)
     {
 	if (mask & PictFormatID)
@@ -596,7 +825,7 @@ XRenderQueryPictIndexValues(Display			*dpy,
 			    _Xconst XRenderPictFormat	*format,
 			    int				*num)
 {
-    XExtDisplayInfo			*info = XRenderFindDisplay (dpy);
+    XRenderExtDisplayInfo			*info = XRenderFindDisplay (dpy);
     xRenderQueryPictIndexValuesReq	*req;
     xRenderQueryPictIndexValuesReply	rep;
     XIndexValue				*values;

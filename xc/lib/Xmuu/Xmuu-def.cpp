@@ -19,4 +19,4 @@ EXPORTS
  dll_main@12
 #endif
 
-/* $XFree86: xc/lib/Xmuu/Xmuu-def.cpp,v 1.2 2002/05/31 18:45:45 dawes Exp $ */
+/* $XFree86: xc/lib/Xmuu/Xmuu-def.cpp,v 1.1 2001/04/18 17:14:00 dawes Exp $ */

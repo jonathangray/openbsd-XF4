@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xrandr/Xrandrint.h,v 1.4 2002/10/14 18:01:40 keithp Exp $
+ * $XFree86: xc/lib/Xrandr/Xrandrint.h,v 1.2 2001/06/07 15:33:43 keithp Exp $
  *
  *
  * Copyright © 2000, Compaq Computer Corporation, 
@@ -32,11 +32,11 @@
 #define NEED_REPLIES
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
-#include "Xext.h"			/* in ../include */
-#include "extutil.h"			/* in ../include */
+#include <X11/extensions/Xext.h>
+#include <X11/extensions/extutil.h>
 #include "Xrandr.h"
-#include "randr.h"
-#include "randrproto.h"
+#include <X11/extensions/randr.h>
+#include <X11/extensions/randrproto.h>
 
 extern XExtensionInfo XrandrExtensionInfo;
 extern char XrandrExtensionName[];

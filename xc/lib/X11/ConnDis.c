@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/lib/X11/ConnDis.c,v 1.5 2004/07/27 06:06:05 herrb Exp $ */
 /* $Xorg: ConnDis.c,v 1.8 2001/02/09 02:03:31 xorgcvs Exp $ */
 /*
  
@@ -24,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/ConnDis.c,v 3.29 2003/12/19 02:05:37 dawes Exp $ */
+/* $XFree86: xc/lib/X11/ConnDis.c,v 3.28 2003/12/02 23:33:17 herrb Exp $ */
 
 /* 
  * This file contains operating system dependencies.
@@ -57,7 +58,7 @@ in this Software without prior written authorization from The Open Group.
 
 #include "Xintconn.h"
 
-/* prototyes */
+/* prototypes */
 static void GetAuthorization(
     XtransConnInfo trans_conn,
     int family,
@@ -146,9 +147,9 @@ _X11TransConnectDisplay (
     int connect_stat;
 #ifdef LOCALCONN
     struct utsname sys;
+#endif
 #ifdef TCPCONN
     char *tcphostname = NULL;		/* A place to save hostname pointer */
-#endif
 #endif
 
     p = display_name;
@@ -282,12 +283,18 @@ _X11TransConnectDisplay (
 
 #if defined(TCPCONN) || defined(UNIXCONN) || defined(LOCALCONN) || defined(MNX_TCPCONN) || defined(OS2PIPECONN)
     if (!pprotocol) {
-	if (!phostname)
+	if (!phostname) {
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
 	    pprotocol = copystring ("local", 5);
+#if defined(TCPCONN)
+	    tcphostname = copystring("localhost", 9);
+#endif
+	}
 	else
+	{
 #endif
 	    pprotocol = copystring ("tcp", 3);
+	}
     }
 #endif
 
@@ -318,7 +325,7 @@ _X11TransConnectDisplay (
     }
 #endif
 
-#if defined(LOCALCONN) && defined(TCPCONN)
+#if defined(TCPCONN)
   connect:
 #endif
     /*
@@ -332,6 +339,7 @@ _X11TransConnectDisplay (
 		       (pdpynum   ? strlen(pdpynum)   : 0);
 	if (olen > sizeof addrbuf) address = Xmalloc (olen);
     }
+    if (!address) goto bad;
 
     sprintf(address,"%s/%s:%d",
 	pprotocol ? pprotocol : "",
@@ -390,6 +398,7 @@ _X11TransConnectDisplay (
 	}
 
     if (address != addrbuf) Xfree (address);
+    address = addrbuf;
 
     if( trans_conn == NULL )
       goto bad;
@@ -421,6 +430,9 @@ _X11TransConnectDisplay (
     if (phostname) Xfree (phostname);
     if (pdpynum) Xfree (pdpynum);
     if (pscrnum) Xfree (pscrnum);
+#ifdef TCPCONN
+    if (tcphostname) Xfree (tcphostname);
+#endif
 
     GetAuthorization(trans_conn, family, (char *) saddr, saddrlen, idisplay,
 		     auth_namep, auth_namelenp, auth_datap, auth_datalenp);
@@ -435,8 +447,9 @@ _X11TransConnectDisplay (
     if (saddr) free ((char *) saddr);
     if (pprotocol) Xfree (pprotocol);
     if (phostname) Xfree (phostname);
+    if (address && address != addrbuf) { Xfree(address); address = addrbuf; }
 
-#if defined(LOCALCONN) && defined(TCPCONN)
+#if defined(TCPCONN)
     if (tcphostname) {
 	pprotocol = copystring("tcp", 3);
 	phostname = tcphostname;
@@ -573,13 +586,6 @@ _XSendClientPrefix (dpy, client, auth_proto, auth_string, prefix)
 #endif
 
 #ifdef SECURE_RPC
-#if defined(sun) && defined(SVR4) /* && ????? */
-/*
- * I'm aware this is backwards, but #define'ing PORTMAP, as suggested in the
- * man pages, doesn't work either.
- */
-#define authdes_seccreate authdes_create
-#endif
 #include <rpc/rpc.h>
 #ifdef ultrix
 #include <time.h>
@@ -1115,15 +1121,20 @@ GetAuthorization(
 	    static unsigned long    unix_addr = 0xFFFFFFFF;
 	    unsigned long	the_addr;
 	    unsigned short	the_port;
+	    unsigned long	the_utime;
+	    struct timeval      tp;
 	    
+	    X_GETTIMEOFDAY(&tp);
 	    _XLockMutex(_Xglobal_lock);
 	    the_addr = unix_addr--;
 	    _XUnlockMutex(_Xglobal_lock);
+	    the_utime = (unsigned long) tp.tv_usec;
 	    the_port = getpid ();
-
-	    xdmcp_data[j++] = (the_addr >> 24) & 0xFF;
-	    xdmcp_data[j++] = (the_addr >> 16) & 0xFF;
-	    xdmcp_data[j++] = (the_addr >>  8) & 0xFF;
+	    
+	    xdmcp_data[j++] = (the_utime >> 24) & 0xFF;
+	    xdmcp_data[j++] = (the_utime >> 16) & 0xFF;
+	    xdmcp_data[j++] = ((the_utime >>  8) & 0xF0)
+		| ((the_addr >>  8) & 0x0F);
 	    xdmcp_data[j++] = (the_addr >>  0) & 0xFF;
 	    xdmcp_data[j++] = (the_port >>  8) & 0xFF;
 	    xdmcp_data[j++] = (the_port >>  0) & 0xFF;

@@ -71,4 +71,4 @@ EXPORTS
  _IceTransWrite
  
 /* $Xorg: ICE-def.cpp,v 1.3 2000/08/21 16:42:31 coskrey Exp $ */
-/* $XFree86: xc/lib/ICE/ICE-def.cpp,v 1.5 2001/04/18 16:13:18 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/ICE-def.cpp,v 1.4 2001/01/17 19:41:29 dawes Exp $ */

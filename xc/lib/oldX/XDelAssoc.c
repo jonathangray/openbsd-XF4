@@ -24,9 +24,9 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/oldX/XDelAssoc.c,v 1.4 2001/12/14 19:57:02 dawes Exp $ */
+/* $XFree86: xc/lib/oldX/XDelAssoc.c,v 1.3 2001/01/17 19:43:37 dawes Exp $ */
 
-#include "Xlibint.h"
+#include "X11/Xlibint.h"
 #include "X10.h"
 
 /*

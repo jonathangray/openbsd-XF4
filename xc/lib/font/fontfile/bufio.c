@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/fontfile/bufio.c,v 3.10 2002/05/31 18:45:49 dawes Exp $ */
+/* $XFree86: xc/lib/font/fontfile/bufio.c,v 3.9 2001/12/14 19:56:50 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium

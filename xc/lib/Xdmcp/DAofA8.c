@@ -1,4 +1,4 @@
-/*
+/* $Xdotorg: $
  * $Xorg: DAofA8.c,v 1.4 2001/02/09 02:03:48 xorgcvs Exp $
  *
  * 
@@ -38,9 +38,11 @@ XdmcpDisposeARRAYofARRAY8 (array)
 {
     int	i;
 
-    for (i = 0; i < (int)array->length; i++)
-	XdmcpDisposeARRAY8 (&array->data[i]);
-    if (array->data != NULL) Xfree (array->data);
+    if (array->data != NULL) {
+	for (i = 0; i < (int)array->length; i++)
+	    XdmcpDisposeARRAY8 (&array->data[i]);
+	Xfree (array->data);
+    }
     array->length = 0;
     array->data = NULL;
 }

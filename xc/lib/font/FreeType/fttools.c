@@ -21,7 +21,7 @@
   THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/fttools.c,v 1.7 2003/11/20 22:36:37 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/fttools.c,v 1.6 2003/06/08 15:41:13 herrb Exp $ */
 
 #include "fontmisc.h"
 #ifndef FONTMODULE
@@ -39,6 +39,13 @@
 #include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
 #include "ft.h"
+
+/* backward compatibility hack */
+#if (FREETYPE_VERSION < 2001008)
+# ifndef ft_isdigit
+#  define ft_isdigit isdigit
+# endif
+#endif
 
 #ifndef LSBFirst
 #define LSBFirst 0
@@ -169,7 +176,7 @@ FTcheckForTTCName(char *fileName, char **realFileName, int *faceNumber)
     if(start) {
         fn=0;
         i=1;
-        while(isdigit(start[i])) {
+        while(ft_isdigit(start[i])) {
             fn *= 10;
             fn += start[i]-'0';
             i++;

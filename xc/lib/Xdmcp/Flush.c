@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/lib/Xdmcp/Flush.c,v 3.8 2001/12/14 19:54:54 dawes Exp $ */
+/* $XFree86: xc/lib/Xdmcp/Flush.c,v 3.7 2001/07/23 13:15:42 dawes Exp $ */
 
 #ifdef WIN32
 #define _WILLWINSOCK_

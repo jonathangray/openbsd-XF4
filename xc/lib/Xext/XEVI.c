@@ -21,7 +21,7 @@ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ********************************************************/
-/* $XFree86: xc/lib/Xext/XEVI.c,v 1.7 2002/10/16 00:37:27 dawes Exp $ */
+/* $XFree86$ */
 #define NEED_EVENTS
 #define NEED_REPLIES
 #include <X11/Xlibint.h>

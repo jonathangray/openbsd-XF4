@@ -49,7 +49,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/Speedo/spfile.c,v 1.14 2001/12/14 19:56:41 dawes Exp $ */
+/* $XFree86: xc/lib/font/Speedo/spfile.c,v 1.13 2001/08/13 21:46:47 dawes Exp $ */
 
 #include "fntfilst.h"
 #include "fontenc.h"

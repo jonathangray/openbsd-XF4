@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xrender/Imakefile,v 1.11 2002/11/14 21:01:18 tsi Exp $
+XCOMM $XFree86: xc/lib/Xrender/Imakefile,v 1.10tsi Exp $
 
 #ifdef UseInstalled
 
@@ -104,6 +104,7 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 #endif
      
          SRCS = Xrender.c \
+                AddTrap.c \
                 Color.c \
                 Composite.c \
                 Cursor.c \
@@ -117,6 +118,7 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
                 Tri.c
 
          OBJS = Xrender.o \
+                AddTrap.o \
                 Color.o \
                 Composite.o \
                 Cursor.o \
@@ -133,6 +135,16 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 
 HEADERS = Xrender.h $(NONSTANDARD_HEADERS)
 
+SUBSTVARS=prefix="$(PROJECTROOT)" \
+          exec_prefix="$(BINDIR)" \
+          libdir="$(USRLIBDIR)" \
+          includedir="$(INCROOT)" \
+          VERSION="0.8.4" \
+          X_REQUIRES="" \
+          RENDER_CFLAGS="" \
+          X_NON_PKG_CFLAGS="" \
+          X_NON_PKG_LIBS="-lX11 -lXext"
+
 #include <Library.tmpl>
 
 DependTarget()
@@ -142,3 +154,14 @@ DependTarget()
 distclean:: clean
 	RemoveFile(Makefile)
 #endif
+
+all:: xrender.pc
+
+xrender.pc: xrender.pc.in
+	RemoveFile($@)
+	sh ../Xcursor/config-subst $(SUBSTVARS) < xrender.pc.in > $@
+
+InstallNonExecFile(xrender.pc,$(USRLIBDIR)/pkgconfig)
+
+clean::
+	RemoveFile(xrender.pc)

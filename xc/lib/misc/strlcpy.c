@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlcpy.c,v 1.1.1.1 2004/02/13 21:44:33 matthieu Exp $	*/
+/*	$OpenBSD: strlcpy.c,v 1.2 2004/11/02 23:48:04 matthieu Exp $	*/
 
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -15,7 +15,7 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/lib/misc/strlcpy.c,v 1.1 2003/10/26 12:17:14 herrb Exp $ */
+/* $XFree86$ */
 
 #include <sys/types.h>
 #include <string.h>

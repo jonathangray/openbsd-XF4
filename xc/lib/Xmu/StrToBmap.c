@@ -49,7 +49,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xmu/StrToBmap.c,v 1.6 2001/12/14 19:55:50 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/StrToBmap.c,v 1.5 2001/01/17 19:42:57 dawes Exp $ */
 
 #include	<X11/Intrinsic.h>
 #include	<X11/StringDefs.h>

@@ -24,7 +24,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/lcUTF8.c,v 1.16 2003/11/17 22:20:12 dawes Exp $ */
+/* $XFree86: xc/lib/X11/lcUTF8.c,v 1.15 2002/10/08 23:31:36 dawes Exp $ */
 
 /*
  * This file contains:
@@ -1750,13 +1750,18 @@ create_tofontcs_conv(
         }
 	while (count-- > 0) {
 	    XlcCharSet charset = _XlcGetCharSet(*value++);
-	    const char *name = charset->encoding_name;
+	    const char *name;
+
+	    if (charset == (XlcCharSet) NULL)
+		continue;
+
+	    name = charset->encoding_name;
 	    /* If it wasn't already encountered... */
 	    for (k = num - 1; k >= 0; k--)
 		if (!strcmp(preferred[k]->name, name))
 		    break;
 	    if (k < 0) {
-                /* For fonts "ISO10646-1" means not utf8 but ucs2.*/
+                /* For fonts "ISO10646-1" means ucs2, not utf8.*/
                 if (!strcmp("ISO10646-1", name)) {
                     preferred[num++] = &all_charsets[ucs2_conv_index];
                     continue;

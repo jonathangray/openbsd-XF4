@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ************************************************************************/
-/* $XFree86: xc/lib/X11/PolyReg.c,v 1.7 2003/04/13 19:22:17 dawes Exp $ */
+/* $XFree86: xc/lib/X11/PolyReg.c,v 1.6 2001/12/14 19:54:03 dawes Exp $ */
 
 #define LARGE_COORDINATE 1000000
 #define SMALL_COORDINATE -LARGE_COORDINATE
@@ -517,6 +517,8 @@ XPolygonRegion(Pts, Count, rule)
 	}
 	return(region);
     }
+    
+    if (Count < 2) return region;
 
     if (! (pETEs = (EdgeTableEntry *)
 	   Xmalloc((unsigned) (sizeof(EdgeTableEntry) * Count))))

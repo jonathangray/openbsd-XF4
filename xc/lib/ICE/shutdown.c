@@ -26,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/shutdown.c,v 3.4 2001/12/14 19:53:36 dawes Exp $ */
+/* $XFree86: xc/lib/ICE/shutdown.c,v 3.3 2001/08/01 00:44:37 tsi Exp $ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"

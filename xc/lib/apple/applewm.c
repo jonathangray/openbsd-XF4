@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/apple/applewm.c,v 1.1 2003/08/12 23:47:10 torrey Exp $ */
+/* $XFree86: xc/lib/GL/dri/XF86dri.c,v 1.12 2001/08/27 17:40:57 dawes Exp $ */
 /**************************************************************************
 
 Copyright (c) 2002 Apple Computer, Inc.

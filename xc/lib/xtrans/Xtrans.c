@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/lib/xtrans/Xtrans.c,v 1.3 2004/07/17 01:13:31 alanc Exp $ */
 /* $Xorg: Xtrans.c,v 1.4 2001/02/09 02:04:06 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtrans.c,v 3.34 2003/12/05 05:12:50 dawes Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtrans.c,v 3.33 2003/08/11 17:41:29 eich Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -1140,7 +1141,7 @@ TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret,
     *partial = (*count_ret < complete_network_count());
 
     PRMSG (5,
-     "MakeAllCLTSServerListeners: partial=%d, actual=%d, complete=%d \n",
+     "MakeAllCOTSServerListeners: partial=%d, actual=%d, complete=%d \n",
 	*partial, *count_ret, complete_network_count());
 
     if (*count_ret > 0)

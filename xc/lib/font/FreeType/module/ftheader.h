@@ -14,7 +14,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86: xc/lib/font/FreeType/module/ftheader.h,v 1.1 2003/11/20 02:35:40 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftheader.h,v 1.4 2003/05/29 03:05:08 dawes Exp $ */
 
 #ifndef __FT_HEADER_H__
 #define __FT_HEADER_H__
@@ -105,7 +105,7 @@
   /*    FreeType 2 configuration data.                                     */
   /*                                                                       */
 #ifndef FT_CONFIG_CONFIG_H
-#define FT_CONFIG_CONFIG_H  <ftconfig.h>
+#define FT_CONFIG_CONFIG_H  <freetype/config/ftconfig.h>
 #endif
 
 
@@ -119,7 +119,7 @@
   /*    FreeType 2 configuration data.                                     */
   /*                                                                       */
 #ifndef FT_CONFIG_STANDARD_LIBRARY_H
-#define FT_CONFIG_STANDARD_LIBRARY_H  <ftstdlib.h>
+#define FT_CONFIG_STANDARD_LIBRARY_H  <myftstdlib.h>
 #endif
 
 
@@ -282,7 +282,7 @@
   /*    A macro used in #include statements to name the file containing    */
   /*    the module management API of FreeType 2.                           */
   /*                                                                       */
-#define FT_MODULE_H  <freetype/ftmodule.h>
+#define FT_MODULE_H  <freetype/ftmodapi.h>
 
 
   /*************************************************************************/
@@ -372,6 +372,18 @@
   /*    the definitions of an API to support for gzip-compressed files.    */
   /*                                                                       */
 #define FT_GZIP_H  <freetype/ftgzip.h>
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* @macro:                                                               */
+  /*    FT_LZW_H                                                           */
+  /*                                                                       */
+  /* @description:                                                         */
+  /*    A macro used in #include statements to name the file containing    */
+  /*    the definitions of an API to support for LZW-compressed files.     */
+  /*                                                                       */
+#define FT_LZW_H  <freetype/ftlzw.h>
 
 
   /*************************************************************************/
@@ -510,7 +522,7 @@
   /* */
 
 #define FT_TRIGONOMETRY_H          <freetype/fttrigon.h>
-#define FT_STROKER_H               <freetype/ftstroker.h>
+#define FT_STROKER_H               <freetype/ftstroke.h>
 #define FT_SYNTHESIS_H             <freetype/ftsynth.h>
 #define FT_ERROR_DEFINITIONS_H     <freetype/fterrdef.h>
 
@@ -523,6 +535,8 @@
 #define FT_XFREE86_H               <freetype/ftxf86.h>
 
 #define FT_INCREMENTAL_H           <freetype/ftincrem.h>
+
+#define FT_TRUETYPE_UNPATENTED_H   <freetype/ttunpat.h>
 
   /* now include internal headers definitions from <freetype/internal/...> */
 
