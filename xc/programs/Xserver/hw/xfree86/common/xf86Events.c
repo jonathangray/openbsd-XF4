@@ -347,7 +347,8 @@ xf86PostKbdEvent(unsigned key)
     case KEY_Prefix1:
 #if defined(PCCONS_SUPPORT) || defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
       if (xf86Info.consType == PCCONS || xf86Info.consType == SYSCONS
-	  || xf86Info.consType == PCVT) {
+	  || xf86Info.consType == PCVT ||
+	  (xf86Info.consType == WSCONS && xf86Info.kbdEvents != xf86WSKbdEvents)) {
 #endif
         xf86Info.scanPrefix = scanCode;  /* special prefixes */
         return;
@@ -361,7 +362,9 @@ xf86PostKbdEvent(unsigned key)
   else if (
 #ifdef CSRG_BASED
            (xf86Info.consType == PCCONS || xf86Info.consType == SYSCONS
-	    || xf86Info.consType == PCVT) &&
+	    || xf86Info.consType == PCVT || 
+	      (xf86Info.consType == WSCONS && xf86Info.kbdEvents !=
+	      xf86WSKbdEvents)) &&
 #endif
            (xf86Info.scanPrefix == KEY_Prefix0)) {
     xf86Info.scanPrefix = 0;

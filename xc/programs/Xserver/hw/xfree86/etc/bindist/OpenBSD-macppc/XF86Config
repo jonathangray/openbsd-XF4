@@ -23,8 +23,7 @@ EndSection
 Section "InputDevice"
 	Identifier  "Keyboard0"
 	Driver      "keyboard"
-	Option	    "Protocol" 	  "wskbd"
-	Option	    "Device" 	  "/dev/wskbd0"
+	Option	    "Protocol" 	  "standard"
 	Option	    "XkbRules" 	  "xfree86"
 	Option	    "XkbModel" 	  "macintosh"
 	Option	    "XkbLayout"   "us"
@@ -34,7 +33,7 @@ Section "InputDevice"
 	Identifier  "Mouse0"
 	Driver      "mouse"
 	Option      "Protocol" "wsmouse"
-	Option      "Device"   "/dev/wsmouse0"
+	Option      "Device"   "/dev/wsmouse"
 EndSection
 
 Section "Monitor"
