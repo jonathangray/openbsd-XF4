@@ -399,7 +399,9 @@ xf86open(const char *path, int flags, ...)
     va_start(ap, flags);
     flags = xfToOsOpenFlags(flags);
     if (flags & O_CREAT) {
-	mode_t mode = va_arg(ap, mode_t);
+	/* can't request a mode_t directly on systems where mode_t 
+	   is an unsigned short */
+	mode_t mode = (mode_t)va_arg(ap, unsigned int);
 	fd = open(path, flags, mode);
     } else {
 	fd = open(path, flags);
