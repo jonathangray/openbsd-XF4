@@ -1,4 +1,4 @@
-! $OpenBSD: Xsystrace.ad,v 1.3 2002/06/09 16:30:30 matthieu Exp $
+! $OpenBSD: Xsystrace.ad,v 1.4 2002/06/23 13:43:39 matthieu Exp $
 !
 ! Copyright (c) 2002 Matthieu Herrb and Niels Provos
 ! All rights reserved.
@@ -275,9 +275,9 @@ draw-string 60,35,"Always";
 !
 ! Various labels
 !
-*processInfo-label.label: Processus Information
-*processName-label.label: Processus Name: 
-*processPid-label.label: Processus ID: 
+*processInfo-label.label: Process Information
+*processName-label.label: Process Name: 
+*processPid-label.label: Process Id: 
 *policyName-label.label: Policy Name:
 *syscallInfo-label.label: System Call Information
 *filter-label.label: Filter Expression:
@@ -315,11 +315,14 @@ lines 12,15,20,5
 !
 *filter-text.tip: \
 Enter a filter expression that will \n\
-be added to the current policy. 
+be added to the current policy. \n\ 
+The names before the colon can be used \n\
+as tokens.  A possible policy could be \n\
+'filename match "/usr/*" then permit'
 
 *errorCode-button.tip: \
 Configure the error code that is \n\
-returned to the application if \n\
+returned to the application when \n\
 the system call is denied.
 
 *errorCode-text.tip: \
@@ -336,15 +339,23 @@ Review the configured policy\n\
 for this system call. 
 
 *auto-button.tip: \
-Detaches the interactive monitoring\n\
-from the current policy. 
+Detaches the interactive monitoring from\n\
+the current policy. If a policy exists, all\n\
+system calls not covered by it will be\n\
+denied. Otherwise, if no policy exists,\n\
+all system calls for this process will be\n\
+allowed.
 
 *allow-button.tip: \
-Allows the current system call.
+Allows the current system call.  If the\n\
+application attempts the system call again,\n\
+a new warning will be generated.
 
 *deny-button.tip: \
 Denies the current system call. \n\
-The error code above is returned.
+The error code above is returned to the\n\
+application. The application is allowed\n\
+to attempt the system call again
 
 *allow-all-button.tip: \
 Permits this system call forever. No more\n\
