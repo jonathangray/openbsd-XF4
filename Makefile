@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.25 2002/04/26 20:34:44 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.26 2002/05/04 00:29:56 espie Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -77,7 +77,10 @@ compile:
 .endif
 	cd extras && ${MAKE} obj && ${MAKE} depend && exec ${MAKE}
 
-build: compile install fix-appd
+build: 
+	${MAKE} compile 
+	${SUDO} ${MAKE} install 
+	${SUDO} ${MAKE} fix-appd
 
 release-rel:
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest release
@@ -159,7 +162,7 @@ install-xc:
 	cd xc/programs/rstart; ${MAKE} install && ${MAKE} install.man
 
 install-extra:
-	cd extras && exec ${SUDO} ${MAKE} install
+	cd extras && exec ${MAKE} install
 
 install-xc-old:
 .if (${NEED_XC_OLD:L} == "yes")
