@@ -133,8 +133,8 @@ int main(int argc, char **argv)
 	{
 	  /* leaving this in just in case-- any option starting with '-'
  	     will get passed on to m4 anyway */
-	  strcat(m4_options, argv[++i]);
-	  strcat(m4_options, " ");
+	  strlcat(m4_options, argv[++i],sizeof(m4_options));
+	  strlcat(m4_options, " ", sizeof(m4_options));
 	}
       else if(strcasecmp(argv[i],"-m4-squote") == 0)
 	{
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 	}
       else if(strcasecmp(argv[i], "-outfile") == 0)
 	{
-	  strcpy(m4_outfile,argv[++i]);
+	  strlcpy(m4_outfile,argv[++i],sizeof(m4_outfile));
 	}
       else if(strcasecmp(argv[i], "-debug") == 0)
 	{
@@ -161,8 +161,8 @@ int main(int argc, char **argv)
       else if (strncasecmp(argv[i],"-",1) == 0)
 	{
 	  /* pass on any other arguments starting with '-' to m4 */
-	  strcat(m4_options, argv[i]);
-	  strcat(m4_options, " ");
+	  strlcat(m4_options, argv[i],sizeof(m4_options));
+	  strlcat(m4_options, " ",sizeof(m4_options));
         }
       else
 	filename = argv[i];
@@ -183,14 +183,14 @@ int main(int argc, char **argv)
 
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 
-  sprintf(read_string,"read %s\n",tmp_file);
+  snprintf(read_string,sizeof(read_string),"read %s\n",tmp_file);
   SendInfo(fd,read_string,0);
 
   /* For a debugging version, we may wish to omit this part. */
   /* I'll let some m4 advocates clean this up */
   if(!m4_debug)
     {
-      sprintf(delete_string,"exec rm %s\n",tmp_file);
+      snprintf(delete_string,sizeof(delete_string),"exec rm %s\n",tmp_file);
       SendInfo(fd,delete_string,0);
     }
   return 0;
@@ -217,14 +217,14 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 
   if (strlen(m4_outfile) == 0) {
     if ((vc=getenv("TMPDIR"))) {
-      strcpy(tmp_name, vc);
+      strlcpy(tmp_name, vc, sizeof(tmp_name));
     } else {
-      strcpy(tmp_name, "/tmp");
+      strlcpy(tmp_name, "/tmp",sizeof(tmp_name));
     }
-    strcat(tmp_name, "/fvwmrcXXXXXX");
+    strlcat(tmp_name, "/fvwmrcXXXXXX",sizeof(tmp_name));
     mktemp(tmp_name);
   } else {
-    strcpy(tmp_name,m4_outfile);
+    strlcpy(tmp_name,m4_outfile,sizeof(tmp_name));
   }
 
   if (*tmp_name == '\0')
@@ -277,11 +277,11 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   }
 
   hostname = gethostbyname(client);
-  strcpy(server, XDisplayName(host));
+  strlcpy(server, XDisplayName(host),sizeof(server));
   colon = strchr(server, ':');
   if (colon != NULL) *colon = '\0';
   if ((server[0] == '\0') || (!strcmp(server, "unix")))
-    strcpy(server, client);	/* must be connected to :0 or unix:0 */
+    strlcpy(server, client, sizeof(server));	/* must be connected to :0 or unix:0 */
 
   /* TWM_TYPE is fvwm, for completeness */
 
