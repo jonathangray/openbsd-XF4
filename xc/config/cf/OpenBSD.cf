@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.67 2002/01/05 00:25:51 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.68 2002/01/19 10:44:22 matthieu Exp $
 
 
 
@@ -422,6 +422,13 @@ install:: fonts.alias							@@\
 #  endif
 # endif
 
+
+/* Usb Tablets */
+# ifndef OSXInputDrivers
+#  if HasLibUsb
+#   define OSXInputDrivers	usbtablet
+#  endif
+# endif
 
 /* A hack to work around an optimization problem with gcc 2.95.2 */
 # if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 6)
