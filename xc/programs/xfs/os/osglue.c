@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * $NCDXorg: @(#)osglue.c,v 4.6 1991/07/09 14:07:30 lemke Exp $
  *
  */
-/* $XFree86: xc/programs/xfs/os/osglue.c,v 3.10 2001/01/17 23:45:33 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/osglue.c,v 3.13 2001/06/26 22:18:14 paulo Exp $ */
 
 /*
  * this is miscellaneous OS specific stuff.
@@ -54,6 +54,9 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/Xtrans.h>
 #include "osstruct.h"
 #include <stdio.h>
+#ifndef X_NOT_STDC_ENV
+#include <stdlib.h>
+#endif
 #define  XK_LATIN1
 #include <X11/keysymdef.h>
 #ifdef __EMX__

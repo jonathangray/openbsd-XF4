@@ -42,7 +42,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/fonts.c,v 3.9 2001/04/01 14:00:20 tsi Exp $ */
+/* $XFree86: xc/programs/xfs/difs/fonts.c,v 3.10 2001/06/25 20:40:17 paulo Exp $ */
 
 #include        "FS.h"
 #include        "FSproto.h"
@@ -709,8 +709,12 @@ set_font_path_elements(
 	}
     }
     if (validpaths < npaths) {
-	fplist = (FontPathElementPtr *)
+	FontPathElementPtr *ftmp = (FontPathElementPtr *)
 	    fsrealloc(fplist, sizeof(FontPathElementPtr) * validpaths);
+
+	if (!ftmp)
+	    goto bail;
+	fplist = ftmp;
 	npaths = validpaths;
     }
     if (validpaths == 0) {

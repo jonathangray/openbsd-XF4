@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)osdep.h	4.1	5/2/91
  *
  */
-/* $XFree86: xc/programs/xfs/os/osdep.h,v 3.8 2001/01/17 23:45:32 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/osdep.h,v 3.9 2001/06/25 20:40:18 paulo Exp $ */
 
 #ifndef _OSDEP_H_
 #define	_OSDEP_H_
@@ -51,7 +51,7 @@ in this Software without prior written authorization from The Open Group.
 #define	BOTIMEOUT	200	/* in milliseconds */
 #define	BUFSIZE		4096
 #define	BUFWATERMARK	8192
-#define	MAXBUFSIZE	(1 << 18)
+#define	MAXBUFSIZE	(1 << 15)
 
 #ifndef sgi	    /* SGI defines OPEN_MAX in a useless way */
 #ifndef X_NOT_POSIX

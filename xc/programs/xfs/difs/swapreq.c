@@ -42,13 +42,14 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/swapreq.c,v 1.5 2001/01/17 23:45:29 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/difs/swapreq.c,v 1.6 2001/06/25 20:40:17 paulo Exp $ */
 
 #include	<swapreq.h>
 
 #include	"FSproto.h"
 #include	"clientstr.h"
 #include	"globals.h"
+#include	"dispatch.h"
 
 void
 SwapLongs(long *list, unsigned long count)
@@ -135,8 +136,8 @@ SProcResourceRequest(ClientPtr client)
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
-static void
-swap_auth(pointer data, int num)
+static int
+swap_auth(ClientPtr client, pointer data, int num, int length)
 {
     unsigned char *p;
     unsigned char t;
@@ -146,6 +147,12 @@ swap_auth(pointer data, int num)
 
     p = data;
     for (i = 0; i < num; i++) {
+	if (p - (unsigned char *)data > length - 4) {
+	    int lengthword = length;
+
+            SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+            return (FSBadLength);
+	}
 	namelen = *(CARD16 *) p;
 	t = p[0];
 	p[0] = p[1];
@@ -159,15 +166,30 @@ swap_auth(pointer data, int num)
 	p += (namelen + 3) & ~3;
 	p += (datalen + 3) & ~3;
     }
+    if (!num)
+	p += 4;
+    if (p - (unsigned char *)data != length) {
+	int lengthword = length;
+
+	SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	return (FSBadLength);
+    }
+
+    return (FSSuccess);
 }
 
 int
 SProcCreateAC(ClientPtr client)
 {
+    int status;
+	
     REQUEST(fsCreateACReq);
     stuff->length = lswaps(stuff->length);
     stuff->acid = lswapl(stuff->acid);
-    swap_auth((pointer) &stuff[1], stuff->num_auths);
+    status = swap_auth(client, (pointer) &stuff[1],
+	    	       stuff->num_auths, stuff->length);
+    if (status != FSSuccess)
+	return (status);
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
@@ -177,6 +199,9 @@ SProcSetResolution(ClientPtr client)
     REQUEST(fsSetResolutionReq);
     stuff->length = lswaps(stuff->length);
     stuff->num_resolutions = lswaps(stuff->num_resolutions);
+    if ((int)stuff->length - (&stuff[1] - &stuff[0]) !=
+	stuff->num_resolutions * sizeof(fsResolution))
+	return (FSBadLength);
     SwapShorts((short *) &stuff[1], stuff->num_resolutions);
 
     return ((*ProcVector[stuff->reqType]) (client));
@@ -255,11 +280,14 @@ SProcQueryXBitmaps(ClientPtr client)
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
-void
-SwapConnClientPrefix(fsConnClientPrefix *pCCP)
+int
+SwapConnClientPrefix(ClientPtr client, fsConnClientPrefix *pCCP)
 {
+    REQUEST(fsFakeReq);
+	
     pCCP->major_version = lswaps(pCCP->major_version);
     pCCP->minor_version = lswaps(pCCP->minor_version);
     pCCP->auth_len = lswaps(pCCP->auth_len);
-    swap_auth((pointer) &pCCP[1], pCCP->num_auths);
+    return (swap_auth(client, (pointer) &pCCP[1],
+		      pCCP->num_auths, stuff->length));
 }

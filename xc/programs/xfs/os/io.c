@@ -42,7 +42,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/io.c,v 3.12 2001/01/17 23:45:32 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/io.c,v 3.13 2001/06/25 20:40:18 paulo Exp $ */
 
 #include	<X11/Xtrans.h>
 #include	<stdio.h>
@@ -127,14 +127,24 @@ static ConnectionOutputPtr AllocateOutputBuffer(void);
 int
 ReadRequest(ClientPtr client)
 {
-    OsCommPtr   oc = (OsCommPtr) client->osPrivate;
-    ConnectionInputPtr oci = oc->input;
+    OsCommPtr   oc;
+    ConnectionInputPtr oci;
     fsReq      *request;
-    int         fd = oc->fd;
-    int         result,
+    int         fd,
+                result,
                 gotnow,
                 needed = 0;
 
+    if (client == NULL)
+	return -1;
+    oc = (OsCommPtr) client->osPrivate;
+    if (oc == NULL)
+	return -1;
+    oci = oc->input;
+    fd = oc->fd;
+    if (oci == NULL || fd < 0)
+	return -1;
+		
     if (AvailableInput) {
 	if (AvailableInput != oc) {
 	    ConnectionInputPtr aci = AvailableInput->input;
@@ -207,6 +217,10 @@ ReadRequest(ClientPtr client)
 	    oci->bufcnt = gotnow;
 	}
 	/* fill 'er up */
+	if (oc->trans_conn == NULL) {
+	    yield_control_death();
+	    return -1;
+	}
 	result = _FontTransRead(oc->trans_conn, oci->buffer + oci->bufcnt,
 		      oci->size - oci->bufcnt);
 	if (result <= 0) {
@@ -230,7 +244,7 @@ ReadRequest(ClientPtr client)
 		(oci->bufcnt < BUFSIZE) && (needed < BUFSIZE)) {
 	    char       *ibuf;
 
-	    ibuf = (char *) fsrealloc(oci, BUFSIZE);
+	    ibuf = (char *) fsrealloc(oci->buffer, BUFSIZE);
 	    if (ibuf) {
 		oci->size = BUFSIZE;
 		oci->buffer = ibuf;

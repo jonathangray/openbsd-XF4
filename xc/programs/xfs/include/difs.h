@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xfs/include/difs.h,v 1.2 1999/08/21 13:48:50 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/difs.h,v 1.3 2001/06/25 20:40:18 paulo Exp $ */
 /*
  * Copyright (C) 1999 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -83,6 +83,6 @@ extern int QueryBitmaps ( ClientPtr client, ClientFontPtr cfp, int item_size, fs
 #endif
 
 /* difs/main.c */
-extern void NotImplemented(void);
+extern int NotImplemented(void);
 
 #endif

@@ -42,7 +42,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/utils.c,v 3.13 2001/02/13 19:19:18 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/utils.c,v 3.14 2001/06/26 22:18:14 paulo Exp $ */
 
 #include	<stdio.h>
 #include	<X11/Xos.h>
@@ -88,9 +88,6 @@ in this Software without prior written authorization from The Open Group.
 #ifdef X_NOT_STDC_ENV
 char *realloc();
 #else
-#ifdef abs
-#undef abs
-#endif
 #include <stdlib.h>
 #endif
 

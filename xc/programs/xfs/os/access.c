@@ -39,7 +39,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/access.c,v 3.4 2001/01/17 23:45:32 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/os/access.c,v 3.5 2001/06/25 20:40:18 paulo Exp $ */
 
 #include	<X11/Xos.h>
 #ifndef MINIX
@@ -60,6 +60,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"accstr.h"
 #include	"osdep.h"
 #include	"osstruct.h"
+#include	"accstr.h"
 
 long        MaxClients = DEFAULT_CLIENT_LIMIT;
 

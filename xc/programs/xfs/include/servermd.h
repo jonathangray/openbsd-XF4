@@ -48,7 +48,7 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #ifndef VENDOR_STRING
-#define VENDOR_STRING "The X.Org Group"
+#define VENDOR_STRING "The XFree86 Project (experimental version)"
 #endif
 
 #ifndef DEFAULT_FS_PORT

@@ -44,7 +44,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)accstr.h	4.1	91/05/02
  *
  */
-/* $XFree86: xc/programs/xfs/include/accstr.h,v 1.5 2001/01/17 23:45:31 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/include/accstr.h,v 1.6 2001/06/25 20:40:18 paulo Exp $ */
 
 #ifndef _ACCSTR_H_
 #define _ACCSTR_H_
@@ -64,9 +64,9 @@ typedef struct _hostaddress {
 extern int AddHost(HostList *list, HostAddress *addr);
 extern int RemoveHost(HostList *list, HostAddress *addr);
 extern int ValidHost(HostList list, HostAddress *addr);
+#endif
 
 /* os/access.c */
 extern int  GetHostAddress(HostAddress *addr);
-#endif
 
 #endif				/* _ACCSTR_H_ */
