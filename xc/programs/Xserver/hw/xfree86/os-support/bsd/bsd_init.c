@@ -555,7 +555,12 @@ xf86OpenPcvt()
 		FatalError("xf86OpenPcvt: VT_GETMODE failed\n");
 	    }
 	    xf86Info.consType = PCVT;
+#ifdef WSCONS_SUPPORT
+	    xf86Msg(X_PROBED,
+			"Using wscons driver in pcvt compatibility mode (version %d.%d)\n",
+#else
 	    xf86Msg(X_PROBED, "Using pcvt driver (version %d.%d)\n",
+#endif
 		       pcvt_version.rmajor, pcvt_version.rminor);
 	}
 	else
