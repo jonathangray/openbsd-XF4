@@ -47,11 +47,11 @@ BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
 #define HasGccMergeConstants	NO
 #endif
 
-#ifndef HasGccPropolice
-#define HasGccPropolice		NO
+#ifndef HasGccStackProtector
+#define HasGccStackProtector		NO
 #endif
 
-#if HasGccPropolice
+#if HasGccStackProtector
 MODULE_GCC_FLAGS1 = -fno-stack-protector
 #endif 
 
