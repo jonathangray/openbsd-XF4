@@ -19,7 +19,7 @@ resRange PciAvoid[] = {_PCI_AVOID_PC_STYLE, _END};
 #ifdef INCLUDE_XF86_NO_DOMAIN
 
 #if defined(__alpha__) || defined(__sparc__) || defined(__sparc64__) \
-    || defined(__amd64__)
+    || defined(__amd64__) || defined(__hppa__)
 
 resPtr
 xf86BusAccWindowsFromOS(void)
