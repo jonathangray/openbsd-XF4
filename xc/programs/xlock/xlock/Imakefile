@@ -35,7 +35,7 @@ XLOCKCHECKSRCS = $(DU)memcheck$(C)
 
 XCOMM XXX - the following will be correct when we become OpenBSD 2.9
 XCOMM #if defined(OpenBSDArchitecture) && OSMajorVersion >= 2 && OSMinorVersion > 8
-#if 1
+#if HasBSDAuth
 INSTUIDFLAGS=-g auth -m 2755
 #endif
 
