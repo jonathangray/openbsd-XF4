@@ -65,6 +65,10 @@ XFINDPROXYSRCDIR = xfindproxy
     MAKEPSRESDIR = makepsres
 #endif
 
+#if HasKrbIV
+           KXDIR = kx
+#endif
+
    XPMCLIENTDIRS = cxpm sxpm
 
 #if BuildServersOnly
@@ -73,7 +77,7 @@ SUBDIRS = $(XSSRCDIR)
 SUBDIRS = \
 	appres bdftopcf bitmap \
 	$(SCREENSAVESRCDIR) editres fslsfonts fstobdf iceauth \
-	ico listres \
+	ico $(KXDIR) listres \
 	$(MAKEPSRESDIR) $(MKCFMSRCDIR) \
 	mkfontdir oclock $(PROXYMGRSRCDIR) $(RGBSRCDIR) $(RSTARTSRCDIR) \
 	setxkbmap showfont \
