@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/lib/Xft/xftint.h,v 1.26 2001/07/13 18:16:10 keithp Exp $
+ * $XFree86: xc/lib/Xft/xftint.h,v 1.28 2002/01/12 20:46:42 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -77,6 +77,7 @@ typedef struct _XftDisplayInfo {
     XftPattern		    *defaults;
     XftFontSet		    *coreFonts;
     Bool		    hasRender;
+    struct _XftFtGlyphSet   *glyphSets;
 } XftDisplayInfo;
 
 extern XftFontSet	*_XftGlobalFontSet;
@@ -101,6 +102,7 @@ extern XftFontSet	*_XftFontSet;
 #define XFT_DBG_CACHEV	256
 #define XFT_DBG_MATCH	512
 #define XFT_DBG_MATCHV	1024
+#define XFT_DBG_EDIT	2048
 
 typedef enum _XftOp {
     XftOpInteger, XftOpDouble, XftOpString, XftOpMatrix, XftOpBool, XftOpNil,
@@ -324,6 +326,9 @@ void
 XftSubstPrint (XftSubst *subst);
 
 /* xftdpy.c */
+XftDisplayInfo *
+_XftDisplayInfoGet (Display *dpy);
+
 int
 XftDefaultParseBool (char *v);
 
