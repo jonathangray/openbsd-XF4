@@ -55,6 +55,10 @@
 #  define DRI_CTX_ARG
 #endif
 
+#if ! defined(_XtIntrinsic_h) && ! defined(PIXEL_ALREADY_TYPEDEFED)
+#include <X11/Intrinsic.h>
+#endif
+
 
 extern _glthread_Mutex _xmesa_lock;
 
