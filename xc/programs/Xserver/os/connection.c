@@ -1,5 +1,5 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $OpenBSD: connection.c,v 1.8 2004/05/06 21:08:24 matthieu Exp $ */
+/* $OpenBSD: connection.c,v 1.9 2004/05/06 21:20:18 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -495,11 +495,11 @@ AuthAudit (ClientPtr client, Bool letin,
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
 	case AF_UNIX:
 #endif
-	  strlcpy(out, "local host", sizeof(addr)-outlen);
+	    strlcpy(out, "local host", sizeof(addr)-outlen);
 	  break;
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
 	case AF_INET:
-	  snprintf(out, sizeof(addr) - outlen, "IP %s",
+	    snprintf(out, sizeof(addr) - outlen, "IP %s",
 		inet_ntoa(((struct sockaddr_in *) saddr)->sin_addr));
 	    break;
 #if defined(IPv6) && defined(AF_INET6)
@@ -514,12 +514,12 @@ AuthAudit (ClientPtr client, Bool letin,
 #endif
 #ifdef DNETCONN
 	case AF_DECnet:
-	  snprintf(out, sizeof(addr) - outlen, "DN %s",
+	    snprintf(out, sizeof(addr) - outlen, "DN %s",
 		    dnet_ntoa(&((struct sockaddr_dn *) saddr)->sdn_add));
 	    break;
 #endif
 	default:
-	    strcpy(out, "unknown address");
+	    strlcpy(out, "unknown address", sizeof(addr) - outlen);
 	}
     
     if (proto_n)
