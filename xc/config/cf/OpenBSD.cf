@@ -386,7 +386,7 @@ install:: fonts.alias							@@\
 #  define HasSharedLibraries	YES
 # endif
 
-# define BuildServer		YES
+# define BuildServer		NO
 # define XnestServer		YES
 # define XVirtualFramebufferServer	YES
 
@@ -663,7 +663,6 @@ install:: fonts.alias							@@\
 # define BuildXF86VidModeExt	NO
 # define BuildXF86DGA		NO
 # define BuildXInputExt		NO
-# define BuildRender            YES
 # include <xfree86.cf>
 
 #endif /* SparcArchitecture */
