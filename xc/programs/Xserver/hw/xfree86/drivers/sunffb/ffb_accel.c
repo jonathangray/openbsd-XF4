@@ -148,7 +148,7 @@ CreatorDestroyWindow (WindowPtr pWin)
 extern CreatorStipplePtr FFB_tmpStipple;
 
 static int
-CreatorChangeWindowAttributes (WindowPtr pWin, Mask mask)
+CreatorChangeWindowAttributes (WindowPtr pWin, unsigned long mask)
 {
 	FFBPtr pFfb = GET_FFB_FROM_SCREEN(pWin->drawable.pScreen);
 	CreatorPrivWinPtr pFfbPrivWin;

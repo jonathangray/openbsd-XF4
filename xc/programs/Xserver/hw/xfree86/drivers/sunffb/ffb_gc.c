@@ -444,7 +444,7 @@ CreatorNewFillArea(GCPtr pGC, cfbPrivGCPtr devPriv, CreatorPrivGCPtr gcPriv, int
 }
 
 void
-CreatorValidateGC (GCPtr pGC, Mask changes, DrawablePtr pDrawable)
+CreatorValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 {
 	int	mask;		/* stateChanges */
 	int	new_rrop;
