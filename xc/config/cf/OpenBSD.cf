@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.53 2001/09/06 22:16:38 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.54 2001/09/09 20:12:03 matthieu Exp $
 
 
 
@@ -679,6 +679,7 @@ install:: fonts.alias							@@\
 #   ifndef DoLoadableServer
 #     define DoLoadableServer	YES
 #   endif
+#   define XF86OSCardDrivers	wsfb
 #   ifndef XF86CardDrivers
 #    define XF86CardDrivers	ati mga glint s3virge sis savage\
 				trident chips tdfx \
