@@ -582,7 +582,11 @@ xf86OpenWScons()
 
     /* XXX Is this ok? */
     for (i = 0; i < 8; i++) {
+#if defined(__NetBSD__)
 	sprintf(ttyname, "/dev/ttyE%d", i);
+#elif defined(__OpenBSD__)
+	sprintf(ttyname, "/dev/ttyC%d", i);
+#endif
 	if ((fd = open(ttyname, 2)) != -1)
 	    break;
     }

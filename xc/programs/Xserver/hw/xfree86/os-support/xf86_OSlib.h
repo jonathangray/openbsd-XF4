@@ -465,6 +465,9 @@ extern int errno;
 #       undef CONSOLE_X_MODE_OFF
 #       undef CONSOLE_X_BELL
 #     endif
+#     ifdef WSCONS_SUPPORT
+#       include <dev/wscons/wsdisplay_usl_io.h>
+#     endif
 #   endif
 #   ifdef SYSCONS_SUPPORT
 #    define COMPAT_SYSCONS
@@ -555,7 +558,7 @@ extern int errno;
 
 # define CLEARDTR_SUPPORT
 
-# if defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT)
+# if defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
 #  define USE_VT_SYSREQ
 # endif
 
