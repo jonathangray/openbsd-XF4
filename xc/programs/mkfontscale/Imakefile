@@ -17,6 +17,11 @@ SNPRINTF_INCLUDES = -I$(LIBSRC)/misc
 INCLUDES = $(FREETYPE2INCLUDES) $(SNPRINTF_INCLUDES) -I$(XBUILDINCDIR)
 DEFINES = $(FREETYPE2DEFINES) $(SNPRINTF_DEFINES) -DXFREE86_FT2
 
+#ifdef Mc68020Architecture
+EXTRA_LOAD_FLAGS = -static
+#endif
+
+
 ComplexProgramTarget(mkfontscale)
 LinkBuildBinary(ProgramTargetName(mkfontscale))
 
