@@ -165,6 +165,7 @@
 ./usr/X11R6/man/cat1/XF86_SVGA.0
 ./usr/X11R6/man/cat1/XF86_VGA16.0
 ./usr/X11R6/man/cat1/XF86_W32.0
+./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0

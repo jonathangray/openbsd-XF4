@@ -579,7 +579,6 @@
 ./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/lib/libxf86config.a
 ./usr/X11R6/man/cat1/XF86Setup.0
-./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/kbd_mode.0
 ./usr/X11R6/man/cat1/pcitweak.0
