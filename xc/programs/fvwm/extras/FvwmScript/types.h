@@ -1,34 +1,28 @@
+#include "config.h"
+
+#include "../../fvwm/module.h"
+#include "fvwmlib.h"
+
 #include <stdio.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
-#include <malloc.h>
+
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/time.h>
 
 #define XK_MISCELLANY
 #include <sys/types.h>
 #include <sys/time.h>
-#ifdef ISC
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
-#ifdef I18N
-#include <X11/Xlocale.h>
-#ifdef __STDC__
-#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
-#endif
-#define DrawString(a,b,c,d,e,f,g,h,i,h,k) FakeDrawString(xobj->xfontset,a,b,c,d,e,f,g,h,i,h,k)
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,FONTSET,v,w,x,y,z)
-#define XDrawImageString(t,u,v,w,x,y,z) XmbDrawImageString(t,u,FONTSET,v,w,x,y,z)
-#endif /* I18N */
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
@@ -39,10 +33,6 @@
 #include <X11/xpm.h>
 #include <X11/X.h>
 
-#include "../../configure.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"  
-#include "../../version.h"
 
 /* Constante de couleurs */
 #define black 0
@@ -177,7 +167,7 @@ typedef struct
  TypeName TabMsg[40];
 } TypeBuffSend ;
 
-struct XObj 
+struct XObj
 {
   int TypeWidget;
   Window win;		/* Fenetre contenant l'objet */
@@ -202,7 +192,6 @@ struct XObj
   Pixmap icon_maskPixmap;	/* Icone masque */
   int icon_w,icon_h;		/* Largeur et hauteur de l'icone */
   XFontStruct *xfont;
-  XFontSet *xfontset;
   int value;			/* Valeur courante */
   int value2;			/* Valeur minimale */
   int value3;			/* Valeur maximale */

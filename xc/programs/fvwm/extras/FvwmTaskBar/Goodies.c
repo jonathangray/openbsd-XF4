@@ -1,14 +1,20 @@
+#include "config.h"
+#include "fvwmlib.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <pwd.h>
+#include <time.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Intrinsic.h>
+#ifdef SHAPE
 #include <X11/extensions/shape.h>
+#endif
 
 #include "Goodies.h"
 #include "minimail.xbm"
@@ -16,22 +22,13 @@
 extern Display *dpy;
 extern Window Root, win;
 extern int win_width, win_height, win_y, win_border, d_depth,
-       ScreenWidth, ScreenHeight, RowHeight; 
+       ScreenWidth, ScreenHeight, RowHeight;
 extern Pixel back, fore;
 extern int Clength;
 extern GC blackgc, hilite, shadow, checkered;
 
 GC statusgc, dategc;
 XFontStruct *StatusFont;
-#ifdef I18N
-XFontSet StatusFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,StatusFontset,v,w,x,y,z)
-#endif
 int stwin_width = 100, goodies_width = 0;
 int anymail, unreadmail, newmail, mailcleared = 0;
 int fontheight, clock_width;
@@ -59,38 +56,38 @@ TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
 /* Parse 'goodies' specific resources */
-void GoodiesParseConfig(char *tline, char *Module) {
-  if(mystrncasecmp(tline,CatString3(Module, "BellVolume",""),
+void GoodiesParseConfig(char *tline, char *Module)
+{
+  if(strncasecmp(tline,CatString3(Module, "BellVolume",""),
 				Clength+10)==0) {
     BellVolume = atoi(&tline[Clength+11]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "Mailbox",""),
+  } else if(strncasecmp(tline,CatString3(Module, "Mailbox",""),
 				Clength+11)==0) {
-    if (mystrncasecmp(&tline[Clength+11], "None") == 0) {
+    if (strncasecmp(&tline[Clength+11], "None", 4) == 0) {
       NoMailCheck = True;
     } else {
-      UpdateString(&mailpath, &tline[Clength+11]); 
-      mailpath[strlen(mailpath)-1] = '\0';
+      UpdateString(&mailpath, &tline[Clength+8]);
     }
-  } else if(mystrncasecmp(tline,CatString3(Module, "ClockFormat",""),
+  } else if(strncasecmp(tline,CatString3(Module, "ClockFormat",""),
 			  Clength+11)==0) {
     UpdateString(&clockfmt, &tline[Clength+12]);
     clockfmt[strlen(clockfmt)-1] = 0;
-  } else if(mystrncasecmp(tline, CatString3(Module, "StatusFont",""),
+  } else if(strncasecmp(tline, CatString3(Module, "StatusFont",""),
                           Clength+10)==0) {
     CopyString(&statusfont_string,&tline[Clength+11]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "TipsFore",""),
+  } else if(strncasecmp(tline,CatString3(Module, "TipsFore",""),
                                Clength+8)==0) {
     CopyString(&DateFore, &tline[Clength+9]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "TipsBack",""),
+  } else if(strncasecmp(tline,CatString3(Module, "TipsBack",""),
                                Clength+8)==0) {
     CopyString(&DateBack, &tline[Clength+9]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "MailCommand",""),
+  } else if(strncasecmp(tline,CatString3(Module, "MailCommand",""),
                                Clength+11)==0) {
     CopyString(&MailCmd, &tline[Clength+12]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "IgnoreOldMail",""),
+  } else if(strncasecmp(tline,CatString3(Module, "IgnoreOldMail",""),
                                Clength+13)==0) {
     IgnoreOldMail = True;
-  } else if(mystrncasecmp(tline,CatString3(Module, "ShowTips",""),
+  } else if(strncasecmp(tline,CatString3(Module, "ShowTips",""),
                                Clength+8)==0) {
     ShowTips = True;
   }
@@ -101,13 +98,7 @@ void InitGoodies() {
   char tmp[1024];
   XGCValues gcval;
   unsigned long gcmask;
-#ifdef I18N
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
-  
+
   if (mailpath == NULL) {
     strcpy(tmp, DEFAULT_MAIL_PATH);
     pwent = getpwuid(getuid());
@@ -115,34 +106,22 @@ void InitGoodies() {
     UpdateString(&mailpath, tmp);
   }
 
-#ifdef I18N
-  if ((StatusFontset=XCreateFontSet(dpy,statusfont_string,&ml,&mc,&ds))==NULL) {
-    /* plain X11R6.3 hack */
-    if ((StatusFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds))==NULL) {
-      ConsoleMessage("Couldn't load fixed fontset...exiting !\n");
-      exit(1);
-    }
-  }
-  XFontsOfFontSet(StatusFontset,&fs_list,&ml);
-  StatusFont = fs_list[0];
-#else
   if ((StatusFont = XLoadQueryFont(dpy, statusfont_string)) == NULL) {
     if ((StatusFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
       exit(1);
     }
   }
-#endif
 
   fontheight = StatusFont->ascent + StatusFont->descent;
-  
+
   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
   gcval.foreground = fore;
   gcval.background = back;
   gcval.font = StatusFont->fid;
   gcval.graphics_exposures = False;
   statusgc = XCreateGC(dpy, Root, gcmask, &gcval);
-  
+
   if (!NoMailCheck) {
     mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					  minimail_width, minimail_height,
@@ -150,7 +129,7 @@ void InitGoodies() {
     wmailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					   minimail_width, minimail_height,
 					   fore,GetColor("white"), d_depth);
-    
+
     goodies_width += minimail_width + 7;
   }
   if (clockfmt) {
@@ -170,10 +149,10 @@ void InitGoodies() {
 void Draw3dBox(Window wn, int x, int y, int w, int h)
 {
   XClearArea(dpy, wn, x, y, w, h, False);
-  
+
   XDrawLine(dpy, win, shadow, x, y, x+w-2, y);
   XDrawLine(dpy, win, shadow, x, y, x, y+h-2);
-  
+
   XDrawLine(dpy, win, hilite, x, y+h-1, x+w-1, y+h-1);
   XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
 }
@@ -366,8 +345,10 @@ void CreateTipWindow(int x, int y, int w, int h) {
   XFillRectangle(dpy, pclip, gc0, 0, 0, w+4, h+4);
   XFillRectangle(dpy, pclip, gc1, 1, 1, w-1, h-1);
 
+#ifdef SHAPE
   XShapeCombineMask(dpy, Tip.win, ShapeBounding, 0, 0, pmask, ShapeSet);
   XShapeCombineMask(dpy, Tip.win, ShapeClip,     0, 0, pclip, ShapeSet);
+#endif
 
   XFreeGC(dpy, gc0);
   XFreeGC(dpy, gc1);

@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is based on Twm, but has been siginificantly modified 
- * by Rob Nation 
+ * This module is based on Twm, but has been siginificantly modified
+ * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
 /**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
@@ -45,10 +45,6 @@
 #define WithdrawnState 0
 #endif
 
-/* use PanFrames! this replaces the 3 pixel margin with PanFrame windows
-it should not be an option, once it works right. HEDU 2/2/94 */
-#define PAN_FRAME_THICKNESS 2	/* or just 1 ? */
-
 /* the maximum number of mouse buttons fvwm knows about */
 /* don't think that upping this to 5 will make everything
  * hunky-dory with 5 button mouses */
@@ -56,11 +52,9 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 
 #include <X11/Intrinsic.h>
 
-#ifdef SIGNALRETURNSINT
-#define SIGNAL_T int
+#if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
 #else
-#define SIGNAL_T void
 #define SIGNAL_RETURN return
 #endif
 
@@ -72,10 +66,7 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 # define HEIGHT_EXTRA_TITLE 4	/* Extra height for underlining title */
 # define HEIGHT_SEPARATOR 4	/* Height of separator lines */
 
-#define SCROLL_REGION 2         /* region around screen edge that */
-                                /* triggers scrolling */
-
-#ifndef TRUE                    
+#ifndef TRUE
 #define TRUE	1
 #define FALSE	0
 #endif
@@ -83,23 +74,23 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 #define NULLSTR ((char *) NULL)
 
 /* contexts for button presses */
-#define C_NO_CONTEXT	0
-#define C_WINDOW	1
-#define C_TITLE		2
-#define C_ICON		4
-#define C_ROOT		8
-#define C_FRAME		16
-#define C_SIDEBAR       32
-#define C_L1            64
-#define C_L2           128
-#define C_L3           256
-#define C_L4           512
-#define C_L5          1024
-#define C_R1          2048
-#define C_R2          4096
-#define C_R3          8192
-#define C_R4         16384
-#define C_R5         32768
+#define C_NO_CONTEXT	0x00
+#define C_WINDOW	0x01
+#define C_TITLE		0x02
+#define C_ICON		0x04
+#define C_ROOT		0x08
+#define C_FRAME		0x10
+#define C_SIDEBAR       0x20
+#define C_L1            0x40
+#define C_L2            0x80
+#define C_L3           0x100
+#define C_L4           0x200
+#define C_L5           0x400
+#define C_R1           0x800
+#define C_R2          0x1000
+#define C_R3          0x2000
+#define C_R4          0x4000
+#define C_R5          0x8000
 #define C_RALL       (C_R1|C_R2|C_R3|C_R4|C_R5)
 #define C_LALL       (C_L1|C_L2|C_L3|C_L4|C_L5)
 #define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
@@ -108,9 +99,6 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 typedef struct MyFont
 {
   XFontStruct *font;		/* font structure */
-#ifdef I18N
-  XFontSet fontset;		/* font set */
-#endif
   int height;			/* height of the font */
   int y;			/* Y coordinate to draw characters */
 } MyFont;
@@ -129,13 +117,33 @@ typedef struct ColorPair
 struct FvwmDecor;		/* definition in screen.h */
 #endif
 
+/*
+  For 1 style statement, there can be any number of IconBoxes.
+  The name list points at the first one in the chain.
+ */
+typedef struct icon_boxes_struct {
+  struct icon_boxes_struct *next;       /* next icon_boxes or zero */
+  int IconBox[4];                       /* x/y x/y for iconbox */
+  short IconGrid[2];                    /* x incr, y incr */
+  unsigned char IconFlags;               /* some bits */
+  /* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord first */
+  /* eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
+#define ICONFILLBOT (1<<0)
+#define ICONFILLRGT (1<<1)
+#define ICONFILLHRZ (1<<2)
+} icon_boxes;
+
 /* for each window that is on the display, one of these structures
- * is allocated and linked into a list 
+ * is allocated and linked into a list
  */
 typedef struct FvwmWindow
 {
     struct FvwmWindow *next;	/* next fvwm window */
     struct FvwmWindow *prev;	/* prev fvwm window */
+    struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
+				    * order*/
+    struct FvwmWindow *stack_prev; /* prev (higher) fvwm window in stacking
+				    * order */
     Window w;			/* the child window */
     int old_bw;			/* border width before reparenting */
     Window frame;		/* the frame window */
@@ -192,7 +200,58 @@ typedef struct FvwmWindow
     int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
     Window transientfor;
 
+#ifdef GSFR
+    struct {
+      start_iconic : 1;
+      staysontop : 1;
+      sticky : 1;
+      listskip : 1;
+      suppressicon : 1;
+      noicon_title : 1;
+      lenience : 1;
+      sticky_icon : 1;
+      circulate_skip_icon : 1;
+      circulateskip : 1;
+      click_focus : 1;
+      sloppy_focus : 1;
+      show_mapping : 1;
+
+      notitle : 1;
+      noborder : 1;
+      icon : 1;
+      startsondesk : 1;
+      bw : 1;
+      nobw : 1;
+      fore_color : 1;
+      back_color : 1;
+      random_place : 1;
+      smart_place : 1;
+      mwm_button : 1;
+      mwm_decor : 1;
+      mwm_functions : 1;
+      mwm_override : 1;
+      mwm_border : 1;
+      decorate_transient : 1;
+      no_pposition : 1;
+      ol_decor : 1;
+
+#ifdef MINI_ICONS
+      miniicon : 1;
+#endif
+    } new_flags;
+#else
     unsigned long flags;
+/*
+    RBW - 11/13/1998 - new flags to supplement the flags word, implemented
+    as named bit fields.
+*/
+    struct {
+      unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
+      unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
+				       * parent icon from counting for Next */
+    } tmpflags;
+#endif /* GSFR */
+
 #ifdef MINI_ICONS
     char *mini_pixmap_file;
     Picture *mini_icon;
@@ -215,12 +274,26 @@ typedef struct FvwmWindow
     Pixel TextPixel;
     Pixel BackPixel;
     unsigned long buttons;
-    int IconBox[4];
-    int BoxFillMethod;
+    icon_boxes *IconBoxes;              /* zero or more iconboxes */
 } FvwmWindow;
 
+/* Window mask for Circulate and Direction functions */
+typedef struct WindowConditionMask {
+  Bool needsCurrentDesk;
+  Bool needsCurrentPage;
+  Bool needsName;
+  Bool needsNotName;
+  Bool useCirculateHit;
+  Bool useCirculateHitIcon;
+  Bool useCirculateSkip;
+  Bool useCirculateSkipIcon;
+  unsigned long onFlags;
+  unsigned long offFlags;
+  char *name;
+} WindowConditionMask;
+
 /***************************************************************************
- * window flags definitions 
+ * window flags definitions
  ***************************************************************************/
 /* The first 13 items are mapped directly from the style structure's
  * flag value, so they MUST correspond to the first 13 entries in misc.h */
@@ -240,7 +313,7 @@ typedef struct FvwmWindow
 #define ALL_COMMON_FLAGS (STARTICONIC|ONTOP|STICKY|WINDOWLISTSKIP| \
 			  SUPPRESSICON|NOICON_TITLE|Lenience|StickyIcon| \
 			  CirculateSkipIcon|CirculateSkip|ClickToFocus| \
-			  SloppyFocus|SHOW_ON_MAP) 
+			  SloppyFocus|SHOW_ON_MAP)
 
 #define BORDER         (1<<13) /* Is this decorated with border*/
 #define TITLE          (1<<14) /* Is this decorated with title */
@@ -259,7 +332,7 @@ typedef struct FvwmWindow
 #define ICON_MOVED              (1<<26)
 /* was the icon unmapped, even though the window is still iconified
  * (Transients) */
-#define ICON_UNMAPPED           (1<<27) 
+#define ICON_UNMAPPED           (1<<27)
 /* Sent an XMapWindow, but didn't receive a MapNotify yet.*/
 #define MAP_PENDING             (1<<28)
 #define HintOverride            (1<<29)
@@ -287,9 +360,9 @@ typedef struct FvwmWindow
 
 #include <stdlib.h>
 extern void Reborder(void);
-extern void SigDone(int);
-extern void Restart(int nonsense);
-extern void Done(int, char *);
+extern RETSIGTYPE SigDone(int nonsense);
+extern RETSIGTYPE Restart(int nonsense);
+extern void Done(int, char *) __attribute__((__noreturn__));
 extern void BlackoutScreen(void);
 extern void UnBlackoutScreen(void);
 
@@ -301,16 +374,13 @@ extern XContext FvwmContext;
 
 extern Window BlackoutWin;
 
+Bool fFvwmInStartup;
+
 extern Boolean ShapesSupported;
 
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
-
-#ifdef PAN_FRAMES
-extern void checkPanFrames();
-extern void raisePanFrames();
-#endif
 
 extern Atom _XA_MIT_PRIORITY_COLORS;
 extern Atom _XA_WM_CHANGE_STATE;
@@ -336,7 +406,8 @@ extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
 
+/* include this down here because FvwmWindows must be defined when including
+ * this header file. */
+#include "fvwmdebug.h"
+
 #endif /* _FVWM_ */
-
-
-

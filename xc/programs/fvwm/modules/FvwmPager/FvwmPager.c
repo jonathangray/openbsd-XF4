@@ -8,9 +8,9 @@
  * as long as the copyright is kept intact. */
 
 #define TRUE 1
-#define FALSE 
+#define FALSE 0
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -20,12 +20,13 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
- 
+
 #include <stdlib.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -34,23 +35,22 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
 
 #include "../../fvwm/module.h"
 
-#include "../../libs/fvwmlib.h"       
+#include "../../libs/fvwmlib.h"
 #include "FvwmPager.h"
-#include "../../version.h"
 #include "../../fvwm/fvwm.h"
 
 char *MyName;
 int fd_width;
 int fd[2];
 
+PagerStringList *FindDeskStrings(int desk);
+PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
+
 /*************************************************************************
- * 
+ *
  * Screen, font, etc info
  *
  **************************************************************************/
@@ -61,15 +61,24 @@ PagerWindow *FocusWin = NULL;
 Display *dpy;			/* which display are we talking to */
 int x_fd,fd_width;
 
-char *PagerFore = "black";
-char *PagerBack="white";
-char *font_string = "fixed";
+char *PagerFore = NULL;
+char *PagerBack = NULL;
+char *font_string = NULL;
 char *smallFont = NULL;
-char *HilightC = "black";
+char *HilightC = NULL;
 char *WindowBack = NULL;
 char *WindowFore = NULL;
 char *WindowHiBack = NULL;
 char *WindowHiFore = NULL;
+
+int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
+char *BalloonTypeString = NULL;
+char *BalloonBack = NULL;
+char *BalloonFore = NULL;
+char *BalloonFont = NULL;
+char *BalloonBorderColor = NULL;
+int BalloonBorderWidth = 1;
+int BalloonYOffset = 2;
 
 int window_w=0, window_h=0, window_x=0, window_y=0;
 int icon_x=-10000, icon_y=-10000, icon_w=0, icon_h=0;
@@ -77,7 +86,7 @@ int usposition = 0,uselabel = 1;
 int xneg = 0, yneg = 0;
 extern DeskInfo *Desks;
 int StartIconic = 0;
-int	MiniIcons = 0;
+int MiniIcons = 0;
 int Rows = -1, Columns = -1;
 int desk1=0, desk2 =0;
 int ndesks = 0;
@@ -85,32 +94,36 @@ Pixel win_back_pix = -1;
 Pixel win_fore_pix = -1;
 Pixel win_hi_back_pix = -1;
 Pixel win_hi_fore_pix = -1;
+char fAlwaysCurrentDesk = 0;
+PagerStringList string_list = { NULL, 0, NULL, NULL };
+Bool error_occured = False;
+
+static volatile sig_atomic_t isTerminated = False;
+
+static RETSIGTYPE TerminateHandler(int);
+
 /***********************************************************************
  *
  *  Procedure:
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-  char *temp, *s, *cptr;
+  char *temp, *s;
   char *display_name = NULL;
   int itemp,i;
   char line[100];
-  char mask_mesg[50];
 
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
   /* Save our program  name - for error messages */
   temp = argv[0];
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
-  
+
   MyName = safemalloc(strlen(temp)+2);
   strcpy(MyName, temp);
-  
+
   if(argc  < 6)
     {
       fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
@@ -118,21 +131,47 @@ void main(int argc, char **argv)
       exit(1);
     }
   if(argc < 8)
-    { 
+    {
       fprintf(stderr,"%s Version %s requires two arguments: %s n m\n",
 	      MyName,VERSION,MyName);
       fprintf(stderr,"   where desktops n through m are displayed\n");
+      fprintf(stderr,
+	      "   if n and m are \"*\" the current desktop is displayed\n");
       exit(1);
     }
-  
-  /* Dead pipe == Fvwm died */
-  signal (SIGPIPE, DeadPipe);  
-  
+
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+#endif
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
-  
+
   fd_width = GetFdWidth();
-  
+
   desk1 = atoi(argv[6]);
   desk2 = atoi(argv[7]);
 
@@ -143,8 +182,20 @@ void main(int argc, char **argv)
       desk2 = itemp;
     }
   ndesks = desk2 - desk1 + 1;
-  
-  Desks = (DeskInfo *)malloc(ndesks*sizeof(DeskInfo));
+  if (StrEquals(argv[6], "*") && StrEquals(argv[7], "*"))
+    {
+      desk1 = Scr.CurrentDesk;
+      desk2 = Scr.CurrentDesk;
+      fAlwaysCurrentDesk = 1;
+    }
+
+  PagerFore = strdup("black");
+  PagerBack = strdup("white");
+  font_string = strdup("fixed");
+  HilightC = strdup("black");
+  BalloonFont = strdup("fixed");
+  BalloonBorderColor = strdup("black");
+  Desks = (DeskInfo *)safemalloc(ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
       sprintf(line,"Desk %d",i+desk1);
@@ -154,20 +205,20 @@ void main(int argc, char **argv)
       fprintf(stderr,"[main]: Desks[%d].Dcolor == %s\n",i,Desks[i].Dcolor);
 #endif /* DEBUG */
     }
-  
+
   /* Initialize X connection */
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
-  
+
   Scr.screen= DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
-  
-  if(Scr.Root == None) 
+
+  if(Scr.Root == None)
     {
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, (int)Scr.screen);
       exit(1);
@@ -198,13 +249,13 @@ void main(int argc, char **argv)
 #ifdef DEBUG
   fprintf(stderr,"[main]: back from calling ParseOptions, calling init pager\n");
 #endif
-  
+
   /* open a pager window */
   initialize_pager();
 #ifdef DEBUG
   fprintf(stderr,"[main]: back from init pager, getting window list\n");
 #endif
-  
+
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
@@ -212,8 +263,9 @@ void main(int argc, char **argv)
 #ifdef DEBUG
   fprintf(stderr,"[main]: back from getting window list, looping\n");
 #endif
-  
+
   Loop(fd);
+  return 0;
 }
 
 /***********************************************************************
@@ -225,12 +277,26 @@ void main(int argc, char **argv)
 void Loop(int *fd)
 {
   XEvent Event;
-  
-  while(1)
-    {
-      if(My_XNextEvent(dpy,&Event))
+
+  while( !isTerminated )
+  {
+    if(My_XNextEvent(dpy,&Event))
 	DispatchEvent(&Event);
+    if (error_occured)
+    {
+      Window root;
+      unsigned border_width, depth;
+      int x,y;
+
+      if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
+                      (unsigned *)&window_w,(unsigned *)&window_h,
+                      &border_width,&depth)==0)
+      {
+          exit(0);
+      }
+      error_occured = False;
     }
+  }
 }
 
 
@@ -278,9 +344,9 @@ void process_message(unsigned long type,unsigned long *body)
     case M_ICON_NAME:
       list_icon_name(body);
       break;
-	case M_MINI_ICON:
-		list_mini_icon(body);
-		break;
+    case M_MINI_ICON:
+      list_mini_icon(body);
+      break;
     case M_END_WINDOWLIST:
       list_end();
       break;
@@ -297,6 +363,12 @@ void process_message(unsigned long type,unsigned long *body)
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
+static RETSIGTYPE
+TerminateHandler(int nonsense)
+{
+  isTerminated = True;
+}
+
 void DeadPipe(int nonsense)
 {
   exit(0);
@@ -312,7 +384,7 @@ void list_add(unsigned long *body)
 {
   PagerWindow *t,**prev;
   int i=0;
-  
+
   t = Start;
   prev = &Start;
   while(t!= NULL)
@@ -365,7 +437,7 @@ void list_configure(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -375,7 +447,6 @@ void list_configure(unsigned long *body)
   if(t== NULL)
     {
       list_add(body);
-
     }
   else
     {
@@ -423,7 +494,7 @@ void list_configure(unsigned long *body)
 	{
 	  ChangeDeskForWindow(t,body[7]);
 	}
-      
+
       else
 	MoveResizePagerView(t);
       if(FocusWin == t)
@@ -443,7 +514,7 @@ void list_destroy(unsigned long *body)
 {
   PagerWindow *t,**prev;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   prev = &Start;
@@ -462,7 +533,7 @@ void list_destroy(unsigned long *body)
       XDestroyWindow(dpy,t->IconView);
       if(FocusWin == t)
 	FocusWin = NULL;
-      
+
       free(t);
     }
 }
@@ -479,7 +550,7 @@ void list_focus(unsigned long *body)
   Window target_w;
   extern Pixel focus_pix, focus_fore_pix;
   target_w = body[0];
-  
+
   if ((win_hi_fore_pix != -1) && (win_hi_back_pix != -1))
   {
     focus_pix = win_hi_back_pix;
@@ -499,7 +570,7 @@ void list_focus(unsigned long *body)
     {
       temp = FocusWin;
       FocusWin = t;
-      
+
       if(temp != NULL)
 	Hilight(temp,OFF);
       if(FocusWin != NULL)
@@ -539,12 +610,59 @@ void list_new_page(unsigned long *body)
 void list_new_desk(unsigned long *body)
 {
   int oldDesk;
-  
+
   oldDesk = Scr.CurrentDesk;
   Scr.CurrentDesk = (long)body[0];
-  
+  if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk)
+    {
+      PagerWindow *t;
+      PagerStringList *item;
+      char line[100];
+
+      desk1 = Scr.CurrentDesk;
+      desk2 = Scr.CurrentDesk;
+      for (t = Start; t != NULL; t = t->next)
+	{
+	  if (t->desk == oldDesk || t->desk == Scr.CurrentDesk)
+	    ChangeDeskForWindow(t, t->desk);
+	}
+      item = FindDeskStrings(Scr.CurrentDesk);
+      if (Desks[0].label != NULL)
+	{
+	  free(Desks[0].label);
+	  Desks[0].label = NULL;
+	}
+      if (item->next != NULL && item->next->label != NULL)
+	{
+	  CopyString(&Desks[0].label, item->next->label);
+	}
+      else
+	{
+	  sprintf(line, "Desk %d", desk1);
+	  CopyString(&Desks[0].label, line);
+	}
+      XStoreName(dpy, Scr.Pager_w, Desks[0].label);
+      XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
+      if (Desks[0].Dcolor != NULL)
+	{
+	  free(Desks[0].Dcolor);
+	  Desks[0].Dcolor = NULL;
+	}
+      if (item->next != NULL && item->next->Dcolor != NULL)
+	{
+	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+	}
+      else
+	{
+	  /* Use default title if not specified by user. */
+	  CopyString(&Desks[0].Dcolor, PagerBack);
+	}
+      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+      XClearWindow(dpy, Desks[0].w);
+    }
+
   MovePage();
-  
+
   DrawGrid(oldDesk - desk1,1);
   DrawGrid(Scr.CurrentDesk - desk1,1);
   MoveStickyWindows();
@@ -562,7 +680,7 @@ void list_raise(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -573,7 +691,7 @@ void list_raise(unsigned long *body)
     {
       if(t->PagerView != None)
 	XRaiseWindow(dpy,t->PagerView);
-      XRaiseWindow(dpy,t->IconView);      
+      XRaiseWindow(dpy,t->IconView);
     }
 }
 
@@ -588,7 +706,7 @@ void list_lower(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -627,7 +745,7 @@ void list_iconify(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -656,6 +774,11 @@ void list_iconify(unsigned long *body)
 	}
       t->width = t->icon_width;
       t->height = t->icon_height;
+
+      /* if iconifying main pager window turn balloons on or off */
+      if ( t->w == Scr.Pager_w )
+	ShowBalloons = ShowIconBalloons;
+
       MoveResizePagerView(t);
     }
 }
@@ -672,7 +795,7 @@ void list_deiconify(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -690,6 +813,11 @@ void list_deiconify(unsigned long *body)
       t->y = t->frame_y;
       t->width = t->frame_width;
       t->height = t->frame_height;
+
+      /* if deiconifying main pager window turn balloons on or off */
+      if ( t->w == Scr.Pager_w )
+	ShowBalloons = ShowPagerBalloons;
+
       MoveResizePagerView(t);
       if(FocusWin == t)
 	Hilight(t,ON);
@@ -709,7 +837,7 @@ void list_icon_name(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
-  
+
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
@@ -759,10 +887,10 @@ void list_end(void)
   unsigned int nchildren,i;
   Window root, parent, *children;
   PagerWindow *ptr;
-  
+
   if(!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
     return;
-  
+
   for(i=0; i<nchildren;i++)
     {
       ptr = Start;
@@ -778,8 +906,8 @@ void list_end(void)
 	  ptr = ptr->next;
 	}
     }
-  
-  
+
+
   if(nchildren > 0)
     XFree((char *)children);
 }
@@ -796,29 +924,21 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int body_length;
-  int count,count2 = 0;
   static int miss_counter = 0;
   unsigned long *body;
-  int total;
-  char *cbody;
-  
+
   if(XPending(dpy))
     {
       XNextEvent(dpy,event);
       return 1;
     }
-  
+
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif  
-  
+  if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
+  {
   if(FD_ISSET(x_fd, &in_fdset))
     {
       if(XPending(dpy))
@@ -827,44 +947,42 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	  miss_counter = 0;
 	  return 1;
 	}
-      else
 	miss_counter++;
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
-	 {
+      if(ReadFvwmPacket(fd[1],header,&body) > 0)
+	{
 	   process_message(header[1],body);
 	   free(body);
 	 }
     }
+  }
   return 0;
 }
 
 
 
 /*****************************************************************************
- * 
+ *
  * This routine is responsible for reading and parsing the config file
  *
  ****************************************************************************/
-void ParseOptions()
+void ParseOptions(void)
 {
-  char *tend,*tstart;
-  char *tline= NULL,*tmp;
-  char *colors;
+  char *tline= NULL;
   int Clength,n,desk;
 
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
   Scr.VScale = 32;
-  
+
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-  
+
   Scr.VxMax = 3*Scr.MyDisplayWidth - Scr.MyDisplayWidth;
   Scr.VyMax = 3*Scr.MyDisplayHeight - Scr.MyDisplayHeight;
   if(Scr.VxMax <0)
@@ -873,201 +991,371 @@ void ParseOptions()
     Scr.VyMax = 0;
   Scr.Vx = 0;
   Scr.Vy = 0;
-  
-  Clength = strlen(MyName);
-  GetConfigLine(fd,&tline);
 
-  while(tline != NULL)
+  Clength = strlen(MyName);
+
+  for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
     {
       int g_x, g_y, flags;
       unsigned width,height;
-      
-      if((strlen(&tline[0])>1)&&
-	 (mystrncasecmp(tline, CatString3("*", MyName, "Geometry"),Clength+9)==0))
+      char *resource;
+      char *resource_string;
+      char *arg1;
+      char *arg2;
+      char *tline2;
+
+      resource_string = arg1 = arg2 = NULL;
+      tline2 = GetModuleResource(tline, &resource, MyName);
+      if (!resource)
+        continue;
+      tline2 = GetNextToken(tline2, &arg1);
+      if (!arg1)
 	{
-	  tmp = &tline[Clength+9];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    {
-	      tmp++;
-	    }
-	  tmp[strlen(tmp)-1] = 0;
-	  
-	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  arg1 = (char *)safemalloc(1);
+	  arg1[0] = 0;
+	}
+      tline2 = GetNextToken(tline2, &arg2);
+      if (!arg2)
+	{
+	  arg2 = (char *)safemalloc(1);
+	  arg2[0] = 0;
+	}
+
+      if (StrEquals(resource, "Geometry"))
+	{
+	  flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+	  if (flags & WidthValue)
 	    {
 	      window_w = width;
 	    }
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    {
 	      window_h = height;
 	    }
-	  if (flags & XValue) 
+	  if (flags & XValue)
 	    {
 	      window_x = g_x;
 	      usposition = 1;
 	    }
-	  if (flags & YValue) 
+	  if (flags & YValue)
 	    {
 	      window_y = g_y;
 	      usposition = 1;
 	    }
-	  if (flags & XNegative) 
+	  if (flags & XNegative)
 	    {
 	      xneg = 1;
 	    }
-	  if (flags & YNegative) 
+	  if (flags & YNegative)
 	    {
 	      window_y = g_y;
 	      yneg = 1;
 	    }
 	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline, CatString3("*", MyName, "IconGeometry"),
-			     Clength+13)==0))
+      else if (StrEquals(resource, "IconGeometry"))
 	{
-	  tmp = &tline[Clength+13];
-	  while(((isspace((unsigned char)*tmp & 0xff))&&(*tmp != '\n'))&&(*tmp != 0))
-	    {
-	      tmp++;
-	    }
-	  tmp[strlen(tmp)-1] = 0;
-	  
-	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+	  if (flags & WidthValue)
 	    icon_w = width;
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    icon_h = height;
-	  if (flags & XValue) 
+	  if (flags & XValue)
 	    {
 	      icon_x = g_x;
 	    }
-	  if (flags & YValue) 
+	  if (flags & YValue)
 	    {
 	      icon_y = g_y;
 	    }
 	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Label"),Clength+6)==0))
+      else if (StrEquals(resource, "Label"))
 	{
-	  desk = desk1;
-	  sscanf(&tline[Clength+6],"%d",&desk);
-	  if((desk >= desk1)&&(desk <=desk2))
+	  if (StrEquals(arg1, "*"))
 	    {
-	      n = 0;
-	      while(isspace((unsigned char)tline[Clength+6+n] & 0xff))n++;
-	      while(!isspace((unsigned char)tline[Clength+6+n] & 0xff))n++;
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      if (item->next != NULL)
+		{
+		  /* replace label */
+		  if (item->next->label != NULL)
+		    {
+		      free(item->next->label);
+		      item->next->label = NULL;
+		    }
+		  CopyString(&(item->next->label), arg2);
+		}
+	      else
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  CopyString(&(item->label), arg2);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  free(Desks[0].label);
+		  CopyString(&Desks[0].label, arg2);
+		}
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
 	      free(Desks[desk - desk1].label);
-	      CopyString(&Desks[desk - desk1].label,&tline[Clength+6+n]);
+	      CopyString(&Desks[desk - desk1].label, arg2);
 	    }
 	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline, CatString3("*", MyName, "Font"),Clength+5)==0))
+      else if (StrEquals(resource, "Font"))
 	{
-	  CopyString(&font_string,&tline[Clength+5]);
-	  if(mystrncasecmp(font_string,"none",4) == 0)
+	  if (font_string)
+	    free(font_string);
+	  CopyString(&font_string,arg1);
+	  if(strncasecmp(font_string,"none",4) == 0)
 	    uselabel = 0;
-	  
 	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline, CatString3("*", MyName, "Fore"),Clength+5)==0))
-	{
-	  if(Scr.d_depth > 1)
-	    CopyString(&PagerFore,&tline[Clength+5]);
-	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*", MyName, "Back"),Clength+5)==0))
+      else if (StrEquals(resource, "Fore"))
 	{
 	  if(Scr.d_depth > 1)
 	    {
-	    CopyString(&PagerBack,&tline[Clength+5]);
-	    for (n=0;n<ndesks;n++)
-	      {
-                free(Desks[n].Dcolor);
-	        CopyString(&Desks[n].Dcolor,PagerBack);
-#ifdef DEBUG
-                fprintf(stderr,"[ParseOptions]: Back Desks[%d].Dcolor == %s\n",
-                        n,Desks[n].Dcolor);
-#endif
-	      }
+	      if (PagerFore)
+		free(PagerFore);
+	      CopyString(&PagerFore,arg1);
 	    }
-	}	
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"DeskColor"),Clength+10)==0))
+	}
+      else if (StrEquals(resource, "Back"))
 	{
-	  desk = desk1;
-	  sscanf(&tline[Clength+10],"%d",&desk);
-	  if((desk >= desk1)&&(desk <=desk2))
+	  if(Scr.d_depth > 1)
 	    {
-	      n = 0;
-	      while(isspace((unsigned char)tline[Clength+10+n]))n++;
-	      while(!isspace((unsigned char)tline[Clength+10+n]))n++;
+	      if (PagerBack)
+		free(PagerBack);
+	      CopyString(&PagerBack,arg1);
+	      for (n=0;n<ndesks;n++)
+		{
+		  free(Desks[n].Dcolor);
+		  CopyString(&Desks[n].Dcolor,PagerBack);
+#ifdef DEBUG
+		  fprintf(stderr,
+			  "[ParseOptions]: Back Desks[%d].Dcolor == %s\n",
+			  n,Desks[n].Dcolor);
+#endif
+		}
+	    }
+	}
+      else if (StrEquals(resource, "DeskColor"))
+	{
+	  if (StrEquals(arg1, "*"))
+	    {
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      if (item->next != NULL)
+		{
+		  /* replace Dcolor */
+		  if (item->next->Dcolor != NULL)
+		    {
+		      free(item->next->Dcolor);
+		      item->next->Dcolor = NULL;
+		    }
+		  CopyString(&(item->next->Dcolor), arg2);
+		}
+	      else
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  CopyString(&(item->Dcolor), arg2);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  free(Desks[0].Dcolor);
+		  CopyString(&Desks[0].Dcolor, arg2);
+		}
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
 	      free(Desks[desk - desk1].Dcolor);
-	      CopyString(&Desks[desk - desk1].Dcolor,&tline[Clength+10+n]);
-#ifdef DEBUG
-              fprintf(stderr,
-                      "[ParseOptions]: DeskColor Desks[%d].Dcolor == %s\n",
-                      desk-desk1,Desks[desk-desk1].Dcolor);
-#endif
+	      CopyString(&Desks[desk - desk1].Dcolor, arg2);
 	    }
 	}
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Hilight"),Clength+8)==0))
+      else if (StrEquals(resource, "Hilight"))
 	{
 	  if(Scr.d_depth > 1)
-	    CopyString(&HilightC,&tline[Clength+8]);
-	}	
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"SmallFont"),
-			     Clength+10)==0))
+	    {
+	      if (HilightC)
+		free(HilightC);
+	      CopyString(&HilightC,arg1);
+	    }
+	}
+      else if (StrEquals(resource, "SmallFont"))
 	{
-	    CopyString(&smallFont,&tline[Clength+10]);
-            if(mystrncasecmp(smallFont,"none",4) == 0)
+	  if (smallFont)
+	    free(smallFont);
+	  CopyString(&smallFont,arg1);
+	  if(strncasecmp(smallFont,"none",4) == 0)
             {
               free(smallFont);
               smallFont = NULL;
             }
-	}	
-      else if ((strlen (&tline[0]) > 1) && (strncasecmp (tline, CatString3 ("*", MyName, "MiniIcons"), Clength + 9) == 0))
-      {
-              MiniIcons = 1;
-      }
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"StartIconic"),
-			     Clength+12)==0))
+	}
+      else if (StrEquals(resource, "MiniIcons"))
+	{
+	  MiniIcons = 1;
+	}
+      else if (StrEquals(resource, "StartIconic"))
 	{
 	  StartIconic = 1;
-	}	
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Rows"),
-			     Clength+5)==0))
-	{
-	  sscanf(&tline[Clength+5],"%d",&Rows);
-	}	
-      else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Columns"),
-			     Clength+8)==0))
-	{
-	  sscanf(&tline[Clength+8],"%d",&Columns);
 	}
-        else if((strlen(&tline[0])>1)&&
-              (mystrncasecmp(tline,CatString3("*",MyName,"DeskTopScale"),
-                             Clength+13)==0))
+      else if (StrEquals(resource, "Rows"))
+	{
+	  sscanf(arg1,"%d",&Rows);
+	}
+      else if (StrEquals(resource, "Columns"))
+	{
+	  sscanf(arg1,"%d",&Columns);
+	}
+      else if (StrEquals(resource, "DeskTopScale"))
         {
-          sscanf(&tline[Clength+13],"%d",&Scr.VScale);
+          sscanf(arg1,"%d",&Scr.VScale);
         }
-	else if ((strlen (&tline[0]) > 1) && (strncasecmp (tline, CatString3 ("*", MyName, "WindowColors"), Clength + 13) == 0))
+      else if (StrEquals(resource, "WindowColors"))
 	{
-		if (Scr.d_depth > 1)
-		{
-			colors = &tline[Clength + 13];
-			colors = GetNextToken (colors, &WindowFore);
-			colors = GetNextToken (colors, &WindowBack);
-			colors = GetNextToken (colors, &WindowHiFore);
-			colors = GetNextToken (colors, &WindowHiBack);
-		}
+	  if (Scr.d_depth > 1)
+	    {
+	      if (WindowFore)
+		free(WindowFore);
+	      if (WindowBack)
+		free(WindowBack);
+	      if (WindowHiFore)
+		free(WindowHiFore);
+	      if (WindowHiBack)
+		free(WindowHiBack);
+	      CopyString(&WindowFore, arg1);
+	      CopyString(&WindowBack, arg2);
+	      tline2 = GetNextToken(tline2, &WindowHiFore);
+	      GetNextToken(tline2, &WindowHiBack);
+	    }
 	}
-      GetConfigLine(fd,&tline);
+
+
+      /* ... and get Balloon config options ...
+         -- ric@giccs.georgetown.edu */
+      else if (StrEquals(resource, "Balloons"))
+	{
+	  if (BalloonTypeString)
+	    free(BalloonTypeString);
+	  CopyString(&BalloonTypeString, arg1);
+
+	  if ( strncasecmp(BalloonTypeString, "Pager", 5) == 0 ) {
+	    ShowPagerBalloons = 1;
+	    ShowIconBalloons = 0;
+	  }
+	  else if ( strncasecmp(BalloonTypeString, "Icon", 4) == 0 ) {
+	    ShowPagerBalloons = 0;
+	    ShowIconBalloons = 1;
+	  }
+	  else {
+	    ShowPagerBalloons = 1;
+	    ShowIconBalloons = 1;
+	  }
+
+	  /* turn this on initially so balloon window is created; later this
+	     variable is changed to match ShowPagerBalloons or ShowIconBalloons
+	     whenever we receive iconify or deiconify packets */
+	  ShowBalloons = 1;
+	}
+
+      else if (StrEquals(resource, "BalloonBack"))
+	{
+	  if (Scr.d_depth > 1)
+	    {
+	      if (BalloonBack)
+		free(BalloonBack);
+	      CopyString(&BalloonBack, arg1);
+	    }
+	}
+
+      else if (StrEquals(resource, "BalloonFore"))
+	{
+	  if (Scr.d_depth > 1)
+	    {
+	      if (BalloonFore)
+		free(BalloonFore);
+	      CopyString(&BalloonFore, arg1);
+	    }
+	}
+
+      else if (StrEquals(resource, "BalloonFont"))
+	{
+	  if (BalloonFont)
+	    free(BalloonFont);
+	  CopyString(&BalloonFont, arg1);
+	}
+
+      else if (StrEquals(resource, "BalloonBorderColor"))
+	{
+	  if (BalloonBorderColor)
+	    free(BalloonBorderColor);
+	  CopyString(&BalloonBorderColor, arg1);
+	}
+
+      else if (StrEquals(resource, "BalloonBorderWidth"))
+	{
+	  sscanf(arg1, "%d", &BalloonBorderWidth);
+	}
+
+      else if (StrEquals(resource, "BalloonYOffset"))
+	{
+	  sscanf(arg1, "%d", &BalloonYOffset);
+	}
+
+      free(resource);
+      free(arg1);
+      free(arg2);
     }
   return;
 }
 
+/* Returns the item in the sring list that has item->next->desk == desk or
+ * the last item (item->next == NULL) if no entry matches the desk number. */
+PagerStringList *FindDeskStrings(int desk)
+{
+  PagerStringList *item;
+
+  item = &string_list;
+  while (item->next != NULL)
+    {
+      if (item->next->desk == desk)
+	break;
+      item = item->next;
+    }
+  return item;
+}
+
+PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
+{
+  PagerStringList *newitem;
+
+  newitem = (PagerStringList *)safemalloc(sizeof(PagerStringList));
+  last->next = newitem;
+  newitem->desk = desk;
+  newitem->next = NULL;
+  newitem->label = NULL;
+  newitem->Dcolor = NULL;
+
+  return newitem;
+}

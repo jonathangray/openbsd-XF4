@@ -1,8 +1,11 @@
-#ifdef __FreeBSD__
-#define DEFAULT_MAIL_PATH  "/var/mail/"
-#else
+/*
+ * Goodies.c structures and exported functions
+ */
+
+#ifndef _H_Goodies
+#define _H_Goodies
+
 #define DEFAULT_MAIL_PATH  "/var/spool/mail/"
-#endif
 #define DEFAULT_BELL_VOLUME 20
 
 /* Tip window types */
@@ -30,3 +33,6 @@ void RedrawTipWindow();
 void DestroyTipWindow();
 void ShowTipWindow(int open);
 void HandleMouseClick(XEvent event);
+void HandleMailClick(XEvent event);
+
+#endif

@@ -1,4 +1,4 @@
-/* FvwmBacker Module for Fvwm. 
+/* FvwmBacker Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -25,7 +25,7 @@
  * A. Davison
  * Septmber 1994.
  */
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -33,34 +33,36 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
+
 #include <stdlib.h>
 
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "FvwmBacker.h"
 #include "Mallocs.h"
 
 #include <X11/Xlib.h>
 
-unsigned long NameToPixel(char*, unsigned long);
+unsigned long GetColor(char *color);
 
-typedef struct 
+typedef struct
 {
-	int		type;		/* The command type. 			 */
-						/* -1 = no command.              */
-						/*  0 = command to be spawned 	 */
-						/*  1 = a solid color to be set  */
-	char*	cmdStr;		/* The command string (Type 0)   */
-	unsigned long solidColor;
-						/* A solid color after X parsing (Type 1) */
+  int type; /* The command type.
+	     * -1 = no command.
+	     *  0 = command to be spawned
+	     *  1 = a solid color to be set */
+  char*	cmdStr; /* The command string (Type 0)   */
+  unsigned long solidColor; /* A solid color after X parsing (Type 1) */
 } Command;
 
 Command *commands;
@@ -98,7 +100,7 @@ char *temp, *s;
     temp = s + 1;
 
   Module=temp;
-  
+
   if((argc != 6)&&(argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
       VERSION);
@@ -111,7 +113,7 @@ char *temp, *s;
   /* Grab the X display information now. */
 
 	dpy = XOpenDisplay(displayName);
-	if (!dpy) 
+	if (!dpy)
 	{
 		fprintf(stderr, "%s:  unable to open display '%s'\n",
 			Module, XDisplayName (displayName));
@@ -126,7 +128,7 @@ char *temp, *s;
 		fprintf(logFile,"Initialising FvwmBacker\n");
 #	endif
 
-  signal (SIGPIPE, DeadPipe);  
+  signal (SIGPIPE, DeadPipe);
 
   /* Parse the config file */
   ParseConfig();
@@ -143,6 +145,9 @@ char *temp, *s;
 
   /* Recieve all messages from Fvwm */
   EndLessLoop();
+
+  /* Should never get here! */
+  return 1;
 }
 
 /******************************************************************************
@@ -158,19 +163,12 @@ struct timeval tv;
     FD_SET(Fvwm_fd[1],&readset);
     tv.tv_sec=0;
     tv.tv_usec=0;
-#ifdef __hpux
-    if (!select(fd_width,(int *)&readset,NULL,NULL,&tv)) {
+
+    if (!select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,&tv)) {
       FD_ZERO(&readset);
       FD_SET(Fvwm_fd[1],&readset);
-      select(fd_width,(int *)&readset,NULL,NULL,NULL);
+      select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL);
     }
-#else
-    if (!select(fd_width,&readset,NULL,NULL,&tv)) {
-      FD_ZERO(&readset);
-      FD_SET(Fvwm_fd[1],&readset);
-      select(fd_width,&readset,NULL,NULL,NULL);
-    }
-#endif
 
     if (!FD_ISSET(Fvwm_fd[1],&readset)) continue;
     ReadFvwmPipe();
@@ -184,12 +182,11 @@ struct timeval tv;
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  int count,total,count2=0,body_length;
+  int count;
   unsigned long header[HEADER_SIZE],*body;
-  char *cbody;
 
   body = NULL;
-  if(count = ReadFvwmPacket(Fvwm_fd[1],header,&body) > 0)
+  if((count = ReadFvwmPacket(Fvwm_fd[1],header,&body)) > 0)
     {
       ProcessMessage(header[1],body);
       free(body);
@@ -204,12 +201,9 @@ void ReadFvwmPipe()
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
-  char* color;
-  char* tmp;
-
-  if (type==M_NEW_DESK) 
+  if (type==M_NEW_DESK)
     {
-      if (body[0]>DeskCount || commands[body[0]].type == -1) 
+      if (body[0]>DeskCount || commands[body[0]].type == -1)
 	{
 	  return;
 	}
@@ -230,17 +224,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       fflush(logFile);
 #	endif
 
-      
+
       if (commands[body[0]].type == 1)
 	{
 	  /* Process a solid color request */
-	  
+
 	  XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
 	  XClearWindow(dpy, root);
 	  XFlush(dpy);
 	  /*	XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
 	   */
-	  
+
 #		ifdef LOGFILE
 	  fprintf(logFile,"Color set.\n");
 	  fflush(logFile);
@@ -258,7 +252,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 }
 
 /******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm 
+  SendFvwmPipe - Send a message back to fvwm
     Based on SendInfo() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
@@ -293,7 +287,7 @@ char *hold,*temp,*temp_msg;
 }
 
 /***********************************************************************
-  Detected a broken pipe - time to exit 
+  Detected a broken pipe - time to exit
     Based on DeadPipe() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
  **********************************************************************/
@@ -311,16 +305,16 @@ void ParseConfig()
 {
   char line2[40];
   char *tline;
-  
+
   sprintf(line2,"*%sDesk",Module);
-  
+
   GetConfigLine(Fvwm_fd,&tline);
 
-    while(tline != (char *)0) 
+    while(tline != (char *)0)
       {
-	if(strlen(tline)>1) 
+	if(strlen(tline)>1)
 	  {
-	    if(mystrncasecmp(tline,line2,strlen(line2))==0)
+	    if(strncasecmp(tline,line2,strlen(line2))==0)
 	      AddCommand(&tline[strlen(line2)]);
 	  }
 	GetConfigLine(Fvwm_fd,&tline);
@@ -335,10 +329,10 @@ void AddCommand(char *string)
 char *temp;
 int num;
   temp=string;
-  while(isspace((unsigned char)*temp)) temp++;
+  while(isspace(*temp)) temp++;
   num=atoi(temp);
-  while(!isspace((unsigned char)*temp)) temp++;
-  while(isspace((unsigned char)*temp)) temp++;
+  while(!isspace(*temp)) temp++;
+  while(isspace(*temp)) temp++;
   if (DeskCount<1) {
     commands=(Command*)safemalloc((num+1)*sizeof(Command));
     while(DeskCount<num+1) commands[DeskCount++].type= -1;
@@ -362,14 +356,16 @@ int num;
 		/* Process a solid color request */
 
 		color = &temp[7];
-		while (isspace((unsigned char)*color))
+		while (isspace(*color))
 			color++;
 		tmp= color;
-		while (!isspace((unsigned char)*tmp))
+		while (!isspace(*tmp))
 			tmp++;
 		*tmp = 0;
 		commands[num].type = 1;
-		commands[num].solidColor = NameToPixel(color, BlackPixel(dpy, screen));
+		commands[num].solidColor = (!color || !*color) ?
+		  BlackPixel(dpy, screen) :
+		  GetColor(color);
 #ifdef LOGFILE
 		fprintf(logFile,"Adding color: %s as number %d to desk %d\n",
 			color,commands[num].solidColor, num);

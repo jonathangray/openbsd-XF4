@@ -1,7 +1,11 @@
+#include "config.h"
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "x.h"
 #include "xmanager.h"
+
+static char const rcsid[] =
+  "$Id: x.c,v 1.3 2001/06/28 22:32:34 matthieu Exp $";
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
@@ -26,7 +30,7 @@ static void grab_pointer (WinManager *man)
   /* This should only be called after we get our EXPOSE event */
   if (grab_state == NEED_TO_GRAB) {
     if (XGrabPointer (theDisplay, man->theWindow, True, GRAB_EVENTS,
-		      GrabModeAsync, GrabModeAsync, None, 
+		      GrabModeAsync, GrabModeAsync, None,
 		      None, CurrentTime) != GrabSuccess) {
       ConsoleMessage ("Couldn't grab pointer\n");
       ShutMeDown (0);
@@ -54,55 +58,6 @@ static int lookup_color (char *name, Pixel *ans)
   return 1;
 }
 
-static int lookup_hilite_color (Pixel background, Pixel *ans)
-{
-  XColor bg_color, white_p;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(theDisplay, theRoot, &attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(theDisplay, attributes.colormap, &bg_color);
-
-  if (lookup_color ("white", &white_p.pixel) == 0)
-    return 0;
-  XQueryColor(theDisplay, attributes.colormap, &white_p);
-  
-  bg_color.red = MAX((white_p.red/5), bg_color.red);
-  bg_color.green = MAX((white_p.green/5), bg_color.green);
-  bg_color.blue = MAX((white_p.blue/5), bg_color.blue);
-  
-  bg_color.red = MIN(white_p.red, (bg_color.red*140)/100);
-  bg_color.green = MIN(white_p.green, (bg_color.green*140)/100);
-  bg_color.blue = MIN(white_p.blue, (bg_color.blue*140)/100);
-  
-  if(!XAllocColor(theDisplay, attributes.colormap, &bg_color))
-    return 0;
-
-  *ans = bg_color.pixel;
-  return 1;
-}
-
-static int lookup_shadow_color (Pixel background, Pixel *ans)
-{
-  XColor bg_color;
-  XWindowAttributes attributes;
-  
-  XGetWindowAttributes(theDisplay, theRoot, &attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(theDisplay, attributes.colormap, &bg_color);
-  
-  bg_color.red = (unsigned short)((bg_color.red*50)/100);
-  bg_color.green = (unsigned short)((bg_color.green*50)/100);
-  bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-  
-  if(!XAllocColor(theDisplay, attributes.colormap, &bg_color))
-    return 0;
-  
-  *ans = bg_color.pixel;
-  return 1;
-}
 
 WinManager *find_windows_manager (Window win)
 {
@@ -112,7 +67,7 @@ WinManager *find_windows_manager (Window win)
     if (globals.managers[i].theWindow == win)
       return &globals.managers[i];
   }
-  
+
 /*  ConsoleMessage ("error in find_windows_manager:\n");
   ConsoleMessage ("Window: %x\n", win);
   for (i = 0; i < globals.num_managers; i++) {
@@ -170,7 +125,7 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
   XWindowAttributes attr;
 
   ConsoleDebug (X11, "In find_frame_window: 0x%x\n", win);
-  
+
   while (1) {
     XQueryTree (theDisplay, win, &root, &parent, &junkw, &junki);
     if (junkw)
@@ -178,7 +133,7 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
     if (parent == root)
       break;
     XGetWindowAttributes (theDisplay, win, &attr);
-    ConsoleDebug (X11, "Adding (%d, %d) += (%d, %d)\n", 
+    ConsoleDebug (X11, "Adding (%d, %d) += (%d, %d)\n",
 		  *off_x, *off_y, attr.x + attr.border_width,
 		  attr.y + attr.border_width);
     *off_x += attr.x + attr.border_width;
@@ -198,12 +153,12 @@ static void reparentnotify_event (WinManager *man, XEvent *ev)
 {
   ConsoleDebug (X11, "XEVENT: ReparentNotify\n");
 #if 0
-  ConsoleMessage ("seen %d expected %d\n", num_reparents_seen, 
+  ConsoleMessage ("seen %d expected %d\n", num_reparents_seen,
 		  num_reparents_expected);
   man->off_x = ev->xreparent.x;
   man->off_y = ev->xreparent.y;
   ConsoleDebug (X11, "reparent: off = (%d, %d)\n",man->off_x, man->off_y);
-  man->theFrame = find_frame_window (ev->xany.window, 
+  man->theFrame = find_frame_window (ev->xany.window,
 				     &man->off_x, &man->off_y);
   ConsoleMessage ("\twin = 0x%x, frame = 0x%x\n", man->theWindow,
 		  man->theFrame);
@@ -217,13 +172,11 @@ static void reparentnotify_event (WinManager *man, XEvent *ev)
 void xevent_loop (void)
 {
   XEvent theEvent;
-  int glob_x, glob_y, x, y, mask;
   unsigned int modifier;
   Binding *key;
   Button *b;
   static int flag = 0;
   WinManager *man;
-  Window root, child;
 
   if (flag == 0) {
     flag = 1;
@@ -252,13 +205,13 @@ void xevent_loop (void)
       /* Here's a real hack - some systems have two keys with the
        * same keysym and different keycodes. This converts all
        * the cases to one keycode. */
-      theEvent.xkey.keycode = 
+      theEvent.xkey.keycode =
 	XKeysymToKeycode (theDisplay,
 			  XKeycodeToKeysym(theDisplay,
 					   theEvent.xkey.keycode,0));
       modifier = (theEvent.xkey.state & MODS_USED);
       ConsoleDebug (X11, "\tKeyPress: %d\n", theEvent.xkey.keycode);
-      
+
       for (key = man->bindings[KEYPRESS]; key != NULL; key = key->NextBinding)
       {
 	if ((key->Button_Key == theEvent.xkey.keycode) &&
@@ -318,10 +271,10 @@ void xevent_loop (void)
       ConsoleDebug (X11, "XEVENT: Configure Notify: %d %d %d %d\n",
 		    theEvent.xconfigure.x, theEvent.xconfigure.y,
 		    theEvent.xconfigure.width, theEvent.xconfigure.height);
-      ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n", 
+      ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
 		    man->geometry.x, man->geometry.y,
 		    man->geometry.width, man->geometry.height);
-      ConsoleDebug (X11, "\tborderwidth = %d\n", 
+      ConsoleDebug (X11, "\tborderwidth = %d\n",
 		    theEvent.xconfigure.border_width);
       ConsoleDebug (X11, "\tsendevent = %d\n", theEvent.xconfigure.send_event);
 #if 0
@@ -330,7 +283,7 @@ void xevent_loop (void)
       draw_manager (man);
 
       /* pointer may not be in the same box as before */
-      if (XQueryPointer (theDisplay, man->theWindow, &root, &child, &glob_x, 
+      if (XQueryPointer (theDisplay, man->theWindow, &root, &child, &glob_x,
 			 &glob_y,
 			 &x, &y, &mask)) {
 	b = xy_to_button (man, x, y);
@@ -367,12 +320,17 @@ void xevent_loop (void)
       ConsoleDebug (X11, "XEVENT: UnmapNotify\n");
       break;
 
+    case DestroyNotify:
+      ConsoleDebug(X11, "XEVENT: DestroyNotify\n");
+      DeadPipe(0);
+      break;
+
     default:
 #ifdef SHAPE
       if (theEvent.type == shapeEventBase + ShapeNotify) {
 	XShapeEvent *xev = (XShapeEvent *)&theEvent;
 	ConsoleDebug (X11, "XEVENT: ShapeNotify\n");
-	ConsoleDebug (X11, "\tx, y, w, h = %d, %d, %d, %d\n", 
+	ConsoleDebug (X11, "\tx, y, w, h = %d, %d, %d, %d\n",
 		      xev->x, xev->y, xev->width, xev->height);
 	break;
       }
@@ -385,13 +343,13 @@ void xevent_loop (void)
   XFlush (theDisplay);
 }
 
-static void set_window_properties (Window win, char *name, char *icon, 
+static void set_window_properties (Window win, char *name, char *icon,
 				   XSizeHints *sizehints)
 {
   XTextProperty win_name;
   XTextProperty win_icon;
   XClassHint class;
-  XWMHints wmhints;
+  XWMHints wmhints = {0};
 
   wmhints.initial_state = NormalState;
   wmhints.flags = StateHint;
@@ -407,7 +365,7 @@ static void set_window_properties (Window win, char *name, char *icon,
 
   class.res_name = Module + 1;
   class.res_class = "FvwmModule";
-  
+
 
   XSetWMProperties (theDisplay, win, &win_name, &win_icon, NULL, 0,
 		    sizehints, &wmhints, &class);
@@ -428,7 +386,7 @@ static int load_default_context_fore (WinManager *man, int i)
   return lookup_color (contextDefaults[i].forecolor[j], &man->forecolor[i]);
 }
 
-static int load_default_context_back (WinManager *man, int i) 
+static int load_default_context_back (WinManager *man, int i)
 {
   int j = 0;
 
@@ -506,12 +464,6 @@ void X_init_manager (int man_id)
   WinManager *man;
   int width, height;
   int i, x, y, geometry_mask;
-#ifdef I18N
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
   ConsoleDebug (X11, "In X_init_manager\n");
 
   man = &globals.managers[man_id];
@@ -521,7 +473,7 @@ void X_init_manager (int man_id)
   man->geometry.x = 0;
   man->geometry.y = 0;
   man->gravity = NorthWestGravity;
-  
+
   man->select_button = NULL;
   man->cursor_in_window = 0;
   man->sizehints_flags = 0;
@@ -529,17 +481,6 @@ void X_init_manager (int man_id)
   ConsoleDebug (X11, "boxwidth = %d\n", man->geometry.boxwidth);
 
   if (man->fontname) {
-#ifdef I18N
-    man->ButtonFontset = XCreateFontSet (theDisplay, man->fontname, &ml, &mc, &ds);
-    if (!man->ButtonFontset) {
-      if (!(man->ButtonFontset = XCreateFontSet (theDisplay, FONT_STRING, &ml, &mc, &ds))) {
-        ConsoleMessage ("Can't get fontset\n");
-        ShutMeDown (1);
-      }
-    }
-    XFontsOfFontSet(man->ButtonFontset,&fs_list,&ml);
-    man->ButtonFont = fs_list[0];
-#else
     man->ButtonFont = XLoadQueryFont (theDisplay, man->fontname);
     if (!man->ButtonFont) {
       if (!(man->ButtonFont = XLoadQueryFont (theDisplay, FONT_STRING))) {
@@ -547,67 +488,62 @@ void X_init_manager (int man_id)
 	ShutMeDown (1);
       }
     }
-#endif
   }
   else {
-#ifdef I18N
-    if (!(man->ButtonFontset = XCreateFontSet (theDisplay, FONT_STRING, &ml, &mc, &ds))) {
-      ConsoleMessage ("Can't get fontset\n");
-      ShutMeDown (1);
-    }
-    XFontsOfFontSet(man->ButtonFontset,&fs_list,&ml);
-    man->ButtonFont = fs_list[0];
-#else
     if (!(man->ButtonFont = XLoadQueryFont (theDisplay, FONT_STRING))) {
       ConsoleMessage ("Can't get font\n");
       ShutMeDown (1);
     }
-#endif
   }
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
     if (man->backColorName[i]) {
       if (!lookup_color (man->backColorName[i], &man->backcolor[i])) {
         if (!load_default_context_back (man, i)) {
-	  ConsoleMessage ("Can't load %s background color\n", 
+	  ConsoleMessage ("Can't load %s background color\n",
 			  contextDefaults[i].name);
         }
       }
     }
     else if (!load_default_context_back (man, i)) {
-      ConsoleMessage ("Can't load %s background color\n", 
+      ConsoleMessage ("Can't load %s background color\n",
 		      contextDefaults[i].name);
     }
-  
+
     if (man->foreColorName[i]) {
       if (!lookup_color (man->foreColorName[i], &man->forecolor[i])) {
         if (!load_default_context_fore (man, i)) {
-    	ConsoleMessage ("Can't load %s foreground color\n", 
+    	ConsoleMessage ("Can't load %s foreground color\n",
 			contextDefaults[i].name);
         }
       }
     }
     else if (!load_default_context_fore (man, i)) {
-      ConsoleMessage ("Can't load %s foreground color\n", 
+      ConsoleMessage ("Can't load %s foreground color\n",
 		      contextDefaults[i].name);
     }
-  
+
     if (theDepth > 2) {
+      man->shadowcolor[i] = GetShadow(man->backcolor[i]);
+      man->hicolor[i] = GetHilite(man->backcolor[i]);
+#if 0
+      /* thing about message id bg vs fg */
       if (!lookup_shadow_color (man->backcolor[i], &man->shadowcolor[i])) {
-	ConsoleMessage ("Can't load %s shadow color\n", 
+	ConsoleMessage ("Can't load %s shadow color\n",
 			contextDefaults[i].name);
       }
       if (!lookup_hilite_color (man->backcolor[i], &man->hicolor[i])) {
-	ConsoleMessage ("Can't load %s hilite color\n", 
+	ConsoleMessage ("Can't load %s hilite color\n",
 			contextDefaults[i].name);
       }
+#endif
     }
   }
 
-  man->fontheight = man->ButtonFont->ascent + 
+  man->fontheight = man->ButtonFont->ascent +
     man->ButtonFont->descent;
 
-  /* silly hack to guess the minimum char width of the font 
+  /* silly hack to guess the minimum char width of the font
      doesn't have to be perfect. */
 
   man->fontwidth = XTextWidth (man->ButtonFont, ".", 1);
@@ -626,16 +562,16 @@ void X_init_manager (int man_id)
   if (man->button_geometry_str) {
     int val;
     val = XParseGeometry (man->button_geometry_str, &x, &y, &width, &height);
-    ConsoleDebug (X11, "button x, y, w, h = %d %d %d %d\n", x, y, width, 
+    ConsoleDebug (X11, "button x, y, w, h = %d %d %d %d\n", x, y, width,
 		  height);
     if (val & WidthValue)
       man->geometry.boxwidth = width;
     if (val & HeightValue)
-      man->geometry.boxheight = MAX (man->geometry.boxheight, height);
+      man->geometry.boxheight = max (man->geometry.boxheight, height);
   }
   if (man->geometry_str) {
-    geometry_mask = XParseGeometry (man->geometry_str, &man->geometry.x, 
-				    &man->geometry.y, &man->geometry.cols, 
+    geometry_mask = XParseGeometry (man->geometry_str, &man->geometry.x,
+				    &man->geometry.y, &man->geometry.cols,
 				    &man->geometry.rows);
 
     if ((geometry_mask & XValue) || (geometry_mask & YValue)) {
@@ -675,15 +611,15 @@ void X_init_manager (int man_id)
   man->geometry.height = man->geometry.rows * man->geometry.boxheight;
 
   if ((geometry_mask & XValue) && (geometry_mask & XNegative))
-    man->geometry.x += globals.screenx - man->geometry.width - 2;
+    man->geometry.x += globals.screenx - man->geometry.width;
   if ((geometry_mask & YValue) && (geometry_mask & YNegative))
-    man->geometry.y += globals.screeny - man->geometry.height - 2;
+    man->geometry.y += globals.screeny - man->geometry.height;
 
   if (globals.transient) {
     Window dummyroot, dummychild;
     int junk;
 
-    XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild, 
+    XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild,
 		  &man->geometry.x,
 		  &man->geometry.y, &junk, &junk, &junk);
     man->geometry.dir |= GROW_DOWN | GROW_RIGHT;
@@ -734,7 +670,7 @@ void create_manager_window (int man_id)
   ConsoleDebug (X11, "In create_manager_window\n");
 
   man = &globals.managers[man_id];
-  
+
   if (man->window_up)
     return;
 
@@ -756,7 +692,7 @@ void create_manager_window (int man_id)
 
 
   ConsoleDebug (X11, "hints: x, y, w, h = %d %d %d %d)\n",
-		sizehints.x, sizehints.y, 
+		sizehints.x, sizehints.y,
 		sizehints.base_width, sizehints.base_height);
   ConsoleDebug (X11, "gravity: %d %d\n", sizehints.win_gravity, man->gravity);
 
@@ -765,7 +701,7 @@ void create_manager_window (int man_id)
   winattr.border_pixel = man->forecolor[PLAIN_CONTEXT];
   winattr.backing_store = WhenMapped;
   winattr.bit_gravity = man->gravity;
-  winattr.event_mask = ExposureMask | PointerMotionMask | EnterWindowMask | 
+  winattr.event_mask = ExposureMask | PointerMotionMask | EnterWindowMask |
     LeaveWindowMask | KeyPressMask | StructureNotifyMask;
 
   if (globals.transient)
@@ -774,9 +710,9 @@ void create_manager_window (int man_id)
     winattr.event_mask |= ButtonPressMask;
 
   man->theWindow = XCreateWindow (theDisplay, theRoot, sizehints.x,
-				  sizehints.y, man->geometry.width, 
+				  sizehints.y, man->geometry.width,
 				  man->geometry.height,
-				  1, CopyFromParent, InputOutput, 
+				  0, CopyFromParent, InputOutput,
 				  (Visual *)CopyFromParent, winattrmask,
 				  &winattr);
 #ifdef SHAPE
@@ -784,12 +720,12 @@ void create_manager_window (int man_id)
 #endif
 
   /* We really want the bit gravity to be NorthWest, so that can minimize
-     redraws. But, we had to have an appropriate bit gravity when creating 
-     the window so that fvwm would place the window correctly if it has 
+     redraws. But, we had to have an appropriate bit gravity when creating
+     the window so that fvwm would place the window correctly if it has
      a border. I don't know if I should wait until an event is received
      before doing this. Sigh */
   winattr.bit_gravity = NorthWestGravity;
-  XChangeWindowAttributes (theDisplay, man->theWindow, 
+  XChangeWindowAttributes (theDisplay, man->theWindow,
 			   CWBitGravity, &winattr);
   set_shape (man);
 
@@ -801,40 +737,40 @@ void create_manager_window (int man_id)
     man->backContext[i] =
       XCreateGC (theDisplay, man->theWindow, gcmask, &gcval);
     XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
-    XSetLineAttributes (theDisplay, man->backContext[i], line_width, 
+    XSetLineAttributes (theDisplay, man->backContext[i], line_width,
 			line_style, cap_style,
 			join_style);
-    
+
     man->hiContext[i] =
       XCreateGC (theDisplay, man->theWindow, gcmask, &gcval);
     XSetFont (theDisplay, man->hiContext[i], man->ButtonFont->fid);
     XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
-    
+
     gcmask = GCForeground | GCBackground;
     gcval.foreground = man->backcolor[i];
     gcval.background = man->forecolor[i];
-    man->flatContext[i] = XCreateGC (theDisplay, man->theWindow, 
+    man->flatContext[i] = XCreateGC (theDisplay, man->theWindow,
 						 gcmask, &gcval);
     if (theDepth > 2) {
       gcmask = GCForeground | GCBackground;
       gcval.foreground = man->hicolor[i];
       gcval.background = man->backcolor[i];
-      man->reliefContext[i] = XCreateGC (theDisplay, man->theWindow, 
+      man->reliefContext[i] = XCreateGC (theDisplay, man->theWindow,
 						     gcmask, &gcval);
-      
+
       gcmask = GCForeground | GCBackground;
       gcval.foreground = man->shadowcolor[i];
       gcval.background = man->backcolor[i];
-      man->shadowContext[i] = XCreateGC (theDisplay, man->theWindow, 
+      man->shadowContext[i] = XCreateGC (theDisplay, man->theWindow,
 						     gcmask, &gcval);
     }
   }
-    
-  set_window_properties (man->theWindow, man->titlename, 
+
+  set_window_properties (man->theWindow, man->titlename,
 			 man->iconname, &sizehints);
   man->window_up = 1;
   map_manager (man);
-}  
+}
 
 static int handle_error (Display *d, XErrorEvent *ev)
 {
@@ -869,7 +805,7 @@ void init_display (void)
   globals.shapes_supported = XShapeQueryExtension (theDisplay, &shapeEventBase,
 						   &shapeErrorBase);
 #endif
-  	
+
   InitPictureCMap (theDisplay, theRoot);
 
   ConsoleDebug (X11, "screen width: %d\n", globals.screenx);

@@ -6,7 +6,7 @@
 #include "debuglevels.h"
 
 static char const rcsid[] =
-  "$Id: debug.c,v 1.1.1.2 2001/06/28 22:05:31 matthieu Exp $";
+  "$Id: debug.c,v 1.2 2001/06/28 22:32:34 matthieu Exp $";
 
 static FILE *console = NULL;
 

@@ -1,6 +1,6 @@
 /****************************************************************************
  * This module is all new
- * by Rob Nation 
+ * by Rob Nation
  ****************************************************************************/
 /***********************************************************************
  *
@@ -8,7 +8,7 @@
  *
  ***********************************************************************/
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -23,6 +23,7 @@
 #include "../../libs/fvwmlib.h"
 #include "../../fvwm/fvwm.h"
 #include "FvwmPager.h"
+
 extern ScreenInfo Scr;
 extern Display *dpy;
 
@@ -33,22 +34,15 @@ extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
 extern int window_w, window_h,window_x,window_y,usposition,uselabel,xneg,yneg;
 extern int StartIconic;
 extern int MiniIcons;
+extern int ShowBalloons, ShowPagerBalloons, ShowIconBalloons;
+
 extern int icon_w, icon_h, icon_x, icon_y;
 XFontStruct *font, *windowFont;
-#ifdef I18N
-XFontSet fontset, windowFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,FONTSET,v,w,x,y,z)
-#define XDrawImageString(t,u,v,w,x,y,z) XmbDrawImageString(t,u,FONTSET,v,w,x,y,z)
-#endif
 
 GC NormalGC,DashedGC,HiliteGC,rvGC;
 GC StdGC;
 GC MiniIconGC;
+GC BalloonGC;
 
 extern PagerWindow *Start;
 extern PagerWindow *FocusWin;
@@ -84,6 +78,7 @@ static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
 
 Window		icon_win;               /* icon window */
+BalloonWindow balloon;            /* balloon window */
 
 /***********************************************************************
  *
@@ -111,44 +106,31 @@ void initialize_pager(void)
 {
   XWMHints wmhints;
   XClassHint class1;
-#ifdef I18N
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
   XTextProperty name;
   unsigned long valuemask;
   XSetWindowAttributes attributes;
   extern char *PagerFore, *PagerBack, *HilightC;
   extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
+  extern char *BalloonFore, *BalloonBack, *BalloonFont;
+  extern char *BalloonBorderColor;
+  extern int BalloonBorderWidth, BalloonYOffset;
   extern char *font_string, *smallFont;
   int n,m,w,h,i,x,y;
   XGCValues gcv;
   unsigned long gcm;
 
-#if 0
+#if 1
   /* I don't think that this is necessary - just let pager die */
+  /* domivogt (07-mar-1999): But it is! A window being moved in the pager
+   * might die at any moment causing the Xlib calls to generate BadMatch
+   * errors. Without an error handler the pager will die! */
   XSetErrorHandler((XErrorHandler)FvwmErrorHandler);
-#endif /* 0 */
+#endif /* 1 */
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
   /* load the font */
-#ifdef I18N
-  if (!uselabel || ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL))
-    {
-      /* plain X11R6.3 hack */
-      if ((fontset = XCreateFontSet(dpy, "fixed,-*--14-*", &ml, &mc, &ds)) == NULL)
-      {
-	fprintf(stderr,"%s: No fonts available\n",MyName);
-	exit(1);
-      }
-    }
-  XFontsOfFontSet(fontset, &fs_list, &ml);
-  font = fs_list[0];
-#else
   if (!uselabel || ((font = XLoadQueryFont(dpy, font_string)) == NULL))
     {
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -157,36 +139,18 @@ void initialize_pager(void)
 	  exit(1);
 	}
     };
-#endif
-
   if(uselabel)
     label_h = font->ascent + font->descent+2;
   else
     label_h = 0;
-      
-#ifdef I18N
-  if(smallFont != NULL)
-    {
-      windowFontset = XCreateFontSet(dpy, smallFont, &ml, &mc, &ds);
-      if (windowFontset != NULL)
-	{
-	  XFontsOfFontSet(windowFontset, &fs_list, &ml);
-	  windowFont = fs_list[0];
-        }
-    }
-  else
-    {
-      windowFontset = NULL;
-      windowFont = NULL;
-    }
-#else
+
+
   if(smallFont!= NULL)
     {
       windowFont= XLoadQueryFont(dpy, smallFont);
     }
   else
-    windowFont= NULL;    
-#endif
+    windowFont= NULL;
 
   /* Load the colors */
   fore_pix = GetColor(PagerFore);
@@ -203,13 +167,13 @@ void initialize_pager(void)
   /* Load pixmaps for mono use */
   if(Scr.d_depth<2)
     {
-      Scr.gray_pixmap = 
+      Scr.gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
 				    fore_pix,back_pix,Scr.d_depth);
-      Scr.light_gray_pixmap = 
+      Scr.light_gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
 				    fore_pix,back_pix,Scr.d_depth);
-      Scr.sticky_gray_pixmap = 
+      Scr.sticky_gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Root,s_g_bits,s_g_width,s_g_height,
 				    fore_pix,back_pix,Scr.d_depth);
     }
@@ -235,13 +199,21 @@ void initialize_pager(void)
     }
   if(Columns < 0)
     {
+      if (Rows == 0)
+	Rows = 1;
       Columns = ndesks/Rows;
       if(Rows*Columns < ndesks)
 	Columns++;
     }
 
   if(Rows*Columns < ndesks)
-    Rows = ndesks/Columns;
+    {
+      if (Columns == 0)
+	Columns = 1;
+      Rows = ndesks/Columns;
+      if (Rows*Columns < ndesks)
+	Rows++;
+    }
   if(window_w > 0)
     {
       window_w = ((window_w - n)/(n+1))*(n+1)+n;
@@ -259,10 +231,10 @@ void initialize_pager(void)
       Columns-1;
   if(window_h <= 0)
     {
-      window_h = Rows*((Scr.VyMax + Scr.MyDisplayHeight)/Scr.VScale 
+      window_h = Rows*((Scr.VyMax + Scr.MyDisplayHeight)/Scr.VScale
 		       + m + label_h + 1)-2;
     }
-  
+
   if(xneg)
     {
       sizehints.win_gravity = NorthEastGravity;
@@ -317,23 +289,23 @@ void initialize_pager(void)
 
   icon_w = (icon_w / (n+1)) *(n+1)+n;
   icon_h = (icon_h / (m+1)) *(m+1)+m;
-  icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y, 
+  icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y,
 			    icon_w,icon_h,
 			    (unsigned int) 1,
 			    CopyFromParent, InputOutput,
 			    (Visual *) CopyFromParent,
 			    valuemask, &attributes);
-  XGrabButton(dpy, 1, AnyModifier, icon_win, 
+  XGrabButton(dpy, 1, AnyModifier, icon_win,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None, 
+	      GrabModeAsync, GrabModeAsync, None,
 	      None);
-  XGrabButton(dpy, 2, AnyModifier, icon_win, 
+  XGrabButton(dpy, 2, AnyModifier, icon_win,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None, 
+	      GrabModeAsync, GrabModeAsync, None,
 	      None);
-  XGrabButton(dpy, 3, AnyModifier, icon_win, 
+  XGrabButton(dpy, 3, AnyModifier, icon_win,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None, 
+	      GrabModeAsync, GrabModeAsync, None,
 	      None);
   if(!StartIconic)
     wmhints.initial_state = NormalState;
@@ -398,7 +370,7 @@ void initialize_pager(void)
 
       attributes.event_mask = 0;
       attributes.background_pixel = hi_pix;
-      
+
       w = (window_w - n)/(n+1);
       h = (window_h - label_h - m)/(m+1);
       Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w,-1000, -1000, w, h,0,
@@ -409,17 +381,16 @@ void initialize_pager(void)
       XMapRaised(dpy,Desks[i].CPagerWin);
       XMapRaised(dpy,Desks[i].w);
       XMapRaised(dpy,Desks[i].title_w);
-
     }
   XMapRaised(dpy,Scr.Pager_w);
-      
+
   gcm = GCForeground|GCBackground|GCFont;
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
 
   gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
-  MiniIconGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  NormalGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  MiniIconGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   gcv.foreground = hi_pix;
   if(Scr.d_depth < 2)
@@ -427,21 +398,21 @@ void initialize_pager(void)
       gcv.foreground = fore_pix;
       gcv.background = back_pix;
     }
-  HiliteGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
-  
+  HiliteGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
   if((Scr.d_depth < 2)||(fore_pix == hi_pix))
-    gcv.foreground = back_pix;  
+    gcv.foreground = back_pix;
   else
     gcv.foreground = fore_pix;
-  rvGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  rvGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   if(windowFont != NULL)
     {
       /* Create GC's for doing window labels */
       gcv.foreground = focus_fore_pix;
       gcv.background = focus_pix;
-      gcv.font =  windowFont->fid;      
-      StdGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+      gcv.font =  windowFont->fid;
+      StdGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
     }
 
   gcm = gcm | GCLineStyle;
@@ -449,15 +420,85 @@ void initialize_pager(void)
   gcv.background = back_pix;
   gcv.line_style = LineOnOffDash;
   DashedGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
+
+  /* create balloon window
+     -- ric@giccs.georgetown.edu */
+  if ( ShowBalloons ) {
+
+    valuemask = CWOverrideRedirect | CWEventMask | CWBackPixel | CWBorderPixel;
+
+    /* tell WM to ignore this window */
+    attributes.override_redirect = True;
+
+    attributes.event_mask = ExposureMask;
+    attributes.border_pixel = GetColor(BalloonBorderColor);
+
+    /* if given in config set this now, otherwise it'll be set for each
+       pager window when drawn later */
+    attributes.background_pixel =
+      (BalloonBack == NULL) ? 0 : GetColor(BalloonBack);
+
+    /* get font for balloon */
+    if ( (balloon.font = XLoadQueryFont(dpy, BalloonFont)) == NULL ) {
+      if ( (balloon.font = XLoadQueryFont(dpy, "fixed")) == NULL ) {
+        fprintf(stderr,"%s: No fonts available.\n", MyName);
+        exit(1);
+      }
+      fprintf(stderr, "%s: Can't find font '%s', using fixed.\n",
+              MyName, BalloonFont);
+    }
+
+    balloon.height = balloon.font->ascent + balloon.font->descent + 1;
+
+    /* this may have been set in config */
+    balloon.border = BalloonBorderWidth;
+
+
+    /* we don't allow yoffset of 0 because it allows direct transit
+       from pager window to balloon window, setting up a
+       LeaveNotify/EnterNotify event loop */
+    if ( BalloonYOffset )
+      balloon.yoffset = BalloonYOffset;
+    else {
+      fprintf(stderr,
+       "%s: Warning: you're not allowed BalloonYOffset 0; defaulting to +2\n",
+              MyName);
+      balloon.yoffset = 2;
+    }
+
+    /* now create the window */
+    balloon.w = XCreateWindow(dpy, Scr.Root,
+                              0, 0,            /* coords set later */
+                              1,               /* width set later */
+                              balloon.height,
+                              balloon.border,
+                              CopyFromParent,
+                              InputOutput,
+                              CopyFromParent,
+                              valuemask,
+                              &attributes);
+
+    /* set font */
+    gcv.font = balloon.font->fid;
+
+    /* if fore given in config set now, otherwise it'll be set later */
+    gcv.foreground = (BalloonFore == NULL) ? 0 : GetColor(BalloonFore);
+
+    BalloonGC = XCreateGC(dpy, balloon.w, GCFont | GCForeground, &gcv);
+
+    /* Make sure we don't get balloons initially with the Icon option. */
+    ShowBalloons = ShowPagerBalloons;
+  } /* ShowBalloons */
 }
 
 
 
 /****************************************************************************
- * 
+ *
  * Loads a single color
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
@@ -465,11 +506,11 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy,Scr.Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
      {
        nocolor("alloc",name);
      }
@@ -496,6 +537,14 @@ void DispatchEvent(XEvent *Event)
 
   switch(Event->xany.type)
     {
+    case EnterNotify:
+      if ( ShowBalloons )
+        MapBalloonWindow(Event);
+      break;
+    case LeaveNotify:
+      if ( ShowBalloons )
+        UnmapBalloonWindow();
+      break;
     case ConfigureNotify:
       ReConfigure();
       break;
@@ -526,18 +575,20 @@ void DispatchEvent(XEvent *Event)
 		{
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
 		}
 	    }
 	  if(Event->xany.window == icon_win)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 	}
       break;
     case ButtonPress:
+      if ( ShowBalloons )
+        UnmapBalloonWindow();
       if (((Event->xbutton.button == 2)||
 	   ((Event->xbutton.button == 3)&&
 	    (Event->xbutton.state & Mod1Mask)))&&
@@ -551,16 +602,23 @@ void DispatchEvent(XEvent *Event)
 	    {
 	      if(Event->xany.window == Desks[i].w)
 		{
+		  if (Scr.CurrentDesk != i + desk1)
+		    {
+		      SwitchToDeskAndPage(i,Event);
+		      Scr.CurrentDesk = i + desk1;
+		      Wait = 0;
+		    }
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
+		  break;
 		}
 	    }
 	  if(Event->xany.window == icon_win)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 	}
       break;
@@ -575,21 +633,21 @@ void DispatchEvent(XEvent *Event)
 		{
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				    &JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
 		}
 	    }
 	  if(Event->xany.window == icon_win)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 
 	}
       break;
-      
+
     case ClientMessage:
-      if ((Event->xclient.format==32) && 
+      if ((Event->xclient.format==32) &&
 	  (Event->xclient.data.l[0]==wm_del_win))
 	{
 	  exit(0);
@@ -603,6 +661,12 @@ void HandleExpose(XEvent *Event)
   int i;
   PagerWindow *t;
 
+  /* ric@giccs.georgetown.edu */
+  if ( Event->xany.window == balloon.w ) {
+    DrawInBalloonWindow();
+    return;
+  }
+
   for(i=0;i<ndesks;i++)
     {
       if((Event->xany.window == Desks[i].w)
@@ -611,7 +675,7 @@ void HandleExpose(XEvent *Event)
     }
   if(Event->xany.window == icon_win)
     DrawIconGrid(0);
-  
+
   t = Start;
   while(t!= NULL)
     {
@@ -625,7 +689,7 @@ void HandleExpose(XEvent *Event)
 	  LabelIconWindow(t);
 	  PictureIconWindow(t);
 	}
-      
+
       t = t->next;
     }
 }
@@ -674,12 +738,12 @@ void ReConfigure(void)
       for(j=0;j<Columns;j++)
 	{
 	  i = k*Columns+j;
-	  
+
 	  if(i<ndesks)
 	    {
 	      XMoveResizeWindow(dpy,Desks[i].title_w,
 				(desk_w+1)*j-1,(desk_h+label_h+1)*k-1,
-				desk_w,window_h);
+				desk_w,desk_h+label_h);
 	      XMoveResizeWindow(dpy,Desks[i].w,-1,label_h - 1,
 				desk_w,desk_h);
 	      if(i == Scr.CurrentDesk - desk1)
@@ -703,9 +767,6 @@ void MovePage(void)
 {
   int n1,m1,x,y,n,m,i;
   XTextProperty name;
-#ifdef I18N
-  int ret;
-#endif
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
 
@@ -742,22 +803,11 @@ void MovePage(void)
 	  sprintf(str,"Desk %d",Scr.CurrentDesk);
 	  sptr = &str[0];
 	}
-#ifdef I18N
-      if ((ret = XmbTextListToTextProperty(dpy,&sptr,1,XStdICCTextStyle,&name))
-	  == XNoMemory)
+      if (XStringListToTextProperty(&sptr,1,&name) == 0)
 	{
 	  fprintf(stderr,"%s: cannot allocate window name",MyName);
 	  return;
 	}
-      else if (ret != Success)
-	  return;
-#else
-      if (XStringListToTextProperty(&sptr,1,&name) == 0) 
-	{
-	  fprintf(stderr,"%s: cannot allocate window name",MyName);
-	  return;
-	}
-#endif
       XSetWMIconName(dpy,Scr.Pager_w,&name);
     }
 }
@@ -793,12 +843,12 @@ void ReConfigureIcons(void)
 	(Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
       h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
 	(Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-      
+
       if (w < 1)
 	w = 1;
       if (h < 1)
 	h = 1;
-      
+
       t->icon_view_width      = w;
       t->icon_view_height     = h;
       if(Scr.CurrentDesk == t->desk)
@@ -857,7 +907,7 @@ void DrawGrid(int i, int erase)
 	XClearArea(dpy,Desks[i].title_w,
 		   0,0,desk_w,label_h - 1,False);
     }
-		     
+
   d = desk1+i;
   ptr = Desks[i].label;
   w=XTextWidth(font,ptr,strlen(ptr));
@@ -865,19 +915,17 @@ void DrawGrid(int i, int erase)
     {
       sprintf(str,"%d",d);
       ptr = str;
-      w=XTextWidth(font,ptr,strlen(ptr));	
+      w=XTextWidth(font,ptr,strlen(ptr));
     }
   if((w<= desk_w)&&(uselabel))
     {
       hor_off = (desk_w -w)/2;
-#undef FONTSET
-#define FONTSET fontset
       if(i == (Scr.CurrentDesk - desk1))
-	XDrawString (dpy, Desks[i].title_w,rvGC,hor_off,font->ascent +1 , 
-		     ptr, strlen(ptr));      
+	XDrawString (dpy, Desks[i].title_w,rvGC,hor_off,font->ascent +1 ,
+		     ptr, strlen(ptr));
       else
-	XDrawString (dpy, Desks[i].title_w,NormalGC,hor_off,font->ascent+1  , 
-		     ptr, strlen(ptr));      
+	XDrawString (dpy, Desks[i].title_w,NormalGC,hor_off,font->ascent+1  ,
+		     ptr, strlen(ptr));
     }
 }
 
@@ -923,49 +971,50 @@ void DrawIconGrid(int erase)
 
   XFillRectangle(dpy,icon_win,HiliteGC,
 		 x,y,w,h);
-		     
+
 }
 
 
 void SwitchToDesk(int Desk)
 {
   char command[256];
-  
+
   sprintf(command,"Desk 0 %d\n",Desk+desk1);
 
-  SendInfo(fd,command,0);  
+  SendInfo(fd,command,0);
 }
 
 
 void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
+#ifndef NON_VIRTUAL
   char command[256];
 
   if (Scr.CurrentDesk != (Desk+desk1))
     {
-#ifndef NON_VIRTUAL
+      int vx, vy;
       SendInfo(fd,"Desk 0 10000\n",0);
-      sprintf(command,"GotoPage %d %d\n",
-	      Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
-	      (desk_w*Scr.MyDisplayWidth),
-	      Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
-	      (desk_h*Scr.MyDisplayHeight));
-      SendInfo(fd,command,0);  
-
+      /* patch to let mouse button 3 change desks and do not cling to a page */
+      vx = Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
+	(desk_w*Scr.MyDisplayWidth);
+      vy = Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
+	(desk_h*Scr.MyDisplayHeight);
+      Scr.Vx = vx * Scr.MyDisplayWidth;
+      Scr.Vy = vy * Scr.MyDisplayHeight;
+      sprintf(command,"GotoPage %d %d\n", vx, vy);
+      SendInfo(fd,command,0);
       sprintf(command,"Desk 0 %d\n",Desk+desk1);
-      SendInfo(fd,command,0);  
+      SendInfo(fd,command,0);
 
-#endif
     }
   else
     {
-#ifndef	NON_VIRTUAL
       sprintf(command,"GotoPage %d %d\n",
 	      Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	      (desk_w*Scr.MyDisplayWidth),
 	      Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
 	      (desk_h*Scr.MyDisplayHeight));
-      SendInfo(fd,command,0);  
+      SendInfo(fd,command,0);
     }
 #endif
   Wait = 1;
@@ -973,15 +1022,15 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 
 void IconSwitchPage(XEvent *Event)
 {
-  char command[256];
-  
 #ifndef NON_VIRTUAL
+  char command[256];
+
   sprintf(command,"GotoPage %d %d\n",
 	  Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	  (icon_w*Scr.MyDisplayWidth),
 	  Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
 	  (icon_h*Scr.MyDisplayHeight));
-  SendInfo(fd,command,0);  
+  SendInfo(fd,command,0);
 #endif
   Wait = 1;
 }
@@ -1015,6 +1064,10 @@ void AddNewWindow(PagerWindow *t)
   attributes.background_pixel = t->back;
   attributes.border_pixel = fore_pix;
   attributes.event_mask = (ExposureMask);
+
+  /* ric@giccs.georgetown.edu -- added Enter and Leave events for
+     popping up balloon window */
+  attributes.event_mask = (ExposureMask | EnterWindowMask | LeaveWindowMask);
 
   if((i >= 0)&& (i <ndesks))
     {
@@ -1050,7 +1103,7 @@ void AddNewWindow(PagerWindow *t)
 				  valuemask,&attributes);
       XGrabButton(dpy, 2, AnyModifier, t->IconView,
 		  True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-		  GrabModeAsync, GrabModeAsync, None, 
+		  GrabModeAsync, GrabModeAsync, None,
 		  None);
       XMapRaised(dpy,t->IconView);
     }
@@ -1087,8 +1140,10 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
   x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-  w = (Scr.Vx + t->x + t->width+2)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+  w = (Scr.Vx + t->x + t->width+2)*(desk_w-n) /
+    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
+  h = (Scr.Vy + t->y + t->height+2)*(desk_h-m) /
+    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
   if (w < 1)
     w = 1;
   if (h < 1)
@@ -1109,8 +1164,10 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 
   x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-  w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+  w = (Scr.Vx + t->x + t->width+2)*(icon_w-n) /
+    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
+  h = (Scr.Vy + t->y + t->height+2)*(icon_h-m) /
+    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
   if (w < 1)
     w = 1;
   if (h < 1)
@@ -1152,7 +1209,7 @@ void MoveResizePagerView(PagerWindow *t)
       AddNewWindow(t);
       return;
     }
-    
+
   x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
   w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
@@ -1176,7 +1233,7 @@ void MoveResizePagerView(PagerWindow *t)
 void MoveStickyWindows(void)
 {
   PagerWindow *t;
-  
+
   t = Start;
   while(t!= NULL)
     {
@@ -1235,14 +1292,14 @@ void Hilight(PagerWindow *t, int on)
       if(on)
 	{
 	  if(t->PagerView != None)
-	    XSetWindowBackground(dpy,t->PagerView,focus_pix);     
-	  XSetWindowBackground(dpy,t->IconView,focus_pix);     
+	    XSetWindowBackground(dpy,t->PagerView,focus_pix);
+	  XSetWindowBackground(dpy,t->IconView,focus_pix);
 	}
       else
 	{
 	  if(t->PagerView != None)
-	    XSetWindowBackground(dpy,t->PagerView,t->back);     
-	  XSetWindowBackground(dpy,t->IconView,t->back);     
+	    XSetWindowBackground(dpy,t->PagerView,t->back);
+	  XSetWindowBackground(dpy,t->IconView,t->back);
 	}
     }
   if(t->PagerView != None)
@@ -1254,14 +1311,16 @@ void Hilight(PagerWindow *t, int on)
   PictureIconWindow(t);
 }
 
-void Scroll(int Desk, int x, int y)
+/* Use Desk == -1 to scroll the icon window */
+void Scroll(int window_w, int window_h, int x, int y, int Desk)
 {
 #ifndef NON_VIRTUAL
   char command[256];
   int sx, sy;
   if(Wait == 0)
     {
-      if(Desk != Scr.CurrentDesk)
+      /* Desk < 0 means we want to scroll an icon window */
+      if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
 	{
 	  return;
 	}
@@ -1271,59 +1330,26 @@ void Scroll(int Desk, int x, int y)
       if(y < 0)
 	y = 0;
 
-      if(x > desk_w)
-	x = desk_w;
-      if(y > desk_h)
-	y = desk_h;
+      if(x > window_w)
+	x = window_w;
+      if(y > window_h)
+	y = window_h;
 
-      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/desk_w- Scr.Vx))/Scr.MyDisplayWidth;
-      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/
-		   desk_h - Scr.Vy))/Scr.MyDisplayHeight;
-      if(sx > 100)sx = 100;
-      if(sx < -100)sx = -100;
-      if(sy < -100)sy = -100;
-      if(sy > 100)sy = 100;
-  
+      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/window_w- Scr.Vx)) /
+	Scr.MyDisplayWidth;
+      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/window_h - Scr.Vy)) /
+	Scr.MyDisplayHeight;
+      /* Make sure we don't get stuck a few pixels fromt the top/left border.
+       * Since sx/sy are ints, values between 0 and 1 are rounded down. */
+      if(sx == 0 && x == 0 && Scr.Vx != 0) sx = -1;
+      if(sy == 0 && y == 0 && Scr.Vy != 0) sy = -1;
+
       sprintf(command,"Scroll %d %d\n",sx,sy);
       SendInfo(fd,command,0);
       Wait = 1;
     }
 #endif
 }
-
-
-void IconScroll(int x, int y)
-{
-#ifndef NON_VIRTUAL
-  char command[256];
-  int sx, sy;
-  if(Wait == 0)
-    {
-      if(x < 0)
-	x = 0;
-      if(y < 0)
-	y = 0;
-
-      if(x > icon_w)
-	x = icon_w;
-      if(y > icon_h)
-	y = icon_h;
-
-      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/icon_w- Scr.Vx))/Scr.MyDisplayWidth;
-      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/
-		   icon_h - Scr.Vy))/Scr.MyDisplayHeight;
-      if(sx > 100)sx = 100;
-      if(sx < -100)sx = -100;
-      if(sy < -100)sy = -100;
-      if(sy > 100)sy = 100;
-  
-      sprintf(command,"Scroll %d %d\n",sx,sy);
-      SendInfo(fd,command,0);
-      Wait = 1;
-    }
-#endif
-}
-
 
 void MoveWindow(XEvent *Event)
 {
@@ -1351,7 +1377,7 @@ void MoveWindow(XEvent *Event)
 	  return;
 	}
     }
-  
+
   if(t == NULL)
     return;
 
@@ -1382,7 +1408,7 @@ void MoveWindow(XEvent *Event)
       if(Event->type == MotionNotify)
 	{
 	  XTranslateCoordinates(dpy, Event->xany.window, Scr.Pager_w,
-				Event->xmotion.x, Event->xmotion.y, &x, &y, 
+				Event->xmotion.x, Event->xmotion.y, &x, &y,
 				&dumwin);
 	  if(moved == 0)
 	    {
@@ -1401,7 +1427,7 @@ void MoveWindow(XEvent *Event)
       else if(Event->type == ButtonRelease)
 	{
 	  XTranslateCoordinates(dpy, Event->xany.window, Scr.Pager_w,
-				Event->xbutton.x, Event->xbutton.y, &x, &y, 
+				Event->xbutton.x, Event->xbutton.y, &x, &y,
 				&dumwin);
 	  XMoveWindow(dpy,t->PagerView, x - (x1),
 		      y - (y1));
@@ -1427,7 +1453,7 @@ void MoveWindow(XEvent *Event)
 	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
-	  sprintf(command,"WindowsDesk %d", NewDesk);
+	  sprintf(command,"MoveToDesk 0 %d", NewDesk);
 	  SendInfo(fd,command,t->w);
 	  t->desk = NewDesk;
 	}
@@ -1440,18 +1466,12 @@ void MoveWindow(XEvent *Event)
 	}
       XTranslateCoordinates(dpy, Scr.Pager_w, Scr.Root,
 			    x, y, &x1, &y1, &dumwin);
-      if(t->flags & ICONIFIED)
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->icon_w);
-	}
-      else
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->w);
-	}
+      XUngrabPointer(dpy,CurrentTime);
+      XSync(dpy,0);
+      sprintf(command, "Move %dp %dp", x, y);
+      SendInfo(fd,command,t->w);
+      SendInfo(fd,"Raise",t->w);
+      SendInfo(fd,"Move",t->w);
       return;
     }
   else
@@ -1507,12 +1527,12 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    {
-	      sprintf(command,"WindowsDesk %d", NewDesk + desk1);
+	      sprintf(command,"MoveToDesk 0 %d", NewDesk + desk1);
 	      SendInfo(fd,command,t->w);
 	      t->desk = NewDesk + desk1;
 	    }
 	}
-      
+
       if((NewDesk >= 0)&&(NewDesk < ndesks))
 	{
 	  XReparentWindow(dpy, t->PagerView, Desks[NewDesk].w,x,y);
@@ -1532,12 +1552,34 @@ void MoveWindow(XEvent *Event)
       if(Scr.CurrentDesk == t->desk)
 	{
           XSync(dpy,0);
-          sleep_a_little(5000);
+          usleep(5000);
           XSync(dpy,0);
 	  if(t->flags & ICONIFIED)
-	    XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time); 
+            {
+/*
+    RBW - reverting to old code for 2.2...
+    The new handling causes an unwanted viewport change whenever Button2
+    is used; the old handling causes focus to be sent to No Input windows
+    regardless of the Lenience setting. After 2.2 we will revisit this issue.
+    I suspect it will involve expanding the module message to include wmhints
+    and such.
+*/
+#if 0
+            SendInfo(fd, "Focus", t->icon_w);
+#else
+            XSetInputFocus (dpy, t->icon_w, RevertToParent,
+              Event->xbutton.time);
+#endif
+            }
 	  else
-	    XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+            {
+#if 0
+	    SendInfo(fd, "Focus", t->w);
+#else
+            XSetInputFocus (dpy, t->w, RevertToParent,
+              Event->xbutton.time);
+#endif
+            }
 	}
     }
 }
@@ -1555,27 +1597,19 @@ void MoveWindow(XEvent *Event)
  ************************************************************************/
 XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
-#if 0
-  Window root;
-  unsigned border_width, depth;
-  int x,y;
-  
-  if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
-		  (unsigned *)&window_w,(unsigned *)&window_h,
-		  &border_width,&depth)==0)
-    {
-      exit(0);
-    }
-
+#if 1
+  extern Bool error_occured;
+  error_occured = True;
   return 0;
 #else
   /* really should just exit here... */
+  /* domivogt (07-mar-1999): No, not really. See comment above. */
   fprintf(stderr,"%s: XError!  Bagging out!\n",MyName);
   exit(0);
-#endif /* 0 */
+#endif /* 1 */
 }
 
- 
+
 void LabelWindow(PagerWindow *t)
 {
   XGCValues Globalgcv;
@@ -1598,23 +1632,21 @@ void LabelWindow(PagerWindow *t)
       Globalgcv.foreground = focus_fore_pix;
       Globalgcv.background = focus_pix;
       Globalgcm = GCForeground|GCBackground;
-      XChangeGC(dpy, StdGC,Globalgcm,&Globalgcv); 
+      XChangeGC(dpy, StdGC,Globalgcm,&Globalgcv);
     }
   else
     {
       Globalgcv.foreground = t->text;
       Globalgcv.background = t->back;
       Globalgcm = GCForeground|GCBackground;
-      XChangeGC(dpy, StdGC,Globalgcm,&Globalgcv); 
+      XChangeGC(dpy, StdGC,Globalgcm,&Globalgcv);
 
     }
-#undef FONTSET
-#define FONTSET windowFontset
   if(t->PagerView != None)
     {
       XClearWindow(dpy, t->PagerView);
-      XDrawString (dpy, t->PagerView,StdGC,2,windowFont->ascent+2 , 
-			t->icon_name, strlen(t->icon_name));        
+      XDrawString (dpy, t->PagerView,StdGC,2,windowFont->ascent+2 ,
+			t->icon_name, strlen(t->icon_name));
     }
 }
 
@@ -1623,15 +1655,15 @@ void LabelIconWindow(PagerWindow *t)
 {
   XGCValues Globalgcv;
   unsigned long Globalgcm;
-  
+
   if(windowFont == NULL)
     {
       return;
     }
   if (MiniIcons && t->mini_icon.picture && (t->PagerView != None))
-  {
-    return; /* will draw picture instead... */
-  }
+    {
+      return; /* will draw picture instead... */
+    }
   if(t->icon_name == NULL)
     {
       return;
@@ -1642,112 +1674,115 @@ void LabelIconWindow(PagerWindow *t)
       Globalgcv.foreground = focus_fore_pix;
       Globalgcv.background = focus_pix;
       Globalgcm = GCForeground|GCBackground;
-      XChangeGC(dpy,StdGC,Globalgcm,&Globalgcv); 
+      XChangeGC(dpy,StdGC,Globalgcm,&Globalgcv);
     }
   else
     {
       Globalgcv.foreground = t->text;
       Globalgcv.background = t->back;
       Globalgcm = GCForeground|GCBackground;
-      XChangeGC(dpy,StdGC,Globalgcm,&Globalgcv); 
+      XChangeGC(dpy,StdGC,Globalgcm,&Globalgcv);
 
     }
-#undef FONTSET
-#define FONTSET windowFontset
   XClearWindow(dpy, t->IconView);
-  XDrawString (dpy, t->IconView,StdGC,2,windowFont->ascent+2 , 
-	       t->icon_name, strlen(t->icon_name));        
+  XDrawString (dpy, t->IconView,StdGC,2,windowFont->ascent+2 ,
+	       t->icon_name, strlen(t->icon_name));
 
 }
 void PictureWindow (PagerWindow *t)
 {
-	XGCValues		Globalgcv;
-	unsigned long	Globalgcm;
-	int				iconX;
-	int				iconY;
-	if (MiniIcons)
+  XGCValues Globalgcv;
+  unsigned long Globalgcm;
+  int iconX;
+  int iconY;
+  if (MiniIcons)
+    {
+      if (t->mini_icon.picture && (t->PagerView != None))
 	{
-		if (t->mini_icon.picture && (t->PagerView != None))
-		{
-			if (t->pager_view_width > t->mini_icon.width)
-				iconX = (t->pager_view_width - t->mini_icon.width) / 2;
-			else if (t->pager_view_width < t->mini_icon.width)
-				iconX = -((t->mini_icon.width - t->pager_view_width) / 2);
-			else
-				iconX = 0;
-			if (t->pager_view_height > t->mini_icon.height)
-				iconY = (t->pager_view_height - t->mini_icon.height) / 2;
-			else if (t->pager_view_height < t->mini_icon.height)
-				iconY = -((t->mini_icon.height - t->pager_view_height) / 2);
-			else
-				iconY = 0;
-			Globalgcm				= GCForeground | GCBackground | GCClipMask | GCClipXOrigin | GCClipYOrigin;
-			Globalgcv.clip_mask		= t->mini_icon.mask;
-			Globalgcv.clip_x_origin	= iconX;
-			Globalgcv.clip_y_origin	= iconY;
-			if (t == FocusWin)
-			{
-				Globalgcv.foreground	= focus_fore_pix;
-				Globalgcv.background	= focus_pix;
-			}
-			else
-			{
-				Globalgcv.foreground	= t->text;
-				Globalgcv.background	= t->back;
-			}
-			XChangeGC (dpy, MiniIconGC, Globalgcm, &Globalgcv);
-			XClearWindow (dpy, t->PagerView);
-			XCopyArea (dpy, t->mini_icon.picture, t->PagerView, MiniIconGC,
-							0, 0, t->mini_icon.width, t->mini_icon.height, iconX, iconY);
-		}
+	  if (t->pager_view_width > t->mini_icon.width)
+	    iconX = (t->pager_view_width - t->mini_icon.width) / 2;
+	  else if (t->pager_view_width < t->mini_icon.width)
+	    iconX = -((t->mini_icon.width - t->pager_view_width) / 2);
+	  else
+	    iconX = 0;
+	  if (t->pager_view_height > t->mini_icon.height)
+	    iconY = (t->pager_view_height - t->mini_icon.height) / 2;
+	  else if (t->pager_view_height < t->mini_icon.height)
+	    iconY = -((t->mini_icon.height - t->pager_view_height) / 2);
+	  else
+	    iconY = 0;
+	  Globalgcm = GCForeground | GCBackground | GCClipMask |
+	    GCClipXOrigin | GCClipYOrigin;
+	  Globalgcv.clip_mask = t->mini_icon.mask;
+	  Globalgcv.clip_x_origin = iconX;
+	  Globalgcv.clip_y_origin = iconY;
+	  if (t == FocusWin)
+	    {
+	      Globalgcv.foreground = focus_fore_pix;
+	      Globalgcv.background = focus_pix;
+	    }
+	  else
+	    {
+	      Globalgcv.foreground = t->text;
+	      Globalgcv.background = t->back;
+	    }
+	  XChangeGC (dpy, MiniIconGC, Globalgcm, &Globalgcv);
+	  XClearWindow (dpy, t->PagerView);
+	  XCopyArea (dpy, t->mini_icon.picture, t->PagerView, MiniIconGC,
+		     0, 0, t->mini_icon.width, t->mini_icon.height, iconX,
+		     iconY);
 	}
+    }
 }
 void PictureIconWindow (PagerWindow *t)
 {
-	XGCValues		Globalgcv;
-	unsigned long	Globalgcm;
-	int				iconX;
-	int				iconY;
-	if (MiniIcons)
+  XGCValues Globalgcv;
+  unsigned long Globalgcm;
+  int iconX;
+  int iconY;
+  if (MiniIcons)
+    {
+      if (t->mini_icon.picture && (t->IconView != None))
 	{
-		if (t->mini_icon.picture && (t->IconView != None))
-		{
-			if (t->icon_view_width > t->mini_icon.width)
-				iconX = (t->icon_view_width - t->mini_icon.width) / 2;
-			else if (t->icon_view_width < t->mini_icon.width)
-				iconX = -((t->mini_icon.width - t->icon_view_width) / 2);
-			else
-				iconX = 0;
-			if (t->icon_view_height > t->mini_icon.height)
-				iconY = (t->icon_view_height - t->mini_icon.height) / 2;
-			else if (t->icon_view_height < t->mini_icon.height)
-				iconY = -((t->mini_icon.height - t->icon_view_height) / 2);
-			else
-				iconY = 0;
-			Globalgcm				= GCForeground | GCBackground | GCClipMask | GCClipXOrigin | GCClipYOrigin;
-			Globalgcv.clip_mask		= t->mini_icon.mask;
-			Globalgcv.clip_x_origin	= iconX;
-			Globalgcv.clip_y_origin	= iconY;
-			if (t == FocusWin)
-			{
-				Globalgcv.foreground	= focus_fore_pix;
-				Globalgcv.background	= focus_pix;
-			}
-			else
-			{
-				Globalgcv.foreground	= t->text;
-				Globalgcv.background	= t->back;
-			}
-			XChangeGC (dpy, MiniIconGC, Globalgcm, &Globalgcv);
-			XClearWindow (dpy, t->IconView);
-			XCopyArea (dpy, t->mini_icon.picture, t->IconView, MiniIconGC,
-							0, 0, t->mini_icon.width, t->mini_icon.height, iconX, iconY);
-		}
+	  if (t->icon_view_width > t->mini_icon.width)
+	    iconX = (t->icon_view_width - t->mini_icon.width) / 2;
+	  else if (t->icon_view_width < t->mini_icon.width)
+	    iconX = -((t->mini_icon.width - t->icon_view_width) / 2);
+	  else
+	    iconX = 0;
+	  if (t->icon_view_height > t->mini_icon.height)
+	    iconY = (t->icon_view_height - t->mini_icon.height) / 2;
+	  else if (t->icon_view_height < t->mini_icon.height)
+	    iconY = -((t->mini_icon.height - t->icon_view_height) / 2);
+	  else
+	    iconY = 0;
+	  Globalgcm = GCForeground | GCBackground | GCClipMask |
+	    GCClipXOrigin | GCClipYOrigin;
+	  Globalgcv.clip_mask = t->mini_icon.mask;
+	  Globalgcv.clip_x_origin = iconX;
+	  Globalgcv.clip_y_origin = iconY;
+	  if (t == FocusWin)
+	    {
+	      Globalgcv.foreground = focus_fore_pix;
+	      Globalgcv.background = focus_pix;
+	    }
+	  else
+	    {
+	      Globalgcv.foreground = t->text;
+	      Globalgcv.background = t->back;
+	    }
+	  XChangeGC (dpy, MiniIconGC, Globalgcm, &Globalgcv);
+	  XClearWindow (dpy, t->IconView);
+	  XCopyArea (dpy, t->mini_icon.picture, t->IconView, MiniIconGC,
+		     0, 0, t->mini_icon.width, t->mini_icon.height, iconX,
+		     iconY);
 	}
+    }
 }
 
 void IconMoveWindow(XEvent *Event,PagerWindow *t)
 {
+  char command[100];
   int x1,y1,finished = 0,wx,wy,n,x=0,y=0,xi=0,yi=0;
   Window dumwin;
   int m,n1,m1;
@@ -1782,7 +1817,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	      yi = y;
 	      moved = 1;
 	    }
-	  
+
 	  XMoveWindow(dpy,t->IconView, x - (x1),
 		      y - (y1));
 	  if((x < -5)||(y < -5)||(x>icon_w+5)||(y>icon_h+5))
@@ -1815,18 +1850,12 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     {
       XTranslateCoordinates(dpy, t->IconView, Scr.Root,
 			    x, y, &x1, &y1, &dumwin);
-      if(t->flags & ICONIFIED)
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->icon_w);
-	}
-      else
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->w);
-	}
+      XUngrabPointer(dpy,CurrentTime);
+      XSync(dpy,0);
+      sprintf(command, "Move %dp %dp", x, y);
+      SendInfo(fd,command,t->w);
+      SendInfo(fd,"Raise",t->w);
+      SendInfo(fd,"Move",t->w);
     }
   else
     {
@@ -1838,7 +1867,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	(Scr.VxMax + Scr.MyDisplayWidth)/(icon_w-n) - Scr.Vx;
       y = (y-m1)*
 	(Scr.VyMax + Scr.MyDisplayHeight)/(icon_h-m) - Scr.Vy;
-      
+
       if(((t->flags & ICONIFIED)&&(t->flags & StickyIcon))||
 	 (t->flags & STICKY))
 	{
@@ -1864,11 +1893,148 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	  MoveResizePagerView(t);
 	}
       SendInfo(fd,"Raise",t->w);
-      
+
       if(t->flags & ICONIFIED)
-	XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time); 
+        {
+/*
+    RBW - reverting to old code for 2.2...temporarily. See note above, in
+    MoveWindow.
+*/
+#if 0
+          SendInfo(fd, "Focus", t->icon_w);
+#else
+          XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
+#endif
+        }
       else
-	XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+        {
+#if 0
+          SendInfo(fd, "Focus", t->w);
+#else
+          XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+#endif
+        }
     }
 
+}
+
+
+/* Just maps window ... draw stuff in it later after Expose event
+   -- ric@giccs.georgetown.edu */
+void MapBalloonWindow (XEvent *event)
+{
+  PagerWindow *t;
+  XWindowChanges window_changes;
+  Window view, dummy;
+  int view_width, view_height;
+  int matched_window = 0;
+  int x, y;
+  extern char *BalloonBack;
+
+  /* is this the best way to match X event window ID to PagerWindow ID? */
+  t = Start;
+
+  while ( ! matched_window ) {
+    if (t == NULL) {
+      return;
+    }
+    else if ( t->PagerView == event->xcrossing.window ) {
+      view = t->PagerView;
+      view_width = t->pager_view_width;
+      view_height = t->pager_view_height;
+      matched_window = 1;
+    }
+    else if ( t->IconView == event->xcrossing.window ) {
+      view = t->IconView;
+      view_width = t->icon_view_width;
+      view_height = t->icon_view_height;
+      matched_window = 1;
+    }
+    else {
+      t = t->next;
+    }
+  }
+
+  /* associate balloon with its pager window */
+  balloon.pw = t;
+
+  /* calculate window width to accommodate string */
+  window_changes.width = 4 + XTextWidth(balloon.font, t->icon_name,
+                                        strlen(t->icon_name));
+
+  /* get x and y coords relative to pager window */
+  x = (view_width / 2) - (window_changes.width / 2) - balloon.border;
+
+  if ( balloon.yoffset > 0 )
+    y = view_height + balloon.yoffset;
+  else
+    y = balloon.yoffset - balloon.height - (2 * balloon.border);
+
+
+  /* balloon is a top-level window, therefore need to
+     translate pager window coords to root window coords */
+  XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+                        &window_changes.x, &window_changes.y, &dummy);
+
+
+  /* make sure balloon doesn't go off screen
+     (actually 2 pixels from edge rather than 0 just to be pretty :-) */
+
+  /* too close to left */
+  if ( window_changes.x < 2 )
+    window_changes.x = 2;
+
+  /* too close to right */
+  else if ( window_changes.x + window_changes.width >
+            Scr.MyDisplayWidth - (2 * balloon.border) - 2 )
+    window_changes.x = Scr.MyDisplayWidth - window_changes.width -
+      (2 * balloon.border) - 2;
+
+  /* too close to top ... make yoffset +ve */
+  if ( window_changes.y < 2 ) {
+    y = - balloon.yoffset + view_height;
+    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+			  &window_changes.x, &window_changes.y, &dummy);
+  }
+
+  /* too close to bottom ... make yoffset -ve */
+  else if ( window_changes.y + balloon.height >
+	    Scr.MyDisplayHeight - (2 * balloon.border) - 2 ) {
+    y = - balloon.yoffset - balloon.height - (2 * balloon.border);
+    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+			  &window_changes.x, &window_changes.y, &dummy);
+  }
+
+
+  /* make changes to window */
+  XConfigureWindow(dpy, balloon.w, CWX | CWY | CWWidth, &window_changes);
+
+  /* if background not set in config make it match pager window */
+  if ( BalloonBack == NULL )
+    XSetWindowBackground(dpy, balloon.w, t->back);
+
+  XMapRaised(dpy, balloon.w);
+}
+
+
+/* -- ric@giccs.georgetown.edu */
+void UnmapBalloonWindow (void)
+{
+  XUnmapWindow(dpy, balloon.w);
+}
+
+
+/* Draws string in balloon window -- call after it's received Expose event
+   -- ric@giccs.georgetown.edu */
+void DrawInBalloonWindow (void)
+{
+  extern char *BalloonFore;
+
+  /* if foreground not set in config make it match pager window */
+  if ( BalloonFore == NULL )
+    XSetForeground(dpy, BalloonGC, balloon.pw->text);
+
+  XDrawString(dpy, balloon.w, BalloonGC,
+              2, balloon.font->ascent,
+              balloon.pw->icon_name, strlen(balloon.pw->icon_name));
 }

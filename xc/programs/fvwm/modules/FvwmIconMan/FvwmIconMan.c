@@ -1,28 +1,39 @@
+/*
+ * Permission is granted to distribute this software freely
+ * for any purpose.
+ */
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <errno.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "x.h"
 #include "xmanager.h"
 
-#ifdef COMPILE_STANDALONE
-#include "module.h"
-#else
 #include "../../fvwm/module.h"
-#endif
+
 
 static int fd_width;
-static char *VERSION = "1.0";
+static volatile sig_atomic_t isTerminated = False;
+
+static char *IM_VERSION = "1.3";
+
+static char const rcsid[] =
+  "$Id: FvwmIconMan.c,v 1.3 2001/06/28 22:32:33 matthieu Exp $";
+
+
+static RETSIGTYPE TerminateHandler(int);
 
 char *copy_string (char **target, char *src)
 {
   int len = strlen (src);
-  ConsoleDebug (CORE, "copy_string: 1: 0x%x %s\n", *target, *target);
+  ConsoleDebug (CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
 
   if (*target)
     Free (*target);
-  
+
   ConsoleDebug (CORE, "copy_string: 2\n");
   *target = (char *)safemalloc ((len + 1) * sizeof (char));
   strcpy (*target, src);
@@ -59,18 +70,6 @@ void PrintMemuse (void)
   ConsoleDebug (CORE, "Memory used: %d\n", MemUsed);
 }
 
-#elif defined(DMALLOC)
-
-void Free (void *p)
-{
-  dfree (p);
-}
-
-void PrintMemuse (void)
-{
-  print_heap_stats();
-}
-    
 #else
 
 void Free (void *p)
@@ -86,6 +85,12 @@ void PrintMemuse (void)
 #endif
 
 
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  isTerminated = True;
+}
+
 
 void ShutMeDown (int flag)
 {
@@ -95,13 +100,7 @@ void ShutMeDown (int flag)
 
 void DeadPipe (int nothing)
 {
-  ConsoleDebug (CORE, "Bye Bye\n");
-  /*
-   * ShutMeDown is not called because most operations, especially X
-   * calls, are not allowed in signal handlers. Currently, of course,
-   * ShutMeDown doesn't do anything significant, but it may in future.
-   */
-  exit (0);
+  ShutMeDown(0);
 }
 
 void SendFvwmPipe (char *message,unsigned long window)
@@ -128,35 +127,32 @@ void SendFvwmPipe (char *message,unsigned long window)
 static void main_loop (void)
 {
   fd_set readset, saveset;
-  struct timeval tv;
-  int n;
 
   FD_ZERO (&saveset);
   FD_SET (Fvwm_fd[1], &saveset);
   FD_SET (x_fd, &saveset);
 
-  while(1) {
+  while( !isTerminated ) {
+    /* Check the pipes for anything to read, and block if
+     * there is nothing there yet ...
+     */
     readset = saveset;
-    tv.tv_sec=0;
-    tv.tv_usec=0;
-    if (!(n = select(fd_width,&readset,NULL,NULL,&tv))) {
-      XPending (theDisplay);
-      readset = saveset;
-      n = select(fd_width,&readset,NULL,NULL,NULL);
+    if (select(fd_width,&readset,NULL,NULL,NULL) < 0) {
+      ConsoleMessage ("Internal error with select: errno=%d\n",errno);
     }
-    
-    if (n < 0) {
-      ConsoleMessage ("Internal error with select\n");
-    }
+    else {
 
-    if (FD_ISSET (x_fd, &readset) || XPending (theDisplay)) {
-      xevent_loop();
+      if (FD_ISSET (x_fd, &readset) || XPending (theDisplay)) {
+        xevent_loop();
+      }
+      if (FD_ISSET(Fvwm_fd[1],&readset)) {
+        ReadFvwmPipe();
+      }
+
     }
-    if (FD_ISSET(Fvwm_fd[1],&readset)) {
-      ReadFvwmPipe();
-    }
-  }
+  } /* while */
 }
+
 int main (int argc, char **argv)
 {
   char *temp, *s;
@@ -169,17 +165,13 @@ int main (int argc, char **argv)
   EF_PROTECT_FREE = 1;
 #endif
 
-#ifdef DMALLOC
-  init_dmalloc(DMALLOC_HEAPCHECK);
-#endif
-
 #ifdef DEBUG_ATTACH
   {
     char buf[256];
     sprintf (buf, "%d", getpid());
     if (fork() == 0) {
       chdir ("/home/bradym/src/FvwmIconMan");
-      execl ("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan", 
+      execl ("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan",
 	     buf, NULL);
     }
     else {
@@ -189,11 +181,7 @@ int main (int argc, char **argv)
   }
 #endif
 
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
-
-  OpenConsole();
+  OpenConsole(OUTPUT_FILE);
 
 #if 0
   ConsoleMessage ("PID = %d\n", getpid());
@@ -203,7 +191,7 @@ int main (int argc, char **argv)
 
   init_globals();
   init_winlists();
-  
+
   temp = argv[0];
   s = strrchr (argv[0], '/');
   if (s != NULL)
@@ -211,7 +199,7 @@ int main (int argc, char **argv)
 
   if((argc != 6) && (argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
-      VERSION);
+      IM_VERSION);
     ShutMeDown (1);
   }
   if (argc == 7 && !strcasecmp (argv[6], "Transient"))
@@ -221,15 +209,40 @@ int main (int argc, char **argv)
   Fvwm_fd[1] = atoi(argv[2]);
   init_display();
   init_boxes();
-  
-  signal (SIGPIPE, DeadPipe);  
+
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+#endif
 
   read_in_resources (argv[3]);
-  
+
   for (i = 0; i < globals.num_managers; i++) {
     X_init_manager (i);
   }
-  
+
   assert (globals.managers);
   fd_width = GetFdWidth();
 
@@ -238,15 +251,13 @@ int main (int argc, char **argv)
                  M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
                  M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
 #ifdef MINI_ICONS
-		 M_MINI_ICON | M_STRING);
-#else
-		 M_STRING);
+		 M_MINI_ICON |
 #endif
+		 M_STRING);
 
   SendInfo (Fvwm_fd, "Send_WindowList", 0);
+
   main_loop();
 
-  ConsoleMessage ("Shouldn't be here\n");
-  
   return 0;
 }

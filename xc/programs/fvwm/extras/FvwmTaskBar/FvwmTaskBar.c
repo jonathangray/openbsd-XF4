@@ -3,6 +3,8 @@
  * (Much reworked version of FvwmWinList)
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
+ * Minor hack by TKP to enable autohide to work with pages (leaves 2 pixels
+ * visible so that the 1 pixel panframes don't get in the way)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -19,7 +21,7 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -29,14 +31,18 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
+
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -44,12 +50,8 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
 
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"  /* for pixmaps routines */
 
 
@@ -88,9 +90,6 @@ int     screen, d_depth;
 Pixel   back, fore;
 GC      graph, shadow, hilite, blackgc, whitegc;
 XFontStruct *ButtonFont, *SelButtonFont;
-#ifdef I18N
-XFontSet ButtonFontset, SelButtonFontset;
-#endif
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -150,12 +149,14 @@ Colormap PictureCMap;
 char *IconPath   = NULL,
      *PixmapPath = NULL;
 
+static void ParseConfigLine(char *tline);
+
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
     Based on main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
 
@@ -164,16 +165,13 @@ void main(int argc, char **argv)
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
-  
+
   /* Setup my name */
   Module = safemalloc(strlen(temp)+2);
   strcpy(Module,"*");
   strcat(Module, temp);
   Clength = strlen(Module);
 
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
   /* Open the console for messages */
   OpenConsole();
 
@@ -196,7 +194,7 @@ void main(int argc, char **argv)
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY | M_ICONIFY |
 		 M_END_WINDOWLIST | M_FOCUS_CHANGE |
-		M_CONFIG_INFO
+		M_CONFIG_INFO | M_END_CONFIG_INFO
 #ifdef FVWM95
 		| M_FUNCTION_END |
 		M_SCROLLREGION
@@ -208,7 +206,8 @@ void main(int argc, char **argv)
 
   /* Parse the config file */
   InitList(&swallowed);
-  ParseConfig(argv[3]);
+
+  ParseConfig();
 
   /* Setup the XConnection */
   StartMeUp();
@@ -230,7 +229,9 @@ void main(int argc, char **argv)
 
   /* Receive all messages from Fvwm */
   EndLessLoop();
+  return 0;
 }
+
 
 /******************************************************************************
   EndLessLoop -  Read and redraw until we get killed, blocking when can't read
@@ -247,40 +248,21 @@ void EndLessLoop()
     XPending(dpy);
     tv.tv_sec  = 0;
     tv.tv_usec = 0;
-#ifdef __hpux
-    if (!select(fd_width, (int *)&readset, NULL, NULL, &tv)) {
+    if (!select(fd_width, SELECT_TYPE_ARG234 &readset, NULL, NULL, &tv)) {
       while(1) {
         FD_ZERO(&readset);
         FD_SET(Fvwm_fd[1], &readset);
         FD_SET(x_fd, &readset);
         XPending(dpy);
-
         tv.tv_sec  = UpdateInterval;
         tv.tv_usec = 0;
-        if (select(fd_width, (int *)&readset, NULL, NULL, &tv) <= 0) 
+        if (select(fd_width, SELECT_TYPE_ARG234 &readset, NULL, NULL, &tv)
+            <= 0)
           DrawGoodies();
         else
           break;
       }
     }
-#else
-    if (!select(fd_width, &readset, NULL, NULL, &tv)) {
-      while(1) {
-        FD_ZERO(&readset);
-        FD_SET(Fvwm_fd[1], &readset);
-        FD_SET(x_fd, &readset);
-        XPending(dpy);
-
-        tv.tv_sec  = UpdateInterval;
-        tv.tv_usec = 0;
-
-        if (select(fd_width, &readset, NULL, NULL, &tv) <= 0)
-          DrawGoodies();
-        else
-          break;
-      }
-    }
-#endif
 
     if (FD_ISSET(x_fd, &readset))
       LoopOnEvents();
@@ -301,9 +283,8 @@ void EndLessLoop()
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  int count,total,count2=0,body_length;
   unsigned long header[HEADER_SIZE],*body;
-  char *cbody;
+
   if(ReadFvwmPacket(Fvwm_fd[1],header,&body) > 0)
     {
       ProcessMessage(header[1],body);
@@ -321,9 +302,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   int redraw=-1;
   int i;
   long flags;
-  char *name,*string;
+  char *string;
   Picture p;
-  
+
   switch(type) {
   case M_FOCUS_CHANGE:
     i = FindItem(&windows, body[0]);
@@ -339,7 +320,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:
     /* Matched only at startup when default border width and
-       actual border width differ. Don't assign win_width here so 
+       actual border width differ. Don't assign win_width here so
        Window redraw and rewarping gets handled by XEvent
        ConfigureNotify code. */
     if (!ShowTransients && (body[8] & TRANSIENT)) break;
@@ -348,9 +329,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	win_x = win_border = (int)body[10];
 
         if (win_y > Midline)
-          win_y = ScreenHeight - (AutoHide ? 1 : win_height + win_border);
-        else 
-          win_y = AutoHide ? 1-win_height : win_border;
+          win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
+        else
+          win_y = AutoHide ? 2 - win_height : win_border;
 
         XMoveResizeWindow(dpy, win, win_x, win_y,
                           ScreenWidth-(win_border<<1), win_height);
@@ -376,13 +357,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_MINI_ICON:
     if ((i = FindItem(&windows, body[0])) == -1) break;
     if (UpdateButton(&buttons, i, NULL, DONT_CARE) != -1) {
-#if 0
-      p.picture = body[1];
-      p.mask    = body[2];
-#else
       p.picture = body[6];
       p.mask    = body[7];
-#endif
       p.width   = body[3];
       p.height  = body[4];
       p.depth   = body[5];
@@ -394,7 +370,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   case M_WINDOW_NAME:
   case M_ICON_NAME:
-    if ((type == M_ICON_NAME   && !UseIconNames) || 
+    if ((type == M_ICON_NAME   && !UseIconNames) ||
 	(type == M_WINDOW_NAME &&  UseIconNames)) break;
     string = (char *) &body[3];
     if ((i = FindNameItem(&swallowed, string)) != -1) {
@@ -403,7 +379,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	break;
       }
     }
-    if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1) 
+    if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1)
       break;
     if (UpdateButton(&buttons, i, string, DONT_CARE) == -1)
       {
@@ -436,14 +412,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #ifdef FVWM95
   case M_FUNCTION_END:
     StartButtonUpdate(NULL, BUTTON_UP);
-    
+
     if (AutoHide && !BelayHide) /* We don't want the taskbar to hide */
       SetAlarm(HIDE_TASK_BAR);  /* after a Focus or Iconify function */
 
     redraw = 0;
     break;
 
-  /* Added a new Fvwm Event because scrolling regions interfere 
+  /* Added a new Fvwm Event because scrolling regions interfere
      with EnterNotify event when taskbar is hidden. */
   case M_SCROLLREGION:
     if (AutoHide && ((win_y <  Midline && body[1] < 4) ||
@@ -460,12 +436,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     break;
 
   }
-  
+
   if (redraw >= 0) RedrawWindow(redraw);
 }
 
 /******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm 
+  SendFvwmPipe - Send a message back to fvwm
     Based on SendInfo() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
@@ -475,7 +451,7 @@ void SendFvwmPipe(char *message, unsigned long window)
   char *hold, *temp, *temp_msg;
 
   hold = message;
-  
+
   while(1) {
     temp = strchr(hold, ',');
     if (temp != NULL) {
@@ -484,9 +460,9 @@ void SendFvwmPipe(char *message, unsigned long window)
       temp_msg[(temp-hold)] = '\0';
       hold = temp+1;
     } else temp_msg = hold;
-    
+
     write(Fvwm_fd[0], &window, sizeof(unsigned long));
-    
+
     w=strlen(temp_msg);
     write(Fvwm_fd[0], &w, sizeof(int));
     write(Fvwm_fd[0], temp_msg, w);
@@ -503,7 +479,7 @@ void SendFvwmPipe(char *message, unsigned long window)
 }
 
 /***********************************************************************
-  Detected a broken pipe - time to exit 
+  Detected a broken pipe - time to exit
     Based on DeadPipe() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
  **********************************************************************/
@@ -577,120 +553,105 @@ int OpenConsole()
   return 1;
 }
 
-/******************************************************************************
-  ParseConfig - Parse the configuration file fvwm to us to use
-    Based on part of main() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
-void ParseConfig(char *file)
-{
-  char line[256];
-  char *tline;
+void ParseConfig() {
+  char *buf;
+  while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
+    ParseConfigLine(buf);
+  } /* end config lines */
+} /* end function */
+
+static void ParseConfigLine(char *tline) {
   char *str;
-  FILE *ptr;
   int i, j;
-   
-  ptr = fopen(file,"r");
-  if (ptr == (FILE *)NULL) {
-    ConsoleMessage("Couldn't read configuration file (%s)...\n", file);
-    return;
-  }
 
-  tline = fgets(line,(sizeof line)-1,ptr);
+  while (isspace(*tline))tline++;
+  if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
+    CopyString(&font_string,&tline[Clength+4]);
+  else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
+    CopyString(&selfont_string,&tline[Clength+7]);
+  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0) {
+    CopyString(&ForeColor,&tline[Clength+4]);
+  } else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
+    str = &tline[Clength+9];
+    while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
+    str[strlen(str)-1] = 0;
+    UpdateString(&geometry,str);
+  } else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
+    CopyString(&BackColor,&tline[Clength+4]);
+  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
+    LinkAction(&tline[Clength+6]);
+  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
+                      Clength+11)==0) UseSkipList=True;
+  else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
+                      Clength+9)==0) AutoStick=True;
+  else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
+                      Clength+4)==0) { AutoHide=True; AutoStick=True; }
+  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
+                      Clength+12)==0) UseIconNames=True;
+  else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
+                      Clength+14)==0) ShowTransients=True;
+  else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
+                      Clength+14)==0)
+    UpdateInterval=atoi(&tline[Clength+14]);
+  else if(strncasecmp(tline,CatString3(Module, "HighlightFocus",""),
+                      Clength+14)==0) HighlightFocus=True;
+  else if(strncasecmp(tline,CatString3(Module, "SwallowModule",""),
+                      Clength+13)==0) {
 
-  while (tline != (char *)0) {
-    while (isspace((unsigned char)*tline))tline++;
-    if (strlen(tline)>1 && tline[0] != '#') {
-      if(mystrncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
-	CopyString(&font_string,&tline[Clength+4]);
-      else if(mystrncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
-	CopyString(&selfont_string,&tline[Clength+7]);
-      else if(mystrncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
-	CopyString(&ForeColor,&tline[Clength+4]);
-      else if(mystrncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
-	str = &tline[Clength+9];
-	while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))	str++;
-	str[strlen(str)-1] = 0;
-	UpdateString(&geometry,str);
-      } else if(mystrncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
-	CopyString(&BackColor,&tline[Clength+4]);
-      else if(mystrncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
-	LinkAction(&tline[Clength+6]);
-      else if(mystrncasecmp(tline,CatString3(Module, "UseSkipList",""),
-			    Clength+11)==0) UseSkipList=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "AutoStick",""),
-			    Clength+9)==0) AutoStick=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "AutoHide",""),
-                            Clength+4)==0) { AutoHide=True; AutoStick=True; }
-      else if(mystrncasecmp(tline,CatString3(Module, "UseIconNames",""),
-			    Clength+12)==0) UseIconNames=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "ShowTransients",""),
-			    Clength+14)==0) ShowTransients=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "UpdateInterval",""),
-                            Clength+14)==0)
-                               UpdateInterval=atoi(&tline[Clength+14]);
-      else if(mystrncasecmp(tline,CatString3(Module, "HighlightFocus",""),
-                            Clength+14)==0) HighlightFocus=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "SwallowModule",""),
-			    Clength+13)==0) {
-	
-	/* tell fvwm to launch the module for us */
-	str = safemalloc(strlen(&tline[Clength+13]) + 6);
-	sprintf(str, "Module %s",&tline[Clength+13]);
-	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
-	
+    /* tell fvwm to launch the module for us */
+    str = safemalloc(strlen(&tline[Clength+13]) + 6);
+    sprintf(str, "Module %s",&tline[Clength+13]);
+    ConsoleMessage("Trying to: %s", str);
+    SendFvwmPipe(str, 0);
+
 	/* Remember the anticipated window's name for swallowing */
-	i = 4;	      
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	j = ++i;
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	if (i > j) {
-	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}	
-	free(str);
-      } else if(mystrncasecmp(tline,CatString3(Module, "Swallow",""),
-			      Clength+7)==0) {
-	
-	/* tell fvwm to Exec the process for us */
-	str = safemalloc(strlen(&tline[Clength+7]) + 6);
-	sprintf(str, "Exec %s",&tline[Clength+7]);
-	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
-	
+    i = 4;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    j = ++i;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    if (i > j) {
+      str[i] = 0;
+      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+    }
+    free(str);
+  } else if(strncasecmp(tline,CatString3(Module, "Swallow",""),
+                        Clength+7)==0) {
+
+    /* tell fvwm to Exec the process for us */
+    str = safemalloc(strlen(&tline[Clength+7]) + 6);
+    sprintf(str, "Exec %s",&tline[Clength+7]);
+    ConsoleMessage("Trying to: %s", str);
+    SendFvwmPipe(str, 0);
+
 	/* Remember the anticipated window's name for swallowing */
-	i = 4;	      
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	j = ++i;
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	if (i > j) {
-	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}	
-	free(str);
-      } else if(mystrncasecmp(tline,"ButtonWidth",11) == 0) {
-	button_width = atoi(&tline[11]);
-      } else if(mystrncasecmp(tline,"IconPath",8) == 0) {
-	CopyString(&IconPath, &tline[8]);
-      } else if(mystrncasecmp(tline,"PixmapPath",10) == 0) {
-	CopyString(&PixmapPath, &tline[10]);
-      } else {
-	GoodiesParseConfig(tline, Module);
-	StartButtonParseConfig(tline, Module);
-      }
-      }
-    tline = fgets(line,(sizeof line)-1,ptr);
+    i = 4;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    j = ++i;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    if (i > j) {
+      str[i] = 0;
+      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+    }
+    free(str);
+  } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
+    button_width = atoi(&tline[11]);
+  } else if(strncasecmp(tline,"IconPath",8) == 0) {
+    CopyString(&IconPath, &tline[8]);
+  } else if(strncasecmp(tline,"PixmapPath",10) == 0) {
+    CopyString(&PixmapPath, &tline[10]);
+  } else {
+    GoodiesParseConfig(tline, Module);
+    StartButtonParseConfig(tline, Module);
   }
 }
 
@@ -716,7 +677,7 @@ void Swallow(unsigned long *body) {
   XReparentWindow(dpy,(Window)body[0], win,
 		  win_width - stwin_width + goodies_width + 2, 5);
   goodies_width += w + 2;
-  
+
   XMapWindow(dpy,body[0]);
   XSelectInput(dpy,(Window)body[0],
 	       PropertyChangeMask|StructureNotifyMask);
@@ -770,7 +731,7 @@ void CheckForTip(int x, int y) {
   else {
     num = LocateButton(&buttons, x, y, &bx, &by, &name, &trunc);
     if (num != -1 && trunc) {
-      if ((Tip.type != num)  || 
+      if ((Tip.type != num)  ||
           (Tip.text == NULL) || (strcmp(name, Tip.text) != 0))
         PopupTipWindow(bx+3, by, name);
       Tip.type = num;
@@ -784,7 +745,7 @@ void CheckForTip(int x, int y) {
       alarm(1);
       AlarmSet = 1;
     }
-    if (AlarmSet != SHOW_TIP && !Tip.open) 
+    if (AlarmSet != SHOW_TIP && !Tip.open)
       SetAlarm(SHOW_TIP);
   } else {
     if (AlarmSet) {
@@ -802,10 +763,10 @@ void CheckForTip(int x, int y) {
 ******************************************************************************/
 void LoopOnEvents()
 {
-  int  num;
+  int  num = 0;
   char tmp[100];
   XEvent Event;
-  int x, x1, y, y1, redraw;
+  int x, y, redraw;
   static unsigned long lasttime = 0L;
 
   while(XPending(dpy)) {
@@ -818,7 +779,7 @@ void LoopOnEvents()
         if (num != -1) {
           ButReleased = ButPressed; /* Avoid race fvwm pipe */
           BelayHide = True; /* Don't AutoHide when function ends */
-          SendFvwmPipe(ClickAction[Event.xbutton.button-1], 
+          SendFvwmPipe(ClickAction[Event.xbutton.button-1],
                        ItemID(&windows, num));
           redraw = 0;
         }
@@ -850,7 +811,7 @@ void LoopOnEvents()
           num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
           UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
                                               BUTTON_BRIGHT : BUTTON_DOWN);
- 
+
 /*	  UpdateButton(&buttons, num, NULL, BUTTON_DOWN);*/
           ButPressed = num;
 	}
@@ -945,7 +906,7 @@ void LoopOnEvents()
 
         CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
-      
+
       case ConfigureNotify:
         if ((Event.xconfigure.width != win_width ||
 	     Event.xconfigure.height != win_height)) {
@@ -972,10 +933,10 @@ void LoopOnEvents()
     }
   }
 
-} 
+}
 
 /***********************************
-  AdjustWindow - Resize the window 
+  AdjustWindow - Resize the window
   **********************************/
 void AdjustWindow(int width, int height)
 {
@@ -1007,14 +968,14 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace((unsigned char)*temp)) temp++;
-  if(mystrncasecmp(temp, "Click1", 6)==0)
+  while(isspace(*temp)) temp++;
+  if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
-  else if(mystrncasecmp(temp, "Click2", 6)==0)
+  else if(strncasecmp(temp, "Click2", 6)==0)
     CopyString(&ClickAction[1],&temp[6]);
-  else if(mystrncasecmp(temp, "Click3", 6)==0)
+  else if(strncasecmp(temp, "Click3", 6)==0)
     CopyString(&ClickAction[2],&temp[6]);
-  else if(mystrncasecmp(temp, "Enter", 5)==0)
+  else if(strncasecmp(temp, "Enter", 5)==0)
     CopyString(&EnterAction,&temp[5]);
 }
 
@@ -1026,16 +987,7 @@ void StartMeUp()
    XSizeHints hints;
    XGCValues gcval;
    unsigned long gcmask;
-   unsigned int dummy1,dummy2;
-   int x,y,ret,count;
-   Window dummyroot,dummychild;
-   XClassHint *class_hints;
-#ifdef I18N
-   char **ml;
-   int mc;
-   char *ds;
-   XFontStruct **fs_list;
-#endif
+   int ret;
 
    if (!(dpy = XOpenDisplay(""))) {
       fprintf(stderr,"%s: can't open display %s", Module,
@@ -1051,27 +1003,9 @@ void StartMeUp()
    ScreenHeight = XDisplayHeight(dpy, screen);
 
    Midline = (int) (ScreenHeight >> 1);
-   
+
    if (selfont_string == NULL) selfont_string = font_string;
 
-#ifdef I18N
-   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
-     /* plain X11R6.3 hack */
-     if ((ButtonFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds)) == NULL)
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
-       exit(1);
-   }
-   XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
-   ButtonFont = fs_list[0];
-   if ((SelButtonFontset=XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds)) == NULL) {
-     /* plain X11R6.3 hack */
-     if ((SelButtonFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds)) == NULL)
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
-       exit(1);
-   }
-   XFontsOfFontSet(SelButtonFontset,&fs_list,&ml);
-   SelButtonFont = fs_list[0];
-#else
    if ((ButtonFont = XLoadQueryFont(dpy, font_string)) == NULL) {
      if ((ButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
        ConsoleMessage("Couldn't load fixed font. Exiting!\n");
@@ -1084,8 +1018,7 @@ void StartMeUp()
        exit(1);
      }
    }
-#endif
-   
+
    fontheight = SelButtonFont->ascent + SelButtonFont->descent;
 
    NRows = 1;
@@ -1101,9 +1034,9 @@ void StartMeUp()
 
    if (ret & YNegative)
      hints.y = ScreenHeight - (AutoHide ? 1 : win_height + (win_border<<1));
-   else 
+   else
      hints.y = AutoHide ? 1 - win_height : 0;
-   
+
    hints.flags=USPosition|PPosition|USSize|PSize|PResizeInc|
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
    hints.x           = 0;
@@ -1137,15 +1070,8 @@ void StartMeUp()
 
    wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
    XSetWMProtocols(dpy,win,&wm_del_win,1);
-   
+
    XSetWMNormalHints(dpy,win,&hints);
-   
-   /* Set some class hints like a good little X client */
-   /* Module + 1 gets module name without leading '*' */
-   class_hints = XAllocClassHint();
-   class_hints->res_name = Module + 1; 
-   class_hints->res_class = Module + 1;
-   XSetClassHint(dpy, win, class_hints);
 
    XGrabButton(dpy,1,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
 	       GrabModeAsync,None,None);
@@ -1165,9 +1091,9 @@ void StartMeUp()
    gcval.graphics_exposures = False;
    graph = XCreateGC(dpy,Root,gcmask,&gcval);
 
-   if(d_depth < 2) 
+   if(d_depth < 2)
      gcval.foreground = GetShadow(fore);
-   else 
+   else
      gcval.foreground = GetShadow(back);
    gcval.background = back;
    gcmask = GCForeground | GCBackground | GCGraphicsExposures;
@@ -1176,16 +1102,16 @@ void StartMeUp()
    gcval.foreground = GetHilite(back);
    gcval.background = back;
    hilite = XCreateGC(dpy,Root,gcmask,&gcval);
-   
+
    gcval.foreground = GetColor("white");;
    gcval.background = back;
    whitegc = XCreateGC(dpy,Root,gcmask,&gcval);
-   
+
    gcval.foreground = GetColor("black");
    gcval.background = back;
    blackgc = XCreateGC(dpy,Root,gcmask,&gcval);
 
-   gcmask = GCForeground | GCBackground | GCTile | 
+   gcmask = GCForeground | GCBackground | GCTile |
             GCFillStyle  | GCGraphicsExposures;
    gcval.foreground = GetHilite(back);
    gcval.background = back;
@@ -1238,10 +1164,10 @@ void ChangeWindowName(char *str)
 
 /**************************************************************************
  *
- * Sets mwm hints 
+ * Sets mwm hints
  *
  *************************************************************************/
-/* 
+/*
  *  Now, if we (hopefully) have MWW - compatible window manager ,
  *  say, mwm, ncdwm, or else, we will set useful decoration style.
  *  Never check for MWM_RUNNING property.May be considered bad.
@@ -1253,7 +1179,7 @@ PropMwmHints prop;
 
   if (MwmAtom==None)
     {
-      MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);  
+      MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);
     }
   if (MwmAtom!=None)
     {
@@ -1262,7 +1188,7 @@ PropMwmHints prop;
       prop.functions = funcs;
       prop.inputMode = input;
       prop.flags = MWM_HINTS_DECORATIONS| MWM_HINTS_FUNCTIONS | MWM_HINTS_INPUT_MODE;
-      
+
       /* HOP - LA! */
       XChangeProperty (dpy,win,
 		       MwmAtom, MwmAtom,
@@ -1280,14 +1206,14 @@ PropMwmHints prop;
  *
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
- * 
+ *
  ***********************************************************************/
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
 
-  
+
   int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
   int baseWidth, baseHeight;
   int dwidth = *widthp, dheight = *heightp;
@@ -1321,7 +1247,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       baseWidth = 1;
       baseHeight = 1;
     }
-  
+
   if(hints->flags & PMaxSize)
     {
       maxWidth = hints->max_width;
@@ -1342,24 +1268,24 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       xinc = 1;
       yinc = 1;
     }
-  
+
   /*
    * First, clamp to min and max values
    */
   if (dwidth < minWidth) dwidth = minWidth;
   if (dheight < minHeight) dheight = minHeight;
-  
+
   if (dwidth > maxWidth) dwidth = maxWidth;
   if (dheight > maxHeight) dheight = maxHeight;
-  
-  
+
+
   /*
    * Second, fit to base + N * inc
    */
   dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
   dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-  
-  
+
+
   /*
    * Third, adjust for aspect ratio
    */
@@ -1379,16 +1305,16 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    *
    * minAspectX * dheight > minAspectY * dwidth
    * maxAspectX * dheight < maxAspectY * dwidth
-   * 
+   *
    */
-  
+
   if (hints->flags & PAspect)
     {
       if (minAspectX * dheight > minAspectY * dwidth)
 	{
 	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
 			   xinc);
-	  if (dwidth + delta <= maxWidth) 
+	  if (dwidth + delta <= maxWidth)
 	    dwidth += delta;
 	  else
 	    {
@@ -1397,7 +1323,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	      if (dheight - delta >= minHeight) dheight -= delta;
 	    }
 	}
-      
+
       if (maxAspectX * dheight < maxAspectY * dwidth)
 	{
 	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
@@ -1412,7 +1338,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	    }
 	}
     }
-  
+
   *widthp = dwidth;
   *heightp = dheight;
   return;
@@ -1432,11 +1358,11 @@ void WarpTaskBar(int y) {
   XMoveWindow(dpy, win, win_x, win_y);
   if (AutoHide) SetAlarm(HIDE_TASK_BAR);
 
-  /* Prevent oscillations caused by race with 
+  /* Prevent oscillations caused by race with
      time delayed TaskBarHide().  Is there any way
      to prevent these Xevents from being sent
      to the server in the first place? */
-  PurgeConfigEvents(); 
+  PurgeConfigEvents();
 }
 
 /***********************************************************************
@@ -1445,12 +1371,12 @@ void WarpTaskBar(int y) {
 void RevealTaskBar() {
   ClearAlarm();
 
-  if (win_y < Midline) 
+  if (win_y < Midline)
     win_y = win_border;
-  else 
+  else
     win_y = (int)ScreenHeight - win_height - win_border;
 
-  BelayHide = False; 
+  BelayHide = False;
   XMoveWindow(dpy, win, win_x, win_y);
 }
 
@@ -1460,10 +1386,10 @@ void RevealTaskBar() {
 void HideTaskBar() {
   ClearAlarm();
 
-  if (win_y < Midline) 
-    win_y = /*1*/ - win_height;
+  if (win_y < Midline)
+    win_y = 2 - win_height;
   else
-    win_y = (int)ScreenHeight /*- 1*/;
+    win_y = (int)ScreenHeight - 2;
 
   XMoveWindow(dpy, win, win_x, win_y);
 }
@@ -1492,22 +1418,20 @@ void ClearAlarm(void) {
 void PurgeConfigEvents(void) {
   XEvent Event;
 
-  if (XPending(dpy))
-    {
-      XPeekEvent(dpy, &Event);
-      while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event));
-    }
+  XPeekEvent(dpy, &Event);
+  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event));
 }
 
 /************************************************************************
   X Error Handler
 ************************************************************************/
 XErrorHandler ErrorHandler(Display *d, XErrorEvent *event)
-  {
+{
   char errmsg[256];
 
   XGetErrorText(d, event->error_code, errmsg, 256);
   ConsoleMessage("%s failed request: %s\n", Module, errmsg);
   ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
                   event->request_code, event->resourceid);
-  }
+  return NULL;
+}

@@ -35,7 +35,7 @@ char *CatString3(char *a, char *b, char *c)
   else
     strcpy(CatS, a);
   if(b != NULL)
-  strcat(CatS, b);
+    strcat(CatS, b);
   if(c != NULL)
     strcat(CatS, c);
   return CatS;
@@ -50,7 +50,12 @@ void CopyString(char **dest, char *source)
   int len;
   char *start;
   
-  while(((isspace((unsigned char)*source))&&(*source != '\n'))&&(*source != 0))
+  if (source == NULL)
+    {
+      *dest = NULL;
+      return;
+    }
+  while(((isspace(*source))&&(*source != '\n'))&&(*source != 0))
   {
     source++;
   }
@@ -63,7 +68,7 @@ void CopyString(char **dest, char *source)
   }
   
   source--;
-  while((isspace((unsigned char)*source))&&(*source != 0)&&(len >0))
+  while((isspace(*source))&&(*source != 0)&&(len >0))
   {
     len--;
     source--;
@@ -71,48 +76,6 @@ void CopyString(char **dest, char *source)
   *dest = safemalloc(len+1);
   strncpy(*dest,start,len);
   (*dest)[len]=0;	  
-}
-
-int mystrcasecmp(char *s1,char *s2)
-{
-  int c1,c2;
-  int n,n2;
-
-  n=strlen(s1);
-  n2=strlen(s2);
-  if(n!=n2)
-    return 1;
-
-  for (;;)
-  {
-    c1 = *s1; 
-    c2 = *s2;
-    if (!c1 || !c2) 
-      return(c1 - c2);
-    if (isupper(c1)) 
-      c1 = 'a' - 1 + (c1 & 31);
-    if (isupper(c2)) 
-      c2 = 'a' - 1 + (c2 & 31);
-    if (c1 != c2) 
-      return(c1 - c2);
-    n--,s1++,s2++;
-  }
-}
-
-int mystrncasecmp(char *s1,char *s2,int n)
-{
-  register int c1,c2;
-  
-  for (;;)
-  {
-    if (!n) return(0);
-    c1 = *s1,c2 = *s2;
-    if (!c1 || !c2) return(c1 - c2);
-    if (isupper(c1)) c1 = 'a' - 1 + (c1 & 31);
-    if (isupper(c2)) c2 = 'a' - 1 + (c2 & 31);
-    if (c1 != c2) return(c1 - c2);
-    n--,s1++,s2++;
-  }
 }
 
 /****************************************************************************
@@ -129,11 +92,11 @@ char *stripcpy(char *source)
   if(source == NULL)
     return NULL;
 
-  while(isspace((unsigned char)*source))
+  while(isspace(*source))
     source++;
   len = strlen(source);
   tmp = source + len -1;
-  while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=source))
+  while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=source))
     {
       tmp--;
       len--;
@@ -146,7 +109,9 @@ char *stripcpy(char *source)
   
 int StrEquals(char *s1,char *s2)
 {
+  if (!s1 && !s2)
+    return 1;
   if (!s1 || !s2)
     return 0;
-  return (mystrcasecmp(s1,s2)==0);
+  return (strcasecmp(s1,s2)==0);
 }

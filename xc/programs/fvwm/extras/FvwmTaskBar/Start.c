@@ -4,19 +4,10 @@
 
 #include "../../libs/fvwmlib.h"
 #include "ButtonArray.h"
-#include <stdio.h>	/* NULL may be defined */
 
 extern Display *dpy;
 extern Window Root, win;
 extern XFontStruct *ButtonFont;
-#ifdef I18N
-extern XFontSet ButtonFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
 extern int Clength;
 extern char *PixmapPath;
 extern char *IconPath;
@@ -27,12 +18,13 @@ char *StartName     = NULL,
      *StartIconName = NULL;
 
 
-void StartButtonParseConfig(char *tline, char *Module) {
-  if(mystrncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
+void StartButtonParseConfig(char *tline, char *Module)
+{
+  if(strncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
     CopyString(&StartName,&tline[Clength+9]);
-  else if(mystrncasecmp(tline,CatString3(Module,"StartMenu",""), Clength+9)==0)
+  else if(strncasecmp(tline,CatString3(Module,"StartMenu",""), Clength+9)==0)
     CopyString(&StartPopup,&tline[Clength+9]);
-  else if(mystrncasecmp(tline,CatString3(Module,"StartIcon",""), Clength+9)==0)
+  else if(strncasecmp(tline,CatString3(Module,"StartIcon",""), Clength+9)==0)
     CopyString(&StartIconName,&tline[Clength+9]);
 }
 
@@ -42,28 +34,36 @@ void StartButtonInit(int height)
   int pw;
 
   /* some defaults */
-  if (StartName  == NULL) UpdateString(&StartName, "Start");
-  if (StartPopup == NULL) UpdateString(&StartPopup, "StartMenu");
-  if (StartIconName == NULL) UpdateString(&StartIconName, "mini-start.xpm");
+  if (StartName  == NULL)
+    UpdateString(&StartName, "Start");
+  if (StartPopup == NULL)
+    UpdateString(&StartPopup, "StartMenu");
+  if (StartIconName == NULL)
+    UpdateString(&StartIconName, "mini-start.xpm");
 
-  p = GetPicture(dpy, Root, IconPath, PixmapPath, StartIconName);
+  /** FIXME: what should the colour limit be?
+      I put in -1, which apparently imposes NO limit.
+  **/
+  p = GetPicture(dpy, Root, IconPath, PixmapPath, StartIconName, -1);
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP);
   if (p != NULL) pw = p->width+3; else pw = 0;
-  StartButtonWidth = XTextWidth(ButtonFont, StartName, strlen(StartName)) + pw + 14;
+  StartButtonWidth = XTextWidth(ButtonFont, StartName, strlen(StartName)) +
+    pw + 14;
   StartButtonHeight = height;
 }
 
 void StartButtonUpdate(char *title, int state)
 {
-  if (title != NULL) ConsoleMessage("Updating StartTitle not supported yet...\n");
+  if (title != NULL)
+    ConsoleMessage("Updating StartTitle not supported yet...\n");
   ButtonUpdate(StartButton, title, state);
 }
 
 void StartButtonDraw(int force)
 {
- if (StartButton->needsupdate || force)
-  ButtonDraw(StartButton, 0, 0, StartButtonWidth, StartButtonHeight);
+  if (StartButton->needsupdate || force)
+    ButtonDraw(StartButton, 0, 0, StartButtonWidth, StartButtonHeight);
 }
 
 int MouseInStartButton(int x, int y)

@@ -3,22 +3,17 @@
 # for hints, as well as pointers from the various links on the official
 # fvwm web page (see the FAQ).
 
-# be sure to customize these paths for your installation:
-#ModulePath /usr/lib/X11/fvwm2
-#PixmapPath /usr/include/X11/pixmaps
-#IconPath   /usr/include/X11/bitmaps
-
 EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
 # make sure these fonts exist on your system:
-WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-18-*-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
+WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
 HilightColor black palevioletred
 DeskTopSize 2x2
-MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-14-*-*-*-*-*-*-* fvwm
+MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 
 ColormapFocus FollowsMouse
 
@@ -268,45 +263,72 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 +                            "I" Recapture
 
 ################## FvwmButtons button-bar ################################
+*FvwmButtonsGeometry 520x100-1-1
 *FvwmButtonsBack bisque3
-*FvwmButtons(Frame 2 Padding 2 2 Container(Rows 2 Frame 1 Padding 10 0 \
-                                           Swallow(Respawn)))
-*FvwmButtons(NoSize Title Close, Icon bomb.xpm, Action Close)
-*FvwmButtons(Title Resize Icon mini.resize.xpm Back bisque4 Action Resize)
-*FvwmButtons(Frame -3 Swallow(Respawn,NoHints) xclock \
-       `Exec exec xclock -bg darkolivegreen -padding 0 -geometry +2000+0`)
-*FvwmButtons(3x1 Back darkolivegreen Fore white Frame 2 Padding 2 2 \
-                 Container(Rows 1 Frame -2 Padding 1 1 Back darkolivegreen))
-*FvwmButtons(Frame 2 Title(Side,Right) Mail Fore white \
-         Swallow(UseOld,NoRespawn)\
-         xbiff `Exec exec xbiff -bg darkolivegreen -geometry +200+200`)
-*FvwmButtons(2x1 Swallow (NoHints) "FvwmTalk" "FvwmTalk")
+*FvwmButtons(Frame 2 Padding 2 2 Container(Rows 2 Columns 5 Frame 1 \
+                                           Padding 10 0))
+*FvwmButtons(3x2 Frame 2 Swallow "FvwmIconMan" "Module FvwmIconMan")
+*FvwmButtons(1x2 Frame 2 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
+*FvwmButtons(1x2 Frame 0 Container(Rows 2 Columns 2 Frame 0))
+*FvwmButtons(Frame 2 Swallow(UseOld,NoHints,Respawn) "xbiff" `Exec exec xbiff -bg bisque3`)
+*FvwmButtons(Frame 3 Swallow(UseOld,NoHints,Respawn) "xclock" `Exec exec xclock -bg bisque3 -fg black -hd black -hl black -padding 0 -update 1`)
+*FvwmButtons(2x1 Frame 2 Swallow(UseOld,NoHints,Respawn) "xload" `Exec exec xload -bg bisque3 -fg black -update 5 -nolabel`)
 *FvwmButtons(End)
 *FvwmButtons(End)
 
+########################## Icon Manager ####################################
+# this FvwmIconMan setup is for swallowing in above button bar example
+*FvwmIconMan*numManagers 1
+*FvwmIconMan*Resolution  page
+*FvwmIconMan*background  bisque3
+*FvwmIconMan*foreground  black
+*FvwmIconMan*font        7x13bold
+*FvwmIconMan*format      "%t"
+*FvwmIconMan*action      Mouse   1 N sendcommand Focus, sendcommand "Iconify"
+*FvwmIconMan*action      Mouse   2 N sendcommand "Iconify 1"
+*FvwmIconMan*action      Mouse   3 N sendcommand "FvwmIdent"
+*FvwmIconMan*followfocus true
+*FvwmIconMan*sort        false
+*FvwmIconMan*plainbutton          up black bisque3
+*FvwmIconMan*selectbutton         down black bisque3
+*FvwmIconMan*focusbutton          up yellow firebrick
+*FvwmIconMan*focusandselectButton down yellow firebrick
+*FvwmIconMan*dontshow icon=Untitled name=Untitled
+#*FvwmIconMan*drawicons true
+*FvwmIconMan*buttongeometry  300x0
+*FvwmIconMan*managergeometry 1x5
 
 ########################## Window-Identifier ###############################
 # Just choose colors and a fonts
 *FvwmIdentBack MidnightBlue
 *FvwmIdentFore Yellow
-*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-12-*-*-*-*-*-*-*
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 
 ########################### Pager #########################################
 *FvwmPagerBack #908090
 *FvwmPagerFore #484048
-*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
+#*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+# turn off desktop names for swallowing in above button bar example:
+*FvwmPagerFont none
 *FvwmPagerHilight #cab3ca
 *FvwmPagerGeometry -1-1
-*FvwmPagerLabel 0 OpenBSD 2.9
-*FvwmPagerLabel 1 Page2
-*FvwmPagerLabel 2 Page3
-*FvwmPagerLabel 3 Page4
+*FvwmPagerLabel 0 Misc
+*FvwmPagerLabel 1 Maker
+*FvwmPagerLabel 2 Mail
+*FvwmPagerLabel 3 Matlab
 *FvwmPagerSmallFont 5x8
+*FvwmPagerBalloons            All
+*FvwmPagerBalloonBack         Yellow
+*FvwmPagerBalloonFore         Black
+*FvwmPagerBalloonFont         lucidasanstypewriter-12
+*FvwmPagerBalloonYOffset      +2
+*FvwmPagerBalloonBorderWidth  1
+*FvwmPagerBalloonBorderColor  Black
 
 ##########################FvwmWinList##################################
 *FvwmWinListBack #908090
 *FvwmWinListFore Black
-*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
+*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *FvwmWinListAction Click1 Iconify -1,Focus
 *FvwmWinListAction Click2 Iconify
 *FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
@@ -334,7 +356,7 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 #*FvwmIconBoxFore       blue
 *FvwmIconBoxGeometry    5x1+0+0
 *FvwmIconBoxMaxIconSize 64x38
-*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 *FvwmIconBoxSortIcons   IconName
 *FvwmIconBoxPadding     4
 *FvwmIconBoxLines       10

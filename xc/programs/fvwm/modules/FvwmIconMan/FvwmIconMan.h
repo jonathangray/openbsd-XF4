@@ -1,18 +1,12 @@
-#include <stdio.h>
-#include <string.h>
+#include "config.h"
+
 #include <assert.h>
+#include <stdio.h>
+
 #include <sys/time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#ifdef I18N
-#include <X11/Xlocale.h>
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,man->ButtonFontset,v,w,x,y,z)
-#endif
-
-#ifdef MALLOC_H
-#include <malloc.h>
-#endif
 
 #ifndef FVWM_VERSION
 #define FVWM_VERSION 2
@@ -24,7 +18,7 @@
 #include "../../libs/fvwmlib.h"
 #endif
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -32,14 +26,6 @@
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
-#endif
-
-#ifndef MAX
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
-#ifndef MIN
-#define MIN(a,b) ((a) > (b) ? (b) : (a))
 #endif
 
 #define RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2) \
@@ -66,7 +52,8 @@ struct malloc_header {
 #endif
 
 #ifdef DMALLOC
-#include "/home/bradym/src/dmalloc/dmalloc.h"
+/*  What the heck is this??  */
+#include <dmalloc.h>
 #endif
 
 extern void PrintMemuse (void);
@@ -82,7 +69,7 @@ typedef enum {
   SHOW_PAGE = 2
 } Resolution;
 
-typedef enum { 
+typedef enum {
   BUTTON_FLAT,
   BUTTON_UP,
   BUTTON_DOWN,
@@ -92,7 +79,7 @@ typedef enum {
 
 /* The clicks must be the first three elements in this type, X callbacks
 	depend on it! */
-typedef enum { 
+typedef enum {
   SELECT,
   MOUSE,
   KEYPRESS,
@@ -133,20 +120,20 @@ typedef struct {
   StringEl *list;
 } StringList;
 
-typedef enum { 
-  NoArg, 
+typedef enum {
+  NoArg,
   IntArg,
   StringArg,
-  ButtonArg, 
+  ButtonArg,
   WindowArg,
   ManagerArg,
   JmpArg
 } BuiltinArgType;
 
-typedef enum { 
-  NoButton, 
-  SelectButton, 
-  FocusButton, 
+typedef enum {
+  NoButton,
+  SelectButton,
+  FocusButton,
   AbsoluteButton,
   UpButton,
   DownButton,
@@ -183,10 +170,10 @@ typedef struct Binding
   char IsMouse;           /* Is it a mouse or key binding 1= mouse; */
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
-  int Modifier;           /* Modifiers for keyboard state */   
+  int Modifier;           /* Modifiers for keyboard state */
   char *Action;           /* What to do? */
   Function *Function;
-  struct Binding *NextBinding, *LastBinding; 
+  struct Binding *NextBinding, *LastBinding;
 } Binding;
 
 typedef struct win_data {
@@ -236,7 +223,7 @@ typedef struct button_array {
 } ButtonArray;
 
 typedef enum {
-  GROW_HORIZ = 1, 
+  GROW_HORIZ = 1,
   GROW_VERT  = 2,
   GROW_UP    = 4,
   GROW_DOWN  = 8,
@@ -245,7 +232,7 @@ typedef enum {
   GROW_FIXED = 64
 } GrowDirection;
 
-typedef struct { 
+typedef struct {
   /* Things which we can change go in here.
      This like border width go in WinManager */
   int x, y, width, height;
@@ -260,6 +247,13 @@ typedef struct {
   XRectangle rects[2];
 } ShapeState;
 
+typedef enum {
+  SortNone,          /* no sorting */
+  SortId,            /* sort by window id */
+  SortName,          /* case insensitive name sorting */
+  SortNameCase       /* case sensitive name sorting */
+} SortType;
+
 typedef struct win_manager {
   unsigned int magic;
   int index;
@@ -268,13 +262,10 @@ typedef struct win_manager {
   Resolution res;
   Pixel backcolor[NUM_CONTEXTS], forecolor[NUM_CONTEXTS];
   Pixel hicolor[NUM_CONTEXTS], shadowcolor[NUM_CONTEXTS];
-  GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS], 
+  GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS],
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
   XFontStruct *ButtonFont;
-#ifdef I18N
-  XFontSet ButtonFontset;
-#endif
 #ifdef MINI_ICONS
   int draw_icons;
 #endif
@@ -292,7 +283,7 @@ typedef struct win_manager {
   NameType format_depend;
   Uchar followFocus;
   Uchar usewinlist;
-  Uchar sort;
+  SortType sort;
 
   /* X11 state */
   Window theWindow, theFrame;
@@ -352,12 +343,11 @@ extern char *Module;
 extern int ModuleLen;
 extern ContextDefaults contextDefaults[];
 
-extern void ReadFvwmPipe();
+extern void ReadFvwmPipe(void);
 extern void *Malloc (size_t size);
 extern void Free (void *p);
-extern void ConsoleMessage(char *fmt, ...);
-extern void ShutMeDown (int flag);
-extern void DeadPipe (int nothing);
+extern void ShutMeDown (int flag) __attribute__ ((__noreturn__));
+extern void DeadPipe (int nothing) __attribute__ ((__noreturn__));
 extern void SendFvwmPipe(char *message, unsigned long window);
 extern char *copy_string (char **target, char *src);
 

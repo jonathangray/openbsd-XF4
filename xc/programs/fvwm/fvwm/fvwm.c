@@ -1,7 +1,7 @@
 
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -11,7 +11,7 @@
  * fvwm - "F? Virtual Window Manager"
  ***********************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,18 +35,13 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
-
-#if defined (sparc) && defined (SVR4)
+#if HAVE_SYS_SYSTEMINFO_H
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
 #endif
 
 #define MAXHOSTNAME 255
 
-#include "../version.h"
 
 #ifndef lint
 static char sccsid[] = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";
@@ -58,21 +53,22 @@ ScreenInfo Scr;		        /* structures for the screen */
 Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
+Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 
-#ifdef FVWMRC
 char *default_config_command = "Read "FVWMRC;
-#else
-char *default_config_command = "Read .fvwm2rc";
-#endif
+
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
 
+#if 0
+/* unsused */
 char *output_file = NULL;
+#endif
 
-XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
-XIOErrorHandler CatchFatal(Display *);
-XErrorHandler CatchRedirectError(Display *, XErrorEvent *);
+int FvwmErrorHandler(Display *, XErrorEvent *);
+int CatchFatal(Display *);
+int CatchRedirectError(Display *, XErrorEvent *);
 void newhandler(int sig);
 void CreateCursors(void);
 void ChildDied(int nonsense);
@@ -102,9 +98,12 @@ static char g_bits[] = {0x02, 0x01};
 #define l_g_height 2
 static char l_g_bits[] = {0x08, 0x02};
 
+#if 0
+/* code unused */
 #define s_g_width 4
 #define s_g_height 4
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
+#endif
 
 #ifdef SHAPE
 int ShapeEventBase, ShapeErrorBase;
@@ -116,6 +115,18 @@ extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
+
+typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
+
+/*
+ * Currently, the "isTerminated" variable is superfluous. However,
+ * I am looking to the future where isTerminated controls all
+ * event loops in FVWM: then we can collect such code into a common
+ * object-file ...
+ */
+static volatile sig_atomic_t fvwmRunState = FVWM_RUNNING;
+volatile sig_atomic_t isTerminated = False;
+/**/
 
 /***********************************************************************
  *
@@ -137,34 +148,34 @@ int main(int argc, char **argv)
   char message[255];
   Bool single = False;
   Bool option_error = FALSE;
-  MenuRoot *mr;
+  int x, y;
 
   g_argv = argv;
   g_argc = argc;
 
   DBUG("main","Entered, about to parse args");
 
-#ifdef I18N
-  if (setlocale(LC_CTYPE, "") == NULL)
-    fvwm_msg(ERR, "main", "Can't set locale. Check your $LC_CTYPE or $LANG.\n");
-#endif
-  for (i = 1; i < argc; i++) 
+  /* Put the default module directory into the environment so it can be used
+     later by the config file, etc.  */
+  putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
+
+  for (i = 1; i < argc; i++)
   {
-    if (mystrncasecmp(argv[i],"-debug",6)==0)
+    if (strncasecmp(argv[i],"-debug",6)==0)
     {
       debugging = True;
     }
-    else if (mystrncasecmp(argv[i],"-s",2)==0)
+    else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
     }
-    else if (mystrncasecmp(argv[i],"-d",2)==0)
+    else if (strncasecmp(argv[i],"-d",2)==0)
     {
       if (++i >= argc)
         usage();
       display_name = argv[i];
     }
-    else if (mystrncasecmp(argv[i],"-f",2)==0)
+    else if (strncasecmp(argv[i],"-f",2)==0)
     {
       if (++i >= argc)
         usage();
@@ -181,7 +192,7 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
-    else if (mystrncasecmp(argv[i],"-cmd",4)==0)
+    else if (strncasecmp(argv[i],"-cmd",4)==0)
     {
       if (++i >= argc)
         usage();
@@ -195,22 +206,25 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
-    else if (mystrncasecmp(argv[i],"-outfile",8)==0)
+#if 0
+/* unused */
+    else if (strncasecmp(argv[i],"-outfile",8)==0)
     {
       if (++i >= argc)
         usage();
       output_file = argv[i];
     }
-    else if (mystrncasecmp(argv[i],"-h",2)==0)
+#endif
+    else if (strncasecmp(argv[i],"-h",2)==0)
     {
       usage();
-      return 0;
+      exit(0);
     }
-    else if (mystrncasecmp(argv[i],"-blackout",9)==0)
+    else if (strncasecmp(argv[i],"-blackout",9)==0)
     {
       Blackout = True;
     }
-    else if (mystrncasecmp(argv[i], "-version", 8) == 0)
+    else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
       fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
               VERSION,__DATE__,__TIME__);
@@ -228,22 +242,58 @@ int main(int argc, char **argv)
   {
     usage();
   }
-    
+
   DBUG("main","Installing signal handlers");
 
-  newhandler (SIGINT);
-  newhandler (SIGHUP);
-  newhandler (SIGQUIT);
-  newhandler (SIGTERM);
-  signal (SIGUSR1, Restart);
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    /*
+     * Use reliable signal semantics since they are predictable and portable.
+     * DeadPipe() looks like a no-op, so don't stop processing system calls
+     * to handle a SIGPIPE (Why don't we just -ignore- SIGPIPE?)
+     */
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigemptyset(&sigact.sa_mask);
+
+    sigact.sa_handler = DeadPipe;  /* This handler does nothing ??? */
+    sigaction(SIGPIPE, &sigact, NULL);
+
+    /*
+     * If we need to restart then we need to stop what we're doing as
+     * quickly as possible - hence interrupt any system call we're
+     * blocked in ...
+     */
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = Restart;
+    sigaction(SIGUSR1, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+  signal(SIGPIPE, DeadPipe);
+  signal(SIGUSR1, Restart);
+#endif
+
+  newhandler(SIGINT);
+  newhandler(SIGHUP);
+  newhandler(SIGQUIT);
+  newhandler(SIGTERM);
 
   ReapChildren();
 
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
   {
     fvwm_msg(ERR,"main","can't open display %s", XDisplayName(display_name));
-    return 1;
+    exit (1);
   }
   Scr.screen= DefaultScreen(dpy);
   Scr.NumberOfScreens = ScreenCount(dpy);
@@ -286,13 +336,13 @@ int main(int argc, char **argv)
 
   x_fd = XConnectionNumber(dpy);
   fd_width = GetFdWidth();
-    
-  if (fcntl(x_fd, F_SETFD, 1) == -1) 
+
+  if (fcntl(x_fd, F_SETFD, 1) == -1)
   {
     fvwm_msg(ERR,"main","close-on-exec failed");
-    return 1;
+    exit (1);
   }
-	    
+
   /*  Add a DISPLAY entry to the environment, incase we were started
    * with fvwm -display term:0.0
    */
@@ -308,7 +358,7 @@ int main(int argc, char **argv)
   if(strncmp(display_string,"DISPLAY=:",9)==0)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
-    mygethostname(client,MAXHOSTNAME);
+    gethostname(client,MAXHOSTNAME);
     rdisplay_string = safemalloc(len+14 + strlen(client));
     sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,&display_string[9]);
     putenv(rdisplay_string);
@@ -316,7 +366,7 @@ int main(int argc, char **argv)
   else if(strncmp(display_string,"DISPLAY=unix:",13)==0)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
-    mygethostname(client,MAXHOSTNAME);
+    gethostname(client,MAXHOSTNAME);
     rdisplay_string = safemalloc(len+14 + strlen(client));
     sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,
             &display_string[13]);
@@ -331,10 +381,10 @@ int main(int argc, char **argv)
   }
 
   Scr.Root = RootWindow(dpy, Scr.screen);
-  if(Scr.Root == None) 
+  if(Scr.Root == None)
   {
     fvwm_msg(ERR,"main","Screen %d is not a valid screen",(char *)Scr.screen);
-    return 1;
+    exit(1);
   }
 
 
@@ -349,16 +399,16 @@ int main(int argc, char **argv)
                    XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
 
-  XSetErrorHandler((XErrorHandler)CatchRedirectError);
-  XSetIOErrorHandler((XIOErrorHandler)CatchFatal);
+  XSetErrorHandler(CatchRedirectError);
+  XSetIOErrorHandler(CatchFatal);
   XSelectInput(dpy, Scr.Root,
-               LeaveWindowMask| EnterWindowMask | PropertyChangeMask | 
-               SubstructureRedirectMask | KeyPressMask | 
+               LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
+               SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 
-  XSetErrorHandler((XErrorHandler)FvwmErrorHandler);
+  XSetErrorHandler(FvwmErrorHandler);
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -367,7 +417,7 @@ int main(int argc, char **argv)
   InitEventHandlerJumpTable();
   initModules();
 
-  Scr.gray_bitmap = 
+  Scr.gray_bitmap =
     XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
 
@@ -380,29 +430,31 @@ int main(int argc, char **argv)
     int i;
     for(i=0;i<num_config_commands;i++)
     {
-      ExecuteFunction(config_commands[i], NULL,&Event,C_ROOT,-1);
+      ExecuteFunction(config_commands[i], NULL,&Event,C_ROOT,1);
       free(config_commands[i]);
     }
   }
   else
   {
-    ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,-1);
+    ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,1);
   }
   DBUG("main","Done running config_commands");
 
   if(Scr.d_depth<2)
   {
-    Scr.gray_pixmap = 
+    Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
-                                  Scr.MenuColors.fore,Scr.MenuColors.back,
-                                  Scr.d_depth);	
-    Scr.light_gray_pixmap = 
+                                  Scr.StdColors.fore,
+				  Scr.StdColors.back,
+                                  Scr.d_depth);
+    Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-                                  Scr.MenuColors.fore,Scr.MenuColors.back,
+                                  Scr.StdColors.fore,
+				  Scr.StdColors.back,
                                   Scr.d_depth);
   }
 
-  /* create a window which will accept the keyboard focus when no other 
+  /* create a window which will accept the keyboard focus when no other
      windows have it */
   attributes.event_mask = KeyPressMask|FocusChangeMask;
   attributes.override_redirect = True;
@@ -422,41 +474,32 @@ int main(int argc, char **argv)
 
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.border_pixel = Scr.MenuColors.fore;
-  attributes.background_pixel = Scr.MenuColors.back;
+  attributes.border_pixel = Scr.StdColors.fore;
+  attributes.background_pixel = Scr.StdColors.back;
   attributes.bit_gravity = NorthWestGravity;
   valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
-  if(!(Scr.flags & MWMMenus))
+  if(!Scr.gs.EmulateMWM)
   {
-    Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    0, 0, 
-                                    (unsigned int)(Scr.SizeStringWidth +
-                                                   SIZE_HINDENT*2),
-                                    (unsigned int) (Scr.StdFont.height +
-                                                    SIZE_VINDENT*2),
-                                    (unsigned int) 0, 0,
-                                    (unsigned int) CopyFromParent,
-                                    (Visual *) CopyFromParent,
-                                    valuemask, &attributes);
+    x = 0;
+    y = 0;
   }
   else
   {
-    Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    Scr.MyDisplayWidth/2 - 
-                                    (Scr.SizeStringWidth +
-                                     SIZE_HINDENT*2)/2,
-                                    Scr.MyDisplayHeight/2 -
-                                    (Scr.StdFont.height + 
-                                     SIZE_VINDENT*2)/2, 
-                                    (unsigned int)(Scr.SizeStringWidth +
-                                                   SIZE_HINDENT*2),
-                                    (unsigned int) (Scr.StdFont.height +
-                                                    SIZE_VINDENT*2),
-                                    (unsigned int) 0, 0,
-                                    (unsigned int) CopyFromParent,
-                                    (Visual *) CopyFromParent,
-                                    valuemask, &attributes);
+    x = Scr.MyDisplayWidth/2 - (Scr.SizeStringWidth + SIZE_HINDENT*2)/2;
+    y = Scr.MyDisplayHeight/2 - (Scr.StdFont.height + SIZE_VINDENT*2)/2;
   }
+  Scr.SizeWindow = XCreateWindow (dpy, Scr.Root, x, y,
+				  (unsigned int)(Scr.SizeStringWidth +
+						 SIZE_HINDENT*2),
+				  (unsigned int) (Scr.StdFont.height +
+						  SIZE_VINDENT*2),
+				  (unsigned int) 0, 0,
+				  (unsigned int) CopyFromParent,
+				  (Visual *) CopyFromParent,
+				  valuemask, &attributes);
+  if(Scr.SizeWindow != None)
+    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
+
 #ifndef NON_VIRTUAL
   initPanFrames();
 #endif
@@ -468,10 +511,27 @@ int main(int argc, char **argv)
 #endif
   MyXUngrabServer(dpy);
   UnBlackoutScreen(); /* if we need to remove blackout window */
+  CoerceEnterNotifyOnCurrentWindow();
+  /* Make sure we have the correct click time now. */
+  if (Scr.ClickTime < 0)
+    Scr.ClickTime = -Scr.ClickTime;
+  fFvwmInStartup = False;
   DBUG("main","Entering HandleEvents loop...");
+
   HandleEvents();
-  DBUG("main","Back from HandleEvents loop?  Exitting...");
-  return;
+  switch( fvwmRunState )
+  {
+  case FVWM_DONE:
+    Done(0, NULL);     /* does not return */
+
+  case FVWM_RESTART:
+    Done(1, *g_argv);  /* does not return */
+
+  default:
+    DBUG("main","Unknown FVWM run-state");
+  }
+
+  return 0;
 }
 
 
@@ -486,18 +546,28 @@ void StartupStuff(void)
 
   CaptureAllWindows();
   MakeMenus();
-      
+#ifndef NON_VIRTUAL
+  /* Have to do this here too because preprocessor modules have not run to the
+   * end when HandleEvents is entered from the main loop. */
+  checkPanFrames();
+#endif
+
+  /* migo (02-Oct-1999): execute StartFunction */
+  if (FindPopup("StartFunction")) {
+    ExecuteFunction("Function StartFunction", NULL, &Event, C_ROOT, 1);
+  }
+
   if(Restarting)
   {
     mr = FindPopup("RestartFunction");
     if(mr != NULL)
-      ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,-1);
+      ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,1);
   }
   else
   {
     mr = FindPopup("InitFunction");
     if(mr != NULL)
-      ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
+      ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,1);
   }
 } /* StartupStuff */
 
@@ -516,7 +586,7 @@ void CaptureAllWindows(void)
   int i,j;
   unsigned int nchildren;
   Window root, parent, *children;
-  FvwmWindow *tmp,*next;		/* temp fvwm window structure */
+   FvwmWindow *tmp,*next;		/* temp fvwm window structure */
   Window w;
   unsigned long data[1];
   unsigned char *prop;
@@ -539,18 +609,18 @@ void CaptureAllWindows(void)
     /*
     ** weed out icon windows
     */
-    for (i=0;i<nchildren;i++) 
+    for (i=0;i<nchildren;i++)
     {
-      if (children[i]) 
+      if (children[i])
       {
         XWMHints *wmhintsp = XGetWMHints (dpy, children[i]);
-        if (wmhintsp) 
+        if (wmhintsp)
         {
-          if (wmhintsp->flags & IconWindowHint) 
+          if (wmhintsp->flags & IconWindowHint)
           {
-            for (j = 0; j < nchildren; j++) 
+            for (j = 0; j < nchildren; j++)
             {
-              if (children[j] == wmhintsp->icon_window) 
+              if (children[j] == wmhintsp->icon_window)
               {
                 children[j] = None;
                 break;
@@ -581,7 +651,7 @@ void CaptureAllWindows(void)
     tmp = Scr.FvwmRoot.next;
     for(i=0;i<nchildren;i++)
     {
-      if(XFindContext(dpy, children[i], FvwmContext, 
+      if(XFindContext(dpy, children[i], FvwmContext,
                       (caddr_t *)&tmp)!=XCNOENT)
       {
         isIconicState = DontCareState;
@@ -600,12 +670,12 @@ void CaptureAllWindows(void)
         data[0] = (unsigned long) tmp->Desk;
         XChangeProperty (dpy, tmp->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                          PropModeReplace, (unsigned char *) data, 1);
-        
+
         XSelectInput(dpy, tmp->w, 0);
         w = tmp->w;
         XUnmapWindow(dpy,tmp->frame);
         XUnmapWindow(dpy,w);
-        RestoreWithdrawnLocation (tmp,True); 
+        RestoreWithdrawnLocation (tmp,True);
         Destroy(tmp);
         Event.xmaprequest.window = w;
         HandleMapRequestKeepRaised(BlackoutWin);
@@ -638,17 +708,17 @@ void SetRCDefaults()
   char *defaults[] = {
     "HilightColor black grey",
     "XORValue 0",
-    "MenuStyle black grey slategrey fixed fvwm",
+    "DefaultFont fixed",
+    "DefaultColors black grey",
+    "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
     "TitleStyle Centered -- Raised",
-    "IconFont fixed",
-    "WindowFont fixed",
     "Style \"*\" Color lightgrey/dimgrey, Title",
     "Style \"*\" RandomPlacement, SmartPlacement",
     "AddToMenu builtin_menu \"Builtin Menu\" Title",
     "+ \"Exit FVWM\" Quit",
     "Mouse 1 R N Popup builtin_menu",
     "AddToFunc WindowListFunc \"I\" WindowId $0 Iconify -1",
-    "+ \"I\" WindowId $0 Focus",
+    "+ \"I\" WindowId $0 FlipFocus",
     "+ \"I\" WindowId $0 Raise",
     "+ \"I\" WindowId $0 WarpToWindow 5p 5p",
     NULL
@@ -657,7 +727,7 @@ void SetRCDefaults()
 
   while (defaults[i])
   {
-    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,-1);
+    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,1);
     i++;
   }
 } /* SetRCDefaults */
@@ -726,7 +796,7 @@ Atom _XA_WM_DELETE_WINDOW;
 Atom _XA_WM_DESKTOP;
 Atom _XA_MwmAtom;
 Atom _XA_MOTIF_WM;
- 
+
 Atom _XA_OL_WIN_ATTR;
 Atom _XA_OL_WT_BASE;
 Atom _XA_OL_WT_CMD;
@@ -742,10 +812,10 @@ Atom _XA_OL_DECOR_ICON_NAME;
 
 void InternUsefulAtoms (void)
 {
-  /* 
+  /*
    * Create priority colors if necessary.
    */
-  _XA_MIT_PRIORITY_COLORS = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", False);   
+  _XA_MIT_PRIORITY_COLORS = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", False);
   _XA_WM_CHANGE_STATE = XInternAtom (dpy, "WM_CHANGE_STATE", False);
   _XA_WM_STATE = XInternAtom (dpy, "WM_STATE", False);
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
@@ -774,23 +844,46 @@ void InternUsefulAtoms (void)
 /***********************************************************************
  *
  *  Procedure:
- *	newhandler: Installs new signal handler
+ *	newhandler: Installs new signal handler (reliable semantics)
  *
  ************************************************************************/
-void newhandler(int sig)
+void
+newhandler(int sig)
 {
-  if (signal (sig, SIG_IGN) != SIG_IGN)
-    signal (sig, SigDone);
+#ifdef HAVE_SIGACTION
+  struct sigaction  sigact;
+
+  sigaction(sig,NULL,&sigact);
+  if (sigact.sa_handler != SIG_IGN)
+  {
+    /*
+     * SigDone requires that we QUIT as soon as possible afterwards,
+     * so we need to interrupt any system calls we are blocked in
+     */
+    sigemptyset(&sigact.sa_mask);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = SigDone;
+    sigaction(sig, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so use less robust methods.  */
+  if (signal(sig,SIG_IGN) == SIG_IGN)
+    signal(sig,SigDone);
+#endif
 }
 
 
 /*************************************************************************
  * Restart on a signal
  ************************************************************************/
-void Restart(int nonsense)
+RETSIGTYPE Restart(int nonsense)
 {
-  Done(1, *g_argv);
-  SIGNAL_RETURN;
+  isTerminated = True;
+  fvwmRunState = FVWM_RESTART;
 }
 
 /***********************************************************************
@@ -824,9 +917,9 @@ void CreateCursors(void)
 
 /***********************************************************************
  *
- *  LoadDefaultLeftButton -- loads default left button # into 
+ *  LoadDefaultLeftButton -- loads default left button # into
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultLeftButton(ButtonFace *bf, int i)
 {
@@ -917,7 +1010,7 @@ void LoadDefaultLeftButton(ButtonFace *bf, int i)
  *
  *  LoadDefaultRightButton -- loads default left button # into
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultRightButton(ButtonFace *bf, int i)
 {
@@ -1008,7 +1101,7 @@ void LoadDefaultRightButton(ButtonFace *bf, int i)
  *
  *  LoadDefaultButton -- loads default button # into button structure
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultButton(ButtonFace *bf, int i)
 {
@@ -1026,28 +1119,40 @@ extern void FreeButtonFace(Display *dpy, ButtonFace *bf);
  *
  *  ResetAllButtons -- resets all buttons to defaults
  *                 destroys existing buttons
- * 
+ *
  ************************************************************************/
 void ResetAllButtons(FvwmDecor *fl)
 {
-    int i = 0;
-    for (; i < 5; ++i) {
-	int j;
+    TitleButton *leftp, *rightp;
+    int i=0;
 
-	FreeButtonFace(dpy, &fl->left_buttons[i].state[0]);
-	FreeButtonFace(dpy, &fl->right_buttons[i].state[0]);
+    for (leftp=fl->left_buttons, rightp=fl->right_buttons;
+         i < 5;
+         ++i, ++leftp, ++rightp) {
+      ButtonFace *lface, *rface;
+      int j;
 
-	LoadDefaultLeftButton(&fl->left_buttons[i].state[0], i);
-	LoadDefaultRightButton(&fl->right_buttons[i].state[0], i);
+      leftp->flags = 0;
+      rightp->flags = 0;
 
-	for (j = 1; j < MaxButtonState; ++j) {
-	    FreeButtonFace(dpy, &fl->left_buttons[i].state[j]);
-	    FreeButtonFace(dpy, &fl->right_buttons[i].state[j]);
+      lface = leftp->state;
+      rface = rightp->state;
 
-	    fl->left_buttons[i].state[j] = fl->left_buttons[i].state[0];
-	    fl->right_buttons[i].state[j] = fl->right_buttons[i].state[0];
-	}
+      FreeButtonFace(dpy, lface);
+      FreeButtonFace(dpy, rface);
+
+      LoadDefaultLeftButton(lface++, i);
+      LoadDefaultRightButton(rface++, i);
+
+      for (j = 1; j < MaxButtonState; ++j, ++lface, ++rface) {
+        FreeButtonFace(dpy, lface);
+        FreeButtonFace(dpy, rface);
+
+        *lface = leftp->state[0];
+        *rface = rightp->state[0];
+      }
     }
+
     /* standard MWM decoration hint assignments (veliaa@rpi.edu)
        [Menu]  - Title Bar - [Minimize] [Maximize] */
     fl->left_buttons[0].flags |= MWMDecorMenu;
@@ -1059,7 +1164,7 @@ void ResetAllButtons(FvwmDecor *fl)
  *
  *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
  *	structure, but does not free the FvwmDecor itself
- * 
+ *
  ************************************************************************/
 void DestroyFvwmDecor(FvwmDecor *fl)
 {
@@ -1090,20 +1195,24 @@ void DestroyFvwmDecor(FvwmDecor *fl)
       XFreeGC(dpy, fl->HiShadowGC);
       fl->HiShadowGC = NULL;
   }
+  if (fl->WindowFont.font != NULL)
+    XFreeFont(dpy, fl->WindowFont.font);
 }
 
 /***********************************************************************
  *
  *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
- * 
+ *
  ************************************************************************/
 void InitFvwmDecor(FvwmDecor *fl)
 {
     int i;
     ButtonFace tmpbf;
-    
+
     fl->HiReliefGC = NULL;
     fl->HiShadowGC = NULL;
+    fl->TitleHeight = 0;
+    fl->WindowFont.font = NULL;
 
 #ifdef USEDECOR
     fl->tag = NULL;
@@ -1128,13 +1237,13 @@ void InitFvwmDecor(FvwmDecor *fl)
 		fl->right_buttons[i].state[j] =  tmpbf;
 	}
     }
-    
+
     /* reset to default button set */
     ResetAllButtons(fl);
-    
+
     /* initialize title-bar styles */
     fl->titlebar.flags = 0;
-    
+
     for (i = 0; i < MaxButtonState; ++i) {
 	fl->titlebar.state[i].style = SimpleButton;
 #ifdef MULTISTYLE
@@ -1166,11 +1275,26 @@ void InitVariables(void)
 
   /* initialize some lists */
   Scr.AllBindings = NULL;
-  Scr.AllMenus = NULL;
   Scr.TheList = NULL;
-  
+
+  Scr.menus.all = NULL;
+  Scr.menus.DefaultStyle = NULL;
+  Scr.menus.LastStyle = NULL;
+  Scr.menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
+  Scr.menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
+
   Scr.DefaultIcon = NULL;
 
+  Scr.StdColors.fore = 0;
+  Scr.StdColors.back = 0;
+  Scr.StdRelief.fore = 0;
+  Scr.StdRelief.back = 0;
+  Scr.StdGC = 0;
+  Scr.StdReliefGC = 0;
+  Scr.StdShadowGC = 0;
+  Scr.DrawGC = 0;
+  Scr.hasIconFont = False;
+  Scr.hasWindowFont = False;
 
   /* create graphics contexts */
   CreateGCs();
@@ -1178,25 +1302,32 @@ void InitVariables(void)
   Scr.d_depth = DefaultDepth(dpy, Scr.screen);
   Scr.FvwmRoot.w = Scr.Root;
   Scr.FvwmRoot.next = 0;
+
+  /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
+  Scr.FvwmRoot.stack_next  =  &Scr.FvwmRoot;
+  Scr.FvwmRoot.stack_prev  =  &Scr.FvwmRoot;
+
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
   Scr.FvwmRoot.number_cmap_windows = 0;
-  
+
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-    
+
   Scr.NoBoundaryWidth = 1;
   Scr.BoundaryWidth = BOUNDARY_WIDTH;
   Scr.CornerWidth = CORNER_WIDTH;
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
+  Scr.PreviousFocus = NULL;
   Scr.Ungrabbed = NULL;
-  
-  Scr.StdFont.font = NULL;
 
-#ifndef NON_VIRTUAL  
+  Scr.StdFont.font = NULL;
+  Scr.IconFont.font = NULL;
+
+#ifndef NON_VIRTUAL
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;
 #else
@@ -1215,7 +1346,7 @@ void InitVariables(void)
     int aformat;
     unsigned long nitems, bytes_remain;
     unsigned char *prop;
-    
+
     Scr.CurrentDesk = 0;
     if ((XGetWindowProperty(dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True,
 			    _XA_WM_DESKTOP, &atype, &aformat, &nitems,
@@ -1231,8 +1362,13 @@ void InitVariables(void)
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
+  Scr.SnapAttraction = -1;
+  Scr.SnapMode = 0;
+  Scr.SnapGridX = 1;
+  Scr.SnapGridY = 1;
   Scr.OpaqueSize = 5;
-  Scr.ClickTime = 150;
+  /* ClickTime is set to the positive value upon entering the event loop. */
+  Scr.ClickTime = -DEFAULT_CLICKTIME;
   Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
 
   /* set major operating modes */
@@ -1250,7 +1386,16 @@ void InitVariables(void)
   Scr.ClickToFocusPassesClick = True;
   Scr.ClickToFocusRaises = True;
   Scr.MouseFocusClickRaises = False;
+  Scr.StipledTitles = False;
 
+  /*  RBW - 11/02/1998    */
+  Scr.go.ModifyUSP                          =  True;
+  Scr.go.CaptureHonorsStartsOnPage          =  True;
+  Scr.go.RecaptureHonorsStartsOnPage        =  False;
+  Scr.go.ActivePlacementHonorsStartsOnPage  =  False;
+
+  Scr.gs.EmulateMWM = False;
+  Scr.gs.EmulateWIN = False;
   /* Not the right place for this, should only be called once somewhere .. */
   InitPictureCMap(dpy,Scr.Root);
 
@@ -1271,9 +1416,13 @@ void Reborder(void)
   MyXGrabServer (dpy);
 
   InstallWindowColormaps (&Scr.FvwmRoot);	/* force reinstall */
-  for (tmp = Scr.FvwmRoot.next; tmp != NULL; tmp = tmp->next)
+/*
+    RBW - 05/15/1998
+    Grab the last window and work backwards: preserve stacking order on restart.
+*/
+  for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot; tmp = tmp->stack_prev)
   {
-    RestoreWithdrawnLocation (tmp,True); 
+    RestoreWithdrawnLocation (tmp,True);
     XUnmapWindow(dpy,tmp->frame);
     XDestroyWindow(dpy,tmp->frame);
   }
@@ -1287,14 +1436,14 @@ void Reborder(void)
 /***********************************************************************
  *
  *  Procedure:
- *	Done - cleanup and exit fvwm
+ *	Done - tells FVWM to clean up and exit
  *
  ***********************************************************************
  */
-void SigDone(int nonsense)
+RETSIGTYPE SigDone(int nonsense)
 {
-  Done(0, NULL);
-  SIGNAL_RETURN;
+  isTerminated = True;
+  fvwmRunState = FVWM_DONE;
 }
 
 void Done(int restart, char *command)
@@ -1307,7 +1456,7 @@ void Done(int restart, char *command)
 
   mr = FindPopup("ExitFunction");
   if(mr != NULL)
-    ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1);
+    ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,1);
 
   /* Close all my pipes */
   ClosePipes();
@@ -1345,7 +1494,7 @@ void Done(int restart, char *command)
         my_argv[i++] = "-s";
       while(i<10)
         my_argv[i++] = NULL;
-	
+
       /* really need to destroy all windows, explicitly,
        * not sleep, but this is adequate for now */
       sleep(1);
@@ -1356,16 +1505,16 @@ void Done(int restart, char *command)
              command,
              g_argv[0]);
     execvp(g_argv[0], g_argv);    /* that _should_ work */
-    fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]); 
+    fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
   }
   else
   {
     XCloseDisplay(dpy);
-    exit(0);
   }
+  exit(0);
 }
 
-XErrorHandler CatchRedirectError(Display *dpy, XErrorEvent *event)
+int CatchRedirectError(Display *dpy, XErrorEvent *event)
 {
   fvwm_msg(ERR,"CatchRedirectError","another WM is running");
   exit(1);
@@ -1377,7 +1526,7 @@ XErrorHandler CatchRedirectError(Display *dpy, XErrorEvent *event)
  *	CatchFatal - Shuts down if the server connection is lost
  *
  ************************************************************************/
-XIOErrorHandler CatchFatal(Display *dpy)
+int CatchFatal(Display *dpy)
 {
   /* No action is taken because usually this action is caused by someone
      using "xlogout" to be able to switch between multiple window managers
@@ -1392,11 +1541,11 @@ XIOErrorHandler CatchFatal(Display *dpy)
  *	FvwmErrorHandler - displays info on internal errors
  *
  ************************************************************************/
-XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
+int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
   extern int last_event_type;
 
-  /* some errors are acceptable, mostly they're caused by 
+  /* some errors are acceptable, mostly they're caused by
    * trying to update a lost  window */
   if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||
      (event->error_code==BadDrawable)||(event->request_code==X_SetInputFocus)||
@@ -1458,12 +1607,12 @@ void SetMWM_INFO(Window window)
     long flags;
     Window win;
   }  motif_wm_info;
-  
-  /* Set Motif WM_INFO atom to make motif relinquish 
+
+  /* Set Motif WM_INFO atom to make motif relinquish
    * broken handling of modal dialogs */
   motif_wm_info.flags     = 2;
   motif_wm_info.win = window;
-  
+
   XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
 		  PropModeReplace,(char *)&motif_wm_info,2);
 #endif
@@ -1473,7 +1622,7 @@ void BlackoutScreen()
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
-  
+
   if (Blackout && (BlackoutWin == None) && !debugging)
   {
     DBUG("BlackoutScreen","Blacking out screen during init...");

@@ -1,6 +1,16 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+
+ * Changed 10/06/97 by dje:
+ * Change single IconBox into chain of IconBoxes.
+ * Allow IconBox to be specified using X Geometry string.
+ * Parse optional IconGrid.
+ * Parse optional IconFill.
+ * Use macros to make parsing more uniform, and easier to read.
+ * Rewrote AddToList without tons of arg passing and merging.
+ * Added a few comments.
+ *
+ * This module was all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -11,7 +21,7 @@
  * code for parsing the fvwm style command
  *
  ***********************************************************************/
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -24,8 +34,54 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "../version.h"
 
+static int Get_TBLR(char *, unsigned char *); /* prototype */
+static void AddToList(name_list *);     /* prototype */
+
+/* A macro for skipping over white space */
+#define SKIPSPACE \
+  while(isspace(*restofline))restofline++;
+
+/* A macro for checking the command with a caseless compare */
+#define ITIS(THIS) \
+  strncasecmp(restofline,THIS,sizeof(THIS)-1)==0
+
+/* A macro for skipping over the command without counting it's size */
+#define SKIP(THIS) \
+  restofline += sizeof(THIS)-1
+
+/* A macro for getting a non-quoted operand */
+#define GETWORD \
+  SKIPSPACE; \
+  tmp = restofline; \
+  len = 0; \
+  while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&& \
+        (*tmp != '\n')&&(!isspace(*tmp))) { \
+    tmp++; \
+    len++; \
+  }
+
+/* A macro for getting a quoted operand */
+#define GETQUOTEDWORD \
+  is_quoted = 0; \
+  SKIPSPACE; \
+  if (*restofline == '"') { \
+    is_quoted = 1; \
+    ++restofline; \
+  } \
+  tmp = restofline; \
+  len = 0; \
+  while (tmp && *tmp && \
+         ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace(*tmp))) \
+          || (is_quoted&&(*tmp != '\n')&&(*tmp != '"')))) \
+    { \
+      tmp++; \
+      len++; \
+    } \
+    if (tmp && (*tmp == '"')) ++tmp;
+
+/* Process a style command.  First built up in a temp area.
+   If valid, added to the list in a malloced area. */
 void ProcessNewStyle(XEvent *eventp,
                      Window w,
                      FvwmWindow *tmp_win,
@@ -33,304 +89,392 @@ void ProcessNewStyle(XEvent *eventp,
                      char *text,
                      int *Module)
 {
-  char *name, *line;
+  char *line;
   char *restofline,*tmp;
-  char *icon_name = NULL;
-#ifdef MINI_ICONS
-  char *miniicon_name = NULL;
-#endif
-#ifdef USEDECOR
-  char *decor = NULL;
-#endif
-  char *forecolor = NULL;
-  char *backcolor = NULL;
-  unsigned long off_buttons=0;
-  unsigned long on_buttons=0;
   name_list *nptr;
-  int butt;
-  int BoxFillMethod = 0;
-  int IconBox[4];
+  int butt;                             /* work area for button number */
   int num,i;
+  /*  RBW - 11/02/1998  */
+  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
+  /**/
 
-  int len,desknumber = 0,bw=0, nobw = 0;
-  unsigned long off_flags = 0;
-  unsigned long on_flags = 0;
-  
-  IconBox[0] = -1;
-  IconBox[1] = -1;
-  IconBox[2] = Scr.MyDisplayWidth;
-  IconBox[3] = Scr.MyDisplayHeight;
+  name_list tname;                      /* temp area to build name list */
+  int len = 0;
+  icon_boxes *which = 0;                /* which current boxes to chain to */
+  int is_quoted;                        /* for parsing args with quotes */
 
-  restofline = GetNextToken(text,&name);
+  memset(&tname, 0, sizeof(name_list)); /* init temp name_list area */
+
+  restofline = GetNextToken(text,&tname.name); /* parse style name */
   /* in case there was no argument! */
-  if((name == NULL)||(restofline == NULL))
-    return;
+  if((tname.name == NULL)||(restofline == NULL))/* If no name, or blank cmd */
+    {
+      if (tname.name)
+	free(tname.name);
+      return;                             /* drop it. */
+    }
 
-  while(isspace((unsigned char)*restofline)&&(*restofline != 0))restofline++;
+  SKIPSPACE;                            /* skip over white space */
   line = restofline;
 
-  if(restofline == NULL)return;
+  if(restofline == NULL)
+    {
+      free(tname.name);
+      return;
+    }
   while((*restofline != 0)&&(*restofline != '\n'))
   {
-    while(isspace((unsigned char)*restofline)) restofline++;
+    SKIPSPACE;                          /* skip white space */
+    /* It might make more sense to capture the whole word, fix its
+       case, and use strcmp, but there aren't many caseless compares
+       because of this "switch" on the first letter. */
     switch (tolower(restofline[0]))
     {
       case 'a':
-        if(mystrncasecmp(restofline,"ACTIVEPLACEMENT",15)==0)
+        if(ITIS("ACTIVEPLACEMENT"))
         {
-          restofline +=15;
-          on_flags |= RANDOM_PLACE_FLAG;
+          SKIP("ACTIVEPLACEMENT");
+          tname.on_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 'b':
-        if(mystrncasecmp(restofline,"BACKCOLOR",9)==0)
+        if(ITIS("BACKCOLOR"))
         {
-          restofline +=9;
-          while(isspace((unsigned char)*restofline))restofline++;
-          tmp = restofline;
-          len = 0;
-          while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
-          {
-            tmp++;
-            len++;
-          }
+          SKIP("BACKCOLOR");
+          GETWORD;
           if(len > 0)
           {
-            backcolor = safemalloc(len+1);
-            strncpy(backcolor,restofline,len);
-            backcolor[len] = 0;
-            off_flags |= BACK_COLOR_FLAG;
+            tname.BackColor = safemalloc(len+1);
+            strncpy(tname.BackColor,restofline,len);
+            tname.BackColor[len] = 0;
+            tname.off_flags |= BACK_COLOR_FLAG;
           }
           restofline = tmp;
         }
-        else if (mystrncasecmp(restofline,"BUTTON",6)==0)
+        else if (ITIS("BUTTON"))
         {
-          restofline +=6;
-	  
+          SKIP("BUTTON");
+	  butt = -1; /* just in case sscanf fails */
           sscanf(restofline,"%d",&butt);
-          while(isspace((unsigned char)*restofline))restofline++;
-          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                (*restofline != ',')&&(*restofline != '\n'))
-            restofline++;
-          while(isspace((unsigned char)*restofline))restofline++;
-	  
+          GETWORD;
+          restofline = tmp;
+          SKIPSPACE;
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
-            on_buttons |= (1<<(butt-1));
+            tname.on_buttons |= (1<<(butt-1));
         }
-        else if(mystrncasecmp(restofline,"BorderWidth",11)==0)
+        else if(ITIS("BorderWidth"))
         {
-          restofline +=11;
-          off_flags |= BW_FLAG;
-          sscanf(restofline,"%d",&bw);
-          while(isspace((unsigned char)*restofline))restofline++;
-          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                (*restofline != ',')&&(*restofline != '\n'))
-            restofline++;
-          while(isspace((unsigned char)*restofline))restofline++;
+          SKIP("BorderWidth");
+          tname.off_flags |= BW_FLAG;
+          sscanf(restofline,"%d",&tname.border_width);
+          GETWORD;
+          restofline = tmp;
+          SKIPSPACE;
         }
         break;
       case 'c':
-        if(mystrncasecmp(restofline,"COLOR",5)==0)
+        if(ITIS("COLOR"))
         {
-          restofline +=5;
-          while(isspace((unsigned char)*restofline))restofline++;
+          SKIP("COLOR");
+          SKIPSPACE;
           tmp = restofline;
           len = 0;
           while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(*tmp != '/')&&(!isspace((unsigned char)*tmp)))
+                (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
           {
             tmp++;
             len++;
           }
           if(len > 0)
           {
-            forecolor = safemalloc(len+1);
-            strncpy(forecolor,restofline,len);
-            forecolor[len] = 0;
-            off_flags |= FORE_COLOR_FLAG;
+            tname.ForeColor = safemalloc(len+1);
+            strncpy(tname.ForeColor,restofline,len);
+            tname.ForeColor[len] = 0;
+            tname.off_flags |= FORE_COLOR_FLAG;
           }
-          
-          while(isspace((unsigned char)*tmp))tmp++;
+
+          while(isspace(*tmp))tmp++;
           if(*tmp == '/')
           {
             tmp++;
-            while(isspace((unsigned char)*tmp))tmp++;
+            while(isspace(*tmp))tmp++;
             restofline = tmp;
             len = 0;
             while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                  (*tmp != '\n')&&(*tmp != '/')&&(!isspace((unsigned char)*tmp)))
+                  (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
             {
               tmp++;
               len++;
             }
             if(len > 0)
             {
-              backcolor = safemalloc(len+1);
-              strncpy(backcolor,restofline,len);
-              backcolor[len] = 0;
-              off_flags |= BACK_COLOR_FLAG;
+              tname.BackColor = safemalloc(len+1);
+              strncpy(tname.BackColor,restofline,len);
+              tname.BackColor[len] = 0;
+              tname.off_flags |= BACK_COLOR_FLAG;
             }
           }
           restofline = tmp;
         }
-        else if(mystrncasecmp(restofline,"CirculateSkipIcon",17)==0)
+        else if(ITIS("CirculateSkipIcon"))
         {
-          restofline +=17;
-          off_flags |= CIRCULATE_SKIP_ICON_FLAG;
+          SKIP("CirculateSkipIcon");
+          tname.off_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"CirculateHitIcon",16)==0)
+        else if(ITIS("CirculateHitIcon"))
         {
-          restofline +=16;
-          on_flags |= CIRCULATE_SKIP_ICON_FLAG;
+          SKIP("CirculateHitIcon");
+          tname.on_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"CLICKTOFOCUS",12)==0)
+        else if(ITIS("CLICKTOFOCUS"))
         {
-          restofline +=12;
-          off_flags |= CLICK_FOCUS_FLAG;
-          on_flags |= SLOPPY_FOCUS_FLAG;
+          SKIP("CLICKTOFOCUS");
+          tname.off_flags |= CLICK_FOCUS_FLAG;
+          tname.on_flags |= SLOPPY_FOCUS_FLAG;
         }
-        else if(mystrncasecmp(restofline,"CirculateSkip",13)==0)
+        else if(ITIS("CirculateSkip"))
         {
-          restofline +=13;
-          off_flags |= CIRCULATESKIP_FLAG;
+          SKIP("CirculateSkip");
+          tname.off_flags |= CIRCULATESKIP_FLAG;
         }
-        else if(mystrncasecmp(restofline,"CirculateHit",12)==0)
+        else if(ITIS("CirculateHit"))
         {
-          restofline +=12;
-          on_flags |= CIRCULATESKIP_FLAG;
+          SKIP("CirculateHit");
+          tname.on_flags |= CIRCULATESKIP_FLAG;
         }
         break;
       case 'd':
-        if(mystrncasecmp(restofline,"DecorateTransient",17)==0)
+        if(ITIS("DecorateTransient"))
         {
-          restofline +=17;
-          off_flags |= DECORATE_TRANSIENT_FLAG;
+          SKIP("DecorateTransient");
+          tname.off_flags |= DECORATE_TRANSIENT_FLAG;
         }
-        else if(mystrncasecmp(restofline,"DUMBPLACEMENT",13)==0)
+        else if(ITIS("DUMBPLACEMENT"))
         {
-          restofline +=13;
-          on_flags |= SMART_PLACE_FLAG;
+          SKIP("DUMBPLACEMENT");
+          tname.on_flags |= SMART_PLACE_FLAG;
         }
         break;
       case 'e':
         break;
       case 'f':
-        if(mystrncasecmp(restofline,"FORECOLOR",9)==0)
+        if(ITIS("FORECOLOR"))
         {
-          restofline +=9;
-          while(isspace((unsigned char)*restofline))restofline++;
-          tmp = restofline;
-          len = 0;
-          while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
-          {
-            tmp++;
-            len++;
-          }
+          SKIP("FORECOLOR");
+          GETWORD;
           if(len > 0)
           {
-            forecolor = safemalloc(len+1);
-            strncpy(forecolor,restofline,len);
-            forecolor[len] = 0;
-            off_flags |= FORE_COLOR_FLAG;
+            tname.ForeColor = safemalloc(len+1);
+            strncpy(tname.ForeColor,restofline,len);
+            tname.ForeColor[len] = 0;
+            tname.off_flags |= FORE_COLOR_FLAG;
           }
           restofline = tmp;
         }
-        else if(mystrncasecmp(restofline,"FVWMBUTTONS",11)==0)
+        else if(ITIS("FVWMBUTTONS"))
         {
-          restofline +=11;
-          on_flags |= MWM_BUTTON_FLAG;
+          SKIP("FVWMBUTTONS");
+          tname.on_flags |= MWM_BUTTON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"FVWMBORDER",10)==0)
+        else if(ITIS("FVWMBORDER"))
         {
-          restofline +=10;
-          on_flags |= MWM_BORDER_FLAG;
+          SKIP("FVWMBORDER");
+          tname.on_flags |= MWM_BORDER_FLAG;
         }
-        else if(mystrncasecmp(restofline,"FocusFollowsMouse",17)==0)
+        else if(ITIS("FocusFollowsMouse"))
         {
-          restofline +=17;
-          on_flags |= CLICK_FOCUS_FLAG;
-          on_flags |= SLOPPY_FOCUS_FLAG;
+          SKIP("FocusFollowsMouse");
+          tname.on_flags |= CLICK_FOCUS_FLAG;
+          tname.on_flags |= SLOPPY_FOCUS_FLAG;
         }
         break;
       case 'g':
         break;
       case 'h':
-        if(mystrncasecmp(restofline,"HINTOVERRIDE",12)==0)
+        if(ITIS("HINTOVERRIDE"))
         {
-          restofline +=12;
-          off_flags |= MWM_OVERRIDE_FLAG;
+          SKIP("HINTOVERRIDE");
+          tname.off_flags |= MWM_OVERRIDE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"HANDLES",7)==0)
+        else if(ITIS("HANDLES"))
         {
-          restofline +=7;
-          on_flags |= NOBORDER_FLAG;
+          SKIP("HANDLES");
+          tname.on_flags |= NOBORDER_FLAG;
         }
-        else if(mystrncasecmp(restofline,"HandleWidth",11)==0)
+        else if(ITIS("HandleWidth"))
         {
-          restofline +=11;
-          off_flags |= NOBW_FLAG;
-          sscanf(restofline,"%d",&nobw);
-          while(isspace((unsigned char)*restofline))restofline++;
-          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                (*restofline != ',')&&(*restofline != '\n'))
-            restofline++;
-          while(isspace((unsigned char)*restofline))restofline++;
+          SKIP("HandleWidth");
+          tname.off_flags |= NOBW_FLAG;
+          sscanf(restofline,"%d",&tname.resize_width);
+          GETWORD;
+          restofline = tmp;
+          SKIPSPACE;
         }
         break;
       case 'i':
-        if(mystrncasecmp(restofline,"IconTitle",9)==0)
+        if(ITIS("IconTitle"))
         {
-          on_flags |= NOICON_TITLE_FLAG;
-          restofline +=9;
+          SKIP("IconTitle");
+          tname.on_flags |= NOICON_TITLE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"IconBox",7) == 0)
+        else if(ITIS("IconBox"))
         {
-          restofline +=7;
-          /* Standard X11 geometry string */
-          num = sscanf(restofline,"%d%d%d%d",&IconBox[0], &IconBox[1],
-                       &IconBox[2],&IconBox[3]);
-          for(i=0;i<num;i++)
-          {
-            while(isspace((unsigned char)*restofline))restofline++;
-            if (*restofline == '-') {   /* If leading minus sign */
-              if (i == 0 || i == 2) {   /* if a width */
-                IconBox[i] += Scr.MyDisplayWidth;
-              } else {                  /* it must be a height */
-                IconBox[i] += Scr.MyDisplayHeight;
-              } /* end width/height */
-            } /* end leading minus sign */
-            while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                  (*restofline != ',')&&(*restofline != '\n'))
-              restofline++;
-          }
-          if(num !=4)
+          icon_boxes *IconBoxes = 0;
+          SKIP("IconBox");              /* Skip over word "IconBox" */
+          IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
+          memset(IconBoxes, 0, sizeof(icon_boxes)); /* clear it */
+          IconBoxes->IconGrid[0] = 3;   /* init grid x */
+          IconBoxes->IconGrid[1] = 3;   /* init grid y */
+          /* try for 4 numbers x y x y */
+          num = sscanf(restofline,"%d%d%d%d",
+                       &IconBoxes->IconBox[0],
+                       &IconBoxes->IconBox[1],
+                       &IconBoxes->IconBox[2],
+                       &IconBoxes->IconBox[3]);
+          if (num == 4) {               /* if 4 numbers */
+            for(i=0;i<num;i++) {
+              SKIPSPACE;
+              if (*restofline == '-') { /* If leading minus sign */
+                if (i == 0 || i == 2) { /* if a width */
+                  IconBoxes->IconBox[i] += Scr.MyDisplayWidth;
+                } else {                  /* it must be a height */
+                  IconBoxes->IconBox[i] += Scr.MyDisplayHeight;
+                } /* end width/height */
+              } /* end leading minus sign */
+              while((!isspace(*restofline))&&(*restofline!= 0)&&
+                    (*restofline != ',')&&(*restofline != '\n'))
+                restofline++;
+            }
+            /* Note: here there is no test for valid co-ords, use geom */
+          } else {                   /* Not 4 numeric args dje */
+            char geom_string[25];    /* bigger than =32767x32767+32767+32767 */
+            int geom_flags;
+            GETWORD;                    /* read in 1 word w/o advancing */
+            if(len > 0 && len < 24) {   /* if word found, not too long */
+              strncpy(geom_string,restofline,len); /* copy and null term */
+              geom_string[len] = 0;     /* null terminate it */
+              geom_flags=XParseGeometry(geom_string,
+                                        &IconBoxes->IconBox[0],
+                                        &IconBoxes->IconBox[1], /* x/y */
+                                        &IconBoxes->IconBox[2],
+                                        &IconBoxes->IconBox[3]); /* width/ht */
+              if (IconBoxes->IconBox[2] == 0) { /* zero width ind invalid */
+                fvwm_msg(ERR,"ProcessNewStyle",
+                "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
+                         geom_string);
+                free(IconBoxes);        /* Drop the box */
+                IconBoxes = 0;          /* forget about it */
+              } else {                  /* got valid iconbox geom */
+                if (geom_flags&XNegative) {
+                  IconBoxes->IconBox[0] = Scr.MyDisplayWidth /* screen width */
+                    + IconBoxes->IconBox[0] /* neg x coord */
+                    - IconBoxes->IconBox[2] -2; /* width - 2 */
+                }
+                if (geom_flags&YNegative) {
+                  IconBoxes->IconBox[1] = Scr.MyDisplayHeight /* scr height */
+                    + IconBoxes->IconBox[1] /* neg y coord */
+                    - IconBoxes->IconBox[3] -2; /* height - 2 */
+                }
+                IconBoxes->IconBox[2] +=
+                  IconBoxes->IconBox[0]; /* x + wid = right x */
+                IconBoxes->IconBox[3] +=
+                  IconBoxes->IconBox[1]; /* y + height = bottom y */
+              } /* end icon geom worked */
+            } else {                    /* no word or too long */
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "IconBox requires 4 numbers or geometry! Too long (%d).",
+                       len);
+              free(IconBoxes);          /* Drop the box */
+              IconBoxes = 0;            /* forget about it */
+            } /* end word found, not too long */
+            restofline = tmp;           /* got word, move past it */
+          } /* end not 4 args */
+          /* If we created an IconBox, put it in the chain. */
+          if (IconBoxes != 0) {         /* If no error */
+            if (tname.IconBoxes == 0) { /* If first one */
+              tname.IconBoxes = IconBoxes; /* chain to root */
+            } else {                    /* else not first one */
+              which->next = IconBoxes;  /* add to end of chain */
+            } /* end not first one */
+            which = IconBoxes;          /* new current box. save for grid */
+          } /* end no error */
+        } /* end iconbox parameter */
+        else if(ITIS("ICONGRID")) {
+          SKIP("ICONGRID");
+          SKIPSPACE;                    /* skip whitespace after keyword */
+          /* The grid always affects the prior iconbox */
+          if (which == 0) {             /* If no current box */
             fvwm_msg(ERR,"ProcessNewStyle",
-                     "IconBox style requires 4 arguments!");
-        }
-        else if(mystrncasecmp(restofline,"ICON",4)==0)
+		     "IconGrid must follow an IconBox in same Style command");
+          } else {                      /* have a place to grid */
+            num = sscanf(restofline,"%hd%hd", /* 2 shorts */
+                         &which->IconGrid[0],
+                         &which->IconGrid[1]);
+            if (num != 2
+                || which->IconGrid[0] < 1
+                || which->IconGrid[1] < 1) {
+              fvwm_msg(ERR,"ProcessNewStyle",
+                "IconGrid needs 2 numbers > 0. Got %d numbers. x=%d y=%d!",
+                       num, (int)which->IconGrid[0], (int)which->IconGrid[1]);
+              which->IconGrid[0] = 3;   /* reset grid x */
+              which->IconGrid[1] = 3;   /* reset grid y */
+            } else {                    /* it worked */
+              GETWORD;                  /* swallow word */
+              restofline = tmp;
+              GETWORD;                  /* swallow word */
+              restofline = tmp;
+            } /* end bad grid */
+          } /* end place to grid */
+        } else if(ITIS("ICONFILL")) {   /* direction to fill iconbox */
+          SKIP("ICONFILL");
+          SKIPSPACE;                    /* skip whitespace after keyword */
+          /* The fill always affects the prior iconbox */
+          if (which == 0) {             /* If no current box */
+            fvwm_msg(ERR,"ProcessNewStyle",
+		     "IconFill must follow an IconBox in same Style command");
+          } else {                      /* have a place to fill */
+            unsigned char IconFill_1;   /* first  type direction parsed */
+            unsigned char IconFill_2;   /* second type direction parsed */
+            GETWORD;                    /* read in word for length */
+            if (Get_TBLR(restofline,&IconFill_1) == 0) { /* top/bot/lft/rgt */
+              fvwm_msg(ERR,"ProcessNewStyle",
+                "IconFill must be followed by T|B|R|L, found %.*s.",
+                       len, restofline); /* its wrong */
+            } else {                    /* first word valid */
+              restofline = tmp;         /* swallow it */
+              SKIPSPACE;                /* skip space between words */
+              GETWORD;                  /* read in second word */
+              if (Get_TBLR(restofline,&IconFill_2) == 0) {/* top/bot/lft/rgt */
+                fvwm_msg(ERR,"ProcessNewStyle",
+                         "IconFill must be followed by T|B|R|L, found %.*s.",
+                         len, restofline); /* its wrong */
+              } else if ((IconFill_1&ICONFILLHRZ)==(IconFill_2&ICONFILLHRZ)) {
+                fvwm_msg(ERR,"ProcessNewStyle",
+                 "IconFill must specify a horizontal and vertical direction.");
+              } else {                  /* Its valid! */
+                which->IconFlags |= IconFill_1; /* merge in flags */
+                IconFill_2 &= ~ICONFILLHRZ; /* ignore horiz in 2nd arg */
+                which->IconFlags |= IconFill_2; /* merge in flags */
+              } /* end second word valid */
+            } /* end first word valid */
+            restofline = tmp;           /* swallow first or second word */
+          } /* end have a place to fill */
+        } /* end iconfill */
+        else if(ITIS("ICON"))
         {
-          restofline +=4;
-          while(isspace((unsigned char)*restofline))restofline++;
-          tmp = restofline;
-          len = 0;
-          while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&(*tmp != '\n'))
-          {
-            tmp++;
-            len++;
-          }
+          SKIP("ICON");
+          GETWORD;
           if(len > 0)
           {
-            icon_name = safemalloc(len+1);
-            strncpy(icon_name,restofline,len);
-            icon_name[len] = 0;
-            off_flags |= ICON_FLAG;
-            on_flags |= SUPPRESSICON_FLAG;
+            tname.value = safemalloc(len+1);
+            strncpy(tname.value,restofline,len);
+            tname.value[len] = 0;
+            tname.off_flags |= ICON_FLAG;
+            tname.on_flags |= SUPPRESSICON_FLAG;
           }
           else
-            on_flags |= SUPPRESSICON_FLAG;	    
+            tname.on_flags |= SUPPRESSICON_FLAG;
           restofline = tmp;
         }
         break;
@@ -339,139 +483,131 @@ void ProcessNewStyle(XEvent *eventp,
       case 'k':
         break;
       case 'l':
-        if(mystrncasecmp(restofline,"LENIENCE",8)==0)
+        if(ITIS("LENIENCE"))
         {
-          restofline += 8;
-          off_flags |= LENIENCE_FLAG;
+          SKIP("LENIENCE");
+          tname.off_flags |= LENIENCE_FLAG;
         }
         break;
       case 'm':
-        if(mystrncasecmp(restofline,"MWMBUTTONS",10)==0)
+        if(ITIS("MWMBUTTONS"))
         {
-          restofline +=10;
-          off_flags |= MWM_BUTTON_FLAG;
+          SKIP("MWMBUTTONS");
+          tname.off_flags |= MWM_BUTTON_FLAG;
         }
 #ifdef MINI_ICONS
-	else if (mystrncasecmp(restofline,"MINIICON", 8) == 0)
+	else if (ITIS("MINIICON"))
 	{
-	  restofline += 8;
-	  while (isspace ((unsigned char)*restofline)) restofline++;
-	  tmp = restofline;
-	  len = 0;
-	  while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&(*tmp != '\n'))
-          {
-            tmp++;
-            len++;
-          }
+          SKIP("MINIICON");
+          GETWORD;
           if(len > 0)
           {
-            miniicon_name = safemalloc(len+1);
-            strncpy(miniicon_name,restofline,len);
-            miniicon_name[len] = 0;
-            off_flags |= MINIICON_FLAG;
+            tname.mini_value = safemalloc(len+1);
+            strncpy(tname.mini_value,restofline,len);
+            tname.mini_value[len] = 0;
+            tname.off_flags |= MINIICON_FLAG;
           }
           restofline = tmp;
 	}
 #endif
-        else if(mystrncasecmp(restofline,"MWMBORDER",9)==0)
+        else if(ITIS("MWMBORDER"))
         {
-          restofline +=9;
-          off_flags |= MWM_BORDER_FLAG;
+          SKIP("MWMBORDER");
+          tname.off_flags |= MWM_BORDER_FLAG;
         }
-        else if(mystrncasecmp(restofline,"MWMDECOR",8)==0)
+        else if(ITIS("MWMDECOR"))
         {
-          restofline +=8;
-          off_flags |= MWM_DECOR_FLAG;
+          SKIP("MWMDECOR");
+          tname.off_flags |= MWM_DECOR_FLAG;
         }
-        else if(mystrncasecmp(restofline,"MWMFUNCTIONS",12)==0)
+        else if(ITIS("MWMFUNCTIONS"))
         {
-          restofline +=12;
-          off_flags |= MWM_FUNCTIONS_FLAG;
+          SKIP("MWMFUNCTIONS");
+          tname.off_flags |= MWM_FUNCTIONS_FLAG;
         }
-        else if(mystrncasecmp(restofline,"MOUSEFOCUS",10)==0)
+        else if(ITIS("MOUSEFOCUS"))
         {
-          restofline +=10;
-          on_flags |= CLICK_FOCUS_FLAG;
-          on_flags |= SLOPPY_FOCUS_FLAG;
+          SKIP("MOUSEFOCUS");
+          tname.on_flags |= CLICK_FOCUS_FLAG;
+          tname.on_flags |= SLOPPY_FOCUS_FLAG;
         }
         break;
       case 'n':
-        if(mystrncasecmp(restofline,"NoIconTitle",11)==0)
+        if(ITIS("NoIconTitle"))
         {
-          off_flags |= NOICON_TITLE_FLAG;
-          restofline +=11;
+          SKIP("NoIconTitle");
+          tname.off_flags |= NOICON_TITLE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOICON",6)==0)
+        else if(ITIS("NOICON"))
         {
-          restofline +=6;
-          off_flags |= SUPPRESSICON_FLAG;
+          SKIP("NOICON");
+          tname.off_flags |= SUPPRESSICON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOTITLE",7)==0)
+        else if(ITIS("NOTITLE"))
         {
-          restofline +=7;
-          off_flags |= NOTITLE_FLAG;
+          SKIP("NOTITLE");
+          tname.off_flags |= NOTITLE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NoPPosition",11)==0)
+        else if(ITIS("NoPPosition"))
         {
-          restofline +=11;
-          off_flags |= NO_PPOSITION_FLAG;
+          SKIP("NoPPosition");
+          tname.off_flags |= NO_PPOSITION_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NakedTransient",14)==0)
+        else if(ITIS("NakedTransient"))
         {
-          restofline +=14;
-          on_flags |= DECORATE_TRANSIENT_FLAG;
+          SKIP("NakedTransient");
+          tname.on_flags |= DECORATE_TRANSIENT_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NODECORHINT",11)==0)
+        else if(ITIS("NODECORHINT"))
         {
-          restofline +=11;
-          on_flags |= MWM_DECOR_FLAG;
+          SKIP("NODECORHINT");
+          tname.on_flags |= MWM_DECOR_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOFUNCHINT",10)==0)
+        else if(ITIS("NOFUNCHINT"))
         {
-          restofline +=10;
-          on_flags |= MWM_FUNCTIONS_FLAG;
+          SKIP("NOFUNCHINT");
+          tname.on_flags |= MWM_FUNCTIONS_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOOVERRIDE",10)==0)
+        else if(ITIS("NOOVERRIDE"))
         {
-          restofline +=10;
-          on_flags |= MWM_OVERRIDE_FLAG;
+          SKIP("NOOVERRIDE");
+          tname.on_flags |= MWM_OVERRIDE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOHANDLES",9)==0)
+        else if(ITIS("NOHANDLES"))
         {
-          restofline +=9;
-          off_flags |= NOBORDER_FLAG;
+          SKIP("NOHANDLES");
+          tname.off_flags |= NOBORDER_FLAG;
         }
-        else if(mystrncasecmp(restofline,"NOLENIENCE",10)==0)
+        else if(ITIS("NOLENIENCE"))
         {
-          restofline += 10;
-          on_flags |= LENIENCE_FLAG;
+          SKIP("NOLENIENCE");
+          tname.on_flags |= LENIENCE_FLAG;
         }
-        else if (mystrncasecmp(restofline,"NOBUTTON",8)==0)
+        else if (ITIS("NOBUTTON"))
         {
-          restofline +=8;
-	  
+          SKIP("NOBUTTON");
+
+	  butt = -1; /* just in case sscanf fails */
           sscanf(restofline,"%d",&butt);
-          while(isspace((unsigned char)*restofline))restofline++;
-          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                (*restofline != ',')&&(*restofline != '\n'))
-            restofline++;
-          while(isspace((unsigned char)*restofline))restofline++;
-	  
+          GETWORD;
+          SKIPSPACE;
+
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
-            off_buttons |= (1<<(butt-1));
+            tname.off_buttons |= (1<<(butt-1));
+          restofline = tmp;
         }
-        else if(mystrncasecmp(restofline,"NOOLDECOR",9)==0)
+        else if(ITIS("NOOLDECOR"))
         {
-          restofline += 9;
-          on_flags |= OL_DECOR_FLAG;
+          SKIP("NOOLDECOR");
+          tname.on_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'o':
-        if(mystrncasecmp(restofline,"OLDECOR",7)==0)
+        if(ITIS("OLDECOR"))
         {
-          restofline += 7;
-          off_flags |= OL_DECOR_FLAG;
+          SKIP("OLDECOR");
+          tname.off_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'p':
@@ -479,220 +615,230 @@ void ProcessNewStyle(XEvent *eventp,
       case 'q':
         break;
       case 'r':
-        if(mystrncasecmp(restofline,"RANDOMPLACEMENT",15)==0)
+        if(ITIS("RANDOMPLACEMENT"))
         {
-          restofline +=15;
-          off_flags |= RANDOM_PLACE_FLAG;
+          SKIP("RANDOMPLACEMENT");
+          tname.off_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 's':
-        if(mystrncasecmp(restofline,"SMARTPLACEMENT",14)==0)
+        if(ITIS("SMARTPLACEMENT"))
         {
-          restofline +=14;
-          off_flags |= SMART_PLACE_FLAG;
+          SKIP("SMARTPLACEMENT");
+          tname.off_flags |= SMART_PLACE_FLAG;
         }
-        else if(mystrncasecmp(restofline,"SkipMapping",11)==0)
+        else if(ITIS("SkipMapping"))
         {
-          restofline +=11;
-          off_flags |= SHOW_MAPPING;
+          SKIP("SkipMapping");
+          tname.off_flags |= SHOW_MAPPING;
         }
-        else if(mystrncasecmp(restofline,"ShowMapping",11)==0)
+        else if(ITIS("ShowMapping"))
         {
-          restofline +=12;
-          on_flags |= SHOW_MAPPING;
+          SKIP("ShowMapping");
+          tname.on_flags |= SHOW_MAPPING;
         }
-        else if(mystrncasecmp(restofline,"StickyIcon",10)==0)
+        else if(ITIS("StickyIcon"))
         {
-          restofline +=10;
-          off_flags |= STICKY_ICON_FLAG;
+          SKIP("StickyIcon");
+          tname.off_flags |= STICKY_ICON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"SlipperyIcon",12)==0)
+        else if(ITIS("SlipperyIcon"))
         {
-          restofline +=12;
-          on_flags |= STICKY_ICON_FLAG;
+          SKIP("SlipperyIcon");
+          tname.on_flags |= STICKY_ICON_FLAG;
         }
-        else if(mystrncasecmp(restofline,"SLOPPYFOCUS",11)==0)
+        else if(ITIS("SLOPPYFOCUS"))
         {
-          restofline +=11;
-          on_flags |= CLICK_FOCUS_FLAG;
-          off_flags |= SLOPPY_FOCUS_FLAG;
+          SKIP("SLOPPYFOCUS");
+          tname.on_flags |= CLICK_FOCUS_FLAG;
+          tname.off_flags |= SLOPPY_FOCUS_FLAG;
         }
-        else if(mystrncasecmp(restofline,"StartIconic",11)==0)
+        else if(ITIS("StartIconic"))
         {
-          restofline +=11;
-          off_flags |= START_ICONIC_FLAG;
+          SKIP("StartIconic");
+          tname.off_flags |= START_ICONIC_FLAG;
         }
-        else if(mystrncasecmp(restofline,"StartNormal",11)==0)
+        else if(ITIS("StartNormal"))
         {
-          restofline +=11;
-          on_flags |= START_ICONIC_FLAG;
+          SKIP("StartNormal");
+          tname.on_flags |= START_ICONIC_FLAG;
         }
-        else if(mystrncasecmp(restofline,"StaysOnTop",10)==0)
+        else if(ITIS("StaysOnTop"))
         {
-          restofline +=10;
-          off_flags |= STAYSONTOP_FLAG;	  
+          SKIP("StaysOnTop");
+          tname.off_flags |= STAYSONTOP_FLAG;
         }
-        else if(mystrncasecmp(restofline,"StaysPut",8)==0)
+        else if(ITIS("StaysPut"))
         {
-          restofline +=8;
-          on_flags |= STAYSONTOP_FLAG;	  
+          SKIP("StaysPut");
+          tname.on_flags |= STAYSONTOP_FLAG;
         }
-        else if(mystrncasecmp(restofline,"Sticky",6)==0)
+        else if(ITIS("Sticky"))
         {
-          off_flags |= STICKY_FLAG;	  
-          restofline +=6;
+          tname.off_flags |= STICKY_FLAG;
+          SKIP("Sticky");
         }
-        else if(mystrncasecmp(restofline,"Slippery",8)==0)
+        else if(ITIS("Slippery"))
         {
-          on_flags |= STICKY_FLAG;	  
-          restofline +=8;
+          tname.on_flags |= STICKY_FLAG;
+          SKIP("Slippery");
         }
-        else if(mystrncasecmp(restofline,"STARTSONDESK",12)==0)
+        else if(ITIS("STARTSONDESK"))
         {
-          restofline +=12;
-          off_flags |= STARTSONDESK_FLAG;
-          sscanf(restofline,"%d",&desknumber);
-          while(isspace((unsigned char)*restofline))restofline++;
-          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
-                (*restofline != ',')&&(*restofline != '\n'))
-            restofline++;
-          while(isspace((unsigned char)*restofline))restofline++;
+          SKIP("STARTSONDESK");
+          tname.off_flags |= STARTSONDESK_FLAG;
+          /*  RBW - 11/02/1998  */
+          spargs = sscanf(restofline,"%d",&tmpno1);
+          if (spargs == 1)
+            {
+              /*  RBW - 11/20/1998 - allow for the special case of -1  */
+              tname.Desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+            }
+          else
+	    {
+              tname.off_flags &= ~STARTSONDESK_FLAG;
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "bad StartsOnDesk arg: %s", restofline);
+	    }
+	  /**/
+          GETWORD;
+          restofline = tmp;
+          SKIPSPACE;
         }
-        else if(mystrncasecmp(restofline,"STARTSANYWHERE",14)==0)
+       /*  RBW - 11/02/1998
+           StartsOnPage is like StartsOnDesk-Plus
+       */
+       else if(ITIS("STARTSONPAGE"))
+         {
+           SKIP("STARTSONPAGE");
+           tname.off_flags |= STARTSONDESK_FLAG;
+           spargs = sscanf(restofline,"%d %d %d", &tmpno1, &tmpno2, &tmpno3);
+
+          if (spargs == 1 || spargs == 3)
+            {
+            /*  We have a desk no., with or without page.  */
+              /*  RBW - 11/20/1998 - allow for the special case of -1  */
+              tname.Desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;  /*  Desk is now actual + 1  */
+              /*  Bump past desk no.    */
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+            }
+
+          if (spargs == 2 || spargs == 3)
+            {
+              if (spargs == 3)
+                {
+                  /*  RBW - 11/20/1998 - allow for the special case of -1  */
+                  tname.PageX = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+                  tname.PageY = (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
+                }
+              else
+                {
+                  tname.PageX       =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                  tname.PageY       =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+                }
+              /*  Bump past next 2 args.    */
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+
+            }
+          if (spargs < 1 || spargs > 3)
+            {
+              tname.off_flags &= ~STARTSONDESK_FLAG;
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "bad StartsOnPage args: %s", restofline);
+            }
+
+	 }
+       /**/
+        else if(ITIS("STARTSANYWHERE"))
         {
-          restofline +=14;
-          on_flags |= STARTSONDESK_FLAG;
+          SKIP("STARTSANYWHERE");
+          tname.on_flags |= STARTSONDESK_FLAG;
         }
         break;
       case 't':
-        if(mystrncasecmp(restofline,"TITLE",5)==0)
+        if(ITIS("TITLE"))
         {
-          restofline +=5;
-          on_flags |= NOTITLE_FLAG;
+          SKIP("TITLE");
+          tname.on_flags |= NOTITLE_FLAG;
         }
         break;
       case 'u':
-        if(mystrncasecmp(restofline,"UsePPosition",12)==0)
+        if(ITIS("UsePPosition"))
         {
-          restofline +=12;
-          on_flags |= NO_PPOSITION_FLAG;
+          SKIP("UsePPosition");
+          tname.on_flags |= NO_PPOSITION_FLAG;
         }
 #ifdef USEDECOR
-        if(mystrncasecmp(restofline,"UseDecor",8)==0)
+        if(ITIS("UseDecor"))
         {
-          int is_quoted = 0;
-          restofline += 8;
-          while(isspace((unsigned char)*restofline))restofline++;
-          if (*restofline == '"') {
-              is_quoted = 1;
-              ++restofline;
-          }
-          tmp = restofline;
-          len = 0;
-          while (tmp && *tmp &&
-                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
-                  || (is_quoted&&(*tmp != '\n')&&(*tmp != '"'))))
-          {
-            tmp++;
-            len++;
-          }
-          if (tmp && (*tmp == '"')) ++tmp;
+          SKIP("UseDecor");
+          GETQUOTEDWORD;
           if (len > 0)
           {
-            decor = safemalloc(len+1);
-            strncpy(decor,restofline,len);
-            decor[len] = 0;
+            tname.Decor = safemalloc(len+1);
+            strncpy(tname.Decor,restofline,len);
+            tname.Decor[len] = 0;
           }
           restofline = tmp;
         }
 #endif
-        else if(mystrncasecmp(restofline,"UseStyle",8)==0)
+        else if(ITIS("UseStyle"))
         {
-          int is_quoted = 0;
-          restofline +=8;
-          while(isspace((unsigned char)*restofline))restofline++;
-          if (*restofline == '"') {
-              is_quoted = 1;
-              ++restofline;
-          }
-          tmp = restofline;
-          len = 0;
-          while (tmp && *tmp &&
-                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
-                  || (is_quoted&&(*tmp != '\n')&&(*tmp != '"'))))
-	  {
-            tmp++;
-	    len++;
-	  }
-          if (tmp && (*tmp == '"')) ++tmp;
-          if (len > 0)
-          {
-	    int hit = 0;            
-	    /* changed to accumulate multiple Style definitions (veliaa@rpi.edu) */
+          SKIP("UseStyle");
+          GETQUOTEDWORD;
+          if (len > 0) {
+	    int hit = 0;
+	    /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
             for ( nptr = Scr.TheList; nptr; nptr = nptr->next ) {
-		if (!mystrncasecmp(restofline,nptr->name,len))
-		{
-		    if (!hit) {
-			on_flags      = nptr->on_flags;
-			off_flags     = nptr->off_flags;
-			icon_name     = nptr->value;
+              if (!strncasecmp(restofline,nptr->name,len)) { /* match style */
+                if (!hit) {             /* first match */
+		  char *save_name;
+		  save_name = tname.name;
+                  memcpy((void*)&tname, (const void*)nptr, sizeof(name_list)); /* copy everything */
+                  tname.next = 0;       /* except the next pointer */
+		  tname.name = save_name; /* and the name */
+                  hit = 1;              /* set not first match */
+                } else {                /* subsequent match */
+                  tname.off_flags     |= nptr->off_flags;
+                  tname.on_flags      &= ~(nptr->on_flags);
+                  tname.off_buttons   |= nptr->off_buttons;
+                  tname.on_buttons    &= ~(nptr->on_buttons);
+                  if(nptr->value) tname.value = nptr->value;
 #ifdef MINI_ICONS
-			miniicon_name = nptr->mini_value;
+                  if(nptr->mini_value) tname.mini_value = nptr->mini_value;
 #endif
 #ifdef USEDECOR
-			decor	    = nptr->Decor;
+                  if(nptr->Decor) tname.Decor = nptr->Decor;
 #endif
-			desknumber    = nptr->Desk;
-			bw            = nptr->border_width;
-			nobw          = nptr->resize_width;
-			forecolor     = nptr->ForeColor;
-			backcolor     = nptr->BackColor;
-			BoxFillMethod = nptr->BoxFillMethod;
-			IconBox[0]    = nptr->IconBox[0];
-			IconBox[1]    = nptr->IconBox[1];
-			IconBox[2]    = nptr->IconBox[2];
-			IconBox[3]    = nptr->IconBox[3];
-			off_buttons   = nptr->off_buttons;
-			on_buttons    = nptr->on_buttons;
-			hit = 1;
-		    } else {
-			off_flags     |= nptr->off_flags;
-			on_flags      &= ~(nptr->on_flags);
-			off_buttons   |= nptr->off_buttons;
-			on_buttons    &= ~(nptr->on_buttons);
-			if(nptr->value) icon_name = nptr->value;
-#ifdef MINI_ICONS
-			if(nptr->mini_value) miniicon_name = nptr->mini_value;
-#endif
-#ifdef USEDECOR
-			if(nptr->Decor) decor = nptr->Decor;
-#endif
-			if(nptr->off_flags & STARTSONDESK_FLAG)
-			    desknumber = nptr->Desk;
-			if(nptr->off_flags & BW_FLAG)
-			    bw = nptr->border_width;
-			if(nptr->off_flags & NOBW_FLAG)
-			    nobw = nptr->resize_width;
-			if(nptr->off_flags & FORE_COLOR_FLAG)
-			    forecolor = nptr->ForeColor;
-			if(nptr->off_flags & BACK_COLOR_FLAG)
-			    backcolor = nptr->BackColor;
-
-			if(nptr->BoxFillMethod != 0)
-			    BoxFillMethod = nptr->BoxFillMethod;
-			if(nptr->IconBox[0] >= 0)
-			{
-			    IconBox[0] = nptr->IconBox[0];
-			    IconBox[1] = nptr->IconBox[1];
-			    IconBox[2] = nptr->IconBox[2];
-			    IconBox[3] = nptr->IconBox[3];
-			}
+                  if(nptr->off_flags & STARTSONDESK_FLAG)
+		    /*  RBW - 11/02/1998  */
+		    {
+                      tname.Desk = nptr->Desk;
+                      tname.PageX = nptr->PageX;
+                      tname.PageY = nptr->PageY;
 		    }
-		}
-	    }
-	    restofline = tmp;
-	    if (!hit)
-            {
+		    /**/
+                  if(nptr->off_flags & BW_FLAG)
+                    tname.border_width = nptr->border_width;
+                  if(nptr->off_flags & NOBW_FLAG)
+                    tname.resize_width = nptr->resize_width;
+                  if(nptr->off_flags & FORE_COLOR_FLAG)
+                    tname.ForeColor = nptr->ForeColor;
+                  if(nptr->off_flags & BACK_COLOR_FLAG)
+                    tname.BackColor = nptr->BackColor;
+                  tname.IconBoxes = nptr->IconBoxes; /* use same chain */
+                } /* end hit/not hit */
+              } /* end found matching style */
+	    } /* end looking at all styles */
+	    restofline = tmp;           /* move forward one word */
+	    if (!hit) {
               tmp=safemalloc(500);
               strcat(tmp,"UseStyle: ");
               strncat(tmp,restofline-len,len);
@@ -701,21 +847,21 @@ void ProcessNewStyle(XEvent *eventp,
               free(tmp);
             }
           }
-          while(isspace((unsigned char)*restofline)) restofline++;
+          while(isspace(*restofline)) restofline++;
         }
         break;
       case 'v':
         break;
       case 'w':
-        if(mystrncasecmp(restofline,"WindowListSkip",14)==0)
+        if(ITIS("WindowListSkip"))
         {
-          restofline +=14;
-          off_flags |= LISTSKIP_FLAG;
+          SKIP("WindowListSkip");
+          tname.off_flags |= LISTSKIP_FLAG;
         }
-        else if(mystrncasecmp(restofline,"WindowListHit",13)==0)
+        else if(ITIS("WindowListHit"))
         {
-          restofline +=13;
-          on_flags |= LISTSKIP_FLAG;
+          SKIP("WindowListHit");
+          tname.on_flags |= LISTSKIP_FLAG;
         }
         break;
       case 'x':
@@ -728,113 +874,68 @@ void ProcessNewStyle(XEvent *eventp,
         break;
     }
 
-    while(isspace((unsigned char)*restofline))restofline++;
+    SKIPSPACE;
     if(*restofline == ',')
       restofline++;
     else if((*restofline != 0)&&(*restofline != '\n'))
     {
       fvwm_msg(ERR,"ProcessNewStyle",
                "bad style command: %s", restofline);
-      return;
+      /* Can't return here since all malloced memory will be lost. Ignore rest
+       * of line instead. */
+      break;
     }
-  }
+  } /* end while still stuff on command */
 
   /* capture default icons */
-  if(strcmp(name,"*") == 0)
+  if(strcmp(tname.name,"*") == 0)
   {
-    if(off_flags & ICON_FLAG)
-      Scr.DefaultIcon = icon_name;
-    off_flags &= ~ICON_FLAG;
-    icon_name = NULL;
+    if(tname.off_flags & ICON_FLAG)
+      Scr.DefaultIcon = tname.value;
+    tname.off_flags &= ~ICON_FLAG;
+    tname.value = NULL;
   }
-
-  AddToList(name,icon_name,
-#ifdef MINI_ICONS
-            miniicon_name,
-#endif
-#ifdef USEDECOR
-	    decor,
-#endif
-            off_flags,on_flags,desknumber,bw,nobw,
-	    forecolor,backcolor,off_buttons,on_buttons,IconBox,BoxFillMethod);
+  AddToList(&tname);                /* add temp name list to list */
 }
 
+/* Check word after IconFill to see if its "Top,Bottom,Left,Right" */
+static int Get_TBLR(char *restofline,unsigned char *IconFill) {
+  *IconFill = 0;                        /* init */
+  if (ITIS("B") || ITIS("BOT")|| ITIS("BOTTOM")) {
+    *IconFill |= ICONFILLBOT; /* turn on bottom bit */
+    *IconFill |= ICONFILLHRZ; /* turn on vertical */
+  } else if (ITIS("T") || ITIS("TOP")) { /* else if its "top" */
+    *IconFill |= ICONFILLHRZ; /* turn on vertical */
+  } else if (ITIS("R") || ITIS("RGT") || ITIS("RIGHT")) {
+    *IconFill |= ICONFILLRGT; /* turn on right bit */
+  } else if (!(ITIS("L") || ITIS("LFT") || ITIS("LEFT"))) { /* "left" */
+    return 0;                           /* anything else is bad */
+  }
+  return 1;                             /* return OK */
+}
 
-void AddToList(char *name,
-               char *icon_name,
-#ifdef MINI_ICONS
-               char *miniicon_name,
-#endif
-#ifdef USEDECOR
-	       char *decor,
-#endif
-               unsigned long off_flags, 
-	       unsigned long on_flags,
-               int desk,
-               int bw,
-               int nobw,
-	       char *forecolor,
-               char *backcolor,
-               unsigned long off_buttons,
-               unsigned long on_buttons,
-	       int *IconBox,
-               int BoxFillMethod)
+static void AddToList(name_list *tname)
 {
   name_list *nptr,*lastptr = NULL;
 
-  if((name == NULL)||((off_flags == 0)&&(on_flags == 0)&&(on_buttons == 0)&&
- 		      (off_buttons == 0)&&(IconBox[0] < 0)
-#ifdef MINI_ICONS
-		      &&(miniicon_name == NULL)
-#endif
-#ifdef USEDECOR
-		      &&(decor == NULL)
-#endif
-      ))
-  {
-    if(name)
-      free(name);
-    if(icon_name)
-      free(icon_name);
-    return;
-  }
+  /* This used to contain logic that returned if the style didn't contain
+     anything.  I don't see why we should bother. dje. */
 
   /* used to merge duplicate entries, but that is no longer
    * appropriate since conficting styles are possible, and the
    * last match should win! */
-  for (nptr = Scr.TheList; nptr != NULL; nptr = nptr->next)
-  {
-    lastptr=nptr;
+
+  /* seems like a pretty inefficient way to keep track of the end
+     of the list, but how long can the style list be? dje */
+  for (nptr = Scr.TheList; nptr != NULL; nptr = nptr->next) {
+    lastptr=nptr;                       /* find end of style list */
   }
 
-  nptr = (name_list *)safemalloc(sizeof(name_list));
-  nptr->next = NULL;
-  nptr->name = name;
-  nptr->on_flags = on_flags;
-  nptr->off_flags = off_flags;
-  nptr->value = icon_name;
-#ifdef MINI_ICONS
-  nptr->mini_value = miniicon_name;
-#endif
-#ifdef USEDECOR
-  nptr->Decor = decor;
-#endif
-  nptr->Desk = desk;
-  nptr->border_width = bw;
-  nptr->resize_width = nobw;
-  nptr->ForeColor = forecolor;
-  nptr->BackColor = backcolor;
-  nptr->BoxFillMethod = BoxFillMethod;
-  nptr->IconBox[0] = IconBox[0];
-  nptr->IconBox[1] = IconBox[1];
-  nptr->IconBox[2] = IconBox[2];
-  nptr->IconBox[3] = IconBox[3];
-  nptr->off_buttons = off_buttons;
-  nptr->on_buttons = on_buttons;
-
-  if(lastptr != NULL)
-    lastptr->next = nptr;
-  else
-    Scr.TheList = nptr;
-}
+  nptr = (name_list *)safemalloc(sizeof(name_list)); /* malloc area */
+  memcpy((void*)nptr, (const void*)tname, sizeof(name_list)); /* copy term area into list */
+  if(lastptr != NULL)                   /* If not first entry in list */
+    lastptr->next = nptr;               /* chain this entry to the list */
+  else                                  /* else first entry in list */
+    Scr.TheList = nptr;                 /* set the list root pointer. */
+} /* end function */
 

@@ -1,11 +1,17 @@
-/****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+/*
+ * *************************************************************************
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
-#include "../configure.h"
+ *
+ * Changed 09/24/98 by Dan Espen:
+ * - remove logic that processed and saved module configuration commands.
+ * Its now in "modconf.c".
+ * *************************************************************************
+ */
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -13,9 +19,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
 
 #include "fvwm.h"
 #include "menus.h"
@@ -28,139 +31,121 @@ extern Boolean debugging;
 
 char *fvwm_file = NULL;
 
-struct moduleInfoList
-{
-  char *data;
-  struct moduleInfoList *next;
-};
-
-struct moduleInfoList *modlistroot = NULL;
-
 int numfilesread = 0;
 
 static int last_read_failed=0;
 
-#ifdef FVWMRC /* FVWMRC should be .fvwm2rc or .fvwmrc */
 static const char *read_system_rc_cmd="Read system"FVWMRC;
-#else
-static const char *read_system_rc_cmd="Read system.fvwm2rc";
-#endif
 
-void AddToModList(char *tline);
 
 extern void StartupStuff(void);
 
 /*
-** func to do actual read/piperead work
-*/
+ * func to do actual read/piperead work
+ * Arg 1 is file name to read.
+ * Arg 2 (optional) "Quiet" to suppress message on missing file.
+ */
 static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                         unsigned long context, char *action,int* Module,
                         int piperead)
 {
   char *filename= NULL,*Home, *home_file, *ofilename = NULL;
-  char *rest,*tline,line[1000];
-  int HomeLen;
+  char *option;                         /* optional arg to read */
+  char *rest,*tline,line[1024];
   FILE *fd;
   int thisfileno;
-  extern Bool Restarting;
-  extern XEvent Event;
-#ifdef I18N
-  char *Lang;
-#endif
+  char missing_quiet;                   /* missing file msg control */
+  char *cmdname;
+
+  /* domivogt (30-Dec-1998: I tried using conditional evaluation instead
+   * of the cmdname variable ( piperead?"PipeRead":"Read" ), but gcc seems
+   * to treat this expression as a pointer to a character pointer, not just
+   * as a character pointer, but it doesn't complain either. Or perhaps
+   * insure++ gets this wrong? */
+  if (piperead)
+    cmdname = "PipeRead";
+  else
+    cmdname = "Read";
 
   thisfileno = numfilesread;
   numfilesread++;
 
-/*  fvwm_msg(INFO,piperead?"PipeRead":"Read","action == '%s'",action); */
+/*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
-  rest = GetNextToken(action,&ofilename);
+  rest = GetNextToken(action,&ofilename); /* read file name arg */
   if(ofilename == NULL)
   {
-    fvwm_msg(ERR,piperead?"PipeRead":"Read","missing parameter");
+    fvwm_msg(ERR, cmdname,"missing parameter");
     last_read_failed = 1;
     return;
   }
+  missing_quiet='n';                    /* init */
+  rest = GetNextToken(rest,&option);    /* read optional arg */
+  if (option != NULL) {                 /* if there is a second arg */
+    if (strncasecmp(option,"Quiet",5)==0) { /* is the arg "quiet"? */
+      missing_quiet='y';                /* no missing file message wanted */
+    } /* end quiet arg */
+    free(option);                       /* arg not needed after this */
+  } /* end there is a second arg */
 
   filename = ofilename;
-/*  fvwm_msg(INFO,piperead?"PipeRead":"Read","trying '%s'",filename); */
+/*  fvwm_msg(INFO, cmdname,"trying '%s'",filename); */
 
   if (piperead)
     fd = popen(filename,"r");
-  else
-    fd = fopen(filename,"r");
-
-  if (!piperead)
+  else if (ofilename[0] != '/')
   {
-    if((fd == NULL)&&(ofilename[0] != '/'))
+    /* find the home directory to look in */
+    Home = getenv("HOME");
+    if (Home != NULL)
     {
-      /* find the home directory to look in */
-      Home = getenv("HOME");
-      if (Home == NULL)
-        Home = "./";
-      HomeLen = strlen(Home);
-#ifdef I18N
-      if((Lang = setlocale(LC_CTYPE, NULL)) != NULL) {
-	/* find the LOCALE directory to look in */
-	home_file = safemalloc(HomeLen + strlen(Lang) + strlen(ofilename)+4);
-	strcpy(home_file,Home);
-	strcat(home_file,"/");
-	strcat(home_file,Lang);
-	strcat(home_file,"/");
-	strcat(home_file,ofilename);
-	filename = home_file;
-	fd = fopen(filename,"r");
-      }
-      if(fd == NULL) {
-	if((filename != NULL)&&(filename!= ofilename))
-	  free(filename);
-	/* do it as original */
-	home_file = safemalloc(HomeLen + strlen(ofilename)+3);
-	strcpy(home_file,Home);
-	strcat(home_file,"/");
-	strcat(home_file,ofilename);
-	filename = home_file;
-	fd = fopen(filename,"r");      
-      }
-#else
-      home_file = safemalloc(HomeLen + strlen(ofilename)+3);
+      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
       strcpy(home_file,Home);
       strcat(home_file,"/");
       strcat(home_file,ofilename);
       filename = home_file;
-      fd = fopen(filename,"r");      
-#endif
+      fd = fopen(filename,"r");
     }
-    if((fd == NULL)&&(ofilename[0] != '/'))
+    else
+    {
+      fd = 0;
+    }
+    if (fd == 0)
     {
       if((filename != NULL)&&(filename!= ofilename))
-        free(filename);
+	free(filename);
       /* find the home directory to look in */
-      Home = FVWMDIR;
-      HomeLen = strlen(Home);
-      home_file = safemalloc(HomeLen + strlen(ofilename)+3);
+      Home = FVWM_CONFIGDIR;
+      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
       strcpy(home_file,Home);
       strcat(home_file,"/");
       strcat(home_file,ofilename);
       filename = home_file;
-      fd = fopen(filename,"r");      
+      fd = fopen(filename,"r");
     }
+  }
+  else
+  {
+    /* open file with absolute path */
+    fd = fopen(filename,"r");
   }
 
   if(fd == NULL)
   {
-    fvwm_msg(ERR,
-             piperead?"PipeRead":"Read",
-             piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWMDIR,
-             ofilename);
+    if (missing_quiet == 'n') {         /* if quiet option not on */
+      if (piperead)
+	fvwm_msg(ERR, cmdname, "command '%s' not run", ofilename);
+      else
+	fvwm_msg(ERR, cmdname,
+		 "file '%s' not found in $HOME or "FVWM_CONFIGDIR, ofilename);
+    } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
     {
       free(filename);
-      filename = NULL;
     }
     if(ofilename != NULL)
     {
       free(ofilename);
-      ofilename = NULL;
     }
     last_read_failed = 1;
     return;
@@ -168,30 +153,35 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   if((ofilename != NULL)&&(filename!= ofilename))
     free(ofilename);
   fcntl(fileno(fd), F_SETFD, 1);
-  if(fvwm_file != NULL)
-    free(fvwm_file);
-  fvwm_file = filename;
+  if (!piperead)
+  {
+    if(fvwm_file != NULL)
+      free(fvwm_file);
+    fvwm_file = filename;
+  }
+  else
+  {
+    if (filename)
+      free(filename);
+  }
 
   tline = fgets(line,(sizeof line)-1,fd);
-  while(tline != (char *)0)
+  while(tline)
   {
     int l;
-    while(tline && (l=strlen(line))<sizeof(line) &&
-          line[l-1]=='\n' && line[l-2]=='\\')
+    while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
+          line[l-2]=='\\' && line[l-1]=='\n')
     {
-      tline = fgets(line+l-2,sizeof(line)-l,fd);
+      tline = fgets(line+l-2,sizeof(line)-l+1,fd);
     }
     tline=line;
-    while(isspace((unsigned char)*tline))tline++;
+    while(isspace(*tline))
+      tline++;
     if (debugging)
     {
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
     }
-    /* should these next checks be moved into ExecuteFunction? */
-    if((strlen(&tline[0])>1)&&(tline[0]!='#')&&(tline[0]!='*'))
-      ExecuteFunction(tline,tmp_win,eventp,context,*Module);
-    if(tline[0] == '*')
-      AddToModList(tline);
+    ExecuteFunction(tline,tmp_win,eventp,context,*Module);
     tline = fgets(line,(sizeof line)-1,fd);
   }
 
@@ -217,7 +207,7 @@ void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   if (last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"Read","trying to read system rc file");
-    ExecuteFunction(read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
+    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
   }
 
   if (this_read == 0)
@@ -245,7 +235,7 @@ void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   if (last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"PipeRead","trying to read system rc file");
-    ExecuteFunction(read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
+    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
   }
 
   if (this_read == 0)
@@ -258,117 +248,3 @@ void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-void AddToModList(char *tline)
-{
-  struct moduleInfoList *t, *prev, *this;
-
-  /* Find end of list */
-  t = modlistroot;
-  prev = NULL;
-
-  while(t != NULL)
-  {
-    prev = t;
-    t = t->next;
-  }
-  
-  this = (struct moduleInfoList *)safemalloc(sizeof(struct moduleInfoList));
-  this->data = (char *)safemalloc(strlen(tline)+1);
-  this->next = NULL;
-  strcpy(this->data, tline);  
-  if(prev == NULL)
-  {
-    modlistroot = this;
-  }
-  else
-    prev->next = this;
-}
-      
-/* interface function for AddToModList */
-void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
-{
-  AddToModList( action );
-}
-
-/**************************************************************/
-/* delete from module configuration                           */
-/**************************************************************/
-void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module)
-{
-  struct moduleInfoList *this, *that, *prev;
-  char *info;   /* info to be deleted - may contain wildcards */
-  char *mi;
-
-  action = GetNextToken(action,&info); 
-  if( info == NULL )
-  {
-    return;
-  }
-
-  this = modlistroot;
-  prev = NULL;
-
-  while(this != NULL)
-  {
-    GetNextToken( this->data, &mi);
-    that = this->next;
-    if( matchWildcards(info, mi+1) )
-    {
-      free(this->data);
-      free(this);
-      if( prev )
-      {
-        prev->next = that;
-      }
-      else
-      {
-        modlistroot = that;
-      }
-    }
-    else
-    {
-      prev = this;
-    }
-    this = that;
-  }
-}
-
-void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module)
-{
-  struct moduleInfoList *t;
-  char *message,msg2[32];
-  extern char *IconPath;
-#ifdef XPM
-  extern char *PixmapPath;
-#endif
-
-  if (IconPath && strlen(IconPath))
-  {
-    message=safemalloc(strlen(IconPath)+11);
-    sprintf(message,"IconPath %s\n",IconPath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
-  }
-#ifdef XPM
-  if (PixmapPath && strlen(PixmapPath))
-  {
-    message=safemalloc(strlen(PixmapPath)+13);
-    sprintf(message,"PixmapPath %s\n",PixmapPath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
-  }
-#endif
-  sprintf(msg2,"ClickTime %d\n",Scr.ClickTime);
-  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-
-  t = modlistroot;
-  while(t != NULL)
-  {
-    SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
-    t = t->next;
-  }  
-  SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
-}

@@ -1,35 +1,31 @@
 /* FvwmForm is original work of Thomas Zuwei Feng.
- * 
+ *
  * Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warantees are
  * provided or implied in any way whatsoever.  Use this program at your own
  * risk.  Permission to use, modify, and redistribute this program is hereby
  * given, provided that this copyright is kept intact.
  */
-#include "../../configure.h"
+#include "config.h"
+
 #include "../../libs/fvwmlib.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
-#include <X11/Xlib.h>
-#include <X11/X.h>
-#include <X11/Xutil.h>
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
-#include <X11/cursorfont.h>
-#define XK_MISCELLANY
-#include <X11/keysymdef.h>
-#if !defined(__bsdi__) && !defined(__FreeBSD__) && !defined(__OpenBSD__)
-#include <malloc.h>
-#endif
-#include <string.h>
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#if defined ___AIX || defined _AIX || defined ___AIXV3
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
+#include <X11/Xlib.h>
+#include <X11/X.h>
+#include <X11/Xutil.h>
+#include <X11/cursorfont.h>
+#define XK_MISCELLANY
+#include <X11/keysymdef.h>
 
 void dummy () {
 }
@@ -47,8 +43,8 @@ void dummy () {
 #define ITEM_VSPC   5
 
 /* tba: use dynamic buffer expanding */
-#define MAX_LINES 16
-#define MAX_ITEMS 64
+#define MAX_LINES 50
+#define MAX_ITEMS 100
 #define ITEMS_PER_LINE 64
 #define CHOICES_PER_SEL 64
 
@@ -174,15 +170,6 @@ char *font_names[3] = {
 };
 Font fonts[3];
 XFontStruct *xfs[3];
-#ifdef I18N
-XFontSet setxfs[3];
-#ifdef __STDC__
-#define	XTextWidth(x,y,z)	XmbTextEscapement(set ## x,y,z)
-#else
-#define	XTextWidth(x,y,z)	XmbTextEscapement(set/**/x,y,z)
-#endif
-#define XDrawImageString(t,u,v,w,x,y,z) XmbDrawImageString(t,u,FONTSET,v,w,x,y,z)
-#endif
 
 Cursor xc_ibeam, xc_hand;
 
@@ -204,7 +191,7 @@ char *CopyNString (char *cp, int n)
   bp = dp = (char *)malloc(n+1);
   while (n-- > 0)
     *dp++ = *cp++;
-  while (isspace(((unsigned char)(*(--dp)))));
+  while (isspace(*(--dp)));
   *(++dp) = '\0';
   return bp;
 }
@@ -242,7 +229,7 @@ char *CopySolidString (char *cp)
     if (c == '\\') {
       *(dp++) = '\\';
       *(dp++) = *(cp++);
-    } else if (isspace((unsigned char)c) || c == '\0') {
+    } else if (isspace(c) || c == '\0') {
       *dp = '\0';
       return bp;
     } else
@@ -261,20 +248,16 @@ int FontWidth (XFontStruct *xfs)
 {
   return (xfs->per_char[0].width);
 }
-  
+
 /* read the configuration file */
 void ReadConfig ()
 {
-  FILE *fp, *fopen();
+  FILE *fopen();
   int prog_name_len, i, j, l, extra;
   char *line_buf;
   char *cp;
   Line *cur_line, *line;
   Item *item, *cur_sel, *cur_button;
-#ifdef I18N
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
 #define AddToLine(item) { cur_line->items[cur_line->n++] = item; cur_line->size_x += item->header.size_x; if (cur_line->size_y < item->header.size_y) cur_line->size_y = item->header.size_y; }
 
@@ -295,23 +278,15 @@ void ReadConfig ()
   def_button.button.key = IB_CONTINUE;
 
   /* default fonts in case the *FFFont's are missing */
-#ifdef I18N
-  setxfs[f_text] = setxfs[f_input] = setxfs[f_button] =
-    GetFontSetOrFixed(dpy, "fixed");
-  XFontsOfFontSet(setxfs[f_text], &fs_list, &ml);
-  xfs[f_text] = xfs[f_input] = xfs[f_button] = fs_list[0];
-  fonts[f_text] = fonts[f_input] = fonts[f_button] = xfs[f_text]->fid;
-#else
   xfs[f_text] = xfs[f_input] = xfs[f_button] =
     GetFontOrFixed(dpy, "fixed");
   fonts[f_text] = fonts[f_input] = fonts[f_button] = xfs[f_text]->fid;
-#endif
 
   prog_name_len = strlen(prog_name);
 
   while (GetConfigLine(fd,&line_buf),line_buf) {
     cp = line_buf;
-    while (isspace((unsigned char)*cp)) cp++;  /* skip blanks */
+    while (isspace(*cp)) cp++;  /* skip blanks */
     if (*cp != '*') continue;
     if (strncmp(++cp, prog_name, prog_name_len) != 0) continue;
     cp += prog_name_len;
@@ -326,87 +301,66 @@ void ReadConfig ()
     else if (strncmp(cp, "Position", 8) == 0) {
       cp += 8;
       geom = 1;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       gx = atoi(cp);
-      while (!isspace((unsigned char)*cp)) cp++;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (!isspace(*cp)) cp++;
+      while (isspace(*cp)) cp++;
       gy = atoi(cp);
       fprintf(fp_err, "Position @ (%d, %d)\n", gx, gy);
       continue;
     }
     else if (strncmp(cp, "Fore", 4) == 0) {
       cp += 4;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       color_names[c_fore] = CopyNString(cp, 0);
       fprintf(fp_err, "ColorFore: %s\n", color_names[c_fore]);
       continue;
     } else if (strncmp(cp, "Back", 4) == 0) {
       cp += 4;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       color_names[c_back] = CopyNString(cp, 0);
       fprintf(fp_err, "ColorBack: %s\n", color_names[c_back]);
       continue;
     } else if (strncmp(cp, "ItemFore", 8) == 0) {
       cp += 8;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       color_names[c_itemfore] = CopyNString(cp, 0);
       fprintf(fp_err, "ColorItemFore: %s\n", color_names[c_itemfore]);
       continue;
     } else if (strncmp(cp, "ItemBack", 8) == 0) {
       cp += 8;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       color_names[c_itemback] = CopyNString(cp, 0);
       fprintf(fp_err, "ColorItemBack: %s\n", color_names[c_itemback]);
       continue;
     } else if (strncmp(cp, "Font", 4) == 0) {
       cp += 4;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       font_names[f_text] = CopyNString(cp, 0);
       fprintf(fp_err, "Font: %s\n", font_names[f_text]);
-#ifdef I18N
-      setxfs[f_text] = GetFontSetOrFixed(dpy, font_names[f_text]);
-      XFontsOfFontSet(setxfs[f_text], &fs_list, &ml);
-      xfs[f_text] = fs_list[0];
-      fonts[f_text] = xfs[f_text]->fid;
-#else
       xfs[f_text] = GetFontOrFixed(dpy, font_names[f_text]);
       fonts[f_text] = xfs[f_text]->fid;
-#endif
       continue;
     } else if (strncmp(cp, "ButtonFont", 10) == 0) {
       cp += 10;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       font_names[f_button] = CopyNString(cp, 0);
       fprintf(fp_err, "ButtonFont: %s\n", font_names[f_button]);
-#ifdef I18N
-      setxfs[f_button] = GetFontSetOrFixed(dpy, font_names[f_button]);
-      XFontsOfFontSet(setxfs[f_button], &fs_list, &ml);
-      xfs[f_button] = fs_list[0];
-      fonts[f_button] = xfs[f_button]->fid;
-#else
       xfs[f_button] = GetFontOrFixed(dpy, font_names[f_button]);
       fonts[f_button] = xfs[f_button]->fid;
-#endif
       continue;
     } else if (strncmp(cp, "InputFont", 9) == 0) {
       cp += 9;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       font_names[f_input] = CopyNString(cp, 0);
       fprintf(fp_err, "InputFont: %s\n", font_names[f_input]);
-#ifdef I18N
-      setxfs[f_input] = GetFontSetOrFixed(dpy, font_names[f_input]);
-      XFontsOfFontSet(setxfs[f_input], &fs_list, &ml);
-      xfs[f_input] = fs_list[0];
-      fonts[f_input] = xfs[f_input]->fid;
-#else
       xfs[f_input] = GetFontOrFixed(dpy, font_names[f_input]);
       fonts[f_input] = xfs[f_input]->fid;
-#endif
       continue;
     } else if (strncmp(cp, "Line", 4) == 0) {
       cp += 4;
       cur_line = lines + n_lines++;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (strncmp(cp, "left", 4) == 0)
 	cur_line->justify = L_LEFT;
       else if (strncmp(cp, "right", 5) == 0)
@@ -424,13 +378,13 @@ void ReadConfig ()
       item = items + n_items++;
       item->type = I_TEXT;
       item->header.name = "";
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (*cp == '\"')
 	item->text.value = CopyQuotedString(++cp);
       else
 	item->text.value = "";
       item->text.n = strlen(item->text.value);
-      item->header.size_x = XTextWidth(xfs[f_text], item->text.value, 
+      item->header.size_x = XTextWidth(xfs[f_text], item->text.value,
 				     item->text.n) + 2 * TEXT_SPC;
       item->header.size_y = FontHeight(xfs[f_text]) + 2 * TEXT_SPC;
       fprintf(fp_err, "Text \"%s\" [%d, %d]\n", item->text.value,
@@ -443,13 +397,13 @@ void ReadConfig ()
       cp += 5;
       item = items + n_items++;
       item->type = I_INPUT;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       item->header.name = CopySolidString(cp);
       cp += strlen(item->header.name);
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       item->input.size = atoi(cp);
-      while (!isspace((unsigned char)*cp)) cp++;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (!isspace(*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (*cp == '\"')
 	item->input.init_value = CopyQuotedString(++cp);
       else
@@ -472,16 +426,16 @@ void ReadConfig ()
       cp += 9;
       cur_sel = items + n_items++;
       cur_sel->type = I_SELECT;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       cur_sel->header.name = CopySolidString(cp);
       cp += strlen(cur_sel->header.name);
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (strncmp(cp, "multiple", 8) == 0)
 	cur_sel->select.key = IS_MULTIPLE;
       else
 	cur_sel->select.key = IS_SINGLE;
       cur_sel->select.n = 0;
-      cur_sel->select.choices = 
+      cur_sel->select.choices =
 	(Item **)malloc(sizeof(Item *) * CHOICES_PER_SEL);
       continue;
     } else if (strncmp(cp, "Choice", 6) == 0) {
@@ -489,19 +443,19 @@ void ReadConfig ()
       cp += 6;
       item = items + n_items++;
       item->type = I_CHOICE;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       item->header.name = CopySolidString(cp);
       cp += strlen(item->header.name);
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       item->choice.value = CopySolidString(cp);
       cp += strlen(item->choice.value);
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (strncmp(cp, "on", 2) == 0)
 	item->choice.init_on = 1;
       else
 	item->choice.init_on = 0;
-      while (!isspace((unsigned char)*cp)) cp++;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (!isspace(*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (*cp == '\"')
 	item->choice.text = CopyQuotedString(++cp);
       else
@@ -522,19 +476,19 @@ void ReadConfig ()
       item = items + n_items++;
       item->type = I_BUTTON;
       item->header.name = "";
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (strncmp(cp, "restart", 7) == 0)
 	item->button.key = IB_RESTART;
       else if (strncmp(cp, "quit", 4) == 0)
 	item->button.key = IB_QUIT;
       else
 	item->button.key = IB_CONTINUE;
-      while (!isspace((unsigned char)*cp)) cp++;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (!isspace(*cp)) cp++;
+      while (isspace(*cp)) cp++;
       if (*cp == '\"') {
 	item->button.text = CopyQuotedString(++cp);
 	cp += strlen(item->button.text) + 1;
-	while (isspace((unsigned char)*cp)) cp++;
+	while (isspace(*cp)) cp++;
       } else
 	item->button.text = "";
       if (*cp == '^')
@@ -556,7 +510,7 @@ void ReadConfig ()
     } else if (strncmp(cp, "Command", 7) == 0) {
 /* syntax: *FFCommand <command> */
       cp += 7;
-      while (isspace((unsigned char)*cp)) cp++;
+      while (isspace(*cp)) cp++;
       cur_button->button.commands[cur_button->button.n++] =
 	CopyNString(cp, 0);
     }
@@ -683,39 +637,9 @@ void GetColors ()
        else
          colors[c_itemback] = WhitePixel(dpy, screen);
 
-    if (XParseColor(dpy, d_cmap, color_names[c_itemback], &xc_item)) {
-         red = (int) xc_item.red ;
-         green = (int) xc_item.green ;
-         blue = (int) xc_item.blue ;
-         xc_item.red = (60 * red) / 100 ;
-         xc_item.green = (60 * green) / 100 ;
-         xc_item.blue = (60 * blue) / 100 ;
-         if (XAllocColor(dpy, d_cmap, &xc_item))
-               colors[c_itemlo] = xc_item.pixel;
-         else
-               colors[c_itemlo] = BlackPixel(dpy, screen);
-       } else
-         colors[c_itemlo] = BlackPixel(dpy, screen);
-
-    if (XParseColor(dpy, d_cmap, color_names[c_itemback], &xc_item)) {
-         tmp1 = (14 * red) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + red) / 2 ;
-         xc_item.red = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         tmp1 = (14 * green) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + green) / 2 ;
-         xc_item.green = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         tmp1 = (14 * blue) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + blue) / 2 ;
-         xc_item.blue = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         if (XAllocColor(dpy, d_cmap, &xc_item))
-               colors[c_itemhi] = xc_item.pixel;
-         else
-               colors[c_itemhi] = BlackPixel(dpy, screen);
-       } else
-         colors[c_itemhi] = BlackPixel(dpy, screen);
+    InitPictureCMap(dpy,root);          /* for shadow routines */
+    colors[c_itemlo] = GetShadow(colors[c_itemback]); /* alloc shadow */
+    colors[c_itemhi] = GetHilite(colors[c_itemback]); /* alloc shadow */
   } else if (!XAllocColorCells(dpy, d_cmap, 0, NULL, 0, colors, 6)) {
     colors[c_back] = colors[c_itemback] = WhitePixel(dpy, screen);
     colors[c_fore] = colors[c_itemfore] = colors[c_itemlo] = colors[c_itemhi]
@@ -725,9 +649,9 @@ void GetColors ()
 		     DoRed | DoGreen | DoBlue);
     XStoreNamedColor(dpy, d_cmap, color_names[c_back], colors[c_back],
 		     DoRed | DoGreen | DoBlue);
-    XStoreNamedColor(dpy, d_cmap, color_names[c_itemfore], 
+    XStoreNamedColor(dpy, d_cmap, color_names[c_itemfore],
 		     colors[c_itemfore], DoRed | DoGreen | DoBlue);
-    XStoreNamedColor(dpy, d_cmap, color_names[c_itemback], 
+    XStoreNamedColor(dpy, d_cmap, color_names[c_itemback],
 		     colors[c_itemback], DoRed | DoGreen | DoBlue);
     XParseColor(dpy, d_cmap, color_names[c_itemback], &xc_item);
     red = (int) xc_item.red ;
@@ -756,7 +680,7 @@ void GetColors ()
     xc_item.flags = DoRed | DoGreen | DoBlue;
     XStoreColor(dpy, d_cmap, &xc_item);
   }
-}    
+}
 
 /* reset all the values */
 void Restart ()
@@ -796,16 +720,12 @@ void RedrawFrame ()
     case I_TEXT:
       x = item->header.pos_x + TEXT_SPC;
       y = item->header.pos_y + TEXT_SPC + xfs[f_text]->ascent;
-#undef FONTSET
-#define FONTSET setxfs[f_text]
       XDrawImageString(dpy, frame, gc_text, x, y, item->text.value,
 		       item->text.n);
       break;
     case I_CHOICE:
       x = item->header.pos_x + TEXT_SPC + item->header.size_y;
       y = item->header.pos_y + TEXT_SPC + xfs[f_text]->ascent;
-#undef FONTSET
-#define FONTSET setxfs[f_text]
       XDrawImageString(dpy, frame, gc_text, x, y, item->choice.text,
 		       item->choice.n);
       break;
@@ -850,8 +770,6 @@ void RedrawItem (Item *item, int click)
 		x, BOX_SPC, x, dy - BOX_SPC);
     }
     len = item->input.n - item->input.left;
-#undef FONTSET
-#define FONTSET setxfs[f_input]
     if (len > item->input.size)
       len = item->input.size;
     else
@@ -860,7 +778,7 @@ void RedrawItem (Item *item, int click)
 		       BOX_SPC + TEXT_SPC + xfs[f_input]->ascent,
 		       item->input.blanks, item->input.size - len);
     XDrawImageString(dpy, item->header.win, gc_input,
-		     BOX_SPC + TEXT_SPC, 
+		     BOX_SPC + TEXT_SPC,
 		     BOX_SPC + TEXT_SPC + xfs[f_input]->ascent,
 		     item->input.value + item->input.left, len);
     if (item == cur_text && !click) {
@@ -942,10 +860,8 @@ void RedrawItem (Item *item, int click)
     xsegs[3].x2 = dx - 1, xsegs[3].y2 = dy;
     XDrawSegments(dpy, item->header.win, gc_button, xsegs, 4);
     XSetForeground(dpy, gc_button, colors[c_itemfore]);
-#undef FONTSET
-#define FONTSET setxfs[f_button]
     XDrawImageString(dpy, item->header.win, gc_button,
-		     BOX_SPC + TEXT_SPC, 
+		     BOX_SPC + TEXT_SPC,
 		     BOX_SPC + TEXT_SPC + xfs[f_button]->ascent,
 		     item->button.text, item->button.len);
     break;
@@ -1010,7 +926,7 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	  *(vp++) = '\0';
 	  break;
 	}
-	else if (!isspace((unsigned char)x))
+	else if (!isspace(x))
 	  *(vp++) = x;
       }
       for (i = 0; i < n_items; i++) {
@@ -1026,8 +942,8 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	      }
 	    } else {
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if (x == '?' && strlen(item->input.value) > 0 ||
-		  x == '!' && strlen(item->input.value) == 0)
+	      if ((x == '?' && strlen(item->input.value) > 0) ||
+		  (x == '!' && strlen(item->input.value) == 0))
 		dn = dn2;
 	    }
 	    break;
@@ -1037,8 +953,8 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 		AddChar(*cp);
 	    } else {
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if (x == '?' && item->choice.on ||
-		  x == '!' && !item->choice.on)
+	      if ((x == '?' && item->choice.on) ||
+		  (x == '!' && !item->choice.on))
 		dn = dn2;
 	    }
 	    break;
@@ -1067,7 +983,7 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
       ;
   }
 }
-  
+
 /* execute a command */
 void DoCommand (Item *cmd)
 {
@@ -1092,7 +1008,7 @@ void DoCommand (Item *cmd)
     len = 1;
     write(fd_out, &len, sizeof(int));
   }
-  
+
   /* post-command */
   if (cmd->button.key == IB_QUIT) {
     if (grab_server)
@@ -1131,7 +1047,7 @@ void OpenWindows ()
   xcb.pixel = colors[c_itemback];
   XQueryColor(dpy, d_cmap, &xcb);
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
-  
+
   /* the frame window first */
   if (geom) {
     if (gx >= 0)
@@ -1180,7 +1096,7 @@ void OpenWindows ()
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       break;
     case I_CHOICE:
-      item->header.win = 
+      item->header.win =
 	XCreateSimpleWindow(dpy, frame,
 			    item->header.pos_x, item->header.pos_y,
 			    item->header.size_y, item->header.size_y,
@@ -1190,12 +1106,12 @@ void OpenWindows ()
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       break;
     case I_BUTTON:
-      item->header.win = 
+      item->header.win =
 	XCreateSimpleWindow(dpy, frame,
 			    item->header.pos_x, item->header.pos_y,
 			    item->header.size_x, item->header.size_y,
 			    0, colors[c_back], colors[c_itemback]);
-      XSelectInput(dpy, item->header.win, 
+      XSelectInput(dpy, item->header.win,
 		   ButtonPressMask | ExposureMask);
       xswa.cursor = xc_hand;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
@@ -1206,7 +1122,7 @@ void OpenWindows ()
   XMapRaised(dpy, frame);
   XMapSubwindows(dpy, frame);
   if (warp_pointer) {
-    XWarpPointer(dpy, None, frame, 0, 0, 0, 0, 
+    XWarpPointer(dpy, None, frame, 0, 0, 0, 0,
 		 max_width / 2, total_height - 1);
   }
   DoCommand(&def_button);
@@ -1234,7 +1150,7 @@ void ReadXServer ()
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp, *ep;
-  static char buf[10], n;
+  static unsigned char buf[10], n;
 
   while (XEventsQueued(dpy, QueuedAfterReading)) {
     XNextEvent(dpy, &event);
@@ -1243,7 +1159,7 @@ void ReadXServer ()
       case Expose:
 	RedrawFrame();
 	if (grab_server && !server_grabbed) {
-	  if (GrabSuccess == 
+	  if (GrabSuccess ==
 	      XGrabPointer(dpy, frame, True, 0, GrabModeAsync, GrabModeAsync,
 			   None, None, CurrentTime))
 	    server_grabbed = 1;
@@ -1330,7 +1246,7 @@ void ReadXServer ()
 	  if (rel_cursor < cur_text->input.n) {
 	    rel_cursor++;
 	    abs_cursor++;
-	    if (abs_cursor >= cur_text->input.size && 
+	    if (abs_cursor >= cur_text->input.size &&
 		rel_cursor < cur_text->input.n) {
 	      abs_cursor--;
 	      cur_text->input.left++;
@@ -1422,10 +1338,12 @@ void ReadXServer ()
 	  break;
 	default:
 	  old_cursor = abs_cursor;
-	  if (buf[0] >= ' ' && buf[0] < '\177') {  /* regular char */
+	  if((buf[0] >= ' ' &&
+              buf[0] < '\177') ||
+             (buf[0] >= 160)) {         /* regular or intl char */
 	    if (++(cur_text->input.n) >= cur_text->input.buf) {
 	      cur_text->input.buf += cur_text->input.size;
-	      cur_text->input.value = 
+	      cur_text->input.value =
 		(char *)realloc(cur_text->input.value,
 				cur_text->input.buf);
 	    }
@@ -1473,19 +1391,17 @@ void ReadXServer ()
 	{
 	  int len, x, dy;
 	  len = cur_text->input.n - cur_text->input.left;
-#undef FONTSET
-#define FONTSET setxfs[f_input]
 	  if (len > cur_text->input.size)
 	    len = cur_text->input.size;
 	  else
 	    XDrawImageString(dpy, cur_text->header.win, gc_input,
-			     BOX_SPC + TEXT_SPC + 
+			     BOX_SPC + TEXT_SPC +
 			     FontWidth(xfs[f_input]) * len,
 			     BOX_SPC + TEXT_SPC + xfs[f_input]->ascent,
-			     cur_text->input.blanks, 
+			     cur_text->input.blanks,
 			     cur_text->input.size - len);
 	  XDrawImageString(dpy, cur_text->header.win, gc_input,
-			   BOX_SPC + TEXT_SPC, 
+			   BOX_SPC + TEXT_SPC,
 			   BOX_SPC + TEXT_SPC + xfs[f_input]->ascent,
 			   cur_text->input.value + cur_text->input.left, len);
 	  x = BOX_SPC + TEXT_SPC + FontWidth(xfs[f_input]) * abs_cursor - 1;
@@ -1511,7 +1427,7 @@ void ReadXServer ()
 	    old_item->input.o_cursor = rel_cursor;
 	    cur_text = item;
 	    RedrawItem(old_item, 1);
-	    abs_cursor = (event.xbutton.x - BOX_SPC - 
+	    abs_cursor = (event.xbutton.x - BOX_SPC -
 			  TEXT_SPC + FontWidth(xfs[f_input]) / 2)
 	      / FontWidth(xfs[f_input]);
 	    if (abs_cursor < 0)
@@ -1525,7 +1441,7 @@ void ReadXServer ()
 	      rel_cursor = item->input.n;
 	    if (rel_cursor > 0 && rel_cursor == item->input.left)
 	      item->input.left--;
-	    if (rel_cursor < item->input.n && 
+	    if (rel_cursor < item->input.n &&
 		rel_cursor == item->input.left + item->input.size)
 	      item->input.left++;
 	    abs_cursor = rel_cursor - item->input.left;
@@ -1536,7 +1452,7 @@ void ReadXServer ()
 	  if (item->type == I_BUTTON) {
 	    RedrawItem(item, 1);
 	    XGrabPointer(dpy, item->header.win, False, ButtonReleaseMask,
-			 GrabModeAsync, GrabModeAsync, 
+			 GrabModeAsync, GrabModeAsync,
 			 None, None, CurrentTime);
 	  }
 	  break;
@@ -1550,7 +1466,7 @@ void ReadXServer ()
 	    XUngrabPointer(dpy, CurrentTime);
 	    XFlush(dpy);
 	  }
-	  if (event.xbutton.x >= 0 && 
+	  if (event.xbutton.x >= 0 &&
 	      event.xbutton.x < item->header.size_x &&
 	      event.xbutton.y >= 0 &&
 	      event.xbutton.y < item->header.size_y) {
@@ -1582,17 +1498,13 @@ void MainLoop ()
     }
   }
 }
-    
+
 
 /* main procedure */
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
   FILE *fdopen();
   int i;
-
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
 
   buf = (char *)malloc(N);  /* some kludge */
 
@@ -1641,7 +1553,7 @@ main (int argc, char **argv)
     exit(1);
   }
   fd_x = XConnectionNumber(dpy);
-  
+
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
   scr_depth = DefaultDepth(dpy, screen);
@@ -1654,7 +1566,10 @@ main (int argc, char **argv)
   OpenWindows();
 
   MainLoop();
+
+  return 0;
 }
+
 
 void DeadPipe(int nonsense)
 {

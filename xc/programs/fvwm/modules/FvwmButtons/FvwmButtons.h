@@ -39,22 +39,29 @@
 /* ------------------------------- structs --------------------------------- */
 
 /* flags for b->flags */
-#define b_Container 0x0001 /* Contains several buttons */
-#define b_Font      0x0002 /* Has personal font data */
-#define b_Fore      0x0004 /* Has personal text color */
-#define b_Back      0x0008 /* Has personal background color (or "none") */ 
-#define b_Padding   0x0010 /* Has personal padding data */
-#define b_Frame     0x0020 /* Has personal framewidth */
-#define b_Title     0x0040 /* Contains title */
-#define b_Icon      0x0080 /* Contains icon */
-#define b_Swallow   0x0100 /* Contains swallowed window */
-#define b_Action    0x0200 /* Fvwm action when clicked on */
-#define b_Hangon    0x0400 /* Is waiting for a window before turning active */
-#define b_Justify   0x0800 /* Has justification info */
-#define b_Size      0x1000 /* Has a minimum size, don't guess */
-#define b_IconBack  0x2000 /* Has an icon as background */
-#define b_IconParent 0x4000 /* Parent button has an icon as background */
-#define b_TransBack 0x8000 /* Transparent background */
+#define b_Container  0x00000001 /* Contains several buttons */
+#define b_Font       0x00000002 /* Has personal font data */
+#define b_Fore       0x00000004 /* Has personal text color */
+#define b_Back       0x00000008 /* Has personal background color (or "none")*/
+#define b_Padding    0x00000010 /* Has personal padding data */
+#define b_Frame      0x00000020 /* Has personal framewidth */
+#define b_Title      0x00000040 /* Contains title */
+#define b_Icon       0x00000080 /* Contains icon */
+#define b_Swallow    0x00000100 /* Contains swallowed window */
+#define b_Action     0x00000200 /* Fvwm action when clicked on */
+#define b_Hangon     0x00000400 /* Is waiting for a window before turning
+				 * active */
+#define b_Justify    0x00000800 /* Has justification info */
+#define b_Size       0x00001000 /* Has a minimum size, don't guess */
+#define b_IconBack   0x00002000 /* Has an icon as background */
+#define b_IconParent 0x00004000 /* Parent button has an icon as background */
+#define b_TransBack  0x00008000 /* Transparent background */
+#define b_Left       0x00010000 /* Button is left-aligned */
+#define b_Right      0x00020000 /* Button is right-aligned */
+#define b_SizeFixed  0x00040000 /* User provided rows/columns may not be
+				 * altered */
+#define b_PosFixed   0x00080000 /* User provided button position */
+#define b_SizeSmart  0x00100000 /* Improved button box sizing */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
@@ -69,6 +76,7 @@
 #define b_TitleHoriz  0x03 /* Mask for title x positioning info */
 #define b_Horizontal  0x04 /* HACK: stack title and iconwin horizontally */
 
+typedef struct panel_info_struct panel_info;
 typedef struct button_info_struct button_info;
 typedef struct container_info_struct container_info;
 #define ushort unsigned int
@@ -86,7 +94,7 @@ struct container_info_struct
   int ButtonHeight;
   int xpos,ypos;
 
-  ushort flags;            /* Which data are set in this container? */
+  unsigned long flags;     /* Which data are set in this container? */
   byte justify;            /* b_Justify */
   byte justify_mask;       /* b_Justify */
   byte swallow;            /* b_Swallow */
@@ -94,9 +102,6 @@ struct container_info_struct
   byte xpad,ypad;          /* b_Padding */
   signed char framew;             /* b_Frame */
   XFontStruct *font;       /* b_Font */
-#ifdef I18N
-  XFontSet fontset;        /* b_Font */
-#endif
   char *font_string;       /* b_Font */
   char *back;              /* b_Back && !b_IconBack */
   char *back_file;         /* b_Back && b_IconBack */
@@ -106,20 +111,18 @@ struct container_info_struct
   Picture *backicon;       /* b_Back && b_IconBack */
   ushort minx,miny;        /* b_Size */
 };
-  
+
 struct button_info_struct
 {
   /* required fields */
-  ushort flags;
+  unsigned long flags;
+  int  BPosX,BPosY;        /* position in button units from top left */
   byte BWidth,BHeight;     /* width and height in button units  */
   button_info *parent;
   int n;                   /* number in parent */
 
   /* conditional fields */ /* applicable if these flags are set */
   XFontStruct *font;       /* b_Font */
-#ifdef I18N
-  XFontSet fontset;        /* b_Font */
-#endif
   char *font_string;       /* b_Font */
   char *back;              /* b_Back */
   char *fore;              /* b_Fore */
@@ -149,28 +152,12 @@ struct button_info_struct
   ushort w,h,bw;           /* b_Swallow */
 };
 
+struct panel_info_struct
+{ button_info  *uber;      /* panel */
+  panel_info   *next;
+};
+
 #include "button.h"
-
-/* -------------------------------- other macros --------------------------- */
-
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef abs
-#define abs(a) (((a)>=0)?(a):-(a))
-#endif
-
-#ifdef I18N
-#ifdef __STDC__
-#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
-#endif
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,fontset,v,w,x,y,z)
-#endif
 
 /* -------------------------------- prototypes ----------------------------- */
 void AddButtonAction(button_info*,int,char*);
@@ -188,6 +175,7 @@ extern Window Root;
 extern Window MyWindow;
 extern char *MyName;
 extern button_info *UberButton,*CurrentButton;
+extern panel_info *MainPanel, *CurrentPanel;
 
 extern char *iconPath;
 extern char *pixmapPath;
@@ -200,12 +188,4 @@ extern GC  NormalGC;
 extern int x,y,xneg,yneg,w,h; /* Dirty... */
 
 /* ---------------------------------- misc --------------------------------- */
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 

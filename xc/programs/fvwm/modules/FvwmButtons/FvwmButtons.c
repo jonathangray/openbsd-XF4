@@ -13,8 +13,9 @@
 */
 
 /* ------------------------------- includes -------------------------------- */
+#include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -28,13 +29,11 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -48,9 +47,7 @@
 #include <X11/extensions/shape.h>
 #endif
 
-#include "../../configure.h"
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
@@ -81,17 +78,16 @@ extern void SaveButtons(button_info*);
 
 /* ------------------------------ prototypes ------------------------------- */
 
-void DeadPipe(int nonsense);
-void CleanUp(void);
+void DeadPipe(int nonsense) __attribute__((__noreturn__));
+static void DeadPipeCleanup(void);
+static RETSIGTYPE TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void);
 void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateWindow(button_info*,int,int);
-Pixel GetShadow(Pixel background);
-Pixel GetHilite(Pixel background);
-void nocolor(char *a, char *b);
+void nocolor(const char *a, const char *b) __attribute__((__noreturn__));
 Pixel GetColor(char *name);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
@@ -104,6 +100,9 @@ void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
 
 void DebugEvents(XEvent*);
+
+panel_info *seekpanel(button_info *);
+void Slide(panel_info *, button_info *);
 
 /* -------------------------------- globals ---------------------------------*/
 
@@ -131,8 +130,6 @@ Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
 int Width,Height;
 
-int running = 1;
-
 int x= -30000,y= -30000,w= -1,h= -1,gravity = NorthWestGravity;
 int new_desk = 0;
 int ready = 0;
@@ -143,6 +140,12 @@ int fd[2];
 
 button_info *UberButton=NULL;
 
+panel_info *MainPanel = NULL, *CurrentPanel = NULL, *PanelIndex;
+int dpw, dph;
+
+int save_color_limit;                   /* Color limit, if any */
+
+static volatile sig_atomic_t isTerminated = False;
 /* ------------------------------ Misc functions ----------------------------*/
 
 #ifdef DEBUG
@@ -154,33 +157,6 @@ char *mymalloc(int length)
     p[--i]=255;
   return p;
 }
-#endif
-
-#ifdef I18N
-/*
- * fake XFetchName() function
- */
-static Status MyXFetchName(dpy, win, winname)
-Display *dpy;
-Window win;
-char **winname;
-{
-  XTextProperty text;
-  char **list;
-  int nitems;
-
-  if (XGetWMName(dpy, win, &text)) {
-    if (text.value)
-      text.nitems = strlen(text.value);
-    if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success &&
-      *list) {
-      *winname = *list;
-      return 0;
-    }
-    return 1;
-  }
-}
-#define XFetchName(x,y,z) MyXFetchName(x,y,z)
 #endif
 
 /**
@@ -203,44 +179,29 @@ int IsThereADestroyEvent(button_info *b)
 
 /**
 *** DeadPipe()
-*** Dead pipe handler
+*** Externally callable function to quit! Note that DeadPipeCleanup
+*** is an exit-procedure and so will be called automatically
 **/
 void DeadPipe(int whatever)
 {
-  struct stat buf;
-
-  /*
-   * If a SIGPIPE arrives during this operation, just exit.
-   *  - the signal will probably because the server is shutting
-   *  down. Attempting to do any further processing is useless
-   *    and may in fact, on some platforms, put the process into
-   *    a tight loop (if SIGPIPE is ignored).
-   * 22 July 1996 GRM.
-   *
-   * Further investigation: XSync may loop *without* causing a SIGPIPE.
-   * This may be because the connection is dead, or because of the
-   * fact that X operations in signal handlers are discouraged.
-   *
-   * In order to cover all the bases, then, this function will now
-   * set a global flag which will cause the main loop to stop.
-   *
-   * SIGPIPE is reset to DeadPipe, as well.
-   */
-  signal(SIGPIPE, DeadPipe);
-
-  /*
-   * Try to check status of X connection.
-   */
-  if(fstat(XConnectionNumber(Dpy), &buf) == -1)
-    exit(0);
-
-  /*
-   * do not run anymore
-   */
-  running = 0;
+  exit(0);
 }
 
-void CleanUp(void)
+/**
+*** TerminateHandler()
+*** Signal handler that will make the event-loop terminate
+**/
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  isTerminated = True;
+}
+
+/**
+*** DeadPipeCleanup()
+*** Remove all the windows from the Button-Bar, and close them as necessary
+**/
+static void DeadPipeCleanup(void)
 {
   button_info *b,*ub=UberButton;
   int button=-1;
@@ -258,7 +219,7 @@ void CleanUp(void)
 	  fprintf(stderr,"%s: Button 0x%06x window 0x%x (\"%s\") is ",
 		  MyName,(ushort)b,(ushort)b->IconWin,b->hangon);
 #         endif
-	  if(!IsThereADestroyEvent(b)) /* Has someone destroyed it? */
+	  if(!IsThereADestroyEvent(b)) { /* Has someone destroyed it? */
 	    if(!(buttonSwallow(b)&b_NoClose))
 	      {
 		if(buttonSwallow(b)&b_Kill)
@@ -287,6 +248,7 @@ void CleanUp(void)
 		XResizeWindow(Dpy,b->IconWin,b->w,b->h);
 		XSetWindowBorderWidth(Dpy,b->IconWin,b->bw);
 	      }
+	  }
 #         ifdef DEBUG_HANGON
 	  else
 	    fprintf(stderr,"already handled\n");
@@ -308,8 +270,6 @@ void CleanUp(void)
 	 && !(b->c->flags&b_TransBack))
 	DestroyPicture(Dpy,b->c->backicon);
     }
-
-  exit(0);
 }
 
 /**
@@ -328,7 +288,7 @@ void SetButtonSize(button_info *ub,int w,int h)
     {
       fprintf(stderr,"%s: BUG: Set size when rows/cols was unset\n",MyName);
       exit(2);
-    } 
+    }
   w*=ub->BWidth;
   h*=ub->BHeight;
 
@@ -363,6 +323,10 @@ void SetButtonSize(button_info *ub,int w,int h)
 **/
 void AddButtonAction(button_info *b,int n,char *action)
 {
+  int l;
+  char *s;
+  char *t;
+
   if(!b || n<0 || n>3 || !action)
     {
       fprintf(stderr,"%s: BUG: AddButtonAction failed\n",MyName);
@@ -372,16 +336,41 @@ void AddButtonAction(button_info *b,int n,char *action)
     {
       if(b->action[n])
 	free(b->action[n]);
-      b->action[n]=action;
     }
   else
     {
       int i;
       b->action=(char**)mymalloc(4*sizeof(char*));
       for(i=0;i<4;b->action[i++]=NULL);
-      b->action[n]=action;
       b->flags|=b_Action;
     }
+
+  while (*action && isspace(*action))
+    action++;
+  l = strlen(action);
+  if (l > 1)
+    {
+      switch (action[0])
+      {
+      case '\"':
+      case '\'':
+      case '`':
+	s = SkipQuote(action, NULL, "", "");
+	/* Strip outer quotes */
+	if (*s == 0)
+	  {
+	    action++;
+	    l -= 2;
+	  }
+	break;
+      default:
+	break;
+      }
+    }
+  t = (char *)mymalloc(l + 1);
+  memmove(t, action, l);
+  t[l] = 0;
+  b->action[n] = t;
 }
 
 /**
@@ -414,28 +403,28 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   unsigned int depth_return;
   int number, i;
   XFontStruct *font;
-  
+
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
   gc = XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gvals);
   XSetForeground(Dpy,gc,0);
   XFillRectangle(Dpy,pmap_mask,gc,0,0,w,h);
   XSetForeground(Dpy,gc,1);
-  
+
   /*
    * if button has an icon, draw a rect with the same size as the icon
    * (or the mask of the icon),
    * else draw a rect with the same size as the button.
    */
-  
+
   i=-1;
   while(NextButton(&ub,&b,&i,0))
     {
-      if(b->flags&b_Icon) 
+      if(b->flags&b_Icon)
 	{
 	  XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
 		       &width_return,&height_return,
 		       &border_width_return,&depth_return);
-	  
+
 	  number=buttonNum(b);
 	  if (b->icon->mask == None)
 	    XFillRectangle(Dpy,pmap_mask,gc,x_return, y_return,
@@ -451,12 +440,12 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 			 buttonYPos(b,number),
 			 buttonWidth(b),buttonHeight(b));
 	}
-      
+
       /* handle button's title */
       font=buttonFont(b);
       if(b->flags&b_Title && font)
 	{
-	  gcm = GCForeground | GCFont; 
+	  gcm = GCForeground | GCFont;
 	  gvals.foreground=1;
 	  gvals.font = font->fid;
 	  XChangeGC(Dpy,gc,gcm,&gvals);
@@ -471,13 +460,12 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 /**
 *** myErrorHandler()
 *** Shows X errors made by FvwmButtons.
-*** Code copied from FvwmIconBox.
 **/
 XErrorHandler oldErrorHandler=NULL;
-XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
+int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   fprintf(stderr,"%s: Cause of next X Error.\n",MyName);
-  (*oldErrorHandler)(dpy,event);
+  /* return (*oldErrorHandler)(dpy,event); */
   return 0;
 }
 
@@ -486,7 +474,7 @@ XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
 /**
 *** main()
 **/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i;
@@ -495,20 +483,38 @@ void main(int argc, char **argv)
   char *temp, *s;
   button_info *b,*ub;
 
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
   temp=argv[0];
   s=strrchr(argv[0],'/');
   if(s) temp=s+1;
   MyName=mymalloc(strlen(temp)+1);
   strcpy(MyName,temp);
 
-  signal(SIGPIPE,DeadPipe);
-  signal(SIGINT,DeadPipe);
-  signal(SIGHUP,DeadPipe);
-  signal(SIGQUIT,DeadPipe);
-  signal(SIGTERM,DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+#endif
 
   if(argc<6 || argc>8)
     {
@@ -530,7 +536,7 @@ void main(int argc, char **argv)
 
   fd[0]=atoi(argv[1]);
   fd[1]=atoi(argv[2]);
-  if (!(Dpy = XOpenDisplay(display_name))) 
+  if (!(Dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: Can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -541,27 +547,45 @@ void main(int argc, char **argv)
 
   screen=DefaultScreen(Dpy);
   Root=RootWindow(Dpy, screen);
-  if(Root==None) 
+  if(Root==None)
     {
       fprintf(stderr,"%s: Screen %d is not valid\n",MyName,screen);
       exit(1);
     }
   d_depth = DefaultDepth(Dpy, screen);
 
-  oldErrorHandler=XSetErrorHandler((XErrorHandler)myErrorHandler);
+  oldErrorHandler=XSetErrorHandler(myErrorHandler);
 
   UberButton=(button_info*)mymalloc(sizeof(button_info));
+  memset(UberButton, 0, sizeof(button_info));
   UberButton->flags=0;
   UberButton->parent=NULL;
   UberButton->BWidth=1;
   UberButton->BHeight=1;
+  UberButton->font = NULL;
+  UberButton->font_string = NULL;
   MakeContainer(UberButton);
+
+  dpw = DisplayWidth(Dpy,screen);
+  dph = DisplayHeight(Dpy,screen);
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"%s: Parsing...",MyName);
 # endif
 
+  CurrentPanel = MainPanel
+               = (panel_info *) mymalloc(sizeof(panel_info));
+  MainPanel->next = NULL;
+  MainPanel->uber = UberButton;
+  UberButton->title   = MyName;
+  UberButton->swallow = 1; /* the panel is shown */
+
   ParseOptions(UberButton);
+
+  CurrentPanel = MainPanel; /* reassign CurrentPanel */
+  while (CurrentPanel)
+  { UberButton = CurrentPanel->uber;
+
   if(UberButton->c->num_buttons==0)
     {
       fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
@@ -590,13 +614,17 @@ void main(int argc, char **argv)
 
   CreateWindow(UberButton,maxx,maxy);
 
+    CurrentPanel->uber->IconWinParent = MyWindow;
+    CurrentPanel->uber->icon_w = maxx;
+    CurrentPanel->uber->icon_h = maxy;
+
 # ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
 # endif
 
   i=-1;ub=UberButton;
   while(NextButton(&ub,&b,&i,0))
-    if(b->flags&b_Icon) 
+    if(b->flags&b_Icon)
       {
 #ifdef DEBUG_INIT
 	fprintf(stderr,"0x%06x...",(ushort)b);
@@ -620,6 +648,16 @@ void main(int argc, char **argv)
     SetTransparentBackground(UberButton,Width,Height);
 # endif
 
+    i=-1;ub=UberButton;
+    while(NextButton(&ub,&b,&i,0))
+      MakeButton(b);
+
+    CurrentPanel = CurrentPanel->next;
+  }
+  CurrentPanel = MainPanel;
+  UberButton   = CurrentPanel->uber;
+  MyWindow     = UberButton->IconWinParent;
+
 # ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Mapping windows...",MyName);
 # endif
@@ -639,7 +677,14 @@ void main(int argc, char **argv)
   fprintf(stderr,"OK\n%s: Startup complete\n",MyName);
 # endif
 
+  /*
+  ** Now that we have finished initialising everything,
+  ** it is safe(r) to install the clean-up handlers ...
+  */
+  atexit(DeadPipeCleanup);
   Loop();
+
+  return 0;
 }
 
 /* -------------------------------- Main Loop -------------------------------*/
@@ -650,24 +695,32 @@ void main(int argc, char **argv)
 void Loop(void)
 {
   XEvent Event;
-  Window root;
   KeySym keysym;
   char buffer[10],*tmp,*act;
-  int i,i2,x,y,tw,th,border_width,depth,button;
+  int i,i2,button;
   button_info *ub,*b;
+  panel_info *ppi;
 #ifndef OLD_EXPOSE
   int ex=10000,ey=10000,ex2=0,ey2=0;
 #endif
 
-  while(running)
+  while( !isTerminated )
     {
       if(My_XNextEvent(Dpy,&Event))
 	{
 	switch(Event.type)
 	  {
 	  case Expose:
-	    if(Event.xany.window==MyWindow)
-	      {
+            PanelIndex = MainPanel;
+            while (PanelIndex && (PanelIndex->uber->IconWinParent != Event.xany.window))
+              PanelIndex = PanelIndex->next;
+            if (PanelIndex)
+            { UberButton = PanelIndex->uber;
+              MyWindow   = UberButton->IconWinParent;
+            }
+            else
+              break;
+
 #ifdef OLD_EXPOSE
 		if(Event.xexpose.count == 0)
 		  {
@@ -696,7 +749,7 @@ void Loop(void)
 			  {
 			    x=buttonXPos(b,buttonNum(b));
 			    y=buttonYPos(b,buttonNum(b));
-			  } 
+			  }
 			else
 			  {
 			    x=buttonXPos(b,button);
@@ -716,11 +769,10 @@ void Loop(void)
 		    ex=ey=10000;ex2=ey2=0;
 		  }
 #endif
-              }
 	    break;
 
 	  case ConfigureNotify:
-	    XGetGeometry(Dpy,MyWindow,&root,&x,&y,
+	    /* XGetGeometry(Dpy, MyWindow, &root, &x, &y,
 			 (ushort*)&tw,(ushort*)&th,
 			 (ushort*)&border_width,(ushort*)&depth);
 	    if(tw!=Width || th!=Height)
@@ -732,7 +784,7 @@ void Loop(void)
 		while(NextButton(&ub,&b,&button,0))
 		  MakeButton(b);
                 RedrawWindow(NULL);
-	      }
+	      } */ /* I don't like to change its size after it started */
 	    break;
 
 	  case KeyPress:
@@ -740,35 +792,72 @@ void Loop(void)
 	    if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
 	      break;	                /* fall through to ButtonPress */
 	  case ButtonPress:
-	    CurrentButton = b = 
-	      select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
-	    if(!b || !(b->flags&b_Action))
+            PanelIndex = MainPanel;
+            b = NULL;
+            do
+              if (PanelIndex->uber->swallow) /* is the panel shown? */
+              {
+                UberButton = PanelIndex->uber;
+                MyWindow   = UberButton->IconWinParent;
+                if (Event.xany.window == MyWindow)
+		  CurrentButton = b =
+		    select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+              }
+            while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next))
+	      ;
+
+	    if(!b || !(b->flags&b_Action) ||
+	       ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
+		(act=GetButtonAction(b,0)) == NULL))
 	      {
 		CurrentButton=NULL;
 		break;
 	      }
+
+	    /* record the panel, the button pressed */
+            CurrentPanel = PanelIndex;
+            UberButton = CurrentPanel->uber;
+            MyWindow   = UberButton->IconWinParent;
+
 	    RedrawButton(b,0);
-	    if(!(act=GetButtonAction(b,Event.xbutton.button)))
-	      act=GetButtonAction(b,0);
-	    if(mystrncasecmp(act,"popup",5)!=0)
+	    if(strncasecmp(act,"popup",5)!=0)
+	    {
+	      if (strncasecmp(act, "panel-", 6) == 0)
+                Slide(seekpanel(b), b);
 	      break;
+            }
 	    else /* i.e. action is Popup */
 	      XUngrabPointer(Dpy,CurrentTime); /* And fall through */
 
 	  case KeyRelease:
 	  case ButtonRelease:
-	    b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+            PanelIndex = MainPanel;
+            b = NULL;
+            do
+            { if (PanelIndex->uber->swallow)
+              {
+		UberButton = PanelIndex->uber;
+                MyWindow   = UberButton->IconWinParent;
+                if (Event.xany.window == MyWindow)
+		  b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+              }
+            } while (!b && (PanelIndex = PanelIndex->next));
+
 	    if(!(act=GetButtonAction(b,Event.xbutton.button)))
 	      act=GetButtonAction(b,0);
 	    if(b && b==CurrentButton && act)
 	      {
-		if(mystrncasecmp(act,"Exec",4)==0)
+		if(strncasecmp(act,"Exec",4)==0)
 		  {
+		    /* close current subpanel */
+		    if (PanelIndex != MainPanel)
+		      Slide(PanelIndex, NULL);
+
 		    /* Look for Exec "identifier", in which case the button
 		       stays down until window "identifier" materializes */
 		    i=4;
 		    while(act[i]!=0 && act[i]!='"' &&
-			  isspace((unsigned char)act[i]))
+			  isspace(act[i]))
 		      i++;
 		    if(act[i] == '"')
 		      {
@@ -787,22 +876,27 @@ void Loop(void)
 		      }
 		    else
 		      i2=i;
-		    
-		    tmp=mymalloc(strlen(act));
+
+		    tmp=mymalloc(strlen(act)+1);
 		    strcpy(tmp,"Exec ");
-		    while(act[i2]!=0 && isspace((unsigned char)act[i2]))
+		    while(act[i2]!=0 && isspace(act[i2]))
 		      i2++;
 		    strcat(tmp,&act[i2]);
 		    MySendText(fd,tmp,0);
 		    free(tmp);
 		  }
-		else if(mystrncasecmp(act,"DumpButtons",11)==0)
+		else if(strncasecmp(act,"DumpButtons",11)==0)
 		  DumpButtons(UberButton);
-		else if(mystrncasecmp(act,"SaveButtons",11)==0)
+		else if(strncasecmp(act,"SaveButtons",11)==0)
 		  SaveButtons(UberButton);
-		else
+		else if(strncasecmp(act,"panel",5))
 		  MySendText(fd,act,0);
 	      }
+
+            /* recover the old record */
+            UberButton = CurrentPanel->uber; /* the panel, the button pressed */
+            MyWindow   = UberButton->IconWinParent;
+
 	    b=CurrentButton;
 	    CurrentButton=NULL;
 	    if(b)
@@ -810,9 +904,22 @@ void Loop(void)
 	    break;
 
 	  case ClientMessage:
-	    if(Event.xclient.format==32 && 
+	    if(Event.xclient.format==32 &&
 	       Event.xclient.data.l[0]==_XA_WM_DEL_WIN)
-	      DeadPipe(1);
+	      {
+		for (ppi = MainPanel->next; ppi != NULL;
+		     ppi = ppi->next)
+		  {
+		    if (ppi->uber->IconWinParent == Event.xany.window)
+		      {
+			/* Only close the panel */
+			Slide(ppi, NULL);
+			break;
+		      }
+		  }
+		if (ppi == NULL)
+		  DeadPipe(1);
+	      }
 	    break;
 
 	  case PropertyNotify:
@@ -822,10 +929,10 @@ void Loop(void)
 	    while(NextButton(&ub,&b,&button,0))
 	      if((buttonSwallowCount(b)==3) && Event.xany.window==b->IconWin)
 		{
-		  if(Event.xproperty.atom==XA_WM_NAME && 
+		  if(Event.xproperty.atom==XA_WM_NAME &&
 		     buttonSwallow(b)&b_UseTitle)
 		    {
-		      if(b->flags&b_Title) 
+		      if(b->flags&b_Title)
 			free(b->title);
 		      b->flags|=b_Title;
 		      XFetchName(Dpy,b->IconWin,&tmp);
@@ -845,7 +952,8 @@ void Loop(void)
 		}
 	    break;
 
-	  case UnmapNotify: /* Not really sure if this is abandon all hope.. */
+	  /* Not really sure if this is abandon all hope.. */
+	  /* case UnmapNotify: */
 	  case DestroyNotify:
 	    ub=UberButton;button=-1;
 	    while(NextButton(&ub,&b,&button,0))
@@ -886,8 +994,6 @@ void Loop(void)
 	  }
       }
     }
-    /* goodbye */
-    CleanUp();
 }
 
 /**
@@ -923,7 +1029,7 @@ void RedrawWindow(button_info *b)
 **/
 int LoadIconFile(char *s,Picture **p)
 {
-  *p=CachePicture(Dpy,Root,iconPath,pixmapPath,s);
+  *p=CachePicture(Dpy,Root,iconPath,pixmapPath,s, save_color_limit);
   if(*p)
     return 1;
   return 0;
@@ -937,13 +1043,6 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
   int i,j,x=0,y=0;
   XFontStruct *font;
-#ifdef I18N
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-  XFontSet fontset;
-#endif
 
   if(!b) return;
 
@@ -998,30 +1097,16 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       fprintf(stderr,", font \"%s\"",b->font_string);
 #     endif
 
-      if(mystrncasecmp(b->font_string,"none",4)==0)
+      fprintf(stderr, "b=0x%lx, font_string=%s\n",
+              (unsigned long)b, b? b->font_string : "(NULL)");
+      if(strncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
-#ifdef I18N
-      else if(!(b->fontset=XCreateFontSet(Dpy,b->font_string,&ml,&mc,&ds)))
-	{
-	  b->font = NULL;
-	  b->flags&=~b_Font;
-	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
-		  b->font_string);
-	}
-      else
-	{
-	  /* fontset found */
-	  XFontsOfFontSet(fontset, &fs_list, &ml);
-	  b->font = fs_list[0];
-	}
-#else
       else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))
 	{
 	  b->flags&=~b_Font;
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
 		  b->font_string);
 	}
-#endif
     }
 
   if(b->flags&b_Container && b->c->flags&b_Font)
@@ -1029,33 +1114,8 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #     ifdef DEBUG_LOADDATA
       fprintf(stderr,", font2 \"%s\"",b->c->font_string);
 #     endif
-      if(mystrncasecmp(b->c->font_string,"none",4)==0)
+      if(strncasecmp(b->c->font_string,"none",4)==0)
 	b->c->font=NULL;
-#ifdef I18N
-      else if(!(b->c->fontset=XCreateFontSet(Dpy,b->c->font_string,&ml,&mc,&ds)))
-	{
-	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
-		  b->c->font_string);
-	  if(b==UberButton)
-	    {
-	      /* plain X11R6.3 hack */
-	      if(!(b->c->fontset=XCreateFontSet(Dpy,"fixed,-*--14-*",&ml,&mc,&ds))) {
-		fprintf(stderr,"%s: Couldn't load fontset fixed\n",MyName);
-		b->c->font = NULL;
-	      }
-	    }
-	  else {
-	    b->c->font = NULL;
-	    b->c->flags&=~b_Font;
-	  }
-	}
-      else
-	{
-	  /* fontset found */
-	  XFontsOfFontSet(b->c->fontset, &fs_list, &ml);
-	  b->c->font = fs_list[0];
-	}
-#else
       else if(!(b->c->font=XLoadQueryFont(Dpy,b->c->font_string)))
 	{
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
@@ -1068,7 +1128,6 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 	  else
 	    b->c->flags&=~b_Font;
 	}
-#endif
     }
 
 
@@ -1099,7 +1158,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
 
 
-  
+
   i=0;j=0;
 
   /* Load the icon */
@@ -1114,11 +1173,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   else
     b->flags&=~b_Icon;
 
-#ifdef I18N
-  if(b->flags&b_Title && (fontset = buttonFontSet(b)) && (font=buttonFont(b)))
-#else
   if(b->flags&b_Title && (font=buttonFont(b)))
-#endif
     {
 #     ifdef DEBUG_LOADDATA
       fprintf(stderr,", title \"%s\"",b->title);
@@ -1146,7 +1201,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 
   x+=2*(buttonFrame(b)+buttonXPad(b));
   y+=2*(buttonFrame(b)+buttonYPad(b));
-  
+
   x/=b->BWidth;
   y/=b->BHeight;
 
@@ -1159,7 +1214,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 
 /**
 *** CreateWindow()
-*** Sizes and creates the window 
+*** Sizes and creates the window
 **/
 void CreateWindow(button_info *ub,int maxx,int maxy)
 {
@@ -1167,6 +1222,11 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   XGCValues gcv;
   unsigned long gcm;
   XClassHint myclasshints;
+
+  x = CurrentPanel->uber->x; /* Geometry x where to put the panel */
+  y = CurrentPanel->uber->y; /* Geometry y where to put the panel */
+  xneg = CurrentPanel->uber->w;
+  yneg = CurrentPanel->uber->h;
 
   if(maxx<16)
     maxx=16;
@@ -1230,17 +1290,17 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 	  mysizehints.x = DisplayWidth(Dpy,screen) + x - mysizehints.width;
 	  gravity = NorthEastGravity;
 	}
-      else 
+      else
 	mysizehints.x = x;
       if (yneg)
 	{
 	  mysizehints.y = DisplayHeight(Dpy,screen) + y - mysizehints.height;
 	  gravity = SouthWestGravity;
 	}
-      else 
+      else
 	mysizehints.y = y;
       if(xneg && yneg)
-	gravity = SouthEastGravity;	
+	gravity = SouthEastGravity;
       mysizehints.flags |= USPosition;
     }
   mysizehints.win_gravity = gravity;
@@ -1262,7 +1322,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
       hilite_pix = GetHilite(back_pix);
       shadow_pix = GetShadow(back_pix);
     }
-  
+
 # ifdef DEBUG_INIT
   if(mysizehints.flags&USPosition)
     fprintf(stderr,"create(%i,%i,%u,%u,1,%u,%u)...",
@@ -1277,7 +1337,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 
   MyWindow = XCreateSimpleWindow(Dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 1,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
     XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
 
@@ -1287,13 +1347,28 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 # endif
   XSetWMProtocols(Dpy,MyWindow,&_XA_WM_DEL_WIN,1);
 
-  myclasshints.res_name=strdup(MyName);
-  myclasshints.res_class=strdup("FvwmButtons");
+#if 0
+  myclasshints.res_name=strdup((CurrentPanel == MainPanel)
+                                 ? MyName : CurrentPanel->uber->title);
+#else
+  if (CurrentPanel == MainPanel)
+  {
+    myclasshints.res_name=strdup(MyName);
+  }
+  else
+  {
+    myclasshints.res_name=(char *)malloc(strlen(MyName)+6);
+    strcpy(myclasshints.res_name,MyName);
+    strcat(myclasshints.res_name,"Panel");
+  }
+#endif
+  myclasshints.res_class=strdup((CurrentPanel == MainPanel)
+                                 ? "FvwmButtons" : "FvwmButtonsPanel");
 
   {
     XTextProperty mynametext;
     char *list[]={NULL,NULL};
-    list[0]=MyName;
+    list[0]=(CurrentPanel == MainPanel) ? MyName : CurrentPanel->uber->title;
     if(!XStringListToTextProperty(list,1,&mynametext))
       {
 	fprintf(stderr,"%s: Failed to convert name to XText\n",MyName);
@@ -1317,7 +1392,10 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
       gcv.font = ub->c->font->fid;
       gcm |= GCFont;
     }
-  NormalGC = XCreateGC(Dpy, Root, gcm, &gcv);  
+  NormalGC = XCreateGC(Dpy, Root, gcm, &gcv);
+
+  free(myclasshints.res_class);
+  free(myclasshints.res_name);
 }
 
 /* ----------------------------- color functions --------------------------- */
@@ -1359,65 +1437,10 @@ int PleaseAllocColor(XColor *color)
 #endif
 
 /**
-*** GetShadow()
-*** This routine computes the shadow color from the background color
-**/
-Pixel GetShadow(Pixel background) 
-{
-  XColor bg_color;
-  XWindowAttributes attributes;
-  
-  XGetWindowAttributes(Dpy,Root,&attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(Dpy,attributes.colormap,&bg_color);
-  
-  bg_color.red = (unsigned short)((bg_color.red*50)/100);
-  bg_color.green = (unsigned short)((bg_color.green*50)/100);
-  bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-  
-  if(!MyAllocColor(Dpy,attributes.colormap,&bg_color))
-    nocolor("alloc shadow","");
-  
-  return bg_color.pixel;
-}
-
-/**
-*** GetHilite()
-*** This routine computes the hilight color from the background color
-**/
-Pixel GetHilite(Pixel background) 
-{
-  XColor bg_color, white_p;
-  XWindowAttributes attributes;
-  
-  XGetWindowAttributes(Dpy,Root,&attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(Dpy,attributes.colormap,&bg_color);
-
-  white_p.pixel = GetColor("white");
-  XQueryColor(Dpy,attributes.colormap,&white_p);
-  
-  bg_color.red = max((white_p.red/5), bg_color.red);
-  bg_color.green = max((white_p.green/5), bg_color.green);
-  bg_color.blue = max((white_p.blue/5), bg_color.blue);
-  
-  bg_color.red = min(white_p.red, (bg_color.red*140)/100);
-  bg_color.green = min(white_p.green, (bg_color.green*140)/100);
-  bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
-  
-  if(!MyAllocColor(Dpy,attributes.colormap,&bg_color))
-    nocolor("alloc hilight","");
-  
-  return bg_color.pixel;
-}
-
-/**
 *** nocolor()
-*** Complain 
+*** Complain
 **/
-void nocolor(char *a, char *b)
+void nocolor(const char *a, const char *b)
 {
   fprintf(stderr,"%s: Can't %s %s, quitting, sorry...\n", MyName, a,b);
   exit(1);
@@ -1434,7 +1457,7 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(Dpy,Root,&attributes);
   color.pixel = 0;
-  if (!XParseColor (Dpy, attributes.colormap, name, &color)) 
+  if (!XParseColor (Dpy, attributes.colormap, name, &color))
     nocolor("parse",name);
   else if(!MyAllocColor(Dpy,attributes.colormap,&color))
     nocolor("alloc",name);
@@ -1525,12 +1548,8 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif
-
+  if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
+  {
 
   if(FD_ISSET(x_fd, &in_fdset))
     {
@@ -1548,7 +1567,7 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
       if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
@@ -1557,6 +1576,8 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 	  free(body);
 	}
     }
+
+  }
   return 0;
 }
 
@@ -1574,7 +1595,7 @@ void SpawnSome()
     return;
   first=0;
   while(NextButton(&ub,&b,&button,0))
-    if((buttonSwallowCount(b)==1) && b->flags&b_Hangon && 
+    if((buttonSwallowCount(b)==1) && b->flags&b_Hangon &&
        buttonSwallow(b)&b_UseOld)
       if(b->spawn)
 	{
@@ -1588,13 +1609,19 @@ void SpawnSome()
 
 /**
 *** process_message()
-*** Process window list messages 
+*** Process window list messages
 **/
 void process_message(unsigned long type,unsigned long *body)
 {
 # ifdef DEBUG_FVWM
   DebugFvwmEvents(type);
 # endif
+  panel_info *PanelIndex = MainPanel;
+  do
+  {
+    UberButton = PanelIndex->uber;
+    MyWindow   = UberButton->IconWinParent;
+
   switch(type)
     {
     case M_NEW_DESK:
@@ -1616,6 +1643,8 @@ void process_message(unsigned long type,unsigned long *body)
     default:
       break;
     }
+
+  } while ((PanelIndex = PanelIndex->next));
 }
 
 
@@ -1669,7 +1698,7 @@ void CheckForHangon(unsigned long *body)
 	    free(b->hangon);
 	    b->hangon=NULL;
 	    RedrawButton(b,0);
-  
+
 	  }
 	break;
       }
@@ -1677,7 +1706,7 @@ void CheckForHangon(unsigned long *body)
       break;      /* This window has already been swallowed by someone else! */
 }
 
-/** 
+/**
 *** GetRealGeometry()
 *** Traverses window tree to find the real x,y of a window. Any simpler?
 *** Returns parent window, or None if failed.
@@ -1698,8 +1727,9 @@ Window GetRealGeometry(Display *dpy,Window win,int *x,int *y,ushort *w,
 
   XTranslateCoordinates(dpy,win,root,*x,*y,x,y,&rp);
 
-  XQueryTree(dpy,win,&root,&rp,&children,&n); 
-  XFree(children);
+  XQueryTree(dpy,win,&root,&rp,&children,&n);
+  if (children)
+    XFree(children);
 
   return rp;
 }
@@ -1740,7 +1770,7 @@ void swallow(unsigned long *body)
 	    fprintf(stderr,"%s: Window 0x%lx (\"%s\") was %s (window 0x%lx)\n",
 		    MyName,b->IconWin,b->hangon,"grabbed by someone else",p);
 
-	    /* Request a new windowlist, we might have ignored another 
+	    /* Request a new windowlist, we might have ignored another
 	       matching window.. */
 	    SendText(fd,"Send_WindowList",0);
 
@@ -1758,10 +1788,10 @@ void swallow(unsigned long *body)
 
 	b->swallow&=~b_Count;
 	b->swallow|=3;
-	
+
 	/* "Swallow" the window! Place it in the void so we don't see it
 	   until it's MoveResize'd */
-	XReparentWindow(Dpy,b->IconWin,MyWindow,-1500,-1500); 
+	XReparentWindow(Dpy,b->IconWin,MyWindow,-1500,-1500);
 	XSelectInput(Dpy,b->IconWin,SW_EVENTS);
 	if(buttonSwallow(b)&b_UseTitle)
 	  {
@@ -1779,3 +1809,197 @@ void swallow(unsigned long *body)
       }
 }
 
+/*
+ * Button
+ *   b->flags     |= b_Action (though b->hangon is ilegally used)
+ *   b->action[0]  = "panel-u", "panel-l", "panel-d", or "panel-r"
+ *   b->hangon     = panel title (case sensitive)
+ * Panel
+ *   uber->flags  |= b_Container (though the following fields are ilegally
+ *                    used)
+ *   uber->title   = the title of the panel
+ *   uber->IconWinParent = the panel window, will be assigned to MyWindow
+ *   uber->swallow = 0:hidden 1:shown
+ *   uber->icon_w  = panel width
+ *   uber->icon_h  = panel height
+ *   uber->x       = x position to start the panel wrt the button b
+ *   uber->y       = y position to start the panel wrt the button b
+ *   uber->w       = xneg
+ *   uber->h       = yneg
+ *   uber->n       = cast to 'char' to record of the direction
+ *
+ *   CurrentPanel  = the panel where the button b was pressed to popup a new
+ *                   panel
+ */
+
+#define PanelPopUpStep 32
+
+panel_info *seekpanel (button_info *b)
+{
+  panel_info *PanelIndex = MainPanel->next; /* skip the main panel */
+
+  while (PanelIndex && strcmp(b->hangon, PanelIndex->uber->title))
+    PanelIndex = PanelIndex->next;
+
+  return PanelIndex;
+}
+
+void Slide (panel_info *p, button_info *b)
+{
+  Window PanelWin;
+  Window root;
+  int x, y, iw, ih, BW, depth;
+  char direction;
+  ushort i, c, xstep, ystep, wstep, hstep;
+
+  if (!p)
+    /* no such panel */
+    return;
+  /* PanelWin is found */
+  PanelWin = p->uber->IconWinParent;
+
+  direction = b ? b->action[0][6] : (char) p->uber->n;
+
+  if (p->uber->swallow)
+  {
+    /* shown ---> hidden */
+    root = GetRealGeometry(Dpy, PanelWin, &x, &y,
+                           (ushort*)&iw, (ushort*)&ih,
+                           (ushort*)&BW, (ushort*)&depth);
+
+    switch (direction)
+    {
+    case 'l':
+      c = iw / PanelPopUpStep;
+      xstep = wstep = PanelPopUpStep;
+      ystep = hstep = 0;
+      break;
+    case 'r':
+      c = iw / PanelPopUpStep;
+      wstep = PanelPopUpStep;
+      xstep = ystep = hstep = 0;
+      break;
+    case 'd':
+      c = ih / PanelPopUpStep;
+      hstep = PanelPopUpStep;
+      xstep = ystep = wstep = 0;
+      break;
+    case 'g':
+      /* just pop down without animation */
+      c = 0;
+      break;
+    case 'u':
+    default:
+      c = ih / PanelPopUpStep;
+      ystep = hstep = PanelPopUpStep;
+      xstep = wstep = 0;
+      break;
+    }
+
+    for (i = 1; i < c; i++)
+    {
+      iw -= wstep;
+      ih -= hstep;
+      x += xstep;
+      y += ystep;
+      XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
+    }
+
+    XUnmapWindow(Dpy, PanelWin);
+    p->uber->swallow = 0;
+  }
+  else
+  {
+    /* hidden ---> shown */
+    int ix = buttonXPos(b, b->n);  /* button in the CurrentPanel */
+    int iy = buttonYPos(b, b->n);  /* button in the CurrentPanel */
+
+    int mw = p->uber->icon_w; /* panel menu width */
+    int mh = p->uber->icon_h; /* panel menu height */
+    int w;                    /* current width */
+    int h;                    /* current height */
+
+    root = GetRealGeometry(Dpy, CurrentPanel->uber->IconWinParent, &x, &y,
+                           (ushort*)&iw, (ushort*)&ih,
+                           (ushort*)&BW, (ushort*)&depth);
+
+    x += p->uber->x + ix;
+    y += p->uber->y + iy;
+    c = 0;
+
+    /* initial position and size */
+    switch (direction)
+    {
+    case 'g':
+      /* just pop up without animation */
+      c = 0;
+      break;
+    case 'l':
+    case 'r':
+      h = mh;
+      w = mw % PanelPopUpStep;
+      if (w == 0)
+      {
+	w = PanelPopUpStep;
+	c--;
+      }
+      if (direction == 'l')
+      {
+	x -= w;
+	c += mw / PanelPopUpStep;
+	xstep = wstep = PanelPopUpStep;
+	ystep = hstep = 0;
+      }
+      else
+      {
+	x += b->BWidth * b->parent->c->ButtonWidth;
+	c += mw / PanelPopUpStep;
+	wstep = PanelPopUpStep;
+	xstep = ystep = hstep = 0;
+      }
+      break;
+    case 'd':
+    case 'u':
+    default:
+      w = mw;
+      h = mh % PanelPopUpStep;
+      if (h == 0)
+      {
+	h = PanelPopUpStep;
+	c--;
+      }
+      if (direction == 'd')
+      {
+	y += b->BHeight * b->parent->c->ButtonHeight;
+	c += mh / PanelPopUpStep;
+	hstep = PanelPopUpStep;
+	xstep = ystep = wstep = 0;
+      }
+      else
+      {
+	y -= h;
+	c += mh / PanelPopUpStep;
+	ystep = hstep = PanelPopUpStep;
+	xstep = wstep = 0;
+      }
+      break;
+    }
+
+    if (c > 0)
+      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
+    XMapSubwindows(Dpy, PanelWin);
+    XMapWindow(Dpy, PanelWin);
+
+    for (i = 0; i < c; i++)
+    {
+      x -= xstep;
+      w += wstep;
+      y -= ystep;
+      h += hstep;
+      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
+    }
+
+    p->uber->n = (int) direction;
+    p->uber->swallow = 1;
+  }
+}

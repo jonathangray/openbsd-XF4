@@ -6,7 +6,7 @@
 #include "xmanager.h"
 
 static char const rcsid[] =
-  "$Id: xmanager.c,v 1.1.1.2 2001/06/28 22:05:51 matthieu Exp $";
+  "$Id: xmanager.c,v 1.2 2001/06/28 22:32:34 matthieu Exp $";
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>

@@ -8,11 +8,11 @@
  * as long as the copyright is kept intact. */
 
 #define TRUE 1
-#define FALSE 
+#define FALSE
 
-#include "../../configure.h"
+#include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -22,17 +22,15 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "../../fvwm/module.h"
-
-#ifdef I18N
-#include <X11/Xlocale.h>
-#endif
 
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
@@ -42,34 +40,9 @@
 #include <X11/Intrinsic.h>
 
 #include "FvwmGoodStuff.h"
-#include "../../version.h"
 char *MyName;
 
 XFontStruct *font;
-#ifdef I18N
-XFontSet fontset;
-static Status MyXFetchName(dpy, win, winname)
-Display *dpy;
-Window win;
-char **winname;
-{
-  XTextProperty text;
-  char **list;
-  int nitems;
-
-  if (XGetWMName(dpy, win, &text)) {
-    if (text.value)
-      text.nitems = strlen(text.value);
-    if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success &&
-      *list) {
-      *winname = *list;
-      return 0;
-    }
-    return 1;
-  }
-}
-#define XFetchName(x,y,z) MyXFetchName(x,y,z)
-#endif
 
 Display *dpy;			/* which display are we talking to */
 int x_fd,fd_width;
@@ -120,23 +93,13 @@ Atom _XA_WM_NAME;
  *
  ***********************************************************************
 */
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i,j;
   Window root;
   int x,y,border_width,depth,button;
   char *temp, *s;
-#ifdef I18N
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
-
-#ifdef I18N
-  setlocale(LC_CTYPE, "");
-#endif
 
   if((argc != 6)&&(argc != 7))
   {
@@ -176,17 +139,17 @@ void main(int argc, char **argv)
       Buttons[i].up = 1;                        /* Buttons start up */
       Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
     }
-  signal (SIGPIPE, DeadPipe);  
+  signal (SIGPIPE, DeadPipe);
 
   signal (SIGINT, DeadPipe);  /* cleanup on other ways of closing too */
-  signal (SIGHUP, DeadPipe);  
-  signal (SIGQUIT, DeadPipe);  
-  signal (SIGTERM, DeadPipe);  
-  
+  signal (SIGHUP, DeadPipe);
+  signal (SIGQUIT, DeadPipe);
+  signal (SIGTERM, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
-  
-  if (!(dpy = XOpenDisplay(display_name))) 
+
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -198,17 +161,17 @@ void main(int argc, char **argv)
 
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  if(Root == None) 
+  if(Root == None)
     {
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
       exit(1);
     }
   d_depth = DefaultDepth(dpy, screen);
 
-  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| 
+  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME);
-  
+
   ParseOptions();
   if(num_buttons == 0)
     {
@@ -217,25 +180,12 @@ void main(int argc, char **argv)
     }
 
   /* load the font, or none */
-  if (mystrncasecmp(font_string,"none",4)==0)
+  if (strncasecmp(font_string,"none",4)==0)
     {
       font=NULL;
     }
-  else 
+  else
     {
-#ifdef I18N
-      if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL)
-	{
-	  /* plain X11R6.3 hack */
-	  if ((fontset = XCreateFontSet(dpy, "fixed,-*--14-*", &ml, &mc, &ds)) == NULL)
-	    {
-	      fprintf(stderr,"%s: No fonts available\n",MyName);
-	      exit(1);
-	    }
-	}
-      XFontsOfFontSet(fontset, &fs_list, &ml);
-      font = fs_list[0];
-#else
       if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
         {
           if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -244,14 +194,14 @@ void main(int argc, char **argv)
 	      exit(1);
 	    }
         }
-#endif
     };
   for(i=0;i<num_buttons;i++)
     {
       LoadIconFile(i);
       if(Buttons[i].icon_w/Buttons[i].BWidth > max_internal_width)
 	max_internal_width = Buttons[i].icon_w/Buttons[i].BWidth;
-      if(Buttons[i].title && strcmp(Buttons[i].title,"-")==0||font==NULL)
+      if( (Buttons[i].title && strcmp(Buttons[i].title,"-")==0) ||
+	  font==NULL )
 	{
           if(Buttons[i].icon_h/Buttons[i].BHeight > max_internal_height)
 	    max_internal_height = Buttons[i].icon_h/Buttons[i].BHeight;
@@ -290,7 +240,7 @@ void main(int argc, char **argv)
   SendText(fd,"Send_WindowList",0);
 
   Loop();
-
+  return 0;
 }
 
 /***********************************************************************
@@ -326,7 +276,7 @@ void Loop(void)
 		  RedrawWindow(-1);
 		}
 	      break;
-	      
+
 	    case ConfigureNotify:
 	      XGetGeometry(dpy,main_win,&root,&x,&y,
 			   (unsigned int *)&tw,(unsigned int *)&th,
@@ -339,7 +289,7 @@ void Loop(void)
 		  ButtonWidth = (Width+1) / num_columns;
 		  ButtonHeight = (Height+1) / num_rows;
 		  XClearWindow(dpy,main_win);
-		  
+
 		  for(i=0;i<num_rows;i++)
 		    for(j=0;j<num_columns; j++)
 		      {
@@ -348,9 +298,9 @@ void Loop(void)
 			  ConfigureIconWindow(button,i,j);
 			else if(Buttons[button].swallow == 3)
 			  {
-			    ih = Buttons[button].BHeight*ButtonHeight; 
-			    iw = Buttons[button].BWidth*ButtonWidth; 
-			    Buttons[button].icon_w = 
+			    ih = Buttons[button].BHeight*ButtonHeight;
+			    iw = Buttons[button].BWidth*ButtonWidth;
+			    Buttons[button].icon_w =
 			      iw - 2*framew;
 			    if(strcmp(Buttons[button].title,"-")==0||font==NULL)
 			      {
@@ -359,7 +309,7 @@ void Loop(void)
 			      }
 			    else
 			      {
-				Buttons[button].icon_h = 
+				Buttons[button].icon_h =
 				  ih - 2*framew - font->ascent - font->descent;
 				ih -= font->ascent + font->descent;
 			      }
@@ -368,13 +318,13 @@ void Loop(void)
 					  &Buttons[button].icon_w,
 					  &Buttons[button].icon_h);
 
-			    XResizeWindow(dpy,Buttons[button].IconWin, 
+			    XResizeWindow(dpy,Buttons[button].IconWin,
 					  Buttons[button].icon_w,
 					  Buttons[button].icon_h);
 			    XMoveWindow(dpy,Buttons[button].IconWin,
 					j*ButtonWidth +
 					((iw - Buttons[button].icon_w)>>1),
-					i*ButtonHeight + 
+					i*ButtonHeight +
 					((ih - Buttons[button].icon_h)>>1));
 
 
@@ -383,13 +333,13 @@ void Loop(void)
 		  RedrawWindow(-1);
 		}
 	      break;
-	      
+
 	    case KeyPress:
 	      blah = XLookupString(&Event.xkey, buffer, 10,
 				   &keysym, 0);
 	      if ((keysym != XK_Return) && (keysym != XK_KP_Enter)
 		  && (keysym != XK_Linefeed))
-		break;                          
+		break;
 	      /* fall through */
 	    case ButtonPress:
 	      CurrentRow = (Event.xbutton.y/ButtonHeight);
@@ -426,7 +376,7 @@ void Loop(void)
               if(NewButton == CurrentButton)
 		{
 		  if((Buttons[CurrentButton].action)&&
-		     (mystrncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
+		     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
 		    {
 		      /* Look for Exec "identifier", in which
 		       * case the button stays down until window
@@ -434,7 +384,7 @@ void Loop(void)
 		      i=4;
 		      while((Buttons[CurrentButton].action[i] != 0)&&
 			    (Buttons[CurrentButton].action[i] != '"')&&
-			    isspace((unsigned char)Buttons[CurrentButton].action[i]))
+			    isspace(Buttons[CurrentButton].action[i]))
 			i++;
 		      if(Buttons[CurrentButton].action[i] == '"')
 			{
@@ -467,8 +417,8 @@ void Loop(void)
 		      strcpy(tmp,"Exec ");
 		      i3= i2+1;
 		      while((Buttons[CurrentButton].action[i3] != 0)&&
-			    (isspace((unsigned char)Buttons[CurrentButton].action[i3])))
-			i3++;			  
+			    (isspace(Buttons[CurrentButton].action[i3])))
+			i3++;
 		      strcat(tmp,&Buttons[CurrentButton].action[i3]);
 		      SendInfo(fd,tmp,0);
 		      free(tmp);
@@ -487,7 +437,7 @@ void Loop(void)
 	      RedrawWindow(CurrentButton);
 	      break;
 	    case ClientMessage:
-	      if ((Event.xclient.format==32) && 
+	      if ((Event.xclient.format==32) &&
 		  (Event.xclient.data.l[0]==wm_del_win))
 		{
 		  DeadPipe(1);
@@ -518,7 +468,7 @@ void Loop(void)
 			long supplied;
 
 			if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
-						&Buttons[button].hints, 
+						&Buttons[button].hints,
 						&supplied))
 			  Buttons[button].hints.flags = 0;
 			ih = Buttons[button].icon_h + 2*framew;
@@ -526,14 +476,14 @@ void Loop(void)
 			ConstrainSize(&Buttons[button].hints,
 				      &Buttons[button].icon_w,
 				      &Buttons[button].icon_h);
-			
-			XResizeWindow(dpy,Buttons[button].IconWin, 
+
+			XResizeWindow(dpy,Buttons[button].IconWin,
 				      Buttons[button].icon_w,
 				      Buttons[button].icon_h);
 			XMoveWindow(dpy,Buttons[button].IconWin,
 				    j*ButtonWidth +
 				    ((iw - Buttons[button].icon_w)>>1),
-				    i*ButtonHeight + 
+				    i*ButtonHeight +
 				    ((ih - Buttons[button].icon_h)>>1));
 		      }
 		  }
@@ -549,12 +499,12 @@ void Loop(void)
 
 /************************************************************************
  *
- * Draw the window 
+ * Draw the window
  *
  ***********************************************************************/
 void RedrawWindow(int newbutton)
 {
-  int i,j,w,yoff,button,len,yoff2,BW,BH;
+  int i,j,w,button,len,yoff2,BW,BH;
   XEvent dummy;
   int val1,val2;
 
@@ -600,14 +550,14 @@ void RedrawWindow(int newbutton)
 			  {
 			    XDrawString(dpy,main_win,NormalGC,
 					j*ButtonWidth+((BW - w)>>1),
-					i*ButtonHeight+((ButtonHeight + 
+					i*ButtonHeight+((ButtonHeight +
                                         font->ascent - font->descent)>>1),
 					Buttons[button].title, len);
 			  }
 		      }
 		  }
 		if((Buttons[button].action)&&
-		   (mystrncasecmp(Buttons[button].action,"Desk",4)==0))
+		   (strncasecmp(Buttons[button].action,"Desk",4)==0))
 		  {
 		    sscanf(&Buttons[button].action[4],"%d %d",&val1,&val2);
 		    if((val1 == 0)&&(val2 == new_desk))
@@ -643,8 +593,7 @@ void RedrawWindow(int newbutton)
  *  Draws the relief pattern around a window
  *
  ****************************************************************************/
-FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,
-		   GC rgc,GC sgc)
+void RelieveWindow(Window win,int x,int y,int w,int h, GC rgc,GC sgc)
 {
   XSegment seg[4];
   int i;
@@ -686,7 +635,7 @@ FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,
 
 /************************************************************************
  *
- * Sizes and creates the window 
+ * Sizes and creates the window
  *
  ***********************************************************************/
 XSizeHints mysizehints;
@@ -704,14 +653,14 @@ void CreateWindow(void)
   first_avail_button = num_buttons;
   for(i=0;i<num_buttons;i++)
     actual_buttons_used += Buttons[i].BWidth*Buttons[i].BHeight;
-  
+
   if(actual_buttons_used > MAX_BUTTONS)
     {
       fprintf(stderr,"%s: Out of Buttons!\n",MyName);
       exit(0);
     }
   num_buttons = actual_buttons_used;
-      
+
   /* size and create the window */
   if((num_rows == 0)&&(num_columns == 0))
     num_rows = 2;
@@ -753,7 +702,7 @@ void CreateWindow(void)
 		     i,num_columns,Buttons[i].BWidth,
 		     num_columns - (i%num_rows));
 	      Buttons[i].BWidth  = 1;
-	   } 
+	   }
 	  for(k=0;k<Buttons[i].BHeight;k++)
 	    for(j=0;j<Buttons[i].BWidth;j++)
 	      {
@@ -786,10 +735,10 @@ void CreateWindow(void)
  /* Shifting First_Avail-1 --> First_Avail :: downwards          */
  /* Attention: exclude the buttons allready freed  for the Bigs  */
  /* I don't know how to determine such a freed button.           */
- /* That's why I used this full WHILE-Codelines                  */                            
+ /* That's why I used this full WHILE-Codelines                  */
  /* tb := TARGET_BOTTON sb := SOURCE_BOTTON for shifting         */
  /* palme@elphy.irz.hu-berlin.de                                 */
-   
+
                          tb=first_avail_button;
                          sb=tb-1;
                          while(sb>=(i+j+k*num_columns))
@@ -806,7 +755,7 @@ void CreateWindow(void)
                                (Buttons[sb].icon_depth == 0) &&
                                (Buttons[sb].swallow == 0) &&
                                (Buttons[sb].module == 0) &&
-                               (Buttons[sb].hangon == NULL) &&           
+                               (Buttons[sb].hangon == NULL) &&
                                (Buttons[sb].up == 1) &&
                                (Buttons[sb].BWidth == 0) &&
                                (Buttons[sb].BHeight == 0)
@@ -838,43 +787,43 @@ void CreateWindow(void)
                                (Buttons[tb].icon_depth == 0) &&
                                (Buttons[tb].swallow == 0) &&
                                (Buttons[tb].module == 0) &&
-                               (Buttons[tb].hangon == NULL) &&           
+                               (Buttons[tb].hangon == NULL) &&
                                (Buttons[tb].up == 1) &&
                                (Buttons[tb].BWidth == 0) &&
                                (Buttons[tb].BHeight == 0)
                                ) tb--; /* ignore Targed_Botton if this is a freed one */
                            sb--;
-                         }  
- 
+                         }
+
  /* No follows the Original Code which frees the current Botton */
- 		    
-/*			Buttons[first_avail_button].action = 
+
+/*			Buttons[first_avail_button].action =
 			  Buttons[i+j+k*num_columns].action;
-			Buttons[first_avail_button].title = 
+			Buttons[first_avail_button].title =
 			  Buttons[i+j+k*num_columns].title;
-			Buttons[first_avail_button].icon_file = 
+			Buttons[first_avail_button].icon_file =
 			  Buttons[i+j+k*num_columns].icon_file;
-			Buttons[first_avail_button].BWidth = 
+			Buttons[first_avail_button].BWidth =
 			  Buttons[i+j+k*num_columns].BWidth;
-			Buttons[first_avail_button].BHeight = 
+			Buttons[first_avail_button].BHeight =
 			  Buttons[i+j+k*num_columns].BHeight;
-			Buttons[first_avail_button].icon_w = 
+			Buttons[first_avail_button].icon_w =
 			  Buttons[i+j+k*num_columns].icon_w;
-			Buttons[first_avail_button].icon_h = 
+			Buttons[first_avail_button].icon_h =
 			  Buttons[i+j+k*num_columns].icon_h;
-			Buttons[first_avail_button].iconPixmap = 
+			Buttons[first_avail_button].iconPixmap =
 			  Buttons[i+j+k*num_columns].iconPixmap;
-			Buttons[first_avail_button].icon_maskPixmap = 
+			Buttons[first_avail_button].icon_maskPixmap =
 			  Buttons[i+j+k*num_columns].icon_maskPixmap;
-			Buttons[first_avail_button].IconWin = 
+			Buttons[first_avail_button].IconWin =
 			  Buttons[i+j+k*num_columns].IconWin;
-			Buttons[first_avail_button].hints = 
+			Buttons[first_avail_button].hints =
 			  Buttons[i+j+k*num_columns].hints;
-			Buttons[first_avail_button].icon_depth = 
+			Buttons[first_avail_button].icon_depth =
 			  Buttons[i+j+k*num_columns].icon_depth;
-			Buttons[first_avail_button].hangon = 
+			Buttons[first_avail_button].hangon =
 			  Buttons[i+j+k*num_columns].hangon;
-			Buttons[first_avail_button].swallow = 
+			Buttons[first_avail_button].swallow =
 			  Buttons[i+j+k*num_columns].swallow;
 */
 			Buttons[i+j+k*num_columns].action = NULL;
@@ -888,7 +837,7 @@ void CreateWindow(void)
 			Buttons[i+j+k*num_columns].icon_depth = 0;
 			Buttons[i+j+k*num_columns].swallow = 0;
                         Buttons[i+j+k*num_columns].module = 0;
-			Buttons[i+j+k*num_columns].hangon = NULL;           
+			Buttons[i+j+k*num_columns].hangon = NULL;
 			Buttons[i+j+k*num_columns].up = 1;
 			Buttons[i+j+k*num_columns].BWidth = 0;
 			Buttons[i+j+k*num_columns].BHeight = 0;
@@ -898,8 +847,8 @@ void CreateWindow(void)
 	      }
 	}
     }
-    
-  
+
+
   mysizehints.flags = PWinGravity| PResizeInc | PBaseSize;
   /* subtract one for the right/bottom border */ /* But that ruins it! Jarl */
   mysizehints.width = (max_internal_width+2*(xpad+framew))*num_columns;
@@ -929,23 +878,23 @@ void CreateWindow(void)
 	  mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
 	  gravity = NorthEastGravity;
 	}
-      else 
+      else
 	mysizehints.x = x;
       if (yneg)
 	{
 	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
 	  gravity = SouthWestGravity;
 	}
-      else 
+      else
 	mysizehints.y = y;
 
       if(xneg && yneg)
-	gravity = SouthEastGravity;	
+	gravity = SouthEastGravity;
       mysizehints.flags |= USPosition;
     }
 
   mysizehints.win_gravity = gravity;
-#define BW 1
+
   if(d_depth < 2)
     {
       back_pix = GetColor("white");
@@ -964,7 +913,7 @@ void CreateWindow(void)
 
   main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 BW,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
@@ -974,12 +923,12 @@ void CreateWindow(void)
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
   gcv.background = back_pix;
-  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = shadow_pix;
   gcv.background = back_pix;
-  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground;
   if(font)
@@ -989,7 +938,7 @@ void CreateWindow(void)
     }
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
 }
 
 
@@ -1003,23 +952,23 @@ void CreateWindow(void)
  * This routine computes the shadow color from the background color
  *
  ****************************************************************************/
-Pixel GetShadow(Pixel background) 
+Pixel GetShadow(Pixel background)
 {
   XColor bg_color;
   XWindowAttributes attributes;
-  
+
   XGetWindowAttributes(dpy,Root,&attributes);
-  
+
   bg_color.pixel = background;
   XQueryColor(dpy,attributes.colormap,&bg_color);
-  
+
   bg_color.red = (unsigned short)((bg_color.red*50)/100);
   bg_color.green = (unsigned short)((bg_color.green*50)/100);
   bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-  
+
   if(!XAllocColor(dpy,attributes.colormap,&bg_color))
     nocolor("alloc shadow","");
-  
+
   return bg_color.pixel;
 }
 
@@ -1028,35 +977,30 @@ Pixel GetShadow(Pixel background)
  * This routine computes the hilight color from the background color
  *
  ****************************************************************************/
-Pixel GetHilite(Pixel background) 
+Pixel GetHilite(Pixel background)
 {
   XColor bg_color, white_p;
   XWindowAttributes attributes;
-  
+
   XGetWindowAttributes(dpy,Root,&attributes);
-  
+
   bg_color.pixel = background;
   XQueryColor(dpy,attributes.colormap,&bg_color);
 
   white_p.pixel = GetColor("white");
   XQueryColor(dpy,attributes.colormap,&white_p);
-  
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
 
   bg_color.red = max((white_p.red/5), bg_color.red);
   bg_color.green = max((white_p.green/5), bg_color.green);
   bg_color.blue = max((white_p.blue/5), bg_color.blue);
-  
+
   bg_color.red = min(white_p.red, (bg_color.red*140)/100);
   bg_color.green = min(white_p.green, (bg_color.green*140)/100);
   bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
-  
+
   if(!XAllocColor(dpy,attributes.colormap,&bg_color))
     nocolor("alloc hilight","");
-  
+
   return bg_color.pixel;
 }
 
@@ -1068,10 +1012,10 @@ void nocolor(char *a, char *b)
 
 
 /****************************************************************************
- * 
+ *
  * Loads a single color
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
@@ -1079,11 +1023,11 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
      {
        nocolor("alloc",name);
      }
@@ -1119,7 +1063,7 @@ void DeadPipe(int nonsense)
 }
 
 /*****************************************************************************
- * 
+ *
  * This routine is responsible for reading and parsing the config file
  *
  ****************************************************************************/
@@ -1135,25 +1079,25 @@ void ParseOptions(void)
     {
       int g_x, g_y, flags;
       unsigned width,height;
-      
+
       if((strlen(&tline[0])>1)&&
-	 (mystrncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
+	 (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
 	{
 	  tmp = &tline[Clength+9];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    {
 	      tmp++;
 	    }
 	  tmp[strlen(tmp)-1] = 0;
 
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  if (flags & WidthValue)
 	    w = width;
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    h = height;
-	  if (flags & XValue) 
+	  if (flags & XValue)
 	    x = g_x;
-	  if (flags & YValue) 
+	  if (flags & YValue)
 	    y = g_y;
 	  if (flags & XNegative)
 	    xneg = 1;
@@ -1161,26 +1105,26 @@ void ParseOptions(void)
 	    yneg = 1;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0))
 	{
 	  CopyString(&font_string,&tline[Clength+5]);
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
 	{
 	  len=sscanf(&tline[Clength+5],"%d",&num_rows);
 	  if(len < 1)
 	    num_rows = 0;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
 	{
 	  len=sscanf(&tline[Clength+8],"%d",&num_columns);
 	  if(len < 1)
 	    num_columns = 0;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Padding"),Clength+8)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Padding"),Clength+8)==0))
 	{
 	  len=sscanf(&tline[Clength+8],"%d %d",&xpad,&ypad);
 	  if(len < 2)
@@ -1192,7 +1136,7 @@ void ParseOptions(void)
 	    }
 	}
 /*    else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"PadY"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"PadY"),Clength+5)==0))
 	{
 	  len=sscanf(&tline[Clength+5],"%d",&ypad);
 	  if(len < 1)
@@ -1200,26 +1144,26 @@ void ParseOptions(void)
 	}
 */
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Fore"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Fore"),Clength+5)==0))
 	{
 	  CopyString(&GoodStuffFore,&tline[Clength+5]);
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName, "Back"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName, "Back"),Clength+5)==0))
 	{
 	  CopyString(&GoodStuffBack,&tline[Clength+5]);
-	}	
+	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)&&
+	      (strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)&&
 	      (num_buttons < MAX_BUTTONS))
 	{
 	  match_string(&tline[Clength+1]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"IconPath",8)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"IconPath",8)==0))
 	{
 	  CopyString(&iconPath,&tline[8]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"PixmapPath",10)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
 	{
 	  CopyString(&pixmapPath,&tline[10]);
 	}
@@ -1231,16 +1175,16 @@ void ParseOptions(void)
 
 /**************************************************************************
  *
- * Parses a button command line from the config file 
+ * Parses a button command line from the config file
  *
  *************************************************************************/
 void match_string(char *tline)
 {
-  int len,i,i2,n;
+  int len,i,i2;
   char *ptr,*start,*end,*tmp;
 
   /* Get a size argument, if any */
-  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   if( *tline == '(')
     {
@@ -1249,7 +1193,7 @@ void match_string(char *tline)
       tline++;
       sscanf((tline),"%dx%d",&thisw,&thish);
       while((*tline != ')')&&(*tline != '\n')&&(*tline != 0))
-	tline++;   
+	tline++;
       tline++;
       if(thisw > 0)
 	Buttons[num_buttons].BWidth = thisw;
@@ -1258,44 +1202,44 @@ void match_string(char *tline)
     }
 
   /* skip spaces */
-  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
-  /* read next word. Its the button label. Users can specify "" 
+  /* read next word. Its the button label. Users can specify ""
    * NoIcon, or whatever to skip the label */
   /* read to next space */
   start = tline;
   end = tline;
-  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
     end++;
   len = end - start;
   ptr = safemalloc(len+1);
   strncpy(ptr,start,len);
   ptr[len] = 0;
-  Buttons[num_buttons].title = ptr;      
+  Buttons[num_buttons].title = ptr;
 
-  /* read next word. Its the icon bitmap/pixmap label. Users can specify "" 
+  /* read next word. Its the icon bitmap/pixmap label. Users can specify ""
    * NoIcon, or whatever to skip the label */
   /* read to next space */
   start = end;
   /* skip spaces */
-  while(isspace((unsigned char)*start)&&(*start != '\n')&&(*start != 0))
+  while(isspace(*start)&&(*start != '\n')&&(*start != 0))
     start++;
   end = start;
-  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
     end++;
   len = end - start;
   ptr = safemalloc(len+1);
   strncpy(ptr,start,len);
   ptr[len] = 0;
-  Buttons[num_buttons].icon_file = ptr;      
+  Buttons[num_buttons].icon_file = ptr;
 
   tline = end;
   /* skip spaces */
-  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
-  if(mystrncasecmp(tline,"swallow",7)==0)
+  if(strncasecmp(tline,"swallow",7)==0)
     {
       /* Look for swallow "identifier", in which
        * case GoodStuff spawns and gobbles up window */
@@ -1315,24 +1259,24 @@ void match_string(char *tline)
 	  Buttons[num_buttons].swallow = 1;
 	}
       i2++;
-      while((isspace((unsigned char)tline[i2]))&&(tline[i2]!=0))
+      while((isspace(tline[i2]))&&(tline[i2]!=0))
 	i2++;
       len = strlen(&tline[i2]);
       tmp = tline + i2 + len -1;
-      while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=(tline + i2)))
+      while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=(tline + i2)))
 	{
 	  tmp--;
 	  len--;
 	}
       ptr = safemalloc(len+1);
-      if(mystrncasecmp(&tline[i2],"Module",6)==0)
+      if(strncasecmp(&tline[i2],"Module",6)==0)
 	{
           Buttons[num_buttons].module = 1;
-	}	  
+	}
 
       strncpy(ptr,&tline[i2],len);
       ptr[len]=0;
-      SendText(fd,ptr,0);     
+      SendText(fd,ptr,0);
       free(ptr);
       Buttons[num_buttons++].action = NULL;
     }
@@ -1340,7 +1284,7 @@ void match_string(char *tline)
     {
       len = strlen(tline);
       tmp = tline + len -1;
-      while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=tline))
+      while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=tline))
 	{
 	  tmp--;
 	  len--;
@@ -1359,8 +1303,8 @@ void match_string(char *tline)
 void change_window_name(char *str)
 {
   XTextProperty name;
-  
-  if (XStringListToTextProperty(&str,1,&name) == 0) 
+
+  if (XStringListToTextProperty(&str,1,&name) == 0)
     {
       fprintf(stderr,"%s: cannot allocate window name",MyName);
       return;
@@ -1381,12 +1325,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int body_length;
-  int count,count2 = 0;
   static int miss_counter = 0;
   unsigned long *body;
-  int total;
-  char *cbody;
 
   if(XPending(dpy))
     {
@@ -1398,12 +1338,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif
-
+  select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL);
 
   if(FD_ISSET(x_fd, &in_fdset))
     {
@@ -1418,10 +1353,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(count = ReadFvwmPacket(fd[1], header, &body) > 0)
+      if(ReadFvwmPacket(fd[1], header, &body) > 0)
 	{
 	  process_message(header[1],body);
 	  free(body);
@@ -1439,7 +1374,7 @@ void CheckForHangon(unsigned long *body)
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
       {
-	button = i*num_columns + j;      
+	button = i*num_columns + j;
 	if(Buttons[button].hangon != NULL)
 	  {
 	    if(strcmp(cbody,Buttons[button].hangon)==0)
@@ -1469,7 +1404,7 @@ void CheckForHangon(unsigned long *body)
 
 /**************************************************************************
  *
- * Process window list messages 
+ * Process window list messages
  *
  *************************************************************************/
 void process_message(unsigned long type,unsigned long *body)
@@ -1503,22 +1438,22 @@ void swallow(unsigned long *body)
   char *temp;
   int button,i,j,iw,ih;
   long supplied;
-  
+
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
       {
-	button = i*num_columns + j;      
+	button = i*num_columns + j;
 	if((Buttons[button].IconWin == (Window)body[0])&&
 	  (Buttons[button].swallow == 2))
 	  {
 	    Buttons[button].swallow = 3;
 	    /* "Swallow" the window! */
-	    XReparentWindow(dpy,Buttons[button].IconWin, main_win, 
+	    XReparentWindow(dpy,Buttons[button].IconWin, main_win,
 			    j*ButtonWidth+2, i*ButtonHeight+2);
 	    XMapWindow(dpy,Buttons[button].IconWin);
 	    XSelectInput(dpy,(Window)body[0],
 			 PropertyChangeMask|StructureNotifyMask);
-	    Buttons[button].icon_w = 
+	    Buttons[button].icon_w =
 	      Buttons[button].BWidth * ButtonWidth - 4;
 	    if(strcmp(Buttons[button].title,"-")==0 || font==NULL)
 	      {
@@ -1527,25 +1462,25 @@ void swallow(unsigned long *body)
 	      }
 	    else
 	      {
-		Buttons[button].icon_h = 
-		  Buttons[button].BHeight*ButtonHeight - 4 
+		Buttons[button].icon_h =
+		  Buttons[button].BHeight*ButtonHeight - 4
 		    - font->ascent - font->descent;
 	      }
 	    if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
-				    &Buttons[button].hints, 
+				    &Buttons[button].hints,
 				    &supplied))
 	      Buttons[button].hints.flags = 0;
-	    ih = Buttons[button].icon_h + 4; 
-	    iw = Buttons[button].icon_w + 4; 
+	    ih = Buttons[button].icon_h + 4;
+	    iw = Buttons[button].icon_w + 4;
 	    ConstrainSize(&Buttons[button].hints, &Buttons[button].icon_w,
 			  &Buttons[button].icon_h);
-							    
+
 	    XResizeWindow(dpy,(Window)body[0], Buttons[button].icon_w,
 			  Buttons[button].icon_h);
 	    XMoveWindow(dpy,Buttons[button].IconWin,
 			j*ButtonWidth +
 			(iw - Buttons[button].icon_w)/2,
-			i*ButtonHeight + 
+			i*ButtonHeight +
 			(ih - Buttons[button].icon_h)/2);
 
 	    XFetchName(dpy, Buttons[button].IconWin, &temp);
@@ -1569,14 +1504,14 @@ void swallow(unsigned long *body)
  *
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
- * 
+ *
  ***********************************************************************/
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
 
-  
+
   int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
   int baseWidth, baseHeight;
   int dwidth = *widthp, dheight = *heightp;
@@ -1610,7 +1545,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       baseWidth = 1;
       baseHeight = 1;
     }
-  
+
   if(hints->flags & PMaxSize)
     {
       maxWidth = hints->max_width;
@@ -1631,24 +1566,24 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       xinc = 1;
       yinc = 1;
     }
-  
+
   /*
    * First, clamp to min and max values
    */
   if (dwidth < minWidth) dwidth = minWidth;
   if (dheight < minHeight) dheight = minHeight;
-  
+
   if (dwidth > maxWidth) dwidth = maxWidth;
   if (dheight > maxHeight) dheight = maxHeight;
-  
-  
+
+
   /*
    * Second, fit to base + N * inc
    */
   dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
   dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-  
-  
+
+
   /*
    * Third, adjust for aspect ratio
    */
@@ -1668,16 +1603,16 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    *
    * minAspectX * dheight > minAspectY * dwidth
    * maxAspectX * dheight < maxAspectY * dwidth
-   * 
+   *
    */
-  
+
   if (hints->flags & PAspect)
     {
       if (minAspectX * dheight > minAspectY * dwidth)
 	{
 	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
 			   xinc);
-	  if (dwidth + delta <= maxWidth) 
+	  if (dwidth + delta <= maxWidth)
 	    dwidth += delta;
 	  else
 	    {
@@ -1686,7 +1621,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	      if (dheight - delta >= minHeight) dheight -= delta;
 	    }
 	}
-      
+
       if (maxAspectX * dheight < maxAspectY * dwidth)
 	{
 	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
@@ -1701,7 +1636,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	    }
 	}
     }
-  
+
   *widthp = dwidth;
   *heightp = dheight;
   return;

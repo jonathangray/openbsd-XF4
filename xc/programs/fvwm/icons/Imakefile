@@ -1,16 +1,10 @@
-/*
- * Imakefile for fvwm 2.0 -- icons
- */
+XCOMM $OpenBSD: Imakefile,v 1.2 2001/06/28 22:32:27 matthieu Exp $
 
-FVWM_SRCDIR = ..
+FVWMTOP= ..
 #include "../Fvwm.tmpl"
-
-NullMake()
 
 BITMAPS= *.bitmap *.icon *.xbm
 PIXMAPS= *.xpm
 
-#if InstallIcons
 InstallMultipleFlags($(BITMAPS),$(INCDIR)/X11/bitmaps,$(INSTINCFLAGS))
 InstallMultipleFlags($(PIXMAPS),$(INCDIR)/X11/pixmaps,$(INSTINCFLAGS))
-#endif

@@ -1,8 +1,9 @@
-#include "../../libs/fvwmlib.h"       
+#include "fvwmlib.h"
+
 /*************************************************************************
  *
  * Subroutine Prototypes
- * 
+ *
  *************************************************************************/
 extern void   CreateWindow(void);
 extern Pixel  GetColor(char *name);
@@ -16,7 +17,7 @@ extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern void   change_window_name(char *str);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
-extern FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
+extern void   RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
 extern void   DeadPipe(int nonsense);
 extern void   LoadIconFile(int button);
 extern void   CreateIconWindow(int button);
@@ -39,11 +40,6 @@ extern GC  NormalGC;
 extern GC  ReliefGC;
 extern int ButtonWidth,ButtonHeight;
 extern XFontStruct *font;
-#ifdef I18N
-extern XFontSet fontset;
-#define XTextWidth(x,y,z)     XmbTextEscapement(fontset,y,z)
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,fontset,v,w,x,y,z)
-#endif
 #define MAX_BUTTONS 100
 
 struct button_info
@@ -71,12 +67,4 @@ extern struct button_info Buttons[MAX_BUTTONS];
 
 extern char *iconPath;
 extern char *pixmapPath;
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 

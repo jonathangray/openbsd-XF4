@@ -1,10 +1,10 @@
-/* FvwmWinList Module for Fvwm. 
+/* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
  *
  * The functions in this source file that are the original work of Mike Finger.
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
@@ -12,7 +12,7 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,30 +23,13 @@
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
-
-#ifdef I18N
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
-#endif
 
 extern XFontStruct *ButtonFont;
-#ifdef I18N
-extern XFontSet ButtonFontset;
-#endif
 extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 extern GC graph[MAX_COLOUR_SETS],background[MAX_COLOUR_SETS];
-extern int LeftJustify;
-extern int TruncateLeft;
+extern int LeftJustify, TruncateLeft, ShowFocus;
 
 extern long CurrentDesk;
 extern int ShowCurrentDesk;
@@ -63,8 +46,7 @@ extern int ShowCurrentDesk;
    ------------------------------------------------------------------------- */
 Button *ButtonNew(char *title, Picture *p, int up)
 {
-  int updateneeded = 0;
-  Button *new, *temp;
+  Button *new;
 
   new = (Button *)safemalloc(sizeof(Button));
   new->title = safemalloc(strlen(title)+1);
@@ -158,7 +140,7 @@ int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
   {
     if (title!=NULL)
     {
-      temp->title=(char *)realloc(temp->title,strlen(title)+1);
+      temp->title=(char *)saferealloc(temp->title,strlen(title)+1);
       strcpy(temp->title,title);
       temp->tw=XTextWidth(ButtonFont,title,strlen(title));
       temp->truncatewidth = 0;
@@ -190,7 +172,7 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
 }
 
 /******************************************************************************
-  UpdateButtonSet - Change colour set of a button
+  UpdateButtonSet - Change colour set of a button between odd and even
 ******************************************************************************/
 int UpdateButtonSet(ButtonArray *array, int butnum, int set)
 {
@@ -199,9 +181,9 @@ int UpdateButtonSet(ButtonArray *array, int butnum, int set)
   btn=find_n(array, butnum);
   if (btn != NULL)
   {
-    if (btn->set != set)
+    if ((btn->set & 1) != set)
     {
-      btn->set = set;
+      btn->set = (btn->set & 2) | set;
       btn->needsupdate = 1;
     }
   } else return -1;
@@ -249,7 +231,7 @@ void RemoveButton(ButtonArray *array, int butnum)
   FreeButton(temp2);
 
   if (temp!=array->head) temp=temp->next;
-  for(temp;temp!=NULL;temp=temp->next) temp->needsupdate=1;
+  for(;temp!=NULL;temp=temp->next) temp->needsupdate=1;
 }
 
 /******************************************************************************
@@ -257,7 +239,7 @@ void RemoveButton(ButtonArray *array, int butnum)
 ******************************************************************************/
 Button *find_n(ButtonArray *array, int n)
 {
-  Button *temp; 
+  Button *temp;
   int i;
 
   temp=array->head;
@@ -317,27 +299,14 @@ void DoButton(Button *button, int x, int y, int w, int h)
   Fontheight=ButtonFont->ascent+ButtonFont->descent;
 
  /*? XClearArea(dpy,win,x,y,w,h,False);*/
-  XFillRectangle(dpy,win,background[set],x,y,w,h);
-  XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
-  XDrawLine(dpy,win,topgc,x,y+1,x+w-2,y+1);
-
-  XDrawLine(dpy,win,topgc,x,y,x,y+h-1);
-  XDrawLine(dpy,win,topgc,x+1,y,x+1,y+h-2);
-  
-  XDrawLine(dpy,win,bottomgc,x,y+h,x+w,y+h);
-  XDrawLine(dpy,win,bottomgc,x+1,y+h-1,x+w,y+h-1);
-
-  XDrawLine(dpy,win,bottomgc,x+w,y+h,x+w,y);
-  XDrawLine(dpy,win,bottomgc,x+w-1,y+h,x+w-1,y+1);
-
-  newx = 2;
+  XFillRectangle(dpy,win,background[set],x,y,w,h+1);
 
   if ((button->p.picture != 0)/* &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
 
     gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
-    gcv.clip_x_origin = x + 3;
+    gcv.clip_x_origin = x + 4;
     gcv.clip_y_origin = y + ((h-button->p.height) >> 1);
     XChangeGC(dpy, hilite[set], gcm, &gcv);
     XCopyArea(dpy, button->p.picture, win, hilite[set], 0, 0,
@@ -347,20 +316,19 @@ void DoButton(Button *button, int x, int y, int w, int h)
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite[set], gcm, &gcv);
 
-    newx += button->p.width+4;
-    }
-	else
-	{
-		newx = 4;
-	}
+    newx = button->p.width+6;
+  }
+  else
+  {
+    if (LeftJustify)
+      newx=4;
+    else
+      newx=max((w-button->tw)/2,4);
+  }
 
   string=button->title;
-  if (LeftJustify) {
-/* newx set by pixmap    newx=4;
-*/
-  } else {
-/* set by pixmap    newx=max((w-button->tw)/2,4);
-*/
+
+  if (!LeftJustify) {
     if (TruncateLeft && (w-button->tw)/2 < 4) {
       if (button->truncatewidth == w)
 	string=button->truncate_title;
@@ -375,6 +343,17 @@ void DoButton(Button *button, int x, int y, int w, int h)
   }
   XDrawString(dpy,win,graph[set],x+newx,y+3+ButtonFont->ascent,string,strlen(string));
   button->needsupdate=0;
+
+  /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
+  XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
+  XDrawLine(dpy,win,topgc,x+1,y+1,x+w-2,y+1);
+  XDrawLine(dpy,win,topgc,x,y+1,x,y+h+1);
+  XDrawLine(dpy,win,topgc,x+1,y+2,x+1,y+h);
+  XDrawLine(dpy,win,bottomgc,x+1,y+h,x+w,y+h);
+  XDrawLine(dpy,win,bottomgc,x+2,y+h-1,x+w-1,y+h-1);
+  XDrawLine(dpy,win,bottomgc,x+w-1,y,x+w-1,y+h);
+  XDrawLine(dpy,win,bottomgc,x+w-2,y+1,x+w-2,y+h-1);
+
 }
 
 /******************************************************************************
@@ -385,7 +364,7 @@ void DrawButtonArray(ButtonArray *barray, int all)
   Button *btn;
   int i = 0;		/* buttons displayed */
 
-  for(btn = barray->head; btn != NULL; btn = btn->next) 
+  for(btn = barray->head; btn != NULL; btn = btn->next)
   {
     if((!ShowCurrentDesk) || ( btn->desk == CurrentDesk ) )
     {
@@ -409,7 +388,7 @@ void DrawButtonArray(ButtonArray *barray, int all)
 void SwitchButton(ButtonArray *array, int butnum)
 {
   Button *btn;
-  
+
   btn = find_n(array, butnum);
   btn->up =!btn->up;
   btn->needsupdate=1;
@@ -423,19 +402,32 @@ void RadioButton(ButtonArray *array, int butnum)
 {
   Button *temp;
   int i;
-  
+
   for(temp=array->head,i=0; temp!=NULL; temp=temp->next,i++)
   {
     if (i == butnum)
     {
-      temp->up = 0;
-      temp->needsupdate=1;
+      if (ShowFocus && temp->up)
+      {
+        temp->up = 0;
+        temp->needsupdate=1;
+      }
+      if (!(temp->set & 2))
+      {
+        temp->set |= 2;
+        temp->needsupdate=1;
+      }
     }
     else
     {
-      if (temp->up == 0)
+      if (ShowFocus && !temp->up)
       {
         temp->up = 1;
+        temp->needsupdate = 1;
+      }
+      if (temp->set & 2)
+      {
+        temp->set &= 1;
         temp->needsupdate = 1;
       }
     }
@@ -493,6 +485,7 @@ void PrintButtons(ButtonArray *array)
     ConsoleMessage("   %s is %s\n",temp->title,(temp->up) ? "Up":"Down");
 }
 
+#if 0
 /******************************************************************************
   ButtonArrayMaxWidth - Calculate the width needed for the widest title
 ******************************************************************************/
@@ -504,3 +497,4 @@ int x=0;
     x=max(temp->tw,x);
   return x;
 }
+#endif
