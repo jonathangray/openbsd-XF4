@@ -236,6 +236,12 @@ const char *lc_dir;
     char *path;
     size_t len;
 
+    /*
+     * reject this for possible security issue
+     */
+    if (strstr (dl_name, "../"))
+	return NULL;
+
 #ifdef _LP64
     len = (lc_dir ? strlen(lc_dir) : 0 ) +
 	(dl_name ? strlen(dl_name) : 0) + _MACH64_NAME_LEN + 10;
@@ -317,6 +323,8 @@ _XlcDynamicLoad(lc_name)
 	    strcmp(objects_list->locale_name, lc_name)) continue;
 	if (!objects_list->dl_module) {
 	  path = __lc_path(objects_list->dl_name, lc_dir);
+	  if (!path)
+	      continue;
 #if defined(hpux)
 	  objects_list->dl_module = shl_load(path, BIND_DEFERRED, 0L);
 #else
@@ -392,6 +400,8 @@ char *res_name, *res_class;
 	strcmp(objects_list->locale_name, lc_name)) continue;
     if (!objects_list->dl_module) {
       path = __lc_path(objects_list->dl_name, lc_dir);
+      if (!path)
+	  continue;
 #if defined(hpux)
       objects_list->dl_module = shl_load(path, BIND_DEFERRED, 0L);
 #else
@@ -467,6 +477,8 @@ XPointer	*client_data;
 	strcmp(objects_list->locale_name, lc_name)) continue;
     if (!objects_list->dl_module) {
       path = __lc_path(objects_list->dl_name, lc_dir);
+      if (!path)
+	  continue;
 #if defined(hpux)
       objects_list->dl_module = shl_load(path, BIND_DEFERRED, 0L);
 #else
@@ -542,6 +554,8 @@ XPointer	*client_data;
 	strcmp(objects_list->locale_name, lc_name)) continue;
     if (!objects_list->dl_module) {
       path = __lc_path(objects_list->dl_name, lc_dir);
+      if (!path)
+	  continue;
 #if defined(hpux)
       objects_list->dl_module = shl_load(path, BIND_DEFERRED, 0L);
 #else
@@ -637,6 +651,8 @@ char *res_class;
 	strcmp(objects_list->locale_name, lc_name)) continue;
     if (!objects_list->dl_module) {
       path = __lc_path(objects_list->dl_name, lc_dir);
+      if (!path)
+	  continue;
 #if defined(hpux)
       objects_list->dl_module = shl_load(path, BIND_DEFERRED, 0L);
 #else
