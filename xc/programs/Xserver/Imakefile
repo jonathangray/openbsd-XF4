@@ -533,6 +533,23 @@ ServerTarget(Xhp,$(HPSUBDIRS),$(HPOBJS),$(HPLIBS),$(HPSYSLIBS))
 #endif
 #endif	/* XhpServer */
 
+#if XmacppcServer
+XCOMM
+XCOMM macppc server from NetBSD
+XCOMM
+MFBDIR   = mfb
+FBDIR = fb
+CFB8DIR  = cfb
+DDXDIR1  = hw/macppc
+PMACDIRS = $(STDDIRS) $(FBDIR) $(DDXDIR1) $(DEPDIRS)
+PMACOBJS = hw/macppc/macppcInit.o
+PMACLIBS = hw/macppc/libmacppc.a FBLibs
+ServerTarget(Xmacppc,$(PMACDIRS),$(PMACOBJS),$(PMACLIBS),$(FONTLIBS) $(SYSLIBS))
+#ifndef ServerToInstall
+#define ServerToInstall Xmacppc
+#endif
+#endif /* XmacppcServer */
+
 
 #if HasParallelMake
 XCOMM
