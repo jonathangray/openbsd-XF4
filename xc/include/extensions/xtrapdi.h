@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/xtrapdi.h,v 1.1 2001/11/02 23:29:26 dawes Exp $ */
+/* $XFree86$ */
 #ifndef __XTRAPDI__
 #define __XTRAPDI__
 

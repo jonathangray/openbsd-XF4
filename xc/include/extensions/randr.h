@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/include/extensions/randr.h,v 1.6 2002/10/14 18:01:38 keithp Exp $
+ * $XFree86: xc/include/extensions/randr.h,v 1.4 2001/11/24 07:24:58 keithp Exp $
  *
  * Copyright © 2000, Compaq Computer Corporation, 
  * Copyright © 2002, Hewlett Packard, Inc.

@@ -1,4 +1,5 @@
 /*
+ * $XdotOrg: xc/include/Xos.h,v 1.2 2004/04/23 18:43:05 eich Exp $
  * $Xorg: Xos.h,v 1.6 2001/02/09 02:03:22 xorgcvs Exp $
  * 
  * 
@@ -27,7 +28,7 @@ in this Software without prior written authorization from The Open Group.
  * The X Window System is a Trademark of The Open Group.
  *
  */
-/* $XFree86: xc/include/Xos.h,v 3.42 2003/12/31 01:18:41 tsi Exp $ */
+/* $XFree86: xc/include/Xos.h,v 3.41tsi Exp $ */
 
 /* This is a collection of things to try and minimize system dependencies
  * in a "signficant" number of source files.
@@ -94,6 +95,9 @@ in this Software without prior written authorization from The Open Group.
 #ifdef SCO325
 #include <strings.h>
 #else
+#if (defined(sun) && defined(__SVR4))
+#include <strings.h>
+#endif
 #ifdef __STDC__
 #ifndef index
 #define index(s,c) (strchr((s),(c)))

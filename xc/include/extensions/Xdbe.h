@@ -30,7 +30,7 @@
  *     Header file for Xlib-related DBE
  *
  *****************************************************************************/
-/* $XFree86: xc/include/extensions/Xdbe.h,v 3.3 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/Xdbe.h,v 3.2 2001/08/01 00:44:35 tsi Exp $ */
 
 #ifndef XDBE_H
 #define XDBE_H

@@ -4,7 +4,7 @@
  * Cutter and Paster:  Jeffrey Hsu
  */
 
-/* $XFree86: xc/util/memleak/stackbottom.c,v 3.2 2001/07/25 15:05:31 dawes Exp $ */
+/* $XFree86: xc/util/memleak/stackbottom.c,v 3.1 1996/12/31 05:02:27 dawes Exp $ */
 
 #include <signal.h>
 

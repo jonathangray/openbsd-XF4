@@ -27,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/include/Xpoll.h,v 3.9 2001/12/14 19:53:26 dawes Exp $ */
+/* $XFree86: xc/include/Xpoll.h,v 3.8 2001/01/17 17:53:11 dawes Exp $ */
 
 #ifndef _XPOLL_H_
 #define _XPOLL_H_
@@ -118,62 +118,40 @@ typedef struct fd_set {
 #endif
 
 /*
- * The following macros are used by the servers only. There is an
- * explicit assumption that the bit array in the fd_set is at least
- * 256 bits long (8 32-bit words). This is true on most modern POSIX 
- * systems. Note that this is merely an optimization for the servers
- * based on assumptions about the way that file descripters are
- * allocated on POSIX systems. 
- *
- * When porting X to new systems it is important to adjust these
- * macros if the system has fewer than 256 bits in the fd_set bit
- * array.
+ * The howmany(FD_SETSIZE, NFDBITS) computes the number of elements in the
+ * array. before accessing an element in the array we check it exists.
+ * If it does not exist then the compiler discards the code to access it. 
  */
 #define XFD_ANYSET(p) \
-		((p)->fds_bits[0] || (p)->fds_bits[1] || \
-		(p)->fds_bits[2] || (p)->fds_bits[3] || \
-		(p)->fds_bits[4] || (p)->fds_bits[5] || \
-		(p)->fds_bits[6] || (p)->fds_bits[7])
+        ((howmany(FD_SETSIZE, NFDBITS) > 0 && (p)->fds_bits[0]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 1 && (p)->fds_bits[1]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 2 && (p)->fds_bits[2]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 3 && (p)->fds_bits[3]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 4 && (p)->fds_bits[4]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 5 && (p)->fds_bits[5]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 6 && (p)->fds_bits[6]) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 7 && (p)->fds_bits[7]))
 
-#define XFD_COPYSET(src,dst) \
-		(dst)->fds_bits[0] = (src)->fds_bits[0]; \
-		(dst)->fds_bits[1] = (src)->fds_bits[1]; \
-		(dst)->fds_bits[2] = (src)->fds_bits[2]; \
-		(dst)->fds_bits[3] = (src)->fds_bits[3]; \
-		(dst)->fds_bits[4] = (src)->fds_bits[4]; \
-		(dst)->fds_bits[5] = (src)->fds_bits[5]; \
-		(dst)->fds_bits[6] = (src)->fds_bits[6]; \
-		(dst)->fds_bits[7] = (src)->fds_bits[7];
-
-#define XFD_ANDSET(dst,b1,b2) \
-		(dst)->fds_bits[0] = ((b1)->fds_bits[0] & (b2)->fds_bits[0]); \
-		(dst)->fds_bits[1] = ((b1)->fds_bits[1] & (b2)->fds_bits[1]); \
-		(dst)->fds_bits[2] = ((b1)->fds_bits[2] & (b2)->fds_bits[2]); \
-		(dst)->fds_bits[3] = ((b1)->fds_bits[3] & (b2)->fds_bits[3]); \
-		(dst)->fds_bits[4] = ((b1)->fds_bits[4] & (b2)->fds_bits[4]); \
-		(dst)->fds_bits[5] = ((b1)->fds_bits[5] & (b2)->fds_bits[5]); \
-		(dst)->fds_bits[6] = ((b1)->fds_bits[6] & (b2)->fds_bits[6]); \
-		(dst)->fds_bits[7] = ((b1)->fds_bits[7] & (b2)->fds_bits[7]);
-
-#define XFD_ORSET(dst,b1,b2) \
-		(dst)->fds_bits[0] = ((b1)->fds_bits[0] | (b2)->fds_bits[0]); \
-		(dst)->fds_bits[1] = ((b1)->fds_bits[1] | (b2)->fds_bits[1]); \
-		(dst)->fds_bits[2] = ((b1)->fds_bits[2] | (b2)->fds_bits[2]); \
-		(dst)->fds_bits[3] = ((b1)->fds_bits[3] | (b2)->fds_bits[3]); \
-		(dst)->fds_bits[4] = ((b1)->fds_bits[4] | (b2)->fds_bits[4]); \
-		(dst)->fds_bits[5] = ((b1)->fds_bits[5] | (b2)->fds_bits[5]); \
-		(dst)->fds_bits[6] = ((b1)->fds_bits[6] | (b2)->fds_bits[6]); \
-		(dst)->fds_bits[7] = ((b1)->fds_bits[7] | (b2)->fds_bits[7]);
-
-#define XFD_UNSET(dst,b1) \
-		(dst)->fds_bits[0] &= ~((b1)->fds_bits[0]); \
-		(dst)->fds_bits[1] &= ~((b1)->fds_bits[1]); \
-		(dst)->fds_bits[2] &= ~((b1)->fds_bits[2]); \
-		(dst)->fds_bits[3] &= ~((b1)->fds_bits[3]); \
-		(dst)->fds_bits[4] &= ~((b1)->fds_bits[4]); \
-		(dst)->fds_bits[5] &= ~((b1)->fds_bits[5]); \
-		(dst)->fds_bits[6] &= ~((b1)->fds_bits[6]); \
-		(dst)->fds_bits[7] &= ~((b1)->fds_bits[7]);
+#define XFD_COPYSET(src,dst) { \
+        int __i__; \
+		for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
+            (dst)->fds_bits[__i__] = (src)->fds_bits[__i__]; \
+        }
+#define XFD_ANDSET(dst,b1,b2) { \
+        int __i__; \
+        for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
+            (dst)->fds_bits[__i__] = ((b1)->fds_bits[__i__] & (b2)->fds_bits[__i__]); \
+        }
+#define XFD_ORSET(dst,b1,b2) { \
+        int __i__; \
+        for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
+		    (dst)->fds_bits[__i__] = ((b1)->fds_bits[__i__] | (b2)->fds_bits[__i__]); \
+        }        
+#define XFD_UNSET(dst,b1) { \
+        int __i__; \
+        for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
+    		(dst)->fds_bits[__i__] &= ~((b1)->fds_bits[__i__]); \
+        }
 
 #else /* USE_POLL */
 #include <sys/poll.h>

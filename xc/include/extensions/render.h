@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/include/extensions/render.h,v 1.11 2002/11/23 02:34:45 keithp Exp $
+ * $XFree86: xc/include/extensions/render.h,v 1.10 2002/11/06 22:47:49 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -33,7 +33,7 @@ typedef unsigned long	PictFormat;
 
 #define RENDER_NAME	"RENDER"
 #define RENDER_MAJOR	0
-#define RENDER_MINOR	8
+#define RENDER_MINOR	9
 
 #define X_RenderQueryVersion		    0
 #define X_RenderQueryPictFormats	    1
@@ -68,8 +68,11 @@ typedef unsigned long	PictFormat;
 #define X_RenderSetPictureTransform	    28
 #define X_RenderQueryFilters		    29
 #define X_RenderSetPictureFilter	    30
+/* 0.8 */
 #define X_RenderCreateAnimCursor	    31
-#define RenderNumberRequests		    (X_RenderCreateAnimCursor+1)
+/* 0.9 */
+#define X_RenderAddTraps		    32
+#define RenderNumberRequests		    (X_RenderAddTraps+1)
 
 #define BadPictFormat			    0
 #define BadPicture			    1
@@ -150,7 +153,7 @@ typedef unsigned long	PictFormat;
 #define CPPolyMode			    (1 << 10)
 #define CPDither			    (1 << 11)
 #define CPComponentAlpha		    (1 << 12)
-#define CPLastBit			    11
+#define CPLastBit			    12
 
 /* Filters included in 0.6 */
 #define FilterNearest			    "nearest"

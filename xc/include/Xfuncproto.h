@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  *
  */
-/* $XFree86: xc/include/Xfuncproto.h,v 3.5 2001/12/19 21:37:28 dawes Exp $ */
+/* $XFree86: xc/include/Xfuncproto.h,v 3.4 2001/12/14 19:53:25 dawes Exp $ */
 
 /* Definitions to make function prototypes manageable */
 

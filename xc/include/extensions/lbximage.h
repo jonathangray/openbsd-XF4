@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 ******************************************************************************/
-/* $XFree86: xc/include/extensions/lbximage.h,v 1.5 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/lbximage.h,v 1.4 2001/12/20 19:28:54 tsi Exp $ */
 
 #ifndef _LBX_IMAGE_H_
 #define _LBX_IMAGE_H_

@@ -24,7 +24,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/include/extensions/XKB.h,v 1.6 2003/12/22 17:48:02 tsi Exp $ */
+/* $XFree86: xc/include/extensions/XKB.h,v 1.5tsi Exp $ */
 
 #ifndef _XKB_H_
 #define	_XKB_H_

@@ -21,7 +21,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/include/fonts/fontstruct.h,v 3.4 2001/01/17 17:53:26 dawes Exp $ */
+/* $XFree86: xc/include/fonts/fontstruct.h,v 3.3 1999/08/21 13:47:34 dawes Exp $ */
 
 #ifndef FONTSTR_H
 #define FONTSTR_H

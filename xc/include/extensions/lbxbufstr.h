@@ -22,7 +22,7 @@
  * SOFTWARE.
  * 
  */
-/* $XFree86: xc/include/extensions/lbxbufstr.h,v 1.2 2001/08/01 00:44:35 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _BUFFERSTR_H_
 #define _BUFFERSTR_H_

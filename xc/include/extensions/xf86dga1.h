@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/xf86dga1.h,v 1.3 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/xf86dga1.h,v 1.2 1999/04/17 07:05:41 dawes Exp $ */
 /*
 
 Copyright (c) 1995  Jon Tombs

@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/mitmiscstr.h,v 1.3 2003/07/16 01:38:24 dawes Exp $ */
+/* $XFree86$ */
 /************************************************************
 
 Copyright 1989, 1998  The Open Group

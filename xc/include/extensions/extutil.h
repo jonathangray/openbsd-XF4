@@ -31,7 +31,7 @@ in this Software without prior written authorization from The Open Group.
  * protocol extensions.  THESE INTERFACES ARE NOT PART OF THE X STANDARD AND
  * ARE SUBJECT TO CHANGE!
  */
-/* $XFree86: xc/include/extensions/extutil.h,v 1.10 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/extutil.h,v 1.9 2001/12/14 19:53:28 dawes Exp $ */
 
 #ifndef _EXTUTIL_H_
 #define _EXTUTIL_H_

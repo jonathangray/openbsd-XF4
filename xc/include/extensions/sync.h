@@ -48,7 +48,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/include/extensions/sync.h,v 1.5 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/sync.h,v 1.4 2001/12/20 19:40:59 tsi Exp $ */
 
 #ifndef _SYNC_H_
 #define _SYNC_H_

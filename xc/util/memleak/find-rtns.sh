@@ -8,7 +8,7 @@
 #
 # Usage: find-routines <program-name> {leak-tracing-output-files}
 #
-# $XFree86: xc/util/memleak/find-rtns.sh,v 1.4 2002/07/01 02:26:08 tsi Exp $
+# $XFree86$
 #
 
 TMP1=find-routine.tmp1

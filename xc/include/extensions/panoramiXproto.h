@@ -23,7 +23,7 @@ shall not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from Digital
 Equipment Corporation.
 ******************************************************************/
-/* $XFree86: xc/include/extensions/panoramiXproto.h,v 3.6 2001/01/17 17:53:22 dawes Exp $ */
+/* $XFree86: xc/include/extensions/panoramiXproto.h,v 3.5 2000/03/01 01:04:21 dawes Exp $ */
 
 /* THIS IS NOT AN X PROJECT TEAM SPECIFICATION */
 

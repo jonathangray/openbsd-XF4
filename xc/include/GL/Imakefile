@@ -1,20 +1,14 @@
-XCOMM $XFree86: xc/include/GL/Imakefile,v 1.14 2002/02/22 21:32:50 dawes Exp $
+XCOMM $XFree86: xc/include/GL/Imakefile,v 1.13 2001/04/30 14:58:48 dawes Exp $
 
-LinkSourceFile(gl.h, ../../extras/Mesa/include/GL)
-LinkSourceFile(glext.h, ../../extras/Mesa/include/GL)
-LinkSourceFile(glxext.h, ../../extras/Mesa/include/GL)
-LinkSourceFile(osmesa.h, ../../extras/Mesa/include/GL)
+LinkSourceFile(gl.h, $(MESASRCDIR)/include/GL)
+LinkSourceFile(glext.h, $(MESASRCDIR)/include/GL)
+LinkSourceFile(glxext.h, $(MESASRCDIR)/include/GL)
+LinkSourceFile(osmesa.h, $(MESASRCDIR)/include/GL)
 
-#if BuildGLXLibrary
 GLXHEADERS = gl.h glext.h glu.h glx.h glxint.h glxmd.h glxproto.h \
 	     glxtokens.h osmesa.h glxext.h
-#endif
 
-#if BuildGLULibrary
-GLUHEADERS = glu.h
-#endif
-
-HEADERS = $(GLXHEADERS) $(GLUHEADERS)
+HEADERS = $(GLXHEADERS)
 
 all::
 

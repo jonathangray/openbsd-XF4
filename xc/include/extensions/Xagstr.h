@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/Xagstr.h,v 1.5 2001/12/17 20:52:24 dawes Exp $ */
+/* $XFree86: xc/include/extensions/Xagstr.h,v 1.4 2001/12/14 19:53:28 dawes Exp $ */
 /*
 Copyright 1996, 1998, 2001  The Open Group
 

@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/Xagsrv.h,v 1.6 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/Xagsrv.h,v 1.5 2003/07/16 01:38:24 dawes Exp $ */
 /*
 Copyright 1996, 1998  The Open Group
 

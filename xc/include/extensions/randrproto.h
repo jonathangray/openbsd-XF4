@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/include/extensions/randrproto.h,v 1.8 2002/10/14 18:01:38 keithp Exp $
+ * $XFree86: xc/include/extensions/randrproto.h,v 1.6 2002/09/29 23:39:43 keithp Exp $
  *
  * Copyright © 2000 Compaq Computer Corporation
  * Copyright © 2002 Hewlett-Packard Company

@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
 
-/* $XFree86: xc/include/extensions/multibufst.h,v 3.9 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/multibufst.h,v 3.8 2001/12/19 21:37:29 dawes Exp $ */
 
 #ifndef _MULTIBUFST_H_
 #define _MULTIBUFST_H_

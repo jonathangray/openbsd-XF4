@@ -48,7 +48,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/include/extensions/syncstr.h,v 1.4 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/syncstr.h,v 1.3 2003/07/16 01:38:24 dawes Exp $ */
 
 #ifndef _SYNCSTR_H_
 #define _SYNCSTR_H_

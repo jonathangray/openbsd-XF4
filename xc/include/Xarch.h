@@ -25,7 +25,7 @@
  * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/include/Xarch.h,v 1.11 2003/05/27 22:26:24 tsi Exp $ */
+/* $XFree86: xc/include/Xarch.h,v 1.10tsi Exp $ */
 
 
 /*

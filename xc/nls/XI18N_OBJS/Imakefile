@@ -1,16 +1,17 @@
 XCOMM $Xorg: Imakefile,v 1.1 2000/12/12 13:00:42 coskrey Exp $
+XCOMM $XdotOrg: xc/nls/XI18N_OBJS/Imakefile,v 1.2 2004/04/23 18:44:34 eich Exp $
 
 
 
 
-XCOMM $XFree86: xc/nls/XI18N_OBJS/Imakefile,v 1.8 2003/08/06 14:04:00 eich Exp $
+XCOMM $XFree86: xc/nls/XI18N_OBJS/Imakefile,v 1.6 2002/12/17 03:41:53 dawes Exp $
 
 #ifndef Win32Architecture
 # define XI18NTarget(name)						@@\
 all:: name								@@\
-	MakeDir($(BUILDLIBDIR)/locale/name)				@@\
-	RemoveFile($(BUILDLIBDIR)/locale/name/XI18N_OBJS)			@@\
-	cd $(BUILDLIBDIR)/locale/name && $(LN) $(BUILDLIBTOP)/../../$(CURRENT_DIR)/name XI18N_OBJS @@\
+	MakeDir($(BUILDI18NDIR)/name)					@@\
+	RemoveFile($(BUILDI18NDIR)/name/XI18N_OBJS)			@@\
+	cd $(BUILDI18NDIR)/name && $(LN) $(BUILDLIBTOP)/../../$(CURRENT_DIR)/name XI18N_OBJS @@\
 InstallNamedNonExec(name,XI18N_OBJS,$(XLOCALEDIR)/name)
 #else
 # define XI18NTarget(name)						@@\

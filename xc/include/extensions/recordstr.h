@@ -24,7 +24,7 @@ static char sccsid[ ] = "@(#) recordstr.h 1.5 6/5/95 12:37:44";
  * AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  **************************************************************************/
-/* $XFree86: xc/include/extensions/recordstr.h,v 1.2 2001/08/01 00:44:35 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _RECORDSTR_H_
 #define _RECORDSTR_H_

@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/xtraplibp.h,v 1.1 2001/11/02 23:29:26 dawes Exp $ */
+/* $XFree86$ */
 #ifndef __XTRAPLIBP__
 #define __XTRAPLIBP__
 

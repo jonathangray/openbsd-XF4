@@ -50,7 +50,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/include/fonts/FS.h,v 1.10 2003/07/18 15:53:24 tsi Exp $ */
+/* $XFree86: xc/include/fonts/FS.h,v 1.9 2003/07/09 15:27:28 tsi Exp $ */
 
 #ifndef _FS_H_
 #define	_FS_H_

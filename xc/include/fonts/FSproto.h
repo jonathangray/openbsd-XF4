@@ -43,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/include/fonts/FSproto.h,v 1.3 2001/12/14 19:53:31 dawes Exp $ */
+/* $XFree86: xc/include/fonts/FSproto.h,v 1.2 2001/08/01 00:44:37 tsi Exp $ */
 
 #ifndef _FS_PROTO_H_
 #define _FS_PROTO_H_

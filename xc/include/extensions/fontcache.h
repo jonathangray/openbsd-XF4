@@ -27,7 +27,7 @@
  *
  *	Id: fontcache.h,v 1.6 1999/01/31 12:41:32 akiyama Exp $
  */
-/* $XFree86: xc/include/extensions/fontcache.h,v 1.4 2003/11/17 22:20:03 dawes Exp $ */
+/* $XFree86: xc/include/extensions/fontcache.h,v 1.3 2001/08/01 00:44:35 tsi Exp $ */
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD */
 

@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/xf86misc.h,v 3.17 2003/04/03 16:15:46 dawes Exp $ */
+/* $XFree86: xc/include/extensions/xf86misc.h,v 3.16 2002/11/20 04:04:56 dawes Exp $ */
 
 /*
  * Copyright (c) 1995, 1996  The XFree86 Project, Inc

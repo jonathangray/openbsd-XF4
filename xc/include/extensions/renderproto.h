@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/include/extensions/renderproto.h,v 1.13 2002/11/23 02:34:45 keithp Exp $
+ * $XFree86: xc/include/extensions/renderproto.h,v 1.12 2002/09/26 02:56:48 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -167,6 +167,18 @@ typedef struct {
 } xGlyphElt;
 
 #define sz_xGlyphElt	8
+
+typedef struct {
+    Fixed   l, r, y;
+} xSpanFix;
+
+#define sz_xSpanFix	12
+
+typedef struct {
+    xSpanFix	top, bot;
+} xTrap;
+
+#define sz_xTrap	24
 
 /* 
  * requests and replies
@@ -568,6 +580,19 @@ typedef struct {
 
 #define sz_xRenderCreateAnimCursorReq		    8
 
+/* 0.9 and higher */
+
+typedef struct {
+    CARD8		reqType;
+    CARD8		renderReqType;
+    CARD16		length B16;
+    Picture		picture;
+    INT16		xOff B16;
+    INT16		yOff B16;
+} xRenderAddTrapsReq;
+
+#define sz_xRenderAddTrapsReq			    12
+    
 #undef Window
 #undef Drawable
 #undef Font

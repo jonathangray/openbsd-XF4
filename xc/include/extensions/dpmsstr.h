@@ -26,7 +26,7 @@ dealings in this Software without prior written authorization from Digital
 Equipment Corporation.
 
 ******************************************************************/
-/* $XFree86: xc/include/extensions/dpmsstr.h,v 3.4 2003/07/16 01:38:24 dawes Exp $ */
+/* $XFree86$ */
 
 /*
  * HISTORY

@@ -1,4 +1,4 @@
-/* $XFree86: xc/include/extensions/xtrapbits.h,v 1.1 2001/11/02 23:29:26 dawes Exp $ */
+/* $XFree86$ */
 /*
  * This include file is designed to be a portable way for systems to define
  * bit field manipulation of arrays of bits.
