@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.64 2001/11/28 21:07:42 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.65 2001/11/28 23:10:56 matthieu Exp $
 
 
 
@@ -61,7 +61,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #ifndef HasKrbIV
 #define HasKrbIV		YES
 #endif
-#define HasDlopen		YES
 #define HasUsableFileMmap	YES
 
 #define HasNCurses		YES
@@ -336,7 +335,6 @@ install:: fonts.alias							@@\
 
 # define HasWeakSymbols		NO
 # define UseElfFormat		YES
-# define HasSharedLibraries	YES
 
 # ifdef XnestServer
 #  undef XnestServer
@@ -495,6 +493,7 @@ install:: fonts.alias							@@\
 # define UnalignedReferencesAllowed YES
 # define HasWeakSymbols		NO
 # define HasSharedLibraries	NO
+# define HasDlopen		NO
 
 #include <xfree86.cf>
 
@@ -754,7 +753,6 @@ install:: fonts.alias							@@\
 
 # define HasWeakSymbols		NO
 # define UseElfFormat		YES
-# define HasSharedLibraries	YES
 
 # ifndef XF86Server
 #  define XF86Server		NO
@@ -877,6 +875,10 @@ install:: fonts.alias							@@\
 # else
 #  define OSBinaryType			/**/
 # endif
+#endif
+
+#ifndef HasDlopen
+#  define HasDlopen		YES
 #endif
 
 #ifndef DlLibrary
