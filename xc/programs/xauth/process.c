@@ -621,7 +621,7 @@ static _signal_t
 die(int sig)
 {
     dieing = True;
-    exit (auth_finalize ());
+    _exit (auth_finalize ());
     /* NOTREACHED */
 #ifdef SIGNALRETURNSINT
     return -1;				/* for picky compilers */
