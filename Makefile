@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.22 2002/04/02 13:39:54 todd Exp $
+#	$OpenBSD: Makefile,v 1.23 2002/04/08 15:36:08 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -128,9 +128,12 @@ perms:
 	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/.
 	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/.
 	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/usr/X11R6/.
+	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/etc/.
 	@${CHOWN} ${DIROWN}.${DIRGRP} ${DESTDIR}/etc/X11/.
 	@find ${DESTDIR}/usr/X11R6/. \
-		${DESTDIR}/etc/X11/. \! -user ${DIROWN} -ls
+		${DESTDIR}/etc/. \
+		\! -user ${DIROWN} -o \! -group ${DIRGRP} \
+		-ls
 
 dist-rel:
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist 2>&1 | tee distlog
@@ -147,7 +150,7 @@ install-xc:
 	cd xc; ${MAKE} install && ${MAKE} install.man
 .if (${MACHINE} == "hp300")
 	echo /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
-	chown root.wheel ${DESTDIR}/usr/X11R6/lib/X11/X0screens
+	${CHOWN} root.wheel ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 	cd xc/programs/rstart; ${MAKE} install && ${MAKE} install.man
 
