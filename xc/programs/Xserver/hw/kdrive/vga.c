@@ -41,7 +41,20 @@
 
 #define _VgaByteAddr(a)	((VGAVOL8 *) (a))
 #define _VgaBytePort(a)	(a)
+#endif /* linux */
+
+#if defined(CSRG_BASED)
+#ifdef __i386__
+#include <sys/types.h>
+#include <machine/pio.h>
 #endif
+
+#define _VgaInb(r)	inb(r)
+#define _VgaOutb(v,r)	outb(r,v)
+
+#define _VgaByteAddr(a) ((VGAVOL8 *)(a))
+#define _VgaBytePort(a) (a)
+#endif /* CSRG_BASED */
 
 #ifdef VXWORKS
 #define _VgaInb(r)  0

@@ -663,7 +663,7 @@ ServerDriverSDKTarget(XFree86)
 #endif
 #endif        /* XF86Server */
 
-#ifdef KDriveXServer
+#if KDriveXServer
 XCOMM
 XCOMM Tiny X server section
 XCOMM
@@ -677,6 +677,11 @@ XCOMM
 #ifdef VXWORKS
        KDOSDIR = $(KDRIVE)/vxworks
           KDOS = $(KDOSDIR)/LibraryTargetName(vxworks)
+#endif
+
+#ifdef OpenBSDArchitecture
+      KDOSDIR = $(KDRIVE)/bsd
+         KDOS = $(KDOSDIR)/LibraryTargetName(bsd)
 #endif
 
 #if BuildPseudo8
@@ -700,11 +705,11 @@ XCOMM
 
     FBDEVDIR = $(KDRIVE)/fbdev
        FBDEV = $(FBDEVDIR)/LibraryTargetName(fbdev)
-       
+
       KDDIRS = StdKdDirs
 
    FBDEVDIRS = $(STDDIRS) $(KDDIRS) $(FBDEVDIR) $(SHADOWDIR) $(LAYERDIR)
-   
+
    FBDEVLIBS = PreFbLibs $(FBDEV) $(LAYER) KdLibs FbPostFbLibs
 FBDEVSYSLIBS = StdKdSysLibs
 
@@ -1060,9 +1065,36 @@ ServerTarget(Xvesa,$(VESADIRS),$(VESAOBJS), \
 	$(VESALIBS),$(VESASYSLIBS))
 #endif /* XvesaServer */
 
+#if XwsfbServer
+XCOMM
+XCOMM server with wsfb driver only based on Keith's server
+XCOMM
+
+    WSFBDIR = $(KDRIVE)/wsfb
+       WSFB = $(WSFBDIR)/LibraryTargetName(wsfb)
+
+      KDDIRS = StdKdDirs
+
+    WSFBDIRS = $(STDDIRS) $(KDDIRS) $(WSFBDIR) $(SHADOWDIR) $(LAYERDIR)
+
+   WSFBLIBS = PreFbLibs $(WSFB) $(LAYER) KdLibs FbPostFbLibs
+WSFBSYSLIBS = StdKdSysLibs
+
+#if HasParallelMake
+MakeMutex($(WSFBDIRS) $(WSFBOBJS) $(WSFBLIBS) $(WSFBSYSLIBS))
+#endif
+#if ForceServerRemake
+$(WSFBOBJS) $(XWSFB) $(WSFBLIBS) $(WSFBSYSLIBS):: $(WSFBDIRS)
+	@if [ -f $@ ]; then touch $@ >/dev/null 2>&1 || exit 0; fi
+#endif
+ServerTarget(Xwsfb,$(WSFBDIRS),$(WSFBOBJS), \
+	$(WSFBLIBS),$(WSFBSYSLIBS))
+#endif /* XwsfbServer */
+
 KDRIVEDIRS=$(KDDIRS) $(FBDEVDIR) $(SAVAGEDIR) $(TRIDENTDIR) $(I810DIR) \
 	   $(SIS530DIR) $(TRIODIR) $(TS300DIR) $(ITSYDIR) $(IGSDIR) \
-	   $(VESADIR) $(PCMCIADIR) $(IPAQDIR) $(MACH64DIR) $(CHIPSDIR)
+	   $(VESADIR) $(PCMCIADIR) $(IPAQDIR) $(MACH64DIR) $(CHIPSDIR) \
+	   $(WSFBDIR)
 #endif	/* KDriveXServer */
 
 #if XprtServer

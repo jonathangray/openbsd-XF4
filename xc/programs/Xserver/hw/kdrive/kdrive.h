@@ -654,6 +654,10 @@ extern KdMouseFuncs	TsFuncs;
 extern KdKeyboardFuncs	LinuxKeyboardFuncs;
 extern KdOsFuncs	LinuxFuncs;
 
+extern KdMouseFuncs	WsMouseFuncs;
+extern KdKeyboardFuncs	WsKbdFuncs;
+extern KdOsFuncs	BsdFuncs;
+
 extern KdMouseFuncs	VxWorksMouseFuncs;
 extern KdKeyboardFuncs	VxWorksKeyboardFuncs;
 extern KdOsFuncs	VxWorksFuncs;

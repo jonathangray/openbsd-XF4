@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.94 2002/05/26 10:27:55 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.95 2002/06/07 06:58:11 matthieu Exp $
 
 
 
@@ -707,7 +707,11 @@ install:: fonts.alias							@@\
 
 # endif /* XF86Server */
 
-# include <xfree86.cf>
+# if KDriveXServer
+#  include <kdrive.cf>
+# else 
+#  include <xfree86.cf>
+# endif
 
 #endif /* PpcArchitecture */
 

@@ -41,6 +41,10 @@ XCOMM $XConsortium: $
 #define Xmach64Server	NO
 #endif
 
+#ifndef XwsfbServer
+#define XwsfbServer	NO
+#endif
+
 #if XItsyServer
 #include <itsy.cf>
 #endif
