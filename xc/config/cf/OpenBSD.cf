@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.75 2002/02/15 12:48:45 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.76 2002/03/17 18:01:06 matthieu Exp $
 
 
 
@@ -818,16 +818,6 @@ install:: fonts.alias							@@\
 
 #ifndef ServerExtraDefines
 #  define ServerExtraDefines GccGasOption
-#endif
-
-#ifndef BuildCyrillicFonts
-# define BuildCyrillicFonts	YES
-#endif
-#ifndef BuildLatin2Fonts
-# define BuildLatin2Fonts	YES
-#endif
-#ifndef UseKoi8RForCyrillic
-# define UseKoi8RForCyrillic	YES
 #endif
 
 #ifndef HasWeakSymbols
