@@ -1,3 +1,5 @@
+/* $OpenBSD: makepsres.c,v 1.2 2003/05/07 23:45:02 avsm Exp $ */
+
 /*
  * makepsres.c
  *
@@ -1131,12 +1133,12 @@ static void ProcessFont (file, fileName)
     while (found != 0x7F && SkipToEitherCharacter (file, '/', 'e', &out)) {
 	/* If we encounter an eexec, skip the rest of the file */
 	if (out == 'e') {
-	    if (fscanf (file, "%256s", key) != 1) continue;
+	    if (fscanf (file, "%255s", key) != 1) continue;
 	    if (strcmp(key, "exec") == 0) break;
 	    continue;
 	}
 
-	if (fscanf (file, "%256s", key) != 1) continue;
+	if (fscanf (file, "%255s", key) != 1) continue;
 	if (!SkipWhiteSpace(file)) break;
 	if (!ReadItem(file, buf, 256)) break;
 
@@ -1228,7 +1230,7 @@ static void ProcessResource (file, fileName)
 
     if (pointer == NULL) return;
 
-    sscanf (pointer, "%*256s%256s", resourceName);
+    sscanf (pointer, "%*256s%255s", resourceName);
     StripName (resourceName);
 
     AddResource (resourceType, resourceName, fileName, false);
@@ -1252,7 +1254,7 @@ static void ProcessBDF (file, fileName)
 
     while (SkipToCharacter(file, '\n')) {
 	if (!SkipWhiteSpace(file)) break;
-	if (fscanf (file, "%256s", key) != 1) continue;
+	if (fscanf (file, "%255s", key) != 1) continue;
 	if (!SkipWhiteSpace(file)) break;
 
 	if ((found & 1) == 0 && strcmp(key, "FONT") == 0) {
@@ -1314,7 +1316,7 @@ static void ProcessAFM (file, fileName)
     if (pointer == NULL)
 	    return;
 
-    sscanf (pointer, "%256s", fontName);
+    sscanf (pointer, "%255s", fontName);
 
     extraCr = strchr (fontName, '\r'); /* Handle DOS newlines */
 
@@ -2056,7 +2058,7 @@ void ReadStdinDirectories()
 
     stdinDirectories = true;
 
-    while (scanf("%256s", buf) == 1) {
+    while (scanf("%255s", buf) == 1) {
 	directoryCount++;
 	directories = (char **) ckrealloc((char *) directories,
 				  directoryCount * sizeof(char *),
