@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.20 2002/01/14 15:34:23 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.20.2.1 2002/01/27 19:05:19 herrb Exp $ */
 
 /*
  * Copyright 1999 by The XFree86 Project, Inc.
