@@ -1466,7 +1466,11 @@ xf86EloControl(DeviceIntPtr	dev,
     DBG(2, ErrorF("Elographics touchscreen close...\n"));
     dev->public.on = FALSE;
     if (local->fd >= 0) {
+#ifdef XFREE86_V4
+      xf86RemoveEnabledDevice(local);
+#else
       RemoveEnabledDevice(local->fd);
+#endif
     }
     SYSCALL(close(local->fd));
     local->fd = -1;
