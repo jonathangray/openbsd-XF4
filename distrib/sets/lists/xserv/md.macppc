@@ -886,6 +886,7 @@
 ./usr/X11R6/man/cat1/XDarwin.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xorg.0
+./usr/X11R6/man/cat1/Xprt.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0
 ./usr/X11R6/man/cat1/getconfig.0

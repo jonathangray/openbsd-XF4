@@ -3981,6 +3981,7 @@
 ./usr/X11R6/lib/X11/fonts/encodings/adobe-symbol.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/ansi-1251.enc
 ./usr/X11R6/lib/X11/fonts/encodings/armscii-8.enc
+./usr/X11R6/lib/X11/fonts/encodings/ascii-0.enc
 ./usr/X11R6/lib/X11/fonts/encodings/dec-special.enc
 ./usr/X11R6/lib/X11/fonts/encodings/encodings.dir
 ./usr/X11R6/lib/X11/fonts/encodings/ibm-cp437.enc

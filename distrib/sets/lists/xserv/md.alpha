@@ -977,6 +977,7 @@
 ./usr/X11R6/lib/modules/v20002d.uc
 ./usr/X11R6/man/cat1/XDarwin.0
 ./usr/X11R6/man/cat1/Xorg.0
+./usr/X11R6/man/cat1/Xprt.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/getconfig.0
 ./usr/X11R6/man/cat1/kbd_mode.0
