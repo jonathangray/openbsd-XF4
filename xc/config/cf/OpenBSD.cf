@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.98 2002/07/13 07:36:12 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.99 2002/07/17 21:57:48 todd Exp $
 
 
 
@@ -534,6 +534,9 @@ install:: fonts.alias							@@\
 # define UnalignedReferencesAllowed YES
 # define HasSharedLibraries	NO
 # define HasDlopen		NO
+
+# define BuildGlxExt		NO
+# define BuildGLXLibrary	NO
 
 #include <xfree86.cf>
 
