@@ -391,6 +391,7 @@
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/fc-cache
 ./usr/X11R6/bin/fc-list
+./usr/X11R6/bin/fontconfig-config
 ./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/getconfig
