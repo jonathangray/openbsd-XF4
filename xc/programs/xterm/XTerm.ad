@@ -1,5 +1,5 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.5 2001/06/04 12:42:32 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.6 2001/08/05 19:45:19 matthieu Exp $
 !
 !
 !
@@ -165,5 +165,8 @@ XTerm.JoinSession:False
 	! @Num_Lock Ctrl	<Btn5Down>:	scroll-forw(1,halfpage) \n\
 				<Btn5Down>:	scroll-forw(5,line)
 
+! Restore the traditional backarrow/delete key behaviour
 ! The delete key should generate DEL
 *deleteIsDEL: true
+! so should the back arrow key
+*backarrowKey: false
