@@ -133,7 +133,7 @@ xf86SetKbdRepeat(char rad)
 	}
 }
 
-#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT)
+#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
 static struct termio kbdtty;
 #endif
 
@@ -151,7 +151,10 @@ xf86KbdInit()
 #endif
 #if defined WSCONS_SUPPORT
 	case WSCONS:
-		xf86FlushInput(xf86Info.kbdFd);
+		if (xf86Info.kbdFd != -1) 
+			xf86FlushInput(xf86Info.kbdFd);
+		else
+			tcgetattr(xf86Info.consoleFd, &kbdtty);
 		break;
 #endif
 	}
@@ -160,9 +163,13 @@ xf86KbdInit()
 int
 xf86KbdOn()
 {
-#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT)
+#if defined(SYSCONS_SUPPORT) || defined(PCCONS_SUPPORT) || defined(PCVT_SUPPORT) || defined(WSCONS_SUPPORT)
 	struct termios nTty;
 #endif
+#ifdef WSCONS_SUPPORT
+	int option;
+#endif
+
 
 	switch (xf86Info.consType) {
 
@@ -188,7 +195,22 @@ xf86KbdOn()
 #endif
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-		return xf86Info.kbdFd;
+		if (xf86Info.kbdFd == -1) {
+		nTty = kbdtty;
+		nTty.c_iflag = IGNPAR | IGNBRK;
+		nTty.c_oflag = 0;
+		nTty.c_cflag = CREAD | CS8;
+		nTty.c_lflag = 0;
+		nTty.c_cc[VTIME] = 0;
+		nTty.c_cc[VMIN] = 1;
+		cfsetispeed(&nTty, 9600);
+		cfsetospeed(&nTty, 9600);
+		tcsetattr(xf86Info.consoleFd, TCSANOW, &nTty);
+		option = WSKBD_RAW;
+		ioctl(xf86Info.consoleFd, WSKBDIO_SETMODE, &option);
+		} else {
+			return xf86Info.kbdFd;
+		}
 #endif
 	}
 	return(xf86Info.consoleFd);
@@ -197,6 +219,10 @@ xf86KbdOn()
 int
 xf86KbdOff()
 {
+#ifdef WSCONS_SUPPORT
+	int option;
+#endif
+
 	switch (xf86Info.consType) {
 
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
@@ -212,7 +238,14 @@ xf86KbdOff()
 #endif
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-		return xf86Info.kbdFd;
+		if (xf86Info.kbdFd != -1) {
+			return xf86Info.kbdFd;
+		} else {
+			option = WSKBD_TRANSLATED;
+			ioctl(xf86Info.consoleFd, WSKBDIO_SETMODE, &option);
+			tcsetattr(xf86Info.consoleFd, TCSANOW, &kbdtty);
+		}
+		break;
 #endif
 	}	
 	return(xf86Info.consoleFd);
