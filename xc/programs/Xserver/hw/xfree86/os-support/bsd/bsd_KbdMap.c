@@ -1047,6 +1047,7 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
 #endif
 #ifdef WSCONS_SUPPORT
       case WSCONS:
+	if (pKbd->isConsole) {
            switch (pKbd->wsKbdType) {
 	       case WSKBD_TYPE_PC_XT:
 	       case WSKBD_TYPE_PC_AT:
@@ -1071,6 +1072,7 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
 	       default:
 		    ErrorF("Unknown wskbd type %d\n", pKbd->wsKbdType);
            }
+	} 
       break;
 #endif
   }
