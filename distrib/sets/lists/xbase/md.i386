@@ -14,7 +14,6 @@
 ./etc/X11/xserver
 ./etc/X11/xkb
 ./etc/X11/xkb/compat
-./etc/X11/xkb/compiled
 ./etc/X11/xkb/geometry
 ./etc/X11/xkb/geometry/digital
 ./etc/X11/xkb/geometry/ibm
