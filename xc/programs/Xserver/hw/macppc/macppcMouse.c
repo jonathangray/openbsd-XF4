@@ -53,15 +53,13 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define NEED_EVENTS
 #include "macppc.h"
+#include "mi.h"
+#include "cursor.h"
 #include <stdio.h>
 
-#if 0 /* XXX */
-Bool macppcActiveZaphod = TRUE;
-#endif /* 0 XXX */
-
-static Bool macppcCursorOffScreen();
-static void macppcCrossScreen();
-static void macppcWarpCursor();
+static Bool macppcCursorOffScreen(ScreenPtr *, int *, int *);
+static void macppcCrossScreen(ScreenPtr, Bool);
+static void macppcWarpCursor(ScreenPtr, int, int);
 
 miPointerScreenFuncRec macppcPointerScreenFuncs = {
     macppcCursorOffScreen,
@@ -85,16 +83,8 @@ miPointerScreenFuncRec macppcPointerScreenFuncs = {
  *-----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static
-#if NeedFunctionPrototypes
-void macppcMouseCtrl (
-    DeviceIntPtr    device,
-    PtrCtrl*	    ctrl)
-#else
-void macppcMouseCtrl (device, ctrl)
-    DeviceIntPtr    device;
-    PtrCtrl*	    ctrl;
-#endif
+static void 
+macppcMouseCtrl(DeviceIntPtr device, PtrCtrl* ctrl)
 {
 }
 
@@ -110,21 +100,10 @@ void macppcMouseCtrl (device, ctrl)
  *
  *-----------------------------------------------------------------------
  */
-#if NeedFunctionPrototypes
-int macppcMouseProc (
-    DeviceIntPtr  device,
-    int	    	  what)
-#else
-int macppcMouseProc (device, what)
-    DeviceIntPtr  device;   	/* Mouse to play with */
-    int	    	  what;	    	/* What to do with it */
-#endif
+int macppcMouseProc(DeviceIntPtr device, int what)
 {
     DevicePtr	  pMouse = (DevicePtr) device;
-    int	    	  format;
-    static int	  oformat;
     BYTE    	  map[4];
-    char	  *dev;
 
     switch (what) {
 	case DEVICE_INIT:
@@ -145,27 +124,12 @@ int macppcMouseProc (device, what)
 	    break;
 
 	case DEVICE_ON:
-#if 0
-	    if (ioctl (macppcPtrPriv.fd, VUIDGFORMAT, &oformat) == -1) {
-		Error ("macppcMouseProc ioctl VUIDGFORMAT");
-		return !Success;
-	    }
-	    format = VUID_FIRM_EVENT;
-	    if (ioctl (macppcPtrPriv.fd, VUIDSFORMAT, &format) == -1) {
-		Error ("macppcMouseProc ioctl VUIDSFORMAT");
-		return !Success;
-	    }
-#endif
 	    macppcPtrPriv.bmask = 0;
 	    AddEnabledDevice (macppcPtrPriv.fd);
 	    pMouse->on = TRUE;
 	    break;
 
 	case DEVICE_CLOSE:
-#if 0
-	    if (ioctl (macppcPtrPriv.fd, VUIDSFORMAT, &oformat) == -1)
-		Error ("macppcMouseProc ioctl VUIDSFORMAT");
-#endif
 	    break;
 
 	case DEVICE_OFF:
@@ -191,17 +155,8 @@ int macppcMouseProc (device, what)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-Firm_event* macppcMouseGetEvents (
-    int		fd,
-    int*	pNumEvents,
-    Bool*	pAgain)
-#else
-Firm_event* macppcMouseGetEvents (fd, pNumEvents, pAgain)
-    int		fd;
-    int*	pNumEvents;
-    Bool*	pAgain;
-#endif
+Firm_event* 
+macppcMouseGetEvents(int fd, int* pNumEvents, Bool* pAgain)
 {
     int	    	  nBytes;	    /* number of bytes of events available. */
     static Firm_event	evBuf[MAXEVENTS];   /* Buffer for Firm_events */
@@ -236,9 +191,7 @@ Firm_event* macppcMouseGetEvents (fd, pNumEvents, pAgain)
  *-----------------------------------------------------------------------
  */
 static short
-MouseAccelerate (device, delta)
-    DeviceIntPtr  device;
-    int	    	  delta;
+MouseAccelerate(DeviceIntPtr device, int delta)
 {
     int  sgn = sign(delta);
     PtrCtrl *pCtrl;
@@ -272,15 +225,8 @@ MouseAccelerate (device, delta)
  *-----------------------------------------------------------------------
  */
 
-#if NeedFunctionPrototypes
-void macppcMouseEnqueueEvent (
-    DeviceIntPtr  device,
-    Firm_event	  *fe)
-#else
-void macppcMouseEnqueueEvent (device, fe)
-    DeviceIntPtr  device;   	/* Mouse from which the event came */
-    Firm_event	  *fe;	    	/* Event to process */
-#endif
+void 
+macppcMouseEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
 {
     xEvent		xE;
     macppcPtrPrivPtr	pPriv;	/* Private data for pointer */
@@ -348,52 +294,22 @@ void macppcMouseEnqueueEvent (device, fe)
 
 /*ARGSUSED*/
 static Bool
-macppcCursorOffScreen (pScreen, x, y)
-    ScreenPtr	*pScreen;
-    int		*x, *y;
+macppcCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
 {
-    int	    index, ret = FALSE;
-    extern Bool PointerConfinedToScreen();
-
-    if (PointerConfinedToScreen()) return TRUE;
-#if 0 /* XXX */
-    /*
-     * Active Zaphod implementation:
-     *    increment or decrement the current screen
-     *    if the x is to the right or the left of
-     *    the current screen.
-     */
-    if (sunActiveZaphod &&
-	screenInfo.numScreens > 1 && (*x >= (*pScreen)->width || *x < 0)) {
-	index = (*pScreen)->myNum;
-	if (*x < 0) {
-	    index = (index ? index : screenInfo.numScreens) - 1;
-	    *pScreen = screenInfo.screens[index];
-	    *x += (*pScreen)->width;
-	} else {
-	    *x -= (*pScreen)->width;
-	    index = (index + 1) % screenInfo.numScreens;
-	    *pScreen = screenInfo.screens[index];
-	}
-	ret = TRUE;
-    }
-#endif /* 0 XXX */
-    return ret;
+    if (PointerConfinedToScreen()) 
+	    return TRUE;
+    return FALSE;
 }
 
 static void
-macppcCrossScreen (pScreen, entering)
-    ScreenPtr	pScreen;
-    Bool	entering;
+macppcCrossScreen(ScreenPtr pScreen, Bool entering)
 {
     if (macppcFbs[pScreen->myNum].EnterLeave)
 	(*macppcFbs[pScreen->myNum].EnterLeave) (pScreen, entering ? 0 : 1);
 }
 
 static void
-macppcWarpCursor (pScreen, x, y)
-    ScreenPtr	pScreen;
-    int		x, y;
+macppcWarpCursor(ScreenPtr pScreen, int x, int y)
 {
     sigset_t newsigmask;
 
