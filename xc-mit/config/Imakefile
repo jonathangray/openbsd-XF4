@@ -7,7 +7,7 @@
 
 DEPLIBS = 
 HEADERS = imakemdep.h 
-CFFILES = $(HEADERS) *.rules *.tmpl site.def *.bac *.cf
+CFFILES = $(HEADERS) *.rules *.tmpl site.def *.cf
 CPP_PROGRAM = CppCmd
 INCLUDES = -I$(BUILDINCDIR)
 DEFINES = $(SIGNAL_DEFINES) $(BOOTSTRAPCFLAGS) -DCPP_PROGRAM="$(CPP_PROGRAM)" 
