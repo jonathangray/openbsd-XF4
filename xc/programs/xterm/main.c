@@ -2597,6 +2597,9 @@ spawn (void)
 		if (resource.backarrow_is_erase)
 		if (initial_erase == 127) {	/* see input.c */
 			term->keyboard.flags &= ~MODE_DECBKM;
+		} else {
+			term->keyboard.flags |= MODE_DECBKM;
+			term->keyboard.reset_DECBKM = TRUE;
 		}
 		TRACE(("%s @%d, ptyInitialErase:%d, backarrow_is_erase:%d, initial_erase:%d (from pty)\n",
 			__FILE__, __LINE__,
@@ -4369,6 +4372,7 @@ nonblocking_wait(void)
 static SIGNAL_T reapchild (int n GCC_UNUSED)
 {
     int pid;
+    int olderrno = errno;
 
     pid = wait(NULL);
 
@@ -4389,6 +4393,7 @@ static SIGNAL_T reapchild (int n GCC_UNUSED)
 	}
     } while ( (pid=nonblocking_wait()) > 0);
 
+    errno = olderrno;
     SIGNAL_RETURN;
 }
 #endif /* !VMS */
