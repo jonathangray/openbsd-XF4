@@ -150,6 +150,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 #   define AMD64Architecture
 #   undef __amd64__
 #   undef __x86_64__
+#   undef amd64
 # endif
 # if defined(__mc68020__) || defined(mc68020)
 #  define Mc68020Architecture
