@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.9 2002/05/22 21:54:55 jason Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.10 2002/07/20 15:45:10 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -154,8 +154,8 @@ static const OptionInfoRec WsfbOptions[] = {
 	{ -1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
-/* Symbols needed from other modules */
-static const char *cfbSymbols[] = {
+static const char *fbSymbols[] = {
+	"fbPictureInit",
 	"fbScreenInit",
 	NULL
 };
@@ -200,7 +200,7 @@ WsfbSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 	if (!setupDone) {
 		setupDone = TRUE;
 		xf86AddDriver(&WSFB, module, 0);
-		LoaderRefSymLists(cfbSymbols, shadowSymbols, NULL);
+		LoaderRefSymLists(fbSymbols, shadowSymbols, NULL);
 		return (pointer)1;
 	} else {
 		if (errmaj != NULL) 
@@ -525,7 +525,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 		WsfbFreeRec(pScrn);
 		return FALSE;
 	}
-	xf86LoaderReqSymLists(cfbSymbols, NULL);
+	xf86LoaderReqSymLists(fbSymbols, NULL);
 	
 	/* Load shadow if needed */
 	if (fPtr->shadowFB) {
