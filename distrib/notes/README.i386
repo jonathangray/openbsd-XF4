@@ -38,13 +38,15 @@ Post-installation instructions for XFree86[tm] on OpenBSD/i386
 
     a. For the XFree86 4.0.x server, run ``xf86cfg''.
 
-       This will produce the /etc/X11/XF86Config file. 
+       This will produce the /etc/X11/XF86Config file.  If for some reason
+       xf86cfg doesn't work on your hardware, try the alternate program
+       xf86config.
 
     b. For the XFree86 3.3.x server, run XF86Setup.
 
        This will make the /etc/XF86Config file.  If for some reason
-       XF86Setup don't work on your hardware, try the alternate program
-       xf86config.
+       XF86Setup doesn't work on your hardware, try the alternate program
+       xf86config3.
 
        See the XF86Config user's guide in /usr/X11R6/lib/X11/doc/QuickStart.doc
 
