@@ -826,7 +826,6 @@
 ./usr/X11R6/include/X11/pixmaps/xv.xpm
 ./usr/X11R6/include/X11/pixmaps/xv2.xpm
 ./usr/X11R6/include/X11/xpm.h
-./usr/X11R6/lib/X11/app-defaults
 ./usr/X11R6/lib/X11/config
 ./usr/X11R6/lib/X11/config/Amoeba.cf
 ./usr/X11R6/lib/X11/config/DGUX.cf
@@ -3353,3 +3352,4 @@
 ./var/db/xdm
 ./var/db/xkb
 ./var/db/xkb/README
+./usr/X11R6/lib/X11/doc/html/xgamma.1.html

@@ -1,6 +1,3 @@
-./etc/X11/xserver
-./etc/X11/xserver/SecurityPolicy
-./usr/X11R6/bin/X
 ./usr/X11R6/bin/XF86_3DLabs
 ./usr/X11R6/bin/XF86_8514
 ./usr/X11R6/bin/XF86_AGX
@@ -16,10 +13,6 @@
 ./usr/X11R6/bin/XF86_VGA16
 ./usr/X11R6/bin/XF86_W32
 ./usr/X11R6/bin/XFree86
-./usr/X11R6/bin/Xnest
-./usr/X11R6/bin/Xprt
-./usr/X11R6/bin/Xvfb
-./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/codeconv
 ./usr/X11R6/lib/modules/drivers
@@ -55,6 +48,17 @@
 ./usr/X11R6/lib/modules/extensions
 ./usr/X11R6/lib/modules/fonts
 ./usr/X11R6/lib/modules/input
+./usr/X11R6/lib/modules/old/pex5.so
+./usr/X11R6/lib/modules/old/xf86AceCad.so
+./usr/X11R6/lib/modules/old/xf86Calcomp.so
+./usr/X11R6/lib/modules/old/xf86Dial.so
+./usr/X11R6/lib/modules/old/xf86Dyna.so
+./usr/X11R6/lib/modules/old/xf86Elo.so
+./usr/X11R6/lib/modules/old/xf86Jstk.so
+./usr/X11R6/lib/modules/old/xf86MuTouch.so
+./usr/X11R6/lib/modules/old/xf86Summa.so
+./usr/X11R6/lib/modules/old/xf86Wacom.so
+./usr/X11R6/lib/modules/old/xie.so
 ./usr/X11R6/man/cat1/XF86_8514.0
 ./usr/X11R6/man/cat1/XF86_AGX.0
 ./usr/X11R6/man/cat1/XF86_Accel.0
@@ -68,6 +72,3 @@
 ./usr/X11R6/man/cat1/XF86_SVGA.0
 ./usr/X11R6/man/cat1/XF86_VGA16.0
 ./usr/X11R6/man/cat1/XF86_W32.0
-./usr/X11R6/man/cat1/Xnest.0
-./usr/X11R6/man/cat1/Xserver.0
-./usr/X11R6/man/cat1/Xvfb.0
