@@ -165,6 +165,7 @@
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/lisp.lsp
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/make.lsp
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/man.lsp
+./usr/X11R6/lib/X11/xedit/lisp/progmodes/patch.lsp
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/rpm.lsp
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/sgml.lsp
 ./usr/X11R6/lib/X11/xedit/lisp/progmodes/sh.lsp

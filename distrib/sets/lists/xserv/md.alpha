@@ -10,12 +10,14 @@
 ./usr/X11R6/lib/modules/codeconv/libBIG5.a
 ./usr/X11R6/lib/modules/codeconv/libBIG5HKSCS.a
 ./usr/X11R6/lib/modules/codeconv/libDOSENCODING.a
+./usr/X11R6/lib/modules/codeconv/libGB18030.a
 ./usr/X11R6/lib/modules/codeconv/libGB2312.a
 ./usr/X11R6/lib/modules/codeconv/libGBK.a
 ./usr/X11R6/lib/modules/codeconv/libGEORGIAN.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_1.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_10.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_11.a
+./usr/X11R6/lib/modules/codeconv/libISO8859_13.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_14.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_15.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_2.a
@@ -47,6 +49,7 @@
 ./usr/X11R6/lib/modules/drivers/r128_drv.o
 ./usr/X11R6/lib/modules/drivers/radeon_drv.o
 ./usr/X11R6/lib/modules/drivers/rendition_drv.o
+./usr/X11R6/lib/modules/drivers/riva128.o
 ./usr/X11R6/lib/modules/drivers/s3_drv.o
 ./usr/X11R6/lib/modules/drivers/s3virge_drv.o
 ./usr/X11R6/lib/modules/drivers/savage_drv.o
@@ -69,6 +72,7 @@
 ./usr/X11R6/lib/modules/fonts/libtype1.a
 ./usr/X11R6/lib/modules/fonts/libxtt.a
 ./usr/X11R6/lib/modules/input
+./usr/X11R6/lib/modules/input/acecad_drv.o
 ./usr/X11R6/lib/modules/input/calcomp_drv.o
 ./usr/X11R6/lib/modules/input/citron_drv.o
 ./usr/X11R6/lib/modules/input/digitaledge_drv.o

@@ -13,6 +13,7 @@
 ./etc/X11/app-defaults/XCalc-color
 ./etc/X11/app-defaults/XClipboard
 ./etc/X11/app-defaults/XClock
+./etc/X11/app-defaults/XClock-color
 ./etc/X11/app-defaults/XConsole
 ./etc/X11/app-defaults/XFontSel
 ./etc/X11/app-defaults/XLoad
@@ -374,9 +375,6 @@
 ./usr/X11R6/include/X11/extensions/XEVI.h
 ./usr/X11R6/include/X11/extensions/XEVIstr.h
 ./usr/X11R6/include/X11/extensions/XI.h
-./usr/X11R6/include/X11/extensions/XIE.h
-./usr/X11R6/include/X11/extensions/XIEproto.h
-./usr/X11R6/include/X11/extensions/XIEprotost.h
 ./usr/X11R6/include/X11/extensions/XInput.h
 ./usr/X11R6/include/X11/extensions/XIproto.h
 ./usr/X11R6/include/X11/extensions/XKB.h
@@ -841,6 +839,8 @@
 ./usr/X11R6/lib/X11/locale/vi_VN.viscii/Compose
 ./usr/X11R6/lib/X11/locale/vi_VN.viscii/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/zh_CN
+./usr/X11R6/lib/X11/locale/zh_CN.UTF-8
+./usr/X11R6/lib/X11/locale/zh_CN.UTF-8/XLC_LOCALE
 ./usr/X11R6/lib/X11/locale/zh_CN.gbk
 ./usr/X11R6/lib/X11/locale/zh_CN.gbk/Compose
 ./usr/X11R6/lib/X11/locale/zh_CN.gbk/XLC_LOCALE
@@ -894,6 +894,7 @@
 ./usr/X11R6/man/cat1/dpsexec.0
 ./usr/X11R6/man/cat1/dpsinfo.0
 ./usr/X11R6/man/cat1/editres.0
+./usr/X11R6/man/cat1/fonttosfnt.0
 ./usr/X11R6/man/cat1/fslsfonts.0
 ./usr/X11R6/man/cat1/fstobdf.0
 ./usr/X11R6/man/cat1/fvwm.0
@@ -1399,6 +1400,12 @@
 ./usr/X11R6/man/cat3/XRemoveHosts.0
 ./usr/X11R6/man/cat3/XReparentEvent.0
 ./usr/X11R6/man/cat3/XReparentWindow.0
+./usr/X11R6/man/cat3/XRes.0
+./usr/X11R6/man/cat3/XResQueryClientPixmapBytes.0
+./usr/X11R6/man/cat3/XResQueryClientResources.0
+./usr/X11R6/man/cat3/XResQueryClients.0
+./usr/X11R6/man/cat3/XResQueryExtension.0
+./usr/X11R6/man/cat3/XResQueryVersion.0
 ./usr/X11R6/man/cat3/XResetScreenSaver.0
 ./usr/X11R6/man/cat3/XResizeRequestEvent.0
 ./usr/X11R6/man/cat3/XResizeWindow.0
@@ -1409,6 +1416,16 @@
 ./usr/X11R6/man/cat3/XSaveContext.0
 ./usr/X11R6/man/cat3/XScreenNumberOfScreen.0
 ./usr/X11R6/man/cat3/XScreenResourceString.0
+./usr/X11R6/man/cat3/XScreenSaverAllocInfo.0
+./usr/X11R6/man/cat3/XScreenSaverGetRegistered.0
+./usr/X11R6/man/cat3/XScreenSaverQueryExtension.0
+./usr/X11R6/man/cat3/XScreenSaverQueryInfo.0
+./usr/X11R6/man/cat3/XScreenSaverQueryVersion.0
+./usr/X11R6/man/cat3/XScreenSaverRegister.0
+./usr/X11R6/man/cat3/XScreenSaverSelectInput.0
+./usr/X11R6/man/cat3/XScreenSaverSetAttributes.0
+./usr/X11R6/man/cat3/XScreenSaverUnregister.0
+./usr/X11R6/man/cat3/XScreenSaverUnsetAttributes.0
 ./usr/X11R6/man/cat3/XSegment.0
 ./usr/X11R6/man/cat3/XSelectExtensionEvent.0
 ./usr/X11R6/man/cat3/XSelectInput.0
@@ -1672,6 +1689,7 @@
 ./usr/X11R6/man/cat3/XrmStringToQuarkList.0
 ./usr/X11R6/man/cat3/XrmUniqueQuark.0
 ./usr/X11R6/man/cat3/XrmValue.0
+./usr/X11R6/man/cat3/Xss.0
 ./usr/X11R6/man/cat3/XtAddActions.0
 ./usr/X11R6/man/cat3/XtAddCallback.0
 ./usr/X11R6/man/cat3/XtAddCallbacks.0
