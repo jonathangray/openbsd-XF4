@@ -11,7 +11,7 @@ foreach setname ($lists)
 	cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} >>! $TMPFILE
 end
 
-if ( "$arch" != "vax" ) then
+if ( "$arch" != "vax" && "$arch" != "hppa" ) then
 	if ( "$arch" == "hp300" || "$arch" == "pmax" ) then
     		set xvers=x11r5
 	else

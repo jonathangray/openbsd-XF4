@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.112 2002/10/22 21:31:56 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.113 2002/10/24 20:01:59 todd Exp $
 
 
 
@@ -593,8 +593,6 @@ install:: fonts.alias							@@\
 #  define BuildServer		NO
 # endif
 # define InstallFontAliases	InstallFontAliasesNoComment
-# define UseRgbTxt		NO
-# define UseRgb			YES
 # define HasSharedLibraries     NO
 # define HasDlopen              NO
 # define BuildGlxExt            NO
@@ -990,10 +988,6 @@ install:: fonts.alias							@@\
 # else
 #  define DlLibrary /**/
 # endif
-#endif
-
-#ifndef GccWarningOptions
-# define GccWarningOptions -Wall -Wpointer-arith
 #endif
 
 /* This must come last */
