@@ -628,7 +628,7 @@ mouse_configuration(void) {
 		config_emulate3buttons = 0;
 	printf("\n");
 
-	printf("Do want to configure a mouse wheel? ");
+	printf("Do you want to configure a mouse wheel? ");
 	getstring(s);
 	if (answerisyes(s)) 
 		config_wheel = 1;
