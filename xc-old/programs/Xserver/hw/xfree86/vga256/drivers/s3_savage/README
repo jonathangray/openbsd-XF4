@@ -1,0 +1,48 @@
+$OpenBSD: README,v 1.1 2001/02/21 00:47:09 marc Exp $
+
+This version of the s3 savage driver differs from that released by XFree86
+in fix-08-s3savage_ix+mx.   The current source came from
+
+    http://www.probo.com/timr/savagemx.html
+
+as it existed on Feb 19, 2001.   It includes fixes not present in
+fix-08-s3savage_ix+mx.   Other parts of fix-08-s3savage_ix+mx
+(e.g. SuperProbe changes) have been incorporated into the OpenBSD
+source tree.
+
+Some notes from http://www.probo.com/timr/savagemx.html by timr@probo.com 
+
+    Known Issues
+
+    VT-Switching: There is a known issue when bringing down the server on
+    non-Linux and non-x86 systems. I have some kind of a register timing or
+    write-order problem that I have been unable to resolve. I was able to
+    work around it by calling the video BIOS to switch to mode 3 before
+    exiting the server, but the video BIOS code only works on Linux/x86. If
+    you encounter screen hangs when killing the server, let me know, and let
+    me know a little about your environment. Since the /MX and /IX were
+    designed for laptops, I don't expect to get a lot of exposure in non-x86
+    environments.
+
+    Snow on FreeBSD at 32bpp: When the server is build for FreeBSD, the
+    32-bit modes get "sparklies" on the screen during rapid activity. The
+    snow is not intolerable, but it is annoying. I am working on this
+    issue.
+
+Note: this version of the driver has a work around for the "text scrolling"
+problem found by some users of earlier versions.  If you've experienced a
+bus lock, requiring a power cycle to recover, during rapid text scrolling
+then export the environment variable SAV_SHADOW_STATUS, e.g.
+
+  sh/bash/ksh:	export SAV_SHADOW_STATUS=1
+  csh/tcsh:	setenv SAV_SHADOW_STATUS=1
+
+This symbol must be defined before the server launches. If you use startx,
+that's not hard. If you use xdm/kdm, you will probably have to add this to
+one of the system-wide files, like /etc/profile.
+
+There is a small but measurable (less than 5%) performance penalty for
+enabling this feature; which is why it is not turned on by default.
+
+The "VT-Switching" and "Snow on FreeBSD at 32bpp" problems have also
+been seen on OpenBSD.
