@@ -665,9 +665,9 @@
 ./usr/X11R6/man/cat1/kbd_mode.0
 ./usr/X11R6/man/cat1/pcitweak.0
 ./usr/X11R6/man/cat1/showrgb.0
-./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xf86cfg.0
 ./usr/X11R6/man/cat1/xf86config.0
+./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xsetmode.0
 ./usr/X11R6/man/cat1/xsetpointer.0
 ./usr/X11R6/man/cat1/xvidtune.0

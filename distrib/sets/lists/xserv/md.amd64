@@ -1,3 +1,4 @@
+./etc/X11/app-defaults/XF86Cfg
 ./etc/X11/xserver
 ./etc/X11/xserver/SecurityPolicy
 ./usr/X11R6/bin/X
@@ -62,5 +63,5 @@
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
-./usr/X11R6/man/cat5/getconfig.0
 ./usr/X11R6/man/cat5/XF86Config.0
+./usr/X11R6/man/cat5/getconfig.0
