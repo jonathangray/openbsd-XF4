@@ -590,7 +590,6 @@
 ./usr/X11R6/lib/X11/doc/README.rendition
 ./usr/X11R6/lib/X11/doc/README.s3virge
 ./usr/X11R6/lib/X11/doc/RELNOTES
-./usr/X11R6/lib/X11/doc/Status
 ./usr/X11R6/lib/X11/doc/Versions
 ./usr/X11R6/lib/X11/doc/VideoBoard98
 ./usr/X11R6/lib/X11/etc/Xinstall.sh
@@ -1261,4 +1260,3 @@
 ./usr/X11R6/man/cat5
 ./usr/X11R6/man/cat5/XF86Config.0
 ./usr/X11R6/man/cat5/getconfig.0
-./var/X11
