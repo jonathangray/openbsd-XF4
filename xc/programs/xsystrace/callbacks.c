@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.2 2002/06/06 17:34:27 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.3 2002/06/06 18:24:47 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -61,6 +61,8 @@ static void TextAppend(Widget, char *, int);
 static void TextReplace(Widget, int, int, XawTextBlock *);
 static long  TextLength(Widget);
 
+XtInputId inputId;
+
 static void
 dprintf(char *format, ...)
 {
@@ -81,7 +83,8 @@ freadline(char *line, int size, int fd)
 
 	do {
 		if ((n = read(fd, p, 1)) <= 0) {
-			dprintf("got null line state %d\n", state);
+			dprintf("got null line n=%d state %d\n", n, state);
+			XtRemoveInput(inputId);
 			return NULL;
 		}
 		if (*p == '\n') break;

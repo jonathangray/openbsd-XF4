@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.h,v 1.1 2002/06/04 21:23:41 matthieu Exp $ */
+/* $OpenBSD: callbacks.h,v 1.2 2002/06/06 18:24:47 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -27,6 +27,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+extern XtInputId inputId;
 
 extern void getInput(XtPointer, int *, XtInputId *);
 extern void on_error_select(Widget, XtPointer, XtPointer);

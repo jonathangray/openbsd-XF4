@@ -1,4 +1,4 @@
-/* $OpenBSD: main.c,v 1.1 2002/06/04 21:23:41 matthieu Exp $ */
+/* $OpenBSD: main.c,v 1.2 2002/06/06 18:24:47 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -150,8 +150,9 @@ main(int argc, char *argv[])
 	setvbuf(stdin, NULL, _IOLBF, 0);
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
-	XtAppAddInput(appContext, fileno(stdin), (XtPointer)XtInputReadMask, 
-		      getInput, top);
+	inputId = XtAppAddInput(appContext, fileno(stdin), 
+				(XtPointer)XtInputReadMask, 
+				getInput, top);
 
 	done = False;
 	while (!done) {
