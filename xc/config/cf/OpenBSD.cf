@@ -128,6 +128,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  else
 #    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
 #  endif
+#  ifndef GccWarningOptions
+#    define GccWarningOptions -Wall -Wpointer-arith
+#  endif
 #endif
 
 #define GccGasOption 		-DGCCUSESGAS
