@@ -1113,7 +1113,7 @@ void HandleHardFocus(FvwmWindow *t)
 void fvwm_msg(int type,char *id,char *msg,...)
 {
   char *typestr;
-  va_list args;
+  va_list args1, args2;
 
   switch(type)
   {
@@ -1136,23 +1136,25 @@ void fvwm_msg(int type,char *id,char *msg,...)
       break;
   }
 
-  va_start(args,msg);
+  va_start(args1,msg);
+  va_copy(args2,args1);
 
   fprintf(stderr,"[FVWM][%s]: %s ",id,typestr);
-  vfprintf(stderr, msg, args);
+  vfprintf(stderr, msg, args1);
   fprintf(stderr,"\n");
 
   if (type == ERR)
   {
     char tmp[1024]; /* I hate to use a fixed length but this will do for now */
     snprintf(tmp, sizeof(tmp), "[FVWM][%s]: %s ",id,typestr);
-    vsnprintf(tmp+strlen(tmp), sizeof(tmp)-strlen(tmp), msg, args);
+    vsnprintf(tmp+strlen(tmp), sizeof(tmp)-strlen(tmp), msg, args2);
     tmp[strlen(tmp)+1]='\0';
     tmp[strlen(tmp)]='\n';
     BroadcastName(M_ERROR,0,0,0,tmp);
   }
 
-  va_end(args);
+  va_end(args1);
+  va_end(args2);
 } /* fvwm_msg */
 
 /* CoerceEnterNotifyOnCurrentWindow()
