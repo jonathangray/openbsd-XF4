@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/render.c,v 1.28 2003/11/03 05:12:02 tsi Exp $
+ * $XFree86: xc/programs/Xserver/render/render.c,v 1.30 2004/03/19 16:20:03 alanh Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -1123,7 +1123,10 @@ ProcRenderAddGlyphs (ClientPtr client)
     }
     glyphs = glyphsBase;
     while (nglyphs--)
+    {
 	AddGlyph (glyphSet, glyphs->glyph, glyphs->id);
+	++glyphs;
+    }
 
     if (glyphsBase != glyphsLocal)
 	DEALLOCATE_LOCAL (glyphsBase);
@@ -1505,7 +1508,7 @@ ProcRenderCreateCursor (ClientPtr client)
 	}
 	pPicture = CreatePicture (0, &pPixmap->drawable, pFormat, 0, 0, 
 				  client, &error);
-	if (!pPicture);
+	if (!pPicture)
 	{
 	    xfree (argbbits);
 	    xfree (srcbits);
