@@ -1,4 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.2 2002/05/25 18:09:33 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -33,24 +34,8 @@
 #include "xf86_OSlib.h"
 #include "xf86OSpriv.h"
 
-#if defined(__NetBSD__) && !defined(MAP_FILE)
-#define MAP_FLAGS MAP_SHARED
-#else
-#define MAP_FLAGS (MAP_FILE | MAP_SHARED)
-#endif
-
 #ifndef MAP_FAILED
 #define MAP_FAILED ((caddr_t)-1)
-#endif
-
-#ifdef __OpenBSD__
-#define SYSCTL_MSG "\tCheck that you have set 'machdep.allowaperture=1'\n"\
-		   "\tin /etc/sysctl.conf and reboot your machine\n" \
-		   "\trefer to xf86(4) for details\n"
-#define SYSCTL_MSG2 \
-		"Check that you have set 'machdep.allowaperture=2'\n" \
-		"\tin /etc/sysctl.conf and reboot your machine\n" \
-		"\trefer to xf86(4) for details\n"
 #endif
 
 
