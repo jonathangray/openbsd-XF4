@@ -80,7 +80,7 @@ GARTInit(int screenNum)
 	xf86AcquireGART(-1);
 	/* Check the kernel driver version. */
 	if (ioctl(gartFd, AGPIOC_INFO, &agpinf) != 0) {
-		xf86DrvMsg(screenNum, X_ERROR,
+		xf86DrvMsg(screenNum, X_WARNING,
 			"GARTInit: AGPIOC_INFO failed (%s)\n", strerror(errno));
 		close(gartFd);
 		gartFd = -1;
