@@ -1165,8 +1165,8 @@ PatchUp:
     FreeAttrs (pAttr);
 bail:
     CheckScreenPrivate (pScreen);
+    xfree (pAttr->values);
     xfree (pAttr);
-    xfree (values);
     return ret;
 }
 
