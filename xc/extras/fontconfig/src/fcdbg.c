@@ -1,5 +1,4 @@
 /*
- * $RCSId: xc/lib/fontconfig/src/fcdbg.c,v 1.10 2002/08/22 18:53:22 keithp Exp $
  *
  * Copyright © 2000 Keith Packard
  *

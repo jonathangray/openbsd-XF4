@@ -1,5 +1,5 @@
 #
-# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/Distfile,v 1.2 2003/04/01 22:36:13 matthieu Exp $
+# $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/Distfile,v 1.3 2004/11/02 23:27:03 matthieu Exp $
 #
 
 DISTDIR_SI = /xc/lib/GL/glu

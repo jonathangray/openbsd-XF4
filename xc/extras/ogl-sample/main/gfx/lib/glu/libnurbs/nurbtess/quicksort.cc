@@ -38,7 +38,7 @@
 */
 
 
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/quicksort.cc,v 1.2 2002/01/23 17:06:18 dawes Exp $ */
+/* $XFree86$ */
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 OBJECTS			= sys$O decode$O ops$O ops2$O prim_ops$O fpu$O debug$O
-CFLAGS      	+= -DSCITECH
+CFLAGS      	+= -DSCITECH -DPACK=pack(1) -DEND_PACK=pack()
 .IF $(DEBUG)
 CFLAGS			+= -DDEBUG
 .ENDIF

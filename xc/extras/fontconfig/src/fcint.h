@@ -1,5 +1,4 @@
 /*
- * $RCSId: xc/lib/fontconfig/src/fcint.h,v 1.27 2002/08/31 22:17:32 keithp Exp $
  *
  * Copyright © 2000 Keith Packard
  *

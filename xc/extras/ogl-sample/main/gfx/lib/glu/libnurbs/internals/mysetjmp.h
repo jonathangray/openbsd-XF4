@@ -31,13 +31,13 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mysetjmp.h,v 1.4 2003/10/22 19:20:57 tsi Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mysetjmp.h,v 1.3tsi Exp $ */
 
 /*
  * mysetjmp.h
  *
- * $Date: 2004/02/13 22:40:57 $ $Revision: 1.3 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mysetjmp.h,v 1.3 2004/02/13 22:40:57 matthieu Exp $
+ * $Date: 2004/11/02 23:27:04 $ $Revision: 1.4 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mysetjmp.h,v 1.4 2004/11/02 23:27:04 matthieu Exp $
  */
 
 #ifndef __glumysetjmp_h_

@@ -2,7 +2,7 @@
    See the file COPYING for copying permission.
 */
 
-/* $XFree86: xc/extras/expat/lib/xmlrole.c,v 1.4 2003/09/29 23:39:30 alanh Exp $ */
+/* $XFree86: xc/extras/expat/lib/xmlrole.c,v 1.3 2003/04/10 20:05:16 herrb Exp $ */
 
 #ifdef COMPILED_FROM_DSP
 #include "winconfig.h"

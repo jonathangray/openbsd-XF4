@@ -32,7 +32,7 @@
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/mipmap.c,v 1.5 2002/02/22 21:32:49 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/mipmap.c,v 1.4 2001/10/28 03:32:23 tsi Exp $ */
 
 #include "gluos.h"
 #include <assert.h>

@@ -32,7 +32,7 @@
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/quad.c,v 1.4 2003/03/04 16:25:05 tsi Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/quad.c,v 1.3tsi Exp $ */
 
 #include "gluos.h"
 #include "gluint.h"

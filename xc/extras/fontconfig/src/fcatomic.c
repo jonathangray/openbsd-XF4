@@ -1,5 +1,4 @@
 /*
- * $RCSId: xc/lib/fontconfig/src/fcatomic.c,v 1.2 2002/03/04 21:15:28 tsi Exp $
  *
  * Copyright © 2002 Keith Packard
  *

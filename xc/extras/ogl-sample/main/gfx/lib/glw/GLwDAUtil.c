@@ -38,7 +38,7 @@
  *
  */
 
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwDAUtil.c,v 1.4 2003/11/06 18:37:54 tsi Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwDAUtil.c,v 1.3tsi Exp $ */
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>

@@ -1,7 +1,7 @@
 /* Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
    See the file COPYING for copying permission.
 */
-/* $XFree86: xc/extras/expat/lib/expat.h,v 1.2 2003/10/22 16:59:31 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef XmlParse_INCLUDED
 #define XmlParse_INCLUDED 1

@@ -19,7 +19,7 @@
    Note: Use of these macros is based on judgement, not hard rules,
          and therefore subject to change.
 */
-/* $XFree86: xc/extras/expat/lib/internal.h,v 1.2 2003/11/06 18:37:54 tsi Exp $ */
+/* $XFree86$ */
 
 #if defined(__GNUC__) && \
     !defined(ia64) && !defined(__ia64__) && \

@@ -1,4 +1,4 @@
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/patch.cc,v 1.3 2001/04/27 12:58:28 dawes Exp $ */
+/* $XFree86$ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -36,8 +36,8 @@
 /*
  * patch.c++
  *
- * $Date: 2003/04/01 22:36:15 $ $Revision: 1.2 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/patch.cc,v 1.2 2003/04/01 22:36:15 matthieu Exp $
+ * $Date: 2004/11/02 23:27:04 $ $Revision: 1.3 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/patch.cc,v 1.3 2004/11/02 23:27:04 matthieu Exp $
  */
 
 #include <stdio.h>

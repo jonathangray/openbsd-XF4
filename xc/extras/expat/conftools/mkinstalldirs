@@ -3,8 +3,8 @@
 # Author: Noah Friedman <friedman@prep.ai.mit.edu>
 # Created: 1993-05-16
 # Public domain
+# $XdotOrg: xc/extras/expat/conftools/mkinstalldirs,v 1.2 2004/04/23 18:42:33 eich Exp $
 
-# $Id: mkinstalldirs,v 1.2 2003/04/01 22:36:10 matthieu Exp $
 
 errstatus=0
 

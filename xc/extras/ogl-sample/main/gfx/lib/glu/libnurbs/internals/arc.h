@@ -35,8 +35,8 @@
 /*
  * arc.h
  *
- * $Date: 2003/04/01 22:36:14 $ $Revision: 1.2 $
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/arc.h,v 1.2 2003/04/01 22:36:14 matthieu Exp $
+ * $Date: 2004/11/02 23:27:04 $ $Revision: 1.3 $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/arc.h,v 1.3 2004/11/02 23:27:04 matthieu Exp $
  */
 
 #ifndef __gluarc_h_

@@ -31,12 +31,12 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
-** $Date: 2004/02/13 22:40:57 $ $Revision: 1.3 $
+** $Date: 2004/11/02 23:27:05 $ $Revision: 1.4 $
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/monoChain.cc,v 1.2 2003/10/22 19:20:57 tsi Exp $ */
+/* $XFree86$ */
 
 /*
-** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/monoChain.cc,v 1.3 2004/02/13 22:40:57 matthieu Exp $
+** $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/monoChain.cc,v 1.4 2004/11/02 23:27:05 matthieu Exp $
 */
 
 #include "gluos.h"

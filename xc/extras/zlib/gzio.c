@@ -4,7 +4,7 @@
  *
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
-/* $XFree86: xc/extras/zlib/gzio.c,v 1.4 2003/06/01 22:05:22 herrb Exp $ */
+/* $XFree86$ */
 
 #include <stdio.h>
 

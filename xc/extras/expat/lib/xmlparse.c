@@ -1,7 +1,7 @@
 /* Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
    See the file COPYING for copying permission.
 */
-/* $XFree86: xc/extras/expat/lib/xmlparse.c,v 1.3 2003/09/29 23:39:30 alanh Exp $ */
+/* $XFree86: xc/extras/expat/lib/xmlparse.c,v 1.2 2003/05/27 16:47:34 tsi Exp $ */
 
 #include <stddef.h>
 #include <string.h>                     /* memset(), memcpy() */

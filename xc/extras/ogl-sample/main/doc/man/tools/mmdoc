@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $XFree86: xc/extras/ogl-sample/main/doc/man/tools/mmdoc,v 1.4 2003/10/22 19:45:56 tsi Exp $
+# $XFree86$
 
 set -x
 

@@ -13,7 +13,7 @@
 /*
  * monotonizer.h
  *
- * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/monotonizer.h,v 1.2 2003/04/01 22:36:14 matthieu Exp $
+ * $Header: /tmp/OpenBSD-XF4-repo/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/monotonizer.h,v 1.3 2004/11/02 23:27:04 matthieu Exp $
  */
 
 #ifndef __glumonotonizer_h_

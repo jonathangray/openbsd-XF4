@@ -39,7 +39,7 @@
 ** tree and for generating both Motif(TM) 1.2 and 2.x versions of the widgets
 ** in the same library.
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwDrawAP.h,v 1.3 2001/05/02 13:37:45 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwDrawAP.h,v 1.2 2000/11/02 20:39:07 dawes Exp $ */
 
 #ifndef _GLwDrawAP_h
 #define _GLwDrawAP_h

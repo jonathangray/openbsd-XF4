@@ -1,4 +1,4 @@
-/* $XdotOrg: pre-CVS proposed fix for CESA-2004-003 alanc 7/25/2004 $ */
+/* $XdotOrg: xc/extras/Xpm/lib/create.c,v 1.2.4.1 2004/09/15 15:47:39 daniel Exp $ */
 /*
  * Copyright (C) 1989-95 GROUPE BULL
  *
@@ -33,7 +33,7 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
-/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.5 2003/10/07 21:25:37 herrb Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.4 2003/05/27 22:26:20 tsi Exp $ */
 
 /*
  * The code related to FOR_MSW has been added by

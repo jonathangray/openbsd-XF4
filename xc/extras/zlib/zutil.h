@@ -2,7 +2,7 @@
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
-/* $XFree86: xc/extras/zlib/zutil.h,v 1.3 2003/10/22 20:46:21 tsi Exp $ */
+/* $XFree86$ */
 
 /* WARNING: this file should *not* be used by applications. It is
    part of the implementation of the compression library and is

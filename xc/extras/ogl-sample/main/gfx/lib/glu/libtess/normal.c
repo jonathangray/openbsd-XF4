@@ -1,4 +1,4 @@
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/normal.c,v 1.4 2003/12/22 17:48:01 tsi Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/normal.c,v 1.3tsi Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

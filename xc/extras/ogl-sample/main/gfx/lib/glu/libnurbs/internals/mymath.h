@@ -41,7 +41,7 @@
 
 
 
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mymath.h,v 1.3 2002/05/31 16:36:49 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mymath.h,v 1.2 2001/02/18 20:01:01 dawes Exp $ */
 
 #ifndef __glumymath_h_
 #define __glumymath_h_

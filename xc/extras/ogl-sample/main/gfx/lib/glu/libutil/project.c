@@ -1,4 +1,4 @@
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/project.c,v 1.3 2002/02/22 21:32:49 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libutil/project.c,v 1.2 2001/10/28 03:32:24 tsi Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

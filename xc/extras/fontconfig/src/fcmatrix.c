@@ -1,5 +1,4 @@
 /*
- * $RCSId: $
  *
  * Copyright © 2000 Tuomas J. Lukka
  *

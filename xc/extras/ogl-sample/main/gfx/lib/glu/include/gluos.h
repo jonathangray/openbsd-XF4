@@ -2,7 +2,7 @@
 ** gluos.h - operating system dependencies for GLU
 **
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/include/gluos.h,v 1.3 2001/04/06 17:44:57 dawes Exp $ */
+/* $XFree86$ */
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 

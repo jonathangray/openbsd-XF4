@@ -1,5 +1,5 @@
 # 
-#  $Id: Makefile.am,v 1.1.1.1 2004/06/21 16:13:59 matthieu Exp $
+#  $Id: Makefile.am,v 1.2 2004/11/02 23:26:43 matthieu Exp $
 # 
 #  Copyright © 2003 Keith Packard
 # 

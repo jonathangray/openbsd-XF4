@@ -32,7 +32,7 @@
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwDrawA.c,v 1.4 2001/10/28 03:32:25 tsi Exp $ */
+/* $XFree86$ */
 
 #include <stdio.h>
 #include <GL/glx.h>

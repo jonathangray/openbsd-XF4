@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $XFree86: xc/extras/fontconfig/setfontdirs,v 1.2 2003/06/04 16:29:38 dawes Exp $
+# $XFree86: xc/lib/fontconfig/setfontdirs,v 1.6 2003/01/07 02:07:47 dawes Exp $
 #
 LC_ALL=C
 export LC_ALL

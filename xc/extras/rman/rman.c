@@ -18,7 +18,7 @@ static char cvsid[] = "Header: /usr/build/rman/rman-031225/phelps/RCS/rman.c,v 1
 	source interpretation added September 24, 1996
 	renamed PolyglotMan due to lawsuit by Rosetta, Inc. August 8, 1997
 */
-/* $XFree86: xc/extras/rman/rman.c,v 1.19 2004/01/01 00:47:45 dickey Exp $ */
+/* $XFree86: xc/extras/rman/rman.c,v 1.18 2003/10/22 19:50:36 tsi Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -180,7 +180,7 @@ char *lcexceptions[] = {
 	"AWK", "cvs", "rcs", "GL", "vi", "PGP", "QuickTime", "DDD", "XPG/3",
 	"NFS", "NIS", "NIS+", "AFS",
 	"UNIX", "SysV",
-	"XFree86", "ICCCM",
+	"Xorg", "XOrg", "X.Org", "XFree86", "ICCCM",
 	"MH", "MIME",
 	"TeX", "LaTeX", "PicTeX",
 	"PostScript", "EPS", "EPSF", "EPSI",
@@ -462,7 +462,7 @@ manrefextract(char *p)
 	manrefname = p;
 	while (*p && *p!=' ' && *p!='(') p++; *p++='\0';
 	while (*p==' ' || *p=='(') p++; p0=p;
-#ifdef XFree86
+#if defined(XOrg) || defined(XFree86)
 	/* Don't allow a letter after the man section number */
 	p++;
 #else
@@ -1293,7 +1293,7 @@ HTML(enum command cmd)
 	switch (cmd) {
 	   case CHARNBSP:	printf("&nbsp;"); I++; break;
 	   case CHARTAB:	printf("<tt>&#32;</tt>&nbsp;<tt>&#32;</tt>&nbsp;");	break;
-#ifdef XFree86
+#if defined(XOrg) || defined(XFree86)
 	   /* using named entities for ASCII quote characters is redundant */
 	   case CHARLQUOTE:
 	   case CHARRQUOTE:
@@ -1373,7 +1373,7 @@ HTML(enum command cmd)
 /*		printf("<isindex>\n");*/
 		/* better title possible? */
 		printf("<title>"); printf(manTitle, manName, manSect); printf("</title>\n");
-#ifdef XFree86
+#if defined(XOrg) || defined(XFree86)
 		printf("</head>\n<body bgcolor='#efefef' text='black' "
 			"link='blue' vlink='#551A8B' alink='red'>\n");
 #else

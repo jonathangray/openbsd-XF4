@@ -36,7 +36,7 @@
 ** Author: Eric Veach, July 1994.
 **
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/sweep.c,v 1.3 2002/02/22 21:32:49 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/sweep.c,v 1.2 2001/10/28 03:32:22 tsi Exp $ */
 
 #include "gluos.h"
 #include <assert.h>

@@ -1,5 +1,4 @@
 /*
- * $RCSId: xc/lib/fontconfig/src/fcname.c,v 1.15 2002/09/26 00:17:28 keithp Exp $
  *
  * Copyright © 2000 Keith Packard
  *

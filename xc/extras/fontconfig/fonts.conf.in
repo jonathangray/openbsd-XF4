@@ -21,15 +21,11 @@
 	Keith Packard
 -->
 
-<!-- FONTPATH_START -->
-
 <!-- Font directory list configured on @FC_FONTDATE@ -->
 
 	<dir>@FC_DEFAULT_FONTS@</dir>
 	@FC_FONTPATH@
 	<dir>~/.fonts</dir>
-
-<!-- FONTPATH_END -->
 
 <!--
   Accept deprecated 'mono' alias, replacing it with 'monospace'

@@ -2,11 +2,7 @@
 
 Copyright 1990, 1994, 1998  The Open Group
 
-Permission to use, copy, modify, distribute, and sell this software and its
-documentation for any purpose is hereby granted without fee, provided that
-the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation.
+All Rights Reserved.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -23,11 +19,13 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/extras/freetype2/src/pcf/pcfutil.c,v 1.5 2003/12/22 17:48:01 tsi Exp $ */
+/* $XFree86: xc/lib/font/util/utilbitmap.c,v 1.3 1999/08/22 08:58:58 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
  */
+
+/* Modified for use with FreeType */
 
 
 #include <ft2build.h>
@@ -130,91 +128,5 @@ in this Software without prior written authorization from The Open Group.
     }
   }
 
-
-# ifdef UNUSED
-  /*
-   *  Repad a bitmap.
-   */
-
-  static int
-  RepadBitmap( char*         pSrc,
-               char*         pDst,
-               unsigned int  srcPad,
-               unsigned int  dstPad,
-               int           width,
-               int           height )
-  {
-    int   srcWidthBytes, dstWidthBytes;
-    int   row, col;
-    char  *pTmpSrc, *pTmpDst;
-
-
-    switch ( srcPad )
-    {
-    case 1:
-      srcWidthBytes = ( width + 7 ) >> 3;
-      break;
-
-    case 2:
-      srcWidthBytes = ( ( width + 15 ) >> 4 ) << 1;
-      break;
-
-    case 4:
-      srcWidthBytes = ( ( width + 31 ) >> 5 ) << 2;
-      break;
-
-    case 8:
-      srcWidthBytes = ( ( width + 63 ) >> 6 ) << 3;
-      break;
-
-    default:
-      return 0;
-    }
-
-    switch ( dstPad )
-    {
-    case 1:
-      dstWidthBytes = ( width + 7 ) >> 3;
-      break;
-
-    case 2:
-      dstWidthBytes = ( ( width + 15 ) >> 4 ) << 1;
-      break;
-
-    case 4:
-      dstWidthBytes = ( ( width + 31 ) >> 5 ) << 2;
-      break;
-
-    case 8:
-      dstWidthBytes = ( ( width + 63 ) >> 6 ) << 3;
-      break;
-
-    default:
-      return 0;
-    }
-
-    width = srcWidthBytes;
-    if ( width > dstWidthBytes )
-      width = dstWidthBytes;
-
-    pTmpSrc= pSrc;
-    pTmpDst= pDst;
-
-    for ( row = 0; row < height; row++ )
-    {
-      for ( col = 0; col < width; col++ )
-        *pTmpDst++ = *pTmpSrc++;
-
-      while ( col < dstWidthBytes )
-      {
-        *pTmpDst++ = '\0';
-        col++;
-      }
-      pTmpSrc += srcWidthBytes - width;
-    }
-
-    return dstWidthBytes * height;
-  }
-# endif
 
 /* END */

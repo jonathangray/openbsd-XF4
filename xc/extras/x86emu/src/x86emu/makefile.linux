@@ -31,6 +31,7 @@
 #############################################################################
 
 TARGETLIB = libx86emu.a
+TARGETDEBUGLIB =libx86emud.a
 
 OBJS=\
 debug.o \
@@ -41,20 +42,39 @@ ops2.o \
 prim_ops.o \
 sys.o
 
+DEBUGOBJS=debug.d \
+          decode.d \
+	  fpu.d \
+	  ops.d \
+	  ops2.d \
+	  prim_ops.d \
+	  sys.d
+
+.SUFFIXES: .d
+
+all: $(TARGETLIB) $(TARGETDEBUGLIB)
+
 $(TARGETLIB): $(OBJS)
 	ar rv $(TARGETLIB) $(OBJS)
 
+$(TARGETDEBUGLIB): $(DEBUGOBJS)
+	ar rv $(TARGETDEBUGLIB) $(DEBUGOBJS)
+
 INCS   = -I. -Ix86emu -I../../include
-CFLAGS = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG -DDEBUG
+CFLAGS = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG
+CDEBUGFLAGS = -DDEBUG
 
 .c.o:
 	gcc -g -O -Wall -c $(CFLAGS) $(INCS) $*.c
+
+.c.d:
+	gcc -g -O -Wall -c -o$*.d $(CFLAGS) $(CDEBUGFLAGS) $(INCS) $*.c
 
 .cpp.o:
 	gcc -c $(CFLAGS) $(INCS) $*.cpp
 
 clean:
-	rm -f *.a *.o
+	rm -f *.a *.o *.d
 
 validate:	validate.o libx86emu.a
 	gcc -o validate validate.o -lx86emu -L.
