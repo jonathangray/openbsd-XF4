@@ -11,7 +11,7 @@ Single, unaccelerated display
 -----------------------------
 This setup is by far the easiest to configure and is supported on just
 about every machine OpenBSD/sparc64 runs on (both PCI and SBus based
-machines).  A sample /etc/X11/XF86Config is given at the end of this
+machines).  A sample /etc/X11/xorg.conf is given at the end of this
 section, but it may need to be customized to fit the machine.  Mostly
 these just entails configuring where mouse input comes from.
 
@@ -166,7 +166,7 @@ of the video card, eg:
 
 	blade$ dmesg | grep vgafb
 	vgafb0 at pci0 dev 19 function 0 "ATI Rage XL" rev 0x27
-	wsdisplay0 at vgafb0: console (sun, sun emulation), using wskbd0
+	wsdisplay0 at vgafb0: console (std, sun emulation), using wskbd0
 
 The framebuffer is on bus 0, device 19, function 0.  Now, using the
 configuration in the first section as a guide, replace the "Device" section
@@ -208,9 +208,9 @@ See xorg.conf(5) for more options.
 
 Dual, unaccelerated display
 ---------------------------
-Dual-headed displays are only supported on machines with SBus cgsix(4) or
-cgthree(4) framebuffers.  Starting with the configuration in the first
-section, three additional sections are added for the second framebuffer:
+Dual-headed displays are only supported on machines with SBus framebuffers.
+Starting with the configuration in the first section, three additional
+sections are added for the second framebuffer:
 
 Section "Device"
 	Identifier      "Wsdisplay1"
@@ -259,4 +259,4 @@ See xorg.conf(5) for more options.
 
 problem_blurb
 
-$OpenBSD: README.sparc64,v 1.17 2004/11/03 00:27:47 matthieu Exp $
+$OpenBSD: README.sparc64,v 1.18 2004/11/29 22:28:57 miod Exp $
