@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.22 2004/11/07 15:48:26 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.23 2005/01/15 00:18:58 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -105,6 +105,7 @@ static Bool WsfbScreenInit(int, ScreenPtr, int, char **);
 static Bool WsfbCloseScreen(int, ScreenPtr);
 static void *WsfbWindowLinear(ScreenPtr, CARD32, CARD32, int, CARD32 *,
 			      void *);
+static void WsfbPointerMoved(int, int, int);
 static Bool WsfbEnterVT(int, int);
 static void WsfbLeaveVT(int, int);
 static Bool WsfbSwitchMode(int, DisplayModePtr, int);
@@ -126,6 +127,12 @@ static Bool WsfbDGAInit(ScrnInfoPtr, ScreenPtr);
 /* helper functions */
 static int wsfb_open(char *);
 static pointer wsfb_mmap(size_t, off_t, int);
+
+enum { WSFB_ROTATE_NONE = 0,
+       WSFB_ROTATE_CCW = 90,
+       WSFB_ROTATE_UD = 180,
+       WSFB_ROTATE_CW = 270
+};
 
 /*
  * This is intentionally screen-independent.  It indicates the binding
@@ -158,10 +165,12 @@ static SymTabRec WsfbChipsets[] = {
 /* Supported options */
 typedef enum {
 	OPTION_SHADOW_FB,
+	OPTION_ROTATE
 } WsfbOpts;
 
 static const OptionInfoRec WsfbOptions[] = {
 	{ OPTION_SHADOW_FB, "ShadowFB", OPTV_BOOLEAN, {0}, FALSE},
+	{ OPTION_ROTATE, "Rotate", OPTV_STRING, {0}, FALSE},
 	{ -1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
@@ -175,6 +184,7 @@ static const char *shadowSymbols[] = {
 	"shadowAlloc",
 	"shadowInit",
 	"shadowUpdatePacked",
+	"shadowUpdateRotatePacked",
 	NULL
 };
 
@@ -231,8 +241,10 @@ typedef struct {
 	unsigned char*		fbmem;
 	size_t			fbmem_len;
 	unsigned char*		shadowmem;
+	int			rotate;
 	Bool			shadowFB;
 	CloseScreenProcPtr	CloseScreen;
+	void			(*PointerMoved)(int, int, int);
 	EntityInfoPtr		pEnt;
 	struct wsdisplay_cmap	saved_cmap;
 	unsigned char		saved_red[256];
@@ -390,7 +402,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 {
 	WsfbPtr fPtr;
 	int default_depth, wstype;
-	char *dev;
+	char *dev, *s;
 	char *mod = NULL;
 	const char *reqSym = NULL;
 	Gamma zeros = {0.0, 0.0, 0.0};
@@ -523,6 +535,38 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 				   "Shadow FB option ignored on depth 1");
 		}
 
+	/* rotation */
+	fPtr->rotate = WSFB_ROTATE_NONE;
+	if ((s = xf86GetOptValString(fPtr->Options, OPTION_ROTATE))) {
+		if (pScrn->depth >= 8) {
+			if (!xf86NameCmp(s, "CW")) {
+				fPtr->shadowFB = TRUE;
+				fPtr->rotate = WSFB_ROTATE_CW;
+				xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+				    "Rotating screen clockwise\n");
+			} else if (!xf86NameCmp(s, "CCW")) {
+				fPtr->shadowFB = TRUE;
+				fPtr->rotate = WSFB_ROTATE_CCW;
+				xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+				    "Rotating screen counter clockwise\n");
+			} else if (!xf86NameCmp(s, "UD")) {
+				fPtr->shadowFB = TRUE;
+				fPtr->rotate = WSFB_ROTATE_UD;
+				xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+				    "Rotating screen upside down\n");
+			} else {
+				xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+				    "\"%s\" is not a valid value for Option "
+				    "\"Rotate\"\n", s);
+				xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+				    "Valid options are \"CW\", \"CCW\","
+				    " or \"UD\"\n");
+			}
+		} else {
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			    "Option \"Rotate\" ignored on depth 1");
+		}
+	}
 	/* fake video mode struct */
 	mode = (DisplayModePtr)xalloc(sizeof(DisplayModeRec));
 	mode->prev = mode;
@@ -673,8 +717,18 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	if (!miSetPixmapDepths())
 		return FALSE;
 
-	height = pScrn->virtualY;
-	width = pScrn->virtualX;
+	if (fPtr->rotate == WSFB_ROTATE_CW 
+	    || fPtr->rotate == WSFB_ROTATE_CCW) {
+		height = pScrn->virtualX;
+		width = pScrn->displayWidth = pScrn->virtualY;
+	} else {
+		height = pScrn->virtualY;
+		width = pScrn->virtualX;
+	}
+	if (fPtr->rotate && !fPtr->PointerMoved) {
+		fPtr->PointerMoved = pScrn->PointerMoved;
+		pScrn->PointerMoved = WsfbPointerMoved;
+	}
 
 	/* shadowfb */
 	if (fPtr->shadowFB) {
@@ -744,15 +798,33 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 				   "Shadow FB not available on < 8 depth");
 		} else {
-			if (!shadowInit(pScreen, shadowUpdatePacked,
-					WsfbWindowLinear))
-			return FALSE;
+			if (!shadowSetup(pScreen) ||
+			    !shadowAdd(pScreen, NULL,
+				fPtr->rotate ? shadowUpdateRotatePacked :
+				shadowUpdatePacked,
+				WsfbWindowLinear, fPtr->rotate, NULL)) {
+				xf86DrvMsg(scrnIndex, X_ERROR,
+				    "Shadow FB initialization failed\n");
+				return FALSE;
+			}
 		}
 	}
 
 #ifdef XFreeXDGA
-	WsfbDGAInit(pScrn, pScreen);
+	if (!fPtr->rotate) 
+		WsfbDGAInit(pScrn, pScreen);
+	else 
+		xf86DrvMsg(scrnIndex, X_INFO, "Rotated display, "
+		    "disabling DGA\n");
 #endif
+	if (fPtr->rotate) {
+		xf86DrvMsg(scrnIndex, X_INFO, "Enabling Driver Rotation, "
+		    "disabling RandR\n");
+		xf86DisableRandR();
+		if (pScrn->bitsPerPixel == 24) 
+			xf86DrvMsg(scrnIndex, X_WARNING, 
+			    "Rotation might be broken in 24 bpp\n");
+	}
 
 	xf86SetBlackWhitePixels(pScreen);
 	miInitializeBackingStore(pScreen);
@@ -838,6 +910,44 @@ WsfbWindowLinear(ScreenPtr pScreen, CARD32 row, CARD32 offset, int mode,
 		fPtr->linebytes = *size;
 	}
 	return ((CARD8 *)fPtr->fbmem + row *fPtr->linebytes + offset);
+}
+
+static void
+WsfbPointerMoved(int index, int x, int y)
+{
+    ScrnInfoPtr pScrn = xf86Screens[index];
+    WsfbPtr fPtr = WSFBPTR(pScrn);
+    int newX, newY;
+
+    switch (fPtr->rotate)
+    {
+    case WSFB_ROTATE_CW:
+	/* 90 degrees CW rotation. */
+	newX = pScrn->pScreen->height - y - 1;
+	newY = x;
+	break;
+
+    case WSFB_ROTATE_CCW:
+	/* 90 degrees CCW rotation. */
+	newX = y;
+	newY = pScrn->pScreen->width - x - 1;
+	break;
+
+    case WSFB_ROTATE_UD:
+	/* 180 degrees UD rotation. */
+	newX = pScrn->pScreen->width - x - 1;
+	newY = pScrn->pScreen->height - y - 1;
+	break;
+
+    default:
+	/* No rotation. */
+	newX = x;
+	newY = y;
+	break;
+    }
+
+    /* Pass adjusted pointer coordinates to wrapped PointerMoved function. */
+    (*fPtr->PointerMoved)(index, newX, newY);
 }
 
 static Bool
