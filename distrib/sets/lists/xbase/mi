@@ -60,7 +60,6 @@
 ./usr/X11R6/bin/wm2
 ./usr/X11R6/bin/x11perf
 ./usr/X11R6/bin/xauth
-./usr/X11R6/bin/xautolock
 ./usr/X11R6/bin/xbiff
 ./usr/X11R6/bin/xcalc
 ./usr/X11R6/bin/xclipboard
