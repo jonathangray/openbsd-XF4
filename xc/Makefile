@@ -2,12 +2,12 @@
 
 
 
-# $XFree86: xc/Makefile,v 3.29 2003/10/21 17:41:43 tsi Exp $
+# $XFree86: xc/Makefile,v 3.28tsi Exp $
 
 # Luna users will need to either run make as "make MAKE=make"
 # or add "MAKE = make" to this file.
 
-RELEASE = "Release 6.6"
+RELEASE = "Release 6.8"
 SHELL = /bin/sh
 RM = rm -f
 MV = mv
@@ -42,12 +42,12 @@ all-initial:
 	@echo Do not name your log file make.log or it will be deleted.
 
 World:
-	@$(RM) $(VERSPROG)
-	@$(CC) $(VERSINC) -o $(VERSPROG) $(VERSSRC)
+	@-$(RM) $(VERSPROG)
+	@-$(CC) $(VERSINC) -o $(VERSPROG) $(VERSSRC)
 	@echo ""
-	@echo Building XFree86`$(VERSPROG)`.
+	@echo Building $(RELEASE).
 	@echo ""
-	@$(RM) $(VERSPROG)
+	@-$(RM) $(VERSPROG)
 	@case "x$(BOOTSTRAPCFLAGS)" in x) \
 	echo I hope you checked the configuration parameters in $(IRULESRC) ; \
 	echo to see if you need to pass BOOTSTRAPCFLAGS. ; \
@@ -71,12 +71,16 @@ World:
 		fi; \
 	    fi; \
 	fi
-	@if [ ! -f $(IRULESRC)/version.def ]; then \
-	    echo "" > $(IRULESRC)/version.def; \
-	fi
-	@if [ ! -f $(IRULESRC)/date.def ]; then \
-	    echo "" > $(IRULESRC)/date.def; \
-	fi
+#	@rm -f $(IRULESRC)/version.def; echo "" > $(IRULESRC)/version.def;
+	@rm -f $(IRULESRC)/date.def; echo "" > $(IRULESRC)/date.def;
+#	@if [ ! -f $(IRULESRC)/version.def ]; then \
+#	    rm -f $(IRULESRC)/version.def; \
+#	    echo "" > $(IRULESRC)/version.def; \
+#	fi
+#	@if [ ! -f $(IRULESRC)/date.def ]; then \
+#	    rm -f $(IRULESRC)/date.def; \
+#	    echo "" > $(IRULESRC)/date.def; \
+#	fi
 	cd $(IMAKESRC) && $(MAKE) $(FLAGS) clean
 	$(MAKE) $(MFLAGS) Makefile.boot
 	$(MAKE_CMD) $(MFLAGS) version.def
@@ -90,10 +94,10 @@ World:
 	@echo ""
 	@date
 	@echo ""
-	@$(RM) $(VERSPROG)
-	@$(CC) $(VERSINC) -o $(VERSPROG) $(VERSSRC)
-	@echo Full build of XFree86`$(VERSPROG)` complete.
-	@$(RM) $(VERSPROG)
+	@-$(RM) $(VERSPROG)
+	@-$(CC) $(VERSINC) -o $(VERSPROG) $(VERSSRC)
+	@echo Full build of $(RELEASE) complete.
+	@-$(RM) $(VERSPROG)
 	@echo ""
 
 .PRECIOUS: Makefile
@@ -137,7 +141,7 @@ xmakefile: Imakefile
 
 World.Win32:
 	@echo :
-	@echo Building XFree86.
+	@echo Building $(RELEASE).
 	@echo :
 	@echo :
 	-@if not exist $(IRULESRC)\host.def echo > $(IRULESRC)\host.def
@@ -159,12 +163,12 @@ World.Win32:
 	$(MAKE_CMD) $(MFLAGS) $(WIN32WORLDOPTS)
 	@echo :
 	@echo :
-	@echo Full build of XFree86 complete.
+	@echo Full build of $(RELEASE) complete.
 	@echo :
 
 World.OS2:
 	@echo :
-	@echo Building XFree86 on OS/2.
+	@echo Building $(RELEASE) on OS/2.
 	@echo :
 	@echo :
 	-@if not exist $(IRULESRC)\host.def echo > $(IRULESRC)\host.def
@@ -181,7 +185,7 @@ World.OS2:
 	$(MAKE) $(MFLAGS)
 	@echo :
 	@echo :
-	@echo Full build of XFree86 on OS/2 complete.
+	@echo Full build of $(RELEASE) on OS/2 complete.
 	@echo :
 
 # don't allow any default rules in this Makefile

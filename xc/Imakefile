@@ -3,16 +3,12 @@ XCOMM $Xorg: Imakefile,v 1.5 2000/08/17 19:41:44 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/Imakefile,v 3.30 2003/08/24 20:31:43 tsi Exp $
+XCOMM $XFree86: xc/Imakefile,v 3.29tsi Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 
 RELEASE = XOrgReleaseString
-
-#ifdef XFree86VersionString
-VERSTRING = " "version XFree86VersionString "("XFree86DateString")"
-#endif
 
 #ifndef OSName
 #define OSName Unknown Operating System!
@@ -51,11 +47,6 @@ DependSubdirs($(SUBDIRS))
 #define IHaveSpecialMakefileTarget
 
 #ifndef Win32Architecture
-#ifdef XFree86VersionString
-VerifyOS::
-	@echo ""
-	@echo Building XFree86 version XFree86VersionString "("XFree86DateString")."
-#endif
 VerifyOS::
 	@echo ""
 	@echo Building on OSName "("OSMajorVersion"."OSMinorVersion"."OSTeenyVersion")."
@@ -73,22 +64,25 @@ VerifyOS::
 	@echo ""
 #endif
 
-#ifdef XFree86Version
 #ifndef OS2Architecture
 version.def::
-	$(RM) $(IRULESRC)/version.def
 	$(RM) $(IRULESRC)/date.def
-	$(LN) ../../$(XF86SRC)/xf86Version.h $(IRULESRC)/version.def
-	$(LN) ../../$(XF86SRC)/xf86Date.h $(IRULESRC)/date.def
+	@if [ -f ../../$(XF86SRC)/xf86Date.h ]; then \
+ 	  $(LN) ../../$(XF86SRC)/xf86Date.h $(IRULESRC)/date.def; \
+	else \
+  	  echo "" > $(IRULESRC)/date.def; \
+	fi;
+	$(RM) $(IRULESRC)/version.def
+	@if [ -f ../../$(XF86SRC)/xf86Version.h ]; then \
+ 	   echo foo; \
+           $(LN) ../../$(XF86SRC)/xf86Version.h $(IRULESRC)/version.def; \
+        else \
+           echo "" > $(IRULESRC)/version.def; \
+        fi;
 #else /*OS2Architecture*/
 version.def::
-	$(RM) $(IRULESRC)/version.def
 	$(RM) $(IRULESRC)/date.def
-	$(CP) $(XF86SRC)/xf86Version.h $(IRULESRC)/version.def
 	$(CP) $(XF86SRC)/xf86Date.h $(IRULESRC)/date.def
-#endif
-#else
-version.def::
 #endif
 
 includes::
@@ -110,7 +104,7 @@ World::
 
 Everything::
 	@echo ""
-	@echo Rebuilding XFree86$(VERSTRING).
+	@echo Rebuilding $(RELEASE) of the X Window System.
 	@echo ""
 	@date
 	@echo ""
@@ -128,7 +122,7 @@ Everything::
 	@echo ""
 	@date
 	@echo ""
-	@echo Rebuild of XFree86$(VERSTRING) complete.
+	@echo Rebuild of $(RELEASE) of the X Window System complete.
 	@echo ""
 
 XCOMM clean out link tree looking for stuff that should get checked in
@@ -155,7 +149,7 @@ clean::
 
 Everything::
 	@echo :
-	@echo Rebuilding XFree86$(VERSTRING).
+	@echo Rebuilding $(RELEASE) of the X Window System.
 	@echo :
 	@echo :
 	cd $(IMAKESRC)
@@ -169,7 +163,7 @@ Everything::
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) $(WORLDOPTS)
 	@echo :
 	@echo :
-	@echo Rebuild of XFree86$(VERSTRING) complete.
+	@echo Rebuild of $(RELEASE) of the X Window System complete.
 	@echo :
 
 #ifdef ProjectRoot

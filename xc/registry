@@ -1,4 +1,5 @@
 /* $Xorg: registry,v 1.7 2001/06/01 18:55:58 coskrey Exp $ */
+/* $XdotOrg: xc/registry,v 1.2 2004/04/23 18:41:44 eich Exp $ */
 
 				  X Registry
 
@@ -11,8 +12,8 @@ or to
 	The X.Org Group -- X11 Registry
 	c/o Ienup Sung
 	Sun Microsystems, Inc.
-	901 San Antonio Road, MS SJC07-201
-	Palo Alto, CA 94303-4900
+	4150 Network Circle, MS SJC07-201
+	Santa Clara, CA 95054
 
 Electronic mail will be acknowledged upon receipt.
 Please allow up to 4 weeks for a formal response to registration and inquiries.
@@ -448,6 +449,7 @@ Value	Name					Reference
 0	Internet				[23]
 1	DECnet					[23]
 2	Chaos					[23]
+5	ServerInterpreted			[23]
 6	InternetV6				[23]
 33	Amoeba					[8]
 252	LocalHost				[105]
@@ -1026,6 +1028,21 @@ See XIM_ENCODING_NEGOTIATION in section 4.6 of the XIM standard.
 
 "COMPOUND_TEXT"					[104]
 
+23. SERVER INTERPRETED ADDRESS TYPES
+
+Types of addresses used in the ChangeHosts protocol request.
+See the description of ChangeHosts in section 9 of the X11 Protocol standard.
+
+Registered address types:
+
+Name				Reference
+----				---------
+"hostname"			[135 - xc/doc/spec/SIAddresses/hostname.txt]
+"IPv6"				[135 - xc/doc/spec/SIAddresses/IPv6.txt]
+
+Vendor-specific prefixes:
+
+None registered yet.
 
 REFERENCES
 
@@ -1087,8 +1104,8 @@ REFERENCES
 	X.Org Chair:
 	Steve Swales
 	Sun Microsystems, Inc.
-	901 San Antonio Road, MS SJC07-201
-	Palo Alto, CA 94303-4900
+	4150 Network Circle, MS SJC07-201
+	Santa Clara, CA 95054
 	steve.swales@sun.com
 
 	X.Org Co-Chair:
@@ -1326,8 +1343,8 @@ REFERENCES
 [57]	(Originally David Rosenthal)
 	Steve Swales
 	Sun Microsystems, Inc.
-	901 San Antonio Road, MS SJC07-201
-	Palo Alto, CA 94303-4900
+	4150 Network Circle, MS SJC07-201
+	Santa Clara, CA 95054
 	steve.swales@sun.com
 
 [58]	(Originally Murali V. Srinivasan)
@@ -1415,11 +1432,8 @@ REFERENCES
 	P.O. Box 58700
 	Salt Lake City, UT 84158
 
-[76]	Cheryl Huntington
-	MS. MTV21-04
-	Sun Microsystems
-	2550 Garcia Ave.
-	Mountain View, CA.  94043-1100
+[76]	(Originally Cheryl Huntington)
+	See Reference [57]
 
 [77]	Junichi Hiramoto
 	Manager, Engineering Department
@@ -1680,12 +1694,16 @@ REFERENCES
 	Markus G. Kuhn
 	University of Cambridge
 	Computer Laboratory
-	New Museums Site, Pembroke Street
-	Cambridge CB2 3QG
+	15 JJ Thomson Avenue
+	Cambridge CB3 0FD
 	United Kingdom
 
 [134]   In R6.6 X.Org is reserving the string UTF8_STRING for use as an ICCCM
         property type and selection target.  The ICCCM spec will be updated
         in a future release to fully specify UTF8_STRING.
 
+[135]	X.Org Foundation source implementation
+	See Reference [8]
+
 /* $XFree86: xc/registry,v 1.8 2003/07/09 15:27:23 tsi Exp $ */
+
