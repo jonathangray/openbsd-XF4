@@ -1508,7 +1508,6 @@ static void SigchldHndlr (int dummy)
     int   status, w;
     int   olderrno = errno;
     struct sigaction act;
-    int olderrno = errno;
 
     sigfillset(&act.sa_mask);
     act.sa_flags = 0;
