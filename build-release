@@ -15,7 +15,7 @@
 
 ext=log
 log=`/bin/pwd`/snap
-if [ -f $log.$ext ]
+if [ -f $log.$ext -o -f $log.$ext.gz ]
 then
 
 	i=0
