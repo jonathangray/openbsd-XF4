@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.80 2002/03/24 16:34:56 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.81 2002/03/24 18:29:01 matthieu Exp $
 
 
 
@@ -54,7 +54,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define SetTtyGroup     	YES
 #define DBMLibrary		/**/
 #define HasLibCrypt		NO
-#define HasLibDes		YES
 #define HasPosixSignals		YES
 #define HasShm          	YES
 #define HasWChar32		YES
@@ -393,6 +392,8 @@ install:: fonts.alias							@@\
 /* FreeType2 don't work on 64bit machines */
 # define BuildFreetype2Library  NO
 # define BuildXftLibrary	NO
+/* XDM-AUTH code is broken on 64bit arches */
+# define HasXdmAuth		NO
 
 # include <xfree86.cf>
 
@@ -781,6 +782,8 @@ install:: fonts.alias							@@\
 /* GLX doesn't work on sparc64 */
 # define BuildGlxExt		NO
 # define BuildGLXLibrary	YES
+/* XDM-AUTH is broken on 64bit arches */
+# define HasXdmAuth		NO
 
 # if XF86Server
 #   ifndef DoLoadableServer
@@ -897,7 +900,7 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef HasXdmAuth
-# define	HasXdmAuth		YES
+# define HasXdmAuth			YES
 #endif
 
 #ifndef OSBinaryType
