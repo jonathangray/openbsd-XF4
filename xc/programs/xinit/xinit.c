@@ -343,7 +343,7 @@ main(int argc, char *argv[], char *envp[])
 #ifndef __EMX__
 	    (**argv != '/' && **argv != '.')) {
 	    /* hack for the Xfree86 3.3.6 servers: if the X link 
-	       points to XF86_*, start Xwapper instead if X */
+	       points to XF86_*, start Xwrapper instead if X */
 		path = strdup(getenv("PATH"));
 		if (path == NULL) {
 		    Error("Can't find PATH\n");
