@@ -291,8 +291,6 @@ int ScreenNum;
 {
 	int i;
 
-	ScreenEnabled[ScreenNum] = TRUE;
-
 	if (ExtendedEnabled)
 		return;
 
@@ -312,17 +310,14 @@ int ScreenNum;
 {
 	int i;
 
-	ScreenEnabled[ScreenNum] = FALSE;
 
 	if (!ExtendedEnabled)
 		return;
 
-	for (i = 0; i < MAXSCREENS; i++)
-		if (ScreenEnabled[i])
-			return;
 
-	i386_iopl(FALSE);
-	ExtendedEnabled = FALSE;
+	if (i386_iopl(FALSE) == 0) {
+		ExtendedEnabled = FALSE;
+	}
 
 	return;
 }
@@ -452,4 +447,31 @@ xf86EnableInterrupts()
 #endif /* __mips__ */
 
 	return;
+}
+
+
+/*
+ * Do all things that need root priviledges early 
+ * and revoke those priviledges 
+ */
+extern uid_t realUid;
+extern gid_t realGid;
+
+void
+xf86DropPriv(void)
+{
+	ErrorF("xf86DropPriv\n");
+	checkDevMem(TRUE);
+	xf86EnableIOPorts(0);
+	/* revoke priviledges */
+	if (realUid != -1) {
+		setuid(realUid);
+	} else {
+		setuid(getuid());
+	}
+	if (realGid != -1) {
+		setgid(realGid);
+	} else {
+		setgid(getgid());
+	}
 }

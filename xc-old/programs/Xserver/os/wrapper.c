@@ -103,6 +103,7 @@ enum BadCode {
     UnprintableArg,
     EnvTooLong,
     InternalError,
+    MallocFailed,
 #ifdef USE_PAM
     PamFailed,
     PamAuthFailed,
@@ -134,7 +135,7 @@ main(int argc, char **argv, char **envp)
 {
     enum BadCode bad = NotBad;
     int i, j;
-    char *a, *e;
+    char *a, *e, *tmp;
 #if defined(__QNX__) && !defined(__QNXNTO__)
     char cmd_name[64];
 #endif
@@ -211,6 +212,31 @@ main(int argc, char **argv, char **envp)
 	    if (bad)
 		break;
 	}
+	if (!bad) {
+		/* add uid/gid args */
+		tmp = malloc((argc+4)*sizeof(char *));
+		if (tmp == NULL) {
+			bad = MallocFailed;
+			goto failed;
+		}
+		argv = (char **)tmp;
+		argv[argc++] = "-uid";
+		tmp = malloc(12);
+		if (tmp == NULL) {
+			bad = MallocFailed;
+			goto failed;
+		}
+		snprintf(tmp, sizeof(tmp), "%10u", getuid());
+		argv[argc++] = tmp;
+		argv[argc++] = "-gid";
+		tmp = malloc(12);
+		if (tmp == NULL) {
+			bad = MallocFailed;
+			goto failed;
+		}
+		snprintf(tmp, sizeof(tmp), "%10u", getgid());
+		argv[argc++] = tmp;
+	}
 	/* Check each envp[] */
 	if (!bad)
 	    for (i = 0; envp[i]; i++) {
@@ -261,6 +287,7 @@ main(int argc, char **argv, char **envp)
 		}
 	    }
     }
+failed:
     switch (bad) {
     case NotBad:
 	argv[0] = XSERVER_PATH;
@@ -292,6 +319,9 @@ main(int argc, char **argv, char **envp)
 	break;
     case InternalError:
 	fprintf(stderr, "Internal Error\n");
+	break;
+    case MallocFailed:
+	fprintf(stderr, "Memory allocation Error\n");
 	break;
 #ifdef USE_PAM
     case PamFailed:

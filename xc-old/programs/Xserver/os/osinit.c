@@ -182,16 +182,18 @@ OsInit()
 	    }
 	}
 #endif
+    }
+    TimerInit();
+#ifdef DDXOSINIT
+    OsVendorInit();
+#endif
+    if (!been_here) {
 #ifdef SERVER_LOCK
 	LockServer();
 #endif
 	been_here = TRUE;
     }
 #endif /* AMOEBA */
-    TimerInit();
-#ifdef DDXOSINIT
-    OsVendorInit();
-#endif
     OsInitAllocator();
     if (!OsDelayInitColors) OsInitColors();
 }

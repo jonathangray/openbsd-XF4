@@ -434,10 +434,20 @@ InitInput(argc, argv)
  */
  
 extern Bool OsDelayInitColors;
+#ifdef __OpenBSD__
+extern void xf86DropPriv(void);
+#endif
 
 void
 OsVendorInit()
 {
+#ifdef __OpenBSD__
+	static Bool been_here = FALSE;
+	if (!been_here) {
+		xf86DropPriv();
+		been_here = TRUE;
+	}
+#endif
 #ifdef SIGCHLD
   signal(SIGCHLD, SIG_DFL);	/* Need to wait for child processes */
 #endif

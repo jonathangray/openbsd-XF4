@@ -207,6 +207,7 @@ xf86OpenConsole()
     
     if (serverGeneration == 1)
     {
+#ifndef __OpenBSD__
 	/* check if we are run with euid==0 */
 	if (geteuid() != 0)
 	{
@@ -215,7 +216,7 @@ xf86OpenConsole()
 		"You should be using Xwrapper to start the server or xdm.\n"
 		"We strongly advise against making the server SUID root!\n");
 	}
-
+#endif
 	if (!KeepTty)
 	{
 	    /*
@@ -335,11 +336,13 @@ xf86OpenConsole()
 	    {
 	        FatalError("xf86OpenConsole: VT_SETMODE VT_PROCESS failed\n");
 	    }
+#ifndef __OpenBSD__
 	    if (ioctl(xf86Info.consoleFd, KDENABIO, 0) < 0)
 	    {
 	        FatalError("xf86OpenConsole: KDENABIO failed (%s)\n",
 		           strerror(errno));
 	    }
+#endif
 	    if (ioctl(xf86Info.consoleFd, KDSETMODE, KD_GRAPHICS) < 0)
 	    {
 	        FatalError("xf86OpenConsole: KDSETMODE KD_GRAPHICS failed\n");

@@ -199,6 +199,11 @@ OsSignal(sig, handler)
 #endif
 }
 
+#ifdef __OpenBSD__ 
+uid_t realUid = -1;
+gid_t realGid = -1;
+#endif
+
 #include <errno.h>
 extern int errno;
 
@@ -825,6 +830,22 @@ char	*argv[];
 	    else
 		UseMsg();
 	}
+#ifdef __OpenBSD__
+	else if ( strcmp(argv[i], "-uid") == 0)
+	{
+		if (++i < argc) 
+			realUid = atoi(argv[i]);
+		else
+			UseMsg ();
+	}
+	else if ( strcmp(argv[i], "-gid") == 0)
+	{
+		if (++i < argc) 
+			realGid = atoi(argv[i]);
+		else
+			UseMsg ();
+	}
+#endif
 	else if ( strcmp( argv[i], "-help") == 0)
 	{
 	    UseMsg();
