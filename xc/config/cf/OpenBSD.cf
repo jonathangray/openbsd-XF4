@@ -128,9 +128,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  else
 #    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
 #  endif
-#  ifndef GccWarningOptions
-#    define GccWarningOptions -Wall -Wpointer-arith
-#  endif
 #endif
 
 #define GccGasOption 		-DGCCUSESGAS
@@ -736,6 +733,10 @@ install:: fonts.alias							@@\
 #  define OSBinaryType			/**/
 # endif
 #endif
+
+#  if !defined(GccWarningOptions)
+#    define GccWarningOptions -Wall -Wpointer-arith
+#  endif
 
 /* This must come last */
 #if OSMajorVersion == 2 && OSMinorVersion >= 8 || OSMajorVersion > 2
