@@ -10,8 +10,18 @@ A default /etc/X11/XF86Config is installed that uses this driver. So
 you can just use 'startx' or xdm to start X without further
 configuration. 
 
-Currently, only TGA video hardware is supported. See the tga(4) manual 
-page for instructions on setting the resolution of a TGA card. 
+Currently, TGA video hardware is supported as well as a few VGA cards
+are supported. 
+
+VGA cards support is available only on BWX based machines. 
+The following cards have been successfully tested for now:
+
+* Matrox MGA 2064 (8, 16 and 24 bits depth)
+* ATI Rage Pro (works with 'Option "NoAccel"')
+* Cirrus Logics CL5430 (works with 'Option "NoAccel"')
+
+See the tga(4) manual page for instructions on setting
+the resolution of a TGA card.
 
 Start either xdm(1) or startx(1).
 
