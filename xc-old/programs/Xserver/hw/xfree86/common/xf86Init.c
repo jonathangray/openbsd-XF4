@@ -441,7 +441,7 @@ extern void xf86DropPriv(void);
 void
 OsVendorInit()
 {
-#ifdef __OpenBSD__
+#if 0
 	static Bool been_here = FALSE;
 	if (!been_here) {
 		xf86DropPriv();

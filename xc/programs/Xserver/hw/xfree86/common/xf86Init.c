@@ -1069,7 +1069,7 @@ OsVendorInit(void)
 #endif
 #endif
 
-#ifdef __OpenBSD__		/* Heh */
+#if defined(__OpenBSD__) && !defined(__i386__)
   if (!beenHere) {
 	  xf86DropPriv();
   }
