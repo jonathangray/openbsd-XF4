@@ -72,16 +72,27 @@ xlogin*greetColor: CadetBlue
 xlogin*borderWidth: 2
 xlogin*frameWidth: 5
 xlogin*innerFramesWidth: 2
-xlogin*shdColor: #415b50
-xlogin*hiColor: #19a86c
-xlogin*greetColor: #a6d3e9
+
+! top/left border
+xlogin*hiColor: #6d8aa2
+
+! bottom/right border
+xlogin*shdColor: #012c66
+
+! 'Welcome to..' text color
+xlogin*greetColor: #000000
 #endif /* XPM */
 /**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
-xlogin*background: #337359
+! flood fill
+xlogin*background: #2559a5
 /**/#endif
 xlogin*failColor: red
-*Foreground: #0000ae
-*Background: #808080
+
+! 'Login:' and 'Password:'
+*Foreground: #fbfeff
+
+! border/shadow
+*Background: #000000
 /**/#else
 #ifdef XPM
 xlogin*borderWidth: 3
