@@ -24,9 +24,7 @@ id3=$HOME/.ssh/id_rsa
 if [ -e /usr/bin/ssh-agent ] && [ -f $id1 -o -f $id2 -o -f $id3 ];
 then
 	eval `ssh-agent -s`
-	for f in $id1 $id2 $id3; do
-		[ -f $f ] && ssh-add $f < /dev/null
-	done
+	ssh-add $id1 $id2 $id3 < /dev/null
 fi
 
 do_exit() {
