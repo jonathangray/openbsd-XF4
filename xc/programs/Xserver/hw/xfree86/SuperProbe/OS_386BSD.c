@@ -78,7 +78,11 @@
      /* NetBSD's wscons has a PCVT compatibility module. */
 #    include <dev/wscons/wsdisplay_usl_io.h>
 #   else
-#    include <machine/pcvt_ioctl.h>
+#    if defined(__OpenBSD__) && defined(WSCONS_SUPPORT)
+#     include <dev/wscons/wsdisplay_usl_io.h>
+#    else
+#     include <machine/pcvt_ioctl.h>
+#    endif
 #   endif
 #  endif
 #  ifdef SYSCONS_SUPPORT
