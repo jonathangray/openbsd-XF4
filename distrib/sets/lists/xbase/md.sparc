@@ -1,3 +1,4 @@
+./etc/X11/app-defaults/Xvidtune
 ./etc/X11/xkb
 ./etc/X11/xkb/compat
 ./etc/X11/xkb/compat.dir
@@ -61,6 +62,7 @@
 ./etc/X11/xkb/keycodes/sgi/iris
 ./etc/X11/xkb/keycodes/sony
 ./etc/X11/xkb/keycodes/sun
+./etc/X11/xkb/keycodes/wscons
 ./etc/X11/xkb/keycodes/xfree86
 ./etc/X11/xkb/keycodes/xfree98
 ./etc/X11/xkb/keymap
@@ -250,9 +252,12 @@
 ./usr/X11R6/include/X11/extensions/xf86mscstr.h
 ./usr/X11R6/include/X11/extensions/xf86vmode.h
 ./usr/X11R6/include/X11/extensions/xf86vmstr.h
+./usr/X11R6/lib/X11/etc/xterm.termcap
+./usr/X11R6/lib/X11/etc/xterm.terminfo
 ./usr/X11R6/lib/X11/fonts/PEX
 ./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
 ./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
+./usr/X11R6/lib/X11/fonts/Type1
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/libPEX5.a
 ./usr/X11R6/lib/libPEX5.so.6.0
