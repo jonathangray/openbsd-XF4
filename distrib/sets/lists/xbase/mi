@@ -218,6 +218,8 @@
 ./usr/X11R6/lib/libdpstk.a
 ./usr/X11R6/lib/libdpstk.so.1.0
 ./usr/X11R6/lib/libfntstubs.a
+./usr/X11R6/lib/libfreetype.a
+./usr/X11R6/lib/libfreetype.so.6.0
 ./usr/X11R6/lib/liboldX.a
 ./usr/X11R6/lib/liboldX.so.6.0
 ./usr/X11R6/lib/libpsres.a
