@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.73 2002/02/10 13:10:52 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.74 2002/02/13 19:29:30 matthieu Exp $
 
 
 
@@ -789,6 +789,8 @@ install:: fonts.alias							@@\
 
 # define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
 # define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DDDXOSINIT
+
+# define XkbServerDefines  -DXKB_ALWAYS_USES_SOFT_REPEAT
 
 /* FreeType2 don't work on 64bit machines */
 # define BuildFreetype2Library  NO
