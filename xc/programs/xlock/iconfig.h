@@ -415,7 +415,7 @@ PASSWDDEF = -DHAVE_SHADOW
 BITMAPTYPE = x11
 PIXMAPTYPE = x11
 #else
-#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture)
+#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture) || defined(OpenBSDArchitecture)
 SLEEPDEF = -DHAVE_USLEEP
 BITMAPTYPE = bsd
 PIXMAPTYPE = bsd
