@@ -3504,9 +3504,14 @@ MGASwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 #ifdef USEMGAHAL
      MGA_HAL(
 	fdIn = fopen("/tmp/mgaDriverIn", "rt");
+#ifdef MATROX_WRITEBACK
 	fdOut = fopen("/tmp/mgaDriverOut", "wt");
- 
-	if(fdIn && fdOut)
+#endif
+	if(fdIn
+#ifdef MATROX_WRITEBACK
+	   && fdOut
+#endif
+	    )
 	{
  
 	    fgets(sCmdIn, 255, fdIn);
@@ -3519,11 +3524,11 @@ MGASwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 		/* Remove file and close file descriptor */
 		remove("/tmp/mgaDriverIn");
 		fclose(fdIn);
- 
+#ifdef MATROX_WRITEBACK
 		/* Write output data to output file for calling application */
 		fputs(sCmdOut, fdOut);
 		fclose(fdOut);
- 
+#endif
 		mode->Flags &= 0x7FFFFFFF;
 		return TRUE;
 	    }
