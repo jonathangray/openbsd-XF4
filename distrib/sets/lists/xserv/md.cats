@@ -94,7 +94,6 @@
 ./usr/X11R6/lib/modules/libxf8_16bpp.a
 ./usr/X11R6/lib/modules/libxf8_32bpp.a
 ./usr/X11R6/man/cat1/XDarwin.0
-./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xprt.0
 ./usr/X11R6/man/cat1/Xserver.0
