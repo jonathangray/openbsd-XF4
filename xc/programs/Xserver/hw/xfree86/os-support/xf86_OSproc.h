@@ -229,6 +229,9 @@ extern void xf86KbdEvents(void);
 extern int  xf86XqueKbdProc(DeviceIntPtr, int);
 extern void xf86XqueEvents(void);
 #endif
+#ifdef WSCONS_SUPPORT
+extern void xf86WSKbdEvents(void);
+#endif
 extern PMClose xf86OSPMOpen(void);
 
 #ifdef NEED_OS_RAC_PROTOS

@@ -411,36 +411,3 @@ GetTimeInMillis()
 }
 #endif /* DDXTIME && !QNX4 */
 
-#ifdef WSCONS_SUPPORT
-
-#define NUMEVENTS 64
-
-static void
-wsconssig(fd, closure)
-    int fd;
-    void *closure;
-{
-    static struct wscons_event events[NUMEVENTS];
-    int n, i;
-
-    n = read(fd, events, sizeof events);
-    if (n <= 0)
-	return;
-    n /= sizeof(struct wscons_event);
-    for (i = 0; i < n; i++)
-	xf86PostWSKbdEvent(&events[i]);
-}
-
-int
-xf86WSKbdProc(pKeyboard, what)
-   DeviceIntPtr pKeyboard;	/* Keyboard to manipulate */
-   int what;			/* What to do to it */
-{
-    switch (what) {
-    case DEVICE_INIT:
-	xf86FlushInput(xf86Info.kbdFd);
-	xf86InstallSIGIOHandler(xf86Info.kbdFd, wsconssig, pKeyboard);
-    }
-    return xf86KbdProc(pKeyboard, what);
-}
-#endif /* WSCONS_SUPPORT */

@@ -1003,10 +1003,8 @@ configInputKbd(IDevPtr inputp)
     xfree(s);
 #ifdef WSCONS_SUPPORT
   } else if (xf86NameCmp(s, "wskbd") == 0) {
-     int xf86WSKbdProc(DeviceIntPtr, int);
-
-     xf86Info.kbdProc    = xf86WSKbdProc;
-     xf86Info.kbdEvents  = NULL;
+     xf86Info.kbdProc    = xf86KbdProc;
+     xf86Info.kbdEvents  = xf86WSKbdEvents;
      xfree(s);
      s = xf86SetStrOption(inputp->commonOptions, "Device", NULL);
      xf86Msg(X_CONFIG, "Keyboard: Protocol: wskbd\n");
