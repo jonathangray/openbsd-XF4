@@ -46,7 +46,9 @@
 #include "xf86xvmc.h"
 #include "xf86cmap.h"
 #include "xf86fbman.h"
+#ifdef XFreeXDGA
 #include "dgaproc.h"
+#endif
 #include "dpmsproc.h"
 #include "vidmodeproc.h"
 #include "xf86miscproc.h"
@@ -312,6 +314,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMFUNC(xf86ZoomViewport)
    SYMFUNC(xf86GetPointerScreenFuncs)
 
+#ifdef XFreeXDGA
    /* xf86DGA.c */
    /* For drivers */
    SYMFUNC(DGAInit)
@@ -335,6 +338,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMFUNC(DGACreateColormap)
    SYMFUNC(DGAOpenFramebuffer)
    SYMFUNC(DGACloseFramebuffer)
+#endif
 
    /* xf86DPMS.c */
    SYMFUNC(xf86DPMSInit)

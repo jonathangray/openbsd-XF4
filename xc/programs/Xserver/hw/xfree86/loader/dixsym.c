@@ -305,9 +305,11 @@ LOOKUP dixLookupTab[] = {
   SYMFUNC(AssignTypeAndName)
 #endif
 
+#ifdef XFreeXDGA
   /* xf86DGA.c */
   /* XXX This is exported from the DDX, not DIX. */
   SYMVAR(XDGAEventBase)
+#endif
 
   /* librender.a */
 #ifdef RENDER

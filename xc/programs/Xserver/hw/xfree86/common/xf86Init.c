@@ -815,7 +815,11 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	 * don't, will wrap them.
 	 */
 	xf86Screens[i]->EnableDisableFBAccess = xf86EnableDisableFBAccess;
+#ifdef XFreeXDGA
 	xf86Screens[i]->SetDGAMode = xf86SetDGAMode;
+#else
+	xf86Screens[i]->SetDGAMode = NULL;
+#endif
 	scr_index = AddScreen(xf86Screens[i]->ScreenInit, argc, argv);
       if (scr_index == i) {
 	/*
