@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.122 2003/05/14 09:18:04 mho Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.123 2003/11/24 19:01:16 mickey Exp $
 
 
 
@@ -443,16 +443,29 @@ install:: fonts.alias							@@\
  */
 #ifdef HPArchitecture
 
-# ifndef BuildServer
-#  define BuildServer		NO
-# endif
-# define InstallFontAliases	InstallFontAliasesNoComment
+# define XF86Server		YES
+# define HasWeakSymbols		YES
 # define HasSharedLibraries     NO
 # define HasDlopen              NO
 # define BuildGlxExt            NO
 # define BuildGLXLibrary        NO
 
-#include <xfree86.cf>
+# define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+
+# if XF86Server
+#   ifndef DoLoadableServer
+#     define DoLoadableServer	NO
+#   endif
+#   define XF86OSCardDrivers	wsfb
+#   define XFree86ConsoleDefines -DWSCONS_SUPPORT
+
+    /* Support for USB Mices */
+#   ifndef UsbMouseSupport
+#     define UsbMouseSupport	YES
+#   endif
+# endif
+
+# include <xfree86.cf>
 
 #endif /* HPArchitecture */
 
