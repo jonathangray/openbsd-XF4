@@ -162,6 +162,115 @@ static struct pam_conv PAM_conversation = {
 };
 #endif /* USE_PAM */
 
+#ifdef USE_BSDAUTH
+int
+Verify (struct display *d, struct greet_info *greet, struct verify_info *verify)
+{
+	struct passwd	*p;
+	login_cap_t	*lc;
+	auth_session_t	*as;
+	char		*style, *shell, *home, *s, **argv;
+	char		path[MAXPATHLEN];
+	int		authok;
+
+	/* User may have specified an authentication style. */
+	if ((style = strchr(greet->name, ':')) != NULL)
+		*style++ = '\0';
+
+	Debug ("Verify %s, style %s ...\n", greet->name,
+	    style ? style : "default");
+
+	p = getpwnam (greet->name);
+	endpwent();
+
+	if (!p || strlen (greet->name) == 0) {
+		Debug("getpwnam() failed.\n");
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+
+	if ((lc = login_getclass(p->pw_class)) == NULL) {
+		Debug("login_getclass() failed.\n");
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+	if ((style = login_getstyle(lc, style, "xdm")) == NULL) {
+		Debug("login_getstyle() failed.\n");
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+	if ((as = auth_open()) == NULL) {
+		Debug("auth_open() failed.\n");
+		login_close(lc);
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+	if (auth_setoption(as, "login", "yes") == -1) {
+		Debug("auth_setoption() failed.\n");
+		login_close(lc);
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+
+	/* Set up state for no challenge, just check a response. */
+	auth_setstate(as, 0);
+	auth_setdata(as, "", 1);
+	auth_setdata(as, greet->password, strlen(greet->password) + 1);
+
+	/* Build path of the auth script and call it */
+	snprintf(path, sizeof(path), _PATH_AUTHPROG "%s", style);
+	auth_call(as, path, style, "-s", "response", greet->name, NULL);
+	authok = auth_getstate(as);
+
+	if ((authok & AUTH_ALLOW) == 0) {
+		Debug("password verify failed\n");
+		bzero(greet->password, strlen(greet->password));
+		auth_close(as);
+		login_close(lc);
+		return 0;
+	}
+	/* Run the approval script */
+	if (!auth_approval(as, lc, greet->name, "auth-xdm")) {
+		Debug("login not approved\n");
+		bzero(greet->password, strlen(greet->password));
+		auth_close(as);
+		login_close(lc);
+		return 0;
+	}
+	auth_close(as);
+	login_close(lc);
+	/* Check empty passwords against allowNullPasswd */
+	if (!greet->allow_null_passwd && strlen(greet->password) == 0) {
+		Debug("empty password not allowed\n");
+		return 0;
+	}
+	/* Only accept root logins if allowRootLogin resource is set */
+	if (p->pw_uid == 0 && !greet->allow_root_login) {
+		Debug("root logins not allowed\n");
+		bzero(greet->password, strlen(greet->password));
+		return 0;
+	}
+
+	/*
+	 * Shell must be in /etc/shells 
+	 */
+	for (;;) {
+		s = getusershell();
+		if (s == NULL) {
+			/* did not found the shell in /etc/shells 
+			   -> failure */
+			Debug("shell not in /etc/shells\n");
+			bzero(greet->password, strlen(greet->password));
+			endusershell();
+			return 0;
+		}
+		if (strcmp(s, p->pw_shell) == 0) {
+			/* found the shell in /etc/shells */
+			endusershell();
+			break;
+		}
+	} 
+#else /* !USE_BSDAUTH */
 int
 Verify (struct display *d, struct greet_info *greet, struct verify_info *verify)
 {
@@ -336,6 +445,7 @@ done:
 	PAM_BAIL;
 #undef PAM_BAIL
 #endif /* USE_PAM */
+#endif /* USE_BSDAUTH */
 
 	Debug ("verify succeeded\n");
 	/* The password is passed to StartClient() for use by user-based

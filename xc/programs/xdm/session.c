@@ -62,14 +62,6 @@ from The Open Group.
 #endif
 #endif
 
-#ifdef CSRG_BASED
-#include <sys/param.h>
-#ifdef HAS_SETUSERCONTEXT
-#include <login_cap.h>
-#include <pwd.h>
-#endif
-#endif
-
 static	int	runAndWait (char **args, char **environ);
 
 #if defined(CSRG_BASED) || defined(__osf__) || defined(__DARWIN__)

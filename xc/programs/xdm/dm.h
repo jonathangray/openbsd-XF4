@@ -119,6 +119,16 @@ typedef union wait	waitType;
 #include <security/pam_appl.h>
 #endif
 
+#ifdef CSRG_BASED
+#include <sys/param.h>
+#ifdef HAS_SETUSERCONTEXT
+#include <login_cap.h>
+#include <pwd.h>
+#ifdef USE_BSDAUTH
+#include <bsd_auth.h>
+#endif
+#endif
+#endif
 
 # define waitCompose(sig,core,code) ((sig) * 256 + (core) * 128 + (code))
 # define waitVal(w)	waitCompose(waitSig(w), waitCore(w), waitCode(w))
