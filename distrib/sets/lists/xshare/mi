@@ -633,6 +633,7 @@
 ./usr/X11R6/lib/X11/config/Oki.cf
 ./usr/X11R6/lib/X11/config/OpenBSD.cf
 ./usr/X11R6/lib/X11/config/OpenBSDLib.rules
+./usr/X11R6/lib/X11/config/OpenBSDLib.tmpl
 ./usr/X11R6/lib/X11/config/QNX4.cf
 ./usr/X11R6/lib/X11/config/QNX4.rules
 ./usr/X11R6/lib/X11/config/Server.tmpl
