@@ -662,10 +662,10 @@ install:: fonts.alias							@@\
 # endif
 
 # ifndef XmacppcServer
-#   define XmacppcServer	YES
+#   define XmacppcServer	NO
 # endif
 # ifndef XF86Server
-#   define XF86Server		NO
+#   define XF86Server		YES
 # endif
 
 /* Definitions for building the Xmacppc server */
