@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.42 2004/03/30 00:21:45 millert Exp $
+#	$OpenBSD: Makefile,v 1.43 2004/11/03 18:45:25 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -29,7 +29,7 @@ HOSTDEF=xc/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
 HOSTDEFo=xc-old/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEFo=xc-old/config/cf/host.def
-XCONFIG=xc/${BINDIST}/OpenBSD-${XMACH}/XF86Config
+XCONFIG=xc/${BINDIST}/OpenBSD-${XMACH}/xorg.conf
 
 .if ${MACHINE} == i386 || ${MACHINE} == mac68k
 NEED_XC_OLD?=yes
@@ -127,8 +127,8 @@ release-install:
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 .if ${MACHINE} == macppc || ${MACHINE} == alpha || ${MACHINE} == sparc
-	@if [ -f $(DESTDIR)/etc/X11/XF86Config ]; then \
-	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/XF86Config; \
+	@if [ -f $(DESTDIR)/etc/X11/xorg.conf ]; then \
+	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/xorg.conf; \
 	else set -x; \
 	 ${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 644 \
 		${XCONFIG} ${DESTDIR}/etc/X11 ; \

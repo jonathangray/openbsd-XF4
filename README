@@ -1,5 +1,5 @@
 
-		Notes on building XFree86 for OpenBSD X hackers
+		Notes on building X.Org for OpenBSD X hackers
 
 
 This document presents some techniques that can be useful for people
@@ -17,10 +17,9 @@ The XF4 directory has several sub-directories :
            for the hp300 port.
 - xc-old:  a partial XFree86 3.3.6 source tree, used to build the
            XFree86 3.3.6 servers on i386 and mac68k.
-- xc:      the XFree86 4.4.0 source tree, augmented with some OpenBSD
-           additions (xlock, fvwm, wm2, kerberos apps, the wsfb
-           module, the usb tablet input driver) and minus the files 
-           with the new XFree86 1.1 license).
+- xc:      the X.Org 6.8.1 source tree, augmented with some OpenBSD
+	   additions (xlock, fvwm, wm2, the wsfb module, the usb
+	   tablet input driver). 
 
 o Shadow trees
   ------------
@@ -90,8 +89,8 @@ install:   install programs (recursive, should be run as root)
 install.man: install manual pages (recursive, should be run as root)
 
 In xc/programs/Xserver, there's a special target 'load<Server>' to
-just relink the specified X server. For instance to relink the 'XFree86'
-server, use 'make loadXFree86', to relink the Xnest server use 'make
+just relink the specified X server. For instance to relink the 'Xorg'
+server, use 'make loadXorg', to relink the Xnest server use 'make
 loadXnest' and so on...
 
 o How to build something with debug information?
@@ -114,7 +113,7 @@ in the directory(ies) in which you need debugging information.
 If you did that in a subdirectory of the Xserver, finish by relinking
 the X server:
 
-    make loadXFree86
+    make loadXorg
 
 in xc/programs/Xserver.
 
@@ -140,7 +139,7 @@ o Building a X server only
   ------------------------
 
 One of the most common configuration hacking is to build only a
-statically linked XFree86 server without spending time in all the rest.
+statically linked Xorg server without spending time in all the rest.
 
 Use the following host.def file:
 
@@ -178,7 +177,7 @@ build. There are several ways to achieve that:
 
 - if you're using the Makefile in XF4 copy it to
   xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-xxxx, where xxx
-  is the XFree86 name for your architecture. It will be copied into
+  is the X.Org name for your architecture. It will be copied into
   place in the first stages of 'make compile'
 - if you're using the xc Makefile, you should put it directly into
   xc/config/cf in the shadow tree. This allows you to have several
@@ -259,13 +258,13 @@ which is generally not what you want.
 o Other tricks about OpenBSD.cf
   ------------------------------
 
-- Most of the server build configuration is controlled by xfree86.cf,
+- Most of the server build configuration is controlled by xorg.cf,
   which is included last in most architecture dependent
   sections. Before including this file, variables are set to OpenBSD
   specific values to control its actions.
   Some old servers still use xf86.rules or even no external file to
   configure their X server. I'd recommend that they switch to the use of
-  xfree86.cf.
+  xorg.cf.
 
 - Building the libraries is handled on OpenBSD 2.9 and later by
   OpenBSDLib.rules. This file has a set of rules that apply to both
@@ -331,7 +330,7 @@ Imake.tmpl
     host.def
     xf86site.def
   OpenBSD.cf
-    xfree86.cf
+    xorg.cf
       xf86.rules
     OpenBSDLib.rules
   site.def
@@ -344,7 +343,7 @@ Imake.tmpl
     Threads.tmpl
     Libray.tmpl
     Server.tmpl
-      xf86.tmpl
+      xorg.tmpl
     ServerLib.tmpl
 
 Note that host.def is included twice, before and after OpenBSD.cf. The
@@ -425,4 +424,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/include to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.15 2004/08/16 21:49:04 jmc Exp $
+$Id: README,v 1.16 2004/11/03 18:45:25 matthieu Exp $
