@@ -81,6 +81,7 @@
 ./usr/X11R6/bin/xfsinfo
 ./usr/X11R6/bin/xftcache
 ./usr/X11R6/bin/xfwp
+./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xgc
 ./usr/X11R6/bin/xhost
 ./usr/X11R6/bin/xieperf
@@ -112,6 +113,7 @@
 ./usr/X11R6/bin/xsm
 ./usr/X11R6/bin/xstdcmap
 ./usr/X11R6/bin/xterm
+./usr/X11R6/bin/xvidtune
 ./usr/X11R6/bin/xvinfo
 ./usr/X11R6/bin/xwd
 ./usr/X11R6/bin/xwininfo
@@ -223,4 +225,6 @@
 ./usr/X11R6/lib/libxkbui.a
 ./usr/X11R6/man
 ./usr/X11R6/man/cat1
+./usr/X11R6/man/cat1/xgamma.0
+./usr/X11R6/man/cat1/xvidtune.0
 ./usr/X11R6/man/whatis.db

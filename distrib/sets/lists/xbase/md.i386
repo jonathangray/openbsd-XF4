@@ -1,5 +1,4 @@
 ./etc/X11/app-defaults/XF86Cfg
-./etc/X11/app-defaults/Xvidtune
 ./etc/X11/xkb
 ./etc/X11/xkb/compat
 ./etc/X11/xkb/compat.dir

@@ -31,6 +31,7 @@
 ./etc/X11/app-defaults/Xman
 ./etc/X11/app-defaults/Xmessage
 ./etc/X11/app-defaults/Xmh
+./etc/X11/app-defaults/Xvidtune
 ./etc/X11/fs
 ./etc/X11/fs/config
 ./etc/X11/lbxproxy
