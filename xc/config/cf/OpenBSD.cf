@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.90 2002/05/03 20:46:00 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.91 2002/05/22 20:03:49 matthieu Exp $
 
 
 
@@ -108,8 +108,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #if OSMajorVersion >= 3 
 # define HasLibUsb		YES
 # ifndef HasLibUsbHid
-#  /* if OSMajorVersion == 3 && OsMinorVersion > 0 || OSMajorVersion > 3 */
-#  if 1
+#  if OSMajorVersion == 3 && OSMinorVersion > 0 || OSMajorVersion > 3 
 #   define HasLibUsbHid		YES
 #   define UsbHidLib 		-lusbhid
 #  else
@@ -356,8 +355,9 @@ install:: fonts.alias							@@\
 
 # define OptimizedCDebugFlags	-O2
 
-# define HasWeakSymbols		NO
-# define UseElfFormat		YES
+# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+#  define HasWeakSymbols		YES
+# endif
 
 /* XXX Xvfb currently causes a linker error: */
 /* XXX crtbegin.c(.fini+0x10): relocation truncated to fit: BRADDR text */
@@ -401,6 +401,8 @@ install:: fonts.alias							@@\
  */
 #ifdef i386Architecture
 
+#define HasWeakSymbols			YES
+
 /* To use the NetBSD Aperture driver */
 # ifndef HasNetBSDApertureDriver
 #  define HasNetBSDApertureDriver	YES
@@ -443,7 +445,6 @@ install:: fonts.alias							@@\
 #  endif
 # endif
 
-
 /* Usb Tablets */
 # ifndef OSXInputDrivers
 #  if HasLibUsb
@@ -454,11 +455,6 @@ install:: fonts.alias							@@\
 /* A hack to work around an optimization problem with gcc 2.95.2 */
 # if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 6)
 #  define GccOptBug295
-# endif
-
-/* SuperProbe  should be built on OpenBSD/i386 */
-# ifndef BuildSuperProbe
-#  define BuildSuperProbe	YES
 # endif
 
 /* Build configuration tools on the i386 */
@@ -485,7 +481,6 @@ install:: fonts.alias							@@\
  */
 
 # define PositionIndependentCFlags -fpic -fno-function-cse
-# define HasWeakSymbols		NO
 # define BuildGlxExt		NO
 # define BuildGLXLibrary	YES
  
@@ -523,7 +518,6 @@ install:: fonts.alias							@@\
 
 # define ServerExtraDefines	-DXFree86Server
 # define UnalignedReferencesAllowed YES
-# define HasWeakSymbols		NO
 # define HasSharedLibraries	NO
 # define HasDlopen		NO
 
@@ -674,8 +668,9 @@ install:: fonts.alias							@@\
 # endif
 
 # define UseElfFormat		YES
-# define HasWeakSymbols		NO
-
+# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+#  define HasWeakSymbols	YES
+# endif
 # ifndef GccWarningOptions
 #  if XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
@@ -724,6 +719,7 @@ install:: fonts.alias							@@\
  */
 #ifdef SparcArchitecture
 
+#define HasWeakSymbols		YES
 # define OptimizedCDebugFlags	-O2
 # define ServerOSDefines 	-DDDXOSINIT
 # define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
@@ -759,7 +755,9 @@ install:: fonts.alias							@@\
 
 # define OptimizedCDebugFlags	-O2
 
-# define HasWeakSymbols		NO
+# if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
+#  define HasWeakSymbols	YES
+# endif
 # define UseElfFormat		YES
 
 # ifndef XF86Server
@@ -796,7 +794,7 @@ install:: fonts.alias							@@\
  */
 
 #ifndef ServerOSDefines
-#  define ServerOSDefines 	/**/
+#  define ServerOSDefines 		/**/
 #endif
 
 #ifndef ServerExtraDefines
@@ -804,28 +802,24 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef HasWeakSymbols
-#define HasWeakSymbols YES
+#define HasWeakSymbols			NO
 #endif
 
 /*
  * Multi-thread safe libs 
  */	
 #if HasWeakSymbols == YES && (OSMajorVersion == 2 && OSMinorVersion >= 6 || OSMajorVersion >= 3)
-# define HasPosixThreads	YES
-# define ThreadedX		YES
-# define SystemMTDefines	-D_REENTRANT
-# if HasLibPthread
-#  define ThreadsLibraries	-lpthread
-# else
-#  define BuildThreadStubLibrary  YES 
-#  define NeedUIThrStubs          YES 
-#  define ThreadsCompileFlags	-pthread
-#  define ThreadsLibraries	-pthread
-# endif
+# define HasPosixThreads		YES
+# define ThreadedX			YES
+# define SystemMTDefines		-D_REENTRANT
+# define BuildThreadStubLibrary		YES 
+# define NeedUIThrStubs			YES 
+# define ThreadsCompileFlag		-pthread
+# define ThreadsLibraries		-pthread
 #endif
 
 /* Set this to YES when getpwuid_r is added to libc_r */
-#define HasThreadSafeAPI      NO
+#define HasThreadSafeAPI		NO
 
 /* Dynamic loading of i18n modules in libX11 has too many problems for now */
 #ifndef BuildLoadableXlibI18n
@@ -902,9 +896,8 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef DlLibrary
-/* # if (OSMajorVersion < 3 || OSMajorVersion == 3 && OsMinorVersion == 0)\
-    && UseElfFormat */
-# if 0
+# if (OSMajorVersion < 3 || OSMajorVersion == 3 && OSMinorVersion == 0)\
+    && UseElfFormat 
 #  define DlLibrary -ldl
 # else
 #  define DlLibrary /**/
