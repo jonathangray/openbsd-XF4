@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.14 2002/07/25 19:05:58 miod Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.15 2002/07/25 22:07:36 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -73,7 +73,7 @@
 
 #define WSFB_DEFAULT_DEV "/dev/ttyC0"
 
-#define DEBUG 0
+#define DEBUG 1
 
 #if DEBUG
 # define TRACE_ENTER(str)       ErrorF("wsfb: " str " %d\n",pScrn->scrnIndex)
@@ -109,11 +109,13 @@ static void WsfbSave(ScrnInfoPtr);
 static void WsfbRestore(ScrnInfoPtr);
 
 /* dga stuff */
+#ifdef XFreeXDGA
 static Bool WsfbDGAOpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 				   int *, int *, int *);
 static Bool WsfbDGASetMode(ScrnInfoPtr, DGAModePtr);
 static void WsfbDGASetViewport(ScrnInfoPtr, int, int, int);
 static Bool WsfbDGAInit(ScrnInfoPtr, ScreenPtr);
+#endif
 
 /* helper functions */
 static int wsfb_open(char *);
@@ -726,7 +728,9 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		}
 	}
 
+#ifdef XFreeXDGA
 	WsfbDGAInit(pScrn, pScreen);
+#endif
 
 	xf86SetBlackWhitePixels(pScreen);
 	miInitializeBackingStore(pScreen);
@@ -977,6 +981,7 @@ WsfbRestore(ScrnInfoPtr pScrn)
 	}
 }
 
+#ifdef XFreeXDGA
 /***********************************************************************
  * DGA stuff
  ***********************************************************************/
@@ -1115,3 +1120,4 @@ WsfbDGAInit(ScrnInfoPtr pScrn, ScreenPtr pScreen)
 	return (DGAInit(pScreen, &WsfbDGAFunctions,
 			fPtr->pDGAMode, fPtr->nDGAMode));
 }
+#endif
