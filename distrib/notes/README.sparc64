@@ -1,8 +1,140 @@
 Post-installation instructions for XFree86 on OpenBSD/sparc64
 -------------------------------------------------------------
 
-Currently, OpenBSD/sparc64 doesn't support any Xserver, so, sorry, 
-there is nothing to configure (yet).
+- Sparc64 installation is pretty easy since there are not too many
+choices available.  The big determination is where to get mouse
+input from.  A default XF86Config is given at the bottom of this
+file, but it will need to be modified to fit the machine.
 
-$OpenBSD: README.sparc64,v 1.1 2001/10/06 16:47:59 matthieu Exp $
+- For systems with serial mice on Zilog ports (zstty), the following
+'ServerLayout' section should be used in place of the one provided:
 
+Section "ServerLayout"
+	Indentifier	"wsfb"
+	Screen 0	"Screen0" 0 0
+	InputDevice	"zsmouse0" "CorePointer"
+	InputDevice	"Keyboard0" "CoreKeyboard"
+EndSection
+
+- For systems with serial mice on 'com' ports, the following
+'ServerLayout' section should be used in place of the one provided:
+
+Section "ServerLayout"
+	Indentifier	"wsfb"
+	Screen 0	"Screen0" 0 0
+	InputDevice	"commouse0" "CorePointer"
+	InputDevice	"Keyboard0" "CoreKeyboard"
+EndSection
+
+- For systems with USB mice, the following 'ServerLayout' section should
+be used in place of the one provided:
+
+Section "ServerLayout"
+	Indentifier	"wsfb"
+	Screen 0	"Screen0" 0 0
+	InputDevice	"usbmouse0" "CorePointer"
+	InputDevice	"Keyboard0" "CoreKeyboard"
+EndSection
+
+- What follows is the whole X config.
+
+-- Cut Here --
+
+Section "ServerLayout"
+	Identifier	"wsfb"
+	Screen	0	"Screen0" 0 0
+	InputDevice    "usbmouse0" "CorePointer"
+	InputDevice    "Keyboard0" "CoreKeyboard"
+EndSection
+	
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/CID/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+EndSection
+
+Section "Module"
+    Load        "type1"
+    Load        "freetype"
+    Load        "glx"
+    Load        "extmod"
+EndSection
+
+# All Sun keyboards (USB Type 6, Serial Type 3/4/5/6)
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "keyboard"
+	Option	    "Protocol" 	  "wskbd"
+	Option	    "Device" 	  "/dev/wskbd0"
+	Option	    "XkbRules" 	  "xfree86"
+	Option	    "XkbLayout"   "us"
+EndSection
+
+# USB Mice
+Section "InputDevice"
+	Identifier	"usbmouse0"
+	Driver		"mouse"
+	Option		"Protocol" "wsmouse"
+	Option		"Device"   "/dev/wsmouse0"
+EndSection
+
+# Serial mice on zstty ports
+Section "InputDevice"
+	Identifier	"zsmouse0"
+	Driver		"mouse"
+	Option		"Protocol" "MouseSystems"
+	Option		"Device" "/dev/ttyc"
+	Option		"Baudrate" "1200"
+EndSection
+
+# Serial mice on com ports
+Section "InputDevice"
+	Identifier	"commouse0"
+	Driver		"mouse"
+	Option		"Protocol" "MouseSystems"
+	Option		"Device" "/dev/tty00"
+	Option		"Baudrate" "1200"
+EndSection
+
+# All monitors
+Section "Monitor"
+	Identifier   "Monitor"
+	VendorName   "Unknown"
+	ModelName    "Unknown"
+# Adujst those to your monitor before using another device than wsfb 
+# or you can destroy it !!
+	HorizSync    31.5-60
+	VertRefresh  50-70
+EndSection
+
+# All framebuffers
+Section "Device"
+	Identifier	"Wsdisplay0"
+	Driver		"wsfb"
+	Option		"device" "/dev/ttyC0"
+EndSection
+
+# All framebuffers
+Section "Screen"
+	Identifier "Screen0"
+	Device     "Wsdisplay0"
+	Monitor    "Monitor"
+	DefaultDepth 8
+	SubSection "Display"
+		Depth     8
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+	EndSubSection
+EndSection
+-- Cut Here --
+
+If you encounter a problem, you can browse the entire documentation at
+http://www.xfree86.org/4.1.0/
+
+$OpenBSD: README.sparc64,v 1.2 2002/02/07 05:39:09 jason Exp $
