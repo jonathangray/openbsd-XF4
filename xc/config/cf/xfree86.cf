@@ -116,7 +116,7 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 #define XConfigFile		XF86Config
 #endif
 #ifndef XConfigDir
-#define XConfigDir		$(LIBDIR)
+#define XConfigDir		EtcX11Directory
 #endif
 #ifndef XLogFile
 #define XLogFile		XFree86
