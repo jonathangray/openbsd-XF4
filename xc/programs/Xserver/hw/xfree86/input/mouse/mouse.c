@@ -432,8 +432,6 @@ MouseCommonOptions(InputInfoPtr pInfo)
     if (pMse->emulate3Buttons) {
 	xf86Msg(X_CONFIG, "%s: Emulate3Buttons, Emulate3Timeout: %d\n",
 		pInfo->name, pMse->emulate3Timeout);
-	RegisterBlockAndWakeupHandlers (MouseBlockHandler, MouseWakeupHandler,
-					(pointer) pInfo);
     }
 
     pMse->chordMiddle = xf86SetBoolOption(pInfo->options, "ChordMiddle", FALSE);
