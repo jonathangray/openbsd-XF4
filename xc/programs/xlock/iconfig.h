@@ -15,7 +15,9 @@ XCOMM Define these now or down further below, see below for explaination.
 XCOMM  #define CPPCompiler
 #define XpmLibrary	
 XCOMM  #define XmLibrary
+#if BuildGLXLibrary == YES
 #define GLLibrary
+#endif
 XCOMM  #define TtfLibrary
 XCOMM  #define GlttLibrary
 XCOMM  #define DtSaverLibrary
