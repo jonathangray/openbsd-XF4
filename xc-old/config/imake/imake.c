@@ -341,8 +341,8 @@ typedef	unsigned char	boolean;
 
 char *cpp = NULL;
 
-char	*tmpMakefile    = "/tmp/Imf.XXXXXX";
-char	*tmpImakefile    = "/tmp/IIf.XXXXXX";
+char	*tmpMakefile    = "/tmp/Imf.XXXXXXXXXX";
+char	*tmpImakefile    = "/tmp/IIf.XXXXXXXXXX";
 char	*make_argv[ ARGUMENTS ] = {
 #ifdef WIN32
     "nmake"
@@ -961,7 +961,7 @@ const char *libc_c=
 static void get_libc_version(inFile)
   FILE* inFile;
 {
-  char aout[] = "/tmp/imakeXXXXXX";
+  char aout[] = "/tmp/imakeXXXXXXXXXX";
   FILE *fp;
   const char *format = "%s -o %s -x c -";
   char *cc;

@@ -158,7 +158,7 @@ char tmpname[32];
     in= NULL;
     haveDir= True;
 #ifdef WIN32
-    strcpy(tmpname, "\\temp\\xkb_XXXXXX");
+    strcpy(tmpname, "\\temp\\xkb_XXXXXXXXXX");
     (void) mktemp(tmpname);
 #endif
     if (XkbBaseDirectory!=NULL) {

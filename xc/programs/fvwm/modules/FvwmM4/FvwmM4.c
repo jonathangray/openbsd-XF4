@@ -221,7 +221,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
     } else {
       strlcpy(tmp_name, "/tmp",sizeof(tmp_name));
     }
-    strlcat(tmp_name, "/fvwmrcXXXXXX",sizeof(tmp_name));
+    strlcat(tmp_name, "/fvwmrcXXXXXXXXXX",sizeof(tmp_name));
     mktemp(tmp_name);
   } else {
     strlcpy(tmp_name,m4_outfile,sizeof(tmp_name));

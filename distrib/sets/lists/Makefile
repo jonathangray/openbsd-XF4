@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.9 2002/09/29 16:55:17 todd Exp $
+# $OpenBSD: Makefile,v 1.10 2003/07/02 21:18:05 todd Exp $
 
 # Various list maintenance functions
 
@@ -22,7 +22,7 @@ archs  = alpha amiga hp300 i386 mac68k macppc mvme68k sparc sparc64 vax
 		
 mdtomi:
 	@echo "Checking for common md file lines for migration to mi files:"
-	@dir=$$(mktemp -d /tmp/mdtomi.XXXXXXX); \
+	@dir=$$(mktemp -d /tmp/mdtomi.XXXXXXXXXX); \
 	i1=first; \
 	for a in ${archs}; do \
 		sort */md.$$a >> $$dir/$$a; \

@@ -221,9 +221,9 @@ one of these symbols.
 .ta 3i
 Imakefile.c	temporary input file for cpp
 .br
-/tmp/Imf.XXXXXX	temporary Makefile for -s
+/tmp/Imf.XXXXXXXXXX	temporary Makefile for -s
 .br
-/tmp/IIf.XXXXXX	temporary Imakefile if specified Imakefile uses # comments
+/tmp/IIf.XXXXXXXXXX	temporary Imakefile if specified Imakefile uses # comments
 .br
 /lib/cpp	default C preprocessor
 .DT

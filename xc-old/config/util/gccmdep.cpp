@@ -22,7 +22,7 @@ if [ -e ${TMP} ] ; then
 fi
 #if defined(HAS_MKTEMP)
 if [ -n "`type -p mktemp`" ] ; then
-    TMP="`mktemp ${TMP}.XXXXXX`" || exit 1
+    TMP="`mktemp ${TMP}.XXXXXXXXXX`" || exit 1
 fi
 #endif
 

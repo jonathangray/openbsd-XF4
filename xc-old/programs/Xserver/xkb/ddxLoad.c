@@ -242,7 +242,7 @@ int i;
     XkbEnsureSafeMapName(keymap);
     OutputDirectory(xkm_output_dir);
 #ifdef WIN32
-    strcpy(tmpname, "\\temp\\xkb_XXXXXX");
+    strcpy(tmpname, "\\temp\\xkb_XXXXXXXXXX");
     (void) mktemp(tmpname);
 #endif
 #ifdef __EMX__
