@@ -35,28 +35,61 @@ xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-69-iso8859-1
 xlogin*failFont: -adobe-helvetica-bold-o-normal--14-140-75-75-p-82-iso8859-1
 /**/#endif
 #endif /* XPM */
-/**/#ifdef COLOR
+
+/**/#if !(defined(bpp1) || defined(bpp4) || defined(bpp8) || defined(bpp15))
+/**/# if PLANES < 4 || defined(Hp300Architecture)
+/**/#  ifndef bpp1
+/**/#   define bpp1
+/**/#  endif
+/**/# else
+/**/#  if PLANES > 4
+/**/#   if PLANES > 8
+/**/#    ifndef bpp15
+/**/#     define bpp15
+/**/#    endif
+/**/#   else
+/**/#    ifndef bpp8
+/**/#     define bpp8
+/**/#    endif bpp8
+/**/#   endif
+/**/#  else
+/**/#   ifndef bpp4
+/**/#    define bpp4
+/**/#   endif
+/**/#  endif
+/**/# endif
+/**/#endif  //**/* If manual override */**//
+
+/**/#ifndef bpp1
 #ifndef XPM
 xlogin*greetColor: CadetBlue
 #else
-xlogin*borderWidth: 1
+xlogin*borderWidth: 2
 xlogin*frameWidth: 5
 xlogin*innerFramesWidth: 2
-xlogin*shdColor: #005b66
-xlogin*hiColor: #00d7ef
-xlogin*background: #00a5bd
-xlogin*greetColor: Blue3
+xlogin*shdColor: #415b50
+xlogin*hiColor: #19a86c
+xlogin*greetColor: #a6d3e9
 #endif /* XPM */
+/**/#if defined(bpp4) || defined(bpp8) || defined(bpp15)
+xlogin*background: #337359
+/**/#endif
 xlogin*failColor: red
 *Foreground: black
-*Background: #fffff0
+*Background: #808080
 /**/#else
 #ifdef XPM
 xlogin*borderWidth: 3
-xlogin*frameWidth: 0
+xlogin*frameWidth: 5
 xlogin*innerFramesWidth: 1
-xlogin*shdColor: black
-xlogin*hiColor: black
+xlogin*shdColor: white
+xlogin*hiColor: white
+xlogin*greetColor: white
+xlogin*background: black
+xlogin*failColor: white
+xlogin*promptColor: white
+*Foreground: white
+*Background: black
 #else
 xlogin*borderWidth: 3
 xlogin*Foreground: black
@@ -64,19 +97,18 @@ xlogin*Background: white
 #endif /* XPM */
 /**/#endif
 #if defined(XPM)
-/**/#if PLANES < 4 || defined(Hp300Architecture)
+/**/#ifdef bpp1
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_1bpp.xpm
-/**/#else
-/**/#if PLANES > 4
-/**/#if PLANES > 8
-xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
-/**/#else/* PLANES > 8 */
-xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
-/**/#endif/* PLANES > 8 */
-/**/#else /* PLANES > 4 */
+/**/#endif
+/**/#ifdef bpp4
 xlogin*logoFileName: BITMAPDIR/**//OpenBSD_4bpp.xpm
-/**/#endif /* PLANES > 4 */
-/**/#endif /* PLANES < 4 */
+/**/#endif
+/**/#ifdef bpp8
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_8bpp.xpm
+/**/#endif
+/**/#ifdef bpp15
+xlogin*logoFileName: BITMAPDIR/**//OpenBSD_15bpp.xpm
+/**/#endif
 #if ! defined(Hp300Architecture)
 xlogin*useShape: true
 xlogin*logoPadding: 10
