@@ -92,7 +92,6 @@
 ./usr/X11R6/lib/X11/XftConfig
 ./usr/X11R6/lib/X11/etc/xterm.termcap
 ./usr/X11R6/lib/X11/etc/xterm.terminfo
-./usr/X11R6/lib/X11/rgb.db
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/X11/xkb/compat
 ./usr/X11R6/lib/X11/xkb/compat.dir
