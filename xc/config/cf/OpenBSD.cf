@@ -305,13 +305,14 @@ install:: fonts.alias							@@\
 
 # define OptimizedCDebugFlags	-O2
 # define ServerOSDefines 	-DDDXOSINIT
-# define ServerExtraDefines	GccGasOption -D_XSERVER64
+# define ServerExtraDefines	GccGasOption -D_XSERVER64 -DXFree86Server
 
 # define HasWeakSymbols		NO
 /*
  * The code for an Alpha XF86_TGA server compiles, but it DOES NOT work
  */
 # define BuildAlphaXF86		NO
+/*
 # define BuildGlxExt		YES
 # define BuildGLXLibrary	YES
 # define BuildGLULibrary	YES
@@ -320,6 +321,7 @@ install:: fonts.alias							@@\
 # if BuildAlphaXF86
 #  include <xf86.rules>
 # endif
+*/
 
 #  define UseElfFormat		YES
 
@@ -340,7 +342,46 @@ install:: fonts.alias							@@\
 # define BuildXF86DGALibrary	NO
 # define BuildXF86DGA		NO
 
+# ifndef XF86S3Server
+#  define XF86S3Server		NO
+# endif
+# ifndef XF86S3VServer
+#  define XF86S3VServer		NO
+# endif
+# ifndef XF86Mach64Server
+#  define XF86Mach64Server	NO
+# endif
+# ifndef XF86P9000Server
+#  define XF86P9000Server	NO
+# endif
+# ifndef XF86I128Server
+#  define XF86I128Server	NO
+# endif
 # if BuildAlphaXF86
+#  ifndef XF86TGAServer
+#   define XF86TGAServer	YES
+#  endif
+# else
+#  define XF86TGAServer		NO
+# endif
+# ifndef XF86SVGAServer
+#  define XF86SVGAServer	NO
+# endif
+# ifndef XF86MonoServer
+#  define XF86MonoServer	NO
+# endif
+# ifndef XF86SvgaDrivers
+#  define XF86SvgaDrivers	mga s3v
+# endif
+# ifndef XF86Vga2Drivers
+#  define XF86Vga2Drivers	generic
+# endif
+
+# define BuildXF86VidModeExt	NO
+# define BuildXF86DGA		NO
+# define BuildXInputExt		NO
+
+# if 1
 #  include <xfree86.cf>
 # endif
 
@@ -435,6 +476,8 @@ install:: fonts.alias							@@\
 #  define BuildServer		NO
 # endif
 
+# define ServerExtraDefines	-DXFree86Server
+
 #endif /* AmigaArchitecture */
 
 
@@ -452,6 +495,8 @@ install:: fonts.alias							@@\
 # define InstallFontAliases	InstallFontAliasesNoComment
 # define UseRgbTxt		NO
 
+# define ServerExtraDefines	-DXFree86Server
+
 #endif /* Hp300Architecture */
 
 
@@ -460,10 +505,13 @@ install:: fonts.alias							@@\
  */
 #ifdef Mac68kArchitecture
 
+
 # include <xf86.rules>
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
+
+# define ServerExtraDefines	-DXFree86Server
 
 #endif /* mac68kArchitecture */
 
@@ -477,6 +525,8 @@ install:: fonts.alias							@@\
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
+
+# define ServerExtraDefines	-DXFree86Server
 
 #endif /* Mvme68kArchitecture */
 
@@ -493,7 +543,7 @@ install:: fonts.alias							@@\
 # define BootstrapCFlags       -Dsun3
 # define UnalignedReferencesAllowed	YES /* changes _XtCopyArgs() */
 /* Note: -ansi turns off -Dmc68000 */
-# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020
+# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020 -DXFree86Server
 
 # ifndef Xsun24Server
 #  define Xsun24Server		NO
