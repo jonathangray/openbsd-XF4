@@ -42,7 +42,7 @@ SU = su
 #endif
 
 CppFileTarget(Xservers.ws,Xserv.ws.cpp,-DBINDIR=$(BINDIR) -DDEFAULTVT=$(DEFAULTVT),NullParameter)
-CppFileTarget(xdm-config,xdm-conf.cpp,-DXDMDIR=$(XDMDIR) -DXDMLOGDIR=$(XDMLOGDIR) -DXDMPIDDIR=$(XDMPIDDIR)  -DHAS_DES_AUTH=$(HAS_DES_AUTH)-DSU=$(SU),NullParameter)
+CppFileTarget(xdm-config,xdm-conf.cpp,-DXDMDIR=$(XDMDIR) -DXDMLOGDIR=$(XDMLOGDIR) -DXDMPIDDIR=$(XDMPIDDIR) -DHAS_DES_AUTH=$(HAS_DES_AUTH) -DSU=$(SU),NullParameter)
 CppFileTarget(Xresources,Xres.cpp,$(XPM_DEFINES),NullParameter)
 
 LinkFile(Xservers,Xservers.$(SERVERSTYPE))
