@@ -4,7 +4,7 @@
 #include "readconfig.h"
 
 static char const rcsid[] =
-  "$Id: readconfig.c,v 1.5 2003/12/28 15:08:34 espie Exp $";
+  "$Id: readconfig.c,v 1.6 2004/01/29 22:13:15 matthieu Exp $";
 
 /************************************************************************
  *
@@ -164,6 +164,7 @@ void print_args (int numargs, BuiltinArg *args)
 #endif
 }
 
+#ifdef PRINT_DEBUG
 static void print_binding (Binding *binding)
 {
   int i;
@@ -179,23 +180,24 @@ static void print_binding (Binding *binding)
 
   ConsoleDebug (CONFIG, "\tModifiers: %d\n", binding->Modifier);
   ConsoleDebug (CONFIG, "\tAction: %s\n", binding->Action);
-  ConsoleDebug (CONFIG, "\tFunction struct: 0x%x\n", binding->Function);
+  ConsoleDebug (CONFIG, "\tFunction struct: %p\n", binding->Function);
   func = binding->Function;
   while (func) {
     for (i = 0; i < num_builtins; i++) {
       if (func->func == builtin_functions[i].func) {
-	ConsoleDebug (CONFIG, "\tFunction: %s 0x%x ", 
+	ConsoleDebug (CONFIG, "\tFunction: %s %p ", 
 		      builtin_functions[i].name, func->func);
 	break;
       }
     }
     if (i > num_builtins) {
-      ConsoleDebug (CONFIG, "\tFunction: not found 0x%x ", func->func);
+      ConsoleDebug (CONFIG, "\tFunction: not found %p ", func->func);
     }
     print_args (func->numargs, func->args);
     func = func->next;
   }
 }
+#endif 
 
 void print_bindings (Binding *list)
 {
@@ -592,7 +594,7 @@ static Function *parse_function_list (char *line)
 
   JmpArgs=0;
   while (line && (f = parse_function(&line, &stop_char))) {
-    ConsoleDebug (CONFIG, "parse_function: 0x%x\n", f->func);
+    ConsoleDebug (CONFIG, "parse_function: %p\n", f->func);
     /* extra code to check for and remove a 'label' pseudo-function */
     if (f->func==builtin_label) {
       /* scan backwards to fix up references */

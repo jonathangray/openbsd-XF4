@@ -11,7 +11,7 @@
   Some of the logic comes from pixy2, so the copyright is below.
   */
 /*
- * $Id: Picture.c,v 1.3 2003/04/01 22:36:59 matthieu Exp $
+ * $Id: Picture.c,v 1.4 2004/01/29 22:13:15 matthieu Exp $
  * Copyright 1996, Romano Giannetti. No guarantees or warantees or anything
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
@@ -383,7 +383,6 @@ color_reduce_pixmap(XpmImage *image,int color_limit) {
   int i;
   XpmColor *color_table_ptr;
   static char base_init = 'n';
-  Bool do_free;
 
   if (color_limit > 0) {                /* If colors to be limited */
     if (base_init == 'n') {             /* if base table not created yet */

@@ -137,36 +137,42 @@ void SaveButtons(button_info *b)
       if(b->swallow_mask)
 	{
 	  fprintf(stderr,"(");
-	  if(b->swallow_mask&b_NoHints)
+	  if(b->swallow_mask&b_NoHints) {
 	    if(b->swallow&b_NoHints)
 	      fprintf(stderr,"NoHints ");
 	    else
 	      fprintf(stderr,"Hints ");
-	  if(b->swallow_mask&b_Kill)
+	  }
+	  if(b->swallow_mask&b_Kill) {
 	    if(b->swallow&b_Kill)
 	      fprintf(stderr,"Kill ");
 	    else
 	      fprintf(stderr,"NoKill ");
-	  if(b->swallow_mask&b_NoClose)
+	  }
+	  if(b->swallow_mask&b_NoClose) {
 	    if(b->swallow&b_NoClose)
 	      fprintf(stderr,"NoClose ");
 	    else
 	      fprintf(stderr,"Close ");
-	  if(b->swallow_mask&b_Respawn)
+	  }
+	  if(b->swallow_mask&b_Respawn) {
 	    if(b->swallow&b_Respawn)
 	      fprintf(stderr,"Respawn ");
 	    else
 	      fprintf(stderr,"NoRespawn ");
-	  if(b->swallow_mask&b_UseOld)
+	  }
+	  if(b->swallow_mask&b_UseOld) {
 	    if(b->swallow&b_UseOld)
 	      fprintf(stderr,"UseOld ");
 	    else
 	      fprintf(stderr,"NoOld ");
-	  if(b->swallow_mask&b_UseTitle)
+	  }
+	  if(b->swallow_mask&b_UseTitle) {
 	    if(b->swallow&b_UseTitle)
 	      fprintf(stderr,"UseTitle ");
 	    else
 	      fprintf(stderr,"NoTitle ");
+	  }
 	  fprintf(stderr,") ");
 	}
       fprintf(stderr,"\"%s\" \"%s\" ",b->hangon,b->spawn);
@@ -219,36 +225,42 @@ void SaveButtons(button_info *b)
 	  if(b->c->swallow_mask)
 	    {
 	      fprintf(stderr,"Swallow (");
-	      if(b->c->swallow_mask&b_NoHints)
+	      if(b->c->swallow_mask&b_NoHints) {
 		if(b->c->swallow&b_NoHints)
 		  fprintf(stderr,"NoHints ");
 		else
 		  fprintf(stderr,"Hints ");
-	      if(b->c->swallow_mask&b_Kill)
+	      }
+	      if(b->c->swallow_mask&b_Kill) {
 		if(b->c->swallow&b_Kill)
 		  fprintf(stderr,"Kill ");
 		else
 		  fprintf(stderr,"NoKill ");
-	      if(b->c->swallow_mask&b_NoClose)
+	      }
+	      if(b->c->swallow_mask&b_NoClose) {
 		if(b->c->swallow&b_NoClose)
 		  fprintf(stderr,"NoClose ");
 		else
 		  fprintf(stderr,"Close ");
-	      if(b->c->swallow_mask&b_Respawn)
+	      }
+	      if(b->c->swallow_mask&b_Respawn) {
 		if(b->c->swallow&b_Respawn)
 		  fprintf(stderr,"Respawn ");
 		else
 		  fprintf(stderr,"NoRespawn ");
-	      if(b->c->swallow_mask&b_UseOld)
+	      }
+	      if(b->c->swallow_mask&b_UseOld) {
 		if(b->c->swallow&b_UseOld)
 		  fprintf(stderr,"UseOld ");
 		else
 		  fprintf(stderr,"NoOld ");
-	      if(b->c->swallow_mask&b_UseTitle)
+	      }
+	      if(b->c->swallow_mask&b_UseTitle) {
 		if(b->c->swallow&b_UseTitle)
 		  fprintf(stderr,"UseTitle ");
 		else
 		  fprintf(stderr,"NoTitle ");
+	      }
 	      fprintf(stderr,") ");
 	    }
 	}

@@ -35,7 +35,7 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
-#if HAVE_SYS_SYSTEMINFO_H
+#if defined(HAVE_SYS_SYSTEMINFO_H)
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
 #endif

@@ -34,14 +34,14 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#if HAVE_SYS_SELECT_H
+#ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
 #include <unistd.h>
 #include <ctype.h>
 
-#if HAVE_SYS_BSDTYPES_H
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 

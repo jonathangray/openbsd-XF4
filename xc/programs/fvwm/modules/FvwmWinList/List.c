@@ -19,6 +19,8 @@
 #include "Mallocs.h"
 #include "../../fvwm/module.h"
 
+#include <X11/Xmd.h>
+#include "FvwmWinList.h"
 
 /******************************************************************************
   InitList - Initialize the list
@@ -199,7 +201,7 @@ Item *temp;
     "R-Name","R-Class");
   ConsoleMessage("   ---------- --------------- --------------- --------------- --------------- ----\n");
   for(temp=list->head;temp!=NULL;temp=temp->next) {
-    ConsoleMessage("   %10ld %-15.15s %4d\n",temp->id,
+    ConsoleMessage("   %10ld %-15.15s %4ld\n",temp->id,
       (temp->name==NULL) ? "<null>" : temp->name,
        temp->flags);
   }

@@ -1070,7 +1070,7 @@ int ErrorHandler(Display *d, XErrorEvent *event)
     XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
     ConsoleMessage("%s failed request: %s\n", Module, errmsg);
     ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
-		   event->request_code, event->resourceid);
+	event->request_code, (unsigned int)event->resourceid);
     return 0;
 }
 
