@@ -133,11 +133,17 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
  */
 
 /* XInput drivers */
+
+/* OS.cf can set this for OS specific input drivers */
+#ifndef OSXInputDrivers
+#define OSXInputDrivers		/**/
+#endif
+
 #ifndef XInputDrivers
 #if 1
 #define XInputDrivers		mouse digitaledge dynapro elographics \
 				microtouch mutouch spaceorb summa \
-				wacom void citron
+				wacom void citron OSXInputDrivers
 #else
 #define XInputDrivers		mouse digitaledge dynapro elo2300 \
 				elographics magellan citron \
@@ -148,6 +154,11 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 /* <linux/input.h> support mainly for USB support */
 #ifndef HasLinuxInput
 # define HasLinuxInput NO
+#endif
+
+/* libusbhid used for USB support */
+#ifndef HasLibUsbHid 
+# define HasLibUsbHid	NO
 #endif
 
 /* OS.cf files may set this for OS-specific drivers */
