@@ -1319,7 +1319,7 @@ ATIPreInit
             Message += snprintf(Message, Buffer + SizeOf(Buffer) - Message,
                 ";  %s I/O base is 0x%04X",
                 (pATI->CPIODecoding == SPARSE_IO) ? "sparse" : "block",
-                pATI->CPIOBase);
+                (unsigned int)pATI->CPIOBase);
         }
 
         xf86DrvMsg(pScreenInfo->scrnIndex, X_PROBED, "%s.\n", Buffer);
