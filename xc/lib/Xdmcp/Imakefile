@@ -15,15 +15,9 @@ XCOMM $XFree86: xc/lib/Xdmcp/Imakefile,v 3.5 2001/01/17 19:42:43 dawes Exp $
 #define IncSubdir X11
 
 #if HasXdmAuth
-#if !HasLibDes
 AUTHDEFS = -DHASXDMAUTH
 AUTHSRCS = Wrap.c Unwrap.c Wraphelp.c
 AUTHOBJS = Wrap.o Unwrap.o Wraphelp.o
-#else /* Use libdes */
-AUTHDEFS = -DHASXDMAUTH -DHASLIBDES
-AUTHSRCS = Wrap.c Unwrap.c
-AUTHOBJS = Wrap.o Unwrap.o
-#endif
 #endif
 
 DEFINES = $(AUTHDEFS)
