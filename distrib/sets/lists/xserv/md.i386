@@ -141,7 +141,6 @@
 ./usr/X11R6/lib/modules/libxf8_16bpp.a
 ./usr/X11R6/lib/modules/libxf8_32bpp.a
 ./usr/X11R6/lib/modules/old
-./usr/X11R6/lib/modules/old/pex5.so
 ./usr/X11R6/lib/modules/old/xf86AceCad.so
 ./usr/X11R6/lib/modules/old/xf86Calcomp.so
 ./usr/X11R6/lib/modules/old/xf86Dial.so
@@ -151,7 +150,6 @@
 ./usr/X11R6/lib/modules/old/xf86MuTouch.so
 ./usr/X11R6/lib/modules/old/xf86Summa.so
 ./usr/X11R6/lib/modules/old/xf86Wacom.so
-./usr/X11R6/lib/modules/old/xie.so
 ./usr/X11R6/lib/modules/v10002d.uc
 ./usr/X11R6/lib/modules/v20002d.uc
 ./usr/X11R6/man/cat1/XF86_8514.0
