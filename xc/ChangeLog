@@ -1,3 +1,83 @@
+2005-02-09 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/Makefile
+	* xc/config/cf/xorgversion.def
+	Bugzilla #2514 (https://bugs.freedesktop.org/show_bug.cgi?id=2514)
+	attachment #1879 (https://bugs.freedesktop.org/attachment.cgi?id=1879):
+	Bumping version to 6.8.2
+	[Disclaimer: This is just a version bump, X11R6.8.2 is released when
+	you see the official annoucement.]
+
+2005-02-08  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* README:
+	* RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/README:
+	* programs/Xserver/hw/xfree86/doc/RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/sgml/RELNOTES.sgml:
+	Update formatted docs.
+
+2005-02-08 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/RELNOTES.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/defs.ent
+	Bugzilla #2485 (https://bugs.freedesktop.org/show_bug.cgi?id=2485):
+	Second set of release note updates for upcoming X11R6.8.2 release
+        per feedback from the release-wranglers mailinglist.
+
+2005-02-07  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* BUILD:
+	* README:
+	* RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/BUILD:
+	* programs/Xserver/hw/xfree86/doc/DESIGN:
+	* programs/Xserver/hw/xfree86/doc/Install:
+	* programs/Xserver/hw/xfree86/doc/OS2.Notes:
+	* programs/Xserver/hw/xfree86/doc/README:
+	* programs/Xserver/hw/xfree86/doc/README.DECtga:
+	* programs/Xserver/hw/xfree86/doc/README.Darwin:
+	* programs/Xserver/hw/xfree86/doc/README.I128:
+	* programs/Xserver/hw/xfree86/doc/README.LynxOS:
+	* programs/Xserver/hw/xfree86/doc/README.NetBSD:
+	* programs/Xserver/hw/xfree86/doc/README.OpenBSD:
+	* programs/Xserver/hw/xfree86/doc/README.SCO:
+	* programs/Xserver/hw/xfree86/doc/README.SiS:
+	* programs/Xserver/hw/xfree86/doc/README.Solaris:
+	* programs/Xserver/hw/xfree86/doc/README.XKB-Config:
+	* programs/Xserver/hw/xfree86/doc/README.XKB-Enhancing:
+	* programs/Xserver/hw/xfree86/doc/README.ati:
+	* programs/Xserver/hw/xfree86/doc/README.chips:
+	* programs/Xserver/hw/xfree86/doc/README.dps:
+	* programs/Xserver/hw/xfree86/doc/README.fonts:
+	* programs/Xserver/hw/xfree86/doc/README.i740:
+	* programs/Xserver/hw/xfree86/doc/README.i810:
+	* programs/Xserver/hw/xfree86/doc/README.mouse:
+	* programs/Xserver/hw/xfree86/doc/README.r128:
+	* programs/Xserver/hw/xfree86/doc/README.rendition:
+	* programs/Xserver/hw/xfree86/doc/README.s3virge:
+	* programs/Xserver/hw/xfree86/doc/RELNOTES:
+	* programs/Xserver/hw/xfree86/doc/Versions:
+	* programs/Xserver/hw/xfree86/doc/sgml/defs.ent:
+	* programs/xkbcomp/README.config:
+	* programs/xkbcomp/README.enhancing:
+	Update formatted docs.
+
+2005-02-07 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/SiS.sgml
+	Bugzilla #2485 (https://bugs.freedesktop.org/show_bug.cgi?id=2485)
+	attachment #1855 (https://bugs.freedesktop.org/attachment.cgi?id=1855):
+	Update release notes for SiS driver.
+	Patch by Thomas Winischhofer <thomas@winischhofer.net>.
+
+2005-02-07 Roland Mainz <roland.mainz@nrubsig.org>
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/OpenBSD.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/RELNOTES.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/SiS.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/Solaris.sgml
+	* xc/programs/Xserver/hw/xfree86/doc/sgml/defs.ent
+	Bugzilla #2485 (https://bugs.freedesktop.org/show_bug.cgi?id=2485):
+	First set of release note updated for upcoming X11R6.8.2 release.
+
 2005-02-02 Roland Mainz <roland.mainz@nrubsig.org>
 	* xc/config/cf/xorgversion.def
 	Bugzilla #2456 (https://bugs.freedesktop.org/show_bug.cgi?id=2456)
@@ -8059,4 +8139,4 @@ Tue Jul 20 18:23:32 2004  Soeren Sandmann  <sandmann@daimi.au.dk>
        so i18n libs from build tree get used instead of installed ones
        (Egbert Eich).
 
-$XdotOrg: xc/ChangeLog,v 1.365.2.149 2005/02/03 00:32:28 gisburn Exp $
+$XdotOrg: xc/ChangeLog,v 1.365.2.155 2005/02/09 18:03:20 gisburn Exp $

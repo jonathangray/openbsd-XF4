@@ -7,7 +7,7 @@
 # Luna users will need to either run make as "make MAKE=make"
 # or add "MAKE = make" to this file.
 
-RELEASE = "Release 6.8"
+RELEASE = "Release 6.8.2"
 SHELL = /bin/sh
 RM = rm -f
 MV = mv

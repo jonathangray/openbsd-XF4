@@ -1,19 +1,19 @@
-                         Release Notes for X11R6.8.1
+                         Release Notes for X11R6.8.2
 
                             The X.Org Foundation
                           The XFree86 Project, Inc.
 
-                              17 September 2004
+                               9 February 2005
 
                                   Abstract
 
      These release notes contains information about features and their
-     status in the X.Org Foundation X11R6.8.1 release.  It is based on
+     status in the X.Org Foundation X11R6.8.2 release.  It is based on
      the XFree86 4.4RC2 RELNOTES document published by The XFree86[tm]
      Project, Inc.  There are significant updates and differences in the
      X.Org release as noted below.
 
-1.  Introduction to the X11R6.8.1 Release
+1.  Introduction to the X11R6.8.2 Release
 
 The release numbering is based on the original MIT X numbering system.  X11
 refers to the version of the network protocol that the X Window system is
@@ -37,7 +37,7 @@ We encourage you to submit bug fixes and enhancements to bugzilla.freedesk-
 top.org using the xorg product, and discussions on this server take place on
 <xorg@freedesktop.org>.
 
-X11R6.8.1 comes with a graphical configuration tool called "xorgcfg", which
+X11R6.8.2 comes with a graphical configuration tool called "xorgcfg", which
 also has a text mode interface and can be used to create an initial configu-
 ration file. It can also be used to customise existing configurations.
 
@@ -63,20 +63,21 @@ Before downloading  the binary distributions for this release, please have a
 quick read through the Installation Document.  It may save you some time and
 also help you figure out which of the binary releases you need.
 
-The next section describes what is new in the latest version (6.8.1) compared
-with the previous full release (6.8).  The other sections below describe some
-of the new features and changes between 3.3.x and 4.0.  There are lots of new
-features, and we definitely don't have enough space to cover them all here.
+The next section describes what is new in the latest version (6.8.2) compared
+with the previous full release (6.8.1).  The other sections below describe
+some of the new features and changes between 3.3.x and 4.0.  There are lots
+of new features, and we definitely don't have enough space to cover them all
+here.
 
-2.  Summary of new features in X11R6.8.1
+2.  Summary of new features in X11R6.8.2
 
-This is a sampling of the new features in X11R6.8.1.  A more complete list of
+This is a sampling of the new features in X11R6.8.2.  A more complete list of
 changes can be found in the ChangeLog file that is part of the X source tree.
 
    o Freetype was updated to version 2.1.8. But installing freetype from X
      distributions would often or usually result in the replacement or use of
      "stale" versions of freetype. On Linux, FreeBSD, Solaris 10, and SCO5,
-     therefore, X11R6.8.1 will by default use the version of freetype2 that
+     therefore, X11R6.8.2 will by default use the version of freetype2 that
      is installed on the system. If your system doesn't come with an
      installed freetype2 and you wish to use the version supplied with this
      distribution, please add:
@@ -85,10 +86,10 @@ changes can be found in the ChangeLog file that is part of the X source tree.
 
      to config/cf/host.def.
 
-   o  The XTT font module and FreeType1 have been retired because FreeType2
+   o The XTT font module and FreeType1 have been retired because FreeType2
      subsumes their functionality
 
-   o  Retire old PS Type1 font rasterizer (except for CID font usage) since
+   o Retire old PS Type1 font rasterizer (except for CID font usage) since
      the FreeType2 rasterizer now handles PS Type1 (*.pfa, *.pfb)
 
    o Render implementation fixes
@@ -96,6 +97,8 @@ changes can be found in the ChangeLog file that is part of the X source tree.
    o Updated x86emu and resynced with upstream at Scitech
 
    o Updated SiS driver
+
+   o Updated Nvidia driver (opensource version)
 
    o Render acceleration for ATI's R100 and R200-series cards
 
@@ -113,11 +116,12 @@ changes can be found in the ChangeLog file that is part of the X source tree.
    o Software mouse cursor is now based on the Damage extension
 
    o A new keyboard driver is enabled by default. The old driver is disabled
-     unless explicitly compiled in by defining the macro USE_DEPRECATED_KEY-
-     BOARD_DRIVER
+     unless explicitly compiled in by defining the macro |USE_DEPRECATED_KEY-
+     BOARD_DRIVER|.
 
-   o Extensions can be enabled/disabled from the configuration file and from
-     the command line
+   o All extensions (except Xserver-specific extensions "DMX" and "XpExten-
+     sion") can now be enabled/disabled from the configuration file and from
+     the command line.
 
    o Mac OS X updates:
 
@@ -134,9 +138,11 @@ changes can be found in the ChangeLog file that is part of the X source tree.
 
         o Fixed some GLX rendering problems on Mac OS X 10.2 and earlier
 
+   o Updated xterm version
+
 2.1  New X extensions
 
-X11R6.8.1 includes four new extensions:
+X11R6.8.2 includes four new extensions:
 
       XFixes
             The XFixes extension is a collection of improvements for defi-
@@ -163,7 +169,7 @@ X11R6.8.1 includes four new extensions:
             core protocol and the RENDER extension, the compositing manager
             can create special effects, such as translucennt windows.
 
-            The Composite extension is considered experimental in X11R6.8.1
+            The Composite extension is considered experimental in X11R6.8.2
             and is turned off by default.
 
       XEvIE (X Event Interception Extension) (experimental)
@@ -173,7 +179,7 @@ X11R6.8.1 includes four new extensions:
             (i.e., interested clients). This feature is required by the GNOME
             accessibility project.
 
-            The XEvIE extension is considered experimental in X11R6.8.1 and
+            The XEvIE extension is considered experimental in X11R6.8.2 and
             is turned off by default.
 
 As noted above, some extensions are disabled by default.  They can be enabled
@@ -189,7 +195,7 @@ or you could put +extension Composite on your command line.
 
 2.2  Distributed Multihead X (DMX)
 
-X11R6.8.1 includes a new X server, called Xdmx, that allows users to create a
+X11R6.8.2 includes a new X server, called Xdmx, that allows users to create a
 single unified desktop from multiple running X servers.  It works by creating
 a local screen on each of these running X servers, which can be distributed
 across a network, and then presents that set of screens to the user.  When
@@ -201,8 +207,9 @@ More information about DMX can be found on the DMX Project's web site
 
 2.3  Xprint updates
 
-   o Integrated various fixes from xprint.mozdev.org (more or less the whole
-     codebase has been merged)
+   o Integrated various fixes from xprint.mozdev.org
+     <URL:http://xprint.mozdev.org> (more or less the whole codebase has been
+     merged)
 
    o Integrated various fixes from Sun Microsystems
 
@@ -211,17 +218,19 @@ More information about DMX can be found on the DMX Project's web site
    o New set of maintenance tools for the Xprint server (xplsprinters, xpre-
      hashprinterlist, etc.)
 
-   o Added new XprintUtils client library to make the usage off Xprint easier
+   o Added new XprintUtils client library to make the usage of Xprint easier
 
    o Various other features and fixes integrated
 
    o Athena toolkit now has print support (XawPrintShell) which is included
-     in a separate version of that library (Xaw8)
+     in a new version of that library (Xaw8)
 
-   o Various applications/tools like xman, xedit, xlogo, etc. now have print
-     support
+   o Various applications/tools like xman, xedit, xlogo, xlsfonts, etc.  now
+     have print support
 
 2.4  Updated Mesa and DRI from upstream sources
+
+   o Mesa version has been updated to 6.2.1 (in X11R6.8.2)
 
    o More OpenGL extensions
 
@@ -242,23 +251,7 @@ More information about DMX can be found on the DMX Project's web site
 
 2.5  Video driver enhancements
 
-   o SiS driver updates include
-
-        o output device hotplugging
-
-        o lots of fixes for 661, 741, 760
-
-        o extended interface for SiSCtrl?
-
-        o extended LCD handling (allow more modes)
-
-        o HDTV support (480p, 480i, 720p. 1080i; 315/330 series)
-
-        o Added video blitter Xv adapter (315/330 series)
-
-        o extended RENDER acceleration
-
-   o Radeon driver updates:
+   o ATI Radeon driver updates:
 
         o Merged Framebuffer support (dualhead with DRI)
 
@@ -277,19 +270,23 @@ More information about DMX can be found on the DMX Project's web site
 
         o Many other small fixes
 
-   o Neomagic driver updates
+   o Chips driver update
 
-        o Support for Xv on pre-nm2160 chips
-
-        o Pseudocolor overlay mode
-
-        o Improved support for lowres double scan modes
+        o Improved BE support
 
    o MGA driver updates
 
         o Support for DDC and DPMS on second head on G400
 
         o Updated 3D driver
+
+   o Neomagic driver updates
+
+        o Support for Xv on pre-nm2160 chips
+
+        o Pseudocolor overlay mode (=PseudoColor emulation)
+
+        o Improved support for lowres double scan modes
 
    o i810 driver updates
 
@@ -299,17 +296,33 @@ More information about DMX can be found on the DMX Project's web site
 
         o New 3D driver (i830+)
 
-   o Savage driver updates
-
-        o Pseudocolor overlay mode
+        o i810 driver is now supported for AMD64
 
    o S3 driver updates
 
         o Support for additional IBM RAMDACS
 
-   o Chips driver update
+   o Savage driver updates
 
-        o Improved BE support
+        o Pseudocolor overlay mode
+
+   o SiS driver updates include
+
+        o output device hotplugging
+
+        o lots of fixes for 661, 741, 760
+
+        o extended interface for SiSCtrl?
+
+        o extended LCD handling (allow more modes)
+
+        o HDTV support (480p, 480i, 720p. 1080i; 315/330 series)
+
+        o Added video blitter Xv adapter (315/330 series)
+
+        o extended RENDER acceleration
+
+        o SiS driver now supported on AMD64
 
    o New Voodoo driver (Alan Cox)
 
@@ -320,7 +333,7 @@ More information about DMX can be found on the DMX Project's web site
 
 3.1  Video Drivers
 
-X11R6.8.1 includes the following video drivers:
+X11R6.8.2 includes the following video drivers:
 
 +--------------+--------------------------+---------------------------------------------+
 |Driver Name   | Description              | Further Information                         |
@@ -376,48 +389,63 @@ Drivers marked with (-) are for Linux/mips only.
 Darwin/Mac OS X uses IOKit drivers and does not use the module loader drivers
 listed above. Further information can be found in README.Darwin.
 
-X11R6.8.1 includes the following input drivers:
+X11R6.8.2 includes the following print drivers:
 
-3.2  Input Drivers
+3.2  Print Drivers
 
-   +------------+----------------------------------+---------------------+
-   |Driver Name | Description                      | Further Information |
-   +------------+----------------------------------+---------------------+
-   |aiptek(*)   | Aiptek USB tablet                | aiptek(4)           |
-   |calcomp     | Calcomp                          |                     |
-   |citron      | Citron                           | citron(4)           |
-   |digitaledge | DigitalEdge                      |                     |
-   |dmc         | DMC                              | dmc(4)              |
-   |dynapro     | Dynapro                          |                     |
-   |elographics | EloGraphics                      |                     |
-   |fpit        | Fujitsu Stylistic Tablet PCs     | fpit(4)             |
-   |hyperpen    | Aiptek HyperPen 6000             |                     |
-   |js_x        | JamStudio pentablet              | js_x(4)             |
-   |kbd         | generic keyboards (alternate)    | kbd(4)              |
-   |keyboard    | generic keyboards                | keyboard(4)         |
-   |microtouch  | MicroTouch                       |                     |
-   |mouse       | most mouse devices               | mouse(4)            |
-   |mutouch     | MicroTouch                       |                     |
-   |palmax      | Palmax PD1000/PD1100             | palmax(4)           |
-   |penmount    | PenMount                         |                     |
-   |spaceorb    | SpaceOrb                         |                     |
-   |summa       | SummaGraphics                    |                     |
-   |tek4957     | Tektronix 4957 tablet            | tek4957(4)          |
-   |ur98(*)     | Union Reality UR-F98 headtracker | ur98(4)             |
-   |void        | dummy device                     | void(4)             |
-   |wacom       | Wacom tablets                    | wacom(4)            |
-   +------------+----------------------------------+---------------------+
++------------+----------------------------------------+---------------------+
+|Driver Name | Description                            | Further Information |
++------------+----------------------------------------+---------------------+
+|PostScript  | PostScript driver                      |                     |
+|PCL         | PCL color driver                       |                     |
+|PCL-MONO    | PCL monocrome driver                   |                     |
+|RASTER      | Monocrome raster driver (XWD, PS, PCL) |                     |
++------------+----------------------------------------+---------------------+
 
 Drivers marked with (*) are available for Linux only.
 
-4.  Overview of X11R6.8.1
+X11R6.8.2 includes the following input drivers:
 
-On most platforms, X11R6.8.1 has a single X server binary called Xorg.  This
+3.3  Input Drivers
+
+  +------------+-------------------------------------+---------------------+
+  |Driver Name | Description                         | Further Information |
+  +------------+-------------------------------------+---------------------+
+  |aiptek(*)   | Aiptek USB tablet                   | aiptek(4)           |
+  |calcomp     | Calcomp                             |                     |
+  |citron      | Citron                              | citron(4)           |
+  |digitaledge | DigitalEdge                         |                     |
+  |dmc         | DMC                                 | dmc(4)              |
+  |dynapro     | Dynapro                             |                     |
+  |elographics | EloGraphics                         |                     |
+  |fpit        | Fujitsu Stylistic Tablet PCs        | fpit(4)             |
+  |hyperpen    | Aiptek HyperPen 6000                |                     |
+  |js_x        | JamStudio pentablet                 | js_x(4)             |
+  |kbd         | generic keyboards (loadable module) | kbd(4)              |
+  |keyboard    | generic keyboards (builtin driver)  | keyboard(4)         |
+  |microtouch  | MicroTouch                          |                     |
+  |mouse       | most mouse devices                  | mouse(4)            |
+  |mutouch     | MicroTouch                          |                     |
+  |palmax      | Palmax PD1000/PD1100                | palmax(4)           |
+  |penmount    | PenMount                            |                     |
+  |spaceorb    | SpaceOrb                            |                     |
+  |summa       | SummaGraphics                       |                     |
+  |tek4957     | Tektronix 4957 tablet               | tek4957(4)          |
+  |ur98(*)     | Union Reality UR-F98 headtracker    | ur98(4)             |
+  |void        | dummy device                        | void(4)             |
+  |wacom       | Wacom tablets                       | wacom(4)            |
+  +------------+-------------------------------------+---------------------+
+
+Drivers marked with (*) are available for Linux only.
+
+4.  Overview of X11R6.8.2
+
+On most platforms, X11R6.8.2 has a single X server binary called Xorg.  This
 binary can either have one or more video and input drivers linked in stati-
 cally, or more usually, dynamically, and in that manner load the video
 drivers, input drivers, and other modules that are needed.
 
-X11R6.8.1 has X server support for most UNIX® and UNIX-like operating systems
+X11R6.8.2 has X server support for most UNIX® and UNIX-like operating systems
 on Intel/x86 platforms, plus support for Linux and some BSD OSs on Alpha,
 PowerPC, IA-64, AMD64, Sparc, and Mips platforms, and for Darwin on PowerPC.
 
@@ -433,7 +461,7 @@ an X server running on Solaris/x86, or FreeBSD, or even OS/2.
 
 A main benefit of this, is that when modules are updated, they do not need to
 be recompiled for every different operating system.  The loader in version
-6.8.1 has support for Intel (x86), Alpha and PowerPC platforms.  It also has
+6.8.2 has support for Intel (x86), Alpha and PowerPC platforms.  It also has
 preliminary support for Sparc platforms.
 
 The X server makes use of modules for video drivers, X server extensions,
@@ -476,13 +504,13 @@ are described in the Xorg(1) manual page.
 4.4  XAA
 
 The XFree86 Acceleration Architecture (XAA) was completely rewritten from
-scratch for XFree86 4.x and is used in X11R6.8.1.  Most drivers implement
+scratch for XFree86 4.x and is used in X11R6.8.2.  Most drivers implement
 acceleration by making use of the XAA module.  The Xorg server will accept
 modules built either for XFree86 4.4 servers or its own.
 
 4.5  Multi-head
 
-Some multi-head configurations are supported in X11R6.8.1, primarily with
+Some multi-head configurations are supported in X11R6.8.2, primarily with
 multiple PCI/AGP cards.
 
 One of the main problems is with drivers not sufficiently initialising cards
@@ -505,7 +533,7 @@ with a 16-bit screen in Xinerama mode.
 Xinerama is not enabled by default, and can be enabled with the +xinerama
 command line option for the X server.
 
-Xinerama was included with X11R6.4.  The version included in X11R6.8.1 was
+Xinerama was included with X11R6.4.  The version included in X11R6.8.2 was
 completely rewritten for improved performance and correctness.
 
 Known problems:
@@ -517,7 +545,7 @@ Known problems:
 
 4.7  DGA version 2
 
-DGA 2.0 is included in 6.8.1.  Documentation for the client libraries can be
+DGA 2.0 is included in 6.8.2.  Documentation for the client libraries can be
 found in the XDGA(3) man page.  A good degree of backwards compatibility with
 version 1.0 is provided.
 
@@ -554,11 +582,11 @@ rendering component is provided by Mesa <URL:http://www.mesa3d.org>.
 
 4.10  XVideo Extension (Xv)
 
-The XVideo extension is supported in X11R6.7.x.  An XvQueryPortAttributes
-function has been added as well as support for XvImages.  XvImages are XIm-
-ages in alternate color spaces such as YUV and can be passed to the server
-through shared memory segments.  This allows clients to display YUV data with
-high quality hardware scaling and filtering.
+The XVideo extension is supported in X11R6.7.x and newer releases.  An
+XvQueryPortAttributes function has been added as well as support for XvIm-
+ages.  XvImages are XImages in alternate color spaces such as YUV and can be
+passed to the server through shared memory segments.  This allows clients to
+display YUV data with high quality hardware scaling and filtering.
 
 4.11  X Rendering Extension (Render)
 
@@ -589,17 +617,18 @@ via DDC, you may want to add that information to xorg.conf.
 To allow a graceful transition for applications moving from core text render-
 ing to the Render extension, Xft can use either the core rendering requests
 or the Render extension for text.  See the section on FreeType support in Xft
-for instructions on configuring X11R6.8.1 to use an existing FreeType instal-
+for instructions on configuring X11R6.8.2 to use an existing FreeType instal-
 lation.
 
 The Xft library uses configuration files, /etc/fonts/fonts.conf and
 /etc/fonts/local.conf, which contains information about which directories
 contain font files and also provides a sophisticated font aliasing mechanism.
-Documentation for that file is included in the Xft(3) man page.
+Documentation for that file is included in the Xft(3), fontconfig(3) and
+fonts.conf(4) man pages.
 
 4.11.2  Application Support For Anti-Aliased Text
 
-Only four applications have been modified in X11R6.8.1 to work with the Ren-
+Only four applications have been modified in X11R6.8.2 to work with the Ren-
 der extension and the Xft and FreeType libraries to provide anti-aliased
 text: xterm, xditview, x11perf and xclock.  Migration of other applications
 may occur in future releases.
@@ -645,32 +674,32 @@ Xedit has several new features, including:
 
    o Please refer to xedit(1) for more details.
 
-   o XPrint support.
+   o Support for printing via Xprint.
 
 4.14  Font support
 
-Details about the font support in X11R6.8.1.x can be found in the
-README.fonts document.
+Details about the font support in X11R6.8.x can be found in the README.fonts
+document.
 
 4.15  TrueType support
 
 X11R6.7 came with two TrueType backends.  The functionality from the `X-True-
-Type' backend has been integrated into the `FreeType' backend which is
-designed to transparently support all of the functionality from the `X-True-
-Type' backend with the exception of the font encoding libraries; the
-`FreeType' backend uses only the fontenc-based encoding system .
+Type' (="XTT") backend has been integrated into the `FreeType' backend which
+is designed to transparently support all of the functionality from the `X-
+TrueType' backend with the exception of the font encoding libraries; the
+`FreeType' backend uses only the fontenc-based encoding system.
 
 4.16  CID font support
 
-Support for CID-keyed fonts is included in X11R6.8.1 The CID-keyed font for-
+Support for CID-keyed fonts is included in X11R6.8.2 The CID-keyed font for-
 mat was designed by Adobe Systems <URL:http://www.adobe.com> for fonts with
-large character sets.  The CID-keyed font support in X11R6.8.1 was donated by
+large character sets.  The CID-keyed font support in X11R6.8.2 was donated by
 SGI <URL:http://www.sgi.com>.  See the LICENSE document for a copy of the CID
 Font Code Public License.
 
 4.17  Internationalisation of the scalable font backends
 
-X11R6.8.1 has a ``fontenc'' layer to allow the scalable font backends to use
+X11R6.8.2 has a ``fontenc'' layer to allow the scalable font backends to use
 a common method of font re-encoding.  This re-encoding makes it possible to
 uses fonts in encodings other than their their native encoding.  This layer
 is used by the Type1, Speedo and FreeType backends.
@@ -684,7 +713,7 @@ compressed format.
 
 4.19  Unicode/ISO 10646 support
 
-What is included in X11R6.8.1
+What is included in X11R6.8.2
 
    o All ``-misc-fixed-*'' BDF fonts are now available in the ISO10646-1
      encoding and cover at least the 614 characters found in ISO
@@ -718,7 +747,7 @@ What is included in X11R6.8.1
 4.20  Xlib Compose file support and extensions
 
 A more flexible Compose file processing system was added to Xlib in
-X11R6.8.1.  The compose file is searched for in the following order:
+X11R6.8.2.  The compose file is searched for in the following order:
 
   1.  If the environment variable $XCOMPOSEFILE is set, its value is used as
       the name of the Compose file.
@@ -765,14 +794,14 @@ the result depends on how Agrave is mapped in the current locale.
 
 4.21  Bitstream Vera fonts
 
-X11R6.8.1 includes the Bitstream Vera family of typefaces in TrueType format.
+X11R6.8.2 includes the Bitstream Vera family of typefaces in TrueType format.
 This family includes the ``Bitstream Vera Sans'', ``Bitstream Vera Sans
 Mono'' and ``Bitstream Vera Serif'' in Roman and Bold varients as well as the
 ``Bitstream Vera Sans'' and ``Bitstream Vera Sans Mono'' in Oblique and Bold
 Oblique.  These fonts include all of the glyphs needed for ISO  8859 parts 1
 9 and 15.
 
-The license terms for the Vera fonts are inclued in the file COPYRIGHT.Vera>.
+The license terms for the Vera fonts are inclued in the file COPYRIGHT.Vera.
 
 4.22  Luxi fonts from Bigelow and Holmes
 
@@ -801,7 +830,7 @@ site <URL:http://www.urwpp.de>.
 
 5.  Miscellaneous
 
-This section describes other items of note for the X11R6.8.1 release.
+This section describes other items of note for the X11R6.8.2 release.
 
 5.1  Legacy keyboard driver phase-out
 
@@ -862,22 +891,28 @@ will be visible to most users.
 
 6.  Attributions/Acknowledgements/Credits
 
-This section lists the credits for the X11R6.8.1 release.  For a more
+This section lists the credits for the X11R6.8.2 release.  For a more
 detailed breakdown, refer to the ChangeLog file in the X.Org source tree, the
 ChangeLog's in  or the 'cvs log' information for individual source files."
 
-      These people contributed in some way to X11R6.8.1
-            Paul Anderson, Eric Anholt, Daniel Berrange, Russ Blaine, Ryan
-            Breen, Alan Coopersmith, Michel Daenzer, David Dawes, Alex
-            Deucher, Stefan Dirsch, Egbert Eich, Rik Faith, Jim Gettys,
-            Alexander Gottwald, Mike A. Harris, John Harper, John Heasley,
-            Matthieu Herrb, Alan Hourihane, Kristian Høsberg, Harold L. Hunt
-            II, Adam Jackson, Deron Johnson, Ivan Kokshaysky, Stuart Kreit-
-            man, Peter Kunzman, Nolan Leake, Ryan Lortie, Andreas Luik, Tor-
-            rey T. Lyons, Roland Mainz, Guy Martin, Kevin E. Martin, Keith
-            Packard, Greg Parker, Aaron Plattner, Søren Sandmann, Ty Sarna,
-            Yu Shao, Bryan Stine, Owen Taylor, Travis Tilley, Ryan Underwood,
-            Ronny Vindenes, Chisato Yamauchi
+      These people contributed in some way to X11R6.8.2
+            Paul Anderson, Eric Anholt, Dave Airlie, Donnie Berkholz, Daniel
+            Berrange, Thomas Biege, Russ Blaine, Ryan Breen, Alan Cooper-
+            smith, Jay Cotton, Michel Daenzer, David Dawes, Kevin DeKorte,
+            Alex Deucher, Stefan Dirsch, Egbert Eich, Rik Faith, Jim Gettys,
+            Giuseppe Ghibò, Thomas Gilg, Alexander Gottwald, Mike A. Harris,
+            John Harper, John Heasley, Jeremy Huddleston, Matthieu Herrb,
+            Alan Hourihane, Jay Hobson, Matthias Hopf, Kristian Høsberg,
+            Harold L. Hunt II, Adam Jackson, Daniel Jacobowitz, Deron John-
+            son, Masaki Katakai, Stephen Kennedy, Ivan Kokshaysky, Stuart
+            Kreitman, Peter Kunzman, Julien Lafon, Nolan Leake, Ryan Lortie,
+            Andreas Luik, Torrey T. Lyons, Roland Mainz, Guy Martin, Kevin E.
+            Martin, Dan McNichol, Dagfinn Ilmari Mannsaker, Simon Montagu,
+            Keith Packard, Greg Parker, Drew Parsons, Aaron Plattner, Branden
+            Robinson, Søren Sandmann, Ty Sarna, Yu Shao, Gustavo Noronha
+            Silva, Bryan Stine, Owen Taylor, Travis Tilley, Ryan Underwood,
+            Ronny Vindenes, Chisato Yamauchi, Mark Vojkovich, Tim Yamin, Hui
+            Yu
 
 The X Window System has been a collaborative effort from its inception.  Our
 apologies for anyone or organization inadvertently overlooked.  Many individ-
@@ -886,105 +921,103 @@ employers in this list.
 
       This product includes software developed by:
             Paul Anderson, Michael Bax, Jehan Bing, Peter Breitenlohner, Alan
-            Coopersmith, Egbert Eich, John Dennis, Fabrizio Gennari, Jim Get-
-            tys, Alexander Gottwald, Ralf Habacker Mike Harris, Mattheiu
-            Herrb Alan Hourihane, Harold L Hunt II, Elliot Lee, Jeremy Katz,
-            Kaleb Keithley, Stuart Kreitman, Andreas Luik, Torrey Lyons,
-            Roland Mainz, Kevin E. Martin, Takuma Murakami, Kensuke Mat-
-            suzaki, Keith Packard, Ivan Pascal, Earle F. Philhower III, Ben-
-            jamin Rienfenstahl, Leon Shiman, Toshimitsu Tanaka, Nicholas
-            Wourms.
-
-            2d3d Inc., Aaron Plattner, Adam de Boor, Adam Jackson, Adobe Sys-
-            tems Inc., After X-TT Project, AGE Logic Inc., Alan Coopersmith,
-            Alan Cox, Alan Hourihane, Alexander Gottwald, Alex Deucher,
-            Andreas Luik, Andreas Monitzer, Andrew C Aitchison, Andy Ritger,
-            Ani Joshi, Anton Zioviev, Apollo Computer Inc., Apple Computer
-            Inc., Ares Software Corp., AT&T Inc., ATI Technologies Inc., Ben-
-            jamin Rienfenstahl, Bigelow and Holmes, Bill Reynolds, Bitstream
-            Inc., Bitstream, Inc, Brian Fundakowski Feldman, Brian Goines,
-            Brian Paul, Bruno Haible, Bryan Stine, Charles Murcko, Chen
-            Xiangyang, Chisato Yamauchi, Chris Constello, Christian Zietz,
-            Cognition Corp., Compaq Computer Corporation, Concurrent Computer
-            Corporation, Conectiva S.A., Corin Anderson, Craig Struble, Dae-
-            woo Electronics Co. Ltd., Dale Schumacher, Damien Miller, Daniel
-            Berrange, Daniel Stone, Daniver Limited, Daryll Strauss, Data
-            General Corporation, David Bateman, David Dawes, David E. Wexel-
-            blat, David Holland, David J. McKay, David McCullough, David Mos-
-            berger-Tang, David S. Miller, Davor Matic, Deron Johnson, Digital
-            Equipment Corporation, Dirk Hohndel, Doug Anson, Earle F. Phil-
-            hower III, Edouard TISSERANT, Eduardo Horvath, Egbert Eich,
-            Elliot Lee, Eric Anholt, Eric Fortune, Eric Sunshine, Erik For-
-            tune, Erik Nygren, Evans & Sutherland Computer Corporation, Fabio
-            Massimo Di Nitto Fabrizio Gennari, Finn Thoegersen, Frederic Lep-
-            ied, Free Software Foundation Inc., Fujitsu Limited, Fujitsu Open
-            Systems Solutions Inc., Fuji Xerox Co. Ltd., Geert Uytterhoeven,
-            Gerrit Jan Akkerman, Gerry Toll, Glenn G. Lai, GNOME Foundation,
-            Go Watanabe, Gregory Mokhin, Greg Parker, GROUPE BULL, Guy Mar-
-            tin, Hans Oey, Harald Koenig, Harm Hanemaayer, Harold L Hunt II,
-            Harry Langenbacher, Henry A. Worth, Hewlett-Packard Company,
-            Hitachi Ltd, Holger Veit, Howard Greenwell, Hummingbird Communi-
-            cations Ltd., IBM Corporation, Intel Corporation, INTERACTIVE
-            Systems Corporation, International Business Machines Corp., Itai
-            Nahshon, Ivan Kokshaysky, Ivan Pascal, Jakub Jelinek, James Tsil-
-            las, Jason Bacon, Jean-loup Gailly, Jeff Kirk, Jeffrey Hsu, Jehan
-            Bing, Jeremy Katz, Jim Gettys, Jim Tsillas, J. Kean Johnston,
-            John Dennis, John Harper, John Heasley, Jon Block, Jon Tombs,
-            Jorge Delgado, Joseph Friedman, Joseph V. Moss, Juliusz
-            Chroboczek, Jyunji Takagi, Kaleb Keithley, Kaleb S. Keithley,
-            Kazushi (Jam) Marukawa, Kazuyuki (ikko-) Okamoto, Kean Johnston.
-            Keith Packard, Keith Packard, Keith Whitwell, Kensuke Matsuzaki,
-            Kristian Høgsberg, Larry Wall, Lawrence Berkeley Laboratory,
-            Lennart Augustsson, Leon Shiman, Lexmark International Inc.,
-            Linus Torvalds, Luc Verhaegen, Machine Vision Holdings Inc., Man-
-            fred Brands, Marc Aurele La France Mark Adler, Mark J. Kilgard,
-            Mark Leisher, Mark Smulders, Mark Vojkovich, Massachusetts Insti-
-            tute Of Technology, Matrox Graphics, Mattheiu Herrb Matthew
-            Grossman, Matthieu Herrb, Metro Link Inc., Michael Bax, Michael
-            H. Schimek, Michael P. Marking, Michael Schimek, Michael Smith,
-            Michel Daenzer, Mike A. Harris, Mike Harris, Ming Yu, MIPS Com-
-            puter Systems Inc., National Semiconductor, NCR Corporation Inc.,
-            Netscape Communications Corporation, Network Computing Devices
-            Inc., Nicholas Wourms, Noah Levitt, Nolan Leake, Novell Inc.,
-            Nozomi YTOW, NTT Software Corporation, Number Nine Computer
-            Corp., Number Nine Visual Technologies, NVIDIA Corp., Oivier
-            Danet, Oki Technosystems Laboratory Inc., OMRON Corporation, Open
-            Software Foundation, Orest Zborowski, Owen Taylor, Pablo Saratx-
-            aga, Panacea Inc., Panagiotis Tsirigotis, Paolo Severini, Pascal
-            Haible, Patrick Lecoanet, Patrick Lerda, Paul Anderson, Paul
-            Elliott, Peter Breitenlohner, Peter Kunzmann, Peter Trattler,
-            Philip Homburg, Precision Insight Inc., Prentice Hall, Quarter-
-            deck Office Systems, Ralf Habacker Randy Hendry, Ranier Keller,
-            Red Hat Inc., Regents of the University of California, Regis
-            Cridlig, Rene Cougnenc, Richard A. Hecker, Richard Burdick, Rich
-            Murphey, Rickard E. Faith, Rik Faith, Robert Baron, Robert
-            Chesler, Robert Millan. Robert V. Baron, Robin Cutshaw, Roland
-            Mainz, Ronny Vindenes, Russ Blaine, Ryan Breen, Ryan Lortie, Ryan
-            Underwood, S3 Graphics Inc., Sam Leffler, SciTech Software, Scott
-            Laird, Sebastien Marineau, Shigehiro Nomura, ShoGraphics Inc.,
-            Shunsuke Akiyama, Silicon Graphics Computer Systems Inc., Silicon
-            Integrated Systems Corp Inc., Silicon Motion Inc., Simon P.
-            Cooper, Snitily Graphics Consulting Services, Sony Corporation,
-            Søren Sandmann, SRI, Stanislav Brabec, Stefan Dirsch, Stephan
-            Dirsch, Stephan Lang, Steven Lang, Stuart Kreitman, Sun Microsys-
-            tems Inc., SunSoft Inc., SuSE Inc, Sven Luther, Takis Psarogian-
-            nakopoulos, Takuma Murakami, Takuya SHIOZAKI, Tektronix Inc., The
-            DOS-EMU-Development-Team, The Institute of Software Academia
-            Sinica, The NetBSD Foundation, Theo de Raadt, Theodore Ts'o, The
-            Open Group, The Open Software Foundation, The Regents of the Uni-
-            versity of California, The Santa Cruz Operation Inc., The Weather
-            Channel Inc., The X Consortium, The XFree86 Project Inc., Thomas
-            E. Dickey, Thomas G. Lane, Thomas Hellström, Thomas Mueller,
-            Thomas Roell, Thomas Thanner, Thomas Winischhofer, Thomas Wol-
-            fram, Thorsten.Ohl, Tiago Gons, Todd C. Miller, Tomohiro KUBOTA,
-            Torrey Lyons, Torrey T. Lyons, TOSHIBA Corp., Toshimitsu Tanaka,
-            Travis Tilley, Tungsten Graphics Inc., Ty Sarna, UCHIYAMA
-            Yasushi, Unicode Inc., UniSoft Group Limited, University of Utah,
-            UNIX System Laboratories Inc., URW++ GmbH, VA Linux Systems, VIA
-            Technologies Inc., Video Electronics Standard, VMware Inc., Vrije
-            Universiteit, Wittawat Yamwong, Wyse Technology Inc., X Consor-
-            tium, Xi Graphics Inc., X-Oz Technologies, X-TrueType Server Pro-
-            ject and their contributors, Yu Shao,
+            Coopersmith, Thomas Dickey, Egbert Eich, John Dennis, Fabrizio
+            Gennari, Jim Gettys, Alexander Gottwald, Ralf Habacker, Mike Har-
+            ris, Mattheiu Herrb, Alan Hourihane, Harold L Hunt II, Elliot
+            Lee, Jeremy Katz, Kaleb Keithley, Stuart Kreitman, Andreas Luik,
+            Torrey Lyons, Roland Mainz, Kevin E. Martin, Takuma Murakami,
+            Kensuke Matsuzaki, Keith Packard, Ivan Pascal, Earle F. Philhower
+            III, Benjamin Rienfenstahl, Leon Shiman, Toshimitsu Tanaka,
+            Nicholas Wourms, 2d3d Inc., Aaron Plattner, Adam de Boor, Adam
+            Jackson, Adobe Systems Inc., After X-TT Project, AGE Logic Inc.,
+            Alan Coopersmith, Alan Cox, Alan Hourihane, Alexander Gottwald,
+            Alex Deucher, Andreas Luik, Andreas Monitzer, Andrew C Aitchison,
+            Andy Ritger, Ani Joshi, Anton Zioviev, Apollo Computer Inc.,
+            Apple Computer Inc., Ares Software Corp., AT&T Inc., ATI Tech-
+            nologies Inc., Benjamin Rienfenstahl, Bigelow and Holmes, Bill
+            Reynolds, Bitstream Inc., Bitstream, Inc, Brian Fundakowski Feld-
+            man, Brian Goines, Brian Paul, Bruno Haible, Bryan Stine, Charles
+            Murcko, Chen Xiangyang, Chisato Yamauchi, Chris Constello, Chris-
+            tian Zietz, Cognition Corp., Compaq Computer Corporation, Concur-
+            rent Computer Corporation, Conectiva S.A., Corin Anderson, Craig
+            Struble, Daewoo Electronics Co. Ltd., Dale Schumacher, Damien
+            Miller, Daniel Berrange, Daniel Stone, Daniver Limited, Daryll
+            Strauss, Data General Corporation, David Bateman, David Dawes,
+            David E. Wexelblat, David Holland, David J. McKay, David McCul-
+            lough, David Mosberger-Tang, David S. Miller, Davor Matic, Deron
+            Johnson, Digital Equipment Corporation, Dirk Hohndel, Doug Anson,
+            Earle F. Philhower III, Edouard TISSERANT, Eduardo Horvath,
+            Egbert Eich, Elliot Lee, Eric Anholt, Eric Fortune, Eric Sun-
+            shine, Erik Fortune, Erik Nygren, Evans & Sutherland Computer
+            Corporation, Fabio Massimo Di Nitto Fabrizio Gennari, Finn
+            Thoegersen, Frederic Lepied, Free Software Foundation Inc.,
+            Fujitsu Limited, Fujitsu Open Systems Solutions Inc., Fuji Xerox
+            Co. Ltd., Geert Uytterhoeven, Gerrit Jan Akkerman, Gerry Toll,
+            Glenn G. Lai, GNOME Foundation, Go Watanabe, Gregory Mokhin, Greg
+            Parker, GROUPE BULL, Guy Martin, Hans Oey, Harald Koenig, Harm
+            Hanemaayer, Harold L Hunt II, Harry Langenbacher, Henry A. Worth,
+            Hewlett-Packard Company, Hitachi Ltd, Holger Veit, Howard Green-
+            well, Hummingbird Communications Ltd., IBM Corporation, Intel
+            Corporation, INTERACTIVE Systems Corporation, International Busi-
+            ness Machines Corp., Itai Nahshon, Ivan Kokshaysky, Ivan Pascal,
+            Jakub Jelinek, James Tsillas, Jason Bacon, Jean-loup Gailly, Jeff
+            Kirk, Jeffrey Hsu, Jehan Bing, Jeremy Katz, Jim Gettys, Jim Tsil-
+            las, J. Kean Johnston, John Dennis, John Harper, John Heasley,
+            Jon Block, Jon Tombs, Jorge Delgado, Joseph Friedman, Joseph V.
+            Moss, Juliusz Chroboczek, Jyunji Takagi, Kaleb Keithley, Kaleb S.
+            Keithley, Kazushi (Jam) Marukawa, Kazuyuki (ikko-) Okamoto, Kean
+            Johnston. Keith Packard, Keith Packard, Keith Whitwell, Kensuke
+            Matsuzaki, Kristian Høgsberg, Larry Wall, Lawrence Berkeley Labo-
+            ratory, Lennart Augustsson, Leon Shiman, Lexmark International
+            Inc., Linus Torvalds, Luc Verhaegen, Machine Vision Holdings
+            Inc., Manfred Brands, Marc Aurele La France Mark Adler, Mark J.
+            Kilgard, Mark Leisher, Mark Smulders, Mark Vojkovich, Mas-
+            sachusetts Institute Of Technology, Matrox Graphics, Mattheiu
+            Herrb Matthew Grossman, Matthieu Herrb, Metro Link Inc., Michael
+            Bax, Michael H. Schimek, Michael P. Marking, Michael Schimek,
+            Michael Smith, Michel Daenzer, Mike A. Harris, Mike Harris, Ming
+            Yu, MIPS Computer Systems Inc., National Semiconductor, NCR Cor-
+            poration Inc., Netscape Communications Corporation, Network Com-
+            puting Devices Inc., Nicholas Wourms, Noah Levitt, Nolan Leake,
+            Novell Inc., Nozomi YTOW, NTT Software Corporation, Number Nine
+            Computer Corp., Number Nine Visual Technologies, NVIDIA Corp.,
+            Oivier Danet, Oki Technosystems Laboratory Inc., OMRON Corpora-
+            tion, Open Software Foundation, Orest Zborowski, Owen Taylor,
+            Pablo Saratxaga, Panacea Inc., Panagiotis Tsirigotis, Paolo Sev-
+            erini, Pascal Haible, Patrick Lecoanet, Patrick Lerda, Paul
+            Anderson, Paul Elliott, Peter Breitenlohner, Peter Kunzmann,
+            Peter Trattler, Philip Homburg, Precision Insight Inc., Prentice
+            Hall, Quarterdeck Office Systems, Ralf Habacker Randy Hendry,
+            Ranier Keller, Red Hat Inc., Regents of the University of Cali-
+            fornia, Regis Cridlig, Rene Cougnenc, Richard A. Hecker, Richard
+            Burdick, Rich Murphey, Rickard E. Faith, Rik Faith, Robert Baron,
+            Robert Chesler, Robert Millan. Robert V. Baron, Robin Cutshaw,
+            Roland Mainz, Ronny Vindenes, Russ Blaine, Ryan Breen, Ryan Lor-
+            tie, Ryan Underwood, S3 Graphics Inc., Sam Leffler, SciTech Soft-
+            ware, Scott Laird, Sebastien Marineau, Shigehiro Nomura, Sho-
+            Graphics Inc., Shunsuke Akiyama, Silicon Graphics Computer Sys-
+            tems Inc., Silicon Integrated Systems Corp Inc., Silicon Motion
+            Inc., Simon P. Cooper, Snitily Graphics Consulting Services, Sony
+            Corporation, Søren Sandmann, SRI, Stanislav Brabec, Stefan
+            Dirsch, Stephan Dirsch, Stephan Lang, Steven Lang, Stuart Kreit-
+            man, Sun Microsystems Inc., SunSoft Inc., SuSE Inc, Sven Luther,
+            Takis Psarogiannakopoulos, Takuma Murakami, Takuya SHIOZAKI, Tek-
+            tronix Inc., The DOS-EMU-Development-Team, The Institute of Soft-
+            ware Academia Sinica, The NetBSD Foundation, Theo de Raadt,
+            Theodore Ts'o, The Open Group, The Open Software Foundation, The
+            Regents of the University of California, The Santa Cruz Operation
+            Inc., The Weather Channel Inc., The X Consortium, The XFree86
+            Project Inc., Thomas E. Dickey, Thomas G. Lane, Thomas Hellström,
+            Thomas Mueller, Thomas Roell, Thomas Thanner, Thomas Winis-
+            chhofer, Thomas Wolfram, Thorsten.Ohl, Tiago Gons, Todd C.
+            Miller, Tomohiro KUBOTA, Torrey Lyons, Torrey T. Lyons, TOSHIBA
+            Corp., Toshimitsu Tanaka, Travis Tilley, Tungsten Graphics Inc.,
+            Ty Sarna, UCHIYAMA Yasushi, Unicode Inc., UniSoft Group Limited,
+            University of Utah, UNIX System Laboratories Inc., URW++ GmbH, VA
+            Linux Systems, VIA Technologies Inc., Video Electronics Standard,
+            VMware Inc., Vrije Universiteit, Wittawat Yamwong, Wyse Technol-
+            ogy Inc., X Consortium, Xi Graphics Inc., X-Oz Technologies, X-
+            TrueType Server Project and their contributors, Yu Shao,
 
             This product includes software developed by The XFree86 Project,
             Inc (http://www.xfree86.org/) and its contributors.
@@ -1005,4 +1038,4 @@ employers in this list.
             and its contributors.
 
 
-$XdotOrg: xc/RELNOTES,v 1.5.2.1 2004/09/17 15:38:17 kem Exp $
+$XdotOrg: xc/RELNOTES,v 1.5.2.3 2005/02/08 23:54:04 kem Exp $

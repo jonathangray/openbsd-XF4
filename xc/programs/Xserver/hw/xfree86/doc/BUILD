@@ -1,9 +1,9 @@
        Building the X Window System from the X.org Source Distribution
 
-                Jim Gettys and Keith Packard (for X11R6.8.1)
+                Jim Gettys and Keith Packard (for X11R6.8.2)
             David Dawes and Matthieu Herrb (for XFree86 4.4 RC2)
 
-                              17 September 2004
+                               9 February 2005
 
                                   Abstract
 
@@ -22,62 +22,62 @@ known to be required include: gcc, make, C library development package, bi-
 son, flex, zlib (development package), ncurses (development package), font-
 config (development package), expat (development package), and Perl.
 
-1.  How to get the X11R6.8.1 distribution source
+1.  How to get the X11R6.8.2 distribution source
 
-One way of getting the X11R6.8.1 source is to obtain it directly from the
+One way of getting the X11R6.8.2 source is to obtain it directly from the
 X.Org CVS repository.  There are several ways of doing that, and they are
 described in the CVS section of our wiki <URL:http://wiki.x.org> The CVS tag
-for this release is "XORG-6_8_1".   The tag for the maintenance branch for
+for this release is "XORG-6_8_2".   The tag for the maintenance branch for
 this release is "XORG-6_8-branch".
 
-Another method of getting the X11R6.8.1 source is to either download the
-6.8.1 source tarballs sites from freedesktop.org using either ftp or http.
+Another method of getting the X11R6.8.2 source is to either download the
+6.8.2 source tarballs sites from freedesktop.org using either ftp or http.
 The procedure for this is as follows:
 
-   o The X11R6.8.1 source is contained in the files:
+   o The X11R6.8.2 source is contained in the files:
 
-          X11R6.8.1-src1.tar.gz
+          X11R6.8.2-src1.tar.gz
 
-          X11R6.8.1-src2.tar.gz
+          X11R6.8.2-src2.tar.gz
 
-          X11R6.8.1-src3.tar.gz
+          X11R6.8.2-src3.tar.gz
 
-          X11R6.8.1-src4.tar.gz
+          X11R6.8.2-src4.tar.gz
 
-          X11R6.8.1-src5.tar.gz
+          X11R6.8.2-src5.tar.gz
 
-          X11R6.8.1-src6.tar.gz
+          X11R6.8.2-src6.tar.gz
 
-          X11R6.8.1-src7.tar.gz
+          X11R6.8.2-src7.tar.gz
 
-     These can be found at ftp://ftp.freedesktop.org/xorg/X11R6.8.1/src/ or
-     http://freedesktop.org/~xorg/X11R6.8.1/src/     and similar locations on
-     X.org mirror sites.  X11R6.8.1-src4.tgz and X11R6.8.1-src5.tar.gz con-
-     tains the fonts.  X11R6.8.1-src6.tar.gz contains the documentation
-     source.  X11R6.8.1-src7.tar.gz contains the hardcopy documentation.
-     X11R6.8.1-src1.tar.gz, X11R6.8.1-src2.tar.gz and X11R6.8.1-src3.tar.gz
+     These can be found at ftp://ftp.freedesktop.org/xorg/X11R6.8.2/src/ or
+     http://freedesktop.org/~xorg/X11R6.8.2/src/     and similar locations on
+     X.org mirror sites.  X11R6.8.2-src4.tgz and X11R6.8.2-src5.tar.gz con-
+     tains the fonts.  X11R6.8.2-src6.tar.gz contains the documentation
+     source.  X11R6.8.2-src7.tar.gz contains the hardcopy documentation.
+     X11R6.8.2-src1.tar.gz, X11R6.8.2-src2.tar.gz and X11R6.8.2-src3.tar.gz
      contains everything else.  If you don't need the docs or fonts you can
-     get by with only X11R6.8.1-src1.tar.gz, X11R6.8.1-src2.tar.gz and
-     X11R6.8.1-src3.tar.gz.
+     get by with only X11R6.8.2-src1.tar.gz, X11R6.8.2-src2.tar.gz and
+     X11R6.8.2-src3.tar.gz.
 
    o Extract each of these files by running the following from a directory on
      a filesystem containing enough space (the full source requires around
      305MB, and a similar amount is required in addition to this for the com-
      piled binaries):
 
-          gzip -d < X11R6.8.1-src1.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src1.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src2.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src2.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src3.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src3.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src4.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src4.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src5.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src5.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src6.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src6.tar.gz | tar vxf -
 
-          gzip -d < X11R6.8.1-src7.tar.gz | tar vxf -
+          gzip -d < X11R6.8.2-src7.tar.gz | tar vxf -
 
 All methods will produce one main source directory called xc.
 
@@ -96,23 +96,23 @@ A good rule to follow is only to change things that you understand as it's
 easy to create build problems by changing the default configuration.  Check
 the configuration parameters specified in the xc/config/cf/README.
 
-If you are using just the X11R6.8.1-src1.tar.gz, X11R6.8.1-src2.tar.gz and
-X11R6.8.1-src3.tar.gz parts of the source dist, you will need to define
+If you are using just the X11R6.8.2-src1.tar.gz, X11R6.8.2-src2.tar.gz and
+X11R6.8.2-src3.tar.gz parts of the source dist, you will need to define
 BuildFonts to NO.
 
 3.  Using a shadow directory of symbolic links for the build
 
 A recommended practice is to use a shadow directory of symbolic links to do
-the build of X11R6.8.1 as this allows you to keep the source directory unmod-
+the build of X11R6.8.2 as this allows you to keep the source directory unmod-
 ified during the build.  It has the following benefits:
 
    o When you are using CVS to maintain your source tree, the update process
      is not disturbed by foreign files not under CVS's control.
 
-   o It is possible to build X11R6.8.1 for several different Operating System
+   o It is possible to build X11R6.8.2 for several different Operating System
      or architectures from the same sources, shared by read-only NFS mounts.
 
-   o It is possible to build X11R6.8.1 with different configuration options,
+   o It is possible to build X11R6.8.2 with different configuration options,
      by putting a real copy of the host.def file in each build tree and by
      customizing it separately in each build tree.
 
@@ -135,7 +135,7 @@ To make a shadow directory of symbolic links, use the following steps:
      See the lndir(1) manual page for details.
 
 If lndir is not already installed on your system, you can build it manually
-from the X11R6.8.1 sources by running the following commands:
+from the X11R6.8.2 sources by running the following commands:
 
      cd xc/config/util
 
@@ -158,7 +158,7 @@ xc/programs/Xserver/hw/xfree86/doc that is relevant to you.  Once you have
 addressed the OS-specific details, go your build directory (either the xc
 directory or the shadow tree created before) and run "make World" with the
 BOOTSTRAPCFLAGS set as described in the OS-specific README (if necessary, but
-most systems supported by X11R6.8.1 don't need BOOTSTRAPCFLAGS).  It is
+most systems supported by X11R6.8.2 don't need BOOTSTRAPCFLAGS).  It is
 advisable to redirect stdout and stderr to World.Log so that you can track
 down problems that might occur during the build.
 
@@ -197,7 +197,11 @@ for C-shell variants:
 To do the install, run "make install" and "make install.man".  Make sure you
 have enough space in /usr/X11R6 for the install to succeed.  If you want to
 install on a filesystem other than /usr, make a symbolic link to /usr/X11R6
-before installing.
+before installing.  To install the tree into a different directory than
+/usr/X11R6 you can specify DESTDIR:
+
+     make install DESTDIR=<install_target_dir> make install.man DEST-
+     DIR=<install_target_dir>
 
 Cross compiling is supported if the appropriate config files for your target
 platforms exist. You must have the compiler toolchain installed for your tar-
@@ -231,7 +235,7 @@ drivers installed:
 6.  Other useful make targets
 
 There are some other useful targets defined in the top level Makefile of
-X11R6.8.1:
+X11R6.8.2:
 
    o Everything after a make World, make Everything does everything a make
      World does, except the cleaning of the tree. It is a way to quickly
@@ -247,11 +251,11 @@ X11R6.8.1:
                   make depend
                   make
 
-     to rebuild the X11R6.8.1.
+     to rebuild the X11R6.8.2.
 
    o distclean does a full cleaning of the source tree, removing all gener-
      ated files. After a make distclean, make World is the only option to
-     rebuild X11R6.8.1.
+     rebuild X11R6.8.2.
 
    o includes generates all generated header files and in-tree symbolic links
      needed by the build. These files are removed by a make clean.
@@ -265,7 +269,7 @@ X11R6.8.1:
      shown do not match your system, you probably need to set them manually
      in host.def and report the problem to <xorg@freedesktop.org>.
 
-     $Id: BUILD,v 1.2 2004/11/03 00:08:17 matthieu Exp $
+     $Id: BUILD,v 1.3 2005/02/12 10:21:20 matthieu Exp $
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 1.4.2.2 2004/09/17 15:38:18 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 1.4.2.3 2005/02/08 00:44:26 kem Exp $

@@ -1,119 +1,40 @@
-                       README for X11R6.8.1 on OpenBSD
+                       README for X11R6.8.2 on OpenBSD
 
                                Matthieu Herrb
 
- Last modified on: 9 December 2003; updated 25 March 2004 by Jim Gettys for
-                                  X11R6.8.1
+                     Last modified on: 4 February 2005.
 
-1.  What and Where is X11R6.8.1?
+1.  What and Where is X11R6.8.2?
 
-The X.org Foundation X11R6.8.1 is an Open Source version of the X Window Sys-
+The X.org Foundation X11R6.8.2 is an Open Source version of the X Window Sys-
 tem that supports several UNIX(R) and UNIX-like operating systems (such as
 Linux, the BSDs and Solaris x86) on Intel and other platforms.
 
 See the Copyright Notice.
 
-The sources for X11R6.8.1 are available from
+The sources for X11R6.8.2 are available from http://wiki.x.org
 
-http://wiki.x.org
-
-X11R6.8.1 also builds on other OpenBSD architectures. See section Building on
-other architectures (section 8., page 1) for details.
+X11R6.8.2 builds on most architectures supported by OpenBSD. See section
+Building on other architectures (section 7., page 1) for details.
 
 2.  Bug Reports for This Document
 
-Use the X.org Bugzilla at urlnam <URL:http://bugzilla.freedesktop.org> to
-submit comments or suggestions about this file, using the xorg product.
+Use the X.org Bugzilla at http://bugs.freedesktop.org to submit comments or
+suggestions about this file, using the xorg product.
 
 3.  New OS dependent features
 
-See the Release Notes for non-OS dependent new features in X11R6.8.1.
+See the Release Notes for non-OS dependent new features in X11R6.8.2.
 
-3.1  New OS related features
+   o Switch the the Xinput-aware kbd driver for keyboard input
 
-   o The IPv6 support is enabled on OpenBSD, but XDMCP over IPv6 is not cur-
-     rently enabled since the code uses IPv6 mapped IPv4 addresses which are
-     not supported on OpenBSD.
+3.1  New OS related features in X.Org 6.8
 
-   o The userland part of DRI is enabled and built. Now waiting for someone
-     to port the kernel modules...
+   o Support for Propolice in modules.
 
-   o All major revisions of the shared libraries are incremented on OpenBSD
-     3.3 and later, to support the API changes introduced by gcc stack pro-
-     tector.
+   o Server support for OpenBSD/amd64.
 
-3.2  New OS related features in 4.3
-
-   o Support for some VGA cards on OpenBSD/alpha
-
-3.3  New OS dependent features in 4.2
-
-   o Support for OpenBSD/macppc on the ATI Rage128 based Power Macintoshes.
-
-   o Support for building clients on OpenBSD/sparc64.
-
-3.4  New OS dependent features in 4.0.3
-
-   o Support for the wscons console driver in post 2.8 OpenBSD.
-
-   o A fix for multi-threaded libraries support.
-
-3.5  New OS dependent features in 4.0.2
-
-   o Support for the OpenBSD ports tree,
-
-   o Preliminary support for the macppc architecture (clients build and work,
-     the server doesn't work yet),
-
-   o xdm now writes an utmp entry,
-
-   o startx now creates an Xauthority magic cookie for the display.
-
-3.6  New OS dependent features in 4.0.1
-
-   o Several features from the OpenBSD X11 tree were merged into xdm:
-
-        o  support for Kerberos IV authentication
-
-        o use the arc4random(4) random number generator
-
-        o add a new resource "allowRootLogin", which can be used to disable
-          root logins through xdm
-
-        o log failed logins to syslogd
-
-        o verify that the shell is valid using /etc/shell
-
-        o verify that the account hasn't expired
-
-   o The Xsun server can be built again on OpenBSD/sparc.
-
-3.7  New OS dependent features in 4.0
-
-   o Multi-thread safe libraries are built by default on OpenBSD 2.6 and
-     later,
-
-   o Preliminary APM support.
-
-3.8  New OS dependent features in 3.9.18
-
-   o Support for USB mices has been added on OpenBSD.
-
-   o Soft-booting secondary cards through the int10 BIOS interface is now
-     possible using the x86emu real mode emulator.
-
-3.9  New OS dependent features in 3.9.17
-
-   o Silken mouse is supported for serial mices, and, under post 2.6 OpenBSD-
-     current for PS/2 mices.
-
-   o MTRR Write Combining is enabled under post 2.6 OpenBSD-current.
-
-4.  Installing the Binaries
-
-Refer to the Installation Document for detailed installation instructions.
-
-5.  Configuring X for Your Hardware
+4.  Configuring X for Your Hardware
 
 The /etc/X11/xorg.conf file tells the X server what kind of monitor, video
 card and mouse you have.  You must create it to tell the server what specific
@@ -123,7 +44,7 @@ You'll need info on your hardware:
 
    o Your mouse type, baud rate and its /dev entry.
 
-   o The video card's chipset (e.g. ET4000, S3, etc).
+   o The video card's chipset (e.g. ATI Radeon, nVidia GeForce 4/MX etc).
 
    o Your monitor's sync frequencies.
 
@@ -138,33 +59,28 @@ page.
 Once you've set up a xorg.conf file, you can fine tune the video modes with
 the xvidtune utility.
 
-5.1  About mouse configuration
+4.1  About mouse configuration
 
-X11R6.8.1 has support for the mouse driver included in the new wscons console
-driver introduced by OpenBSD-2.9.  Specify ``wsmouse'' as the protocol and
-``/dev/wsmouse0'' as the  device in /etc/X11/xorg.conf if you're using
-OpenBSD-2.9 or later with a PS/2 or USB mouse.
+X11R6.8.2 has support for the mouse driver included in the new wscons console
+driver.  Specify ``wsmouse'' as the protocol and ``/dev/wsmouse'' as the
+device in /etc/X11/xorg.conf with a PS/2 or USB mouse.
 
 See README.mouse  for general instruction on mouse configuration.
 
-6.  Running X
+5.  Running X
 
-6.1  Starting xdm, the display manager
+5.1  Starting xdm, the display manager
 
 To start the display manager, log in as root on the console and type: ``xdm
 -nodaemon''.
 
-You can start xdm automatically on bootup by changing the line
-
-     xdm_flags=NO            # for normal use: xdm_flags=""
-
-to:
+You can start xdm automatically on bootup by adding the line:
 
      xdm_flags=""            # for normal use: xdm_flags=""
 
-in /etc/rc.conf.
+in /etc/rc.conf.local.
 
-6.2  Running X without the display manager
+5.2  Running X without the display manager
 
 The easiest way for new users to start X windows is to type: ``startx >&
 startx.log''.  Error messages are lost unless you redirect them because the
@@ -174,21 +90,15 @@ To get out of X windows, type: ``exit'' in the console xterm.  You can cus-
 tomize your X by creating .xinitrc, .xserverrc, and .twmrc files in your home
 directory as described in the xinit and startx man pages.
 
-7.  Kernel Support for X
+6.  Kernel Support for X
 
-To make sure X support is enabled under  OpenBSD, the following line must be
-in your config file in /sys/arch/i386/conf:
+OpenBSD's GENERIC kernels have all support for running X enabled.
 
-     option APERTURE
-
-7.1  Console drivers
+6.1  Console drivers
 
 The server supports wscons, the standard OpenBSD/i386 console driver.
 
-The pcvt console driver which was the default up to OpenBSD 2.8, is also sup-
-ported on those releases.
-
-7.2  Aperture Driver
+6.2  Aperture Driver
 
 By default OpenBSD includes the BSD 4.4 kernel security feature that disables
 access to the /dev/mem device when in multi-user mode. But the X server
@@ -214,12 +124,12 @@ in /etc/rc.securelevel.
      terminals, only the first one will have linear memory access.  Set
      securelevel to -1 if you need more that one X server at a time.
 
-7.3  MIT-SHM
+6.3  MIT-SHM
 
 OpenBSD supports System V shared memory. If X detects this support in your
 kernel, it will support the MIT-SHM extension.
 
-8.  Rebuilding the X Distribution
+7.  Rebuilding the X Distribution
 
 You should configure the distribution by editing xc/config/cf/host.def
 before compiling.  To compile the sources, invoke ``make World'' in the xc
@@ -230,9 +140,11 @@ fications. You may want to start with this tree to rebuild from sources.  The
 OpenBSD XF4 source tree is available by anoncvs from all OpenBSD anoncvs
 servers. See http://www.openbsd.org/anoncvs.html for details on anoncvs.
 
-X11R6.8.1  also compiles on other OpenBSD architectures.
+X11R6.8.2 compiles on most OpenBSD architectures. The X.Org X server builds
+and run on the following systems. On other architectures supported by
+OpenBSD, only client side libraries and applications are supported.
 
-8.1  X11R6.8.1 on OpenBSD/alpha
+7.1  OpenBSD/alpha
 
 The X server is known to work on some VGA cards in alpha machines that sup-
 port BWX I/O, with OpenBSD 3.2 and higher.
@@ -253,11 +165,10 @@ Note that this version of doesn't work on TGA cards. The version shipped with
 OpenBSD 3.1 and higher includes an OS-specific driver wsfb that is used to
 support TGA cards.
 
-8.2  X11R6.8.1 on OpenBSD/macppc
+7.2  OpenBSD/macppc
 
-The X server is currently known to work on the G4 Macs and new iBooks with
-ATI Rage 128 cards running OpenBSD 3.0 or later.  Other machines are more or
-less untested. Earlier OpenBSD versions lack some kernel support for it.
+The X server is currently known to work on most of the G4 Macs and iBooks
+with ATI or nVidia cards.  Other machines are more or less untested.
 
 Use xorgconfig to build a /etc/X11/xorg.conf file before starting the server
 for the first time.
@@ -267,32 +178,24 @@ For the Titanium Powerbook G4, you can try the following mode line in
 
      Modeline "1152x768" 64.995 1152 1213 1349 1472  768 771 777 806 -HSync -VSync
 
-8.3  OpenBSD/sparc
+7.3  OpenBSD/sparc
 
 OpenBSD 3.2 on sparc switched to the wscons device driver and now uses the OS
 specific wsfb driver in the X server. This driver is not included in
-X11R6.8.1. Please use the version shipped with OpenBSD instead.
+X11R6.8.2. Please use the version shipped with OpenBSD instead.
 
-8.4  OpenBSD/sparc64
+7.4  OpenBSD/sparc64
 
-This version only has support for X clients on OpenBSD/sparc64. Note that the
-version shipped with OpenBSD also has support for the X server on both SBus
-and PCI based machines.
+This version only has support PCI based machines using ATI cards on
+OpenBSD/sparc64. Note that the version shipped with OpenBSD has support for
+the X server on both SBus and UPA (unaccelerated) based cards.
 
-9.  Building New X Clients
+8.  Thanks
 
-The easiest way to build a new client (X application) is to use xmkmf if an
-Imakefile is included in the sources.  Type ``xmkmf -a'' to create the Make-
-files, check the configuration if necessary and type ``make''.  Whenever you
-install additional man pages you should update whatis.db by running ``make-
-whatis /usr/X11R6/man''.
-
-10.  Thanks
-
-Many thanks to all people who contributed to make X11R6.8.1 work on *BSD, in
-particular: David Dawes, Todd Fries, Rod Grimes, Charles Hannum, Amancio
-Hasty, Christoph Robitschko, Matthias Scheler, Michael Smith, Ignatios Sou-
-vatzis, Jack Velte, Nate Williams and Pace Willison.
+Many thanks to all people who contributed to make X11R6.8.2 work on *BSD, in
+particular: David Dawes, Todd Fries, Miodrag Vallat, Rod Grimes, Charles Han-
+num, Amancio Hasty, Christoph Robitschko, Matthias Scheler, Michael Smith,
+Ignatios Souvatzis, Jack Velte, Nate Williams and Pace Willison.
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.OpenBSD,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.OpenBSD,v 1.3.2.2 2005/02/08 00:44:27 kem Exp $

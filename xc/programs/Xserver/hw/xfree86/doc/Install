@@ -1,13 +1,13 @@
-                     Installation Details for X11R6.8.1
+                     Installation Details for X11R6.8.2
 
                             The X.Org Foundation
 
-                              17 September 2004
+                               9 February 2005
 
                                   Abstract
 
      How to install the X.Org Foundation's X Window System release ver-
-     sion X11R6.8.1.
+     sion X11R6.8.2.
 
 1.  Introduction
 
@@ -25,7 +25,7 @@ top of your running X installation *after* having carefully backed up
 the file INSTALL.TXT in the root of the source distribution for build and
 install details.
 
-     $Id: Install,v 1.2 2004/11/03 00:08:17 matthieu Exp $
+     $Id: Install,v 1.3 2005/02/12 10:21:20 matthieu Exp $
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/Install,v 1.3.2.1 2004/09/17 15:38:18 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/Install,v 1.3.2.2 2005/02/08 00:44:27 kem Exp $

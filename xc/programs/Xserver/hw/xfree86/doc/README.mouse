@@ -1,4 +1,4 @@
-                         Mouse Support in X11R6.8.1
+                         Mouse Support in X11R6.8.2
 
                                Kazutaka Yokota
 
@@ -6,7 +6,7 @@
 
 1.  Introduction
 
-This document describes mouse support in X.org Foundation's X11R6.8.1 server.
+This document describes mouse support in X.org Foundation's X11R6.8.2 server.
 
 Mouse configuration has often been mysterious task for novice users.  How-
 ever, once you learn several basics, it is straightforward to write the mouse
@@ -66,7 +66,7 @@ interface lacks this logic and cannot be used in such a way, even if you can
 find an appropriate adapter with which you can connect the PS/2 mouse to a
 serial port or visa versa.
 
-X11R6.8.1 supports the mouse with a wheel, a roller or a knob.  Its action is
+X11R6.8.2 supports the mouse with a wheel, a roller or a knob.  Its action is
 detected as the Z (third) axis motion of the mouse.  As the X server or
 clients normally do not use the Z axis movement of the pointing device, a
 configuration option, "ZAxisMapping", is provided to assign the Z axis move-
@@ -101,7 +101,7 @@ ment to another axis or a pair of buttons (see below).
      SP: support is available in a different form
 
      *1 Refer to the following sections for details.
-     *2 X11R6.8.1/OS2 will support any type of mouse that the OS supports,
+     *2 X11R6.8.2/OS2 will support any type of mouse that the OS supports,
         whether it is serial, bus mouse, or PnP type.
 
 3.2  BSD/OS
@@ -203,10 +203,10 @@ Human Interface Device (hid) /dev/uhid*. Select the "usb" protocol and the
 
 3.12  OS/2
 
-X11R6.8.1/OS2 always uses the native mouse driver of the operating system and
+X11R6.8.2/OS2 always uses the native mouse driver of the operating system and
 will support any type of pointer that the OS supports, whether it is serial,
 bus mouse, or PnP type.  If the mouse works under Presentation Manager, it
-will also work under X11R6.8.1/OS2.
+will also work under X11R6.8.2/OS2.
 
 Always specify "OSMouse" as the protocol type.
 
@@ -435,7 +435,7 @@ N4 actually exist in this mouse, their actions won't be detected by the X
 server.
 
 NOTE #1: horizontal movement may not always be detected by the current ver-
-sion of the X11R6.8.1 X servers, because there appears to be no accepted
+sion of the X11R6.8.2 X servers, because there appears to be no accepted
 standard as to how the horizontal direction is encoded in mouse data.
 
 NOTE #2: Some mice think left is the negative horizontal direction, others
@@ -989,4 +989,4 @@ time. They may prefer the following InputDevice section which defines button
      EndSection
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.mouse,v 1.4.2.1 2004/09/17 15:38:19 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.mouse,v 1.4.2.2 2005/02/08 00:44:27 kem Exp $

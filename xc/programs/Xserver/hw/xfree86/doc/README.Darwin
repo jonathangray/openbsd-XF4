@@ -37,16 +37,16 @@ window of the X11 display is the size of the screen and contains all the
 other windows. The X11 root window is not displayed in rootless mode as Aqua
 handles the desktop background.
 
-From the console, the Darwin port of X11R6.8.1 uses the IOKit for device
-driver loading and discovery, rather than the X11R6.8.1 module loader.
-Because of this, the X11R6.8.1 configuration file is not used on Darwin or
+From the console, the Darwin port of X11R6.8.2 uses the IOKit for device
+driver loading and discovery, rather than the X11R6.8.2 module loader.
+Because of this, the X11R6.8.2 configuration file is not used on Darwin or
 Mac OS X systems. The descriptions found elsewhere of devices supported by
-X11R6.8.1 for other operating systems also do not apply.
+X11R6.8.2 for other operating systems also do not apply.
 
-X11R6.8.1 for Darwin or Mac OS X will work with any video card that you have
+X11R6.8.2 for Darwin or Mac OS X will work with any video card that you have
 an IOKit driver for. If you are running Mac OS X, this typically means any
 card that has been shipped by Apple. If a card works for you with the Mac
-OS X GUI, it will work on the same machine with X11R6.8.1. If you have a pure
+OS X GUI, it will work on the same machine with X11R6.8.2. If you have a pure
 Darwin installation, you may need to download additional third-party drivers
 from Apple's Darwin site. IOKit drivers are typically installed in /Sys-
 tem/Library/Extensions/ or /Library/Extensions/.
@@ -58,9 +58,9 @@ driver, only a single mouse button will work on an ADB mouse.
 3.  Getting Started
 
 Following are instructions for building and running your own copy of
-X11R6.8.1. The procedure for getting your X server up and running on Darwin
+X11R6.8.2. The procedure for getting your X server up and running on Darwin
 and Mac OS X are very similar. Where there are differences I have noted them
-below. Note that to build X11R6.8.1 for yourself on Mac OS X, you need to
+below. Note that to build X11R6.8.2 for yourself on Mac OS X, you need to
 install the Developers' Tools.
 
 /Applications.
@@ -93,9 +93,9 @@ dation project.
 
      Wait for all the files to complete downloading.
 
-3.2  Build X11R6.8.1
+3.2  Build X11R6.8.2
 
-Once you have everything ready it is easy to build and install X11R6.8.1.
+Once you have everything ready it is easy to build and install X11R6.8.2.
 From the command line:
 
      cd sandbox/xc
@@ -126,20 +126,20 @@ clients in the user's default login shell. (An alternate shell can also be
 specified in the preferences.) The way to set the path depends on the shell
 you are using. This is described in the man page documentation for the shell.
 
-In addition you may also want to add the man pages from X11R6.8.1 to the list
+In addition you may also want to add the man pages from X11R6.8.2 to the list
 of pages to be searched when you are looking for documentation. The X11 man
 pages are located in /usr/X11R6/man and the MANPATH environment variable con-
 tains the list of directories to search.
 
 4.2  Starting the X Server
 
-On Mac OS X, you can run X11R6.8.1 from the Darwin text console or in paral-
+On Mac OS X, you can run X11R6.8.2 from the Darwin text console or in paral-
 lel with Aqua. To get to the text console in Mac OS X you need to logout and
 type ``>console'' as the user name. This will shutdown Core Graphics and
 bring up the console login prompt. Login again as your user.  From the text
 console you can start the X Window System by typing ``exec startx''.
 
-When you are ready to quit X11R6.8.1 type ``exit'' in the main terminal win-
+When you are ready to quit X11R6.8.2 type ``exit'' in the main terminal win-
 dow or quit with the window manager if you have one running. Unfortunately in
 IOKit mode, the X server does not shutdown correctly and if you did not start
 with ``exec startx'', you will get an apparently frozen screen with only a
@@ -149,7 +149,7 @@ return to normalcy after a brief delay. With Darwin, this should put you back
 at the text console login prompt. With Mac OS X, Core Graphics will restart
 and you should be given a login window.
 
-To start X11R6.8.1 in Quartz mode you can launch the XDarwin application in
+To start X11R6.8.2 in Quartz mode you can launch the XDarwin application in
 the /Applications folder, or from the command line type ``startx --
 -quartz''. By default this will give you a mode picker to choose between full
 screen or rootless mode. You can change the default to always use a particu-
@@ -182,7 +182,7 @@ this to work.
 The X Window System is very customizable and you will certainly want to
 change some things. There is a lot you can do to control how your windows
 look, how the windows are moved, resized, etc. You will likely want to get a
-fancier window manager than twm, which is included with X11R6.8.1. The .xini-
+fancier window manager than twm, which is included with X11R6.8.2. The .xini-
 trc file in your home directory controls what programs are run when you start
 the X Window System. You can find a sample .xinitrc file in
 /etc/X11/xinit/xinitrc.
@@ -204,4 +204,4 @@ Good luck!
      Generated from XdotOrg: xc/programs/Xserver/hw/xfree86/doc/sgml/Darwin.sgml,v 1.2 eich Exp $
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.Darwin,v 1.3.2.1 2004/09/17 15:38:18 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.Darwin,v 1.3.2.2 2005/02/08 00:44:27 kem Exp $

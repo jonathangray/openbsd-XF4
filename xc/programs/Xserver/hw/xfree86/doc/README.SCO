@@ -6,12 +6,12 @@
 
 1.  Requirements
 
-Before you can either compile or execute a binary distribution of X11R6.8.1,
+Before you can either compile or execute a binary distribution of X11R6.8.2,
 the following conditions must be met:
 
    o Ensure that you are running Release 5.0.4 or later. This is required
      because OSS646 is only supported on those platforms. There are no plans
-     to support X11R6.8.1 on earlier releases of OpenServer.
+     to support X11R6.8.2 on earlier releases of OpenServer.
 
    o Ensure that OSS646, the ``Execution Environment Update'' package is
      installed, if appropriate.  Check the release notes for that update to
@@ -29,7 +29,7 @@ the following conditions must be met:
      est version can always be found at the SCO FTP site
      <URL:ftp://ftp.sco.com/pub/openserver5/opensrc>.
 
-   o To compile X11R6.8.1, you must use the SCO-supported version of the GNU
+   o To compile X11R6.8.2, you must use the SCO-supported version of the GNU
      C Compiler.  It is possible that Skunkware versions of the compiler will
      work too, but this has not been tested.  The ``GNU Development System''
      is available for all releases from (and including) SCO OpenServer
@@ -42,7 +42,7 @@ the following conditions must be met:
    o If you are not using OSR 5.0.7 or later, you need to get an updated con-
      sole driver.  See urlnam <URL:http://www.sco.com> for details on
      OpenServer supplements.  If you can't or don't want to upgrade your con-
-     sole driver, X11R6.8.1 will still compile, but you may run into problems
+     sole driver, X11R6.8.2 will still compile, but you may run into problems
      with some cards such as the Riva TNT and ATI Rage cards.  The problem
      with the console driver in 5.0.6A and earlier is that when the X server
      sets graphics mode, the driver does not set a status bit, so any text
@@ -51,11 +51,11 @@ the following conditions must be met:
      console video memory.  This just happens to be slap bang in the middle
      of palette data for the Riva TNT, so you get color map corruption.  The
      updated console driver also has an improved mechanism for allocating
-     video memory that X11R6.8.1 detects at compile time, and it will use it
+     video memory that X11R6.8.2 detects at compile time, and it will use it
      if it exists.  It is STRONGLY recommended that you get the console
      driver update.
 
-2.  Compiling X11R6.8.1
+2.  Compiling X11R6.8.2
 
 Using the GNU Development System, compiling the distribution should be fairly
 straightforward.  Before attempting to compile the system though, you should
@@ -85,7 +85,7 @@ the compilation, perform the following steps:
    o If you want to install the manual pages, execute the command make
      install.man 2>&1 | tee -a install.log as root.
 
-3.  Before Running X11R6.8.1
+3.  Before Running X11R6.8.2
 
 The SCO xterm terminfo description is not compatible with the xterm in the R5
 distribution.
@@ -99,7 +99,7 @@ ble getting your mouse to work using the X mouse drivers.
 
 4.  Switching Consoles
 
-X11R6.8.1 uses similar console switching keys as the SCO R4 and R5 servers.
+X11R6.8.2 uses similar console switching keys as the SCO R4 and R5 servers.
 That is, Ctrl-PrntScr takes you to the next console along from the one X is
 running on.  If this is the last console it will take you to console 1. Ctrl-
 Alt-FXX, where XX is a function key between F1 and F12 will switch you to the
@@ -135,12 +135,12 @@ manual pages yourself.
 
 6.  Using SCO binaries/servers.
 
-X11R6.8.1 will accept connections from SCO binaries (R3 upwards) and the SCO
-R5 server will also accept connections from X11R6.8.1 binaries. This means
+X11R6.8.2 will accept connections from SCO binaries (R3 upwards) and the SCO
+R5 server will also accept connections from X11R6.8.2 binaries. This means
 you may mix and match the two if you have ODT.  For example you may still use
 the Panning Motif window manager (pmwm) if you prefer.
 
      Generated from XdotOrg: xc/programs/Xserver/hw/xfree86/doc/sgml/SCO.sgml,v 1.3 keithp Exp $
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.SCO,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.SCO,v 1.3.2.2 2005/02/08 00:44:27 kem Exp $

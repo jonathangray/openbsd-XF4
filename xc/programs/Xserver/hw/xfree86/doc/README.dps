@@ -1,4 +1,4 @@
-$Id: README.dps,v 1.2 2004/11/03 00:08:18 matthieu Exp $
+$Id: README.dps,v 1.3 2005/02/12 10:21:20 matthieu Exp $
 
                                   X and DPS
 
@@ -34,7 +34,7 @@ request that a line should be rendered; instead, it uploads code to the
 server which, when executed, causes a line to be drawn.
 
 This document does not aim at teaching programming with DPS; it is only a
-summary description of the DPS support code included with X11R6.8.1.  More
+summary description of the DPS support code included with X11R6.8.2.  More
 information about DPS, including a DPS bibliography, is available from the
 DPS extension site <URL:http://dps.sourceforge.net>.
 
@@ -49,14 +49,14 @@ either of an X server extension, or of a client-side process known as the
 ``DPS agent.''  In this latter case, the term ``server-side'' is somewhat
 misleading.
 
-At the time of writing, only the client side is included with X11R6.8.1; the
+At the time of writing, only the client side is included with X11R6.8.2; the
 server side must be obtained separately.  Please see server side (section 3.,
 page 1) later in this document for more information.
 
 2.  The DPS client side
 
 The DPS client side consists of four libraries and a number of basic tools
-for programming and configuration; these are all included with X11R6.8.1.
+for programming and configuration; these are all included with X11R6.8.2.
 
 2.1  Libraries
 
@@ -80,14 +80,14 @@ The libdpstkXm library contains four Motif widgets.  The DPS Scrolling Widget
 is a DPS drawing area that automatically manages issues such as scrolling,
 scaling, client-side backing store, incremental redisplay, etc. The Font
 Selection Box, and its associated Font Preview, present a convenient and pow-
-erful interface for choosing scalable fonts.  Finally, the Color Picker pre-
-sents an interface for choosing colours using either of the RGB or HSV
+erful interface for choosing scalable fonts.  Finally, the Color Picker
+presents an interface for choosing colours using either of the RGB or HSV
 spaces.  The latter three widgets are documented in [DPTX]; some summary
 Scrolling Widget documentation is available in the doc subdirectory of the
 DPS.tar.gz file, available from urlnam <URL:ftp://dps.source-
 forge.net/pub/dps/DPS.tar.gz>.
 
-The source code for libdpstkXm is included with X11R6.8.1; however, as it
+The source code for libdpstkXm is included with X11R6.8.2; however, as it
 depends on Motif, this library is not built by default.  A GTK-based library
 providing some of the functionality of libdpstkXm is available from the
 gtkDPS site <URL:http://www.gyve.org/gtkDPS/>.
@@ -100,7 +100,7 @@ addition, all programs that link with libdps need to link with libXt, whether
 they use Xt or not.
 
 This state of affairs is unfortunately true of the version of libdps included
-with X11R6.8.1.  We are currently considering various solutions to this prob-
+with X11R6.8.2.  We are currently considering various solutions to this prob-
 lem (including the use of weak linker symbols or splitting off the guilty
 functions into a separate library).
 
@@ -122,7 +122,7 @@ DPS extension.  Pswrap is documented in [PSWRAP].
 
 2.3  Sample clients
 
-X11R6.8.1 contains three sample DPS clients, dpsinfo, dpsexec and texteroids.
+X11R6.8.2 contains three sample DPS clients, dpsinfo, dpsexec and texteroids.
 They are documented in their respective manual pages.
 
 A number of sample clients that depend on Motif are available in urlnam
@@ -188,4 +188,4 @@ Developers. 15 April 1993.
      Updated by Jim Gettys.
 
 
-$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.dps,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.dps,v 1.3.2.2 2005/02/08 00:44:27 kem Exp $

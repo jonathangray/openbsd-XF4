@@ -118,12 +118,13 @@ supplied with this distribution, please add:
 
 to config/cf/host.def.
 
-<item> The XTT font module and FreeType1 have been retired because FreeType2 subsumes 
+<item>The XTT font module and FreeType1 have been retired because FreeType2 subsumes 
 their functionality
-<item> Retire old PS Type1 font rasterizer (except for CID font usage) since the FreeType2 rasterizer now handles PS Type1 (*.pfa, *.pfb)
+<item>Retire old PS Type1 font rasterizer (except for CID font usage) since the FreeType2 rasterizer now handles PS Type1 (*.pfa, *.pfb)
 <item>Render implementation fixes
 <item>Updated x86emu and resynced with upstream at Scitech
 <item>Updated SiS driver
+<item>Updated Nvidia driver (opensource version)
 <item>Render acceleration for ATI's R100 and R200-series cards
 <item>Substantial speedups in the software implementation of the
 render extensions when compiled with gcc 3.4 on the i386 architecture.
@@ -134,8 +135,9 @@ render extensions when compiled with gcc 3.4 on the i386 architecture.
           <item>Allow backward compatibility but internally covert to new format
 	</itemize>
 <item>Software mouse cursor is now based on the Damage extension
-<item>A new keyboard driver is enabled by default. The old driver is disabled unless explicitly compiled in by defining the macro USE_DEPRECATED_KEYBOARD_DRIVER
-<item>Extensions can be enabled/disabled from the configuration file and from the command line
+<item>A new keyboard driver is enabled by default. The old driver is disabled unless explicitly compiled in by defining the macro |USE_DEPRECATED_KEYBOARD_DRIVER|.
+<item>All extensions (except Xserver-specific extensions "DMX" and "XpExtension") can now be
+enabled/disabled from the configuration file and from the command line.
 <item>Mac OS X updates:
 	<itemize>
          <item>Support dynamic screen configuration changes in rootless mode
@@ -145,6 +147,7 @@ render extensions when compiled with gcc 3.4 on the i386 architecture.
          <item>Fixed launch of X clients from Finder with a space in their path
          <item>Fixed some GLX rendering problems on Mac OS X 10.2 and earlier
 	</itemize>
+<item>Updated xterm version
 </itemize>
 
 <sect1>New X extensions
@@ -229,89 +232,92 @@ web site" url="http://dmx.sf.net/">, including how to configure and use
 Xprint updates
 <p>
 <itemize>
-  <item>Integrated various fixes from xprint.mozdev.org (more or less the whole codebase has been merged)
+  <item>Integrated various fixes from <url name="xprint.mozdev.org" url="http://xprint.mozdev.org"> (more or less the whole codebase has been merged)
   <item>Integrated various fixes from Sun Microsystems
   <item>OpenGL is now supported for printing
   <item>New set of maintenance tools for the Xprint server (xplsprinters, xprehashprinterlist, etc.)
-  <item>Added new XprintUtils client library to make the usage off Xprint easier
+  <item>Added new XprintUtils client library to make the usage of Xprint easier
   <item>Various other features and fixes integrated
   <item>Athena toolkit now has print support (XawPrintShell) which is included
-        in a separate version of that library (Xaw8)
-  <item>Various applications/tools like xman, xedit, xlogo, etc. now have
-        print support
+        in a new version of that library (Xaw8)
+  <item>Various applications/tools like xman, xedit, xlogo, xlsfonts, etc.
+        now have print support
 </itemize>
 
 <sect1>Updated Mesa and DRI from upstream sources
 <P>	
-	<itemize>
-          <item>More OpenGL extensions
-          <item>MergedFB for Radeon (Dualhead DRI support on these cards)
-          <item>Many GLX fixes
-          <item>Working SiS DRI driver
-          <item>Major Radeon and R200 DRI driver updates
-          <item>fbconfigs support
-          <item>Beginnings of pbuffer support (indirect only, and only in specific circumstances).
-          <item>Merge Mach64 DRI support (Eric Anholt, July 23)
-	</itemize>
+  <itemize>
+    <item>Mesa version has been updated to 6.2.1 (in X11R6.8.2)
+    <item>More OpenGL extensions
+    <item>MergedFB for Radeon (Dualhead DRI support on these cards)
+    <item>Many GLX fixes
+    <item>Working SiS DRI driver
+    <item>Major Radeon and R200 DRI driver updates
+    <item>fbconfigs support
+    <item>Beginnings of pbuffer support (indirect only, and only in specific circumstances).
+    <item>Merge Mach64 DRI support (Eric Anholt, July 23)
+  </itemize>
 
 <sect1>Video driver enhancements
 <p>
 <itemize>
-   <item>SiS driver updates include
-	<itemize>
-         <item>output device hotplugging
-         <item>lots of fixes for 661, 741, 760
-         <item>extended interface for SiSCtrl?
-         <item>extended LCD handling (allow more modes)
-         <item>HDTV support (480p, 480i, 720p. 1080i; 315/330 series)
-         <item>Added video blitter Xv adapter (315/330 series)
-         <item>extended RENDER acceleration
-	</itemize>
-   <item>Radeon driver updates:
-	<itemize>
-         <item>Merged Framebuffer support (dualhead with DRI)
-         <item>DynamicClocks option (reduced power usage)
-         <item>Render acceleration (r100, r200 chips only)
-         <item>Support for new ATI chips (R420/M18, R423, RV370/M22, RV380/M24, RS300)
-         <item>DRI support for IGP chips
-         <item>Xv gamma correction
-         <item>Updated 3D drivers
-         <item>Many other small fixes
-	</itemize>
-   <item>Neomagic driver updates
-	<itemize>
-         <item>Support for Xv on pre-nm2160 chips
-         <item>Pseudocolor overlay mode
-         <item>Improved support for lowres double scan modes
-	</itemize>
-   <item>MGA driver updates
-	<itemize>
-         <item>Support for DDC and DPMS on second head on G400
-         <item>Updated 3D driver
-	</itemize>
-   <item>i810 driver updates
-	<itemize>
-         <item>Dualhead support (i830+)
-         <item>i915 support
-         <item>New 3D driver (i830+)
-	</itemize>
-   <item>Savage driver updates
-	<itemize>
-         <item>Pseudocolor overlay mode
-	</itemize>
-   <item>S3 driver updates
-	<itemize>
-         <item>Support for additional IBM RAMDACS
-	</itemize>
-   <item>Chips driver update
-	<itemize>
-         <item>Improved BE support
-	</itemize>
-   <item>New Voodoo driver (Alan Cox)
-        <itemize>
-         <item>Provides native (glide-less) acceleration and mode setup for voodoo/voodoo2 boards
-        </itemize>
-  </itemize>
+  <item>ATI Radeon driver updates:
+       <itemize>
+        <item>Merged Framebuffer support (dualhead with DRI)
+        <item>DynamicClocks option (reduced power usage)
+        <item>Render acceleration (r100, r200 chips only)
+        <item>Support for new ATI chips (R420/M18, R423, RV370/M22, RV380/M24, RS300)
+        <item>DRI support for IGP chips
+        <item>Xv gamma correction
+        <item>Updated 3D drivers
+        <item>Many other small fixes
+       </itemize>
+  <item>Chips driver update
+       <itemize>
+        <item>Improved BE support
+       </itemize>
+  <item>MGA driver updates
+       <itemize>
+        <item>Support for DDC and DPMS on second head on G400
+        <item>Updated 3D driver
+       </itemize>
+  <item>Neomagic driver updates
+       <itemize>
+        <item>Support for Xv on pre-nm2160 chips
+        <item>Pseudocolor overlay mode (=PseudoColor emulation)
+        <item>Improved support for lowres double scan modes
+       </itemize>
+  <item>i810 driver updates
+       <itemize>
+        <item>Dualhead support (i830+)
+        <item>i915 support
+        <item>New 3D driver (i830+)
+        <item>i810 driver is now supported for AMD64
+       </itemize>
+  <item>S3 driver updates
+       <itemize>
+        <item>Support for additional IBM RAMDACS
+       </itemize>
+  <item>Savage driver updates
+       <itemize>
+        <item>Pseudocolor overlay mode
+       </itemize>
+  <item>SiS driver updates include
+       <itemize>
+        <item>output device hotplugging
+        <item>lots of fixes for 661, 741, 760
+        <item>extended interface for SiSCtrl?
+        <item>extended LCD handling (allow more modes)
+        <item>HDTV support (480p, 480i, 720p. 1080i; 315/330 series)
+        <item>Added video blitter Xv adapter (315/330 series)
+        <item>extended RENDER acceleration
+        <item>SiS driver now supported on AMD64
+       </itemize>
+  <item>New Voodoo driver (Alan Cox)
+       <itemize>
+        <item>Provides native (glide-less) acceleration and mode setup for voodoo/voodoo2 boards
+       </itemize>
+</itemize>
 
 <sect>Drivers
 <P>
@@ -418,6 +424,27 @@ Darwin/Mac OS X uses IOKit drivers and does not use the module loader drivers
 listed above. Further information can be found in
 <htmlurl name="README.Darwin" url="Darwin.html">.
 
+X11R&relvers; includes the following print drivers:
+
+<sect1>Print Drivers
+<p>
+
+<table border=1 align="center">
+<tabular ca="|l|l|l|">
+   <tabrow>Driver Name<colsep>Description<colsep>Further Information</tabrow>
+   <hline>
+   <tabrow><tt>PostScript</tt><colsep>PostScript driver<colsep>&nbsp;</tabrow>
+   <tabrow><tt>PCL</tt><colsep>PCL color driver<colsep>&nbsp;</tabrow>
+   <tabrow><tt>PCL-MONO</tt><colsep>PCL monocrome driver<colsep>&nbsp;</tabrow>
+   <tabrow><tt>RASTER</tt><colsep>Monocrome raster driver (XWD, PS, PCL)<colsep>&nbsp;</tabrow>
+<!-- not yet
+   <tabrow><tt>SVG</tt><colsep>Scaleable Vector Graphics driver<colsep>&nbsp;</tabrow>
+-->
+</tabular>
+</table>
+
+Drivers marked with (*) are available for Linux only.
+
 X11R&relvers; includes the following input drivers:
 
 <sect1>Input Drivers
@@ -445,9 +472,9 @@ X11R&relvers; includes the following input drivers:
    <tabrow><tt>hyperpen</tt><colsep>Aiptek HyperPen 6000<colsep>&nbsp;</tabrow>
    <tabrow><tt>js_x</tt><colsep>JamStudio pentablet<colsep><htmlurl
 		name="js_x(4)" url="js_x.4.html"></tabrow>
-   <tabrow><tt>kbd</tt><colsep>generic keyboards (alternate)<colsep><htmlurl
+   <tabrow><tt>kbd</tt><colsep>generic keyboards (loadable module)<colsep><htmlurl
 		name="kbd(4)" url="kbd.4.html"></tabrow>
-   <tabrow><tt>keyboard</tt><colsep>generic keyboards<colsep><htmlurl
+   <tabrow><tt>keyboard</tt><colsep>generic keyboards (builtin driver)<colsep><htmlurl
 		name="keyboard(4)" url="keyboard.4.html"></tabrow>
    <tabrow><tt>microtouch</tt><colsep>MicroTouch<colsep>&nbsp;</tabrow>
    <tabrow><tt>mouse</tt><colsep>most mouse devices<colsep><htmlurl
@@ -639,8 +666,7 @@ url="http://dri.sf.net/">.  The 3D core rendering component is provided by
 
 <sect1>XVideo Extension (Xv)
 <p>
-
-The XVideo extension is supported in X11R6.7.x.
+The XVideo extension is supported in X11R6.7.x and newer releases.
 An XvQueryPortAttributes function has been added as well as
 support for XvImages.  XvImages are XImages in alternate color spaces 
 such as YUV and can be passed to the server through shared memory
@@ -692,7 +718,11 @@ The Xft library uses configuration files, <tt>/etc/fonts/fonts.conf</tt>
 and <tt>/etc/fonts/local.conf</tt>, which
 contains information about which directories contain font files and also
 provides a sophisticated font aliasing mechanism.  Documentation for that
-file is included in the <htmlurl name="Xft(3)" url="Xft.3.man"> man page.
+file is included in the
+<htmlurl name="Xft(3)" url="Xft.3.man">,
+<htmlurl name="fontconfig(3)" url="fontconfig.3.man"> and
+<htmlurl name="fonts.conf(4)" url="fonts.conf.4.man">
+man pages.
 
 </sect2>
 
@@ -756,7 +786,7 @@ Xedit has several new features, including:
   <item>Flexible search/replace interface that allows regex matches.
   <item>Please refer to <tt><htmlurl name="xedit(1)" url="xedit.1.html"></tt>
 	for more details.
-  <item>XPrint support.
+  <item>Support for printing via Xprint.
 </itemize>
 
 <!--
@@ -767,17 +797,18 @@ Xedit has several new features, including:
 <sect1>Font support
 <p>
 
-Details about the font support in X11R&relvers;.x can be found
+Details about the font support in X11R&lastfullrelvers;.x can be found
 in the <htmlurl name="README.fonts" url="fonts.html"> document.
 
 <sect1>TrueType support
 <p>
 
 X11R6.7 came with two TrueType backends.  The functionality from the
-`X-TrueType' backend has been integrated into the `FreeType' backend which
-is designed to transparently support all of the functionality from the
-`X-TrueType' backend with the exception of the font encoding libraries; the
-`FreeType' backend uses only the fontenc-based encoding system .
+`X-TrueType' (="XTT") backend has been integrated into the `FreeType'
+backend which is designed to transparently support all of the functionality
+from the `X-TrueType' backend with the exception of the font encoding
+libraries; the `FreeType' backend uses only the fontenc-based encoding
+system.
 
 <sect1>CID font support
 <p>
@@ -904,7 +935,7 @@ These fonts include all of the glyphs needed for ISO&nbsp; 8859 parts 1 9
 and 15.
 
 The license terms for the Vera fonts are inclued in the file
-<tt/COPYRIGHT.Vera/>.
+<tt/COPYRIGHT.Vera/.
 
 <sect1>Luxi fonts from Bigelow and Holmes <label id="luxi">
 <p>
@@ -1029,30 +1060,44 @@ send details to <email>xorg@freedesktop.org</email>.
 <tag>These people contributed in some way to X11R&relvers;</tag>
 Paul Anderson, 
 Eric Anholt, 
+Dave Airlie, 
+Donnie Berkholz, 
 Daniel Berrange, 
+Thomas Biege, 
 Russ Blaine, 
 Ryan Breen, 
 Alan Coopersmith, 
+Jay Cotton, 
 Michel Daenzer, 
 David Dawes,
+Kevin DeKorte, 
 Alex Deucher, 
 Stefan Dirsch, 
 Egbert Eich, 
 Rik Faith,
 Jim Gettys, 
+Giuseppe Ghib&ograve;, 
+Thomas Gilg, 
 Alexander Gottwald, 
 Mike A. Harris, 
 John Harper, 
 John Heasley, 
+Jeremy Huddleston, 
 Matthieu Herrb, 
 Alan Hourihane, 
+Jay Hobson, 
+Matthias Hopf, 
 Kristian H&oslash;sberg, 
 Harold L. Hunt II, 
 Adam Jackson, 
+Daniel Jacobowitz, 
 Deron Johnson, 
+Masaki Katakai, 
+Stephen Kennedy, 
 Ivan Kokshaysky, 
 Stuart Kreitman, 
-Peter Kunzman, 
+Peter Kunzman,
+Julien Lafon, 
 Nolan Leake,
 Ryan Lortie, 
 Andreas Luik, 
@@ -1060,18 +1105,27 @@ Torrey T. Lyons,
 Roland Mainz, 
 Guy Martin, 
 Kevin E. Martin, 
+Dan McNichol, 
+Dagfinn Ilmari Mannsaker, 
+Simon Montagu, 
 Keith Packard, 
 Greg Parker, 
+Drew Parsons, 
 Aaron Plattner, 
+Branden Robinson, 
 S&oslash;ren Sandmann,
 Ty Sarna, 
 Yu Shao, 
+Gustavo Noronha Silva, 
 Bryan Stine, 
 Owen Taylor, 
 Travis Tilley, 
 Ryan Underwood, 
 Ronny Vindenes, 
-Chisato Yamauchi
+Chisato Yamauchi,
+Mark Vojkovich, 
+Tim Yamin,
+Hui Yu
 </descrip>
 
 <p>
@@ -1089,14 +1143,15 @@ Michael Bax,
 Jehan Bing,
 Peter Breitenlohner,
 Alan Coopersmith,
+Thomas Dickey, 
 Egbert Eich,
 John Dennis,
 Fabrizio Gennari,
 Jim Gettys,
 Alexander Gottwald,
-Ralf Habacker
+Ralf Habacker,
 Mike Harris,
-Mattheiu Herrb
+Mattheiu Herrb,
 Alan Hourihane,
 Harold L Hunt II,
 Elliot Lee,
@@ -1106,7 +1161,7 @@ Stuart Kreitman,
 Andreas Luik,
 Torrey Lyons,
 Roland Mainz,
-Kevin E. Martin, 
+Kevin E. Martin,
 Takuma Murakami,
 Kensuke Matsuzaki,
 Keith Packard,
@@ -1115,8 +1170,7 @@ Earle F. Philhower III,
 Benjamin Rienfenstahl,
 Leon Shiman,
 Toshimitsu Tanaka,
-Nicholas Wourms.
-
+Nicholas Wourms,
 2d3d Inc., 
 Aaron Plattner, 
 Adam de Boor, 
