@@ -12,7 +12,7 @@ SUPPORTED HARDWARE
 This server has been tested on iMac, and G4 hardware, with resolutions 
 of 1024x768 and 1280x1024. 
 
-All 8 bits capable PCI VGA display adapters supported by OpenFirmare 
+All 8 bits capable PCI VGA display adapters supported by OpenFirmware 
 should work.
 
 Only US keyboards are supported by default. To use other keymaps, define
