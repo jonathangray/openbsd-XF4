@@ -109,6 +109,10 @@ typedef pthread_t xthread_t;
 #pragma weak pthread_cond_wait = _Xthr_zero_stub_
 #pragma weak pthread_cond_signal = _Xthr_zero_stub_
 #pragma weak pthread_cond_broadcast = _Xthr_zero_stub_
+/* These are added for libGL */
+#pragma weak pthread_key_create = _Xthr_zero_stub_
+#pragma weak pthread_getspecific = _Xthr_zero_stub_
+#pragma weak pthread_setspecific = _Xthr_zero_stub_
 #if defined(_DECTHREADS_) || defined(linux)
 #pragma weak pthread_equal = _Xthr_equal_stub_	/* See Xthreads.h! */
 int
