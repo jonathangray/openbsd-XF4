@@ -33,8 +33,6 @@
  * Brian Paul  26 January 2000
  */
 
-#define DO_GLU
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <GL/gl.h>
