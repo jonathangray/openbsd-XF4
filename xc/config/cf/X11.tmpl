@@ -2423,6 +2423,10 @@ SharedLibReferences(GLX,GL,$(GLXLIBSRC),SOGLREV,SharedGlxRev)
 #else
 ProjectUnsharedLibReferences(GLX,GL,$(GLXLIBSRC),XBuildLibDir)
 #endif
+#ifndef SharedOSMesaRev
+#define SharedOSMesaRev 4.0
+#endif
+
     GLWIDGETSRC = $(LIBSRC)/GLw
 #if SharedLibGLw
 #ifndef SharedGLwRev

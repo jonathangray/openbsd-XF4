@@ -33,7 +33,7 @@ MESA_INCLUDES = -I$(MESASRCDIR)/src/OSmesa -I$(MESASRCDIR)/src \
 
       DEFINES = $(ALLOC_DEFINES) $(DRI_DEFINES)
      INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC) $(MESA_INCLUDES) \
-     	 	$(DRI_INCLUDES) -I$(GLXLIBSRC)/include
+	 	$(DRI_INCLUDES) -I$(GLXLIBSRC)/include
 
      MESAOBJS = $(COREMESAOBJS) $(MESA_ASM_OBJS)
     MESAUOBJS = $(COREMESAUOBJS) $(MESA_ASM_UOBJS)
@@ -69,7 +69,7 @@ NormalLintTarget($(SRCS))
 
 LIBNAME = OSMesa
 #if !defined(OS2Architecture)
-SOREV = 4.0
+SOREV = SharedOSMesaRev
 #else
 SOREV =
 #endif
