@@ -1,5 +1,6 @@
 XCOMM $XdotOrg: xc/lib/fontconfig/Imakefile,v 1.2 2004/04/23 18:44:24 eich Exp $
 XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.17 2003/11/19 20:57:37 dawes Exp $
+XCOMM $OpenBSD: Imakefile,v 1.9 2004/11/13 08:56:26 matthieu Exp $
 
 #define DoNormalLib NormalLibFontconfig
 #define DoSharedLib SharedLibFontconfig
@@ -71,6 +72,10 @@ FONTCONFIGFONTSCONFDIR=FontconfigFontsConfDir
 #ifdef DarwinArchitecture
 MACFONTDIRS = ~/Library/Fonts /Library/Fonts /Network/Library/Fonts \
               /System/Library/Fonts
+#endif
+#ifdef OpenBSDArchitecture
+EXTRAFONTDIRS = /usr/local/lib/X11/fonts \
+		/usr/local/share/fonts
 #endif
 
 #if NothingOutsideProjectRoot
