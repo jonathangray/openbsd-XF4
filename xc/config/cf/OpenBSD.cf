@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.116 2002/12/04 03:49:30 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.117 2002/12/16 23:07:31 matthieu Exp $
 
 
 
@@ -139,8 +139,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define GccUsesGas		YES
 #define UseGas			YES
 #define GnuCpp			YES
-#define HasGccPropolice		YES
-
 
 #define NeedConstPrototypes	YES
 #define NeedFunctionPrototypes	YES
