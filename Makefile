@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.4 2001/02/26 18:48:57 todd Exp $
+#	$OpenBSD: Makefile,v 1.5 2001/02/26 19:01:54 todd Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -16,6 +16,8 @@ XMACH= ${MACHINE}
 .endif
 HOSTDEF=xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
+HOSTDEFo=xc-old/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
+CONFHOSTDEFo=xc-old/config/cf/host.def
 
 .if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == alpha \
 	|| ${MACHINE} == powerpc || ${MACHINE} == mac68k
@@ -48,6 +50,7 @@ compile:
 	${CP} ${HOSTDEF} ${CONFHOSTDEF}
 	cd xc ; ${MAKE} World WORLDOPTS=
 .if (${NEED_XC_OLD:L} == "yes")
+	${CP} ${HOSTDEFo} ${CONFHOSTDEFo}
 	cd xc-old ; ${MAKE} World WORLDOPTS=
 .endif
 
