@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # $Xorg: Xsession,v 1.4 2000/08/17 19:54:17 cpqbld Exp $
-# $OpenBSD: Xsession,v 1.7 2003/04/01 22:37:03 matthieu Exp $
+# $OpenBSD: Xsession,v 1.8 2003/09/02 23:59:20 todd Exp $
 #
 #
 #
@@ -13,7 +13,7 @@ for errfile in "$HOME/.xsession-errors" "${TMPDIR-/tmp}/xses-$USER" "/tmp/xses-$
 do
 	case "$errfile" in
 	/tmp/* | /var/tmp/*)
-		errfile=`mktemp ${errfile}.XXXXXX` || break;
+		errfile=`mktemp ${errfile}.XXXXXXXXXX` || break;
 		;;
 	esac
 	if ( cp /dev/null "$errfile" 2> /dev/null )
