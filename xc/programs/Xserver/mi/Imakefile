@@ -68,6 +68,9 @@ SpecialCObjectRule(miscrinit,$(ICONFIGFILES),$(EXT_DEFINES))
 #ifdef ItsyCompilerBug
 SpecialCObjectRule(mipolycon,$(_NOOP_),-O0)
 #endif
+#if defined(OpenBSDArchitecture) && defined(Sparc64Architecture)
+SpecialCObjectRule(mizerclip,NullParameter,-O0)
+#endif
 
 AllTarget($(EXTRAMIINITEXTOBJ))
 
