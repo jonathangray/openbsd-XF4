@@ -1,5 +1,5 @@
 XCOMM $XConsortium: Imakefile /main/4 1996/10/24 10:16:33 kaleb $
-
+XCOMM $OpenBSD: Imakefile,v 1.4 2003/05/12 12:55:24 todd Exp $
 
 
 
@@ -50,7 +50,7 @@ includes::
 #if BuildServersOnly && !defined(UseInstalled)
 /* Use installed X libraries and headers */
  USEINSTALLEDLIB = -L$(USRLIBDIR)
-     USEBUILTLIB = -L$(BUILDLIBDIR)
+     USEBUILTLIB = -L$(BUILDLIBDIR) -L../../../../../../xc/exports/lib
  USEINSTALLEDINC = -I$(INCROOT)
         LDPRELIB = 
 #undef XawClientDepLibs
