@@ -396,18 +396,12 @@ install:: fonts.alias							@@\
 #  include <xf86.rules>
 # endif
 
- /*
-  * For the current ECOFF system
-# define UseElfFormat		NO
-  */
- /*
-  * For the upcoming ELF system
-  */
-#  define HasSharedLibraries	NO
 #  define UseElfFormat		YES
-#  define SharedLibXThrStub	NO
 
-# if 0 /* NOT YET */
+# if 1
+#  define HasSharedLibraries	NO
+#  define SharedLibXThrStub	NO
+# else /* NOT YET */
 #  define HasSharedLibraries	YES
 # endif
 
