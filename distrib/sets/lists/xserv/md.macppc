@@ -53,6 +53,7 @@
 ./usr/X11R6/lib/modules/drivers/tdfx_drv.o
 ./usr/X11R6/lib/modules/drivers/trident_drv.o
 ./usr/X11R6/lib/modules/drivers/vga_drv.o
+./usr/X11R6/lib/modules/drivers/wsfb_drv.o
 ./usr/X11R6/lib/modules/extensions
 ./usr/X11R6/lib/modules/extensions/libGLcore.a
 ./usr/X11R6/lib/modules/extensions/libdbe.a
@@ -128,3 +129,4 @@
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
+./usr/X11R6/man/cat4/wsfb.0
