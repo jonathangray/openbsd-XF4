@@ -90,12 +90,6 @@ Conventions used in this document:
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
  
-      To use startx with a 3.3.6 server, you need to create a 
-      /usr/X11R6/lib/X11/xinit/xserverrc file containing the following 
-      line:
-
-      exec /usr/X11R6/bin/Xwrapper $*
-
 5. With XFree86 4.1.0, you can use antialiased fonts in some applications. 
    visit http://www.openbsd.org/faq/truetype.html for more information. 
 
