@@ -1,4 +1,4 @@
-/* $Xorg: io.c,v 1.4 2000/08/17 19:54:22 cpqbld Exp $ */
+/* $Xorg: io.c,v 1.5 2001/02/09 02:05:44 xorgcvs Exp $ */
 /*
  * i/o functions
  */
@@ -6,7 +6,11 @@
  
 Copyright 1990, 1991, 1998  The Open Group
 
-All Rights Reserved.
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -42,13 +46,12 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/io.c,v 3.13 2001/06/25 20:40:18 paulo Exp $ */
+/* $XFree86: xc/programs/xfs/os/io.c,v 3.18 2001/12/14 20:01:41 dawes Exp $ */
 
 #include	<X11/Xtrans.h>
 #include	<stdio.h>
 #include	<errno.h>
 #include	<sys/types.h>
-#ifndef MINIX
 #ifndef Lynx
 #include	<sys/param.h>
 #ifndef __EMX__
@@ -57,7 +60,6 @@ in this Software without prior written authorization from The Open Group.
 #else
 #include	<uio.h>
 #endif
-#endif
 
 #include	"FSproto.h"
 #include	"clientstr.h"
@@ -65,10 +67,6 @@ in this Software without prior written authorization from The Open Group.
 #include	"osdep.h"
 #include	"globals.h"
 #include	"dispatch.h"
-
-#ifdef X_NOT_STDC_ENV
-extern int errno;
-#endif
 
 
 /* check for both EAGAIN and EWOULDBLOCK, because some supposedly POSIX
@@ -142,7 +140,7 @@ ReadRequest(ClientPtr client)
 	return -1;
     oci = oc->input;
     fd = oc->fd;
-    if (oci == NULL || fd < 0)
+    if (oci != NULL && fd < 0)
 	return -1;
 		
     if (AvailableInput) {

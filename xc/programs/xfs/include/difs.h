@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/xfs/include/difs.h,v 1.3 2001/06/25 20:40:18 paulo Exp $ */
+/* $XFree86: xc/programs/xfs/include/difs.h,v 1.4 2001/08/01 00:45:04 tsi Exp $ */
 /*
  * Copyright (C) 1999 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -77,10 +77,8 @@ extern void DeleteClientFontStuff ( ClientPtr client );
 /* difs/fontinfo.c */
 extern void CopyCharInfo ( CharInfoPtr ci, fsXCharInfo *dst );
 extern int convert_props ( FontInfoPtr pinfo, fsPropInfo **props );
-#if 0
 extern int QueryExtents ( ClientPtr client, ClientFontPtr cfp, int item_size, int nranges, Bool range_flag, pointer range_data );
 extern int QueryBitmaps ( ClientPtr client, ClientFontPtr cfp, int item_size, fsBitmapFormat format, int nranges, Bool range_flag, pointer range_data );
-#endif
 
 /* difs/main.c */
 extern int NotImplemented(void);
