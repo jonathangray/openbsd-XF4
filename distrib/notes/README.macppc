@@ -10,11 +10,14 @@ A default /etc/X11/XF86Config is installed that uses this driver.
 So you can just use 'startx' or xdm to start X without further 
 configuration. 
 
+To use xdm from rc.conf, it is necessary to disable /dev/ttyC0 in
+/etc/ttys, change the 'status' of /dev/ttyC0 to 'off'.
+
 Accellerated drivers
 --------------------
 
 The 'ati' driver is currently known to work on the G4 Macs with ATI
-Rage 128 cards. The Titanium PowerBook G4 works with the commented
+Rage 128 cards. The Titanium PowerBook G4 and iBook work with the commented
 settings in the below sample XF86Config.  The 'nv' driver has problems
 on nVidia cards for now.  Other cards are untested.
 
@@ -22,8 +25,8 @@ Use xf86config to build a /etc/X11/XF86Config file before starting
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
-You need to set securelvel to -1 in /etc/rc.securelevel in order to be
-able to use the XFree86 accelerated drivers.
+You need to set machdep.allowaperture to 2 in /etc/rc.securelevel in
+order to be able to use the XFree86 accelerated drivers.
 
 -- Cut Here for a sample /etc/X11/XF86Config to use with the ati driver ---
 Section "ServerLayout"
@@ -74,7 +77,8 @@ Section "Monitor"
 	VertRefresh  50-100
 # 	This mode line can be used on the Ti PBG4
 #	Modeline "1152x768" 64.995 1152 1213 1349 1472  768 771 777 806 -HSync -VSync
-
+# 	This mode line can be used on the ibook
+#        ModeLine "1024x768" 75.00 1024 1048 1184 1328 768 771 777 806
 EndSection
 
 Section "Device"
@@ -85,6 +89,9 @@ Section "Device"
 	BusID       "PCI:0:16:0"
 # 	These options are required for use on the Ti PBG4.
 #	Option      "PanelWidth"  "1152"
+#	Option      "PanelHeight" "768"
+# 	These options are required for use on the ibook.
+#	Option      "PanelWidth"  "1024"
 #	Option      "PanelHeight" "768"
 
 EndSection
@@ -107,16 +114,19 @@ Section "Screen"
 		Depth     8
 # For PBG4 uncomment
 #		Modes     "1152x768"
+#		Modes     "1024x768"
 	EndSubSection
 	SubSection "Display"
 		Depth     16
 # For PBG4 uncomment
 #		Modes     "1152x768"
+#		Modes     "1024x768"
 	EndSubSection
 	SubSection "Display"
 		Depth     24
 # For PBG4 uncomment
 #		Modes     "1152x768"
+#		Modes     "1024x768"
 	EndSubSection
 EndSection
 --- Cut Here ---
@@ -130,7 +140,7 @@ them. Other mouse operations can also be emulated using the keyboard.
 To see the default key mappings, look at /etc/X11/xkb/compat/mousekeys.
 These are not enabled by default.  It is necessary to bind a key to
 the Pointer_EnableKeys action.  For the PBG4 a good setting for
-this is using the Enter key next to the space bar (US keymap).
+this is using the Enter key next to or near the space bar (US keymap).
 This can be bound by using the following xmodmap command.
 --
 xmodmap -e "keysym Mode_switch = Mode_switch Pointer_EnableKeys"
