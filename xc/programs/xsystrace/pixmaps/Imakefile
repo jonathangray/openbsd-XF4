@@ -1,12 +1,9 @@
-XCOMM $OpenBSD: Imakefile,v 1.2 2002/06/05 18:09:04 todd Exp $
+PIXMAPS= deny-always.xpm \
+	deny.xpm \
+	logo.xpm \
+	permit-always.xpm \
+	permit.xpm \
+	skull.xpm
 
-#define PixmapInstall InstallNonExecFileNoClobber
+InstallMultipleFlags($(PIXMAPS),$(INCDIR)/X11/pixmaps,$(INSTINCFLAGS))
 
-#define PixmapDir	Concat(IncRoot,/X11/pixmaps)
-
-PixmapInstall(deny-always.xpm,PixmapDir)
-PixmapInstall(deny.xpm,PixmapDir)
-PixmapInstall(logo.xpm,PixmapDir)
-PixmapInstall(permit-always.xpm,PixmapDir)
-PixmapInstall(permit.xpm,PixmapDir)
-PixmapInstall(skull.xpm,PixmapDir)
