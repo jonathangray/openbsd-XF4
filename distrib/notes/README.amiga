@@ -1,0 +1,33 @@
+Post-installation instructions for XFree86 on OpenBSD/amiga
+-----------------------------------------------------------
+
+1. Amiga setup is easy:
+
+Typical XFree86 use on Amiga machines requires no special configuration.
+Currently, the video hardware marked with "X" below is supported:
+
+	X	grf0	Custom Chips
+		grf1	RetinaZ2
+	X	grf2	RetinaZ3
+	X	grf3	Picasso II, Piccolo, Spectrum
+		grf4	A2410
+	X	grf5	CyberVision 64
+		grf6	oMnibus, Domino, Merlin
+
+2. Start xdm, the X display manager by activating the xdm_flags option
+   in /etc/rc.conf.  You may need to disable the console getty.
+
+3. If you have troubles with starting the Xserver you should try to edit
+   /usr/X11R6/lib/X11/xdm/Xservers' last line to instead read something
+   like:
+
+   :0 local /usr/X11R6/bin/X -dev /dev/grf0
+
+   Where the grf0 should be exchanged to whatever Graphics board you have
+   in your system per the table above.  There is a known generic XFree86
+   bug that under certain circumstances makes the Xamiga server crash
+   when it has several framebuffers to run on.  This is being worked on
+   by the XFree86 project.
+
+If you encounter a problem, you can browse the entire documentation at
+http://www.xfree86.org/3.3.6/ or http://www.xfree86.org/4.0.3.
