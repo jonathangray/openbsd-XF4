@@ -329,7 +329,8 @@ KillChild(int sig)
 {
     if (child_pid > 0)
 	kill(child_pid, SIGTERM);
-    exit(0);
+
+    _exit(0);
 }
 #endif
 
