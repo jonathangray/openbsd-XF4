@@ -62,7 +62,8 @@ MACFONTDIRS = ~/Library/Fonts /Library/Fonts /Network/Library/Fonts \
               /System/Library/Fonts
 #endif
 #ifdef OpenBSDArchitecture
-EXTRAFONTDIRS = /usr/local/lib/X11/fonts
+EXTRAFONTDIRS = /usr/local/lib/X11/fonts \
+		/usr/local/share/fonts
 #endif
 
 #if NothingOutsideProjectRoot
