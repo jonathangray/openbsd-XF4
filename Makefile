@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.15 2001/10/13 17:16:12 todd Exp $
+#	$OpenBSD: Makefile,v 1.16 2001/10/24 13:42:25 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -17,7 +17,6 @@
 #  between the two.
 #
 
-XHP?=${.CURDIR}/XhpBSD
 .if ${MACHINE} == i386
 XMACH= ix86
 .elif ${MACHINE} == hp700
@@ -39,15 +38,20 @@ NEED_XC_OLD?=yes
 NEED_XC_OLD?=no
 .endif
 
-CP?= /bin/cp
-MKDIR?= /bin/mkdir
+.if ${MACHINE} == hp300
+NEED_XC_MIT?=yes
+XHP?=${.CURDIR}/xc-mit/server/XhpBSD
+.else
+NEED_XC_MIT?=no
+.endif
+
 LN?= /bin/ln
 CHOWN?=/usr/sbin/chown
-BINOWN?=root
-BINGRP?=wheel
 CHMOD?=/bin/chmod
 ECHO?=/bin/echo
 RM?= /bin/rm
+DIROWN?=root
+DIRGRP?=wheel
 
 MACHINE?=`uname -m`
 
@@ -59,11 +63,14 @@ REALAPPD=/etc/X11/app-defaults
 all:	compile
 
 compile:
+.if (${NEED_XC_MIT:L} == "yes")
+	cd xc-mit ; ${MAKE} -f Makefile.ini World BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000"
+.endif
 	${RM} -f ${CONFHOSTDEF}
-	${CP} ${HOSTDEF} ${CONFHOSTDEF}
+	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
 	cd xc ; ${MAKE} World WORLDOPTS=
 .if (${NEED_XC_OLD:L} == "yes")
-	${CP} ${HOSTDEFo} ${CONFHOSTDEFo}
+	${INSTALL} ${HOSTDEFo} ${CONFHOSTDEFo}
 	cd xc-old ; ${MAKE} World WORLDOPTS=
 .endif
 
@@ -78,12 +85,6 @@ release-clean:
 .if ! ( defined(DESTDIR) && defined(RELEASEDIR) )
 	@echo You must set DESTDIR and RELEASEDIR for a release.; exit 255
 .endif
-.if ${MACHINE} == hp300
-	@if [ ! -e ${XHP} ]; then \
-	  echo "${XHP} does not exist.  Please set XHP to the XhpBSD server.";\
-	  exit 1;\
-	fi
-.endif
 	${RM} -rf ${DESTDIR}/usr/X11R6/* ${DESTDIR}/usr/X11R6/.[a-zA-Z0-9]*
 	${RM} -rf ${DESTDIR}/var/X11/*
 	${RM} -rf ${DESTDIR}/etc/X11/*
@@ -95,16 +96,16 @@ release-clean:
 	fi
 
 release-mkdir:
-	@${MKDIR} -p ${DESTDIR}/usr/X11R6
-	@${MKDIR} -p ${DESTDIR}/etc/X11
-	@${MKDIR} -p ${DESTDIR}/usr/local/lib/X11
+	@${INSTALL} -d -o ${DIROWN} -g ${DIRGRP} -m ${DIRMODE} \
+		${DESTDIR}/usr/X11R6 ${DESTDIR}/etc/X11 \
+		${DESTDIR}/usr/local/lib/X11
 	@${MAKE} perms
 
 release-install:
 	@${MAKE} install
 .if defined(MACHINE) && ${MACHINE} == hp300
-	@${CP} ${XHP} ${DESTDIR}/usr/X11R6/bin
-	@${CHMOD} 755 ${DESTDIR}/usr/X11R6/bin/XhpBSD
+	@${INSTALL} ${INSTALL_STRIP} -m 755 -o ${BINOWN} -g ${BINGRP} \
+		${XHP} ${DESTDIR}/usr/X11R6/bin
 	@${LN} -s XhpBSD ${DESTDIR}/usr/X11R6/bin/X
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
@@ -120,18 +121,19 @@ release-install:
 
 perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/.
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6
-	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11
-	@find ${DESTDIR}/usr/X11R6 \
-		${DESTDIR}/etc/X11 \! -user root -ls
+	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/.
+	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6/.
+	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/etc/X11/.
+	@find ${DESTDIR}/usr/X11R6/. \
+		${DESTDIR}/etc/X11/. \! -user ${BINOWN} -ls
 
 dist-rel:
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest dist 2>&1 | tee distlog
 
 dist:
 	${MAKE} perms
-	cd distrib/sets && csh ./maketars ${OSrev} && csh ./checkflist
+	cd distrib/sets && env MACHINE=${MACHINE} csh ./maketars ${OSrev} && \
+		env MACHINE=${MACHINE} csh ./checkflist
 
 install: install-xc install-xc-old install-distrib
 	/usr/libexec/makewhatis ${DESTDIR}/usr/X11R6/man
@@ -185,3 +187,5 @@ b-r:
 .PHONY: all build release dist install install-xc install-xc-old \
     install-distrib clean distclean fix-appd b-r \
     release-clean release-mkdir release-install
+
+.include <bsd.own.mk>
