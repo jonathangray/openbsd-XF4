@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.76 2002/03/17 18:01:06 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.77 2002/03/17 20:59:19 matthieu Exp $
 
 
 
@@ -844,6 +844,10 @@ install:: fonts.alias							@@\
 /* Set this to YES when getpwuid_r is added to libc_r */
 #define HasThreadSafeAPI      NO
 
+/* Dynamic loading of i18n modules in libX11 has too many problems for now */
+#ifndef BuildLoadableXlibI18n
+#define BuildLoadableXlibI18n		NO
+#endif
 
 #ifndef DoLoadableServer
 #define DoLoadableServer		NO

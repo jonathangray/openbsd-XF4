@@ -213,6 +213,7 @@ iso8859-1/XLC_LOCALE:			wa_BE.ISO8859-1
 iso8859-15/XLC_LOCALE:			wa_BE.ISO8859-15
 microsoft-cp1255/XLC_LOCALE:		yi_US.CP1255
 zh_CN/XLC_LOCALE:			zh_CN.eucCN
+zh_CN/XLC_LOCALE:			zh_CN.GB2312
 zh_CN.gbk/XLC_LOCALE:			zh_CN.gbk
 zh_HK.big5/XLC_LOCALE:			zh_HK.big5
 zh_HK.big5hkscs/XLC_LOCALE:		zh_HK.big5hkscs

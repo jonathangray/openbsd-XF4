@@ -636,14 +636,13 @@ yi_US.microsoftcp1255:				yi_US.CP1255
 yi_US.microsoft-cp1255:				yi_US.CP1255
 yi_US.MICROSOFT-CP1255:				yi_US.CP1255
 zh:						zh_CN.eucCN
-zh_CN:						zh_CN.eucCN
+zh_CN:						zh_CN.GB2312
 zh_CN.Big5:					zh_TW.big5
 zh_CN.EUC:					zh_CN.eucCN
-zh_CN.GB2312:					zh_CN.eucCN
 zh_CN.GBK:					zh_CN.gbk
 zh_CN.big5:					zh_TW.big5
 zh_CN.euc:					zh_CN.eucCN
-zh_CN.gb2312:					zh_CN.eucCN
+zh_CN.gb2312:					zh_CN.GB2312
 zh_HK:						zh_HK.big5
 zh_HK.Big5:					zh_HK.big5
 zh_HK.Big5HKSCS:				zh_HK.big5hkscs
