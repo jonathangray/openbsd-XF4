@@ -479,7 +479,6 @@ install:: fonts.alias							@@\
  */
 #ifdef Hp300Architecture
 
-# include <xf86.rules>
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
@@ -489,6 +488,8 @@ install:: fonts.alias							@@\
 # define UseRgbTxt		NO
 
 # define ServerExtraDefines	-DXFree86Server
+
+#include <xfree86.cf>
 
 #endif /* Hp300Architecture */
 
@@ -753,7 +754,7 @@ install:: fonts.alias							@@\
 #  define BuildThreadStubLibrary  YES 
 #  define NeedUIThrStubs          YES 
 #  define ThreadsCompileFlags	-pthread
-#  define ThreadsLibraries	-lc_r
+#  define ThreadsLibraries	-pthread
 # endif
 #endif
 
