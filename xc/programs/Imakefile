@@ -126,7 +126,7 @@ SUBDIRS = \
 	$(XIECLIENTDIRS) $(XINITSRCDIR) $(XKBSRCDIRS) xkill $(XLOADDIR) \
 	xlock xlogo xlsatoms \
 	xlsclients xlsfonts xmag xman xmessage xmh xmodmap xprop xrdb \
-	xrefresh $(XRXSRCDIR) xset \
+	xrefresh $(XRXSRCDIR) xset xsystrace \
 	xsetroot $(XSMSRCDIR) xstdcmap $(XINPUTCLIENTDIRS) \
 	$(XTERMSRCDIR) $(XTRAPCLIENTDIRS) $(XVIDTUNESRCDIR) xwd xwininfo xwud \
 	$(XPMCLIENTDIRS) $(XVINFOSRCDIR) \
