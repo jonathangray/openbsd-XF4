@@ -48,7 +48,7 @@ char *PeekToken(const char *pstr)
       }
       else /* normal token */
       {
-        if (isspace(*p) || *p == ',')
+        if (isspace((unsigned char)*p) || *p == ',')
           break;
       }
 
@@ -180,9 +180,9 @@ char *GetNextToken(char *indata,char **token)
       *token = NULL;
       return NULL;
     }
-  while(isspace(*t)&&(*t != 0))t++;
+  while(isspace((unsigned char)*t)&&(*t != 0))t++;
   start = t;
-  while(!isspace(*t)&&(*t != 0))
+  while(!isspace((unsigned char)*t)&&(*t != 0))
     {
       /* Check for qouted text */
       if(*t == '"')

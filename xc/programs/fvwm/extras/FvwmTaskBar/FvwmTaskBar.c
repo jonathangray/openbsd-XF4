@@ -44,6 +44,9 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 
 #include "../../fvwm/module.h"
 #include "../../version.h"
@@ -85,6 +88,9 @@ int     screen, d_depth;
 Pixel   back, fore;
 GC      graph, shadow, hilite, blackgc, whitegc;
 XFontStruct *ButtonFont, *SelButtonFont;
+#ifdef I18N
+XFontSet ButtonFontset, SelButtonFontset;
+#endif
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -165,6 +171,9 @@ void main(int argc, char **argv)
   strcat(Module, temp);
   Clength = strlen(Module);
 
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
   /* Open the console for messages */
   OpenConsole();
 
@@ -367,8 +376,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_MINI_ICON:
     if ((i = FindItem(&windows, body[0])) == -1) break;
     if (UpdateButton(&buttons, i, NULL, DONT_CARE) != -1) {
+#if 0
       p.picture = body[1];
       p.mask    = body[2];
+#else
+      p.picture = body[6];
+      p.mask    = body[7];
+#endif
       p.width   = body[3];
       p.height  = body[4];
       p.depth   = body[5];
@@ -585,7 +599,7 @@ void ParseConfig(char *file)
   tline = fgets(line,(sizeof line)-1,ptr);
 
   while (tline != (char *)0) {
-    while (isspace(*tline))tline++;
+    while (isspace((unsigned char)*tline))tline++;
     if (strlen(tline)>1 && tline[0] != '#') {
       if(mystrncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
 	CopyString(&font_string,&tline[Clength+4]);
@@ -595,7 +609,7 @@ void ParseConfig(char *file)
 	CopyString(&ForeColor,&tline[Clength+4]);
       else if(mystrncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
 	str = &tline[Clength+9];
-	while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
+	while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))	str++;
 	str[strlen(str)-1] = 0;
 	UpdateString(&geometry,str);
       } else if(mystrncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
@@ -993,7 +1007,7 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace(*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   if(mystrncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
   else if(mystrncasecmp(temp, "Click2", 6)==0)
@@ -1015,6 +1029,13 @@ void StartMeUp()
    unsigned int dummy1,dummy2;
    int x,y,ret,count;
    Window dummyroot,dummychild;
+   XClassHint *class_hints;
+#ifdef I18N
+   char **ml;
+   int mc;
+   char *ds;
+   XFontStruct **fs_list;
+#endif
 
    if (!(dpy = XOpenDisplay(""))) {
       fprintf(stderr,"%s: can't open display %s", Module,
@@ -1033,6 +1054,24 @@ void StartMeUp()
    
    if (selfont_string == NULL) selfont_string = font_string;
 
+#ifdef I18N
+   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
+     /* plain X11R6.3 hack */
+     if ((ButtonFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds)) == NULL)
+       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       exit(1);
+   }
+   XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
+   ButtonFont = fs_list[0];
+   if ((SelButtonFontset=XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds)) == NULL) {
+     /* plain X11R6.3 hack */
+     if ((SelButtonFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds)) == NULL)
+       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       exit(1);
+   }
+   XFontsOfFontSet(SelButtonFontset,&fs_list,&ml);
+   SelButtonFont = fs_list[0];
+#else
    if ((ButtonFont = XLoadQueryFont(dpy, font_string)) == NULL) {
      if ((ButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
        ConsoleMessage("Couldn't load fixed font. Exiting!\n");
@@ -1045,6 +1084,7 @@ void StartMeUp()
        exit(1);
      }
    }
+#endif
    
    fontheight = SelButtonFont->ascent + SelButtonFont->descent;
 
@@ -1100,6 +1140,13 @@ void StartMeUp()
    
    XSetWMNormalHints(dpy,win,&hints);
    
+   /* Set some class hints like a good little X client */
+   /* Module + 1 gets module name without leading '*' */
+   class_hints = XAllocClassHint();
+   class_hints->res_name = Module + 1; 
+   class_hints->res_class = Module + 1;
+   XSetClassHint(dpy, win, class_hints);
+
    XGrabButton(dpy,1,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
 	       GrabModeAsync,None,None);
    XGrabButton(dpy,2,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
@@ -1445,8 +1492,11 @@ void ClearAlarm(void) {
 void PurgeConfigEvents(void) {
   XEvent Event;
 
-  XPeekEvent(dpy, &Event);
-  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event));
+  if (XPending(dpy))
+    {
+      XPeekEvent(dpy, &Event);
+      while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event));
+    }
 }
 
 /************************************************************************

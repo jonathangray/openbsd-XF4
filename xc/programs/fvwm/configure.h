@@ -86,7 +86,7 @@
 #define CLOSE_STRING4 "quit"
 
 /* #ifdef __alpha */
-#if defined(__alpha) && !defined(linux)
+#if defined(__alpha) && !defined(linux) && !defined(__OpenBSD__)
 #define NEEDS_ALPHA_HEADER
 #undef BROKEN_SUN_HEADERS
 #endif /* (__alpha) */

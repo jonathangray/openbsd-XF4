@@ -1,0 +1,16 @@
+/*
+ * Imakefile for fvwm 2.0 -- icons
+ */
+
+FVWM_SRCDIR = ..
+#include "../Fvwm.tmpl"
+
+NullMake()
+
+BITMAPS= *.bitmap *.icon *.xbm
+PIXMAPS= *.xpm
+
+#if InstallIcons
+InstallMultipleFlags($(BITMAPS),$(INCDIR)/X11/bitmaps,$(INSTINCFLAGS))
+InstallMultipleFlags($(PIXMAPS),$(INCDIR)/X11/pixmaps,$(INSTINCFLAGS))
+#endif

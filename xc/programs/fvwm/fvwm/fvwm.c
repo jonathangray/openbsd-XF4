@@ -35,6 +35,10 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
+
 #if defined (sparc) && defined (SVR4)
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
@@ -120,7 +124,7 @@ char *display_name = NULL;
  *
  ***********************************************************************
  */
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   unsigned long valuemask;	/* mask for create windows */
   XSetWindowAttributes attributes;	/* attributes for create windows */
@@ -140,6 +144,10 @@ void main(int argc, char **argv)
 
   DBUG("main","Entered, about to parse args");
 
+#ifdef I18N
+  if (setlocale(LC_CTYPE, "") == NULL)
+    fvwm_msg(ERR, "main", "Can't set locale. Check your $LC_CTYPE or $LANG.\n");
+#endif
   for (i = 1; i < argc; i++) 
   {
     if (mystrncasecmp(argv[i],"-debug",6)==0)
@@ -196,7 +204,7 @@ void main(int argc, char **argv)
     else if (mystrncasecmp(argv[i],"-h",2)==0)
     {
       usage();
-      exit(0);
+      return 0;
     }
     else if (mystrncasecmp(argv[i],"-blackout",9)==0)
     {
@@ -235,7 +243,7 @@ void main(int argc, char **argv)
   if (!(dpy = XOpenDisplay(display_name))) 
   {
     fvwm_msg(ERR,"main","can't open display %s", XDisplayName(display_name));
-    exit (1);
+    return 1;
   }
   Scr.screen= DefaultScreen(dpy);
   Scr.NumberOfScreens = ScreenCount(dpy);
@@ -282,7 +290,7 @@ void main(int argc, char **argv)
   if (fcntl(x_fd, F_SETFD, 1) == -1) 
   {
     fvwm_msg(ERR,"main","close-on-exec failed");
-    exit (1);
+    return 1;
   }
 	    
   /*  Add a DISPLAY entry to the environment, incase we were started
@@ -326,7 +334,7 @@ void main(int argc, char **argv)
   if(Scr.Root == None) 
   {
     fvwm_msg(ERR,"main","Screen %d is not a valid screen",(char *)Scr.screen);
-    exit(1);
+    return 1;
   }
 
 

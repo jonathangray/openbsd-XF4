@@ -64,6 +64,11 @@ void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);
 void list_end(void);
 
+#ifdef I18N
+#define XTextWidth(x,y,z)     XmbTextEscapement(fontset,y,z)
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,fontset,v,w,x,y,z)
+#endif
+
 #ifdef BROKEN_SUN_HEADERS
 #include "../../fvwm/sun_headers.h"
 #endif

@@ -39,6 +39,11 @@ extern GC  NormalGC;
 extern GC  ReliefGC;
 extern int ButtonWidth,ButtonHeight;
 extern XFontStruct *font;
+#ifdef I18N
+extern XFontSet fontset;
+#define XTextWidth(x,y,z)     XmbTextEscapement(fontset,y,z)
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,fontset,v,w,x,y,z)
+#endif
 #define MAX_BUTTONS 100
 
 struct button_info

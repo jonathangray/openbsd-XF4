@@ -108,6 +108,9 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 typedef struct MyFont
 {
   XFontStruct *font;		/* font structure */
+#ifdef I18N
+  XFontSet fontset;		/* font set */
+#endif
   int height;			/* height of the font */
   int y;			/* Y coordinate to draw characters */
 } MyFont;

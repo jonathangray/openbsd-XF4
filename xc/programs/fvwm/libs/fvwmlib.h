@@ -23,7 +23,7 @@ int matchWildcards(char *pattern, char *string);
 /***********************************************************************
  * Stuff for consistent parsing
  ***********************************************************************/
-#define EatWS(s) do { while ((s) && (isspace(*(s)) || *(s) == ',')) (s)++; } while (0)
+#define EatWS(s) do { while ((s) && (isspace((unsigned char)(*(s))) || *(s) == ',')) (s)++; } while (0)
 #define IsQuote(c) (c == '"' || c == '\'' || c =='`')
 #define IsBlockStart(c) (c == '[' || c == '{' || c == '(')
 #define IsBlockEnd(c,cs) ((c == ']' && cs == '[') || (c == '}' && cs == '{') || (c == ')' && cs == '('))
@@ -84,6 +84,7 @@ char *findIconFile(char *icon, char *pathlist, int type);
  ***********************************************************************/
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
+XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
 
 void MyXGrabServer(Display *disp);
 void MyXUngrabServer(Display *disp);

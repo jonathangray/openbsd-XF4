@@ -387,6 +387,8 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
 		 Scr.StdFont.height,False);
     }
 
+#undef FONTSET
+#define FONTSET Scr.StdFont.fontset
   XDrawString (dpy, Scr.SizeWindow, Scr.MenuGC,
 	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
 

@@ -396,7 +396,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	XBell(dpy, Scr.screen);
 	return;
     }
-    while (isspace(*action))++action;
+    while (isspace((unsigned char)*action))++action;
     if (isdigit(*action))
 	sscanf(action,"%d",&n);
 
@@ -1580,6 +1580,11 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *fore=NULL, *back=NULL, *stipple = NULL, *font= NULL, *style = 0;
   extern char *white,*black;
   int wid,hei;
+#ifdef I18N
+  XFontSetExtents *fset_extents;
+  XFontStruct **fs_list;
+  char **ml;
+#endif
 
   action = GetNextToken(action,&fore);
   action = GetNextToken(action,&back);
@@ -1619,14 +1624,26 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.MenuStippleColors.fore = GetColor(black);
   }
 
+#ifdef I18N
+  if ((font == NULL)||
+      ((Scr.StdFont.fontset = GetFontSetOrFixed(dpy, font)) == NULL))
+#else
   if ((font == NULL)||
       (Scr.StdFont.font = GetFontOrFixed(dpy, font)) == NULL)
+#endif
   {
     fvwm_msg(ERR,"SetMenuStyle","Couldn't load font '%s' or 'fixed'\n",
             (font==NULL)?("NULL"):(font));
     exit(1);
   }
+#ifdef I18N
+  XFontsOfFontSet(Scr.StdFont.fontset, &fs_list, &ml);
+  Scr.StdFont.font = fs_list[0];
+  fset_extents = XExtentsOfFontSet(Scr.StdFont.fontset);
+  Scr.StdFont.height = fset_extents->max_logical_extent.height;
+#else
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
+#endif
   Scr.StdFont.y = Scr.StdFont.font->ascent;
   Scr.EntryHeight = Scr.StdFont.height + HEIGHT_EXTRA;
 
@@ -1752,7 +1769,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		bf = &fl->BorderStyle.active;
 	    else
 		bf = &fl->BorderStyle.inactive;
-	    while (isspace(*action)) ++action;
+	    while (isspace((unsigned char)*action)) ++action;
 	    if ('(' != *action) {
 		if (!*action) {
 		    fvwm_msg(ERR,"SetBorderStyle", 
@@ -1944,18 +1961,35 @@ void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   char *font;
   FvwmWindow *tmp;
+#ifdef I18N
+  XFontSetExtents *fset_extents;
+  XFontStruct **fs_list;
+  char **ml;
+#endif
 
   action = GetNextToken(action,&font);
 
+#ifdef I18N
+  if ((Scr.IconFont.fontset = GetFontSetOrFixed(dpy, font)) == NULL)
+#else
   if ((Scr.IconFont.font = GetFontOrFixed(dpy, font))==NULL)
+#endif
   {
     fvwm_msg(ERR,"LoadIconFont","Couldn't load font '%s' or 'fixed'\n",
             font);
     free(font);
     return;
   }
+#ifdef I18N
+  XFontsOfFontSet(Scr.IconFont.fontset, &fs_list, &ml);
+  Scr.IconFont.font = fs_list[0];
+  fset_extents = XExtentsOfFontSet(Scr.IconFont.fontset);
+  Scr.IconFont.height =
+    fset_extents->max_logical_extent.height;
+#else
   Scr.IconFont.height=
     Scr.IconFont.font->ascent+Scr.IconFont.font->descent;
+#endif
   Scr.IconFont.y = Scr.IconFont.font->ascent;
 
   free(font);
@@ -1984,14 +2018,28 @@ void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
 #else
   FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
+#ifdef I18N
+  XFontSetExtents *fset_extents;
+  XFontStruct **fs_list;
+  char **ml;
+#endif
 
   action = GetNextToken(action,&font);
 
+#ifdef I18N
+  if ((fl->WindowFont.fontset = GetFontSetOrFixed(dpy,font)) != NULL)
+  {
+    XFontsOfFontSet(fl->WindowFont.fontset, &fs_list, &ml);
+    fl->WindowFont.font = fs_list[0];
+    fset_extents = XExtentsOfFontSet(fl->WindowFont.fontset);
+    fl->WindowFont.height = fset_extents->max_logical_extent.height;
+#else
   if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
   {
     fl->WindowFont.font = newfont;
     fl->WindowFont.height=
       fl->WindowFont.font->ascent+fl->WindowFont.font->descent;
+#endif
     fl->WindowFont.y = fl->WindowFont.font->ascent;
     extra_height = fl->TitleHeight;
     fl->TitleHeight=fl->WindowFont.font->ascent+fl->WindowFont.font->descent+3;
@@ -2444,7 +2492,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     enum ButtonState bs = MaxButtonState;
     int i = 0, all = 0, pstyle = 0;
 
-    while(isspace(*s))++s;
+    while(isspace((unsigned char)*s))++s;
     for (; i < MaxButtonState; ++i)
 	if (mystrncasecmp(button_states[i],s,
 			  strlen(button_states[i]))==0) {
@@ -2455,7 +2503,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 	s += strlen(button_states[bs]);
     else 
 	all = 1;
-    while(isspace(*s))++s;
+    while(isspace((unsigned char)*s))++s;
     if ('(' == *s) {
 	int len;
 	pstyle = 1;
@@ -2471,7 +2519,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     } else
 	spec = s;
 
-    while(isspace(*spec))++spec;
+    while(isspace((unsigned char)*spec))++spec;
     /* setup temporary in case button read fails */
     tmpbf.style = SimpleButton;
 #ifdef MULTISTYLE
@@ -2518,7 +2566,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     if (pstyle) {
 	free(spec);
 	++end;
-	while(isspace(*end))++end;
+	while(isspace((unsigned char)*end))++end;
     }
     return end;
 }
@@ -2533,7 +2581,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 void AddToDecor(FvwmDecor *fl, char *s)
 {
     if (!s) return;
-    while (*s&&isspace(*s))++s;
+    while (*s&&isspace((unsigned char)*s))++s;
     if (!*s) return;
     cur_decor = fl;
     ExecuteFunction(s,NULL,&Event,C_ROOT,-1);
@@ -2993,7 +3041,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     return;
 
   t = action;
-  while(isspace(*t)&&(*t!= 0))
+  while(isspace((unsigned char)*t)&&(*t!= 0))
     t++;
   if(*t == '[')
   {

@@ -12,6 +12,8 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
+#include "../../configure.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <X11/Xlib.h>
@@ -26,7 +28,19 @@
 #define max(a,b) (((a)>(b)) ? (a) : (b))
 #endif
 
+#ifdef I18N
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
+#endif
+
 extern XFontStruct *ButtonFont;
+#ifdef I18N
+extern XFontSet ButtonFontset;
+#endif
 extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];

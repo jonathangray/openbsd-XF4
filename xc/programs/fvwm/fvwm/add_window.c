@@ -112,6 +112,13 @@ FvwmWindow *AddWindow(Window w)
   XrmValue rm_value;
   XTextProperty text_prop;
   extern Bool PPosOverride;
+#ifdef I18N
+  Atom actual_type;
+  int actual_format;
+  unsigned long nitems, bytesafter;
+  char **list;
+  int num;
+#endif
 
   NeedToResizeToo = False;
   /* allocate space for the fvwm window */
@@ -137,7 +144,33 @@ FvwmWindow *AddWindow(Window w)
 	return(NULL);
       }
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
+#ifdef I18N
+  {
+    if (text_prop.value) text_prop.nitems = strlen(text_prop.value);
+    if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+	&& num > 0 && *list)
+#ifndef EVIL
+      tmp_win->name = *list;
+    else
+      tmp_win->name = NoName;
+#else /* EVIL */
+      {
+        tmp_win->name = *list;
+        if((tmp_win->name != NULL) && (strcmp(tmp_win->name, "")==0)) {
+	  XGetWMName(dpy, tmp_win->w, &text_prop);
+	  tmp_win->name = (char *)text_prop.value ;
+	}
+      }
+    else
+      {
+	XGetWMName(dpy, tmp_win->w, &text_prop);
+        tmp_win->name = (char *)text_prop.value ;
+      }
+#endif /* EVIL */
+  }
+#else
     tmp_win->name = (char *)text_prop.value ;
+#endif
   else
     tmp_win->name = NoName;
 
@@ -299,8 +332,42 @@ FvwmWindow *AddWindow(Window w)
     }
 
   XSetWindowBorderWidth (dpy, tmp_win->w,0);
+#ifdef I18N
+  if (XGetWindowProperty(dpy, tmp_win->w, XA_WM_ICON_NAME, 0L, 200L, False,
+			 AnyPropertyType, &actual_type, &actual_format, &nitems,
+			 &bytesafter,(unsigned char **)&tmp_win->icon_name)
+      == Success && actual_type != None) {
+    text_prop.value = tmp_win->icon_name;
+    text_prop.encoding = actual_type;
+    text_prop.format = actual_format;
+    text_prop.nitems = nitems;
+    if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+	&& num > 0 && *list)
+#ifndef EVIL
+      tmp_win->icon_name = *list;
+    else
+      tmp_win->icon_name = NULL;
+#else /* EVIL */
+      {
+        tmp_win->icon_name = *list;
+        if((tmp_win->icon_name != NULL) && (strcmp(tmp_win->icon_name, "")==0)){
+          XGetWMIconName (dpy, tmp_win->w, &text_prop);
+	  tmp_win->icon_name = (char *) text_prop.value;
+	}
+      }
+    else
+      {
+        XGetWMIconName (dpy, tmp_win->w, &text_prop);
+        tmp_win->icon_name = (char *)text_prop.value ;
+      }
+#endif /* EVIL */
+  }
+  else
+    tmp_win->icon_name = NULL;
+#else
   XGetWMIconName (dpy, tmp_win->w, &text_prop);
   tmp_win->icon_name = (char *) text_prop.value;
+#endif
   if(tmp_win->icon_name==(char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 
@@ -592,7 +659,33 @@ FvwmWindow *AddWindow(Window w)
 
   XChangeWindowAttributes (dpy, tmp_win->w, valuemask, &attributes);
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
+#ifdef I18N
+  {
+    if (text_prop.value) text_prop.nitems = strlen(text_prop.value);
+    if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+        && num > 0 && *list)
+#ifndef EVIL
+      tmp_win->name = *list;
+    else
+      tmp_win->name = NoName;
+#else
+      {
+        tmp_win->name = *list;
+        if((tmp_win->name != NULL) && (strcmp(tmp_win->name, "")==0)) {
+	  XGetWMName(dpy, tmp_win->w, &text_prop);
+	  tmp_win->name = (char *)text_prop.value ;
+	}
+      }
+    else
+      {
+	XGetWMName(dpy, tmp_win->w, &text_prop);
+        tmp_win->name = (char *)text_prop.value ;
+      }
+#endif 
+  }
+#else
     tmp_win->name = (char *)text_prop.value ;
+#endif
   else
     tmp_win->name = NoName;
   

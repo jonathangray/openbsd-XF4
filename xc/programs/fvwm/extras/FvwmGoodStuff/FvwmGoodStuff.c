@@ -30,6 +30,10 @@
 #include <stdlib.h>
 #include "../../fvwm/module.h"
 
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
+
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -42,6 +46,30 @@
 char *MyName;
 
 XFontStruct *font;
+#ifdef I18N
+XFontSet fontset;
+static Status MyXFetchName(dpy, win, winname)
+Display *dpy;
+Window win;
+char **winname;
+{
+  XTextProperty text;
+  char **list;
+  int nitems;
+
+  if (XGetWMName(dpy, win, &text)) {
+    if (text.value)
+      text.nitems = strlen(text.value);
+    if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success &&
+      *list) {
+      *winname = *list;
+      return 0;
+    }
+    return 1;
+  }
+}
+#define XFetchName(x,y,z) MyXFetchName(x,y,z)
+#endif
 
 Display *dpy;			/* which display are we talking to */
 int x_fd,fd_width;
@@ -99,6 +127,16 @@ void main(int argc, char **argv)
   Window root;
   int x,y,border_width,depth,button;
   char *temp, *s;
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
+
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
 
   if((argc != 6)&&(argc != 7))
   {
@@ -185,6 +223,19 @@ void main(int argc, char **argv)
     }
   else 
     {
+#ifdef I18N
+      if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL)
+	{
+	  /* plain X11R6.3 hack */
+	  if ((fontset = XCreateFontSet(dpy, "fixed,-*--14-*", &ml, &mc, &ds)) == NULL)
+	    {
+	      fprintf(stderr,"%s: No fonts available\n",MyName);
+	      exit(1);
+	    }
+	}
+      XFontsOfFontSet(fontset, &fs_list, &ml);
+      font = fs_list[0];
+#else
       if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
         {
           if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -193,6 +244,7 @@ void main(int argc, char **argv)
 	      exit(1);
 	    }
         }
+#endif
     };
   for(i=0;i<num_buttons;i++)
     {
@@ -382,7 +434,7 @@ void Loop(void)
 		      i=4;
 		      while((Buttons[CurrentButton].action[i] != 0)&&
 			    (Buttons[CurrentButton].action[i] != '"')&&
-			    isspace(Buttons[CurrentButton].action[i]))
+			    isspace((unsigned char)Buttons[CurrentButton].action[i]))
 			i++;
 		      if(Buttons[CurrentButton].action[i] == '"')
 			{
@@ -415,7 +467,7 @@ void Loop(void)
 		      strcpy(tmp,"Exec ");
 		      i3= i2+1;
 		      while((Buttons[CurrentButton].action[i3] != 0)&&
-			    (isspace(Buttons[CurrentButton].action[i3])))
+			    (isspace((unsigned char)Buttons[CurrentButton].action[i3])))
 			i3++;			  
 		      strcat(tmp,&Buttons[CurrentButton].action[i3]);
 		      SendInfo(fd,tmp,0);
@@ -1088,7 +1140,7 @@ void ParseOptions(void)
 	 (mystrncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
 	{
 	  tmp = &tline[Clength+9];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    {
 	      tmp++;
 	    }
@@ -1188,7 +1240,7 @@ void match_string(char *tline)
   char *ptr,*start,*end,*tmp;
 
   /* Get a size argument, if any */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   if( *tline == '(')
     {
@@ -1206,7 +1258,7 @@ void match_string(char *tline)
     }
 
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
   /* read next word. Its the button label. Users can specify "" 
@@ -1214,7 +1266,7 @@ void match_string(char *tline)
   /* read to next space */
   start = tline;
   end = tline;
-  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   len = end - start;
   ptr = safemalloc(len+1);
@@ -1227,10 +1279,10 @@ void match_string(char *tline)
   /* read to next space */
   start = end;
   /* skip spaces */
-  while(isspace(*start)&&(*start != '\n')&&(*start != 0))
+  while(isspace((unsigned char)*start)&&(*start != '\n')&&(*start != 0))
     start++;
   end = start;
-  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   len = end - start;
   ptr = safemalloc(len+1);
@@ -1240,7 +1292,7 @@ void match_string(char *tline)
 
   tline = end;
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
   if(mystrncasecmp(tline,"swallow",7)==0)
@@ -1263,11 +1315,11 @@ void match_string(char *tline)
 	  Buttons[num_buttons].swallow = 1;
 	}
       i2++;
-      while((isspace(tline[i2]))&&(tline[i2]!=0))
+      while((isspace((unsigned char)tline[i2]))&&(tline[i2]!=0))
 	i2++;
       len = strlen(&tline[i2]);
       tmp = tline + i2 + len -1;
-      while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=(tline + i2)))
+      while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=(tline + i2)))
 	{
 	  tmp--;
 	  len--;
@@ -1288,7 +1340,7 @@ void match_string(char *tline)
     {
       len = strlen(tline);
       tmp = tline + len -1;
-      while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=tline))
+      while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=tline))
 	{
 	  tmp--;
 	  len--;

@@ -63,7 +63,7 @@ void DeadPipe(int nonsense)
 #include "../../fvwm/sun_headers.h"
 #endif
 
-#ifdef NEEDS_ALPHA_HEADER
+#if defined(NEEDS_ALPHA_HEADER) && !defined(__OpenBSD__)
 #include "../../fvwm/alpha_header.h"
 #endif /* NEEDS_ALPHA_HEADER */
 
@@ -73,7 +73,7 @@ void DeadPipe(int nonsense)
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     char      	   *enter_fn="Raise",	/* default */
                    *leave_fn=NULL,
@@ -177,6 +177,7 @@ void main(int argc, char **argv)
 	    last_win = focus_win;	/* switch to wait mode again */
 	}
     }
+    return 0;
 }
 
 

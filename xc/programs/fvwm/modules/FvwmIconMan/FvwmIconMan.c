@@ -96,7 +96,12 @@ void ShutMeDown (int flag)
 void DeadPipe (int nothing)
 {
   ConsoleDebug (CORE, "Bye Bye\n");
-  ShutMeDown (0);
+  /*
+   * ShutMeDown is not called because most operations, especially X
+   * calls, are not allowed in signal handlers. Currently, of course,
+   * ShutMeDown doesn't do anything significant, but it may in future.
+   */
+  exit (0);
 }
 
 void SendFvwmPipe (char *message,unsigned long window)
@@ -182,6 +187,10 @@ int main (int argc, char **argv)
       for (i = 0; i < (1 << 27) && !done; i++) ;
     }
   }
+#endif
+
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
 #endif
 
   OpenConsole();

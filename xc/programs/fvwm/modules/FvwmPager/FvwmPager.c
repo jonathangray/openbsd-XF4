@@ -34,6 +34,9 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 
 #include "../../fvwm/module.h"
 
@@ -96,6 +99,9 @@ void main(int argc, char **argv)
   char line[100];
   char mask_mesg[50];
 
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
   /* Save our program  name - for error messages */
   temp = argv[0];
   s=strrchr(argv[0], '/');
@@ -880,7 +886,7 @@ void ParseOptions()
 	 (mystrncasecmp(tline, CatString3("*", MyName, "Geometry"),Clength+9)==0))
 	{
 	  tmp = &tline[Clength+9];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    {
 	      tmp++;
 	    }
@@ -920,7 +926,7 @@ void ParseOptions()
 			     Clength+13)==0))
 	{
 	  tmp = &tline[Clength+13];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp & 0xff))&&(*tmp != '\n'))&&(*tmp != 0))
 	    {
 	      tmp++;
 	    }
@@ -948,8 +954,8 @@ void ParseOptions()
 	  if((desk >= desk1)&&(desk <=desk2))
 	    {
 	      n = 0;
-	      while(isspace(tline[Clength+6+n]))n++;
-	      while(!isspace(tline[Clength+6+n]))n++;
+	      while(isspace((unsigned char)tline[Clength+6+n] & 0xff))n++;
+	      while(!isspace((unsigned char)tline[Clength+6+n] & 0xff))n++;
 	      free(Desks[desk - desk1].label);
 	      CopyString(&Desks[desk - desk1].label,&tline[Clength+6+n]);
 	    }
@@ -993,8 +999,8 @@ void ParseOptions()
 	  if((desk >= desk1)&&(desk <=desk2))
 	    {
 	      n = 0;
-	      while(isspace(tline[Clength+10+n]))n++;
-	      while(!isspace(tline[Clength+10+n]))n++;
+	      while(isspace((unsigned char)tline[Clength+10+n]))n++;
+	      while(!isspace((unsigned char)tline[Clength+10+n]))n++;
 	      free(Desks[desk - desk1].Dcolor);
 	      CopyString(&Desks[desk - desk1].Dcolor,&tline[Clength+10+n]);
 #ifdef DEBUG

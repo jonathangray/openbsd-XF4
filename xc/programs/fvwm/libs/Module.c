@@ -130,7 +130,7 @@ void *GetConfigLine(int *fd, char **tline)
       *tline = NULL;
     if(*tline != NULL)
     {
-      while(isspace(**tline))(*tline)++;
+      while(isspace((unsigned char)**tline))(*tline)++;
     }
 
 /*   fprintf(stderr,"%x %x\n",header[1],M_END_CONFIG_INFO);*/

@@ -318,6 +318,8 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
 	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
+#undef FONTSET
+#define FONTSET Scr.StdFont.fontset
   XDrawString (dpy, Scr.SizeWindow, Scr.MenuGC,
 	       offset,
 	       Scr.StdFont.font->ascent + SIZE_VINDENT,

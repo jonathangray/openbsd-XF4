@@ -156,6 +156,25 @@ XFontStruct *buttonFont(button_info *b)
   return None;
 }
 
+#ifdef I18N
+/**
+*** buttonFontSet()
+*** Give the font pointer for this button
+**/
+XFontSet buttonFontSet(button_info *b)
+{
+  if(b->flags&b_Font)
+    return b->fontset;
+  while((b=b->parent))
+    if(b->c->flags&b_Font)
+      return b->c->fontset;
+#ifdef DEBUG
+  fprintf(stderr,"%s: BUG: No fontset definition?\n",MyName);
+#endif
+  return None;
+}
+#endif
+
 /**
 *** buttonFore()
 *** Give the foreground pixel of this button

@@ -5,6 +5,10 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,man->ButtonFontset,v,w,x,y,z)
+#endif
 
 #ifdef MALLOC_H
 #include <malloc.h>
@@ -268,6 +272,9 @@ typedef struct win_manager {
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
   XFontStruct *ButtonFont;
+#ifdef I18N
+  XFontSet ButtonFontset;
+#endif
 #ifdef MINI_ICONS
   int draw_icons;
 #endif

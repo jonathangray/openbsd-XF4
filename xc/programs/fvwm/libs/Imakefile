@@ -7,6 +7,7 @@
 SRCS = \
 	ClientMsg.c \
 	GetFont.c \
+	GetFontSet.c \
 	Grab.c \
 	Module.c \
 	Parse.c \
@@ -21,6 +22,7 @@ SRCS = \
 OBJS = \
 	ClientMsg.o \
 	GetFont.o \
+	GetFontSet.o \
 	Grab.o \
 	Module.o \
 	Parse.o \

@@ -13,6 +13,7 @@ FVWM_SRCDIR = .
 BUILDSUBDIRS = \
 	  libs \
   	  fvwm \
+	  icons \
 	  modules/FvwmAudio \
           modules/FvwmAuto \
           modules/FvwmBacker \
@@ -37,7 +38,7 @@ SAMPLESUBDIRS = \
 	  sample.fvwmrc
 
 #if HasXpm
-XPMSUBDIRS = xpmroot modules/FvwmBanner 
+XPMSUBDIRS = xpmroot modules/FvwmBanner
 #endif
 
 SUBDIRS = $(BUILDSUBDIRS) $(XPMSUBDIRS) $(SAMPLESUBDIRS)

@@ -693,6 +693,10 @@ void main (int argc, char **argv)
   int IsFather;
   int i;
 
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
+
   /* we get rid of the path from program name */
   ModuleName = argv[0];
 

@@ -66,13 +66,13 @@ void ProcessNewStyle(XEvent *eventp,
   if((name == NULL)||(restofline == NULL))
     return;
 
-  while(isspace(*restofline)&&(*restofline != 0))restofline++;
+  while(isspace((unsigned char)*restofline)&&(*restofline != 0))restofline++;
   line = restofline;
 
   if(restofline == NULL)return;
   while((*restofline != 0)&&(*restofline != '\n'))
   {
-    while(isspace(*restofline)) restofline++;
+    while(isspace((unsigned char)*restofline)) restofline++;
     switch (tolower(restofline[0]))
     {
       case 'a':
@@ -86,11 +86,11 @@ void ProcessNewStyle(XEvent *eventp,
         if(mystrncasecmp(restofline,"BACKCOLOR",9)==0)
         {
           restofline +=9;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           tmp = restofline;
           len = 0;
           while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(!isspace(*tmp)))
+                (*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
           {
             tmp++;
             len++;
@@ -109,11 +109,11 @@ void ProcessNewStyle(XEvent *eventp,
           restofline +=6;
 	  
           sscanf(restofline,"%d",&butt);
-          while(isspace(*restofline))restofline++;
-          while((!isspace(*restofline))&&(*restofline!= 0)&&
+          while(isspace((unsigned char)*restofline))restofline++;
+          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                 (*restofline != ',')&&(*restofline != '\n'))
             restofline++;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
 	  
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
@@ -124,22 +124,22 @@ void ProcessNewStyle(XEvent *eventp,
           restofline +=11;
           off_flags |= BW_FLAG;
           sscanf(restofline,"%d",&bw);
-          while(isspace(*restofline))restofline++;
-          while((!isspace(*restofline))&&(*restofline!= 0)&&
+          while(isspace((unsigned char)*restofline))restofline++;
+          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                 (*restofline != ',')&&(*restofline != '\n'))
             restofline++;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
         }
         break;
       case 'c':
         if(mystrncasecmp(restofline,"COLOR",5)==0)
         {
           restofline +=5;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           tmp = restofline;
           len = 0;
           while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
+                (*tmp != '\n')&&(*tmp != '/')&&(!isspace((unsigned char)*tmp)))
           {
             tmp++;
             len++;
@@ -152,15 +152,15 @@ void ProcessNewStyle(XEvent *eventp,
             off_flags |= FORE_COLOR_FLAG;
           }
           
-          while(isspace(*tmp))tmp++;
+          while(isspace((unsigned char)*tmp))tmp++;
           if(*tmp == '/')
           {
             tmp++;
-            while(isspace(*tmp))tmp++;
+            while(isspace((unsigned char)*tmp))tmp++;
             restofline = tmp;
             len = 0;
             while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                  (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
+                  (*tmp != '\n')&&(*tmp != '/')&&(!isspace((unsigned char)*tmp)))
             {
               tmp++;
               len++;
@@ -220,11 +220,11 @@ void ProcessNewStyle(XEvent *eventp,
         if(mystrncasecmp(restofline,"FORECOLOR",9)==0)
         {
           restofline +=9;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           tmp = restofline;
           len = 0;
           while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(!isspace(*tmp)))
+                (*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
           {
             tmp++;
             len++;
@@ -273,11 +273,11 @@ void ProcessNewStyle(XEvent *eventp,
           restofline +=11;
           off_flags |= NOBW_FLAG;
           sscanf(restofline,"%d",&nobw);
-          while(isspace(*restofline))restofline++;
-          while((!isspace(*restofline))&&(*restofline!= 0)&&
+          while(isspace((unsigned char)*restofline))restofline++;
+          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                 (*restofline != ',')&&(*restofline != '\n'))
             restofline++;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
         }
         break;
       case 'i':
@@ -294,7 +294,7 @@ void ProcessNewStyle(XEvent *eventp,
                        &IconBox[2],&IconBox[3]);
           for(i=0;i<num;i++)
           {
-            while(isspace(*restofline))restofline++;
+            while(isspace((unsigned char)*restofline))restofline++;
             if (*restofline == '-') {   /* If leading minus sign */
               if (i == 0 || i == 2) {   /* if a width */
                 IconBox[i] += Scr.MyDisplayWidth;
@@ -302,7 +302,7 @@ void ProcessNewStyle(XEvent *eventp,
                 IconBox[i] += Scr.MyDisplayHeight;
               } /* end width/height */
             } /* end leading minus sign */
-            while((!isspace(*restofline))&&(*restofline!= 0)&&
+            while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                   (*restofline != ',')&&(*restofline != '\n'))
               restofline++;
           }
@@ -313,7 +313,7 @@ void ProcessNewStyle(XEvent *eventp,
         else if(mystrncasecmp(restofline,"ICON",4)==0)
         {
           restofline +=4;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           tmp = restofline;
           len = 0;
           while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&(*tmp != '\n'))
@@ -355,7 +355,7 @@ void ProcessNewStyle(XEvent *eventp,
 	else if (mystrncasecmp(restofline,"MINIICON", 8) == 0)
 	{
 	  restofline += 8;
-	  while (isspace (*restofline)) restofline++;
+	  while (isspace ((unsigned char)*restofline)) restofline++;
 	  tmp = restofline;
 	  len = 0;
 	  while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&(*tmp != '\n'))
@@ -451,11 +451,11 @@ void ProcessNewStyle(XEvent *eventp,
           restofline +=8;
 	  
           sscanf(restofline,"%d",&butt);
-          while(isspace(*restofline))restofline++;
-          while((!isspace(*restofline))&&(*restofline!= 0)&&
+          while(isspace((unsigned char)*restofline))restofline++;
+          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                 (*restofline != ',')&&(*restofline != '\n'))
             restofline++;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
 	  
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
@@ -552,11 +552,11 @@ void ProcessNewStyle(XEvent *eventp,
           restofline +=12;
           off_flags |= STARTSONDESK_FLAG;
           sscanf(restofline,"%d",&desknumber);
-          while(isspace(*restofline))restofline++;
-          while((!isspace(*restofline))&&(*restofline!= 0)&&
+          while(isspace((unsigned char)*restofline))restofline++;
+          while((!isspace((unsigned char)*restofline))&&(*restofline!= 0)&&
                 (*restofline != ',')&&(*restofline != '\n'))
             restofline++;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
         }
         else if(mystrncasecmp(restofline,"STARTSANYWHERE",14)==0)
         {
@@ -582,7 +582,7 @@ void ProcessNewStyle(XEvent *eventp,
         {
           int is_quoted = 0;
           restofline += 8;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           if (*restofline == '"') {
               is_quoted = 1;
               ++restofline;
@@ -590,7 +590,7 @@ void ProcessNewStyle(XEvent *eventp,
           tmp = restofline;
           len = 0;
           while (tmp && *tmp &&
-                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace(*tmp)))
+                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
                   || (is_quoted&&(*tmp != '\n')&&(*tmp != '"'))))
           {
             tmp++;
@@ -610,7 +610,7 @@ void ProcessNewStyle(XEvent *eventp,
         {
           int is_quoted = 0;
           restofline +=8;
-          while(isspace(*restofline))restofline++;
+          while(isspace((unsigned char)*restofline))restofline++;
           if (*restofline == '"') {
               is_quoted = 1;
               ++restofline;
@@ -618,7 +618,7 @@ void ProcessNewStyle(XEvent *eventp,
           tmp = restofline;
           len = 0;
           while (tmp && *tmp &&
-                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace(*tmp)))
+                 ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace((unsigned char)*tmp)))
                   || (is_quoted&&(*tmp != '\n')&&(*tmp != '"'))))
 	  {
             tmp++;
@@ -701,7 +701,7 @@ void ProcessNewStyle(XEvent *eventp,
               free(tmp);
             }
           }
-          while(isspace(*restofline)) restofline++;
+          while(isspace((unsigned char)*restofline)) restofline++;
         }
         break;
       case 'v':
@@ -728,7 +728,7 @@ void ProcessNewStyle(XEvent *eventp,
         break;
     }
 
-    while(isspace(*restofline))restofline++;
+    while(isspace((unsigned char)*restofline))restofline++;
     if(*restofline == ',')
       restofline++;
     else if((*restofline != 0)&&(*restofline != '\n'))

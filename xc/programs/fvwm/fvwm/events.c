@@ -392,6 +392,14 @@ void HandleKeyPress()
 void HandlePropertyNotify()
 {
   XTextProperty text_prop;
+#ifdef I18N
+  Atom actual = None;
+  int actual_format;
+  unsigned long nitems, bytesafter;
+  char *prop = NULL;
+  char **list;
+  int num;
+#endif
   
   DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -402,12 +410,51 @@ void HandlePropertyNotify()
   switch (Event.xproperty.atom) 
     {
     case XA_WM_NAME:
+#ifdef I18N
+      if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
+			      MAX_NAME_LEN, False, AnyPropertyType, &actual,
+			      &actual_format, &nitems, &bytesafter,
+			      (unsigned char **) &prop) != Success ||
+	  actual == None)
+	return;
+      text_prop.value = prop;
+      text_prop.encoding = actual;
+      text_prop.format = actual_format;
+      text_prop.nitems = nitems;
+      if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) < Success)
+	return;
+#ifdef EVIL
+      if (!(num > 0 && *list)) {
+        if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
+	  return;
+        free_window_names (Tmp_win, True, False);
+        Tmp_win->name = (char *)text_prop.value;
+      } else {
+	prop = *list;
+        Tmp_win->name = prop;
+	if((Tmp_win->name != NULL) && (strcmp(Tmp_win->name, "") == 0)) {
+	  if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
+	    return;
+          free_window_names (Tmp_win, True, False);
+	  Tmp_win->name = (char *)text_prop.value;
+	}
+      }
+#else
+      if (!(num > 0 && *list))
+	prop = NoName;
+      else
+	prop = *list;
+      free_window_names (Tmp_win, True, False);
+      Tmp_win->name = prop;
+#endif
+#else
       if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
 	return;
 
       free_window_names (Tmp_win, True, False);
       
       Tmp_win->name = (char *)text_prop.value;
+#endif
       if (Tmp_win->name == NULL)
         Tmp_win->name = NoName;
       BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
@@ -431,10 +478,49 @@ void HandlePropertyNotify()
       break;
       
     case XA_WM_ICON_NAME:
+#ifdef I18N
+      if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
+			      MAX_NAME_LEN, False, AnyPropertyType, &actual,
+			      &actual_format, &nitems, &bytesafter,
+			      (unsigned char **) &prop) != Success ||
+	  actual == None)
+	return;
+      text_prop.value = prop;
+      text_prop.encoding = actual;
+      text_prop.format = actual_format;
+      text_prop.nitems = nitems;
+      if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) < Success)
+	return;
+#ifdef EVIL
+      if (!(num > 0 && *list)) {
+        if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
+	  return;
+        free_window_names (Tmp_win, False, True);
+        Tmp_win->icon_name = (char *) text_prop.value;
+      } else {
+	prop = *list;
+        Tmp_win->icon_name = prop;
+	if((Tmp_win->icon_name != NULL) && (strcmp(Tmp_win->icon_name, "") == 0)) {
+          if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
+	    return;
+          free_window_names (Tmp_win, False, True);
+          Tmp_win->icon_name = (char *) text_prop.value;
+	}
+      }
+#else
+      if (!(num > 0 && *list))
+	prop = NoName;
+      else
+	prop = *list;
+      free_window_names (Tmp_win, False, True);
+      Tmp_win->icon_name = prop;
+#endif
+#else
       if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
 	return;
       free_window_names (Tmp_win, False, True);
       Tmp_win->icon_name = (char *) text_prop.value;
+#endif
       if (Tmp_win->icon_name == NULL)
         Tmp_win->icon_name = NoName;
       BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,

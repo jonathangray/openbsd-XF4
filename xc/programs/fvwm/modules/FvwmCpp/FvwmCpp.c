@@ -327,6 +327,9 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 #ifdef	XPM
     strcat(options, "XPM ");
 #endif
+#ifdef	I18N
+    strcat(options, "I18N ");
+#endif
 
     strcat(options, "Cpp ");
 

@@ -34,6 +34,9 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 
 #include "../../fvwm/module.h"
 #include "FvwmIdent.h"
@@ -59,6 +62,9 @@ GC  NormalGC;
 Window main_win;
 Window app_win;
 XFontStruct *font;
+#ifdef I18N
+XFontSet fontset;
+#endif
 
 int Width, Height,win_x,win_y;
 
@@ -88,6 +94,10 @@ void main(int argc, char **argv)
   char *display_name = NULL;
   int Clength;
   char *tline;
+
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -346,6 +356,12 @@ void list_end(void)
   int JunkX, JunkY;
   unsigned int JunkMask;
   int x,y;
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   if(!found)
     {
@@ -357,11 +373,21 @@ void list_end(void)
   close(fd[1]);
 
   /* load the font */
+#ifdef I18N
+  if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL) {
+      /* plain X11R6.3 hack */
+      if ((fontset = XCreateFontSet(dpy, "fixed,-*--14-*", &ml, &mc, &ds)) == NULL)
+	  exit(1);
+  }
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  font = fs_list[0];
+#else
   if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
     {
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
 	exit(1);
     };
+#endif
 
   /* make window infomation list */  
   MakeList();

@@ -15,9 +15,15 @@ extern int x_fd;
 #define SingleClic -1
 #define DoubleClic -2
 
+#ifdef I18N
 void DrawString(Display *dpy,GC gc,Window win,int x,int y,char *str,
 		int strl,unsigned long ForeC,unsigned long HiC,
 		unsigned long BackC,int WithRelief);
+#else
+void DrawString(Display *dpy,GC gc,Window win,int x,int y,char *str,
+		int strl,unsigned long ForeC,unsigned long HiC,
+		unsigned long BackC,int WithRelief);
+#endif
 
 char* GetMenuTitle(char *str,int id);
 

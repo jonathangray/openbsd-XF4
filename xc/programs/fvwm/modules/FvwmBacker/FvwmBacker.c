@@ -84,7 +84,7 @@ FILE*	logFile;
 /* #define LOGFILE "/tmp/FvwmBacker.log"*/
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 char *temp, *s;
 	char*	displayName = NULL;
@@ -335,10 +335,10 @@ void AddCommand(char *string)
 char *temp;
 int num;
   temp=string;
-  while(isspace(*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   num=atoi(temp);
-  while(!isspace(*temp)) temp++;
-  while(isspace(*temp)) temp++;
+  while(!isspace((unsigned char)*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   if (DeskCount<1) {
     commands=(Command*)safemalloc((num+1)*sizeof(Command));
     while(DeskCount<num+1) commands[DeskCount++].type= -1;
@@ -362,10 +362,10 @@ int num;
 		/* Process a solid color request */
 
 		color = &temp[7];
-		while (isspace(*color))
+		while (isspace((unsigned char)*color))
 			color++;
 		tmp= color;
-		while (!isspace(*tmp))
+		while (!isspace((unsigned char)*tmp))
 			tmp++;
 		*tmp = 0;
 		commands[num].type = 1;

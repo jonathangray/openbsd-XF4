@@ -63,7 +63,7 @@ char *seekright(char **s)
   else
     {
       b=t=*s;
-      while(**s && !isspace(**s) && **s!=')' && **s!=',')
+      while(**s && !isspace((unsigned char)**s) && **s!=')' && **s!=',')
 	(*s)++;
       t=*s;
     }

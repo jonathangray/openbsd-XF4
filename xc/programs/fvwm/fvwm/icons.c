@@ -316,6 +316,9 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       x = (Tmp_win->icon_w_width - Tmp_win->icon_t_width)/2;
       if(x<3)x=3;
       
+#undef FONTSET
+#define FONTSET Scr.IconFont.fontset
+
       XDrawString (dpy, Tmp_win->icon_w, Scr.ScratchGC3, x,
                    Tmp_win->icon_w_height-Scr.IconFont.height+
 		   Scr.IconFont.y-3,

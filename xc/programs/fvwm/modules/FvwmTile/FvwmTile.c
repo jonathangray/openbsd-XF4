@@ -6,7 +6,7 @@
  * Written by Andrew Veliath
  * Copyright 1996
  * 
- * $Id: FvwmTile.c,v 1.1.1.1 2001/02/17 22:21:54 matthieu Exp $
+ * $Id: FvwmTile.c,v 1.2 2001/02/17 22:31:28 matthieu Exp $
  ************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>

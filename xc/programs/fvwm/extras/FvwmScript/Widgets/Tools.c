@@ -5,9 +5,16 @@ extern void *memcpy(void *dest, const void *src, size_t n);
 /***********************************************/
 /* Fonction d'ecriture en relief               */
 /***********************************************/
+#ifdef I18N
+void FakeDrawString(XFontSet FONTSET,
+		Display *dpy,GC gc,Window win,int x,int y,char *str,
+		int strl,unsigned long ForeC,unsigned long HiC,
+		unsigned long BackC,int WithRelief)
+#else
 void DrawString(Display *dpy,GC gc,Window win,int x,int y,char *str,
 		int strl,unsigned long ForeC,unsigned long HiC,
 		unsigned long BackC,int WithRelief)
+#endif
 {
  if (WithRelief)
  {

@@ -4,21 +4,21 @@
 # fvwm web page (see the FAQ).
 
 # be sure to customize these paths for your installation:
-ModulePath /usr/lib/X11/fvwm2
-PixmapPath /usr/include/X11/pixmaps
-IconPath   /usr/include/X11/bitmaps
+#ModulePath /usr/lib/X11/fvwm2
+#PixmapPath /usr/include/X11/pixmaps
+#IconPath   /usr/include/X11/bitmaps
 
 EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
 # make sure these fonts exist on your system:
-WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-18-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-18-*-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
 
 HilightColor black palevioletred
 DeskTopSize 2x2
-MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
+MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-14-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-14-*-*-*-*-*-*-* fvwm
 
 ColormapFocus FollowsMouse
 
@@ -289,24 +289,24 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 # Just choose colors and a fonts
 *FvwmIdentBack MidnightBlue
 *FvwmIdentFore Yellow
-*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-12-*-*-*-*-*-*-*
 
 ########################### Pager #########################################
 *FvwmPagerBack #908090
 *FvwmPagerFore #484048
-*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
 *FvwmPagerHilight #cab3ca
 *FvwmPagerGeometry -1-1
-*FvwmPagerLabel 0 Misc
-*FvwmPagerLabel 1 Maker
-*FvwmPagerLabel 2 Mail
-*FvwmPagerLabel 3 Matlab
+*FvwmPagerLabel 0 OpenBSD 2.8
+*FvwmPagerLabel 1 Page2
+*FvwmPagerLabel 2 Page3
+*FvwmPagerLabel 3 Page4
 *FvwmPagerSmallFont 5x8
 
 ##########################FvwmWinList##################################
 *FvwmWinListBack #908090
 *FvwmWinListFore Black
-*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-10-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-10-*-*-*-*-*-*-*
 *FvwmWinListAction Click1 Iconify -1,Focus
 *FvwmWinListAction Click2 Iconify
 *FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
@@ -334,7 +334,7 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 #*FvwmIconBoxFore       blue
 *FvwmIconBoxGeometry    5x1+0+0
 *FvwmIconBoxMaxIconSize 64x38
-*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*,-*-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-gothic-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-mincho-medium-r-normal-*-12-*-*-*-*-*-*-*,-*-*-medium-r-normal-*-12-*-*-*-*-*-*-*
 *FvwmIconBoxSortIcons   IconName
 *FvwmIconBoxPadding     4
 *FvwmIconBoxLines       10

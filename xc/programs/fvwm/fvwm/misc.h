@@ -114,6 +114,15 @@ struct functions
    Globalgcm = GCFont | GCForeground | GCBackground; \
    XChangeGC(dpy,Scr.ScratchGC3,Globalgcm,&Globalgcv); \
 }
+#ifdef I18N
+#ifdef __STDC__
+#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,FONTSET,v,w,x,y,z)
+#define XDrawImageString(t,u,v,w,x,y,z) XmbDrawImageString(t,u,FONTSET,v,w,x,y,z)
+#endif
 
 #ifdef NO_ICONS
 #define ICON_HEIGHT 1

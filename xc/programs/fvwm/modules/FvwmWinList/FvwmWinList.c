@@ -72,6 +72,15 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
+#endif
 
 #include "../../fvwm/module.h"
 #include "../../version.h"
@@ -100,6 +109,9 @@ Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
 GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 GC  background[MAX_COLOUR_SETS];
 XFontStruct *ButtonFont;
+#ifdef I18N
+XFontSet ButtonFontset;
+#endif
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -153,6 +165,9 @@ void main(int argc, char **argv)
   strcat(Module, temp);
   Clength = strlen(Module);
 
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
   /* Open the console for messages */
   OpenConsole();
 
@@ -457,7 +472,11 @@ void SendFvwmPipe(char *message,unsigned long window)
  **********************************************************************/
 void DeadPipe(int nonsense)
 {
-  ShutMeDown(1);
+    /*
+     * do not call ShutMeDown, it may make X calls which are not allowed
+     * in a signal hander.
+     */
+  exit(1);
 }
 
 /******************************************************************************
@@ -773,7 +792,7 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace(*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   if(mystrncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
   else if(mystrncasecmp(temp, "Click2", 6)==0)
@@ -938,6 +957,13 @@ void MakeMeWindow(void)
 ******************************************************************************/
 void StartMeUp()
 {
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
+
   if (!(dpy = XOpenDisplay("")))
   {
     fprintf(stderr,"%s: can't open display %s", Module,
@@ -952,10 +978,19 @@ void StartMeUp()
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
+#ifdef I18N
+  if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
+    /* plain X11R6.3 hack */
+    if ((ButtonFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds)) == NULL) exit(1);
+  }
+  XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
+  ButtonFont = fs_list[0];
+#else
   if ((ButtonFont=XLoadQueryFont(dpy,font_string))==NULL)
   {
     if ((ButtonFont=XLoadQueryFont(dpy,"fixed"))==NULL) exit(1);
   }
+#endif
 
   fontheight = ButtonFont->ascent+ButtonFont->descent;
 

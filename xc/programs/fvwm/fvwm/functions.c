@@ -249,7 +249,7 @@ int find_func_type(char *action)
   int j, len = 0;
   char *endtok = action;
   Bool matched;
-  while (*endtok&&!isspace(*endtok))++endtok;
+  while (*endtok&&!isspace((unsigned char)*endtok))++endtok;
   len = endtok - action;
   j=0;
   matched = FALSE;

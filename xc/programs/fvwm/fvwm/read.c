@@ -13,6 +13,9 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 
 #include "fvwm.h"
 #include "menus.h"
@@ -61,6 +64,9 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   int thisfileno;
   extern Bool Restarting;
   extern XEvent Event;
+#ifdef I18N
+  char *Lang;
+#endif
 
   thisfileno = numfilesread;
   numfilesread++;
@@ -92,12 +98,37 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       if (Home == NULL)
         Home = "./";
       HomeLen = strlen(Home);
+#ifdef I18N
+      if((Lang = setlocale(LC_CTYPE, NULL)) != NULL) {
+	/* find the LOCALE directory to look in */
+	home_file = safemalloc(HomeLen + strlen(Lang) + strlen(ofilename)+4);
+	strcpy(home_file,Home);
+	strcat(home_file,"/");
+	strcat(home_file,Lang);
+	strcat(home_file,"/");
+	strcat(home_file,ofilename);
+	filename = home_file;
+	fd = fopen(filename,"r");
+      }
+      if(fd == NULL) {
+	if((filename != NULL)&&(filename!= ofilename))
+	  free(filename);
+	/* do it as original */
+	home_file = safemalloc(HomeLen + strlen(ofilename)+3);
+	strcpy(home_file,Home);
+	strcat(home_file,"/");
+	strcat(home_file,ofilename);
+	filename = home_file;
+	fd = fopen(filename,"r");      
+      }
+#else
       home_file = safemalloc(HomeLen + strlen(ofilename)+3);
       strcpy(home_file,Home);
       strcat(home_file,"/");
       strcat(home_file,ofilename);
       filename = home_file;
       fd = fopen(filename,"r");      
+#endif
     }
     if((fd == NULL)&&(ofilename[0] != '/'))
     {
@@ -151,7 +182,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       tline = fgets(line+l-2,sizeof(line)-l,fd);
     }
     tline=line;
-    while(isspace(*tline))tline++;
+    while(isspace((unsigned char)*tline))tline++;
     if (debugging)
     {
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);

@@ -750,7 +750,16 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   
   if(t->name != (char *)NULL)
   {
+#ifdef I18N
+    /* XXX: TOO DIRTY TO HACK */
+#undef XTextWidth
+#define XTextWidth(x,y,z) XmbTextEscapement(x,y,z)
+    w=XTextWidth(GetDecor(t,WindowFont.fontset),t->name,strlen(t->name));
+#undef XTextWidth
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#else
     w=XTextWidth(GetDecor(t,WindowFont.font),t->name,strlen(t->name));
+#endif
     if(w > t->title_width-12)
       w = t->title_width-4;
     if(w < 0)
@@ -793,6 +802,9 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
       XClearWindow(dpy,t->title_w);
 #endif /* EXTENDED_TITLESTYLE */
   
+#undef FONTSET
+#define FONTSET GetDecor(t,WindowFont.fontset)
+
   /* for mono, we clear an area in the title bar where the window
    * title goes, so that its more legible. For color, no need */
   if(Scr.d_depth<2)

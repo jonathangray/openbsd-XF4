@@ -273,7 +273,10 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   
   if (!m4_default_quotes)
   {
-    fprintf(tmpf, "changequote(%s, %s)dnl\n", m4_startquote, m4_endquote);
+    fprintf(tmpf, "%schangequote(%s, %s)%sdnl\n",
+			(m4_prefix) ? "m4_" : "",
+			m4_startquote, m4_endquote,
+			(m4_prefix) ? "m4_" : "");
   }
   
   hostname = gethostbyname(client);
@@ -357,6 +360,9 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 #endif
 #ifdef	XPM
   strcat(options, "XPM ");
+#endif
+#ifdef  I18N
+    strcat(options, "I18N ");
 #endif
 
   strcat(options, "M4 ");

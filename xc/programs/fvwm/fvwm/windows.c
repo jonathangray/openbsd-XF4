@@ -48,12 +48,14 @@
 /* Function to compare window title names
  */
 static int globalFlags;
-int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
+int winCompare(const void *a, const void *b)
 {
   if(globalFlags & SHOW_ICONNAME)
-    return strcasecmp((*a)->icon_name,(*b)->icon_name);
+    return strcasecmp((* (const FvwmWindow **)a )->icon_name,
+                      (* (const FvwmWindow **)b )->icon_name);
   else
-    return strcasecmp((*a)->name,(*b)->name);
+    return strcasecmp((* (const FvwmWindow **)a )->name,
+                      (* (const FvwmWindow **)b )->name);
 }
 
 

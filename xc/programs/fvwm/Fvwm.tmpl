@@ -20,7 +20,7 @@ XCOMM Template file for Fvwm
  *
  * I HIGHLY RECOMMEND THAT YOU LEAVE THIS DEFINED, TO AVOID CONFUSION!!!!
  ***************************************************************************/
-#define RenameFVWM2
+/* #define RenameFVWM2 */
 
 
 /***************************************************************************
@@ -64,7 +64,8 @@ XCOMM Template file for Fvwm
  * If Xpm is not installed with the rest of your X, set XpmLibs and
  * XpmIncs to the paths where the library and include files are located.
  ***************************************************************************/
-#define HasXpm  YES     /* NO */
+/* HasXpm is defined by imake now */
+/* #define HasXpm  YES     /* NO */
 /* #define XpmLibs -L/usr/local/lib */
 /* #define XpmIncs -I/usr/local/include */
 
@@ -80,6 +81,13 @@ XCOMM Template file for Fvwm
 #define AudioLibs -L/usr/local/lib
 #define AudioIncs -I/usr/local/include
 
+/**************************************************************************
+ * InstallIcons
+ *
+ * Set this to NO If you would not like the mini icons to be installed.
+ * You probably want this if you have Xpm enabled.
+ *************************************************************************/
+#define InstallIcons YES
 
 /**************************************************************************
  * InstallSample
@@ -97,7 +105,7 @@ XCOMM Template file for Fvwm
  * Set this to YES if you would like the programs in the utils directory
  * installed.
  *************************************************************************/
-#define InstallUtils NO
+#define InstallUtils YES
 
 
 /**************************************************************************
@@ -237,6 +245,11 @@ XCOMM Template file for Fvwm
  * up so only the title-bar remains.  See the man page entry for
  * "WindowShade" for more information.
  *
+ *
+ * -DI18N
+ *
+ * If you want to use i18n feature, define this.
+ *
  ***************************************************************************/
 
 /* 
@@ -247,7 +260,7 @@ XCOMM Template file for Fvwm
 #if 0
 
 /* the works: */
-OPTION_DEFINES  = -DSHAPE
+OPTION_DEFINES  = -DSHAPE -DI18N
 OPTION_DEFINES += -DACTIVEDOWN_BTNS -DINACTIVE_BTNS -DMINI_ICONS
 OPTION_DEFINES += -DVECTOR_BUTTONS -DPIXMAP_BUTTONS -DGRADIENT_BUTTONS
 OPTION_DEFINES += -DMULTISTYLE -DEXTENDED_TITLESTYLE
@@ -263,6 +276,9 @@ OPTION_DEFINES  = -DSHAPE -DACTIVEDOWN_BTNS -DINACTIVE_BTNS -DMINI_ICONS -DVECTO
 /* Or if you prefer a more minimal setup, you could try something like: */
 /* OPTION_DEFINES = -DSHAPE -DVECTOR_BUTTONS */
 
+/* FreeBSD ports -- Assumes += notation is allowed */
+OPTION_DEFINES += -DENABLE_REMOTE_CHANGEDESKS
+/* FreeBSD ports */
 
 /***************************************************************************
  * The following section only needs to be changed if you do not want
@@ -271,17 +287,17 @@ OPTION_DEFINES  = -DSHAPE -DACTIVEDOWN_BTNS -DINACTIVE_BTNS -DMINI_ICONS -DVECTO
  ***************************************************************************/
 
 /* Where do you want the fvwm binaries installed. */
-/* #define FvwmBinDir /usr/local/X11R6/bin */
+#define FvwmBinDir ProjectRoot/bin
 
 /* Where do you want the fvwm modules installed. */
-/* #define FvwmDir /usr/local/X11R6/lib/X11/fvwm2 */
+#define FvwmDir ProjectRoot/lib/X11/fvwm
 
 /* Where do you want the fvwm libraries installed. */
-/* #define FvwmLibDir /usr/local/X11R6/lib */
+#define FvwmLibDir ProjectRoot/lib
 
 /* Where do you want the fvwm man pages installed. */
-/* #define FvwmManPath /usr/local/X11R6/man */
-/* #define FvwmManSuffix 1 */
+#define FvwmManPath ProjectRoot/man
+#define FvwmManSuffix 1
 
 
 /***************************************************************************
@@ -383,7 +399,7 @@ XCOMM   CCOPTIONS = FvwmCompilerFlags /* should I have another var for this? */
 #endif
 
 #ifndef FvwmIconPath
-#define FvwmIconPath $(INCDIR)/bitmaps\:$(INCDIR)/pixmaps
+#define FvwmIconPath $(FVWMDIR)/pixmaps\:$(INCDIR)/bitmaps\:$(INCDIR)/pixmaps
 #endif
 
    ICONPATH = FvwmIconPath
@@ -392,7 +408,7 @@ XCOMM   CCOPTIONS = FvwmCompilerFlags /* should I have another var for this? */
 
 /* take care of libs not correctly added by Imake on some systems */
 /* #ifdef AlphaArchitecture */
-#if defined(AlphaArchitecture) && !defined(linux)
+#if defined(AlphaArchitecture) && !defined(linux) && !defined(OpenBSDArchitecture)
 KLUDGE_LIBS = -ldnet_stub
 #else
 #ifdef HPArchitecture
@@ -400,8 +416,19 @@ KLUDGE_LIBS = -lV3
 #else
 #ifdef i386SVR4Architecture
 KLUDGE_LIBS = -lnsl -lsocket
+#else
+#if defined(FreeBSDArchitecture)
+KLUDGE_LIBS = -lxpg4
+#ifdef notdef /* Hmm, I think it should be processed in FreeBSD.cf... */
+#if OSMajorVersion < 2 || (OSMajorVersion == 2 && OSMinorVersion < 2)
+KLUDGE_LIBS = 
+#else
+KLUDGE_LIBS = -lxpg4
+#endif /* FreeBSD 2.2 */
+#endif /* notdef */
 #else /* all other systems shouldn't need anything */
 KLUDGE_LIBS = 
+#endif /* FreeBSDArchitecture */
 #endif /* i386SVR4Architecture */
 #endif /* HPArchitecture */
 #endif /* AlphaArchitecture */

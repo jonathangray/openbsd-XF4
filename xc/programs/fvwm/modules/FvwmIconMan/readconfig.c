@@ -225,11 +225,11 @@ static char *stripcpy(char *source)
   if(source == NULL)
     return NULL;
 
-  while(isspace(*source))
+  while(isspace((unsigned char)*source))
     source++;
   len = strlen(source);
   tmp = source + len -1;
-  while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=source))
+  while(((isspace((unsigned char)*tmp))||(*tmp == '\n'))&&(tmp >=source))
     {
       tmp--;
       len--;
@@ -258,7 +258,7 @@ static int extract_int (char *p, int *n)
   char *s;
   int sign = 1;
 
-  while (isspace (*p) && *p)
+  while (isspace ((unsigned char)*p) && *p)
     p++;
 
   if (*p == '-') {
@@ -308,7 +308,7 @@ static char *GetNextToken(char *indata,char **token)
       *token = NULL;
       return NULL;
     }
-  while(isspace(*t)&&(*t != 0))t++;
+  while(isspace((unsigned char)*t)&&(*t != 0))t++;
   start = t;
 
   if (*t == ',') {
@@ -318,7 +318,7 @@ static char *GetNextToken(char *indata,char **token)
     return t + 1;
   }
 
-  while(!isspace(*t) && (*t != 0) && (*t != ','))
+  while(!isspace((unsigned char)*t) && (*t != 0) && (*t != ','))
     {
       /* Check for qouted text */
       if(*t == '"')

@@ -279,6 +279,8 @@ void PaintEntry(MenuRoot *mr, MenuItem *mi)
     /* should be a shaded out word, no just re-colored. */
     currentGC = Scr.MenuStippleGC;    
 
+#undef FONTSET
+#define FONTSET  Scr.StdFont.fontset
   if(*mi->item)
     XDrawString(dpy, mr->w, currentGC,mi->x,text_y, mi->item, mi->strlen);
   if(mi->strlen2>0)

@@ -27,10 +27,14 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 #if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
 #include <sys/select.h>
 #endif
 
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -78,6 +82,7 @@ extern void SaveButtons(button_info*);
 /* ------------------------------ prototypes ------------------------------- */
 
 void DeadPipe(int nonsense);
+void CleanUp(void);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void);
@@ -126,6 +131,8 @@ Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
 int Width,Height;
 
+int running = 1;
+
 int x= -30000,y= -30000,w= -1,h= -1,gravity = NorthWestGravity;
 int new_desk = 0;
 int ready = 0;
@@ -147,6 +154,33 @@ char *mymalloc(int length)
     p[--i]=255;
   return p;
 }
+#endif
+
+#ifdef I18N
+/*
+ * fake XFetchName() function
+ */
+static Status MyXFetchName(dpy, win, winname)
+Display *dpy;
+Window win;
+char **winname;
+{
+  XTextProperty text;
+  char **list;
+  int nitems;
+
+  if (XGetWMName(dpy, win, &text)) {
+    if (text.value)
+      text.nitems = strlen(text.value);
+    if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success &&
+      *list) {
+      *winname = *list;
+      return 0;
+    }
+    return 1;
+  }
+}
+#define XFetchName(x,y,z) MyXFetchName(x,y,z)
 #endif
 
 /**
@@ -172,6 +206,41 @@ int IsThereADestroyEvent(button_info *b)
 *** Dead pipe handler
 **/
 void DeadPipe(int whatever)
+{
+  struct stat buf;
+
+  /*
+   * If a SIGPIPE arrives during this operation, just exit.
+   *  - the signal will probably because the server is shutting
+   *  down. Attempting to do any further processing is useless
+   *    and may in fact, on some platforms, put the process into
+   *    a tight loop (if SIGPIPE is ignored).
+   * 22 July 1996 GRM.
+   *
+   * Further investigation: XSync may loop *without* causing a SIGPIPE.
+   * This may be because the connection is dead, or because of the
+   * fact that X operations in signal handlers are discouraged.
+   *
+   * In order to cover all the bases, then, this function will now
+   * set a global flag which will cause the main loop to stop.
+   *
+   * SIGPIPE is reset to DeadPipe, as well.
+   */
+  signal(SIGPIPE, DeadPipe);
+
+  /*
+   * Try to check status of X connection.
+   */
+  if(fstat(XConnectionNumber(Dpy), &buf) == -1)
+    exit(0);
+
+  /*
+   * do not run anymore
+   */
+  running = 0;
+}
+
+void CleanUp(void)
 {
   button_info *b,*ub=UberButton;
   int button=-1;
@@ -426,6 +495,9 @@ void main(int argc, char **argv)
   char *temp, *s;
   button_info *b,*ub;
 
+#ifdef I18N
+  setlocale(LC_CTYPE, "");
+#endif
   temp=argv[0];
   s=strrchr(argv[0],'/');
   if(s) temp=s+1;
@@ -587,7 +659,7 @@ void Loop(void)
   int ex=10000,ey=10000,ex2=0,ey2=0;
 #endif
 
-  while(1)
+  while(running)
     {
       if(My_XNextEvent(Dpy,&Event))
 	{
@@ -696,7 +768,7 @@ void Loop(void)
 		       stays down until window "identifier" materializes */
 		    i=4;
 		    while(act[i]!=0 && act[i]!='"' &&
-			  isspace(act[i]))
+			  isspace((unsigned char)act[i]))
 		      i++;
 		    if(act[i] == '"')
 		      {
@@ -718,7 +790,7 @@ void Loop(void)
 		    
 		    tmp=mymalloc(strlen(act));
 		    strcpy(tmp,"Exec ");
-		    while(act[i2]!=0 && isspace(act[i2]))
+		    while(act[i2]!=0 && isspace((unsigned char)act[i2]))
 		      i2++;
 		    strcat(tmp,&act[i2]);
 		    MySendText(fd,tmp,0);
@@ -814,6 +886,8 @@ void Loop(void)
 	  }
       }
     }
+    /* goodbye */
+    CleanUp();
 }
 
 /**
@@ -863,6 +937,13 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
   int i,j,x=0,y=0;
   XFontStruct *font;
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+  XFontSet fontset;
+#endif
 
   if(!b) return;
 
@@ -919,12 +1000,28 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 
       if(mystrncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
+#ifdef I18N
+      else if(!(b->fontset=XCreateFontSet(Dpy,b->font_string,&ml,&mc,&ds)))
+	{
+	  b->font = NULL;
+	  b->flags&=~b_Font;
+	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
+		  b->font_string);
+	}
+      else
+	{
+	  /* fontset found */
+	  XFontsOfFontSet(fontset, &fs_list, &ml);
+	  b->font = fs_list[0];
+	}
+#else
       else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))
 	{
 	  b->flags&=~b_Font;
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
 		  b->font_string);
 	}
+#endif
     }
 
   if(b->flags&b_Container && b->c->flags&b_Font)
@@ -934,6 +1031,31 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #     endif
       if(mystrncasecmp(b->c->font_string,"none",4)==0)
 	b->c->font=NULL;
+#ifdef I18N
+      else if(!(b->c->fontset=XCreateFontSet(Dpy,b->c->font_string,&ml,&mc,&ds)))
+	{
+	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
+		  b->c->font_string);
+	  if(b==UberButton)
+	    {
+	      /* plain X11R6.3 hack */
+	      if(!(b->c->fontset=XCreateFontSet(Dpy,"fixed,-*--14-*",&ml,&mc,&ds))) {
+		fprintf(stderr,"%s: Couldn't load fontset fixed\n",MyName);
+		b->c->font = NULL;
+	      }
+	    }
+	  else {
+	    b->c->font = NULL;
+	    b->c->flags&=~b_Font;
+	  }
+	}
+      else
+	{
+	  /* fontset found */
+	  XFontsOfFontSet(b->c->fontset, &fs_list, &ml);
+	  b->c->font = fs_list[0];
+	}
+#else
       else if(!(b->c->font=XLoadQueryFont(Dpy,b->c->font_string)))
 	{
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
@@ -946,6 +1068,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 	  else
 	    b->c->flags&=~b_Font;
 	}
+#endif
     }
 
 
@@ -991,7 +1114,11 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   else
     b->flags&=~b_Icon;
 
+#ifdef I18N
+  if(b->flags&b_Title && (fontset = buttonFontSet(b)) && (font=buttonFont(b)))
+#else
   if(b->flags&b_Title && (font=buttonFont(b)))
+#endif
     {
 #     ifdef DEBUG_LOADDATA
       fprintf(stderr,", title \"%s\"",b->title);

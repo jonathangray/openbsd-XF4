@@ -23,6 +23,15 @@ extern GC blackgc, hilite, shadow, checkered;
 
 GC statusgc, dategc;
 XFontStruct *StatusFont;
+#ifdef I18N
+XFontSet StatusFontset;
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,StatusFontset,v,w,x,y,z)
+#endif
 int stwin_width = 100, goodies_width = 0;
 int anymail, unreadmail, newmail, mailcleared = 0;
 int fontheight, clock_width;
@@ -60,6 +69,7 @@ void GoodiesParseConfig(char *tline, char *Module) {
       NoMailCheck = True;
     } else {
       UpdateString(&mailpath, &tline[Clength+11]); 
+      mailpath[strlen(mailpath)-1] = '\0';
     }
   } else if(mystrncasecmp(tline,CatString3(Module, "ClockFormat",""),
 			  Clength+11)==0) {
@@ -91,6 +101,12 @@ void InitGoodies() {
   char tmp[1024];
   XGCValues gcval;
   unsigned long gcmask;
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
   
   if (mailpath == NULL) {
     strcpy(tmp, DEFAULT_MAIL_PATH);
@@ -99,12 +115,24 @@ void InitGoodies() {
     UpdateString(&mailpath, tmp);
   }
 
+#ifdef I18N
+  if ((StatusFontset=XCreateFontSet(dpy,statusfont_string,&ml,&mc,&ds))==NULL) {
+    /* plain X11R6.3 hack */
+    if ((StatusFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds))==NULL) {
+      ConsoleMessage("Couldn't load fixed fontset...exiting !\n");
+      exit(1);
+    }
+  }
+  XFontsOfFontSet(StatusFontset,&fs_list,&ml);
+  StatusFont = fs_list[0];
+#else
   if ((StatusFont = XLoadQueryFont(dpy, statusfont_string)) == NULL) {
     if ((StatusFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
       exit(1);
     }
   }
+#endif
 
   fontheight = StatusFont->ascent + StatusFont->descent;
   

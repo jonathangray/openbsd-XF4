@@ -35,6 +35,16 @@ extern int StartIconic;
 extern int MiniIcons;
 extern int icon_w, icon_h, icon_x, icon_y;
 XFontStruct *font, *windowFont;
+#ifdef I18N
+XFontSet fontset, windowFontset;
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,FONTSET,v,w,x,y,z)
+#define XDrawImageString(t,u,v,w,x,y,z) XmbDrawImageString(t,u,FONTSET,v,w,x,y,z)
+#endif
 
 GC NormalGC,DashedGC,HiliteGC,rvGC;
 GC StdGC;
@@ -101,6 +111,12 @@ void initialize_pager(void)
 {
   XWMHints wmhints;
   XClassHint class1;
+#ifdef I18N
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   XTextProperty name;
   unsigned long valuemask;
@@ -120,6 +136,19 @@ void initialize_pager(void)
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
   /* load the font */
+#ifdef I18N
+  if (!uselabel || ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL))
+    {
+      /* plain X11R6.3 hack */
+      if ((fontset = XCreateFontSet(dpy, "fixed,-*--14-*", &ml, &mc, &ds)) == NULL)
+      {
+	fprintf(stderr,"%s: No fonts available\n",MyName);
+	exit(1);
+      }
+    }
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  font = fs_list[0];
+#else
   if (!uselabel || ((font = XLoadQueryFont(dpy, font_string)) == NULL))
     {
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -128,18 +157,36 @@ void initialize_pager(void)
 	  exit(1);
 	}
     };
+#endif
+
   if(uselabel)
     label_h = font->ascent + font->descent+2;
   else
     label_h = 0;
       
-
+#ifdef I18N
+  if(smallFont != NULL)
+    {
+      windowFontset = XCreateFontSet(dpy, smallFont, &ml, &mc, &ds);
+      if (windowFontset != NULL)
+	{
+	  XFontsOfFontSet(windowFontset, &fs_list, &ml);
+	  windowFont = fs_list[0];
+        }
+    }
+  else
+    {
+      windowFontset = NULL;
+      windowFont = NULL;
+    }
+#else
   if(smallFont!= NULL)
     {
       windowFont= XLoadQueryFont(dpy, smallFont);
     }
   else
     windowFont= NULL;    
+#endif
 
   /* Load the colors */
   fore_pix = GetColor(PagerFore);
@@ -656,6 +703,9 @@ void MovePage(void)
 {
   int n1,m1,x,y,n,m,i;
   XTextProperty name;
+#ifdef I18N
+  int ret;
+#endif
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
 
@@ -692,11 +742,22 @@ void MovePage(void)
 	  sprintf(str,"Desk %d",Scr.CurrentDesk);
 	  sptr = &str[0];
 	}
+#ifdef I18N
+      if ((ret = XmbTextListToTextProperty(dpy,&sptr,1,XStdICCTextStyle,&name))
+	  == XNoMemory)
+	{
+	  fprintf(stderr,"%s: cannot allocate window name",MyName);
+	  return;
+	}
+      else if (ret != Success)
+	  return;
+#else
       if (XStringListToTextProperty(&sptr,1,&name) == 0) 
 	{
 	  fprintf(stderr,"%s: cannot allocate window name",MyName);
 	  return;
 	}
+#endif
       XSetWMIconName(dpy,Scr.Pager_w,&name);
     }
 }
@@ -809,6 +870,8 @@ void DrawGrid(int i, int erase)
   if((w<= desk_w)&&(uselabel))
     {
       hor_off = (desk_w -w)/2;
+#undef FONTSET
+#define FONTSET fontset
       if(i == (Scr.CurrentDesk - desk1))
 	XDrawString (dpy, Desks[i].title_w,rvGC,hor_off,font->ascent +1 , 
 		     ptr, strlen(ptr));      
@@ -1545,6 +1608,8 @@ void LabelWindow(PagerWindow *t)
       XChangeGC(dpy, StdGC,Globalgcm,&Globalgcv); 
 
     }
+#undef FONTSET
+#define FONTSET windowFontset
   if(t->PagerView != None)
     {
       XClearWindow(dpy, t->PagerView);
@@ -1587,6 +1652,8 @@ void LabelIconWindow(PagerWindow *t)
       XChangeGC(dpy,StdGC,Globalgcm,&Globalgcv); 
 
     }
+#undef FONTSET
+#define FONTSET windowFontset
   XClearWindow(dpy, t->IconView);
   XDrawString (dpy, t->IconView,StdGC,2,windowFont->ascent+2 , 
 	       t->icon_name, strlen(t->icon_name));        

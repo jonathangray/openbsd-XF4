@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef I18N
+#include <X11/Xlocale.h>
+#endif
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -178,6 +181,9 @@ void RedrawButton(button_info *b,int clean)
   int f,x,y,px,py;
   int ix,iy,iw,ih;
   XFontStruct *font=buttonFont(b);
+#ifdef I18N
+  XFontSet fontset = buttonFontSet(b);
+#endif
   XGCValues gcv;
   unsigned long gcm=0;
   int rev=0;
@@ -259,6 +265,9 @@ void DrawTitle(button_info *b,Window win,GC gc)
   int BH;
   int ix,iy,iw,ih;
   XFontStruct *font=buttonFont(b);
+#ifdef I18N
+  XFontSet fontset = buttonFontSet(b);
+#endif
   int justify=buttonJustify(b);
   int l,i,xpos;
   char *s;
