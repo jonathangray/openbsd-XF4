@@ -41,11 +41,9 @@ in this Software without prior written authorization from The Open Group.
 #if PSZ==8
 int cfbWindowPrivateIndex;
 int cfbGCPrivateIndex;
+#endif
 #ifdef CFB_NEED_SCREEN_PRIVATE
 int cfbScreenPrivateIndex = -1;
-#endif
-#endif
-#ifdef CFB_NEED_SCREEN_PRIVATE
 static unsigned long cfbGeneration = 0;
 #endif
 
