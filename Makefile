@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.44 2005/01/26 18:41:57 miod Exp $
+#	$OpenBSD: Makefile,v 1.45 2005/01/26 18:42:34 miod Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -76,7 +76,7 @@ release-rel:
 	mkdir -p rel
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest release
 
-release: release-clean release-mkdir release-install fix-appd dist
+release: release-clean release-mkdir release-install dist
 
 release-clean:
 .if ! ( defined(DESTDIR) && defined(RELEASEDIR) )
