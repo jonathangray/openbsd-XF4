@@ -26,7 +26,7 @@
  * clicking, but is moving the cursor
  *
  ****************************************************************************/
-Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
+static Bool IsClick(int x,int y,long EndMask, XEvent *d)
 {
   int xcurrent,ycurrent,total = 0;
   Time t0;
