@@ -3049,15 +3049,24 @@ FREETYPE2DEFINES = -DFREETYPE2
 #define ProfileLibExpat		NO
 #endif
           EXPATLIBSRC = $(LIBSRC)/expat
-
-/* Expat 1.95.4 */
+/*
+ * Expat 1.95.6.
+ *
+ * Get the library version information from LIBCURRENT, LIBREVISION and LIBAGE
+ * in xc/extras/expat/configure.
+ *
+ * LIBCURRENT:LIBREVISION:LIBAGE = 4:0:4
+ *
+ * The LibtoolMinorVersions revision is "(LIBCURRENT - LIBAGE).LIBAGE".
+ * The !LibtoolMinorVersions revision is "LIBCURRENT.0".
+ */
 #ifndef ExpatVersion
-#define ExpatVersion 1.95.4
+#define ExpatVersion 1.95.6
 #endif
 
 #if SharedLibExpat
 #ifndef SharedExpatRev
-#define SharedExpatRev 3.0
+#define SharedExpatRev 4.0
 #endif
 SharedLibReferences(EXPAT,expat,$(EXPATLIBSRC),SOEXPATREV,SharedExpatRev)
 #else
