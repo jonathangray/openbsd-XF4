@@ -122,7 +122,7 @@ AddToMenu Utilities     "Utilities" Title
 #+			"XEmacs"	Exec exec xemacs
 #+                       "Mail"          MailFunction xmh "-font fixed"
 +			""		Nop
-+                       "XLock%mini.xlock.xpm%"         Exec exec xlock -mode random
++                       "XLock%mini.xlock.xpm%"         Exec exec xlock
 +			""		Nop
 +                       "Reset X defaults" Exec xrdb -load $HOME/.Xdefaults 
 
