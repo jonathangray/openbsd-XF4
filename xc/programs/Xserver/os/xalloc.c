@@ -187,7 +187,7 @@ extern Bool Must_have_memory;
 #endif
 
 #if defined(__alpha__) || defined(__alpha) || \
-    defined(__ia64__) || defined(ia64)
+    defined(__ia64__) || defined(ia64) || defined(__sparc64__)
 #define MAGIC			0x1404196414071968
 #define MAGIC_FREE              0x1506196615061966
 #define MAGIC2			0x2515207525182079
