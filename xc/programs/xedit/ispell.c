@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <ctype.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <X11/Xaw/Toggle.h>
@@ -299,21 +300,33 @@ IsUpper(int ch)
 /*
  * Implementation
  */
+#ifdef STDERR_FILENO
+# define WRITES(s) write(STDERR_FILENO, s, strlen(s))
+#else
+# define WRITES(s) write(fileno(stderr), s, strlen(s))
+#endif
+
 /*ARGSUSED*/
 #ifndef SIGNALRETURNSINT
 static void
 timeout_signal(int unused)
 {
-    fprintf(stderr, "Warning: Timeout waiting ispell process to die.\n");
+    int olderrno = errno;
+
+    WRITES("Warning: Timeout waiting ispell process to die.\n");
     kill(ispell.pid, SIGTERM);
+    errno = olderrno;
 }
 #else
 static int
 timeout_signal(int unused)
 {
-    fprintf(stderr, "Warning: Timeout waiting ispell process to die.\n");
-    kill(ispell.pid, SIGTERM);
+    int olderrno = errno;
 
+    WRITES("Warning: Timeout waiting ispell process to die.\n");
+    kill(ispell.pid, SIGTERM);
+    
+    errno = olderrno;
     return (0);
 }
 #endif
