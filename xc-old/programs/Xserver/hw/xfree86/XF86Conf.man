@@ -340,7 +340,7 @@ regardless of the model of the PS/2 mouse.
 The other \fBXXXXPS/2\fP protocol types may or may not be supported by
 your OS.
 .PP
-The \fBwsouse\fP protocol is for mices handled by the wscons console
+The \fBwsmouse\fP protocol is for mices handled by the wscons console
 driver in NetBSD 1.4 and later and OpenBSD 2.9 and later. It should be
 used with the /dev/wsmouse0 device. Refer to the wsmouse(4) manual
 page for details.
