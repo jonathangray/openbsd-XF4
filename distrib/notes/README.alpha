@@ -1,0 +1,22 @@
+Post-installation instructions for XFree86 on OpenBSD/alpha
+-----------------------------------------------------------
+
+1. Alpha setup is not required.   NOTHING needs to be nor can be done
+   beyond package installation.  There are no configuration files for
+   X on alpha machines.
+
+   Currently, only TGA video hardware is supported.
+
+2. Start either xdm(1) or startx(1).
+
+   a. Start xdm(1), the X display manager by activating the xdm_flags option
+      in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You may need to disable
+      the console getty.
+
+   b. Start startx(1) from a console shell.  It is the X script that starts
+      the X server and a few X applications, including a window manager.
+
+
+If you encounter a problem, you can browse the entire documentation at
+http://www.xfree86.org/4.0.3/
+
