@@ -150,10 +150,10 @@ XCOMM !!!WARNING!!! Known security hole with MesaGL < 3.0 if setuid root
 GLLIB = -lGL -lGLU
 XCOMM   GLLIB = -L/usr/local/lib -lMesaGL -lMesaGLU
 
-#if SGIArchitecture
+#if defined(SGIArchitecture)
 GLLIB = -lGL -lGLU -lgl
 #endif
-#if SunArchitecture
+#if defined(SunArchitecture)
 XCOMM with OGL1.1
 GLDEF += -DSUN_OGL_NO_VERTEX_MACROS
 #endif
@@ -546,7 +546,7 @@ $(SOUNDDEF) $(PASSWDINC) $(XPMINC) $(GLINC) $(DTSAVERINC) $(DPMSINC) \
 $(SOUNDINC) $(XLOCKINC)
 
 DEPLIBS = $(DEPXLIB)
-#if SGIArchitecture
+#if defined (SGIArchitecture)
 FIRSTLIB = -L/usr/lib32
 #endif
 LOCAL_LIBRARIES = $(FIRSTLIB) $(MODULELIB) \
