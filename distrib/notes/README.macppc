@@ -1,32 +1,23 @@
-Post-installation instructions for XFree86 on OpenBSD/powerpc
--------------------------------------------------------------
+Post-installation instructions for XFree86 on OpenBSD/macppc
+------------------------------------------------------------
 
 The XFree86 server is currently known to work on the G4 Macs with ATI
-Rage 128 cards. Other machines are more or less untested.
+Rage 128 cards. Other machines are more or less untested. The Titanium
+PowerBook G4 is known to crash with the ati driver. 
 
 Use xf86config to build a /etc/X11/XF86Config file before starting 
 the server for the first time. Or you can use the sample configuration
 file appended below as a starting point. 
 
-For the Titanium Powerbook G4, you can try the following mode line in
-/etc/X11/XF86Config to match the flat panel resolution:
-
-Modeline "1152x768" 78.741 1152 1173 1269 1440  768 769 772 800 +HSync +VSync
-
-but for now the server crashes the machine. 
-
-If you're tracking -current and the XFree86 4 server don't work for
-you, you should for now copy the Xmacppc from a former snapshot, as it
-isn't build in parallel with the new one. 
+A special driver reproduces the functionnality of Xmacppc in previous 
+releases: wsfb. It uses whatever graphics mode the console is set to 
+(by Mac OS 9) as a dump unaccelerated framebuffer in 8 bits per pixel. 
 
 Future plans:
 -------------
 
 Test this and solve as much as possible of the problems on various
 powerpc machines.
-
-Build and install the Xmacppc server for machines that don't work
-right now. 
 
 -- Cut Here for a sample /etc/X11/XF86Config ---
 Section "ServerLayout"
@@ -82,21 +73,6 @@ Section "Monitor"
 EndSection
 
 Section "Device"
-	### Available Driver options are:-
-        ### Values: <i>: integer, <f>: float, <bool>: "True"/"False",
-        ### <string>: "String", <freq>: "<f> Hz/kHz/MHz"
-        ### [arg]: arg optional
-        #Option     "NoAccel"            	# [<bool>]
-        #Option     "SWcursor"           	# [<bool>]
-        #Option     "Dac6Bit"            	# [<bool>]
-        #Option     "Dac8Bit"            	# [<bool>]
-        #Option     "Display"            	# <str>
-        #Option     "PanelWidth"         	# <i>
-        #Option     "PanelHeight"        	# <i>
-        #Option     "ProgramFPRegs"      	# [<bool>]
-        #Option     "UseFBDev"           	# [<bool>]
-        #Option     "VideoKey"           	# <i>
-        #Option     "ShowCache"          	# [<bool>]
 	Identifier  "Card0"
 	Driver      "ati"
 	VendorName  "ATI"
@@ -104,22 +80,21 @@ Section "Device"
 	BusID       "PCI:0:16:0"
 EndSection
 
+# Use the following "Device" section instead for wsfb
+#
+# Section "Device"
+#	Identifier "Card0"
+#	Driver	   "wsfb"
+#       Option	   "device" "/dev/ttyC0"
+# EndSection
+
 Section "Screen"
 	Identifier "Screen0"
 	Device     "Card0"
 	Monitor    "Monitor"
-	DefaultDepth 24
-	SubSection "Display"
-		Depth     1
-	EndSubSection
-	SubSection "Display"
-		Depth     4
-	EndSubSection
+	DefaultDepth 8
 	SubSection "Display"
 		Depth     8
-	EndSubSection
-	SubSection "Display"
-		Depth     15
 	EndSubSection
 	SubSection "Display"
 		Depth     16
