@@ -1057,7 +1057,8 @@ xf86MapPciMem(int ScreenNum, int Flags, PCITAG Tag, ADDRESS Base,
 		pciWriteLong(Tag, PCI_CMD_STAT_REG,
 			     save & ~PCI_CMD_MEM_ENABLE);
 	}
-	base = xf86MapVidMem(ScreenNum, Flags, hostbase, Size);
+	Flags |= VIDMEM_TAGINFO;
+	base = xf86MapVidMem(ScreenNum, Flags, hostbase, Size, Tag);
 	if (!base)	{
 		FatalError("xf86MapPciMem: Could not mmap PCI memory "
 			   "[base=0x%x,hostbase=0x%x,size=%x] (%s)\n",

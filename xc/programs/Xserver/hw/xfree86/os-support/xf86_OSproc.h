@@ -96,6 +96,8 @@
 #define VIDMEM_READONLY		0x20	/* read-only mapping
 					 * used when reading BIOS images
 					 * through xf86MapVidMem() */
+#define VIDMEM_TAGINFO		0x40	/* pass PCI Tag information to 
+					   os layer */
 
 /*
  * OS-independent modem state flags for xf86SetSerialModemState() and
@@ -140,7 +142,7 @@ _XFUNCPROTOBEGIN
 /* public functions */
 extern Bool xf86LinearVidMem(void);
 extern Bool xf86CheckMTRR(int); 
-extern pointer xf86MapVidMem(int, int, unsigned long, unsigned long);
+extern pointer xf86MapVidMem(int, int, unsigned long, unsigned long, ...);
 extern void xf86UnMapVidMem(int, pointer, unsigned long);
 extern void xf86MapReadSideEffects(int, int, pointer, unsigned long);
 extern int xf86ReadBIOS(unsigned long, unsigned long, unsigned char *, int);

@@ -4,6 +4,8 @@
 #define _XF86OSPRIV_H
 
 typedef pointer (*MapMemProcPtr)(int, unsigned long, unsigned long, int);
+typedef pointer (*MapMemTagProcPtr)(int, unsigned long, unsigned long, int, 
+				    PCITAG);
 typedef void (*UnmapMemProcPtr)(int, pointer, unsigned long);
 typedef pointer (*SetWCProcPtr)(int, unsigned long, unsigned long, Bool,
 				MessageType);
@@ -14,6 +16,7 @@ typedef void (*ReadSideEffectsProcPtr)(int, pointer, unsigned long);
 typedef struct {
 	Bool			initialised;
 	MapMemProcPtr		mapMem;
+	MapMemTagProcPtr	mapMemTag;
 	UnmapMemProcPtr		unmapMem;
 	ProtectMemProcPtr	protectMem;
 	SetWCProcPtr		setWC;
