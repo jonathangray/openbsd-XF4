@@ -62,7 +62,6 @@ array set FilePermsDB {
 }
 
 array set FilePermsBin {
-	bin/SuperProbe				755
 	bin/bitmap				755
 	bin/mkfontdir				755
 	bin/twm					755
