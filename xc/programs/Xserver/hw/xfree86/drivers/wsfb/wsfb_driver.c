@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.3 2002/03/21 21:51:59 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.4 2002/03/31 17:35:58 jason Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -525,7 +525,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	WsfbPtr fPtr = WSFBPTR(pScrn);
 	VisualPtr visual;
 	int ret, flags, width, height;
-	int wsmode = WSDISPLAYIO_MODE_MAPPED;
+	int wsmode = WSDISPLAYIO_MODE_DUMBFB;
 	size_t len;
 
 	TRACE_ENTER("WsfbScreenInit");
