@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.6 2002/04/29 22:47:56 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.7 2002/05/18 20:58:47 drahn Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -586,7 +586,6 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	
 	WsfbSave(pScrn);
 	pScrn->vtSema = TRUE;
-	WsfbSaveScreen(pScreen, SCREEN_SAVER_ON);
 
 	/* mi layer */
 	miClearVisualTypes();
@@ -840,10 +839,8 @@ WsfbSaveScreen(ScreenPtr pScreen, int mode)
 		return TRUE;
 	
 	if (mode != SCREEN_SAVER_FORCER) {
-		if (mode == SCREEN_SAVER_ON)
-			state = WSDISPLAYIO_VIDEO_OFF;
-		else
-			state = WSDISPLAYIO_VIDEO_ON;
+		state = xf86IsUnblank(mode)?WSDISPLAYIO_VIDEO_ON:
+		                            WSDISPLAYIO_VIDEO_OFF;
 		ioctl(fPtr->fd, 
 		      WSDISPLAYIO_SVIDEO, &state);
 	}
