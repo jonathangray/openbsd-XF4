@@ -43,7 +43,6 @@
 ./usr/X11R6/bin/pswrap
 ./usr/X11R6/bin/resize
 ./usr/X11R6/bin/revpath
-./usr/X11R6/bin/rman
 ./usr/X11R6/bin/sessreg
 ./usr/X11R6/bin/setxkbmap
 ./usr/X11R6/bin/showfont
