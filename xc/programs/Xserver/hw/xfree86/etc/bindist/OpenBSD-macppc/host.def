@@ -1,6 +1,6 @@
 /*
  * Host.def for building OpenBSD bindists
- * $OpenBSD: host.def,v 1.1 2001/02/17 18:35:26 matthieu Exp $
+ * $OpenBSD: host.def,v 1.1 2001/09/04 19:48:50 matthieu Exp $
  * $XFree86$
  */
 
