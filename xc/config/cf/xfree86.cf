@@ -660,9 +660,8 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 /* Pure PCI drivers should go first */
 # ifndef XF86CardDrivers
 #  define XF86CardDrivers	mga tdfx glint s3 s3virge rendition tga ati \
-				savage nv DevelDrivers siliconmotion vga \
-				cirrus \
-				XF86OSCardDrivers XF86ExtraCardDrivers
+				savage nv DevelDrivers siliconmotion cirrus \
+				vga XF86OSCardDrivers XF86ExtraCardDrivers
 # endif
 # if HasGlide3
 #  define TdfxDriDriver		tdfx
