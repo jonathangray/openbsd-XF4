@@ -171,7 +171,7 @@ XkmGetCARD32(file,pNRead)
     int *	pNRead;
 #endif
 {
-unsigned long	val;
+CARD32	val;
 
     if ((fread(&val,4,1,file)==1)&&(pNRead))
 	(*pNRead)+= 4;
