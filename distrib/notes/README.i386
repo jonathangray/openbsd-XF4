@@ -67,7 +67,7 @@ Conventions used in this document:
 
               /usr/X11R6/lib/X11/doc/
 
-    b. For the XFree86 3.3.6 server, run XF86Setup(1) or xf86setup3(1).
+    b. For the XFree86 3.3.6 server, run XF86Setup(1) or xf86config3(1).
 
        - This will make the /etc/XF86Config file.
        - This will create /usr/X11R6/bin/X as a link to your XF86_* server,
