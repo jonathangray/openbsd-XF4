@@ -123,7 +123,7 @@ o Where to set variables?
 
 Most imake configuration files set variables only if they were not
 previously set in host.def.  So, when hacking on X, you can modify the
-vaste majority of imake's configuration variables in
+vast majority of imake's configuration variables in
 xc/config/cf/host.def.
 
 Only some of them require direct modification in
@@ -370,7 +370,7 @@ will make Imakefiles simpler to write.
 
 If the application has only one source file, the Imakefile can be real
 simple. The SimpleProgramTarget() macro takes care of everything. You
-just need to specifly libraries and library dependencies with the
+just need to specify libraries and library dependencies with the
 DEPLIBS and LOCAL_LIBRARIES make variables. This is for instance the
 Imakefile for xev:
 
@@ -422,7 +422,7 @@ LibName	:	the name of the library
 DoSharedLib:	build a shared lib?
 SoRev:		shared lib version
 LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
-IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to.
+IncSubdir:	subdir of /usr/X11R6/include to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.14 2004/05/27 20:23:27 matthieu Exp $
+$Id: README,v 1.15 2004/08/16 21:49:04 jmc Exp $
