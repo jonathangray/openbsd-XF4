@@ -227,16 +227,16 @@ AwaitHandler(int sig)
 
 	if ( ++AwaitHandlerSeen == 2 )
 	{
-		exit( 1 );
+		_exit( 1 );
 	}
 	if ( ( pid = fork() ) == -1 )	
 	{
-		exit( 1 );
+		_exit( 1 );
 	}
 	else if ( pid == 0 )			/* child */
 	{
-	        AbortFlo(xplocal);
-		exit( 0 );
+	        AbortFlo(xplocal); /* XXX is this safe ? */
+		_exit( 0 );
 	}
 	else					/* parent */
 	{
