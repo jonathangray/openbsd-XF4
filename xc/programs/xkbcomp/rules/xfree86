@@ -55,6 +55,7 @@
   abnt2		=	pc
   macintosh	=	macintosh(macintosh)
   macintosh_old	=	macintosh(macintosh)
+  sun		=	sun(type4)
   *		=       pc(pc104)
 
 ! model		variant		layout	=	symbols
@@ -65,6 +66,9 @@
 ! model		layout	=	symbols
   pc98		nec/jp	=	nec/jp(pc98)
   abnt2		br	=	us(pc101)+br
+  sun		us	=	us(pc104)+sun/lkeys
+  sun		en_US	=	en_US(pc104)+sun/lkeys
+  sun		*	=	en_US(pc104)+sun/lkeys+%l%(v)
  $pcmodels	us_intl	=	us(%m)+us_intl
  $mac		us	=	macintosh/us(extended)
  $mac		en_US	=	macintosh/us(extended)
