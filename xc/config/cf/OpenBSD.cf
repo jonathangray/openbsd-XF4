@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.60 2001/10/07 09:33:49 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.61 2001/10/24 13:54:11 todd Exp $
 
 
 
@@ -477,6 +477,27 @@ install:: fonts.alias							@@\
 
 #endif /* AmigaArchitecture */
 
+/*
+ * Definitions for the vax architecture
+ */
+#ifdef VaxArchitecture
+
+# ifndef BuildServer
+#  define BuildServer		NO
+# endif
+/* For the X11R5 server */
+# define CompressAllFonts	NO
+# define InstallFontAliases	InstallFontAliasesNoComment
+# define UseRgbTxt		NO
+# define UseRgb			YES
+
+# define ServerExtraDefines	-DXFree86Server
+# define UnalignedReferencesAllowed YES
+# define HasWeakSymbols		NO
+
+#include <xfree86.cf>
+
+#endif /* VaxArchitecture */
 
 /*
  * Definitions for the hp300 architecture

@@ -68,7 +68,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.67 2001/04/18 17:13:58 dawes Exp $
 # define UltrixArchitecture
 #endif /* ultrix */
 
-#if defined(vax) && !defined(UltrixArchitecture)
+#if defined(vax) && !defined(UltrixArchitecture) && !defined(__OpenBSD__)
 # define MacroIncludeFile <bsd.cf>
 # define MacroFile bsd.cf
 # undef vax
@@ -159,6 +159,11 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.67 2001/04/18 17:13:58 dawes Exp $
 #  undef __powerpc__
 #  undef __macppc__
 #  undef macppc
+# endif
+# ifdef __vax__
+#  undef vax
+#  undef __vax__
+#  define VaxArchitecture
 # endif
 #endif /* OpenBSD */
 
