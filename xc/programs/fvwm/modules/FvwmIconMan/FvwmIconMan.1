@@ -452,20 +452,20 @@ has one manager, and handles all windows:
 
 .nf
 .sp
-##############################################################
-# Load any modules which should be started during
-# fvwm initialization
+XCOMM##############################################################
+XCOMM Load any modules which should be started during
+XCOMM fvwm initialization
 ModulePath /usr/lib/X11/fvwm:/usr/bin/X11
 Module FvwmIconMan
 
-# Make FvwmIconMan title-bar-less, sticky, and give it an icon
+XCOMM Make FvwmIconMan title-bar-less, sticky, and give it an icon
 Style "Fvwm*"      Icon toolbox.xpm,NoTitle,NoHandles,Sticky
 Style "FvwmIconMan" HandleWidth 5, Handles, BorderWidth 5
 
 
-##############################################################
-##############################################################
-#Definitions used by the modules
+XCOMM#############################################################
+XCOMM#############################################################
+XCOMM Definitions used by the modules
 
 *FvwmIconMan*nummanagers        1
 *FvwmIconMan*resolution         global
