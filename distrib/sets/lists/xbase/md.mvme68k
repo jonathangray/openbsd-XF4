@@ -13,12 +13,6 @@
 ./usr/X11R6/bin/xtrapproto
 ./usr/X11R6/bin/xtrapreset
 ./usr/X11R6/bin/xtrapstats
-./usr/X11R6/include/X11/PEX5
-./usr/X11R6/include/X11/PEX5/PEX.h
-./usr/X11R6/include/X11/PEX5/PEXlib.h
-./usr/X11R6/include/X11/PEX5/PEXlibint.h
-./usr/X11R6/include/X11/PEX5/PEXproto.h
-./usr/X11R6/include/X11/PEX5/PEXprotost.h
 ./usr/X11R6/include/X11/Xft
 ./usr/X11R6/include/X11/Xft/Xft.h
 ./usr/X11R6/include/X11/Xft/XftFreetype.h
@@ -33,7 +27,6 @@
 ./usr/X11R6/include/freetype2
 ./usr/X11R6/include/freetype2/freetype
 ./usr/X11R6/include/freetype2/freetype/cache
-./usr/X11R6/include/freetype2/freetype/cache/ftcchunk.h
 ./usr/X11R6/include/freetype2/freetype/cache/ftcglyph.h
 ./usr/X11R6/include/freetype2/freetype/cache/ftcimage.h
 ./usr/X11R6/include/freetype2/freetype/cache/ftcmanag.h
@@ -66,7 +59,6 @@
 ./usr/X11R6/include/freetype2/freetype/fttypes.h
 ./usr/X11R6/include/freetype2/freetype/internal
 ./usr/X11R6/include/freetype2/freetype/internal/autohint.h
-./usr/X11R6/include/freetype2/freetype/internal/cfferrs.h
 ./usr/X11R6/include/freetype2/freetype/internal/cfftypes.h
 ./usr/X11R6/include/freetype2/freetype/internal/fnttypes.h
 ./usr/X11R6/include/freetype2/freetype/internal/ftcalc.h
@@ -83,9 +75,7 @@
 ./usr/X11R6/include/freetype2/freetype/internal/pshints.h
 ./usr/X11R6/include/freetype2/freetype/internal/psnames.h
 ./usr/X11R6/include/freetype2/freetype/internal/sfnt.h
-./usr/X11R6/include/freetype2/freetype/internal/t1errors.h
 ./usr/X11R6/include/freetype2/freetype/internal/t1types.h
-./usr/X11R6/include/freetype2/freetype/internal/tterrors.h
 ./usr/X11R6/include/freetype2/freetype/internal/tttypes.h
 ./usr/X11R6/include/freetype2/freetype/t1tables.h
 ./usr/X11R6/include/freetype2/freetype/ttnameid.h
@@ -95,9 +85,6 @@
 ./usr/X11R6/lib/X11/XftConfig
 ./usr/X11R6/lib/X11/etc/xterm.termcap
 ./usr/X11R6/lib/X11/etc/xterm.terminfo
-./usr/X11R6/lib/X11/fonts/PEX
-./usr/X11R6/lib/X11/fonts/PEX/Roman.phont
-./usr/X11R6/lib/X11/fonts/PEX/Roman_M.phont
 ./usr/X11R6/lib/X11/fonts/Type1
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/X11/xkb/compat
@@ -175,7 +162,6 @@
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/be
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/bg
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/ca
-./usr/X11R6/lib/X11/xkb/keymap/sgi/cs
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/cz
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/cz_qwerty
 ./usr/X11R6/lib/X11/xkb/keymap/sgi/de
@@ -242,8 +228,6 @@
 ./usr/X11R6/lib/X11/xkb/symbols/ca
 ./usr/X11R6/lib/X11/xkb/symbols/ca_enhanced
 ./usr/X11R6/lib/X11/xkb/symbols/compose
-./usr/X11R6/lib/X11/xkb/symbols/cs
-./usr/X11R6/lib/X11/xkb/symbols/cs_qwerty
 ./usr/X11R6/lib/X11/xkb/symbols/ctrl
 ./usr/X11R6/lib/X11/xkb/symbols/cz
 ./usr/X11R6/lib/X11/xkb/symbols/cz_qwerty
@@ -271,7 +255,6 @@
 ./usr/X11R6/lib/X11/xkb/symbols/gb
 ./usr/X11R6/lib/X11/xkb/symbols/ge_la
 ./usr/X11R6/lib/X11/xkb/symbols/ge_ru
-./usr/X11R6/lib/X11/xkb/symbols/gr
 ./usr/X11R6/lib/X11/xkb/symbols/group
 ./usr/X11R6/lib/X11/xkb/symbols/guj
 ./usr/X11R6/lib/X11/xkb/symbols/gur
@@ -294,7 +277,6 @@
 ./usr/X11R6/lib/X11/xkb/symbols/level3
 ./usr/X11R6/lib/X11/xkb/symbols/lock
 ./usr/X11R6/lib/X11/xkb/symbols/lt
-./usr/X11R6/lib/X11/xkb/symbols/lt_p
 ./usr/X11R6/lib/X11/xkb/symbols/lt_std
 ./usr/X11R6/lib/X11/xkb/symbols/lv
 ./usr/X11R6/lib/X11/xkb/symbols/macintosh
@@ -374,8 +356,6 @@
 ./usr/X11R6/lib/libGL.so.1.2
 ./usr/X11R6/lib/libGLU.so.1.3
 ./usr/X11R6/lib/libICE.so.6.3
-./usr/X11R6/lib/libPEX5.a
-./usr/X11R6/lib/libPEX5.so.6.0
 ./usr/X11R6/lib/libSM.so.6.0
 ./usr/X11R6/lib/libX11.so.6.2
 ./usr/X11R6/lib/libXTrap.a
@@ -385,7 +365,6 @@
 ./usr/X11R6/lib/libXext.so.6.4
 ./usr/X11R6/lib/libXfont.so.1.4
 ./usr/X11R6/lib/libXft.a
-./usr/X11R6/lib/libXft.so.1.0
 ./usr/X11R6/lib/libXft.so.1.1
 ./usr/X11R6/lib/libXi.a
 ./usr/X11R6/lib/libXi.so.6.0
