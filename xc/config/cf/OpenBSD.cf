@@ -154,8 +154,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #ifdef SparcArchitecture
 #  define OptimizedCDebugFlags	-O2
 #  define ServerOSDefines 	-DDDXOSINIT
-#  define ServerExtraDefines	XFree86ServerDefines
-#endif 
+#  define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
+				ServerSnprintfDefines DebugDefines \
+				-DX_BYTE_ORDER=ByteOrder
+#endif
 
 #ifdef AlphaArchitecture
 #  define OptimizedCDebugFlags	-O2
@@ -650,13 +652,13 @@ install:: fonts.alias							@@\
 #ifdef SparcArchitecture
 
 # ifndef Xsun24Server
-# define Xsun24Server		NO
+# define Xsun24Server		YES
 # endif
 # ifndef XsunServer
 # define XsunServer		YES
 # endif
 # ifndef XsunMonoServer
-# define XsunMonoServer		NO
+# define XsunMonoServer		YES
 # endif
 
 #define XkbServerDefines  -DXKB_ALWAYS_USES_SOFT_REPEAT
@@ -668,6 +670,7 @@ install:: fonts.alias							@@\
 # define BuildXF86VidModeExt	NO
 # define BuildXF86DGA		NO
 # define BuildXInputExt		NO
+# define BuildRender            NO
 # include <xfree86.cf>
 
 #endif /* SparcArchitecture */
