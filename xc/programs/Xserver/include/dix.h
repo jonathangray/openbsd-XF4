@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/include/dix.h,v 3.27 2003/04/27 21:31:04 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/include/dix.h,v 3.26 2003/01/12 02:44:27 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -372,12 +372,22 @@ extern int DoGetImage(
 extern void IncrementClientCount(void);
 #endif /* LBX */
 
+#if defined(DDXBEFORERESET)
+extern void ddxBeforeReset (void);
+#endif
+
 /* dixutils.c */
 
 extern void CopyISOLatin1Lowered(
     unsigned char * /*dest*/,
     unsigned char * /*source*/,
     int /*length*/);
+
+extern int CompareISOLatin1Lowered(
+    unsigned char * /*a*/,
+    int alen,
+    unsigned char * /*b*/,
+    int blen);
 
 #ifdef XCSECURITY
 
@@ -426,8 +436,10 @@ extern void NoopDDA(void);
 extern int AlterSaveSetForClient(
     ClientPtr /*client*/,
     WindowPtr /*pWin*/,
-    unsigned /*mode*/);
-
+    unsigned /*mode*/,
+    Bool /*toRoot*/,
+    Bool /*remap*/);
+  
 extern void DeleteWindowFromAnySaveSet(
     WindowPtr /*pWin*/);
 
@@ -784,5 +796,22 @@ typedef struct {
     xEventPtr events;
     int count;
 } DeviceEventInfoRec;
+
+/*
+ * SelectionCallback stuff
+ */
+
+extern CallbackListPtr SelectionCallback;
+
+typedef enum {
+    SelectionSetOwner,
+    SelectionWindowDestroy,
+    SelectionClientClose
+} SelectionCallbackKind;
+
+typedef struct {
+    struct _Selection	    *selection;
+    SelectionCallbackKind   kind;
+} SelectionInfoRec;
 
 #endif /* DIX_H */

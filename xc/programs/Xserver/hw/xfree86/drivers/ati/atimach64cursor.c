@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimach64cursor.c,v 1.2 2004/01/05 16:42:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimach64cursor.c,v 1.1 2003/04/23 21:51:29 tsi Exp $ */
 /*
  * Copyright 2003 through 2004 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
@@ -131,6 +131,13 @@ ATIMach64LoadCursorImage
     ATIPtr           pATI     = ATIPTR(pScreenInfo);
     CARD32          *pSrc     = (pointer)pImage;
     volatile CARD32 *pDst     = pATI->pCursorImage;
+
+#ifdef XF86DRI_DEVEL
+
+    /* XAA Sync requires the DRM lock if DRI enabled */
+    ATIDRILock(pScreenInfo);
+
+#endif /* XF86DRI_DEVEL */
 
     /* Synchronise video memory accesses */
     ATIMach64Sync(pScreenInfo);
@@ -276,6 +283,12 @@ ATIMach64LoadCursorImage
     }
 
 #endif
+
+#ifdef XF86DRI_DEVEL
+
+    ATIDRIUnlock(pScreenInfo);
+
+#endif /* XF86DRI_DEVEL */
 
 }
 

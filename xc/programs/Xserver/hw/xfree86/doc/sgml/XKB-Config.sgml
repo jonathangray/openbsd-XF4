@@ -1,4 +1,6 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN">
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
+<!ENTITY % defs SYSTEM "defs.ent"> %defs;
+]>
 
 <article>
 <title>The XKB Configuration Guide
@@ -6,11 +8,10 @@
 <date>25 November 2002
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/XKB-Config.sgml,v 1.4 2003/09/21 01:55:03 dawes Exp $
 </ident>
 
 <abstract>
-This document describes how to configure XFree86 XKB from a user's point
+This document describes how to configure X11R&relvers; XKB from a user's point
 a few. It converts basic configuration syntax and gives also a few examples.
 </abstract>
 
@@ -44,21 +45,21 @@ composition
 </itemize>
 <p>
 The proper rules file depends on your vendor. In reality, the commonest
-file of rules is <tt>xfree86</tt>. For each rules file there is a description
-file named <tt>&lt;vendor-rules&gt;.lst</tt>, for instance <tt>xfree86.lst</tt> 
+file of rules is <tt>xorg</tt>. For each rules file there is a description
+file named <tt>&lt;vendor-rules&gt;.lst</tt>, for instance <tt>xorg.lst</tt> 
 which is located in xkb configuration subdirectory <tt>rules</tt> (for example 
 <tt>/etc/X11/xkb/rules</tt>).
 
 <sect1>Basic Configuration
 <p>
 Let's say you want to configure a PC style America keyboard with 104
-keys as described in <tt>xfree86.lst</tt>. It can be done by simply writing
-several lines from below to you XFree86 configuration file (often
-found as <tt>/etc/X11/XF86Config-4</tt> or <tt>/etc/X11/XF86Config</tt>):
+keys as described in <tt>xorg.lst</tt>. It can be done by simply writing
+several lines from below to you xorg.conf configuration file (previously known
+as <tt>/etc/X11/XF86Config-4</tt> or <tt>/etc/X11/XF86Config</tt>):
 <tscreen><verb>
 Section "InputDevice"
     Identifier "Keyboard1"
-    Driver "Keyboard"
+    Driver "kbd"
 
     Option "XkbModel" "pc104"
     Option "XkbLayout" "us"
@@ -73,14 +74,14 @@ That means the default variant named <tt>basic</tt> is loaded.
 Of course, this can be also done at runtime using utility setxkbmap.
 Shell command loading the same keyboard mapping would look like:
 <tscreen><verb>
-setxkbmap -rules xfree86 -model pc104 -layout us -option ""
+setxkbmap -rules xorg -model pc104 -layout us -option ""
 </verb></tscreen>
 The configuration and the shell command would be very analogical
 for most other layouts (internationalized mappings). 
 
 <sect1>Advanced Configuration
 <p>
-Since XFree86 4.3.x you can use multi-layouts xkb configuration.
+You can use multi-layouts xkb configuration.
 What does it mean? Basically it allows to load up to four different
 keyboard layouts at a time. Each such layout would reside in its
 own group. The groups (unlike complete keyboard remapping) can be
@@ -95,7 +96,7 @@ Then the configuration snippet could look like this:
 <tscreen><verb>
 Section "InputDevice"
     Identifier "Keyboard1"
-    Driver "Keyboard"
+    Driver "kbd"
 
     Option "XkbModel" "logicordless"
     Option "XkbLayout" "us,cz,de"
@@ -105,7 +106,7 @@ EndSection
 Of course, this can be also done at runtime using utility setxkbmap.
 Shell command loading the same keyboard mapping would look like:
 <tscreen><verb>
-setxkbmap -rules xfree86 -model logicordless -layout "us,cz,de" \
+setxkbmap -rules xorg -model logicordless -layout "us,cz,de" \
          -option "grp:alt_shift_toggle"
 </verb></tscreen>
 
@@ -119,7 +120,7 @@ The configuration snippet then changes into:
 <tscreen><verb>
 Section "InputDevice"
     Identifier "Keyboard1"
-    Driver "Keyboard"
+    Driver "kbd"
 
     Option "XkbModel" "logicordless"
     Option "XkbLayout" "us,cz,de"
@@ -135,7 +136,7 @@ key).
 <p>
 Analogically, the loading runtime will change to:
 <tscreen><verb>
-setxkmap -rules xfree86 -model logicordless -layout "us,cz,de" \
+setxkmap -rules xorg -model logicordless -layout "us,cz,de" \
          -variant ",bksl," -option "grp:alt_shift_toggle"
 </verb></tscreen>
 
@@ -154,7 +155,7 @@ xkb components should be used to form the resulting keyboard mapping.
 This method is rather "brute force". You precisely need to know the structure
 and the meaning of all of used configuration components. 
 <p>
-This method also exposes all xkb configuration details directly into XFree86
+This method also exposes all xkb configuration details directly into xorg.conf
 configuration file which is a not very fortunate fact.
 In rare occasions it may be needed, though. So how does it work?
 
@@ -183,9 +184,9 @@ Look at the following example:
 <tscreen><verb>
 Section "InputDevice"
     Identifier "Keyboard0"
-    Driver "Keyboard"
+    Driver "kbd"
 
-    Option "XkbKeycodes" "xfree86"
+    Option "XkbKeycodes" "xorg"
     Option "XkbTypes"    "default"
     Option "XkbSymbols"  "en_US(pc104)+de+swapcaps"
     Option "XkbGeometry" "pc(pc104)"
@@ -193,7 +194,7 @@ Section "InputDevice"
 EndSection
 </verb></tscreen>
 
-This configuration sets the standard XFree86 default interpretation of keyboard 
+This configuration sets the standard X server default interpretation of keyboard 
 keycodes, sets the default modificator types. The
 symbol table is composed of extended US keyboard layout in its
 variant for pc keyboards with 104 keys plus all keys

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vmodes.c,v 1.14 2004/02/24 01:13:10 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vmodes.c,v 1.13 2002/12/11 17:23:33 dawes Exp $ */
 /*
  * file vmodes.c
  *

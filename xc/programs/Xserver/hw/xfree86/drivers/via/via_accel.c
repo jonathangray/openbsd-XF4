@@ -21,7 +21,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_accel.c,v 1.11 2004/01/29 03:13:24 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_accel.c,v 1.10 2004/01/27 02:38:15 dawes Exp $ */
 
 /*************************************************************************
  *
@@ -606,7 +606,7 @@ VIASetupForScreenToScreenCopy(
     VIAPtr  pVia = VIAPTR(pScrn);
     int     cmd;
 
-    cmd = VIA_GEC_BLT | (XAACopyROP[rop] << 24);
+    cmd = VIA_GEC_BLT | (XAAGetCopyROP(rop) << 24);
 
     if (xdir < 0)
         cmd |= VIA_GEC_DECX;
@@ -681,7 +681,7 @@ VIASetupForSolidFill(
     VIAPtr  pVia = VIAPTR(pScrn);
     int     cmd;
 
-    cmd = VIA_GEC_BLT | VIA_GEC_FIXCOLOR_PAT | (XAAPatternROP[rop] << 24);
+    cmd = VIA_GEC_BLT | VIA_GEC_FIXCOLOR_PAT | (XAAGetPatternROP(rop) << 24);
 
     pVia->SavedCmd = cmd;
     pVia->SavedFgColor = color;
@@ -741,7 +741,7 @@ VIASetupForMono8x8PatternFill(
     int     cmd;
 
     cmd = VIA_GEC_BLT | VIA_GEC_PAT_REG | VIA_GEC_PAT_MONO |
-          (XAAPatternROP[rop] << 24);
+          (XAAGetPatternROP(rop) << 24);
 
     if (bg == -1) {
         /* transparent mono pattern */
@@ -803,7 +803,7 @@ VIASetupForColor8x8PatternFill(
     VIAPtr  pVia = VIAPTR(pScrn);
     int     cmd;
 
-    cmd = VIA_GEC_BLT | (XAAPatternROP[rop] << 24);
+    cmd = VIA_GEC_BLT | (XAAGetPatternROP(rop) << 24);
 
     pVia->SavedCmd = cmd;
     pVia->SavedPatternAddr = (patternx * pVia->Bpp + patterny * pVia->Bpl);
@@ -854,7 +854,7 @@ VIASetupForCPUToScreenColorExpandFill(
     int     cmd;
 
     cmd = VIA_GEC_BLT | VIA_GEC_SRC_SYS | VIA_GEC_SRC_MONO |
-          (XAACopyROP[rop] << 24);
+          (XAAGetCopyROP(rop) << 24);
 
     if (bg == -1) {
         cmd |= VIA_GEC_MSRC_TRANS;
@@ -914,7 +914,7 @@ VIASetupForScreenToScreenColorExpand(
     VIAPtr  pVia = VIAPTR(pScrn);
     int     cmd;
 
-    cmd = VIA_GEC_BLT | VIA_GEC_SRC_MONO | (XAACopyROP[rop] << 24);
+    cmd = VIA_GEC_BLT | VIA_GEC_SRC_MONO | (XAAGetCopyROP(rop) << 24);
 
     if (bg == -1) {
         cmd |= VIA_GEC_MSRC_TRANS;
@@ -980,7 +980,7 @@ VIASetupForImageWrite(
     /* We don't record bpp and depth because we assume bpp is equal to
        bpp of screen. Is this assume correct ? */
 
-    cmd = VIA_GEC_BLT | VIA_GEC_SRC_SYS | (XAACopyROP[rop] << 24);
+    cmd = VIA_GEC_BLT | VIA_GEC_SRC_SYS | (XAAGetCopyROP(rop) << 24);
 
     pVia->SavedCmd = cmd;
 
@@ -1038,7 +1038,7 @@ VIASetupForSolidLine(
     int     cmd;
 
     /* we move VIA_GEC_LINE from here to the place firing command */
-    cmd = VIA_GEC_FIXCOLOR_PAT | (XAAPatternROP[rop] << 24);
+    cmd = VIA_GEC_FIXCOLOR_PAT | (XAAGetPatternROP(rop) << 24);
 
     pVia->SavedCmd = cmd;
     pVia->SavedFgColor = color;
@@ -1151,7 +1151,7 @@ VIASetupForDashedLine(
     int     cmd;
     CARD32  pat = *(CARD32 *)pattern;
 
-    cmd = VIA_GEC_LINE | VIA_GEC_FIXCOLOR_PAT | (XAAPatternROP[rop] << 24);
+    cmd = VIA_GEC_LINE | VIA_GEC_FIXCOLOR_PAT | (XAAGetPatternROP(rop) << 24);
 
     if (bg == -1) {
         /* transparent mono pattern */

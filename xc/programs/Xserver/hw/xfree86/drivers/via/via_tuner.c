@@ -20,7 +20,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_tuner.c,v 1.2 2004/01/02 18:23:36 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_tuner.c,v 1.1tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,14 +35,18 @@
 #include "via_capture.h"
 #include "via.h"
 #include "ddmpeg.h"
+#ifdef XF86DRI
 #include "xf86drm.h"
+#endif
 
 #include "via_overlay.h"
 #include "via_driver.h"
 #include "via_regrec.h"
 #include "via_priv.h"
 #include "via_swov.h"
+#ifdef XF86DRI
 #include "via_common.h"
+#endif
 
 /*
  *	Architecture independant implementation of the TV tuner interfaces

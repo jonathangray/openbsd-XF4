@@ -12,7 +12,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Screen.c,v 3.13 2003/11/16 05:05:20 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Screen.c,v 3.12 2003/11/14 22:25:59 dawes Exp $ */
 
 #include "X.h"
 #include "Xproto.h"
@@ -122,6 +122,14 @@ static miPointerScreenFuncRec xnestPointerCursorFuncs =
     xnestCursorOffScreen,
     xnestCrossScreen,
     miPointerWarpCursor
+};
+
+static miPointerSpriteFuncRec xnestPointerSpriteFuncs = 
+{
+    xnestRealizeCursor,
+    xnestUnrealizeCursor,
+    xnestSetCursor,
+    xnestMoveCursor,
 };
 
 Bool
@@ -241,27 +249,6 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
     xnestHeight = gattributes.height;
   }
 
-  /* myNum */
-  /* id */
-  miScreenInit(pScreen, NULL, xnestWidth, xnestHeight, 1, 1, xnestWidth,
-	       rootDepth,
-	       numDepths, depths,
-	       defaultVisual, /* root visual */
-	       numVisuals, visuals);
-
-  miInitializeBackingStore(pScreen);
-
-  miDCInitialize(pScreen, &xnestPointerCursorFuncs);
-
-  pScreen->mmWidth = xnestWidth * DisplayWidthMM(xnestDisplay, 
-		       DefaultScreen(xnestDisplay)) / 
-			 DisplayWidth(xnestDisplay, 
-			   DefaultScreen(xnestDisplay));
-  pScreen->mmHeight = xnestHeight * DisplayHeightMM(xnestDisplay, 
-		        DefaultScreen(xnestDisplay)) /
-			  DisplayHeight(xnestDisplay, 
-			    DefaultScreen(xnestDisplay));
-
   pScreen->defColormap = (Colormap) FakeClientID(0);
   pScreen->minInstalledCmaps = MINCMAPS;
   pScreen->maxInstalledCmaps = MAXCMAPS;
@@ -282,7 +269,6 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 
   /* Random screen procedures */
 
-  pScreen->CloseScreen = xnestCloseScreen;
   pScreen->QueryBestSize = xnestQueryBestSize;
   pScreen->SaveScreen = xnestSaveScreen;
   pScreen->GetImage = xnestGetImage;
@@ -324,16 +310,6 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
   pScreen->RealizeFont = xnestRealizeFont;
   pScreen->UnrealizeFont = xnestUnrealizeFont;
 
-  /* Cursor Procedures */
-
-  pScreen->ConstrainCursor = xnestConstrainCursor;
-  pScreen->CursorLimits = xnestCursorLimits;
-  pScreen->DisplayCursor = xnestDisplayCursor;
-  pScreen->RealizeCursor = xnestRealizeCursor;
-  pScreen->UnrealizeCursor = xnestUnrealizeCursor;
-  pScreen->RecolorCursor = xnestRecolorCursor;
-  pScreen->SetCursorPosition = xnestSetCursorPosition;
-
   /* GC procedures */
   
   pScreen->CreateGC = xnestCreateGC;
@@ -356,6 +332,31 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
   pScreen->WakeupHandler = (ScreenWakeupHandlerProcPtr)NoopDDA;
   pScreen->blockData = NULL;
   pScreen->wakeupData = NULL;
+  /* myNum */
+  /* id */
+  miScreenInit(pScreen, NULL, xnestWidth, xnestHeight, 1, 1, xnestWidth,
+	       rootDepth,
+	       numDepths, depths,
+	       defaultVisual, /* root visual */
+	       numVisuals, visuals);
+
+/*  miInitializeBackingStore(pScreen); */
+
+  miPointerInitialize (pScreen, &xnestPointerSpriteFuncs, 
+		       &xnestPointerCursorFuncs, True);
+
+  pScreen->mmWidth = xnestWidth * DisplayWidthMM(xnestDisplay, 
+		       DefaultScreen(xnestDisplay)) / 
+			 DisplayWidth(xnestDisplay, 
+			   DefaultScreen(xnestDisplay));
+  pScreen->mmHeight = xnestHeight * DisplayHeightMM(xnestDisplay, 
+		        DefaultScreen(xnestDisplay)) /
+			  DisplayHeight(xnestDisplay, 
+			    DefaultScreen(xnestDisplay));
+
+  /* overwrite miCloseScreen with our own */
+  pScreen->CloseScreen = xnestCloseScreen;
+
   if (!miScreenDevPrivateInit(pScreen, xnestWidth, NULL))
       return FALSE;
 

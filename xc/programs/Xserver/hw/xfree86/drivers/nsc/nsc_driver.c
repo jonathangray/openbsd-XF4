@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_driver.c,v 1.5 2003/04/23 21:51:41 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_driver.c,v 1.4tsi Exp $ */
 /*
  * $Workfile: nsc_driver.c $
- * $Revision: 1.1.1.2 $
+ * $Revision: 1.2 $
  * $Author: matthieu $
  *
  * File Contents: This is the main module configures the interfacing 
@@ -398,7 +398,7 @@ static XF86ModuleVersionInfo NscVersionRec = {
    MODULEVENDORSTRING,
    MODINFOSTRING1,
    MODINFOSTRING2,
-   XF86_VERSION_CURRENT,
+   XORG_VERSION_CURRENT,
    NSC_VERSION_MAJOR, NSC_VERSION_MINOR, NSC_PATCHLEVEL,
    ABI_CLASS_VIDEODRV,			/* This is a video driver */
    ABI_VIDEODRV_VERSION,

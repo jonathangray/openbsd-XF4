@@ -26,7 +26,7 @@
  * or other dealings in this Software without prior written authorization
  * from the XFree86 Project.
  */
-/* $OpenBSD: bsd_kqueue_apm.c,v 1.6 2003/04/01 22:36:52 matthieu Exp $ */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.7 2004/11/03 00:09:15 matthieu Exp $ */
 
 #include "X.h"
 #include "os.h"

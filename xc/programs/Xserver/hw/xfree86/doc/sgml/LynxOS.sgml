@@ -3,99 +3,71 @@
 ]>
 
 <article>
-<title>README for XFree86 &relvers; on LynxOS
+<title>README for X11R&relvers; on LynxOS
 <author>Thomas Mueller
-<date>25 February 2000
+<date>25 August 2004
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LynxOS.sgml,v 3.20 2000/06/17 00:27:32 dawes Exp $
 </ident>
 
 <toc>
 
-<sect>What and Where is XFree86?
+<sect>What and Where is X11R&relvers;?
 <p>
-XFree86 is a port of X11R6.4 that supports several versions of
-Intel-based Unix.  It is derived from X386 1.2, which was the X server
+X11R&relvers; is a port of X11R6.4 that supports several versions of
+Intel-based Unix.  It is derived from XFree86 4.4 rc2 which was 
+derived from X386 1.2, which was the X server
 distributed with X11R5.  This release consists of many new features
 and performance improvements as well as many bug fixes.
 
 See the <htmlurl url="COPYRIGHT.html" name="Copyright Notice">.
 
-The sources for XFree86 &relvers; are available by anonymous ftp from:
+Building of this X11R&relvers; version has been tested on
+`LynxOS 3.1.0a i386' and `LynxOS 4.0.0 i386'.
 
-<htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;"
-url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;">
+Previous releases of X11R&relvers; supported LynxOS on the x86 and on
+the PowerPC platform. Building on PowerPC platforms has not been
+tested recently.
 
-Binaries of XFree86 for LynxOS x86 are available from:
-
-<htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/LynxOS"
-url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/LynxOS">
-
-A list of mirror sites is provided by
-<htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/MIRRORS"
-url="ftp://ftp.XFree86.org/pub/XFree86/MIRRORS">
-
-The binaries on the FTP site were built on the latest released LynxOS
-version at the time XFree86 &relvers; was released. In this case it is
-`LynxOS x86 3.0.1'. Because of changes made to the object format they
-don't run on LynxOS versions earlier than 3.0.0.
-
-Building of this XFree86 version has never been tested on LynxOS versions
-earlier than 2.5.1.
-
-This release contains preliminary build support for `LynxOS 3.1.0'.
-Since this OS release was not available long enough for serious testing
-`LynxOS 3.1.0' support has to be considered to be in `alpha state'.
-Initial tests were performed on LynxOS x86 only!
-
-XFree86 &relvers; supports LynxOS on the x86 and on
-the PowerPC platform. X servers are currently available only on the
-x86 platform. The X server may work with some PowerPC platforms
-supported by LynxOS though this has not (yet) been thoroughly tested.
-
-If you need binaries for other platforms than the one on the
-XFree86 FTP server or if you have comments or suggestions about this
-document contact me (<email>tmueller@sysgo.de</email>).
-
-<sect>Installing the Binaries
+<sect>Installing X11R&relvers;
 <p>
 Please refer to the <htmlurl name="Installation Document"
 url="Install.html"> for detailed installation instructions.
 
 It may be necessary to increase the process stack limit in order to
-run XFree86 on your system. Edit <tt>/etc/startab</tt> and reboot your
-system to make the changes active before you begin the installation.
+build X11R&relvers; and run X11R&relvers; on your system. Edit
+<tt>/etc/startab</tt> and reboot your system to make the changes
+active before you begin the installation.
 
 Also, be sure to include <tt>/usr/X11R6/bin</tt> in your PATH
 environment variable.
 
-Refer to the next section <ref id="running" name="Running XFree86"> for
+Refer to the next section <ref id="running" name="Running X11R&relvers;"> for
 further information on necessary configuration steps before running 
-XFree86 on LynxOS. 
+X11R&relvers; on LynxOS. 
 
-<sect1>Accessing XFree86 manual pages
+<sect1>Accessing X11R&relvers; manual pages
 <p>
 Include <tt>/usr/X11R6/man</tt> in the MANPATH environment variable or add 
 the directory <tt>/usr/X11R6/man</tt> to <tt>/usr/Lib/man.config</tt>
 
 
-<sect>Running XFree86<p><label id="running">
+<sect>Running X11R&relvers;<p><label id="running">
 
 This section describes the changes to the LynxOS environment 
-which may be necessary to successfully run XFree86.
+which may be necessary to successfully run X11R&relvers;.
 
 <!--
 Read <htmlurl url="QuickStart.html" name="Quick-Start Guide 
-to XFree86 Setup"> to learn more about how to configure XFree86 for
+to X11R&relvers; Setup"> to learn more about how to configure X11R&relvers; for
 your hardware.
 -->
 
 <sect1>System tuning<p>
 <sect2>Tunable parameters<p>
-To reasonably run XFree86 you may have to adjust a few system parameters.
+To reasonably run X11R&relvers; you may have to adjust a few system parameters.
 
-On LynxOS 2.5.x and 3.0.x include a line
+On LynxOS 3.1.0 and 4.0.0 include a line
 <verb>
 #define X_WINDOWS
 </verb>
@@ -104,9 +76,9 @@ in <tt>/sys/lynx.os/uparam.h</tt>.
 
 <sect2>Adjustment for "nv" driver for NVidia graphics cards<p>
 
-If you're using the "nv" driver (Riva 128, nVidia TNT, TNT2, GeForce),
-you will have to increase the value of the SMEMS parameter in
-<tt>/sys/lynx.os/uparam.h</tt> from 10 to 20.
+If you're using the "nv" driver (Riva 128, nVidia TNT, TNT2, GeForce)
+on LynxOS `3.1.0', you will have to increase the value of the SMEMS
+parameter in <tt>/sys/lynx.os/uparam.h</tt> from 10 to 20.
 
 <sect2>Increase number of ptys<p>
 
@@ -118,11 +90,10 @@ more xterms. You may replace <tt>/sys/cfg/pty.cfg</tt> with
 
 If you're using an Intel PentiumPRO or Pentium II (or higher) class
 CPU you might want to install the MTRR device driver. This driver
-enables the XFree86 X server to manipulate the CPU memory type range
+enables the X11R&relvers; X server to manipulate the CPU memory type range
 registers which may improve performance on certain systems.
 
-To install the driver (on LynxOS x86 2.5.0 systems an higher) follow
-these steps:
+To install the driver follow these steps:
 
 <tscreen><verb>
   # cd /
@@ -149,10 +120,10 @@ now:
      # reboot -N
   </verb></tscreen>
 
-<sect1>Mouse support in XFree86<p>
+<sect1>Mouse support in X11R&relvers;<p>
 
-XFree86 includes support for PnP mice (see also <htmlurl
-url="mouse.html" name="Mouse Support in XFree86">). The current LynxOS
+X11R&relvers; includes support for PnP mice (see also <htmlurl
+url="mouse.html" name="Mouse Support in X11R&relvers;">). The current LynxOS
 TTY device driver doesn't allow the necessary manipulation of the RTS
 line and therefore the support for PnP mice has been disabled for
 LynxOS.
@@ -160,14 +131,45 @@ LynxOS.
 <sect1>PS/2 mouse drivers<p>
 
 LynxOS x86 comes with a PS/2 mouse driver. If it is not currently
-installed on your system install it with
-<tt>/usr/bin/Install.ps2mouse</tt>. Older versions of this driver
-contained code to translate the PS/2 mouse protocol to the format of a 
-serial mouse, thus you'll have to specify "Microsoft" as the mouse
-protocol format. The mouse driver contained in LynxOS x86 patchlevel
-015 (and higher) does no longer perform the protocol translation an
-therefore can be defined as "PS/2" protocol format.
+installed on your system, install it with
+<tt>/usr/bin/Install.ps2mouse</tt>. 
   
+<!--
+On `LynxOS 3.1.0a' some versions of this driver contained code to
+translate the PS/2 mouse protocol to the format of a serial mouse,
+thus you'll have to specify "Microsoft" as the mouse protocol
+format. The mouse driver contained in LynxOS x86 patchlevel 015 (and
+higher) does no longer perform the protocol translation an therefore
+can be defined as "PS/2" protocol format.
+-->
+
+The LynxOS PS/2 mouse driver is not always able to properly handle
+the mouse initialization performed by the X server. If your mouse is
+not responding after the X server has started up, modify the PS/2
+mouse driver as follows:
+
+  <tscreen><verb>
+  --- /sys/drivers/ps2mouse/mousedrvr.c.orig      Wed Aug 25 09:51:02 2004
+  +++ /sys/drivers/ps2mouse/mousedrvr.c   Wed Aug 25 09:50:54 2004
+  @@ -261,6 +261,7 @@
+   int mousewrite(struct statics *s, struct file *f, char *buff, int count)
+   {
+          int i;
+  +       return 0;
+   #ifdef DEBUG
+          kkprintf("Mouse: write %d %x\n", count, buff[0] & 0x0FF);
+   #endif
+  </verb></tscreen>
+
+Then rebuild both the mouse driver and the kernel:
+
+  <tscreen><verb>
+     # cd /sys/drivers/ps2mouse
+     # make
+     # cd /sys/lynx.os
+     # make install
+     # reboot
+  </verb></tscreen>
 
 <sect1> ATC console driver and VT switching<p>
 
@@ -193,9 +195,9 @@ terminals in <tt>/etc/ttys</tt>, e.g. <tt>/dev/atc3</tt>:
 
 <sect1>X Server debug diagnostics output and other VT peculiarities<p>
 
-Output made by the XFree86 X on its stdout or stderr will be lost
-after the server switches to graphics mode. The XFree86 &relvers;
-server stores its output in <tt>/usr/adm/XFree86.n.log</tt> (where
+Output made by the X11R&relvers; X on its stdout or stderr will be lost
+after the server switches to graphics mode. The X11R&relvers;
+server stores its output in <tt>/usr/adm/Xorg.n.log</tt> (where
 <tt>n</tt> is the screen number).
 
 When the X server is running output made to other consoles will be
@@ -204,11 +206,11 @@ be inconsistent with what one would expect (i.e. random).
 
 
 <!--
-<sect>Using XFree86 with Motif<p>
+<sect>Using X11R&relvers; with Motif<p>
 
   The Motif libraries shipped with LynxOS AT 2.3.0 and 2.4.0 can be
-  used with the XFree86 libraries. Follow the steps outlined below after
-  you have installed XFree86 and LynxOS Motif on your system.
+  used with the X11R&relvers; libraries. Follow the steps outlined below after
+  you have installed X11R&relvers; and LynxOS Motif on your system.
 
 <sect1>Copy Motif files<p>
 
@@ -233,7 +235,7 @@ be inconsistent with what one would expect (i.e. random).
 
 <sect1>Motif library patch for LynxOS AT 2.3.0<p>
 
-  The XFree86 libraries are compiled with the -mposix compiler option
+  The X11R&relvers; libraries are compiled with the -mposix compiler option
   while the Motif libraries shipped with LynxOS AT 2.3.0 are not. This
   incompatibility will cause Motif <tt>XmFileSelection</tt> widgets to be linked 
   with the wrong (i.e. POSIX) directory routines. To circumvent this 
@@ -266,7 +268,7 @@ be inconsistent with what one would expect (i.e. random).
 <sect1>Motif config file patch<p>
 
 The file <tt>Motif.tmpl</tt> shipped with LynxOS Motif must be
-modified to work with XFree86. In every reference to
+modified to work with X11R&relvers;. In every reference to
 <tt>UnsharedLibReferences</tt> the first argument must be changed
   <tscreen>
     from
@@ -282,30 +284,32 @@ modified to work with XFree86. In every reference to
 
 -->
 
-<sect>Compiling the XFree86 Distribution<p>
+<sect>Compiling the X11R&relvers; Distribution<p>
 
 <!-- out of date
-Before trying to rebuild XFree86 from source read <htmlurl url="BUILD.html"
-name="Building XFree86"> for a detailed description of the build
-process. -->The next sections contain LynxOS specific notes with
-respect to the build process.
+Before trying to rebuild X11R&relvers; from source read <htmlurl url="BUILD.html"
+name="Building X11R&relvers;"> for a detailed description of the build
+process. -->
+
+The next sections contain LynxOS specific notes with respect to the
+build process.
 
 <sect1>Disk space requirements<p>
 Currently there is no support for shared libraries in the LynxOS
-XFree86 port. A complete binary installation along with manual pages
-will require approximately 100 MBytes of disk space. To compile
-the system you will need at least 250 MBytes of free disk space.
+X11R&relvers; port. A complete binary installation along with manual
+pages will require approximately 250 MBytes of disk space. To compile
+the system you will need at least 350 MBytes of free disk space.
 
 <sect1>Changes to system environment (LynxOS x86)<p>
-Before compiling the XFree86 distribution you will have to make a
+Before compiling the X11R&relvers; distribution you will have to make a
 few little adjustments to your system:
 
 <itemize>
-<item>If not already installed on your system create a shell script
-named <tt>/lib/cpp</tt> as follows:
+<item>If not already installed, on your `LynxOS 3.1.0a' system create
+a shell script named <tt>/lib/cpp</tt> as follows:
 <tscreen><verb>
   #!/bin/sh
-  /usr/lib/gcc-lib/i386-unknown-lynxos2.5/2.7-96q1/cpp \
+  /usr/lib/gcc-lib/i386-coff-lynxos/2.9-gnupro-98r2/cpp \
      -traditional "$@"
 </verb></tscreen>
 On other platforms than the x86 the paths for the compiler support
@@ -319,8 +323,8 @@ to find out the correct path. Set the file mode of <tt>/lib/cpp</tt> with
   # chmod 755 /lib/cpp
 </verb></tscreen>
 
-<item>Modify <tt>/lib/liblynx.a</tt>. The X servers need the
-<tt>smem_create()</tt> system call to map the frame buffer into their
+<item>Modify <tt>/lib/liblynx.a</tt>. On `LynxOS 3.1.0a' the X servers
+need the <tt>smem_create()</tt> system call to map the frame buffer into their
 address space. The system call is in <tt>liblynx</tt> library along
 with other Lynx proprietary calls which (unfortunately) overlap with
 calls in <tt>libc</tt>. To reduce confusion you should modify
@@ -333,13 +337,14 @@ calls in <tt>libc</tt>. To reduce confusion you should modify
   # ar rv /lib/liblynx.a *smem*
   # ranlib /lib/liblynx.a
 </verb></tscreen>
+
 </itemize>
 
 <sect1> make World<p>
 
 <!-- out of date
-Read <htmlurl url="BUILD.html" name="Building XFree86"> before trying
-to rebuild XFree86 from the source distribution.
+Read <htmlurl url="BUILD.html" name="Building X11R&relvers;"> before trying
+to rebuild X11R&relvers; from the source distribution.
 -->
 
 If you have the MTRR device driver installed, add a line
@@ -356,8 +361,8 @@ You may then issue a
      make World
   </verb></tscreen>
 
-to compile XFree86. After a few hours (and hopefully a successful
-build of the XFree86 system) you can install the software using
+to compile X11R&relvers;. After some time (and hopefully a successful
+build of the X11R&relvers; system) you can install the software using
 
   <tscreen><verb>
      make install
@@ -366,23 +371,25 @@ build of the XFree86 system) you can install the software using
 You must be logged in as super-user (root) when you invoke `make
 install'.
 
+<!--
 On LynxOS x86 2.5.0 you may encounter problems with <tt>make</tt> in
 deeply nested subdirectories (eg core dumps, hangups). In this case
 update to GNU make version 3.75 or higher.
+-->
 
-<sect1>Installing XFree86 manual pages<p><label id="installman">
+<sect1>Installing X11R&relvers; manual pages<p><label id="installman">
 
 LynxOS uses cat-able manual pages, and because a doc preparation
 system is definitely not a vital component of a real-time operating
 system you must first install groff-1.09 (or newer).
 
-XFree86 manual pages may be installed using
+X11R&relvers; manual pages may be installed using
 
   <tscreen><verb>
      make install.man
   </verb></tscreen>
 
-The index and whatis database for the XFree86 manual pages will be
+The index and whatis database for the X11R&relvers; manual pages will be
 created automatically. If you already have a whatis database or index
 file in the destination directories you should perform a sort/uniq
 operation to remove duplicate entries:
@@ -402,7 +409,7 @@ operation to remove duplicate entries:
 <!--
 <sect>Building on microSPARC and PowerPC<label id="others"><p>
 
-  XFree86 3.3 compiles on LynxOS microSPARC and on LynxOS PPC as well. On the
+  X11R&relvers; 3.3 compiles on LynxOS microSPARC and on LynxOS PPC as well. On the
   microSPARC there is X server support for the colour frame buffers CG3 and CG6
   while on the PPC there is no X server available at this time. Before you 
   start the build (on versions earlier than 2.5.0) you must create a symbolic

@@ -26,7 +26,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessConfig.h,v 1.2 2003/10/24 00:33:14 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessConfig.h,v 1.1 2003/04/15 01:05:44 torrey Exp $ */
 
 #ifndef _ROOTLESSCONFIG_H
 #define _ROOTLESSCONFIG_H
@@ -46,5 +46,19 @@
 # define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
 
 #endif /* __DARWIN__ */
+
+#ifdef __CYGWIN__
+
+# define ROOTLESS_ACCEL YES
+# define ROOTLESS_GLOBAL_COORDS TRUE
+# define ROOTLESS_PROTECT_ALPHA NO
+# define ROOTLESS_REDISPLAY_DELAY 10
+# undef  ROOTLESS_RESIZE_GRAVITY
+# undef  ROOTLESS_TRACK_DAMAGE
+/*# define ROOTLESSDEBUG*/
+
+# define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
+
+#endif /* __CYGWIN__ */
 
 #endif /* _ROOTLESSCONFIG_H */

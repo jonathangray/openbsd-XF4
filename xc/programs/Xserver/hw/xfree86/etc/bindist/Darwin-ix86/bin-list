@@ -1,4 +1,4 @@
-.XFree86_Version
+.X.Org_Version
 bin
 lib/libFS.6.0.dylib
 lib/libFS.6.dylib
@@ -29,7 +29,7 @@ lib/libXaw.6.dylib
 lib/libXaw.7.0.dylib
 lib/libXaw.7.dylib
 lib/libXaw.dylib
-lib/libXcursor.1.0.dylib
+lib/libXcursor.1.0.2.dylib
 lib/libXcursor.1.dylib
 lib/libXcursor.dylib
 lib/libXext.6.4.dylib
@@ -43,7 +43,7 @@ lib/libXfontcache.1.dylib
 lib/libXfontcache.dylib
 lib/libXft.1.1.dylib
 lib/libXft.1.dylib
-lib/libXft.2.1.dylib
+lib/libXft.2.1.2.dylib
 lib/libXft.2.dylib
 lib/libXft.dylib
 lib/libXi.6.0.dylib
@@ -67,7 +67,7 @@ lib/libXpm.dylib
 lib/libXrandr.2.0.dylib
 lib/libXrandr.2.dylib
 lib/libXrandr.dylib
-lib/libXrender.1.2.dylib
+lib/libXrender.1.2.2.dylib
 lib/libXrender.1.dylib
 lib/libXrender.dylib
 lib/libXss.1.0.dylib
@@ -103,7 +103,7 @@ lib/libdpstk.dylib
 lib/libexpat.0.4.dylib
 lib/libexpat.0.dylib
 lib/libexpat.dylib
-lib/libfontconfig.1.0.dylib
+lib/libfontconfig.1.0.4.dylib
 lib/libfontconfig.1.dylib
 lib/libfontconfig.dylib
 lib/libfontenc.1.0.dylib

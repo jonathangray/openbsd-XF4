@@ -23,7 +23,7 @@
  *
  * Author:  Keith Packard, Network Computing Devices
  */
-/* $XFree86: xc/programs/Xserver/lbx/Imakefile,v 1.5 2003/08/31 12:58:58 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/lbx/Imakefile,v 1.4 2001/01/17 22:36:59 dawes Exp $ */
 
 #include <Server.tmpl>
 

@@ -11,7 +11,7 @@
  *	Guy DESBIEF
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/cir_driver.c,v 1.69 2003/06/18 16:17:38 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/cir_driver.c,v 1.67 2001/05/15 10:19:37 eich Exp $ */
 
 /* All drivers should typically include these */
 #include "xf86.h"
@@ -143,7 +143,7 @@ static XF86ModuleVersionInfo cirVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	CIR_MAJOR_VERSION, CIR_MINOR_VERSION, CIR_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,			/* This is a video driver */
 	ABI_VIDEODRV_VERSION,
@@ -218,7 +218,6 @@ CIRProbe(DriverPtr drv, int flags)
     int numDevSections;
     int numUsed;
     Bool foundScreen = FALSE;
-    ScrnInfoPtr (*subProbe)(int entity);
     ScrnInfoPtr pScrn;
 
 #ifdef CIR_DEBUG
@@ -275,6 +274,7 @@ CIRProbe(DriverPtr drv, int flags)
  	   they should be handled in this driver (as opposed to their
  	   own driver). */
 	pPci = xf86GetPciInfoForEntity(usedChips[i]);
+	pScrn = NULL;
  	if (pPci && (pPci->chipType == PCI_CHIP_GD5462 ||
  	    pPci->chipType == PCI_CHIP_GD5464 ||
  	    pPci->chipType == PCI_CHIP_GD5464BD ||
@@ -286,7 +286,7 @@ CIRProbe(DriverPtr drv, int flags)
  		xf86LoaderReqSymLists(lgSymbols, NULL);
  		lg_loaded = TRUE;
  	    }
- 	    subProbe = LgProbe;
+	    pScrn = LgProbe(usedChips[i]);
  	} else {
  	    if (!alp_loaded) {
  		if (!xf86LoadDrvSubModule(drv, "cirrus_alpine")) 
@@ -294,11 +294,10 @@ CIRProbe(DriverPtr drv, int flags)
  		xf86LoaderReqSymLists(alpSymbols, NULL);
  		alp_loaded = TRUE;
  	    }
- 	    subProbe = AlpProbe;
+ 	    pScrn = AlpProbe(usedChips[i]);
  	}
- 	pScrn = NULL;
  	
- 	if ((pScrn = subProbe(usedChips[i]))) {
+ 	if (pScrn) {
  	    foundScreen = TRUE;
  	    /* Fill in what we can of the ScrnInfoRec */
  	    pScrn->driverVersion = VERSION;

@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/fpit/fpit.man,v 1.1 2002/11/22 03:35:12 dawes Exp $ 
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/wacom.cpp,v 1.9 2000/12/18 00:17:18 dawes Exp $ 
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH FPIT __drivermansuffix__ __vendorversion__
@@ -15,7 +15,7 @@ fpit \- Fujitsu Stylistic input driver
 .fi
 .SH DESCRIPTION
 .B fpit 
-is an XFree86 input driver for Fujitsu Stylistic Tablet PCs.
+is an __xservername__ input driver for Fujitsu Stylistic Tablet PCs.
 .PP
 The
 .B fpit
@@ -35,7 +35,7 @@ Therefore the following must be added to one of your start-up scripts.
 .B setserial /dev/ttyS3 IRQ 15 baud_base 115200 port 0xfce8
 
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(5x) for general configuration
+Please refer to __xconfigfile__(5x) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 .PP
@@ -113,7 +113,7 @@ And for other Stylistic devices try:
 
 
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
 .SH AUTHORS
 Original FPIT port:
 Rob Tsuk <rob@tsuk.com> and John Apfelbaum <johnapf@linuxslate.com>

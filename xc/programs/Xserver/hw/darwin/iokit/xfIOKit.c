@@ -9,7 +9,7 @@
  *
  **************************************************************/
 /*
- * Copyright (c) 2001-2002 Torrey T. Lyons. All Rights Reserved.
+ * Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -33,7 +33,8 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.c,v 1.3 2003/12/09 04:42:36 torrey Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.c,v 1.3 2004/07/30 17:37:09 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.c,v 1.2 2003/10/16 23:50:09 torrey Exp $ */
 
 #include "X.h"
 #include "Xproto.h"
@@ -268,7 +269,7 @@ static void *XFIOKitHIDThread(void *unused)
                 default:
                     continue;
             }
- 
+
             DarwinEQEnqueue(&xe);
         }
     }
@@ -465,7 +466,9 @@ static Bool SetupFBandHID(
 
 #ifdef __i386__
     /* x86 in 8bit mode currently needs fixed color map... */
-    if( pixelInfo.bitsPerComponent == 8 ) {
+    if (pixelInfo.bitsPerComponent == 8 &&
+        pixelInfo.componentCount == 1)
+    {
         pixelInfo.pixelType = kIOFixedCLUTPixels;
     }
 #endif
@@ -573,7 +576,7 @@ Bool DarwinModeAddScreen(
  * XFIOKitShadowUpdate
  *  Update the damaged regions of the shadow framebuffer on the screen.
  */
-static void XFIOKitShadowUpdate(ScreenPtr pScreen, 
+static void XFIOKitShadowUpdate(ScreenPtr pScreen,
                                 shadowBufPtr pBuf)
 {
     DarwinFramebufferPtr dfb = SCREEN_PRIV(pScreen);

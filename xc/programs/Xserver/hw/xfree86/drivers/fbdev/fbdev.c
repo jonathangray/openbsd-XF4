@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/fbdev/fbdev.c,v 1.45 2004/01/11 18:42:59 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/fbdev/fbdev.c,v 1.44 2003/09/24 02:43:21 dawes Exp $ */
 
 /*
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
@@ -137,7 +137,9 @@ static const char *shadowSymbols[] = {
 	"shadowInit",
 	"shadowSetup",
 	"shadowUpdatePacked",
+	"shadowUpdatePackedWeak",
 	"shadowUpdateRotatePacked",
+	"shadowUpdateRotatePackedWeak",
 	NULL
 };
 
@@ -158,20 +160,23 @@ static const char *fbdevHWSymbols[] = {
 	"fbdevHWUnmapVidmem",
 
 	/* colormap */
-	"fbdevHWLoadpalette",
+	"fbdevHWLoadPalette",
+	"fbdevHWLoadPaletteWeak",
 
 	/* ScrnInfo hooks */
-	"fbdevHWAdjustFrame",
-	"fbdevHWEnterVT",
-	"fbdevHWLeaveVT",
+	"fbdevHWAdjustFrameWeak",
+	"fbdevHWEnterVTWeak",
+	"fbdevHWLeaveVTWeak",
 	"fbdevHWModeInit",
 	"fbdevHWRestore",
 	"fbdevHWSave",
 	"fbdevHWSaveScreen",
-	"fbdevHWSwitchMode",
-	"fbdevHWValidMode",
+	"fbdevHWSaveScreenWeak",
+	"fbdevHWSwitchModeWeak",
+	"fbdevHWValidModeWeak",
 
 	"fbdevHWDPMSSet",
+	"fbdevHWDPMSSetWeak",
 
 	NULL
 };
@@ -186,7 +191,7 @@ static XF86ModuleVersionInfo FBDevVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	FBDEV_MAJOR_VERSION, FBDEV_MINOR_VERSION, 0,
 	ABI_CLASS_VIDEODRV,
 	ABI_VIDEODRV_VERSION,
@@ -354,11 +359,11 @@ FBDevProbe(DriverPtr drv, int flags)
 		    pScrn->Probe         = FBDevProbe;
 		    pScrn->PreInit       = FBDevPreInit;
 		    pScrn->ScreenInit    = FBDevScreenInit;
-		    pScrn->SwitchMode    = fbdevHWSwitchMode;
-		    pScrn->AdjustFrame   = fbdevHWAdjustFrame;
-		    pScrn->EnterVT       = fbdevHWEnterVT;
-		    pScrn->LeaveVT       = fbdevHWLeaveVT;
-		    pScrn->ValidMode     = fbdevHWValidMode;
+		    pScrn->SwitchMode    = fbdevHWSwitchModeWeak();
+		    pScrn->AdjustFrame   = fbdevHWAdjustFrameWeak();
+		    pScrn->EnterVT       = fbdevHWEnterVTWeak();
+		    pScrn->LeaveVT       = fbdevHWLeaveVTWeak();
+		    pScrn->ValidMode     = fbdevHWValidModeWeak();
 		    
 		    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 			       "using %s\n", dev ? dev : "default device");
@@ -782,7 +787,8 @@ FBDevScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 
 	if (fPtr->shadowFB && 
 	    (!shadowSetup(pScreen) || !shadowAdd(pScreen, NULL,
-	      fPtr->rotate ? shadowUpdateRotatePacked : shadowUpdatePacked,
+	      fPtr->rotate ? shadowUpdateRotatePackedWeak()
+	                   : shadowUpdatePackedWeak(),
 	      FBDevWindowLinear, fPtr->rotate, NULL)) ) {
 	    xf86DrvMsg(scrnIndex, X_ERROR,
 		       "Shadow framebuffer initialization failed.\n");
@@ -842,12 +848,13 @@ FBDevScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		return FALSE;
 	}
 	flags = CMAP_PALETTED_TRUECOLOR;
-	if(!xf86HandleColormaps(pScreen, 256, 8, fbdevHWLoadPalette, NULL, flags))
+	if(!xf86HandleColormaps(pScreen, 256, 8, fbdevHWLoadPaletteWeak(), 
+				NULL, flags))
 		return FALSE;
 
-	xf86DPMSInit(pScreen, fbdevHWDPMSSet, 0);
+	xf86DPMSInit(pScreen, fbdevHWDPMSSetWeak(), 0);
 
-	pScreen->SaveScreen = fbdevHWSaveScreen;
+	pScreen->SaveScreen = fbdevHWSaveScreenWeak();
 
 	/* Wrap the current CloseScreen function */
 	fPtr->CloseScreen = pScreen->CloseScreen;

@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_driver.c,v 1.98 2003/11/03 05:11:44 tsi Exp $ 
+ * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_driver.c,v 1.97tsi Exp $ 
  *
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -281,7 +281,7 @@ static XF86ModuleVersionInfo tsengVersRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     TSENG_MAJOR_VERSION, TSENG_MINOR_VERSION, TSENG_PATCHLEVEL,
     ABI_CLASS_VIDEODRV,		       /* This is a video driver */
     ABI_VIDEODRV_VERSION,
@@ -1237,7 +1237,7 @@ TsengProcessHibit(ScrnInfoPtr pScrn)
     if (xf86IsOptionSet(pTseng->Options, OPTION_HIBIT_HIGH)) {
 	if (xf86IsOptionSet(pTseng->Options, OPTION_HIBIT_LOW)) {
 	    xf86Msg(X_ERROR, "\nOptions \"hibit_high\" and \"hibit_low\" are incompatible;\n");
-	    xf86Msg(X_ERROR, "    specify only one (not both) in XFree86 configuration file\n");
+	    xf86Msg(X_ERROR, "    specify only one (not both) in X configuration file\n");
 	    return FALSE;
 	}
 	pTseng->save_divide = 0x40;
@@ -1253,7 +1253,7 @@ TsengProcessHibit(ScrnInfoPtr pScrn)
 	    xf86Msg(X_WARNING, "Non-standard VGA text or graphics mode while probing for hibit:\n");
 	    xf86Msg(X_WARNING, "    probed 'hibit' value may be wrong.\n");
 	    xf86Msg(X_WARNING, "    Preferably run probe from 80x25 textmode,\n");
-	    xf86Msg(X_WARNING, "    or specify correct value in XFree86 configuration file.\n");
+	    xf86Msg(X_WARNING, "    or specify correct value in X configuration file.\n");
 	}
 	/* Check for initial state of divide flag */
 	outb(0x3C4, 7);
@@ -1473,7 +1473,7 @@ TsengGetLinFbAddress(ScrnInfoPtr pScrn)
 		break;
 	    default:
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		    "TsengNonPciLinMem(): Internal error. This should not happen: please report to XFree86@XFree86.Org\n");
+		    "TsengNonPciLinMem(): Internal error. This should not happen: Please check "__VENDORDWEBSUPPORT__"\n");
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		    "    Falling back to banked mode.\n");
 		pTseng->UseLinMem = FALSE;
@@ -1765,6 +1765,8 @@ TsengPreInit(ScrnInfoPtr pScrn, int flags)
 	if (!TsengGetLinFbAddress(pScrn))
 	    return FALSE;
     }
+    pScrn->memPhysBase = pTseng->LinFbAddress;
+    pScrn->fbOffset = 0;
 
     if (pTseng->UseAccel)
 	VGAHWPTR(pScrn)->MapSize = 0x20000;  /* accelerator apertures and MMIO */

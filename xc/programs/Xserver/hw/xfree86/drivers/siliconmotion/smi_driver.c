@@ -26,7 +26,7 @@ Silicon Motion shall not be used in advertising or otherwise to promote the
 sale, use or other dealings in this Software without prior written
 authorization from The XFree86 Project or Silicon Motion.
 */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_driver.c,v 1.37 2003/11/06 18:38:08 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_driver.c,v 1.36tsi Exp $ */
 
 #include "xf86Resources.h"
 #include "xf86RAC.h"
@@ -211,18 +211,18 @@ static const char *vgahwSymbols[] =
 	"vgaHWSetMmioFuncs",
 	"vgaHWSetStdFuncs",
 	"vgaHWUnmapMem",
-	"vgaHWddc1SetSpeed",
+	"vgaHWddc1SetSpeedWeak",
 	NULL
 };
 
 static const char *xaaSymbols[] =
 {
-	"XAACopyROP",
+	"XAAGetCopyROP",
 	"XAACreateInfoRec",
 	"XAADestroyInfoRec",
-	"XAAFallbackOps",
+	"XAAGetFallbackOps",
 	"XAAInit",
-	"XAAPatternROP",
+	"XAAGetPatternROP",
 	NULL
 };
 
@@ -304,7 +304,7 @@ static XF86ModuleVersionInfo SMIVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	SILICONMOTION_VERSION_MAJOR,
 	SILICONMOTION_VERSION_MINOR,
 	SILICONMOTION_PATCHLEVEL,
@@ -1860,20 +1860,21 @@ SMI_MapMem(ScrnInfoPtr pScrn)
 			"DataPort=%p - %p\n", pSmi->DataPortBase,
 			pSmi->DataPortBase + pSmi->DataPortSize - 1);
 
+	pScrn->memPhysBase = pSmi->PciInfo->memBase[0];
+	
 	/* Map the frame buffer */
-	if (pSmi->Chipset == SMI_LYNX3DM)
-	{
-		pScrn->memPhysBase = pSmi->PciInfo->memBase[0] + 0x200000;
-	}
+	if (pSmi->Chipset == SMI_LYNX3DM) 
+	    pSmi->fbMapOffset = 0x200000;
 	else
-	{
-		pScrn->memPhysBase = pSmi->PciInfo->memBase[0];
-	}
-	if (pSmi->videoRAMBytes)
-	{
-		pSmi->FBBase = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
-				pSmi->PciTag, pScrn->memPhysBase, pSmi->videoRAMBytes);
-
+	    pSmi->fbMapOffset = 0x0;
+	
+	if (pSmi->videoRAMBytes) {
+	    pSmi->FBBase = xf86MapPciMem(pScrn->scrnIndex,
+					 VIDMEM_FRAMEBUFFER,
+					 pSmi->PciTag,
+					 pScrn->memPhysBase + pSmi->fbMapOffset,
+					 pSmi->videoRAMBytes);
+	    
 		if (pSmi->FBBase == NULL)
 		{
 			xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Internal error: could not "
@@ -1882,9 +1883,12 @@ SMI_MapMem(ScrnInfoPtr pScrn)
 			return(FALSE);
 		}
 	}
-	pSmi->FBOffset = pScrn->fbOffset = 0;
+	pSmi->FBOffset = 0;
+	pScrn->fbOffset = pSmi->FBOffset + pSmi->fbMapOffset;
+	
 	xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, VERBLEV,
-			"Physical frame buffer at 0x%08lX\n", pScrn->memPhysBase);
+			"Physical frame buffer at 0x%08lX offset: 0x%08lX\n",
+		       pScrn->memPhysBase, pScrn->fbOffset);
 	xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, VERBLEV,
 			"Logical frame buffer at %p - %p\n", pSmi->FBBase,
 			pSmi->FBBase + pSmi->videoRAMBytes - 1);
@@ -2384,7 +2388,7 @@ SMI_InternalScreenInit(int scrnIndex, ScreenPtr pScreen)
 		{
 			WRITE_FPR(pSmi, FPR0C, (pSmi->FBOffset = pSmi->FBReserved) >> 3);
 		}
-
+		pScrn->fbOffset = pSmi->FBOffset + pSmi->fbMapOffset;
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 				"Shadow: width=%d height=%d "
 				"offset=0x%08lX pitch=0x%08X\n",
@@ -2395,6 +2399,7 @@ SMI_InternalScreenInit(int scrnIndex, ScreenPtr pScreen)
 	else
 	{
 		pSmi->FBOffset = 0;
+		pScrn->fbOffset = pSmi->FBOffset + pSmi->fbMapOffset;
 	}
 
 	/*
@@ -3435,8 +3440,9 @@ SMI_ddc1(int scrnIndex)
 	tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x72);
 	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x72, tmp | 0x20);
 
-	pMon = xf86PrintEDID(xf86DoEDID_DDC1(scrnIndex, vgaHWddc1SetSpeed,
-			SMI_ddc1Read));
+	pMon = xf86PrintEDID(xf86DoEDID_DDC1(scrnIndex,
+					     vgaHWddc1SetSpeedWeak(),
+					     SMI_ddc1Read));
 	if (pMon != NULL)
 	{
 		success = TRUE;

@@ -1,6 +1,7 @@
                       XFree86 server 4.x Design (DRAFT)
 
                           The XFree86 Project, Inc
+                     Updates for X11R6.8.1 by Jim Gettys
 
                               19 December 2003
 
@@ -47,9 +48,9 @@ The broad design principles are:
 Unless we find major deficiencies in the DIX layer, we should avoid making
 changes there.
 
-2.  The XF86Config File
+2.  The xorg.conf File
 
-The XF86Config file format is similar to the old format, with the following
+The xorg.conf file format is similar to the old format, with the following
 changes:
 
 2.1  Device section
@@ -242,7 +243,7 @@ XFree86 common layer:
             that it knows how to drive.
 
       PreInit
-            Process information from the XF86Config file, determine the full
+            Process information from the xorg.conf file, determine the full
             characteristics of the hardware, and determine if a valid config-
             uration is present.
 
@@ -337,11 +338,11 @@ InitOutput() is expected to fill in the global screenInfo struct, and one
 screenInfo.screen[] entry for each screen present.  Here is what InitOutput()
 does:
 
-5.1  Parse the XF86Config file
+5.1  Parse the xorg.conf file
 
 This is done at the start of the first server generation only.
 
-The XF86Config file is read in full, and the resulting information stored in
+The xorg.conf file is read in full, and the resulting information stored in
 data structures.  None of the parsed information is processed at this point.
 The parser data structures are opaque to the video drivers and to most of the
 common layer code.
@@ -469,7 +470,7 @@ Probe() function of each registered video driver is called.
           PROBE_DETECT is used if "-configure" or "-probe" command
           line arguments are given and indicates to the Probe()
           function that it should not configure the bus entities
-          and that no XF86Config information is available.
+          and that no xorg.conf information is available.
 
           The probe must find the active device sections that match
           the driver by calling xf86MatchDevice().  The number of
@@ -609,7 +610,7 @@ to use them:
 This is done at the start of the first server generation only.
 
 After the Probe phase is finished, there will be some number of ScrnInfoRecs.
-These are then matched with the active Screen sections in the XF86Config, and
+These are then matched with the active Screen sections in the xorg.conf, and
 those not having an active Screen section are deleted.  If the number of
 remaining screens is 0, InitOutput() sets screenInfo.numScreens to 0 and
 returns.
@@ -1061,11 +1062,11 @@ and clock multipliers and dividers.  The function should not modify any other
 mode field, unless it wants to modify the mode timings reported to the user
 by xf86PrintModes().
 
-The function is called once for every mode in the XF86Config Monitor section
+The function is called once for every mode in the xorg.conf Monitor section
 assigned to the screen, with flags set to MODECHECK_INITIAL.  It is subse-
-quently called for every mode in the XF86Config Display subsection assigned
-to the screen, with flags set to MODECHECK_FINAL.  In the second case, the
-mode will have successfully passed all other tests.  In addition, the ScrnIn-
+quently called for every mode in the xorg.conf Display subsection assigned to
+the screen, with flags set to MODECHECK_FINAL.  In the second case, the mode
+will have successfully passed all other tests.  In addition, the ScrnIn-
 foRec's virtualX, virtualY and displayWidth fields will have been set as if
 the mode to be validated were to be the last mode accepted.
 
@@ -1503,7 +1504,7 @@ ates an entity record for each of them, registers non-relocatable resources
 and allocates screens and adds the resources to screens.
 
 Two helper functions are provided for matching device sections in the
-XF86Config file to the devices:
+xorg.conf file to the devices:
 
      int xf86MatchPciInstances(const char *driverName, int vendorID,
 
@@ -4467,7 +4468,7 @@ the helpers.
 
                     Allow missing horizontal sync and/or
                     vertical refresh ranges in the
-                    XF86Config Monitor section
+                    xorg.conf Monitor section
 
                LOOKUP_OPTIONAL_TOLERANCES should only be spec-
                ified when the driver can ensure all modes it
@@ -4495,7 +4496,7 @@ the helpers.
 
           monitor
 
-               Pointer to the applicable XF86Config monitor
+               Pointer to the applicable xorg.conf monitor
                section
 
           fdFormat
@@ -5735,7 +5736,7 @@ NOTE: The xf86DrvMsg() functions cannot be used from the Probe.
 20.3.5  AvailableOptions
 
 Define the AvailableOptions() function. The purpose of this is to return the
-available driver options back to the -configure option, so that an XF86Config
+available driver options back to the -configure option, so that an xorg.conf
 file can be built and the user can see which options are available for them
 to use.
 
@@ -6366,7 +6367,7 @@ eScreen() function.
          ZZZFreeRec(xf86Screens[scrnIndex]);
      }
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.54 dawes Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.53 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/DESIGN,v 1.50 2003/12/20 19:47:28 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/DESIGN,v 1.3.2.1 2004/09/17 15:38:18 kem Exp $

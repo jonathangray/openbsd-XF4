@@ -1,7 +1,7 @@
 .\" Copyright (c) 2000-2003 Peter Kunzmann <support@citron.de>
-.\" $Id: citron.man,v 1.1.1.2 2004/02/13 21:45:13 matthieu Exp $
+.\" $Id: citron.man,v 1.2 2004/11/03 00:09:09 matthieu Exp $
 .\"
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.man,v 1.4 2003/06/24 15:43:40 eich Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.man,v 1.2 2001/01/27 18:20:57 dawes Exp $
 .\"
 .TH CITRON __drivermansuffix__ __vendorversion__
 .SH NAME
@@ -20,7 +20,7 @@ citron \- Citron Infrared Touch Driver (CiTouch)
 .B EndSection
 .SH DESCRIPTION
 .B citron 
-is a XFree86 input driver for 
+is a __xservername__ input driver for 
 .I Citron Infrared Touch
 devices.
 .PP
@@ -47,7 +47,7 @@ touches.
  15.1 inch Infrared Touch
 
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(5x) for general configuration
+Please refer to __xconfigfile__(5x) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 For better understanding please read also the 
@@ -703,6 +703,6 @@ every 20ms. This option is only available for "ZPress" and
 
 
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
 .SH AUTHORS
 2000-2003 - written  by  Citron GmbH (support@citron.de)

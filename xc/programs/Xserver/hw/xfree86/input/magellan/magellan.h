@@ -24,7 +24,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/magellan/magellan.h,v 1.4 2002/06/07 21:03:27 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/magellan/magellan.h,v 1.3 1999/05/15 12:10:30 dawes Exp $ */
 
 #ifndef	_MAGELLAN_H_
 #define _MAGELLAN_H_

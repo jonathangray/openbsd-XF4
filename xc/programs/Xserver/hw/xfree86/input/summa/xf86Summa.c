@@ -24,7 +24,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/summa/xf86Summa.c,v 1.17 2003/11/17 22:20:39 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/summa/xf86Summa.c,v 1.16 2003/11/03 05:11:49 tsi Exp $ */
 
 #if 0
 static const char identification[] = "$Identification: 18 $";
@@ -1639,7 +1639,7 @@ static XF86ModuleVersionInfo xf86SumVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

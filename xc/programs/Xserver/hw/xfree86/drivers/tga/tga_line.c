@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tga/tga_line.c,v 1.2 1999/12/16 02:26:30 robin Exp $ */
+/* $XFree86: $ */
 
 /*
  * Copyright 1999 by Matthew Grossman, Seattle, USA.
@@ -413,7 +413,7 @@ TGAPolySegment(
 #endif
 					  ){
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_GC(pGC);
-    XAAGCPtr   pGCPriv = (XAAGCPtr) (pGC)->devPrivates[XAAGCIndex].ptr;
+    XAAGCPtr   pGCPriv = (XAAGCPtr) (pGC)->devPrivates[XAAGetGCIndex()].ptr;
     BoxPtr pboxInit = REGION_RECTS(pGC->pCompositeClip);
     int nboxInit = REGION_NUM_RECTS(pGC->pCompositeClip);
     unsigned int bias = miGetZeroLineBias(pDrawable->pScreen);

@@ -1,6 +1,6 @@
 .\" $Xorg: constype.man,v 1.3 2000/08/17 19:48:29 cpqbld Exp $
 .\"
-.\" $XFree86: xc/programs/Xserver/hw/sun/constype.man,v 1.6 2001/01/27 18:20:41 dawes Exp $
+.\" $XFree86$
 .\"
 .TH CONSTYPE 1 __xorgversion__
 .SH NAME

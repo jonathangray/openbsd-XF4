@@ -1,3 +1,5 @@
+#if !defined(WINMULTIWINDOWCLASS_H)
+#define WINMULTIWINDOWCLASS_H
 /*
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
@@ -27,7 +29,7 @@
  *
  * Authors:     Earle F. Philhower, III
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winmultiwindowclass.h,v 1.2 2003/10/02 13:30:10 eich Exp $ */
+/* $XFree86$ */
 
 
 /*
@@ -108,3 +110,7 @@ winMultiWindowGetWMNormalHints (WindowPtr pWin, WinXSizeHints *hints);
 int
 winMultiWindowGetWMName (WindowPtr pWin, char **wmName);
 
+int
+winMultiWindowGetTransientFor (WindowPtr pWin, WindowPtr *ppDaddy);
+
+#endif

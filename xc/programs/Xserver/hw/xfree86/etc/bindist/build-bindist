@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/build-bindist,v 1.7 2003/12/05 15:04:07 dawes Exp $
+# $XdotOrg: xc/programs/Xserver/hw/xfree86/etc/bindist/build-bindist,v 1.2 2004/04/23 19:53:58 eich Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/build-bindist,v 1.6 2003/02/08 23:11:49 dawes Exp $
 #
 
 Usage()

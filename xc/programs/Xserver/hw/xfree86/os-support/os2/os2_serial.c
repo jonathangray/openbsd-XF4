@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_serial.c,v 1.4 2002/05/31 18:46:02 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_serial.c,v 1.3 2000/04/05 18:13:53 dawes Exp $ */
 /*
  * (c) Copyright 1999 by Holger Veit
  *			<Holger.Veit@gmd.de>

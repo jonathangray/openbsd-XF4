@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/tv_fs450.h,v 1.1 2002/12/10 15:12:27 alanh Exp $ */
+/* $XFree86$ */
 /*
  * $Workfile: tv_fs450.h $
  *

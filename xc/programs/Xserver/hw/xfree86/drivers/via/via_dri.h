@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_dri.h,v 1.2 2003/08/27 15:16:08 tsi Exp $ */
+/* $XFree86$ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -38,7 +38,7 @@ typedef struct {
 } VIASAREAPriv;
 
 typedef struct {
-    drmHandle handle;
+    drm_handle_t handle;
     drmSize size;
     drmAddress map;
 } viaRegion, *viaRegionPtr;

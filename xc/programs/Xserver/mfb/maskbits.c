@@ -48,7 +48,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
-/* $XFree86: xc/programs/Xserver/mfb/maskbits.c,v 1.6 2001/12/14 20:00:03 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/maskbits.c,v 1.5 2001/01/17 22:37:01 dawes Exp $ */
 
 #include "maskbits.h"
 #include "servermd.h"
@@ -1002,6 +1002,12 @@ PixelType rmask[] =
 #endif /* BITMAP_BIT_ORDER */
 
 #undef _1_
+
+PixelType mfbGetmask(int i) { return mask[i]; }
+PixelType mfbGetrmask(int i) { return rmask[i]; }
+PixelType mfbGetstarttab(int i) { return starttab[i]; }
+PixelType mfbGetendtab(int i) { return endtab[i]; }
+PixelType mfbGetpartmasks(int i, int j) { return partmasks[i][j]; }
 
 /*
  * Merge raster ops for full src + dest + plane mask

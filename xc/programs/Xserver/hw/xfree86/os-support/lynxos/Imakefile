@@ -1,5 +1,11 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/lynxos/Imakefile,v 3.24 2002/12/14 04:41:14 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/lynxos/Imakefile,v 3.23 2002/10/17 02:22:46 dawes Exp $
 #include <Server.tmpl>
+
+#if AllowSIGIO
+SIGIO=sigio
+#else
+SIGIO=sigiostubs
+#endif
 
 #if !defined(PpcArchitecture)
 #if HasMTRRSupport
@@ -20,16 +26,16 @@ MOUSEOBJ = lynx_mouse.o
 SRCS = lynx_init.c lynx_video.c lynx_io.c lynx_mmap.c \
        VTsw_usl.c std_kbdEv.c posix_tty.c $(MOUSESRC) \
        $(IOPERM_SRCS) $(PPC_SRCS) libc_wrapper.c stdResource.c stdPci.c \
-       vidmem.c sigio.c pm_noop.c kmod_noop.c agp_noop.c
+       vidmem.c $(SIGIO).c pm_noop.c kmod_noop.c agp_noop.c
 
 OBJS = lynx_init.o lynx_video.o lynx_io.o lynx_mmap.o \
        VTsw_usl.o std_kbdEv.o posix_tty.o $(MOUSEOBJ) \
        $(IOPERM_OBJS) $(PPC_OBJS) libc_wrapper.o stdResource.o stdPci.o \
-       vidmem.o sigio.o pm_noop.o kmod_noop.o agp_noop.o
+       vidmem.o $(SIGIO).o pm_noop.o kmod_noop.o agp_noop.o
 
 INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
            -I$(XINCLUDESRC) -I$(EXTINCSRC) \
-           -I$(ENV_PREFIX)/sys/lynx.os
+           -I$(ENV_PREFIX)/sys/lynx.os -I$(DRMSRCDIR)/shared
 
 RESDEFINES = -DUSESTDRES
 
@@ -48,7 +54,7 @@ LinkSourceFile(libc_wrapper.c,../shared)
 LinkSourceFile(stdResource.c,../shared)
 LinkSourceFile(stdPci.c,../shared)
 LinkSourceFile(vidmem.c,../shared)
-LinkSourceFile(sigio.c,../shared)
+LinkSourceFile($(SIGIO).c,../shared)
 LinkSourceFile(pm_noop.c,../shared)
 LinkSourceFile(kmod_noop.c,../shared)
 LinkSourceFile(agp_noop.c,../shared)

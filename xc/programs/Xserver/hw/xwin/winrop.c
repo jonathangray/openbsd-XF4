@@ -27,12 +27,15 @@
  *
  * 	Authors:	Alan Hourihane <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winrop.c,v 1.1 2003/08/07 23:47:58 alanh Exp $ */
+/* $XFree86$ */
 
 /*
  * Raster operations used by Windows translated to X's 16 rop codes...
  */
 #include "win.h"
+
+void
+ROP16 (HDC hdc, int rop);
 
 int g_copyROP[16] = { 	0xFF0062, /* GXclear 		- 0 */
 		 	0x8800C6, /* GXand 		- S & D */

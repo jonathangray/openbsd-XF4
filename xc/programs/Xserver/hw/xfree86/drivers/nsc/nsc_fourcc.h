@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_fourcc.h,v 1.2 2003/01/14 09:34:30 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_fourcc.h,v 1.1 2002/12/10 15:12:23 alanh Exp $ */
 /*
  * $Workfile: nsc_fourcc.h $
- * $Revision: 1.1.1.1 $
+ * $Revision: 1.2 $
  * $Author: matthieu $
  *
  * File Contents: This file consists of main Xfree video macro definitions.

@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/Xserver/dix/window.c,v 1.6 2004/07/31 08:24:13 anholt Exp $ */
 /* $Xorg: window.c,v 1.4 2001/02/09 02:04:41 xorgcvs Exp $ */
 /*
 
@@ -49,28 +50,35 @@ SOFTWARE.
 */
 
 /* The panoramix components contained the following notice */
-/****************************************************************
-*                                                               *
-*    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
-*                                                               *
-*   All Rights Reserved.  Unpublished rights  reserved  under   *
-*   the copyright laws of the United States.                    *
-*                                                               *
-*   The software contained on this media  is  proprietary  to   *
-*   and  embodies  the  confidential  technology  of  Digital   *
-*   Equipment Corporation.  Possession, use,  duplication  or   *
-*   dissemination of the software and media is authorized only  *
-*   pursuant to a valid written license from Digital Equipment  *
-*   Corporation.                                                *
-*                                                               *
-*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
-*   by the U.S. Government is subject to restrictions  as  set  *
-*   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
-*   or  in  FAR 52.227-19, as applicable.                       *
-*                                                               *
-*****************************************************************/
+/*****************************************************************
 
-/* $XFree86: xc/programs/Xserver/dix/window.c,v 3.37 2003/11/17 22:20:35 dawes Exp $ */
+Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software.
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
+BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of Digital Equipment Corporation
+shall not be used in advertising or otherwise to promote the sale, use or other
+dealings in this Software without prior written authorization from Digital
+Equipment Corporation.
+
+******************************************************************/
+
+/* $XFree86: xc/programs/Xserver/dix/window.c,v 3.36 2003/11/14 23:52:50 torrey Exp $ */
 
 #include "misc.h"
 #include "scrnintstr.h"
@@ -282,6 +290,9 @@ SetWindowToDefaults(register WindowPtr pWin)
 #ifdef NEED_DBE_BUF_BITS
     pWin->srcBuffer = DBE_FRONT_BUFFER;
     pWin->dstBuffer = DBE_FRONT_BUFFER;
+#endif
+#ifdef COMPOSITE
+    pWin->redirectDraw = 0;
 #endif
 }
 
@@ -1653,6 +1664,19 @@ void
 SetWinSize (pWin)
     register WindowPtr pWin;
 {
+#ifdef COMPOSITE
+    if (pWin->redirectDraw)
+    {
+	BoxRec	box;
+
+	box.x1 = pWin->drawable.x;
+	box.y1 = pWin->drawable.y;
+	box.x2 = pWin->drawable.x + pWin->drawable.width;
+	box.y2 = pWin->drawable.y + pWin->drawable.height;
+	REGION_RESET (pScreen, &pWin->winSize, &box);
+    }
+    else
+#endif
     ClippedRegionFromBox(pWin->parent, &pWin->winSize,
 			 pWin->drawable.x, pWin->drawable.y,
 			 (int)pWin->drawable.width,
@@ -1683,6 +1707,19 @@ SetBorderSize (pWin)
 
     if (HasBorder (pWin)) {
 	bw = wBorderWidth (pWin);
+#ifdef COMPOSITE
+	if (pWin->redirectDraw)
+	{
+	    BoxRec	box;
+
+	    box.x1 = pWin->drawable.x - bw;
+	    box.y1 = pWin->drawable.y - bw;
+	    box.x2 = pWin->drawable.x + pWin->drawable.width + bw;
+	    box.y2 = pWin->drawable.y + pWin->drawable.height + bw;
+	    REGION_RESET (pScreen, &pWin->borderSize, &box);
+	}
+	else
+#endif
 	ClippedRegionFromBox(pWin->parent, &pWin->borderSize,
 		pWin->drawable.x - bw, pWin->drawable.y - bw,
 		(int)(pWin->drawable.width + (bw<<1)),
@@ -3144,10 +3181,17 @@ HandleSaveSet(client)
 
     for (j=0; j<client->numSaved; j++)
     {
-	pWin = (WindowPtr)client->saveSet[j];
-	pParent = pWin->parent;
-	while (pParent && (wClient (pParent) == client))
-	    pParent = pParent->parent;
+	pWin = SaveSetWindow(client->saveSet[j]);
+#ifdef XFIXES
+	if (SaveSetToRoot(client->saveSet[j]))
+	    pParent = WindowTable[pWin->drawable.pScreen->myNum];
+	else
+#endif
+	{
+	    pParent = pWin->parent;
+	    while (pParent && (wClient (pParent) == client))
+		pParent = pParent->parent;
+	}
 	if (pParent)
 	{
 	    if (pParent != pWin->parent)
@@ -3159,12 +3203,15 @@ HandleSaveSet(client)
 		if(!pWin->realized && pWin->mapped)
 		    pWin->mapped = FALSE;
 	    }
-	    MapWindow(pWin, client);
+#ifdef XFIXES
+	    if (SaveSetRemap (client->saveSet[j]))
+#endif
+		MapWindow(pWin, client);
 	}
     }
     xfree(client->saveSet);
     client->numSaved = 0;
-    client->saveSet = (pointer *)NULL;
+    client->saveSet = (SaveSetElt *)NULL;
 }
 
 Bool
@@ -3219,8 +3266,9 @@ SendVisibilityNotify(pWin)
     WindowPtr pWin;
 {
     xEvent event;
+#ifndef NO_XINERAMA_PORT
     unsigned int visibility = pWin->visibility;
-
+#endif
 #ifdef PANORAMIX
     /* This is not quite correct yet, but it's close */
     if(!noPanoramiXExtension) {

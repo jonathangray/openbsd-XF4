@@ -21,16 +21,28 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/fb/fballpriv.c,v 1.4 2000/05/06 21:09:31 keithp Exp $ */
+/* $XFree86: xc/programs/Xserver/fb/fballpriv.c,v 1.3 2000/02/23 20:29:41 dawes Exp $ */
 
 #include "fb.h"
 
 #ifdef FB_SCREEN_PRIVATE
 int fbScreenPrivateIndex;
+int fbGetScreenPrivateIndex(void)
+{
+    return fbScreenPrivateIndex;
+}
 #endif
 int fbGCPrivateIndex;
+int fbGetGCPrivateIndex(void)
+{
+    return fbGCPrivateIndex;
+}
 #ifndef FB_NO_WINDOW_PIXMAPS
 int fbWinPrivateIndex;
+int fbGetWinPrivateIndex(void)
+{
+    return fbWinPrivateIndex;
+}
 #endif
 int fbGeneration;
 

@@ -1,4 +1,4 @@
-bin/XF86_*
+bin/Xorg_*
 bin/XF98_*
 bin/XF68_*
 bin/XF86Setup
@@ -8,4 +8,4 @@ bin/Xvfb
 bin/X
 bin/xfs
 bin/xmseconfig
-bin/XFree86
+bin/Xorg

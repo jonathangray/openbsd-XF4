@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/cursorstr.h,v 1.9 2003/01/12 02:44:27 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/cursorstr.h,v 1.8 2002/11/30 06:21:51 keithp Exp $ */
 
 #ifndef CURSORSTRUCT_H
 #define CURSORSTRUCT_H 
@@ -77,10 +77,22 @@ typedef struct _Cursor {
     unsigned short backRed, backGreen, backBlue; /* device-independent color */
     int refcnt;
     pointer devPriv[MAXSCREENS];		/* set by pScr->RealizeCursor*/
+#ifdef XFIXES
+    CARD32 serialNumber;
+    Atom name;
+#endif
 } CursorRec;
 
 typedef struct _CursorMetric {
     unsigned short width, height, xhot, yhot;
 } CursorMetricRec;
 
+typedef struct {
+    int                x, y;
+    ScreenPtr  pScreen;
+} HotSpot;
+
+#ifdef XEVIE
+extern HotSpot xeviehot;
+#endif
 #endif /* CURSORSTRUCT_H */

@@ -32,7 +32,7 @@
  * port based on pre-XFree4.2.0 driver code v1.10 and XFree4.2.0 SpaceOrb driver code
  */
  
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/magellan/magellan.c,v 1.11 2002/06/07 21:03:27 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/magellan/magellan.c,v 1.10 2001/11/26 16:25:53 dawes Exp $ */
 
 #define _MAGELLAN_C_
 /*****************************************************************************
@@ -79,7 +79,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

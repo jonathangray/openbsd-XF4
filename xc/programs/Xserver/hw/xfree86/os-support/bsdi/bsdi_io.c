@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_io.c,v 3.14 2003/02/17 15:11:56 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_io.c,v 3.13 2002/10/11 01:40:34 dawes Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Dawes <dawes@xfree86.org>

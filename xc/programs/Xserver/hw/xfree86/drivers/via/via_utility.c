@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_utility.c,v 1.5 2003/12/31 05:42:05 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_utility.c,v 1.4 2003/11/03 05:11:46 tsi Exp $ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.

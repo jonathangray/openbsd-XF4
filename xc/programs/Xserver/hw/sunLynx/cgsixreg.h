@@ -43,7 +43,7 @@
  *	@(#)cgsixreg.h	8.4 (Berkeley) 1/21/94
  */
 /*	$NetBSD: cgsixreg.h,v 1.3 1994/11/20 20:52:00 deraadt Exp $ */
-/*	$XFree86: xc/programs/Xserver/hw/sunLynx/cgsixreg.h,v 3.2 2001/01/17 22:36:52 dawes Exp $ */
+/*	$XFree86: xc/programs/Xserver/hw/sunLynx/cgsixreg.h,v 3.1 1996/12/27 06:51:33 dawes Exp $ */
 
 /*
  * CG6 display registers.  (Note, I got tired of writing `cgsix' about

@@ -26,7 +26,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/dix/privates.c,v 3.8 2001/12/14 19:59:32 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/privates.c,v 3.7 2001/01/17 22:36:44 dawes Exp $ */
 
 #include "X.h"
 #include "scrnintstr.h"
@@ -358,7 +358,7 @@ InitCmapPrivFunc initPrivFunc;
     
 	    pColormap->devPrivates = privs;
     
-	    if (!privs || !(*initPrivFunc)(pColormap))
+	    if (!privs || !(*initPrivFunc)(pColormap,index))
 	    {
 		colormapPrivateCount--;
 		return -1;

@@ -1,5 +1,4 @@
 /* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $OpenBSD: connection.c,v 1.9 2004/05/06 21:20:18 matthieu Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -46,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.65 2003/10/30 21:21:10 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.64 2003/10/07 22:50:42 herrb Exp $ */
 /*****************************************************************
  *  Stuff to create connections --- OS dependent
  *
@@ -389,7 +388,7 @@ CreateWellKnownSockets(void)
 #endif /* __UNIXOS2__ */
     if (RunFromSmartParent) {
 	if (ParentProcess > 1) {
-#if defined(__OpenBSD__)
+#ifdef X_PRIVSEP
 	    priv_signal_parent();
 #else
 	    kill (ParentProcess, SIGUSR1);
@@ -495,7 +494,7 @@ AuthAudit (ClientPtr client, Bool letin,
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
 	case AF_UNIX:
 #endif
-	    strlcpy(out, "local host", sizeof(addr)-outlen);
+	  strlcpy(out, "local host", sizeof(addr)-outlen);
 	  break;
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
 	case AF_INET:
@@ -645,7 +644,7 @@ ClientAuthorized(ClientPtr client,
 #ifdef LBX
 		!trans_conn ||
 #endif
-		InvalidHost ((struct sockaddr *) from, fromlen))
+		InvalidHost ((struct sockaddr *) from, fromlen, client))
 		AuthAudit(client, FALSE, (struct sockaddr *) from,
 			  fromlen, proto_n, auth_proto, auth_id);
 	    else

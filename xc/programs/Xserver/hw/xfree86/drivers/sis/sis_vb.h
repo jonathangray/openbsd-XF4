@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_vb.h,v 1.17 2004/02/25 17:45:14 twini Exp $ */
+/* $XFree86$ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_vb.h,v 1.4 2004/07/26 22:40:56 twini Exp $ */
 /*
  * Video bridge detection and configuration for 300, 315 and 330 series
  * Data and prototypes
@@ -16,7 +17,7 @@
  * 3) The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESSED OR
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
  * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
@@ -36,14 +37,15 @@ typedef struct _SiS_LCD_StStruct
 	ULONG VBLCD_lcdflag;
 	USHORT LCDwidth;
 	USHORT LCDheight;
-	USHORT LCDtype;
 } SiS_LCD_StStruct;
 
 void SISCRT1PreInit(ScrnInfoPtr pScrn);
-void SISLCDPreInit(ScrnInfoPtr pScrn);
-void SISTVPreInit(ScrnInfoPtr pScrn);
-void SISCRT2PreInit(ScrnInfoPtr pScrn);
+void SISLCDPreInit(ScrnInfoPtr pScrn, Bool quiet);
+void SISTVPreInit(ScrnInfoPtr pScrn, Bool quiet);
+void SISCRT2PreInit(ScrnInfoPtr pScrn, Bool quiet);
+void SISSense30x(ScrnInfoPtr pScrn, Bool quiet);
+void SISSenseChrontel(ScrnInfoPtr pScrn, Bool quiet);
+Bool SISRedetectCRT2Type(ScrnInfoPtr pScrn);
 
-extern BOOLEAN SiS_GetPanelID(SiS_Private *SiS_Pr, PSIS_HW_INFO HwDeviceExtension);
-extern USHORT SiS_SenseLCDDDC(SiS_Private *SiS_Pr, SISPtr pSiS);
-extern USHORT SiS_SenseVGA2DDC(SiS_Private *SiS_Pr, SISPtr pSiS);
+
+

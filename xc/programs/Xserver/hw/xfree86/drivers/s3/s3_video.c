@@ -24,7 +24,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_video.c,v 1.5 2003/11/10 18:22:25 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_video.c,v 1.4tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

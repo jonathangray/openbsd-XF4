@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbscrinit.c,v 3.9 2003/02/18 21:30:01 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbscrinit.c,v 3.8tsi Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -65,9 +65,12 @@ SOFTWARE.
 
 #ifdef PIXMAP_PER_WINDOW
 int frameWindowPrivateIndex;
+int frameGetWindowPrivateIndex(void) { return frameWindowPrivateIndex; }
 #endif
 int mfbWindowPrivateIndex;
+int mfbGetWindowPrivateIndex(void) { return mfbWindowPrivateIndex; }
 int mfbGCPrivateIndex;
+int mfbGetGCPrivateIndex(void) { return mfbGCPrivateIndex; }
 static unsigned long mfbGeneration = 0;
 
 static VisualRec visual = {
@@ -195,3 +198,13 @@ mfbSetWindowPixmap(pWin, pPix)
 #endif
 }
 
+void mfbFillInScreen(ScreenPtr pScreen)
+{
+    pScreen->ChangeWindowAttributes = mfbChangeWindowAttributes;
+    pScreen->RealizeWindow = mfbMapWindow;
+    pScreen->UnrealizeWindow = mfbUnmapWindow;
+    pScreen->DestroyPixmap = mfbDestroyPixmap;
+    pScreen->RealizeFont = mfbRealizeFont;
+    pScreen->UnrealizeFont = mfbUnrealizeFont;
+    pScreen->BitmapToRegion = mfbPixmapToRegion;
+}

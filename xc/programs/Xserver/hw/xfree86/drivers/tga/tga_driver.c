@@ -22,7 +22,7 @@
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  *           Matthew Grossman, <mattg@oz.net> - acceleration and misc fixes
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tga/tga_driver.c,v 1.61 2003/11/03 05:11:41 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tga/tga_driver.c,v 1.60tsi Exp $ */
 
 /* everybody includes these */
 #include "xf86.h"
@@ -189,7 +189,7 @@ static const char *ramdacSymbols[] = {
 static const char *xaaSymbols[] = {
     "XAACreateInfoRec",
     "XAADestroyInfoRec",
-    "XAAGCIndex",
+    "XAAGetGCIndex",
     "XAAInit",
     NULL
 };
@@ -210,7 +210,7 @@ static XF86ModuleVersionInfo tgaVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	TGA_MAJOR_VERSION, TGA_MINOR_VERSION, TGA_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,			/* This is a video driver */
 	ABI_VIDEODRV_VERSION,

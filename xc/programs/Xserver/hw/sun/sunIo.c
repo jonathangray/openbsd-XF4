@@ -15,7 +15,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.10 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.9 2001/12/19 21:28:45 dawes Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
@@ -191,6 +191,11 @@ void
 ddxGiveUp()
 {
     AbortDDX ();
+}
+
+/* ddxInitGlobals - called by |InitGlobals| from os/util.c */
+void ddxInitGlobals(void)
+{
 }
 
 int

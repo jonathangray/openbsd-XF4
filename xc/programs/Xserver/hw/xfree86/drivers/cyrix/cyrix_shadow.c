@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_shadow.c,v 1.1 2002/11/06 11:38:59 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_shadow.c,v 1.1 1999/08/14 10:49:48 dawes Exp $ */
 
 /*
    Copyright (c) 1999,  The XFree86 Project Inc. 

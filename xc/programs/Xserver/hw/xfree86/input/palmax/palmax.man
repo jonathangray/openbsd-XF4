@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/palmax/palmax.man,v 1.1 2002/11/22 03:40:22 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/mutouch/mutouch.man,v 1.1 2001/01/24 00:06:37 dawes Exp $
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH PALMAX __drivermansuffix__ __vendorversion__
@@ -18,7 +18,7 @@ palmax \- Palmax (TR88L803) touchscreen driver
 .B EndSection
 .SH DESCRIPTION
 .B palmax
-is an XFree86 input driver for the Palmax PD1000/PD1100
+is an __xservername__ input driver for the Palmax PD1000/PD1100
 .PP
 The
 .B palmax
@@ -29,7 +29,7 @@ the touchscreen display and lid buttons on the Palmax machines.
 Palmax PD1000, Palmax PD1100. In theory also any other system using a
 TR88L803 wired to a serial port.
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 .PP
@@ -79,10 +79,10 @@ Support for a double-tap menu button option would be nice.
 .PP
 The smoothing algorithm would benefit from real mathematics.
 .PP
-XFree86 needs a nice calibration tool.
+__xservername__ needs a nice calibration tool.
 .PP
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
 .SH AUTHORS
 Authors include...
  Alan Cox

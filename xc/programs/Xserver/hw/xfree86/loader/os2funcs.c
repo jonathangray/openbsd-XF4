@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/os2funcs.c,v 1.8 2003/10/15 16:29:04 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/os2funcs.c,v 1.7 2003/03/25 04:18:22 dawes Exp $ */
 /*
  * (c) Copyright 1997 by Sebastien Marineau
  *                      <marineau@genie.uottawa.ca>

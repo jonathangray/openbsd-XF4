@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_driver.c,v 1.29 2004/02/20 21:46:35 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_driver.c,v 1.28 2004/02/08 17:57:10 tsi Exp $ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -203,6 +203,7 @@ static const char *vgaHWSymbols[] = {
     "vgaHWLock",
     "vgaHWUnlock",
     "vgaHWFreeHWRec",
+    "vgaHWddc1SetSpeedWeak",
     NULL
 };
 
@@ -243,9 +244,9 @@ static const char *i2cSymbols[] = {
 };
 
 static const char *xaaSymbols[] = {
-    "XAACopyROP",
-    "XAACopyROP_PM",
-    "XAAPatternROP",
+    "XAAGetCopyROP",
+    "XAAGetCopyROP_PM",
+    "XAAGetPatternROP",
     "XAACreateInfoRec",
     "XAADestroyInfoRec",
     "XAAInit",
@@ -649,7 +650,8 @@ VIAddc1(int scrnIndex)
     VGAOUT8(0x3c5, (tmp | 0x11));
 
     if ((pMon = xf86PrintEDID(
-        xf86DoEDID_DDC1(scrnIndex,vgaHWddc1SetSpeed,VIAddc1Read))) != NULL)
+        xf86DoEDID_DDC1(scrnIndex,vgaHWddc1SetSpeedWeak(),
+	                VIAddc1Read))) != NULL)
         success = TRUE;
     xf86SetDDCproperties(pScrn,pMon);
 

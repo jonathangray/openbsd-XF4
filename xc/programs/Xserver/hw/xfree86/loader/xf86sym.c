@@ -77,7 +77,9 @@
 #ifdef XFreeXDGA
 #include "dgaproc.h"
 #endif
+#ifdef DPMSExtension
 #include "dpmsproc.h"
+#endif
 #include "vidmodeproc.h"
 #include "xf86miscproc.h"
 #include "loader.h"
@@ -189,6 +191,7 @@ extern long __umodsi3(long, long);
 #if defined(__arm__) && defined(__linux__)
 #include <sys/io.h>
 #endif
+
 #if defined(__arm__) && defined(__OpenBSD__) && defined(__VFP_FP__)
 void __adddf3();
 void __addsf3();
@@ -267,8 +270,8 @@ extern unsigned long ldl_brx(volatile unsigned char *, int);
 extern unsigned short ldw_brx(volatile unsigned char *, int);
 #endif
 
-#ifdef __OpenBSD__
-/* Propolice */
+#ifdef __SSP__
+/* Propolice! */
 extern long __guard[];
 extern void __stack_smash_handler(char [], int);
 #endif
@@ -737,9 +740,11 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86XInputSetSendCoreEvents)
 /* End merged segment */
 #endif
+#ifdef DPMSExtension
     SYMFUNC(DPMSGet)
     SYMFUNC(DPMSSet)
     SYMFUNC(DPMSSupported)
+#endif
 /* xf86Debug.c */
 #ifdef BUILDDEBUG
     SYMFUNC(xf86Break1)
@@ -1087,26 +1092,38 @@ LOOKUP xfree86LookupTab[] = {
 # endif
 #endif
 #if defined(__GNUC__)
-#ifndef __UNIXOS2__
+#if !defined(__UNIXOS2__) && !defined(Lynx)
     SYMFUNC(__div64)
 #endif
+#if !defined(Lynx)	/* FIXME: test on others than x86 and !3.1.0a/x86 */
     SYMFUNC(__divdf3)
+#endif
     SYMFUNC(__divdi3)
+#if !defined(Lynx)
     SYMFUNC(__divsf3)
     SYMFUNC(__divsi3)
+#endif
     SYMFUNC(__moddi3)
+#if !defined(Lynx)
     SYMFUNC(__modsi3)
-#ifndef __UNIXOS2__
+#endif
+#if !defined(__UNIXOS2__) && !defined(Lynx)
     SYMFUNC(__mul64)
 #endif
+#if !defined(Lynx)
     SYMFUNC(__muldf3)
+#endif
     SYMFUNC(__muldi3)
+#if !defined(Lynx)
     SYMFUNC(__mulsf3)
     SYMFUNC(__mulsi3)
     SYMFUNC(__udivdi3)
     SYMFUNC(__udivsi3)
+#endif
     SYMFUNC(__umoddi3)
+#if !defined(Lynx)
     SYMFUNC(__umodsi3)
+#endif
 #endif
 #if defined(__ia64__)
     SYMFUNC(_outw)
@@ -1181,7 +1198,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMFUNC(hid_set_data)
 #endif
 
-#ifdef __OpenBSD__
+#ifdef __SSP__
     /* propolice */
     SYMFUNC(__stack_smash_handler)
     SYMVAR(__guard)

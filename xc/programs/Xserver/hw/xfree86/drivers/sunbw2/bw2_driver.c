@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunbw2/bw2_driver.c,v 1.4 2003/10/30 17:37:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunbw2/bw2_driver.c,v 1.3 2001/05/04 19:05:45 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -96,7 +96,7 @@ static XF86ModuleVersionInfo sunbw2VersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	BW2_MAJOR_VERSION, BW2_MINOR_VERSION, BW2_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,
 	ABI_VIDEODRV_VERSION,

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dac3026.c,v 1.59 2004/02/20 16:59:49 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dac3026.c,v 1.58tsi Exp $ */
 /*
  * Copyright 1994 by Robin Cutshaw <robin@XFree86.org>
  *
@@ -1033,7 +1033,7 @@ MGA3026_i2cInit(ScrnInfoPtr pScrn)
     I2CPtr = xf86CreateI2CBusRec();
     if(!I2CPtr) return FALSE;
 
-    pMga->I2C = I2CPtr;
+    pMga->DDC_Bus1 = I2CPtr;
 
     I2CPtr->BusName    = "DDC";
     I2CPtr->scrnIndex  = pScrn->scrnIndex;
@@ -1282,6 +1282,6 @@ void MGA2064SetupFuncs(ScrnInfoPtr pScrn)
     pMga->ModeInit = MGA3026Init;
     pMga->ddc1Read = MGA3026_ddc1Read;
     /* vgaHWddc1SetSpeed will only work if the card is in VGA mode */
-    pMga->DDC1SetSpeed = vgaHWddc1SetSpeed;
+    pMga->DDC1SetSpeed = vgaHWddc1SetSpeedWeak();
     pMga->i2cInit = MGA3026_i2cInit;
 }

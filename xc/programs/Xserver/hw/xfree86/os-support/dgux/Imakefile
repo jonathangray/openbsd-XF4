@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/Imakefile,v 1.9 2002/10/17 02:22:45 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/Imakefile,v 1.8 2002/10/11 01:46:59 dawes Exp $
 #include <Server.tmpl>
 
 BIOS_MOD = bios_DGmmap

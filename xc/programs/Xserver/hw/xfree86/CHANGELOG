@@ -9,10 +9,21 @@ XFree86 4.4.0 (29 February 2004)
       - Fix private option handling;
  819. Fix rendition driver system lockup on changes to text mode
       (Bugzilla #1204, Eric Wittry).
+ 818. Make the "fp=n" TTCap option behave the same with the FreeType backend
+      as with the X-TT backend (Bugzilla #1163, Chisato Yamauchi).
+ 817. Fix the disappearance of the RAW_ASCENT, RAW_DESCENT, RAW_PIXEL_SIZE,
+      and RAW_POINT_SIZE properties for the FreeType backend (Bugzilla #1163,
+      Chisato Yamauchi).
+ 816. Fix a FreeType backend problem with the font ascent/descent being
+      incorrect with some fonts (Bugzilla #1163, Chisato Yamauchi, reported by
+      Michael Lampe).
  815. Fix for detection of hardwired panel for the via driver (Bugzilla #813,
       Luc Verhaegen, reported by Johannes Specht).
  814. Fix missing ';' in via_driver.c hidden by an empty macro (Bugzilla #813,
       Luc Verhaegen).
+ 813. Add FT_Get_Postscript_Name() to the freetype2 export list for OS/2.
+      This is needed for the recent PostScript fontname property fix
+      (Bugzilla #1189, Frank Giessler).
  812. Fix MGA driver for big endian and EXTRADEBUG compilation (derived from
       #6132, Rene Rebe).
  811. Turn off the GetDisplayInfo BIOS call by default and add an option 
@@ -28,8 +39,13 @@ XFree86 4.4.0 (29 February 2004)
 
 XFree86 4.3.99.903 (15 February 2004)
  805. Resync the pci.ids data with pciids.sf.net (2004-02-15 snapshot).
+ 804. Improve X server performance on OS/2 when using TCP transport:
+       - Let the server set TCP_NODELAY, et al.
+       - Change the behavior of os2PseudoSelect() on sockets.
+      (Bugzilla #1175, Frank Giessler).
  803. X server on OS/2 doesn't respect AutoRepeat on/off unless XKB is disabled
       (Bugzilla #1174, Frank Giessler).
+ 802. Licence update.
  801. Optimise SlowBcopy() for ia64 architecture (Marc La France).
  800. Simplify vgaHWSaveFonts() and vgaHWRestoreFonts() to fix hangs seen with
       certain nVidia boards on ZX1-based systems (Marc La France).
@@ -40,6 +56,9 @@ XFree86 4.3.99.903 (15 February 2004)
       reported by Julian Cable).
  795. Add uz_UZ locale (Bugzilla #1151, Mashrab Kuvatov).
  794. Fix font alias overrun.
+ 793. Fix for the way the FreeType backend sets the
+      _ADOBE_POSTSCRIPT_FONTNAME property for Type1 fonts (Bugzilla #1123,
+      David Dawes, based on Roland Mainz, reported by David Capshaw).
  792. Fix formatting of the XLookupString bytes that xev prints out (Bugzilla
       #1153, Noah Levitt).
  791. Likely fix for FreeBSD 5.2 libGL build problem (David Dawes, reported by
@@ -18664,7 +18683,7 @@ XFree86 3.0a (28 April 1994)
 XFree86 3.0 (26 April 1994)
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/CHANGELOG,v 3.3157 2004/02/29 00:09:23 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/CHANGELOG,v 3.3156 2004/02/29 04:25:24 martin Exp $
 
 
 

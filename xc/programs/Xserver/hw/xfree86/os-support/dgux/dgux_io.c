@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_io.c,v 1.4 2003/02/17 15:11:56 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_io.c,v 1.3 2002/10/11 01:40:34 dawes Exp $ */
 /*
  * INTEL DG/UX RELEASE 4.20 MU03
  * Copyright 1997 Takis Psarogiannakopoulos Cambridge,UK

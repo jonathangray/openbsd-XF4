@@ -21,7 +21,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/void/void.c,v 1.2 2000/08/11 19:10:48 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/void/void.c,v 1.1 1999/11/19 13:54:57 hohndel Exp $ */
 
 /* Input device which doesn't output any event. This device can be used
  * as a core pointer or as a core keyboard.
@@ -264,7 +264,7 @@ static XF86ModuleVersionInfo xf86VoidVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

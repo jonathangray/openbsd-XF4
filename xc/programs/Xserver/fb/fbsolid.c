@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fbsolid.c,v 1.8 2001/10/28 03:33:08 tsi Exp $
+ * $XFree86$
  *
  * Copyright © 1998 Keith Packard
  *
@@ -49,7 +49,6 @@ fbSolid (FbBits	    *dst,
 	return;
     }
 #endif
-	
     dst += dstX >> FB_SHIFT;
     dstX &= FB_MASK;
     FbMaskBitsBytes(dstX, width, and == 0, startmask, startbyte, 

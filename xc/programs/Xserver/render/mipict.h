@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/render/mipict.h,v 1.13 2002/11/06 22:45:36 keithp Exp $
+ * $XFree86: xc/programs/Xserver/render/mipict.h,v 1.12 2002/11/05 05:34:40 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -123,6 +123,9 @@ void
 miRenderPixelToColor (PictFormatPtr pPict,
 		      CARD32	    pixel,
 		      xRenderColor  *color);
+
+Bool
+miIsSolidAlpha (PicturePtr pSrc);
 
 void
 miCompositeRects (CARD8		op,

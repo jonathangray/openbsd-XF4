@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/Xext/xf86bigfont.c,v 1.18 2003/11/17 22:20:27 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xf86bigfont.c,v 1.17 2003/10/28 23:08:43 tsi Exp $ */
 /*
  * BIGFONT extension for sharing font metrics between clients (if possible)
  * and for transmitting font metrics to clients in a compressed form.
@@ -248,7 +248,7 @@ shmalloc(
 	return (ShmDescPtr) NULL;
 
     size = (size + pagesize-1) & -pagesize;
-    shmid = shmget(IPC_PRIVATE, size, S_IWUSR | S_IRUSR);
+    shmid = shmget(IPC_PRIVATE, size, S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
     if (shmid == -1) {
 	ErrorF(XF86BIGFONTNAME " extension: shmget() failed, size = %u, errno = %d\n",
 	       size, errno);

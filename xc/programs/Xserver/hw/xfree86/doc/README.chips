@@ -1,17 +1,22 @@
                  Information for Chips and Technologies Users
 
                 David Bateman (<dbateman@club-internet.fr>),
-                           Egbert Eich (<eich@xfree86.org>)
+                         Egbert Eich (<eich@freedesktop.org>)
 
                                1st January 2001
 
 1.  Introduction
 
-With the release of XFree86 version 4.3.99.903, the Chips and Technologies
-driver has been extensively rewritten and contains many new features.  This
-driver must be considered work in progress, and those users wanting stability
-are encouraged to use the older XFree86 3.3.x versions. However this version
-of the Chips and Technologies driver has many new features and bug fixes that
+The Chips and Technologies driver release in X11R6.8.1 came from XFree86 4.4
+rc2; this document was originally included in that release and has been
+updated modestly to reflect differences between X11R6.8.1 and XFree86 4.4
+rc2.
+
+With the release of XFree86 version 4.0, the Chips and Technologies driver
+has been extensively rewritten and contains many new features.  This driver
+must be considered work in progress, and those users wanting stability are
+encouraged to use the older XFree86 3.3.x versions. However this version of
+the Chips and Technologies driver has many new features and bug fixes that
 might make users prefer to use this version. These features include
 
    o The long standing black/blue screen problem that some people have had
@@ -149,7 +154,7 @@ architecture.
             second display channel so that the CRT can display independently
             of the LCD.  (Max Ram: 4Mb Only, Max Dclk: 170MHz@3.3V)
 
-3.  XF86Config Options
+3.  xorg.conf Options
 
 The following options are of particular interest to the Chips and Technolo-
 gies driver. It should be noted that the options are case insensitive, and
@@ -215,7 +220,7 @@ Screen, Monitor, Device.
 
       Option "UseModeline"
             The flat panel timings are related to the panel size and not the
-            size of the mode specified in XF86Config. For this reason the
+            size of the mode specified in xorg.conf. For this reason the
             default behaviour of the server is to use the panel timings
             already installed in the chip. The user can force the panel tim-
             ings to be recalculated from the modeline with this option. How-
@@ -527,7 +532,7 @@ The driver is capable of driving both a CRT and a flat panel display. In fact
 the timing for the flat panel are dependent on the specification of the panel
 itself and are independent of the particular mode chosen. For this reason it
 is recommended to use one of the programs that automatically generate
-XF86Config files, such as "xf86config" or "XF86Setup".
+xorg.conf files, such as "xorgconfig".
 
 However there are many older machines, particularly those with 800x600 screen
 or larger, that need to reprogram the panel timings. The reason for this is
@@ -562,17 +567,17 @@ options.
 
 5.  Dual Display Channel
 
-XFree86 releases later than 4.1.0 support dual-channel display on the
-ct69030.  This support can be used to give a single display image on two
-screen with different refresh rates, or entirely different images on the two
-displays.
+XFree86 releases later than 4.1.0 and X.Org releases later than 6.7.0  sup-
+port dual-channel display on the ct69030.  This support can be used to give a
+single display image on two screen with different refresh rates, or entirely
+different images on the two displays.
 
 Dual refresh rate display can be selected with the "DualRefresh" option
 described above. However to use the dual-head support is slightly more com-
 plex. Firstly, the ct69030 chipset must be installed on a PCI bus. This is a
 driver limitation that might be relaxed in the future. In addition the
-device, screen and layout sections of the "XF86Config" must be correctly con-
-figured. A sample of an incomplete "XF86Config" is given below
+device, screen and layout sections of the "xorg.conf" must be correctly con-
+figured. A sample of an incomplete "xorg.conf" is given below
 
           Section "Device"
               Identifier  "Chips and Technologies - Pipe A"
@@ -690,7 +695,7 @@ Hence you will see a line like
 
 in your startx log file. Note that many chips are capable of higher memory
 clocks than actually set by BIOS. You can use the "SetMClk" option in your
-XF86Config file to get a higher MClk. However some video ram, particularly
+xorg.conf file to get a higher MClk. However some video ram, particularly
 EDO, might not be fast enough to handle this, resulting in drawing errors on
 the screen. The formula to determine the maximum usable dotclock on the HiQV
 series of chips is
@@ -859,7 +864,7 @@ cause damage.
             the server attempts to read the panel size from the chip. If the
             user has used the "UseModeline" or "FixPanelSize" options the
             panel timings are derived from the mode, which can be different
-            than the panel size. Try deleting theses options  from XF86Config
+            than the panel size. Try deleting theses options  from xorg.conf
             or using an LCD/CRT switch.
 
       I can't get a 320x240 mode to occupy the whole 640x480 LCD
@@ -884,7 +889,7 @@ cause damage.
 
       The right hand edge of the mode isn't visible on the LCD
             This is usually due to a problem with the "LcdCenter" option. If
-            this option is removed form XF86Config, then the problem might go
+            this option is removed form xorg.conf, then the problem might go
             away. Alternatively the manufacturer could have incorrectly pro-
             grammed the panel size in the EGA console mode. The "FixPanel-
             Size" can be used to force the modeline values into the panel
@@ -930,15 +935,15 @@ cause damage.
             colour depths.  However, 8 and 24 bit colour depths seem to work
             fine.
 
-      My ct69030 machine locks up when starting XFree86
+      My ct69030 machine locks up when starting X
             The ct69030 chipset introduced a new dual channel architecture.
-            In its current form, XFree86 can not take advantage of this sec-
-            ond display channel. In fact if the video BIOS on the machine
-            sets the ct69030 to a dual channel mode by default, XFree86 will
-            lockup hard at this point. The solution is to use the BIOS setup
-            to change to a single display channel mode, ensuring that both
-            the IOSS and MSS registers are set to a single channel mode. Work
-            is underway to fix this.
+            In its current form, X can not take advantage of this second dis-
+            play channel. In fact if the video BIOS on the machine sets the
+            ct69030 to a dual channel mode by default, X will lockup hard at
+            this point. The solution is to use the BIOS setup to change to a
+            single display channel mode, ensuring that both the IOSS and MSS
+            registers are set to a single channel mode. Work is underway to
+            fix this.
 
       I can't start X-windows with 16, 24 or 32bpp
             Firstly, is your machine capable of 16/24/32bpp with the mode
@@ -956,9 +961,9 @@ cause damage.
 
                         startx -- -depth 24 -fbbpp 32   8-8-8 RGB truecolor
 
-            however as XFree86 version 4.3.99.903 allows 32bpp pixmaps to be
-            used with framebuffers operating in 24bpp, this mode of operating
-            will cost performance for no gain in functionality.
+            however as X11R6.8.1 allows 32bpp pixmaps to be used with frame-
+            buffers operating in 24bpp, this mode of operating will cost per-
+            formance for no gain in functionality.
 
             Note that the "-bpp" option has been removed and replaced with a
             "-depth" and "-fbbpp" option because of the confusion between the
@@ -984,16 +989,16 @@ the screen is having problems.
 
 If you are having driver-related problems that are not addressed by this doc-
 ument, or if you have found bugs in accelerated functions, you can try con-
-tacting the XFree86 team (the current driver maintainer can be reached at
-<dbateman@club-internet.fr> or <eich@xfree86.org>), or post in the Usenet
-newsgroup "comp.windows.x.i386unix".
+tacting the Xorg team (the current driver maintainer can be reached at
+<eich@freedesktop.org>).
 
 8.  Disclaimer
 
-XFree86, allows the user to do damage to their hardware with software.
-Although the authors of this software have tried to prevent this, they dis-
-claim all responsibility for any damage caused by the software. Use caution,
-if you think the Xserver is frying your screen, TURN THE COMPUTER OFF!!
+The Xorg X server, allows the user to do damage to their hardware with soft-
+ware with old monitors which may not tolerate bad display settings.  Although
+the authors of this software have tried to prevent this, they disclaim all
+responsibility for any damage caused by the software. Use caution, if you
+think the X server is frying your screen, TURN THE COMPUTER OFF!!
 
 9.  Acknowledgement
 
@@ -1027,7 +1032,5 @@ Contributors (In no particular order)
 We also thank the many people on the net who have contributed by reporting
 bugs and extensively testing this server.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/chips.sgml,v 3.38 eich Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.chips,v 3.51 2004/01/28 02:13:13 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.chips,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

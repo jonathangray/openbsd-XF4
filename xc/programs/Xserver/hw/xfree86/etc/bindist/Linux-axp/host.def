@@ -1,7 +1,7 @@
 /*
  * Host.def for building Linux/alpha bindists
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/Linux-axp/host.def,v 1.8 2001/06/05 23:00:40 dawes Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/Linux-axp/host.def,v 1.7 2001/05/31 18:47:08 dawes Exp $
  */
 
 #define InstallEmptyHostDef

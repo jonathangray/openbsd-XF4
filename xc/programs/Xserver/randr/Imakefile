@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.2 2002/09/29 23:39:45 keithp Exp $
+XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.1 2001/05/23 03:29:44 keithp Exp $
 #include <Server.tmpl>
 
        SRCS =	randr.c mirandr.c

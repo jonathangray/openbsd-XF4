@@ -22,7 +22,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyCfb.c,v 3.5 2001/12/14 19:59:44 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyCfb.c,v 3.4 2001/01/17 22:36:53 dawes Exp $ */
 
 /*
 Copyright 1990, 1998  The Open Group

@@ -1,10 +1,11 @@
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/doc/Imakefile,v 1.3 2004/08/26 11:58:07 eich Exp $
 XCOMM $XConsortium: Imakefile /main/33 1996/10/28 05:12:24 kaleb $
 
 
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/doc/Imakefile,v 3.85 2004/01/28 02:09:20 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/doc/Imakefile,v 3.84 2003/11/22 01:33:31 dawes Exp $
 
 #include <Server.tmpl>
 #include <lnxdoc.rules>
@@ -28,7 +29,6 @@ REPORTFORM = BugReport
 #if !BuildLinuxDocText
 OSREADMES = \
 	ReadmeFile(Darwin)	\
-	ReadmeFile(isc)		\
 	ReadmeFile(LynxOS)	\
 	ReadmeFile(NetBSD)	\
 	ReadmeFile(OpenBSD)	\
@@ -57,8 +57,6 @@ MAINDOCS = LICENSE README BUILD RELNOTES \
 OTHERDOCS = \
 	ReadmeFile(fonts) \
 	ReadmeFile(mouse) \
-	ReadmeFile(DRI) \
-	ReadmeFile(DRIcomp) \
 	ReadmeFile(dps) \
 	ReadmeFile(XKB-Config) \
 	ReadmeFile(XKB-Enhancing)
@@ -69,9 +67,13 @@ MISCDOCS = $(REPORTFORM) \
 
 DATABASE =
 
-FILES = $(MAINDOCS) $(OSREADME) $(HWREADME) $(OTHERDOCS) $(MISCDOCS) $(DATABASE)
+FILES = $(MAINDOCS) $(OSREADMES) $(HWREADME) $(OTHERDOCS) $(MISCDOCS) $(DATABASE)
 
+#if defined XFree86VersionString
 VERS = XFree86VersionString
+#elif defined (XorgVersionString)
+VERS = XorgVersionString
+#endif
 
 CppFileTarget(BugReport, BugReport.cpp, -DXF86_VERSION=$(VERS), $(ICONFIGFILES))
 

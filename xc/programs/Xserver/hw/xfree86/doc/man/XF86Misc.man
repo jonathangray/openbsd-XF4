@@ -1,17 +1,18 @@
+.\" $XdotOrg: xc/programs/Xserver/hw/xfree86/doc/man/XF86Misc.man,v 1.2 2004/04/23 19:23:08 eich Exp $
 .\" $TOG: XF86Misc.man /main/7 1997/07/19 10:30:32 kaleb $
 .\"
 .\"
 .\"
 .\" Copyright (c) 1996  Joe Moss, The XFree86 Project
 .\" 
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/doc/man/XF86Misc.man,v 3.13 2003/11/23 05:40:36 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/doc/man/XF86Misc.man,v 3.12 2002/12/22 00:46:54 dawes Exp $
 .de ZN
 .ie t \fB\^\\$1\^\fR\\$2
 .el \fI\^\\$1\^\fP\\$2
 ..
-.TH XF86MISC 3X11 __vendorversion__ "X FUNCTIONS"
+.TH XF86MISC __libmansuffix__ __vendorversion__ "X FUNCTIONS"
 .SH NAME
-XF86MiscQueryExtension, XF86MiscQueryVersion, XF86MiscGetMouseSettings, XF86MiscSetMouseSettings, XF86MiscGetKbdSettings, XF86MiscSetKbdSettings \- XFree86-Misc extension interface functions
+XF86MiscQueryExtension, XF86MiscQueryVersion, XF86MiscGetMouseSettings, XF86MiscSetMouseSettings, XF86MiscGetKbdSettings, XF86MiscSetKbdSettings \- Extension library for the XFree86-Misc X extension.
 .SH SYNTAX
 .nf
 .LP
@@ -210,7 +211,7 @@ Keyboard types
 .IP \fBMF_\fP* 1i
 Mouse flags
 .SH "SEE ALSO"
-xset(1), XF86Config(__filemansuffix__)
+xset(__appmansuffix__), __xconfigfile__(__filemansuffix__)
 .SH AUTHORS
 Joe Moss and David Dawes, The XFree86 Project, Inc.
 

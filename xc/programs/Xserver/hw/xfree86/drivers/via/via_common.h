@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_common.h,v 1.2 2003/08/27 15:16:08 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef _VIA_COMMON_H_
 #define _VIA_COMMON_H_ 1

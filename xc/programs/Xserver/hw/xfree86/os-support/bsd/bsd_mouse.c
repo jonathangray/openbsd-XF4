@@ -44,6 +44,7 @@
 #else
 #include "usb.h"
 #endif
+
 #include <dev/usb/usb.h>
 #ifdef USB_GET_REPORT_ID
 #define USB_NEW_HID
@@ -63,9 +64,10 @@
 #define UMS_BUT(i) ((i) == 0 ? 2 : (i) == 1 ? 0 : (i) == 2 ? 1 : (i))
 #endif /* USBMOUSE_SUPPORT */
 
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
 extern int priv_open_device(const char *path);
 #endif
+
 #ifdef USBMOUSE_SUPPORT
 static void usbSigioReadInput (int fd, void *closure);
 #endif
@@ -283,7 +285,11 @@ FindDevice(InputInfoPtr pInfo, const char *protocol, int flags)
     struct stat sb;
 
     for (pdev = mouseDevs; *pdev; pdev++) {
+#ifndef X_PRIVSEP
 	SYSCALL (fd = open(*pdev, O_RDWR | O_NONBLOCK));
+#else
+	fd = priv_open_device(*pdev);
+#endif
 	if (fd == -1) {
 #ifdef DEBUG
 	    ErrorF("Cannot open %s (%s)\n", *pdev, strerror(errno));
@@ -366,7 +372,7 @@ FindDevice(InputInfoPtr pInfo, const char *protocol, int flags)
     const char **pdev;
 
     for (pdev = mouseDevs; *pdev; pdev++) {
-	fd = priv_open_device(*pdev);
+	SYSCALL(fd = open(*pdev, O_RDWR | O_NONBLOCK));
 	if (fd != -1) {
 	    /* Set the Device option. */
 	    pInfo->conf_idev->commonOptions =

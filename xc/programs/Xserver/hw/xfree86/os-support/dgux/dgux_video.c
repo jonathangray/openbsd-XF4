@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_video.c,v 1.7 2003/03/14 13:46:05 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_video.c,v 1.6tsi Exp $ */
 /*
  * INTEL DG/UX RELEASE 4.20 MU03
  * Copyright 1997 Takis Psarogiannakopoulos Cambridge,UK

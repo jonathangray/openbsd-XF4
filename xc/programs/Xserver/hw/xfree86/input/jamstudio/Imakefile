@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/jamstudio/Imakefile,v 1.1 2002/11/11 01:18:08 alanh Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/Imakefile,v 1.5 2001/01/24 00:06:37 dawes Exp $
 
 #define IHaveModules
 #include <Server.tmpl>

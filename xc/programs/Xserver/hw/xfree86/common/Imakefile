@@ -4,7 +4,7 @@ XCOMM $XConsortium: Imakefile /main/34 1996/10/27 11:05:08 kaleb $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.155 2004/01/27 01:29:02 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.154 2003/10/08 14:58:26 dawes Exp $
 
 
 
@@ -28,6 +28,10 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/common/Imakefile,v 3.155 2004/01/
         KBD = xf86Kbd
 #  endif
 # endif
+#endif
+
+#if UseDeprecatedKeyboardDriver
+KEYBOARD_DEFS = -DUSE_DEPRECATED_KEYBOARD_DRIVER
 #endif
 
 #if (defined(SparcArchitecture) || defined(Sparc64Architecture)) \
@@ -73,11 +77,15 @@ EXT_MODULES_DEFINES = $(GLX_DEFINES)
 MDEBUGDEFS = -DMEMDEBUG
 #endif
 
-#ifndef XF86ExpireServer
-#define XF86ExpireServer	NO
+#if DoPrivSep
+PRIVSEPDEFINES= -DX_PRIVSEP
 #endif
 
-#if XF86ExpireServer
+#ifndef XorgExpireServer
+#define XorgExpireServer	NO
+#endif
+
+#if XorgExpireServer
       BETASRC = xf86Beta.c
       BETAOBJ = xf86Beta.o
      BETADEFS = -DDO_CHECK_BETA
@@ -90,7 +98,7 @@ MDEBUGDEFS = -DMEMDEBUG
 #define NeedXF86Beta NO
 #endif
 
-#if XF86ExpireServer
+#if XorgExpireServer
 EXP_FORCE_DEFINES = -DSHOW_BETA_MESSAGE -DEXPIRE_SERVER
 #endif
 
@@ -125,6 +133,7 @@ SRCS =	\
 	xf86cmap.c\
 	xf86PM.c \
 	xf86Versions.c \
+	xorgHelper.c \
 	$(DEBUGSRC) \
 	$(KBD).c \
 	$(SBUSSRC) \
@@ -164,6 +173,7 @@ OBJS = \
 	xf86cmap.o\
 	xf86PM.o \
 	xf86Versions.o \
+	xorgHelper.o \
 	$(DEBUGOBJ) \
 	$(SBUSOBJ) \
 	$(XF86_XINPUT_OBJ) \
@@ -199,10 +209,14 @@ CUSTOMVERSION = XFree86CustomVersion
   BUILDERMSG = -DBUILDERSTRING='$(BUILDERSTRING)'
 #endif
        XORGREL = XOrgReleaseString
-   XORGREL_DEF = -DXORG_RELEASE='"$(XORGREL)"'
+   XORGREL_DEF = -DXORG_RELEASE="\"$(XORGREL)\""
+#if defined(XorgDateString)
+      XORGDATE = XorgDateString
+  XORGDATE_DEF = -DXORG_DATE='$(XORGDATE)'
+#endif
 
 CONSDEFINES = XFree86ConsoleDefines
-EXP_DEFINES = -DEXPIRY_TIME=XF86ServerExpiry $(EXP_FORCE_DEFINES)
+EXP_DEFINES = -DEXPIRY_TIME=XorgServerExpiry $(EXP_FORCE_DEFINES)
     DRIVERS = XF86CardDrivers
    IDRIVERS = XInputDrivers
 XCONFIGDEFINES = -DPROJECTROOT='"$(PROJECTROOT)"' \
@@ -212,17 +226,19 @@ XCONFIGDEFINES = -DPROJECTROOT='"$(PROJECTROOT)"' \
 XF86CONFIGFILE = XConfigFile
 XCONFIGUREDEFINES = -DXF86CONFIGFILE='"$(XF86CONFIGFILE)"'
 
-    DEFINES = $(CONSDEFINES) $(KBDDEFINES) $(EXT_DEFINES) $(OS_DEFINES)
+    DEFINES = $(CONSDEFINES) $(KBDDEFINES) $(EXT_DEFINES) $(OS_DEFINES) \
+	      $(CONFIG_DEFINES) $(XKBDEFRULESDEFS) $(VENDORSUPPORTDEFS) \
+	      $(PRIVSEPDEFINES) $(VENDOR_DEFINES)
 
 AllTarget($(OFILES))
 
 SpecialCObjectRule(xf86Bus,NullParameter,$(BUGMSG) $(VGAINCLUDES))
-SpecialCObjectRule(xf86Init,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) $(BUGMSG) $(CUSTOMVERDEF) $(XORGREL_DEF) $(EXT_DEFINES) $(BETADEFS) $(MDEBUGDEFS))
+SpecialCObjectRule(xf86Init,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) $(BUGMSG) $(CUSTOMVERDEF) $(XORGREL_DEF) $(XORGDATE_DEF) $(EXT_DEFINES) $(BETADEFS) $(MDEBUGDEFS) $(KEYBOARD_DEFS))
 SpecialCObjectRule(xf86Events,$(ICONFIGFILES),$(EXT_DEFINES) $(MDEBUGDEFS))
 SpecialCObjectRule(xf86Globals,$(ICONFIGFILES),$(EXT_DEFINES) $(MODPATHDEFINES) $(LOGDEFINES))
 SpecialCObjectRule(xf86AutoConfig,$(ICONFIGFILES),$(XCONFIGDEFINES))
 SpecialCObjectRule(xf86Config,$(ICONFIGFILES),$(XCONFIGDEFINES))
-SpecialCObjectRule(xf86Configure,$(ICONFIGFILES),$(XCONFIGUREDEFINES))
+SpecialCObjectRule(xf86Configure,$(ICONFIGFILES),$(XCONFIGUREDEFINES) $(KEYBOARD_DEFS))
 
 #if NeedXF86Beta
 SpecialCObjectRule($(BETAOBJ),NullParameter,$(EXP_DEFINES))

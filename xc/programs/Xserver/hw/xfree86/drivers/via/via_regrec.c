@@ -21,7 +21,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_regrec.c,v 1.2 2003/09/11 10:08:38 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_regrec.c,v 1.1 2003/08/25 18:44:37 eich Exp $ */
 /*#include <stdlib.h>
 #include <string.h>*/
 #include "xf86.h"

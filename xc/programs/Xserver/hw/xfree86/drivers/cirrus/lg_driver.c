@@ -13,7 +13,7 @@
  *	David Dawes, Andrew E. Mileski, Leonard N. Zubkoff,
  *	Guy DESBIEF, Itai Nahshon.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_driver.c,v 1.50 2003/11/07 22:49:58 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_driver.c,v 1.49 2003/11/03 05:11:09 tsi Exp $ */
 
 #define EXPERIMENTAL
 
@@ -246,7 +246,7 @@ static XF86ModuleVersionInfo lgVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	LG_MAJOR_VERSION, LG_MINOR_VERSION, LG_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,			/* This is a video driver */
 	ABI_VIDEODRV_VERSION,

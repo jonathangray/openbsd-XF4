@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/tek4957/xf86Tek4957.c,v 1.3 2004/04/25 23:16:59 alanc Exp $ */
 /*
  * Copyright 2002 by Olivier DANET <odanet@caramail.com>
  *
@@ -589,16 +590,16 @@ TekInit(InputDriverPtr	drv,
     local->old_y = -1;
 
 #if defined (sun) && !defined(i386)
-    char *dev_name;
-#endif
+    {
+	char *dev_name;
 
-#if defined(sun) && !defined(i386)
-    if ((dev_name = getenv("TEK4957_DEV"))) {
-	priv->Device = xalloc(strlen(dev_name) + 1);
-	strcpy(priv->Device, dev_name);
-	xf86Msg(X_INFO,"Tek4957:Port selected : %s\n", priv->Device);
-    } else {
-	priv->Device = "";
+	if ((dev_name = getenv("TEK4957_DEV"))) {
+	    priv->Device = xalloc(strlen(dev_name) + 1);
+	    strcpy(priv->Device, dev_name);
+	    xf86Msg(X_INFO,"Tek4957:Port selected : %s\n", priv->Device);
+	} else {
+	    priv->Device = "";
+	}
     }
 #else
     priv->Device = "";         /* device file name */
@@ -758,7 +759,7 @@ static XF86ModuleVersionInfo TekVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

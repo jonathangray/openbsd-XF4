@@ -1,5 +1,5 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/Imakefile,v 3.14 2004/02/02 03:55:32 dawes Exp $
-
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/Imakefile,v 3.13 2003/12/30 15:21:06 herrb Exp $
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/misc/Imakefile,v 1.2 2004/04/23 19:54:11 eich Exp $
 
 
 
@@ -26,7 +26,7 @@ SlowBcopy.o: SlowBcopy.c
 #if !(defined(AlphaArchitecture) && defined(OpenBSDArchitecture))
 ILHACKSRCS = xf86_IlHack.c
 ILHACKOBJS = xf86_IlHack.o
-#elif defined(SunArchitecture) && defined(i386Architecture)
+#elif NeedPortIO
 ILHACKOBJS = PortIO.o
 #endif
 #endif
@@ -48,7 +48,7 @@ ObjectFromAsmSource(IODelay,NullParameter)
 ObjectFromAsmSource(SlowBcopy,NullParameter)
 #endif
 
-#if defined(SunArchitecture) && defined(i386Architecture)
+#ifdef NeedPortIO
 ObjectFromAsmSource(PortIO,NullParameter)
 #endif
 

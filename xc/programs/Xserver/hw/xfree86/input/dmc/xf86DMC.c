@@ -35,7 +35,7 @@
   *   - Make dectection work after restart of X
   */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/dmc/xf86DMC.c,v 1.3 2003/06/25 18:06:25 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/dmc/xf86DMC.c,v 1.1 2001/08/17 13:27:55 dawes Exp $ */
 
 #define _DMC_C_
 
@@ -70,7 +70,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcArea.c,v 1.4 2003/02/18 21:29:59 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcArea.c,v 1.3tsi Exp $ */
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -47,7 +47,7 @@ int alu ;
 unsigned long int fg, bg, pm ;
 int xSrc, ySrc ;
 PixmapPtr pPixmap ;
-ppcPrivGC *pPrivGC = pGC->devPrivates[mfbGCPrivateIndex].ptr;
+ppcPrivGC *pPrivGC = pGC->devPrivates[mfbGetGCPrivateIndex()].ptr;
 
 TRACE( ( "xf4bppFillArea(0x%x,%d,0x%x,0x%x)\n", pWin, nboxes, pBox, pGC ) ) ;
 

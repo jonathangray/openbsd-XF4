@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.3 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.10 2004/02/13 22:41:21 matthieu Exp $ */
+/* $XFree86: sparc64_video.c,v 1.2 2003/03/14 13:46:04 tsi Exp $ */
+/* $OpenBSD: sparc64_video.c,v 1.11 2004/11/03 00:09:15 matthieu Exp $
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -34,22 +34,10 @@
 
 #include "xf86_OSlib.h"
 #include "xf86OSpriv.h"
-#include "bus/Pci.h"
-#include <sys/pciio.h>
 
 #ifndef MAP_FAILED
 #define MAP_FAILED ((caddr_t)-1)
 #endif
-
-#ifdef notyet
-static char *devPrefix[] = {
-	"/dev/ttyC",
-	"/dev/ttyD",
-};
-
-#define N_DEV_PREFIX (sizeof(devPrefix)/sizeof(char *))
-#define MAX_DEV_PER_PREFIX 8
-#endif /* notyet */
 
 /***************************************************************************/
 /* Video Memory Mapping section                                            */
@@ -67,15 +55,17 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 	pVidMem->initialised = TRUE;
 }
 
-
-volatile unsigned char *ioBase = MAP_FAILED;
-
 static pointer
 sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, 
 		 int flags)
 {
 	int fd = xf86Info.screenFd;
 	pointer base;
+
+#ifdef DEBUG
+	xf86MsgVerb(X_INFO, 3, "mapVidMem %lx, %lx, fd = %d", 
+		    Base, Size, fd);
+#endif
 
 	base = mmap(0, Size,
 		    (flags & VIDMEM_READONLY) ?
@@ -119,6 +109,7 @@ xf86EnableInterrupts()
 	return;
 }
 
+#ifdef X_PRIVSEP
 /*
  * Do all things that need root privileges early 
  * and revoke those privileges 
@@ -129,3 +120,4 @@ xf86PrivilegedInit(void)
 	pciInit();
 	xf86OpenConsole();
 }
+#endif

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/cen9211.c,v 1.2 2003/11/03 05:11:24 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/cen9211.c,v 1.1tsi Exp $ */
 /*
  * $Workfile: cen9211.c $
  *

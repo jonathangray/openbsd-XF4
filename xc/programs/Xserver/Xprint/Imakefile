@@ -1,10 +1,4 @@
 XCOMM $Xorg: Imakefile,v 1.4 2001/03/14 18:44:11 pookie Exp $
-
-
-
-
-XCOMM $XFree86: xc/programs/Xserver/Xprint/Imakefile,v 1.20 2003/07/16 01:38:33 dawes Exp $
-
 #include <Server.tmpl>
 
 #ifndef XpRasterDDX
@@ -20,10 +14,10 @@ XCOMM $XFree86: xc/programs/Xserver/Xprint/Imakefile,v 1.20 2003/07/16 01:38:33 
 #define XpPostScriptDDX YES
 #endif
 
-SRCS1 =	Init.c Quarks.c attributes.c Util.c mediaSizes.c \
+SRCS1 =	Init.c Quarks.c spooler.c attributes.c Util.c mediaSizes.c \
 	Oid.c AttrValid.c
 
-OBJS1 = Init.o Quarks.o attributes.o Util.o mediaSizes.o \
+OBJS1 = Init.o Quarks.o spooler.o attributes.o Util.o mediaSizes.o \
 	Oid.o AttrValid.o
 
 #ifdef OS2Architecture
@@ -34,7 +28,7 @@ OBJS_OS2 = os2_stubs.o
 #if XprtServer
 #if PrintOnlyServer || defined(PrintServerExtensions)
 #if PrintOnlyServer
-PO_DEFINES = -DPRINT_ONLY_SERVER 
+PO_DEFINES = -DPRINT_ONLY_SERVER
 #endif
 #ifdef PrintServerExtensions
 XPEXT_DEFINES = PrintServerExtensions
@@ -48,7 +42,7 @@ SRCS2 = ddxInit.c
 OBJS2 = ddxInit.o
 #endif
 
-SRCS =	$(SRCS1) $(SRCS2) $(SRCS3) $(SRCS_OS2)
+SRCS = $(SRCS1) $(SRCS2) $(SRCS3) $(SRCS_OS2)
 
 OBJS = $(OBJS1) $(OBJS_OS2)
 
@@ -75,15 +69,15 @@ MKTMP_DEFINES = -DHAS_MKSTEMP
 
 #if XpRasterDDX || XpColorPclDDX || XpMonoPclDDX || XpPostScriptDDX
 
-SUBDIRS = $(RASTDIR) $(PCLDIR) $(MPCLDIR) $(PSDIR)
-
+SUBDIRS = $(RASTDIR) $(PCLDIR) $(MPCLDIR) $(PSDIR) etc
 #define IHaveSubdirs
 
 #endif
 
    INCLUDES = -I$(XINCLUDESRC) -I. -I../mfb -I../mi -I../cfb \
-	      -I../include -I$(TOP)/include -I$(LIBSRC) \
-	      -I$(EXTINCSRC) -I$(FONTINCSRC) -I$(XLIBSRC)
+             -I../include -I$(TOP)/include -I$(LIBSRC) \
+             -I$(EXTINCSRC) -I$(FONTINCSRC) -I$(XLIBSRC)
+
 
    LINTLIBS = $(TOP)/server/dix/llib-ldix.ln $(TOP)/server/os/llib-los.ln \
 	      $(TOP)/server/ddx/mfb/llib-lmfb.ln \
@@ -91,7 +85,7 @@ SUBDIRS = $(RASTDIR) $(PCLDIR) $(MPCLDIR) $(PSDIR)
 	      $(TOP)/server/ddx/cfb/llib-lcfb.ln
 
 DEFINES = -DXPRINTDIR=\"$(XPRINTDIR)\" $(RASTDEF) $(PCLDEF) $(MPCLDEF) \
-	  $(PSDEF) $(MKTMP_DEFINES) -UXFree86LOADER -D_XP_PRINT_SERVER_
+         $(PSDEF) $(MKTMP_DEFINES) -UXFree86LOADER -D_XP_PRINT_SERVER_
 
 /* Go ahead:  Call me paranoid ... */
 Makefiles::
@@ -111,7 +105,7 @@ NormalLintTarget($(SRCS))
 SpecialCObjectRule(ddxInit,$(ICONFIGFILES),$(PO_DEFINES) $(OS_DEFINES) $(EXT_DEFINES))
 #if XprtServer && (PrintOnlyServer || defined(PrintServerExtensions))
 LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
-SpecialCObjectRule(miinitext,$(ICONFIGFILES),$(PO_DEFINES) $(OS_DEFINES) $(XPEXT_DEFINES) -DXPRINT -UGLXEXT)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),$(PO_DEFINES) $(OS_DEFINES) $(XPEXT_DEFINES) -DXPRINT)
 #if PrintOnlyServer
 LinkSourceFile(dpmsstubs.c,$(SERVERSRC)/Xext)
 LinkSourceFile(dpmsproc.h,$(SERVERSRC)/Xext)
@@ -131,3 +125,14 @@ MakeLintLibSubdirs($(SUBDIRS))
 #endif
 
 DependTarget()
+
+MANDIR = $(MISCMANDIR)
+MANSUFFIX = $(MISCMANSUFFIX)
+InstallManPage(Xprint,$(MANDIR))
+
+#ifdef HasDocBookTools
+all:: Xprint.man Xprint.html
+
+ConvertDocBookToManPage(Xprint.sgml, Xprint.man)
+ConvertDocBookToHTML(Xprint.sgml, Xprint.html)
+#endif /* HasDocBookTools */

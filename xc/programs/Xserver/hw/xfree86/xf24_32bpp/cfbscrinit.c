@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbscrinit.c,v 1.6 2003/09/13 21:33:09 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbscrinit.c,v 1.5 2003/07/16 01:38:49 dawes Exp $ */
 
 
 #include "X.h"

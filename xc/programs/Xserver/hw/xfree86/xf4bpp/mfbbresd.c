@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbbresd.c,v 1.4 2002/01/25 21:56:22 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbbresd.c,v 1.3 1999/06/06 08:48:55 dawes Exp $ */
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -102,8 +102,8 @@ int len;		/* length of line */
     register PixelType *addrl;
     register int e3 = e2-e1;
     register unsigned long bit;
-    PixelType leftbit = mask[0]; /* leftmost bit to process in new word */
-    PixelType rightbit = mask[PPW-1]; /* rightmost bit to process in new word */
+    PixelType leftbit = mfbGetmask(0); /* leftmost bit to process in new word */
+    PixelType rightbit = mfbGetmask(PPW-1); /* rightmost bit to process in new word */
     int dashIndex;
     int dashOffset;
     int dashRemaining;
@@ -125,7 +125,7 @@ int len;		/* length of line */
     addrl = mfbScanline(addrlbase, x1, y1, nlwidth);
     yinc = signdy * nlwidth;
     e = e-e1;			/* to make looping easier */
-    bit = mask[x1 & PIM];
+    bit = mfbGetmask(x1 & PIM);
     if (axis == X_AXIS)
     {
 	if (signdx > 0)

@@ -28,10 +28,9 @@
  * Authors:	Keith Packard, MIT X Consortium
  *		Harold L Hunt II
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winallpriv.c,v 1.12 2002/10/31 23:04:39 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winallpriv.c,v 1.11 2002/10/17 08:18:21 alanh Exp $ */
 
 #include "win.h"
-
 
 
 /* See Porting Layer Definition - p. 58 */
@@ -48,7 +47,7 @@ winAllocatePrivates (ScreenPtr pScreen)
   winPrivScreenPtr	pScreenPriv;
 
 #if CYGDEBUG
-  ErrorF ("winAllocateScreenPrivates - g_ulServerGeneration: %d "
+  winDebug ("winAllocateScreenPrivates - g_ulServerGeneration: %d "
 	  "serverGeneration: %d\n",
 	  g_ulServerGeneration, serverGeneration);
 #endif
@@ -117,10 +116,10 @@ winAllocatePrivates (ScreenPtr pScreen)
  */
 
 Bool
-winInitCmapPrivates (ColormapPtr pcmap)
+winInitCmapPrivates (ColormapPtr pcmap, int index)
 {
 #if CYGDEBUG
-  ErrorF ("winInitCmapPrivates\n");
+  winDebug ("winInitCmapPrivates\n");
 #endif
   
   /*
@@ -130,7 +129,9 @@ winInitCmapPrivates (ColormapPtr pcmap)
    * anything.  Perhaps I am misunderstanding the purpose
    * of this function.
    */
-  
+  /*  That's definitely true.
+   *  I therefore changed the API and added the index as argument.
+   */
   return TRUE;
 }
 
@@ -146,7 +147,7 @@ winAllocateCmapPrivates (ColormapPtr pCmap)
   static unsigned long		s_ulPrivateGeneration = 0;
 
 #if CYGDEBUG
-  ErrorF ("winAllocateCmapPrivates\n");
+  winDebug ("winAllocateCmapPrivates\n");
 #endif
 
   /* Get a new privates index when the server generation changes */
@@ -174,7 +175,7 @@ winAllocateCmapPrivates (ColormapPtr pCmap)
   winSetCmapPriv (pCmap, pCmapPriv);
 
 #if CYGDEBUG
-  ErrorF ("winAllocateCmapPrivates - Returning\n");
+  winDebug ("winAllocateCmapPrivates - Returning\n");
 #endif
 
   return TRUE;

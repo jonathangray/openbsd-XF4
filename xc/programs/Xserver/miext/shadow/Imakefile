@@ -1,11 +1,11 @@
-XCOMM $XFree86: xc/programs/Xserver/miext/shadow/Imakefile,v 1.7 2002/05/31 18:46:05 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/miext/shadow/Imakefile,v 1.6 2001/07/20 19:25:02 keithp Exp $
 XCOMM 
 XCOMM 
 
 #define IHaveModules
 #include <Server.tmpl>
 
-#ifdef XFree86Version
+#if (defined (XFree86Version) || defined(XorgVersion))
 #if DoLoadableServer
 XFMODSRC = shmodule.c
 XFMODOBJ = shmodule.o

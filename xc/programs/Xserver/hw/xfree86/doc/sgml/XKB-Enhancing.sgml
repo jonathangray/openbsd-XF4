@@ -1,4 +1,4 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN">
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN">
 
 <article>
 <title>How to further enhance XKB configuration
@@ -6,7 +6,6 @@
 <date>25 November 2002
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/XKB-Enhancing.sgml,v 1.2 2003/02/25 19:31:02 dawes Exp $
 </ident>
 
 <abstract>
@@ -35,7 +34,7 @@ document.
 
 <p>
 Note that this document covers only enhancements which
-are to be made to XFree86 version 4.3.x and above.
+are to be made to XFree86 version 4.3 and X11R6.7.0 and above.
 
 
 <sect>The Basics
@@ -117,7 +116,7 @@ concepts and used tricks.
 <p>
 <sect1>Levels And Groups
 <p>
-Since XFree86 4.3.0 you can use <bf>multi-layout</bf> concept of xkb 
+Since XFree86 4.3.0 and X11R6.7.0 you can use <bf>multi-layout</bf> concept of xkb 
 configuration.
 Though it is still in boundaries of xkb protocol and general ideas, the
 keymap designer must obey new rules when creating new maps. In exchange
@@ -453,7 +452,7 @@ rules file looks like this:
 ! model 	                =	keycodes
   macintosh_old	                =	macintosh
   ...
-  *		                =	xfree86
+  *		                =	xorg
   
 ! model		                =	symbols
   hp		                =	+inet(&percnt;m)
@@ -478,7 +477,7 @@ of equal sign ('<tt>=</tt>') results in. For example a (keyboard) model
 <tt>macintosh_old</tt> instructs xkb to take definitions of keycodes
 from file <tt>keycodes/macintosh</tt> while the rest of models
 (represented by a wild card '<tt>*</tt>') instructs it to take them from
-file <tt>keycodes/xfree86</tt>. The wild card represents all possible
+file <tt>keycodes/xorg</tt>. The wild card represents all possible
 values on the left side which were not found in any of the previous rules.
 The more specialized (more complete) rules have higher precedence than general 
 ones, i.e. the more general rules supply reasonable default values.

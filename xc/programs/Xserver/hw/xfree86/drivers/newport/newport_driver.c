@@ -30,7 +30,7 @@
  * Project.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_driver.c,v 1.26 2003/08/23 15:03:08 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_driver.c,v 1.25 2003/04/23 21:51:41 tsi Exp $ */
 
 /* function prototypes, common data structures & generic includes */
 #include "newport.h"
@@ -127,7 +127,7 @@ static XF86ModuleVersionInfo newportVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	NEWPORT_MAJOR_VERSION, NEWPORT_MINOR_VERSION, NEWPORT_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,
 	ABI_VIDEODRV_VERSION,
@@ -353,6 +353,9 @@ NewportPreInit(ScrnInfoPtr pScrn, int flags)
 	pNewport = NEWPORTPTR(pScrn);
 	pNewport->busID = busID;
 
+	pScrn->memPhysBase = 0;
+	pScrn->fbOffset = 0;
+	
 	/* We use a programmable clock */
 	pScrn->progClock = TRUE;
 

@@ -1,40 +1,41 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
 <article>
-<title>XFree86 on Darwin and Mac OS X
+<title>X.org X on Darwin and Mac OS X
 <author>Torrey T. Lyons
 <date>15 December 2003
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Darwin.sgml,v 1.10 2003/12/15 20:47:41 torrey Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/sgml/Darwin.sgml,v 1.2 2004/04/23 19:23:59 eich Exp $
 </ident>
 
 <toc>
 
 <sect>Introduction
 <p>
-<htmlurl url="http://www.xfree86.org/" name="XFree86">, a freely
-redistributable open-source implementation of the <htmlurl
-url="http://www.x.org/" name="X Window System">, has been ported to <htmlurl
+<htmlurl url="http://www.freedesktop.org/Software/xorg" name="Xorg">, a freely
+redistributable open-source implementation of the 
+<htmlurl url="http://www.x.org/" name="X Window System">, 
+has been ported to <htmlurl
 url="http://www.opensource.apple.com/projects/darwin/" name="Darwin">
 and <htmlurl url="http://www.apple.com/macosx/" name="Mac OS X">. This
 document is a collection of information for anyone
-running XFree86 on Apple's next generation operating system.
+running Xorg's X server on Apple's next generation operating system.
 
 <p>
-Most of the current work on XFree86 for Darwin and Mac OS&nbsp;X is centered
+Most of the current work on X for Darwin and Mac OS&nbsp;X is centered
 around the <htmlurl url="http://sourceforge.net/projects/xonx/"
 name="XonX project"> at <htmlurl url="http://sourceforge.net"
 name="SourceForge">. If you are interested in up-to-date status, want to
-report a bug, or are interested in working on XFree86 for Darwin, stop by the
+report a bug, or are interested in working on Xorg for Darwin, stop by the
 <htmlurl url="http://sourceforge.net/projects/xonx/" name="XonX project">.
 
 <sect>Hardware Support and Configuration
 <p>
 The X window server for Darwin and Mac OS&nbsp;X provided by the <htmlurl
-url="http://www.XFree86.Org/" name="XFree86 Project, Inc."> is called
+url="http://www.X.Org/" name="X.Org Foundation."> is called
 XDarwin. XDarwin can run in three different modes. On Mac OS&nbsp;X,
 XDarwin runs in parallel with Aqua in full screen or rootless modes.
 These modes are called Quartz modes, named after the Quartz 2D compositing
@@ -56,18 +57,18 @@ all the other windows. The X11 root window is not displayed in rootless
 mode as Aqua handles the desktop background.
 
 <p>
-From the console, the Darwin port of XFree86 uses the IOKit for device
-driver loading and discovery, rather than the XFree86 module loader.
-Because of this, the XFree86 configuration file is not used on Darwin
+From the console, the Darwin port of X11R&relvers; uses the IOKit for device
+driver loading and discovery, rather than the X11R&relvers; module loader.
+Because of this, the X11R&relvers; configuration file is not used on Darwin
 or Mac OS&nbsp;X systems. The descriptions found elsewhere of devices
-supported by XFree86 for other operating systems also do not apply.
+supported by X11R&relvers; for other operating systems also do not apply.
 
 <p>
-XFree86 for Darwin or Mac OS&nbsp;X will work with any video card that
+X11R&relvers; for Darwin or Mac OS&nbsp;X will work with any video card that
 you have an IOKit driver for. If you are running Mac OS&nbsp;X, this
 typically means any card that has been shipped by Apple. If a card works
 for you with the Mac OS&nbsp;X GUI, it will work on the same machine with
-XFree86. If you have a pure Darwin installation, you may need to download
+X11R&relvers;. If you have a pure Darwin installation, you may need to download
 additional third-party drivers from
 <htmlurl url="http://developer.apple.com/darwin/"
 name="Apple's Darwin site">. IOKit drivers are typically installed in
@@ -82,23 +83,11 @@ will work on an ADB mouse.
 <sect>Getting Started
 <p>
 Following are instructions for building and running your own copy of
-XFree86. The procedure for getting your X server up and running on
+X11R&relvers;. The procedure for getting your X server up and running on
 Darwin and Mac OS&nbsp;X are very similar. Where there are differences
-I have noted them below. Note that to build XFree86 for yourself on
+I have noted them below. Note that to build X11R&relvers; for yourself on
 Mac OS&nbsp;X, you need to install the Developers' Tools.
 
-<p>
-If you don't feel the need to live on the cutting edge, you can save
-some time and effort by using the precompiled binaries available on
-the XFree86 FTP server at <url
-url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/binaries/">.
-Follow the instructions in the <htmlurl
-url="http://www.xfree86.org/&relvers;/Install.html" name="Install">
-document to install it. This will create three new directory trees,
-<tt>/usr/X11R6</tt>, <tt>/etc/X11</tt> and <tt>/etc/fonts</tt>. On
-Mac OS&nbsp;X the Xquartz.tgz tarball is required in addition to the
-other tarballs required on other platforms. With Mac OS&nbsp;X Quartz
-support, the XDarwin application will be installed in
 <tt>/Applications</tt>.
 
 <p>
@@ -111,14 +100,14 @@ below.
 
 <p>
 The first thing you need to do is to get the source code from the
-XFree86 project.
+X.Org Foundation project.
 
 <itemize>
 <item> Setup CVS: Both Darwin and Mac OS&nbsp;X include CVS (Concurrent
 Versions System), which is an easy way to download and keep up to date
-with open source code released by XFree86 and others. You do have to
+with open source code released by the X.Org Foundation and others. You do have to
 setup CVS properly, however, to tell it where to look. Follow the
-<htmlurl url="http://www.xfree86.org/cvs/" name="XFree86 instructions"> on
+<htmlurl url="http://x.org/" name="X.Org CVS instructions"> on
 how to do this either via ssh or via the cvs pserver.
 
 <item> Now make a directory in some convenient place which will serve
@@ -135,10 +124,10 @@ Wait for all the files to complete downloading.
 
 </itemize>
 
-<sect1> Build XFree86
+<sect1> Build X11R&relvers;
 <p>
 Once you have everything ready it is easy to build and install
-XFree86. From the command line: 
+X11R&relvers;. From the command line: 
 
 <tscreen><verb>
 cd sandbox/xc
@@ -173,14 +162,14 @@ shell you are using. This is described in the man page documentation for
 the shell.
 
 <p>
-In addition you may also want to add the man pages from XFree86 to the list
+In addition you may also want to add the man pages from X11R&relvers; to the list
 of pages to be searched when you are looking for documentation. The X11 man
 pages are located in <tt>/usr/X11R6/man</tt> and the <tt>MANPATH</tt>
 environment variable contains the list of directories to search.
 
 <sect1>Starting the X Server
 <p>
-On Mac OS&nbsp;X, you can run XFree86 from the Darwin
+On Mac OS&nbsp;X, you can run X11R&relvers; from the Darwin
 text console or in parallel with Aqua. To get to the text
 console in Mac OS&nbsp;X you need to logout and type ``&gt;console'' as
 the user name. This will shutdown Core Graphics and
@@ -189,7 +178,7 @@ From the text console you can start the X Window System by typing
 ``exec startx''.
 
 <p>
-When you are ready to quit XFree86 type ``exit'' in the main
+When you are ready to quit X11R&relvers; type ``exit'' in the main
 terminal window or quit with the window manager if you have one
 running. Unfortunately in IOKit mode, the X server does not shutdown
 correctly and if you did not start with ``exec startx'', you 
@@ -202,7 +191,7 @@ Mac OS&nbsp;X, Core Graphics will restart and you should be given a login
 window.
 
 <p>
-To start XFree86 in Quartz mode you can launch the XDarwin application
+To start X11R&relvers; in Quartz mode you can launch the XDarwin application
 in the <tt>/Applications</tt> folder, or from the command line type
 ``startx -- -quartz''. By default this will give you a mode picker to
 choose between full screen or rootless mode. You can change the default
@@ -237,7 +226,7 @@ The X Window System is very customizable and you will certainly want to
 change some things. There is a lot you can do to control how your windows
 look, how the windows are moved, resized, etc. You will likely want to
 get a fancier window manager than twm, which is included with
-XFree86. The <tt>.xinitrc</tt> file in your home directory controls what
+X11R&relvers;. The <tt>.xinitrc</tt> file in your home directory controls what
 programs are run when you start the X Window System. You can find a sample
 <tt>.xinitrc</tt> file in <tt>/etc/X11/xinit/xinitrc</tt>.  
 

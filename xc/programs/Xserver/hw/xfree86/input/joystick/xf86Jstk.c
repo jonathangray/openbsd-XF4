@@ -22,7 +22,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/joystick/xf86Jstk.c,v 1.6 2001/12/26 21:51:59 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/joystick/xf86Jstk.c,v 1.5 2001/11/26 16:25:53 dawes Exp $ */
 
 #include <xf86Version.h>
 
@@ -770,7 +770,7 @@ static XF86ModuleVersionInfo xf86JstkVersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

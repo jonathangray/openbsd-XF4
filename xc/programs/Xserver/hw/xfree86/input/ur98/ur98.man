@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/ur98/ur98.man,v 1.1 2002/11/22 03:49:15 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/mutouch/mutouch.man,v 1.1 2001/01/24 00:06:37 dawes Exp $
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH UR98 __drivermansuffix__ __vendorversion__
@@ -18,7 +18,7 @@ UR-98 \- UR98 (TR88L803) head tracker driver
 .B EndSection
 .SH DESCRIPTION
 .B UR-98
-is an XFree86 input driver for the Union Reality UR-F98 headtracker.
+is an __xservername__ input driver for the Union Reality UR-F98 headtracker.
 .PP
 The
 .B UR-98
@@ -43,7 +43,7 @@ practice to use well.
 Union Reality UR-98. While this is a joystick driver the behaviour is
 absolute so this driver is not useful for true joystick interfaces.
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 .PP
@@ -125,7 +125,7 @@ author writes from direct experience.
 This driver is currently Linux specific.
 .PP
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
 .SH AUTHORS
 Authors include...
  Alan Cox

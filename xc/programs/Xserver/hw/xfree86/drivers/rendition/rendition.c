@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/rendition.c,v 1.59 2004/01/11 04:03:16 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/rendition.c,v 1.58 2003/11/03 05:11:26 tsi Exp $ */
 /*
  * Copyright (C) 1998 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -228,7 +228,7 @@ static XF86ModuleVersionInfo renditionVersionRec = {
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     RENDITION_VERSION_MAJOR, RENDITION_VERSION_MINOR, RENDITION_PATCHLEVEL,
     ABI_CLASS_VIDEODRV,
     ABI_VIDEODRV_VERSION,
@@ -354,8 +354,8 @@ renditionProbe(DriverPtr drv, int flags)
 		foundScreen=TRUE;
 	    }
         }
+	xfree(usedChips);
     }
-    xfree(usedChips);
     return foundScreen;
 }
 

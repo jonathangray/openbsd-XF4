@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/Xserver/Xext/xtest.c,v 1.2 2004/04/23 18:44:42 eich Exp $ */
 /* $Xorg: xtest.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
 /*
 
@@ -26,7 +27,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xtest.c,v 3.11 2003/11/17 22:20:27 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xtest.c,v 3.10 2003/10/28 23:08:44 tsi Exp $ */
 
 #include "X.h"
 #define NEED_EVENTS

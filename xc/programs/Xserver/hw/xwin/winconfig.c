@@ -27,7 +27,7 @@
  *
  * Authors: Alexander Gottwald	
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winconfig.c,v 1.4 2003/10/08 11:13:02 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winconfig.c,v 1.3 2003/10/02 13:30:10 eich Exp $ */
 
 #include "win.h"
 #include "winconfig.h"
@@ -39,6 +39,7 @@
 #include "XKBsrv.h"
 #endif
 
+#ifdef XWIN_XF86CONFIG
 #ifndef CONFIGPATH
 #define CONFIGPATH  "%A," "%R," \
                     "/etc/X11/%R," "%P/etc/X11/%R," \
@@ -53,14 +54,25 @@
 #endif
 
 XF86ConfigPtr g_xf86configptr = NULL;
+#endif
+
 WinCmdlineRec g_cmdline = {
+#ifdef XWIN_XF86CONFIG
   NULL,				/* configFile */
+#endif
   NULL,				/* fontPath */
   NULL,				/* rgbPath */
+#ifdef XWIN_XF86CONFIG
   NULL,				/* keyboard */
+#endif
 #ifdef XKB
   FALSE,			/* noXkbExtension */
   NULL,				/* xkbMap */
+  NULL,             /* xkbRules */
+  NULL,             /* xkbModel */
+  NULL,             /* xkbLayout */
+  NULL,             /* xkbVariant */
+  NULL,             /* xkbOptions */
 #endif
   NULL,				/* screenname */
   NULL,				/* mousename */
@@ -98,6 +110,9 @@ winInfoRec g_winInfo = {
    50}
 };
 
+#define NULL_IF_EMPTY(x) (winNameCompare(x,"")?x:NULL)
+
+#ifdef XWIN_XF86CONFIG
 serverLayoutRec g_winConfigLayout;
 
 static Bool ParseOptionValue (int scrnIndex, pointer options,
@@ -105,8 +120,6 @@ static Bool ParseOptionValue (int scrnIndex, pointer options,
 static Bool configLayout (serverLayoutPtr, XF86ConfLayoutPtr, char *);
 static Bool configImpliedLayout (serverLayoutPtr, XF86ConfScreenPtr);
 static Bool GetBoolValue (OptionInfoPtr p, const char *s);
-
-#define NULL_IF_EMPTY(x) (winNameCompare(x,"")?x:NULL)
 
 
 Bool
@@ -126,6 +139,11 @@ winReadConfigfile ()
   /* Parse config file into data structure */
 
   filename = xf86openConfigFile (CONFIGPATH, xf86ConfigFile, PROJECTROOT);
+    
+  /* Hack for backward compatibility */
+  if (!filename && from == X_DEFAULT)
+    filename = xf86openConfigFile (CONFIGPATH, "XF86Config", PROJECTROOT);
+
   if (filename)
     {
       winMsg (from, "Using config file: \"%s\"\n", filename);
@@ -189,7 +207,7 @@ winReadConfigfile ()
 			     g_xf86configptr->conf_layout_lst,
 			     NULL))
 	    {
-	      winMsg (X_ERROR, "Unable to determin the screen layout\n");
+	      winMsg (X_ERROR, "Unable to determine the screen layout\n");
 	      return FALSE;
 	    }
 	}
@@ -199,6 +217,7 @@ winReadConfigfile ()
   winConfigFiles ();
   return retval;
 }
+#endif
 
 
 /* Set the keyboard configuration */
@@ -219,17 +238,20 @@ WinKBLayoutRec winKBLayouts[] = {
     {  0x407, -1, "pc105", "de",      NULL, NULL, "German (Germany)"},
     {0x10407, -1, "pc105", "de",      NULL, NULL, "German (Germany, IBM)"},
     {  0x807, -1, "pc105", "de_CH",   NULL, NULL, "German (Switzerland)"},
+    {  0x409, -1, "pc105", "us",      NULL, NULL, "English (USA)"},
     {0x10409, -1, "pc105", "dvorak",  NULL, NULL, "English (USA, Dvorak)"}, 
     {0x20409, -1, "pc105", "us_intl", NULL, NULL, "English (USA, International)"}, 
     {  0x809, -1, "pc105", "gb",      NULL, NULL, "English (United Kingdom)"},
+    { 0x1809, -1, "pc105", "ie",      NULL, NULL, "Irish"},
     {  0x40a, -1, "pc105", "es",      NULL, NULL, "Spanish (Spain, Traditional Sort)"},
     {  0x40b, -1, "pc105", "fi",      NULL, NULL, "Finnish"},
     {  0x40c, -1, "pc105", "fr",      NULL, NULL, "French (Standard)"},
     {  0x80c, -1, "pc105", "be",      NULL, NULL, "French (Belgian)"},
     {  0x410, -1, "pc105", "it",      NULL, NULL, "Italian"},
-    {  0x411, -1, "jp",    "jp",      NULL, NULL, "Japanese"},
+    {  0x411,  7, "jp106", "jp",      NULL, NULL, "Japanese"},
+    {  0x813, -1, "pc105", "be",      NULL, NULL, "Dutch (Belgian)"},  
     {  0x414, -1, "pc105", "no",      NULL, NULL, "Norwegian"},
-    {  0x416, -1, "pc105", "pt",      NULL, NULL, "Portuguese (Brazil, ABNT)"},
+    {  0x416, -1, "pc105", "br",      NULL, NULL, "Portuguese (Brazil, ABNT)"},
     {0x10416, -1, "abnt2", "br",      NULL, NULL, "Portuguese (Brazil, ABNT2)"},
     {  0x816, -1, "pc105", "pt",      NULL, NULL, "Portuguese (Portugal)"},
     {  0x41d, -1, "pc105", "se",      NULL, NULL, "Swedish (Sweden)"},
@@ -240,13 +262,18 @@ WinKBLayoutRec winKBLayouts[] = {
 Bool
 winConfigKeyboard (DeviceIntPtr pDevice)
 {
+#ifdef XKB
   char                          layoutName[KL_NAMELENGTH];
-  unsigned int                  layoutNum;
-  int                           keyboardType;  
+  static unsigned int           layoutNum = 0;
+  int                           keyboardType;
+#endif
+#ifdef XWIN_XF86CONFIG
   XF86ConfInputPtr		kbd = NULL;
   XF86ConfInputPtr		input_list = NULL;
-  MessageType			from = X_DEFAULT;
   MessageType			kbdfrom = X_CONFIG;
+#endif
+  MessageType			from = X_DEFAULT;
+  char				*s = NULL;
 
   /* Setup defaults */
 #ifdef XKB
@@ -258,29 +285,65 @@ winConfigKeyboard (DeviceIntPtr pDevice)
   g_winInfo.xkb.variant = NULL;
   g_winInfo.xkb.options = NULL;
 # else
-  g_winInfo.xkb.rules = "xfree86";
+  g_winInfo.xkb.rules = "xorg";
   g_winInfo.xkb.model = "pc101";
   g_winInfo.xkb.layout = "us";
   g_winInfo.xkb.variant = NULL;
   g_winInfo.xkb.options = NULL;
 # endif	/* PC98 */
 
+  /*
+   * Query the windows autorepeat settings and change the xserver defaults.   
+   * If XKB is disabled then windows handles the autorepeat and the special 
+   * treatment is not needed
+   */
+  {
+    int kbd_delay;
+    DWORD kbd_speed;
+    if (SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &kbd_delay, 0) &&
+        SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &kbd_speed, 0))
+      {
+        switch (kbd_delay) 
+          {
+            case 0:  g_winInfo.keyboard.delay = 250; break;
+            case 1:  g_winInfo.keyboard.delay = 500; break;
+            case 2:  g_winInfo.keyboard.delay = 750; break;
+            default:
+            case 3:  g_winInfo.keyboard.delay = 1000; break;
+          }
+        g_winInfo.keyboard.rate = max(1,kbd_speed);
+        winMsgVerb(X_PROBED, 1, "Setting autorepeat to delay=%d, rate=%d\n",
+                g_winInfo.keyboard.delay, g_winInfo.keyboard.rate);
+      }
+  }
   
 
   keyboardType = GetKeyboardType (0);
   if (keyboardType > 0 && GetKeyboardLayoutName (layoutName)) 
   {
     WinKBLayoutPtr	pLayout;
-      
-    layoutNum = strtoul (layoutName, (char **)NULL, 16);
+    Bool                bfound = FALSE;
+
+    if (! layoutNum)
+      layoutNum = strtoul (layoutName, (char **)NULL, 16);
     if ((layoutNum & 0xffff) == 0x411) {
         /* The japanese layouts know a lot of different IMEs which all have
-	  different layout numbers set. Map them to a single entry. 
-	  Same might apply for chinese, korean and other symbol languages
-	  too */
+	   different layout numbers set. Map them to a single entry. 
+	   Same might apply for chinese, korean and other symbol languages
+	   too */
         layoutNum = (layoutNum & 0xffff);
+	if (keyboardType == 7)
+	  {
+	    /* Japanese layouts have problems with key event messages
+	       such as the lack of WM_KEYUP for Caps Lock key.
+	       Loading US layout fixes this problem. */
+	    if (LoadKeyboardLayout("00000409", KLF_ACTIVATE) != NULL)
+	      winMsg (X_INFO, "Loading US keyboard layout.\n");
+	    else
+	      winMsg (X_ERROR, "LoadKeyboardLaout failed.\n");
+	  }
     }
-    winMsg (X_DEFAULT, "winConfigKeyboard - Layout: \"%s\" (%08x) \n", 
+    winMsg (X_PROBED, "winConfigKeyboard - Layout: \"%s\" (%08x) \n", 
             layoutName, layoutNum);
 
     for (pLayout = winKBLayouts; pLayout->winlayout != -1; pLayout++)
@@ -290,15 +353,41 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 	if (pLayout->winkbtype > 0 && pLayout->winkbtype != keyboardType)
 	  continue;
 	
-	winMsg (X_DEFAULT,
-		"Using preset keyboard for \"%s\" (%s), type \"%d\"\n",
-		pLayout->layoutname, layoutName, keyboardType);
+        bfound = TRUE;
+	winMsg (X_PROBED,
+		"Using preset keyboard for \"%s\" (%x), type \"%d\"\n",
+		pLayout->layoutname, pLayout->winlayout, keyboardType);
 	
 	g_winInfo.xkb.model = pLayout->xkbmodel;
 	g_winInfo.xkb.layout = pLayout->xkblayout;
 	g_winInfo.xkb.variant = pLayout->xkbvariant;
 	g_winInfo.xkb.options = pLayout->xkboptions; 
 	break;
+      }
+    
+    if (!bfound)
+      {
+        HKEY                regkey = NULL;
+        const char          regtempl[] = 
+          "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\";
+        char                *regpath;
+        char                lname[256];
+        DWORD               namesize = sizeof(lname);
+
+        regpath = alloca(sizeof(regtempl) + KL_NAMELENGTH + 1);
+        strcpy(regpath, regtempl);
+        strcat(regpath, layoutName);
+
+        if (!RegOpenKey(HKEY_LOCAL_MACHINE, regpath, &regkey) &&
+          !RegQueryValueEx(regkey, "Layout Text", 0, NULL, lname, &namesize))
+          {
+	    winMsg (X_ERROR,
+		"Keyboardlayout \"%s\" (%s) is unknown\n", lname, layoutName);
+          }
+
+	/* Close registry key */
+	if (regkey)
+	  RegCloseKey (regkey);
       }
   }  
   
@@ -312,7 +401,7 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 #endif /* XKB */
 
   /* parse the configuration */
-
+#ifdef XWIN_XF86CONFIG
   if (g_cmdline.keyboard)
     kbdfrom = X_CMDLINE;
 
@@ -339,10 +428,29 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 
   if (kbd != NULL)
     {
+
       if (kbd->inp_identifier)
 	winMsg (kbdfrom, "Using keyboard \"%s\" as primary keyboard\n",
 		kbd->inp_identifier);
 
+      if ((s = winSetStrOption(kbd->inp_option_lst, "AutoRepeat", NULL)))
+        {
+          if ((sscanf(s, "%ld %ld", &g_winInfo.keyboard.delay, 
+                      &g_winInfo.keyboard.rate) != 2) ||
+                  (g_winInfo.keyboard.delay < 1) || 
+                  (g_winInfo.keyboard.rate == 0) || 
+                  (1000 / g_winInfo.keyboard.rate) < 1) 
+            {
+              winErrorFVerb (2, "\"%s\" is not a valid AutoRepeat value", s);
+              xfree(s);
+              return FALSE;
+            }
+          xfree(s);
+          winMsg (X_CONFIG, "AutoRepeat: %ld %ld\n", 
+                  g_winInfo.keyboard.delay, g_winInfo.keyboard.rate);
+        }
+#endif
+      
 #ifdef XKB
       from = X_DEFAULT;
       if (g_cmdline.noXkbExtension)
@@ -350,6 +458,7 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 	  from = X_CMDLINE;
 	  g_winInfo.xkb.disable = TRUE;
 	}
+#ifdef XWIN_XF86CONFIG
       else if (kbd->inp_option_lst)
 	{
 	  int b = winSetBoolOption (kbd->inp_option_lst, "XkbDisable", FALSE);
@@ -359,44 +468,109 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 	      g_winInfo.xkb.disable = TRUE;
 	    }
 	}
+#endif
       if (g_winInfo.xkb.disable)
 	{
 	  winMsg (from, "XkbExtension disabled\n");
 	}
       else
 	{
-	  char *s;
-
-	  if ((s = winSetStrOption (kbd->inp_option_lst, "XkbRules", NULL)))
+          s = NULL;  
+          if (g_cmdline.xkbRules)
+            {
+              s = g_cmdline.xkbRules;
+              from = X_CMDLINE;  
+            }
+#ifdef XWIN_XF86CONFIG
+          else 
+            {
+              s = winSetStrOption (kbd->inp_option_lst, "XkbRules", NULL);
+              from = X_CONFIG;  
+            }
+#endif
+          if (s)
 	    {
 	      g_winInfo.xkb.rules = NULL_IF_EMPTY (s);
-	      winMsg (X_CONFIG, "XKB: rules: \"%s\"\n", s);
+	      winMsg (from, "XKB: rules: \"%s\"\n", s);
 	    }
-
-	  if ((s = winSetStrOption (kbd->inp_option_lst, "XkbModel", NULL)))
+          
+          s = NULL;
+          if (g_cmdline.xkbModel)
+            {
+              s = g_cmdline.xkbModel;
+              from = X_CMDLINE;
+            }
+#ifdef XWIN_XF86CONFIG
+          else
+            {
+              s = winSetStrOption (kbd->inp_option_lst, "XkbModel", NULL);
+              from = X_CONFIG;
+            }  
+#endif
+	  if (s)
 	    {
 	      g_winInfo.xkb.model = NULL_IF_EMPTY (s);
-	      winMsg (X_CONFIG, "XKB: model: \"%s\"\n", s);
+	      winMsg (from, "XKB: model: \"%s\"\n", s);
 	    }
 
-	  if ((s = winSetStrOption (kbd->inp_option_lst, "XkbLayout", NULL)))
+          s = NULL;
+          if (g_cmdline.xkbLayout)
+            {
+              s = g_cmdline.xkbLayout;
+              from = X_CMDLINE;
+            }
+#ifdef XWIN_XF86CONFIG
+          else
+            {
+              s = winSetStrOption (kbd->inp_option_lst, "XkbLayout", NULL);
+              from = X_CONFIG;
+            }
+#endif
+          if (s)  
 	    {
 	      g_winInfo.xkb.layout = NULL_IF_EMPTY (s);
-	      winMsg (X_CONFIG, "XKB: layout: \"%s\"\n", s);
+	      winMsg (from, "XKB: layout: \"%s\"\n", s);
 	    }
 
-	  if ((s = winSetStrOption (kbd->inp_option_lst, "XkbVariant", NULL)))
+          s = NULL;
+          if (g_cmdline.xkbVariant)
+            {
+              s = g_cmdline.xkbVariant;
+              from = X_CMDLINE;
+            }
+#ifdef XWIN_XF86CONFIG
+          else
+            { 
+              s = winSetStrOption (kbd->inp_option_lst, "XkbVariant", NULL);
+              from = X_CONFIG;
+            }
+#endif
+	  if (s)
 	    {
 	      g_winInfo.xkb.variant = NULL_IF_EMPTY (s);
-	      winMsg (X_CONFIG, "XKB: variant: \"%s\"\n", s);
+	      winMsg (from, "XKB: variant: \"%s\"\n", s);
 	    }
 
-	  if ((s = winSetStrOption (kbd->inp_option_lst, "XkbOptions", NULL)))
+          s = NULL;
+          if (g_cmdline.xkbOptions)
+            {
+              s = g_cmdline.xkbOptions;
+              from = X_CMDLINE;
+            }
+#ifdef XWIN_XF86CONFIG
+          else
+            { 
+              s = winSetStrOption (kbd->inp_option_lst, "XkbOptions", NULL);
+              from = X_CONFIG;
+            }
+#endif
+          if (s)
 	    {
 	      g_winInfo.xkb.options = NULL_IF_EMPTY (s);
-	      winMsg (X_CONFIG, "XKB: options: \"%s\"\n", s);
+	      winMsg (from, "XKB: options: \"%s\"\n", s);
 	    }
 
+#ifdef XWIN_XF86CONFIG
 	  from = X_CMDLINE;
 	  if (!XkbInitialMap)
 	    {
@@ -428,16 +602,14 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 	      winMsg (X_CONFIG, "XKB: types: \"%s\"\n", s);
 	    }
 
-	  if (
-	      (s =
+	  if ((s =
 	       winSetStrOption (kbd->inp_option_lst, "XkbKeycodes", NULL)))
 	    {
 	      g_winInfo.xkb.keycodes = NULL_IF_EMPTY (s);
 	      winMsg (X_CONFIG, "XKB: keycodes: \"%s\"\n", s);
 	    }
 
-	  if (
-	      (s =
+	  if ((s =
 	       winSetStrOption (kbd->inp_option_lst, "XkbGeometry", NULL)))
 	    {
 	      g_winInfo.xkb.geometry = NULL_IF_EMPTY (s);
@@ -449,23 +621,23 @@ winConfigKeyboard (DeviceIntPtr pDevice)
 	      g_winInfo.xkb.symbols = NULL_IF_EMPTY (s);
 	      winMsg (X_CONFIG, "XKB: symbols: \"%s\"\n", s);
 	    }
-	}
 #endif
+#endif
+	}
+#ifdef XWIN_XF86CONFIG
     }
-  else
-    {
-      winMsg (X_ERROR, "No primary keyboard configured\n");
-      winMsg (X_DEFAULT, "Using compiletime defaults for keyboard\n");
-    }
+#endif
 
   return TRUE;
 }
 
 
+#ifdef XWIN_XF86CONFIG
 Bool
 winConfigMouse (DeviceIntPtr pDevice)
 {
   MessageType			mousefrom = X_CONFIG;
+
   XF86ConfInputPtr		mouse = NULL;
   XF86ConfInputPtr		input_list = NULL;
 
@@ -558,6 +730,7 @@ winConfigFiles ()
 
   return TRUE;
 }
+#endif
 
 
 Bool
@@ -574,6 +747,7 @@ winConfigScreens ()
 }
 
 
+#ifdef XWIN_XF86CONFIG
 char *
 winSetStrOption (pointer optlist, const char *name, char *deflt)
 {
@@ -627,6 +801,7 @@ winSetRealOption (pointer optlist, const char *name, double deflt)
     deflt = o.value.realnum;
   return deflt;
 }
+#endif
 
 
 /*
@@ -675,6 +850,7 @@ winNameCompare (const char *s1, const char *s2)
 }
 
 
+#ifdef XWIN_XF86CONFIG
 /*
  * Find the named option in the list. 
  * @return the pointer to the option record, or NULL if not found.
@@ -982,6 +1158,7 @@ GetBoolValue (OptionInfoPtr p, const char *s)
     }
   return TRUE;
 }
+#endif
 
 
 char *
@@ -1012,3 +1189,4 @@ winNormalizeName (const char *s)
   *q = '\0';
   return ret;
 }
+

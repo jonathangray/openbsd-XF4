@@ -1,42 +1,25 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN">
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN"[
+<!ENTITY % defs SYSTEM "defs.ent"> %defs;
+]>
 <article>
 
 <!-- Title information -->
 <title>Information for Solaris
 <author>David Holland, modified by Marc Aurele La France
-<date>2001 October 01
+<date>2004 August 18
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Solaris.sgml,v 1.4 2003/01/04 04:20:23 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/sgml/Solaris.sgml,v 1.3 2004/08/19 16:28:42 kem Exp $
 </ident>
 
 <!-- Table of contents -->
 <toc>
 
 <!-- Begin the document -->
-<sect>What is XFree86<p>
-XFree86 is a port of X11R6.5.1 that supports several versions of Unix.
-It is derived from X386 1.2 which was the X server distributed with X11R5.
-This release consists of many new features and performance improvements as well
-as many bug fixes.
-The release is available as a source code distribution, as well as binary
-distributions for many architectures.
-<p>
-The sources for XFree86 are available by anonymous ftp from:
-<quote>
-	<htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/current"
-	url="ftp://ftp.XFree86.org/pub/XFree86/current">
-</quote>
-Solaris binaries for XFree86 are available for anonymous ftp at the same
-address.
-Currently, two binary distributions are available:  one for Solaris 8 x86, the
-other for previous Solaris x86 releases.
-They are <it>not</it> interchangeable.
-No binary distribution is available for Solaris/SPARC as it is still under
-development.<p>
 <sect>The VT-switching sub-system in Solaris x86<p>
 The virtual terminal sub-system is a undocumented, and unsupported feature of
-Solaris x86.
+Solaris x86 releases 2.1 through 7.  It is no longer present in Solaris 8 and
+later releases.
 Therefore if you use virtual terminals, you do so at <bf>YOUR OWN RISK</bf>.<p>
 Virtual terminals are not available in Solaris SPARC, and their availability
 has been removed in Solaris8 x86.<p>
@@ -100,14 +83,14 @@ There are only a total of 8 available VT's (7 normal VT's + 1 console) not the
 usual 15.
 If you have all 8 allocated, and you attempt to allocate a additional VT you
 will panic the system.
-(This bug is worked around in the Solaris XFree86 Xserver.)<p>
+(This bug is worked around in the Solaris X11R&relvers; Xserver.)<p>
 From a programming stand point, they work pretty much as documented in the
 AT&amp;T Unix System V/386 Release 4 Integrated Software Development Guide,
 however a number of <tt>ioctl()</tt> calls are broken.<p>
-<sect>Notes for building XFree86 on Solaris<p>
+<sect>Notes for building X11R&relvers; on Solaris<p>
 <enum>
 <item>
-Both GCC, and ProWorks are supported by XFree86.
+Both GCC, and the Sun Studio compilers are supported by X11R&relvers;.
 The minimum recommended GCC release is 2.7.2.
 Some earlier GCC's are known to not work and should be avoided.<p>
 You should also make certain your version of GCC predefines `sun'.
@@ -117,9 +100,11 @@ On SPARCs, regardless of the compiler you use, ensure it generates 32-bit
 binaries.
 At this time, 64-bit binaries will probably not work.<p>
 <item>
-Also on SPARCs, you will need to set BuildXFree86OnSparcSunOS to YES in
-~xc/config/cf/host.def.
-Otherwise, you can only build the old deprecated Xsun* servers.<p>
+Also on SPARCs, you may be able to build the old deprecated Xsun* servers for
+older cg* graphics devices by adding "#define XsunServer YES" or "#define 
+Xsun24Server YES" or "#define XsunMonoServer YES" to ~xc/config/cf/host.def.
+These servers are no longer maintained nor supported and may not build in
+this release.<p>
 <item>
 A Threaded Xlib compiled with GCC has subtle problems.
 It'll work 98&percnt; of the time, however clients will occasionally exhibit
@@ -127,18 +112,18 @@ strange hangs.
 Most notably image viewers such as xv-3.10 exhibit this problem.<p>
 It is recommended that you set ThreadedX in <tt>~xc/config/cf/host.def</tt> to
 NO, if you are using GCC.
-ProWorks does not have this problem.
+Sun's compilers do not have this problem.
 Whether this behaviour still exists with newer GCC's has not been verified.<p>
 <item>
-To build XFree86 with GCC you need gcc and (optionally) c++filt from GNU
+To build X11R&relvers; with GCC you need gcc and (optionally) c++filt from GNU
 binutils.
 Don't install gas or ld from GNU binutils, use the one provided by Sun.<p>
 You might need to setup a /opt/SUNWspro/bin directory containing symbolic links
 named <tt/cc/, <tt/CC/, and <tt/c++filt/ pointing respectively to the actual
 <tt/gcc/, <tt/g++/ and <tt/c++filt/ commands.<p>
 <item>
-If you are using ProWorks to compile the XFree86 distribution, you need to
-modify your PATH appropriately so the ProWorks tools are available.
+If you are using Sun compilers to compile the X11R&relvers; distribution, you need to
+modify your PATH appropriately so the Sun compiler tools are available.
 Normally, they should be in <tt>/opt/SUNWspro/bin</tt><p>
 <item>
 You <bf>MUST</bf> put <tt>/usr/ccs/bin</tt> at the front of your PATH.
@@ -148,7 +133,7 @@ So the <tt>/usr/ccs/bin</tt> versions of these programs must be found before
 any possible GNU versions.
 (Most notably GNU '<tt/ar/' does not work during the build).<p>
 </enum>
-<sect>Notes for running XFree86 on Solaris<p>
+<sect>Notes for running Xorg on Solaris<p>
 <enum>
 <item>
 Depending on the release or architecture of Solaris you are running, you might
@@ -162,7 +147,7 @@ driver is included in
 <tt>xc/programs/Xserver/hw/xfree86/etc/apSolaris.shar</tt> of the source
 distribution.
 This file can usually also be found in the <tt>/usr/X11R6/lib/X11/etc</tt>
-directory when XFree86 is installed.
+directory when Xorg is installed.
 Building, and installing the driver is relatively straight forward. Please read
 its accompanying README file.<p>
 <item>
@@ -176,12 +161,12 @@ so:<p>
 If you have made the virtual terminal devices you do not need to specify the VT
 to run the Xserver on.<p>
 <item>
-For Solaris you will probably want to set your LD_LIBRARY_PATH to
+For old releases of Solaris you will probably want to set your LD_LIBRARY_PATH to
 <tt>/usr/X11R6/lib:/usr/openwin/lib:/usr/dt/lib</tt>.
 Including <tt>/usr/X11R6/lib</tt> in your LD_LIBRARY_PATH is probably not
 necessary, however it doesn't hurt. :)<p>
 Including <tt>/usr/openwin/lib</tt> in the LD_LIBRARY_PATH is recommended
-because some Sun supplied binaries were not compiled with LD_RUN_PATH set
+on older releases because some Sun supplied binaries were not compiled with LD_RUN_PATH set
 properly at compile time.<p>
 Motif and CDE applications may require <tt>/usr/dt/lib</tt> in your
 LD_LIBRARY_PATH too.
@@ -212,5 +197,6 @@ reported!).
 It might even have broken some aspects of the x86 port.<p>
 </enum>
 <sect>Bug Notification<p>
-Bug reports should be sent to <email>XFree86@XFree86.org</email>.
+Bug reports should be reported using the bugzilla.freedesktop.org using the 
+xorg product or sent to <email>xorg@freedesktop.org</email>.
 </article>

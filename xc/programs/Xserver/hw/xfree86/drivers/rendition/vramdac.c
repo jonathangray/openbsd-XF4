@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vramdac.c,v 1.19 2003/09/24 02:43:25 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vramdac.c,v 1.18 2002/12/11 17:23:33 dawes Exp $ */
 /*
  * includes
  */

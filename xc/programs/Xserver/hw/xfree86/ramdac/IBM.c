@@ -23,7 +23,7 @@
  *
  * IBM RAMDAC routines.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/IBM.c,v 1.13 2003/09/24 02:43:35 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/IBM.c,v 1.12 2003/02/17 16:08:29 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -372,6 +372,10 @@ IBMramdac526SetBpp(ScrnInfoPtr pScrn, RamDacRegRecPtr ramdacReg)
 	    ramdacReg->DacRegs[IBMRGB_16bpp] = 0;
 	    ramdacReg->DacRegs[IBMRGB_8bpp] = 0;
     }
+}
+
+IBMramdac526SetBppProc *IBMramdac526SetBppWeak(void) {
+    return IBMramdac526SetBpp;
 }
 
 void

@@ -1,20 +1,24 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
 <article>
-<title>Building XFree86 from a Source Distribution
-<author>David Dawes, Matthieu Herrb
-<Date>26 February 2003
+<title>Building the X Window System 
+from the 
+X.org Source Distribution
+<author>Jim Gettys and Keith Packard (for X11R&relvers;)
+<and>David Dawes and Matthieu Herrb (for XFree86 4.4 RC2)
+<Date>&reldate;
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.13 2003/12/05 15:51:44 dawes Exp $
+$Id: BUILD.sgml,v 1.2 2004/11/03 00:08:19 matthieu Exp $ 
 </ident>
 
 <abstract>
-This document describes how to build XFree86 from the <bf>source</bf>
-distribution.  It is designed to
-be used in conjunction with the OS-specific README files.
+This document describes how to build the X Window System from the 
+X.Org monolithic <bf>source</bf>
+distribution and is designed to
+be used in conjunction with the operating system (OS) specific README files.
 </abstract>
 
 <toc>
@@ -22,104 +26,116 @@ be used in conjunction with the OS-specific README files.
 <p>
 <quote>
 <bf/NOTE:/  Refer to the appropriate OS-specific README file before attempting
-       to build XFree86.  These files contain additional information that 
-       you may need to successfully build under your OS.
+       to build the X distribution.  These files often contain additional information that 
+       you need to successfully build for your OS.
 </quote>
 
+We highly recommend using gcc to build the X distribution, but X also
+generally builds with the native compiler for each OS platform; 
+The build tools known to be required include: gcc, make, C library development
+package, bison, flex, zlib (development package), ncurses (development
+package), fontconfig (development package), expat (development package),
+and Perl.
 
-We highly recommend using gcc to build XFree86, but it generally also
-builds with the native compiler for each platform; 
-
-<sect>How to get the XFree86 &relvers; source
+<sect>How to get the X11R&relvers; distribution source
 <p>
 
-The recommended way of getting the XFree86 &relvers; source is to
-get it directly from the XFree86 CVS repository.  There are several
-ways of doing that, and they are described at our <url name="CVS web page"
-url="http://www.xfree86.org/cvs/">  The CVS tag for this release is
+One way of getting the X11R&relvers; source is to
+obtain it directly from the X.Org CVS repository.  There are several
+ways of doing that, and they are described in the CVS section of our <url
+name="wiki"
+url="http://wiki.x.org"> The CVS tag for this release is
 "<tt>&reltag;</tt>".  <![ %fullrel; [ The tag for the maintenance branch
 for this release is "<tt>&relbranchtag;</tt>".]]>
 
 <![ %notsnapshot; [
-Another method of getting the XFree86 &relvers; source is to
-either download the &fullrelvers; source tarballs from the XFree86 ftp
-site<![ %updaterel; [ and the source patch that updates &fullrelvers; to
-&relvers]]>.  The procedure for this is as follows:
+Another method of getting the X11R&relvers; source is to
+either download the &fullrelvers; source tarballs
+sites<![ %updaterel; [ and the source patch that updates &fullrelvers; to
+&relvers]]> from freedesktop.org
+using either ftp or http.  The procedure for this is as follows:
 <itemize>
-  <item>The XFree86 &fullrelvers; source is contained in the files
-	<tt>X&fullsrcvers;src-1.tgz</tt>, <tt>X&fullsrcvers;src-2.tgz</tt>,
-	<tt>X&fullsrcvers;src-3.tgz</tt>, <tt>X&fullsrcvers;src-4.tgz</tt>,
-	<tt>X&fullsrcvers;src-5.tgz</tt>, <tt>X&fullsrcvers;src-6.tgz</tt>
-	and <tt>X&fullsrcvers;src-7.tgz</tt>.  These can be found at
-	<htmlurl
-	name="ftp://ftp.xfree86.org/pub/XFree86/&fullrelvers;/source/"
-	url="ftp://ftp.xfree86.org/pub/XFree86/&fullrelvers;/source/">
-	and similar locations on XFree86 mirror sites.
-	<tt>X&fullsrcvers;src-4.tgz</tt> and
-	<tt>X&fullsrcvers;src-5.tgz</tt> contains the fonts.
-	<tt>X&fullsrcvers;src-6.tgz</tt> contains the documentation
-	source.  <tt>X&fullsrcvers;src-7.tgz</tt> contains the hardcopy
-	documentation.  <tt>X&fullsrcvers;src-1.tgz</tt>,
-	<tt>X&fullsrcvers;src-2.tgz</tt> and
-	<tt>X&fullsrcvers;src-3.tgz</tt> contains everything else.  If
-	you don't need the docs or fonts you can get by with only
-	<tt>X&fullsrcvers;src-1.tgz</tt>, <tt>X&fullsrcvers;src-2.tgz</tt>
-	and <tt>X&fullsrcvers;src-3.tgz</tt>.
+  <item>The X11R&relvers; source is contained in the files:
+
+	<quote><tt>
+	X11R&fullrelvers;-src1.tar.gz<newline>
+	X11R&fullrelvers;-src2.tar.gz<newline>
+	X11R&fullrelvers;-src3.tar.gz<newline>
+	X11R&fullrelvers;-src4.tar.gz<newline>
+	X11R&fullrelvers;-src5.tar.gz<newline>
+	X11R&fullrelvers;-src6.tar.gz<newline>
+	X11R&fullrelvers;-src7.tar.gz<newline>
+	</tt></quote>
+
+	These can be found at <htmlurl
+	name="ftp://ftp.freedesktop.org/xorg/X11R&relvers;/src/"
+	url="ftp://ftp.freedesktop.org/xorg/X11R&relvers;/src/">
+	or <htmlurl
+	name="http://freedesktop.org/~xorg/X11R&relvers;/src/"
+	url="http://freedesktop.org/~xorg/X11R&relvers;/src/">	
+	and similar locations on X.org mirror sites.
+	<tt>X11R&fullrelvers;-src4.tgz</tt> and
+	<tt>X11R&fullrelvers;-src5.tar.gz</tt> contains the fonts.
+	<tt>X11R&fullrelvers;-src6.tar.gz</tt> contains the documentation
+	source.  <tt>X11R&fullrelvers;-src7.tar.gz</tt> contains the
+	hardcopy documentation.  <tt>X11R&fullrelvers;-src1.tar.gz</tt>,
+	<tt>X11R&fullrelvers;-src2.tar.gz</tt> and
+	<tt>X11R&fullrelvers;-src3.tar.gz</tt> contains everything
+	else.  If you don't need the docs or fonts you can get by with
+	only <tt>X11R&fullrelvers;-src1.tar.gz</tt>,
+	<tt>X11R&fullrelvers;-src2.tar.gz</tt> and
+	<tt>X11R&fullrelvers;-src3.tar.gz</tt>.
 
   <item>Extract each of these files by running the following from a directory
 	on a filesystem containing enough space (the full source requires
 	around 305MB, and a similar amount is required in addition to this
 	for the compiled binaries):
 	<quote><tt>
-	gzip -d &lt; X&fullsrcvers;src-1.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-2.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-3.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-4.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-5.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-6.tgz | tar vxf -<newline>
-	gzip -d &lt; X&fullsrcvers;src-7.tgz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src1.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src2.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src3.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src4.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src5.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src6.tar.gz | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;-src7.tar.gz | tar vxf -<newline>
 	</tt></quote>
+]]>
 
 <![ %updaterel; [
   <item>A patch relative to &fullrelvers is available at
 	<htmlurl
-	name="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/patches/"
-	url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/patches/">.
-	The patch file is <tt>&fullrelvers;-&relvers;.diff.gz</tt>.
+	name="ftp://ftp.freedesktop.org/xorg/R&relvers;/patches/"
+	url="ftp://ftp.freedesktop.org/xorg/R&relvers;/patches/">.
+	and <htmlurl
+	name="http://freedesktop.org/~xorg/R&relvers;/patches/"
+	url="http://freedesktop.org/~xorg/R&relvers;/patches/">.
+	The patch file is <tt>&fullrelvers;-src&relvers;.diff.gz</tt>.
 
 	The patch can be applied by running:
 	<quote><tt>
 	cd <em>the directory containing the</em> xc <em>directory</em><newline>
-	gzip -d &lt; &fullrelvers;-&relvers;.diff.gz | patch -s -p0 -E 
+	gzip -d &lt; &fullrelvers;-src&relvers;.diff.gz | patch -s -p0 -E 
 	</tt>
 	</quote>
-	Look for special patching instructions in the "How to get XFree86"
+	Look for special patching instructions in the "How to get Xorg"
 	section of the <htmlurl name="README" url="README.html"> for
 	this release.
 ]]>
 </itemize>
 
-<![ %fullrel; [
-Alternatively, if you already have a pristine copy of the XFree86
-&prevfullrelvers; source, you can download patches from
-<htmlurl name="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/patches/"
-url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/patches/"> that will allow
-you to convert it to &relvers;.  Information about which patch files to
-download and how to apply them can be found in the "How to get XFree86"
-section of the <htmlurl name="README" url="README.html"> for this release.
-]]>
-]]>
-
 <![ %snapshot; [
 <p>
-Alternatively you can download the source for the XFree86 &relvers;
+Alternatively you can download the source for the X11R&relvers; &relvers;
 snapshot as a tarball from <htmlurl
-name="ftp://ftp.xfree86.org/pub/XFree86/develsnaps/XFree86-&relvers;.tar.bz2"
-url="ftp://ftp.xfree86.org/pub/XFree86/develsnaps/XFree86-&relvers;.tar.bz2">.
+name="ftp://ftp.freedesktop.org/xorg/R&relvers;/src/X11R&fullrelvers;.tar.gz"
+url="ftp://ftp.freedesktop.org/xorg/R&relvers;/src/X11R&fullrelvers;.tar.gz">
+and  <htmlurl
+name="http://freedesktop.org/~xorg/R&relvers;/src/X11R&fullrelvers;.tar.gz"
+url="http://freedesktop.org/~xorg/R&relvers;/src/X11R&fullrelvers;.tar.gz">.
 This can be extracted by running:
 
 	<quote><tt>
-	bzip2 -d &lt; XFree86-&relvers;.tar.bz2 | tar vxf -<newline>
+	gzip -d &lt; X11R&fullrelvers;.tar.gz | tar vxf -<newline>
 	</tt></quote>
 
 ]]>
@@ -133,44 +149,41 @@ In most cases it shouldn't be necessary to configure anything before building.
 
 If you do want to make configuration changes, it is recommended that
 you start by going to the <tt>xc/config/cf</tt> directory, and copying
-the file <tt>xf86site.def</tt> to <tt>host.def</tt>.  Then read through
-the <tt>host.def</tt> file (which is heavily commented), and set any
-parameters that you want for your configuration.  You can usually find
-out what the default settings are by checking the <tt>.cf</tt> file(s)
-relevant to your OS.
+the file <tt>xorgsite.def</tt> to <tt>host.def</tt>.  Then read through
+the <tt>host.def</tt> file (which is heavily commented), and set your 
+configuration parameters. Usually you can find
+the default settings by checking the <tt>.cf</tt> file(s) relevant to your OS.
 
-A general rule to follow is to only change things that you understand
-and have a good reason to change.  It is easy to create build problems
-by changing the default configuration.  Many of the configuration
-parameters are documented in <tt>xc/config/cf/README</tt>.
+A good rule to follow is only to change things that you understand
+as it's  easy to create build problems by changing the default configuration.  
+Check the configuration parameters specified in the <tt>xc/config/cf/README</tt>.
 
 <!--
-There's also
-a section <ref name="below" id="config_params"> with information about
-some configuration settings.
+Another spot to check is a section <ref name="below" id="config_params">
+ with information about configuration settings.
 -->
 
 <![ %notsnapshot; [
-If you are using just the <tt>X&srcvers;src-1.tgz</tt>,
-<tt>X&srcvers;src-2.tgz</tt> and <tt>X&srcvers;src-3.tgz</tt> parts of
-the source dist, you will need to define <bf>BuildFonts</bf> to
-<bf>NO</bf>.
+If you are using just the <tt>X11R&fullrelvers;-src1.tar.gz</tt>,
+<tt>X11R&fullrelvers;-src2.tar.gz</tt> and
+<tt>X11R&fullrelvers;-src3.tar.gz</tt> parts of the source dist, you
+will need to define <bf>BuildFonts</bf> to <bf>NO</bf>.
 ]]>
 
 <sect>Using a shadow directory of symbolic links for the build
 <p>
 A recommended practice is to use a shadow directory of symbolic links
-to do the build of XFree86. This permits to keep the source directory
-unmodified during the build, which has the following benefits:
+to do the build of X11R&relvers; as this allows you to keep the source directory
+unmodified during the build.  It has the following benefits:
 <itemize>
-<item>In the case where CVS is used to maintain the source tree up to
-date, the update process is not disturbed by foreign files not under
-the control of CVS. 
-<item>It is possible to build XFree86 for several different Operating
+<item>When you are using CVS to maintain your source tree, 
+the update process is not disturbed by foreign files not under
+CVS's control. 
+<item>It is possible to build X11R&relvers; for several different Operating
 System or architectures from the same sources, shared by read-only NFS
 mounts.
-<item>It is possible to build XFree86 with different configuration
-options, just by putting a real copy of the <tt>host.def</tt> file in
+<item>It is possible to build X11R&relvers; with different configuration
+options, by putting a real copy of the <tt>host.def</tt> file in
 each build tree and by customizing it separately in each build tree.
 </itemize>
 <p>
@@ -191,11 +204,11 @@ Note that you can refer to the <tt>xc</tt> directory with an absolute
 path if needed. 
 <p>
 See the <htmlurl name="lndir(1)"
-url="http://www.xfree86.org/&relvers;/lndir.1.html"> manual page for
+url="http://freedesktop.org/~xorg/&relvers;/lndir.1.html"> manual page for
 details.
 </itemize>
 If <tt>lndir</tt> is not already installed on your system, you can
-build it manually from the XFree86 sources by running the following
+build it manually from the X11R&relvers; sources by running the following
 commands: 
 <quote><tt>
 cd xc/config/util<newline>
@@ -203,8 +216,8 @@ make -f Makefile.ini lndir<newline>
 cp lndir <em>some directory in your PATH</em>
 </tt></quote>
 
-From time to time there may be some stale links in the build tree, for
-example, when files in the source tree are removed or renamed.  These can
+Occasionally there may be stale links in the build tree, like 
+when files in the source tree are removed or renamed.  These can
 be cleaned up by running the "<tt>cleanlinks</tt>" script from the build
 directory (see the <htmlurl name="cleanlinks(1)" url="cleanlinks.1.html">
 manual page).  Rarely there will be changes that will require the build
@@ -216,12 +229,12 @@ and then re-create it using the steps outlined above.
 <p>
 Before building the distribution, read through the OS-specific <tt/README/
 file in <tt>xc/programs/Xserver/hw/xfree86/doc</tt> that is relevant to
-you.  Once those OS-specific details have been taken care of, go your
+you.  Once you have addressed the OS-specific details, go your
 build directory 
 (either the <tt/xc/ directory or the shadow tree created before) and
 run "<tt/make World/" with the <bf/BOOTSTRAPCFLAGS/ 
 set as described in the OS-specific README (if necessary, but most
-systems supported by XFree86 don't need <bf/BOOTSTRAPCFLAGS/).  It is
+systems supported by X11R&relvers; don't need <bf/BOOTSTRAPCFLAGS/).  It is
 advisable to redirect stdout and stderr to <tt/World.Log/ so that you
 can track down problems that might occur during the build.
 <p> 
@@ -242,24 +255,24 @@ tail -f World.log
 <p>
 When the build is finished, you should check the <tt/World.Log/ file to
 see if there were any problems.  If there weren't any then you can
-install the binaries.  By default the "make World" process will ignore
-errors and build as much as possible.  If there were problems and they
-are not corrected at this stage, the installation process will fail.
+install the binaries.  By default the "make World" process will exit
+at the first error.
 To restart the build process after correcting the problems, just
 run 'make'.  If Imakefiles or part of the build configuration was
 changed as part of correcting the problem, either re-run "make World",
 or run "make Everything".
 
-If you would prefer "make World" to exit at the first error, run it in the
+If you would prefer "make World" to ignore errors and build as much as
+possible, run it in the
 following way instead of the way described above:
 
 for Bourne-like shells:
 <quote><tt>
-make WORLDOPTS= World &gt; World.log 2&gt;&amp;1
+make WORLDOPTS=-k World &gt; World.log 2&gt;&amp;1
 </tt></quote>
 for C-shell variants:
 <quote><tt>
-make WORLDOPTS= World &gt;&amp; World.log
+make WORLDOPTS=-k World &gt;&amp; World.log
 </tt></quote>
 
 To do the install, run "<tt/make install/" and "<tt/make install.man/".
@@ -268,6 +281,15 @@ to succeed.  If you want to install on a filesystem other than
 <tt>/usr</tt>, make a symbolic link to <tt>/usr/X11R6</tt> before
 installing.
 
+<p>
+Cross compiling is supported if the appropriate config files for your
+target platforms exist. You must have the compiler toolchain installed
+for your target platform and the C-compiler must know where those tools
+exist. To inform the build system where your cross compiler is located use
+<bf/BOOTSTRAPCFLAGS/ to set the make variable <tt/CROSSCOMPILEDIR/.
+<quote><tt>
+make World BOOTSTRAPCFLAGS="CROSSCOMPILEDIR=&lt;cross compiler dir&gt";
+</tt></quote>
 
 <sect>Reconfiguring the server (source distribution)
 <p>
@@ -294,7 +316,7 @@ wish to build.  Also, change the driver lists to suit your needs.
 
 <sect>Other useful make targets
 <p>There are some other useful targets defined in the top level
-<tt>Makefile</tt> of XFree86: 
+<tt>Makefile</tt> of X11R&relvers;: 
 <itemize>
 <item><bf/Everything/ after a <tt>make World</tt>, <tt>make
 Everything</tt> does everything a <tt>make World</tt> does, except the
@@ -313,11 +335,11 @@ you need to re-run
         make
 </verb>
 </tscreen>
-to rebuild the XFree86. 
+to rebuild the X11R&relvers;. 
 
 <item><bf/distclean/ does a full cleaning of the source tree,
 removing all generated files. After a <tt>make distclean</tt>,
-<tt>make World</tt> is the only option to rebuild XFree86. 
+<tt>make World</tt> is the only option to rebuild X11R&relvers;. 
 
 <item><bf/includes/ generates all generated header files and in-tree
 symbolic links  needed by the build. These files are removed by a
@@ -332,7 +354,7 @@ produced by <tt>make includes</tt>.
 <item><bf/VerifyOS/ displays the detected operating system version. If
 the numbers shown do not match your system, you probably need to set
 them manually in <tt>host.def</tt> and report the problem to
-<email>XFree86@XFree86.org</email>.
+<email>xorg@freedesktop.org</email>.
 </itemize>
 
 <!--

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xwin/obj_base.h,v 1.1 2001/04/05 20:13:49 dawes Exp $ */
+/* $Id: obj_base.h,v 1.2 2004/11/03 00:09:37 matthieu Exp $ */
 /*
  * This file defines the macros and types necessary to define COM interfaces, 
  * and the three most basic COM interfaces: IUnknown, IMalloc and IClassFactory.

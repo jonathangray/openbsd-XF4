@@ -32,7 +32,7 @@
  * Backwards compatability modules broken out by:
  *   Jens Owen <jens@tungstengraphics.com>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86drmCompat.h,v 1.1 2002/10/30 12:52:23 alanh Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86drmRadeon.h,v 1.6 2001/04/16 15:02:13 tsi Exp $
  *
  */
 
@@ -43,6 +43,10 @@
  * for binary backwards compatability with the old driver specific DRM 
  * extensions used before XFree86 4.3.
  */
+
+#ifndef __user
+#define __user
+#endif
 
 /* I810 */
 

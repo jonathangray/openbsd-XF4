@@ -24,7 +24,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_Trio64DAC.c,v 1.8 2003/11/03 05:11:28 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_Trio64DAC.c,v 1.7tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

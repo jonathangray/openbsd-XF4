@@ -50,7 +50,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * any purpose.  It is provided "as is" without express or 
  * implied warranty.
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunMouse.c,v 1.4 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunMouse.c,v 1.3 2001/10/28 03:33:12 tsi Exp $ */
 
 #define NEED_EVENTS
 #include    "sun.h"

@@ -28,18 +28,11 @@
  * Authors:	Kensuke Matsuzaki
  *		Harold L Hunt II
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winmultiwindowshape.c,v 1.3 2003/12/22 01:34:20 dickey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winmultiwindowshape.c,v 1.2 2003/11/10 18:22:44 tsi Exp $ */
 
 #ifdef SHAPE
 
 #include "win.h"
-
-
-/*
- * External global variables
- */
-
-extern HICON		g_hiconX;
 
 
 /*
@@ -91,7 +84,7 @@ winReshapeMultiWindow (WindowPtr pWin)
   winWindowPriv(pWin);
 
 #if CYGDEBUG
-  ErrorF ("winReshape ()\n");
+  winDebug ("winReshape ()\n");
 #endif
   
   /* Bail if the window is the root window */

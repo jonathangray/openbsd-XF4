@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf1bpp/mfbmap.h,v 1.2 1998/07/25 16:59:24 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf1bpp/mfbmap.h,v 1.1.2.2 1998/06/08 15:13:15 dawes Exp $ */
 
 #ifndef _MFBMAP_H
 #define _MFBMAP_H
@@ -34,13 +34,21 @@
 #define mfbDoBitbltGeneral  xf1bppDoBitbltGeneral
 #define mfbDoBitbltOr  xf1bppDoBitbltOr
 #define mfbDoBitbltXor  xf1bppDoBitbltXor
+#define mfbFillInScreen  xf1bppFillInScreen
 #define mfbFillPolyBlack  xf1bppFillPolyBlack
 #define mfbFillPolyInvert  xf1bppFillPolyInvert
 #define mfbFillPolyWhite  xf1bppFillPolyWhite
 #define mfbGCPrivateIndex  xf1bppGCPrivateIndex
+#define mfbGetGCPrivateIndex  xf1bppGetGCPrivateIndex
 #define mfbGetImage  xf1bppGetImage
 #define mfbGetSpans  xf1bppGetSpans
 #define mfbGetWindowPixmap  xf1bppGetWindowPixmap
+#define mfbGetWindowPrivateIndex  xf1bppGetWindowPrivateIndex
+#define mfbGetmask  xf1bppGetmask
+#define mfbGetpartmasks xf1bppGetpartmasks
+#define mfbGetrmask  xf1bppGetrmask
+#define mfbGetstarttab  xf1bppGetstarttab
+#define mfbGetendtab  xf1bppGetendtab
 #define mfbHorzS  xf1bppHorzS
 #define mfbImageGlyphBltBlack  xf1bppImageGlyphBltBlack
 #define mfbImageGlyphBltWhite  xf1bppImageGlyphBltWhite

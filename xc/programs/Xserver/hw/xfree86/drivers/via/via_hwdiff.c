@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_hwdiff.c,v 1.2 2003/08/27 15:16:09 tsi Exp $ */
+/* $XFree86$ */
 /*************************************************************************
  *
  *   HWDiff.c 

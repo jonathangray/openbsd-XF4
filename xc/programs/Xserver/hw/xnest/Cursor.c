@@ -12,7 +12,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Cursor.c,v 1.4 2003/11/16 05:05:20 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Cursor.c,v 1.3 2002/11/23 19:27:50 tsi Exp $ */
 
 #include "X.h"
 #include "Xproto.h"
@@ -32,59 +32,6 @@ is" without express or implied warranty.
 #include "Visual.h"
 #include "Keyboard.h"
 #include "Args.h"
-
-void
-xnestConstrainCursor(ScreenPtr pScreen, BoxPtr pBox)
-{
-#ifdef _XSERVER64
-  Window64 wroot;
-#else
-  Window wroot;
-#endif
-
-  int wx, wy;
-  unsigned int wwidth, wheight;
-  unsigned int wborderwidth;
-  unsigned int wdepth;
-  
-  XGetGeometry(xnestDisplay, xnestDefaultWindows[pScreen->myNum], &wroot,
-	       &wx, &wy, &wwidth, &wheight, &wborderwidth, &wdepth);
-  
-  if (pBox->x1 <= 0 && pBox->y1 <= 0 &&
-      pBox->x2 >= wwidth && pBox->y2 >= wheight)
-    XUngrabPointer(xnestDisplay, CurrentTime);
-  else {
-    XReparentWindow(xnestDisplay, xnestConfineWindow, 
-		    xnestDefaultWindows[pScreen->myNum],
-		    pBox->x1, pBox->y1);
-    XResizeWindow(xnestDisplay, xnestConfineWindow,
-		  pBox->x2 - pBox->x1, pBox->y2 - pBox->y1);
-    
-    XGrabPointer(xnestDisplay, 
-		 xnestDefaultWindows[pScreen->myNum], 
-		 True,
-		 xnestEventMask & (~XNEST_KEYBOARD_EVENT_MASK|KeymapStateMask),
-		 GrabModeAsync, GrabModeAsync, 
-		 xnestConfineWindow,
-		 None, CurrentTime);
-  }
-}
-
-void
-xnestCursorLimits(ScreenPtr pScreen, CursorPtr pCursor, BoxPtr pHotBox,
-		  BoxPtr pTopLeftBox)
-{
-  *pTopLeftBox = *pHotBox;		   
-}
-
-Bool
-xnestDisplayCursor(ScreenPtr pScreen, CursorPtr pCursor)
-{
-  XDefineCursor(xnestDisplay, 
-		xnestDefaultWindows[pScreen->myNum], 
-		xnestCursor(pCursor, pScreen));
-  return True;
-}
 
 Bool
 xnestRealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
@@ -192,15 +139,17 @@ xnestRecolorCursor(ScreenPtr pScreen, CursorPtr pCursor, Bool displayed)
 		 &fg_color, &bg_color);
 }
 
-Bool
-xnestSetCursorPosition(ScreenPtr pScreen, int x, int y, Bool generateEvent)
+void xnestSetCursor (ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
 {
-  int i;
+    if (pCursor)
+    {
+	XDefineCursor(xnestDisplay, 
+		      xnestDefaultWindows[pScreen->myNum], 
+		      xnestCursor(pCursor, pScreen));
+    }
+}
 
-  for (i = 0; i < xnestNumScreens; i++)
-    XWarpPointer(xnestDisplay, xnestDefaultWindows[i],
-		 xnestDefaultWindows[pScreen->myNum],
-		 0, 0, 0, 0, x, y);
-  
-  return True;
+void
+xnestMoveCursor (ScreenPtr pScreen, int x, int y)
+{
 }

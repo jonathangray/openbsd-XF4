@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.22 2003/10/07 23:14:55 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_init.c,v 3.21 2003/09/24 02:43:34 dawes Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -34,7 +34,9 @@
 #include "xf86_OSlib.h"
 
 #include <sys/utsname.h>
+#ifdef X_PRIVSEP
 #include <pwd.h>
+#endif
 #include <stdlib.h>
 
 static Bool KeepTty = FALSE;
@@ -155,10 +157,12 @@ xf86OpenConsole()
     struct utsname uts;
     vtmode_t vtmode;
 #endif
-
+    
+#ifdef X_PRIVSEP
     if (xf86Info.consoleFd != -1) {
 	    return;
-    }    
+    }
+#endif
     if (serverGeneration == 1)
     {
 	/* check if we are run with euid==0 */
@@ -303,7 +307,7 @@ acquire_vt:
 #endif /* SYSCONS_SUPPORT || PCVT_SUPPORT */
 #ifdef WSCONS_SUPPORT
 	case WSCONS:
-	    /* Nothing to do... */
+	    /* Nothing to do */
    	    break; 
 #endif
         }
@@ -686,7 +690,9 @@ xf86CloseConsole()
 	}
     }
     close(xf86Info.consoleFd);
+#ifdef X_PRIVSEP
     xf86Info.consoleFd = -1;
+#endif
     if (devConsoleFd >= 0)
 	close(devConsoleFd);
     return;
@@ -731,6 +737,7 @@ xf86UseMsg()
 	return;
 }
 
+#ifdef X_PRIVSEP
 /*
  * Revoke privileges after init.
  * If the X server is started as root (xdm case), then switch to _x11 
@@ -758,4 +765,5 @@ xf86DropPriv(char *disp)
 			FatalError("priv_init");
 		}
 	}
- }
+}
+#endif

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/disp_gu2.c,v 1.5 2003/11/03 05:11:22 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/disp_gu2.c,v 1.4tsi Exp $ */
 /*
  * $Workfile: disp_gu2.c $
  *

@@ -16,7 +16,8 @@ SRCS = savage_driver.c \
         savage_image.c \
         savage_shadow.c \
         savage_vbe.c \
-        savage_video.c
+        savage_video.c \
+        savage_streams.c
 
 OBJS = savage_driver.o \
         savage_accel.o \
@@ -26,7 +27,8 @@ OBJS = savage_driver.o \
         savage_image.o \
         savage_shadow.o \
         savage_vbe.o \
-        savage_video.o
+        savage_video.o \
+        savage_streams.o
 
 DEFINES = -DPSZ=8
 
@@ -76,5 +78,7 @@ InstallDriverSDKNonExecFile(savage_shadow.c,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_vbe.c,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_vbe.h,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_video.c,$(DRIVERSDKDIR)/drivers/savage)
+InstallDriverSDKNonExecFile(savage_streams.h,$(DRIVERSDKDIR)/drivers/savage)
+InstallDriverSDKNonExecFile(savage_streams.c,$(DRIVERSDKDIR)/drivers/savage)
 
 InstallDriverSDKObjectModule(savage,$(DRIVERSDKMODULEDIR),drivers)

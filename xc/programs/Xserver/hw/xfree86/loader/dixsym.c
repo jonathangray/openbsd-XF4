@@ -1,4 +1,6 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.63 2003/12/03 17:11:29 tsi Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.5 2004/08/19 04:08:40 kem Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.63 2003/12/03
+ * 17:11:29 tsi Exp $ */
 
 /*
  * Copyright 1995-1998 by Metro Link, Inc.
@@ -79,13 +81,16 @@
 #include "dgaproc.h"
 #ifdef RENDER
 #include "mipict.h"
+#include "renderedge.h"
 #endif
 #include "selection.h"
 #ifdef XKB
 #include <X11/extensions/XKBsrv.h>
 #endif
 
+#ifdef X_PRIVSEP
 extern int priv_open_device(const char *);
+#endif
 
 extern Selection *CurrentSelections;
 extern int NumCurrentSelections;
@@ -198,6 +203,7 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(VerifyRectOrder)
     SYMFUNC(SetDashes)
     /* globals.c */
+#ifdef DPMSExtension
     SYMVAR(DPMSEnabled)
     SYMVAR(DPMSCapableFlag)
     SYMVAR(DPMSOffTime)
@@ -207,6 +213,7 @@ LOOKUP dixLookupTab[] = {
     SYMVAR(DPMSEnabledSwitch)
     SYMVAR(DPMSDisabledSwitch)
     SYMVAR(defaultDPMSEnabled)
+#endif
     /* bigreq */
     SYMVAR(maxBigRequestSize)
 #ifdef XV
@@ -322,8 +329,20 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(AdjustWaitForDelay)
     SYMVAR(noTestExtensions)
     SYMFUNC(GiveUp)
+#ifdef X_PRIVSEP
     /* privsep.c */
     SYMFUNC(priv_open_device)
+#endif
+#ifdef COMPOSITE
+    SYMVAR(noCompositeExtension)
+#endif
+#ifdef RENDER
+    SYMVAR(noRenderExtension)
+#endif
+#ifdef XEVIE
+    SYMVAR(noXevieExtension)
+#endif
+
     /* log.c */
     SYMFUNC(LogVWrite)
     SYMFUNC(LogWrite)
@@ -347,7 +366,9 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(TimerFree)
     SYMFUNC(TimerSet)
     SYMFUNC(TimerCancel)
-    SYMFUNC(SetDPMSTimers) 
+#ifdef DPMSExtension
+    SYMFUNC(SetDPMSTimers)
+#endif
     /* io.c */
     SYMFUNC(WriteToClient)
     SYMFUNC(SetCriticalOutputPending)
@@ -404,6 +425,11 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(PictureSetFilterAlias)
     SYMFUNC(PictureGetSubpixelOrder)
     SYMFUNC(PictureSetSubpixelOrder)
+    SYMFUNC(RenderSampleCeilY)
+    SYMFUNC(RenderSampleFloorY)
+    SYMFUNC(RenderEdgeStep)
+    SYMFUNC(RenderEdgeInit)
+    SYMFUNC(RenderLineFixedEdgeInit)
 #endif
 
     {0, 0}

@@ -28,7 +28,7 @@
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen, 
  * Siemens Nixdorf Informationssysteme and Appian Graphics.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_driver.c,v 1.163 2003/11/03 22:17:21 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_driver.c,v 1.162 2003/11/03 05:11:11 tsi Exp $ */
 
 #include "fb.h"
 #include "cfb8_32.h"
@@ -294,6 +294,7 @@ static const char *ramdacSymbols[] = {
     "RamDacInit",
     "TIramdacCalculateMNPForClock",
     "TIramdacLoadPalette",
+    "TIramdacLoadPaletteWeak",
     "TIramdacProbe",
     "xf86CreateCursorInfoRec",
     "xf86DestroyCursorInfoRec",
@@ -312,12 +313,12 @@ static const char *fbdevHWSymbols[] = {
 	"fbdevHWGetVidmem",
 
 	/* colormap */
-	"fbdevHWLoadPalette",
+	"fbdevHWLoadPaletteWeak",
 
 	/* ScrnInfo hooks */
-	"fbdevHWAdjustFrame",
+	"fbdevHWAdjustFrameWeak",
 	"fbdevHWEnterVT",
-	"fbdevHWLeaveVT",
+	"fbdevHWLeaveVTWeak",
 	"fbdevHWMapMMIO",
 	"fbdevHWMapVidmem",
 	"fbdevHWModeInit",
@@ -326,7 +327,7 @@ static const char *fbdevHWSymbols[] = {
 	"fbdevHWSwitchMode",
 	"fbdevHWUnmapMMIO",
 	"fbdevHWUnmapVidmem",
-	"fbdevHWValidMode",
+	"fbdevHWValidModeWeak",
 	
 	NULL
 };
@@ -374,6 +375,7 @@ static const char *driSymbols[] = {
     "DRIQueryVersion",
     "DRIScreenInit",
     "GlxSetVisualConfigs",
+    "DRICreatePCIBusID",
     NULL
 };
 #endif
@@ -386,7 +388,7 @@ static XF86ModuleVersionInfo glintVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	GLINT_MAJOR_VERSION, GLINT_MINOR_VERSION, GLINT_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,			/* This is a video driver */
 	ABI_VIDEODRV_VERSION,
@@ -932,7 +934,7 @@ GLINTProbeTIramdac(ScrnInfoPtr pScrn)
     pGlint->RamDacRec->WriteAddress = glintTIWriteAddress;
     pGlint->RamDacRec->ReadData = glintTIReadData;
     pGlint->RamDacRec->WriteData = glintTIWriteData;
-    pGlint->RamDacRec->LoadPalette = TIramdacLoadPalette;
+    pGlint->RamDacRec->LoadPalette = TIramdacLoadPaletteWeak();
 
     if(!RamDacInit(pScrn, pGlint->RamDacRec)) {
 	RamDacDestroyInfoRec(pGlint->RamDacRec);
@@ -1247,9 +1249,9 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
 	pGlint->FBDev = TRUE;
         from = X_CONFIG;
 	
-	pScrn->AdjustFrame	= fbdevHWAdjustFrame;
-	pScrn->LeaveVT		= fbdevHWLeaveVT;
-	pScrn->ValidMode	= fbdevHWValidMode;
+	pScrn->AdjustFrame	= fbdevHWAdjustFrameWeak();
+	pScrn->LeaveVT		= fbdevHWLeaveVTWeak();
+	pScrn->ValidMode	= fbdevHWValidModeWeak();
 	
     } else {
     	/* Only use FBDev if requested */
@@ -3103,7 +3105,7 @@ GLINTScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	((pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_GAMMA) &&
 	 (pGlint->MultiChip == PCI_CHIP_PERMEDIA3)) ) {
     	if (!xf86HandleColormaps(pScreen, 256, pScrn->rgbBits,
-	    (pGlint->FBDev) ? fbdevHWLoadPalette : 
+	    (pGlint->FBDev) ? fbdevHWLoadPaletteWeak() : 
 	    ((pScrn->depth == 16) ? Permedia3LoadPalette16:Permedia3LoadPalette),
 	    NULL,
 	    CMAP_RELOAD_ON_MODE_SWITCH |
@@ -3115,7 +3117,7 @@ GLINTScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	(pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_PERMEDIA2) || 
 	(pGlint->Chipset == PCI_VENDOR_TI_CHIP_PERMEDIA2)) {
     	if (!xf86HandleColormaps(pScreen, 256, pScrn->rgbBits,
-	    (pGlint->FBDev) ? fbdevHWLoadPalette : 
+	    (pGlint->FBDev) ? fbdevHWLoadPaletteWeak() : 
 	    ((pScrn->depth == 16) ? Permedia2LoadPalette16:Permedia2LoadPalette),
 	    NULL,
 	    CMAP_RELOAD_ON_MODE_SWITCH |

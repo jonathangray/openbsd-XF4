@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/int10/Imakefile,v 1.18 2003/11/03 05:11:50 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/int10/Imakefile,v 1.17tsi Exp $
 
 /* An OS-independent INT10 module/library */
 
@@ -16,9 +16,9 @@ X86TOPDIR = $(TOP)/extras/x86emu
 X86SRCDIR = $(X86TOPDIR)/src/x86emu
 X86EMUINCLUDES = -I$(X86TOPDIR)/include -I$(X86SRCDIR)
 
+X86EMUOBJS = x86emu.o
 # if !defined(X86EMU_LIBPATH)
-X86EMUSRCS = debug.c decode.c fpu.c ops.c ops2.c prim_ops.c sys.c
-X86EMUOBJS = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
+X86EMUSRCS = x86emu.c
 
 LinkSourceFile(debug.c,$(X86SRCDIR))
 LinkSourceFile(decode.c,$(X86SRCDIR))
@@ -30,10 +30,12 @@ LinkSourceFile(sys.c,$(X86SRCDIR))
 
 # else
 BuildObjectFromLibraryWithPath(X86EMU_LIBPATH,x86emu,x86emu)
-X86EMUOBJS = x86emu.o
+# endif
+# if DoLoadableServer
+X86EMUMODDEFS = -DNO_SYS_HEADERS
 # endif
 
-X86EMUDEFINES = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG
+X86EMUDEFINES = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG $(X86EMUMODDEFS)
 
 XCOMM Check the AMD64Architecture
 # if defined(i386Architecture) || defined(AMD64Architecture)

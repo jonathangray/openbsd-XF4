@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.2 2003/09/13 21:33:04 dawes Exp $ */
+/* $XdotOrg: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.2 2004/04/23 18:44:43 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.1 2003/07/16 01:38:33 dawes Exp $ */
 
 #ifndef INITARGS
 #define INITARGS void

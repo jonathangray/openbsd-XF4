@@ -50,7 +50,7 @@
  *		(note that most of the data books have been released by
  *		 NatSemi and are downloadable for free as pdf files)
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.31 2003/11/06 18:38:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.30tsi Exp $ */
 
 #include "fb.h"
 #include "mibank.h"
@@ -233,7 +233,7 @@ static XF86ModuleVersionInfo cyrixVersRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	CYRIX_MAJOR_VERSION, CYRIX_MINOR_VERSION, CYRIX_PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,			/* This is a video driver */
 	ABI_VIDEODRV_VERSION,

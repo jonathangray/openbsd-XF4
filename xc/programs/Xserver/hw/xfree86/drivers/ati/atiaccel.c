@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiaccel.c,v 1.14 2004/01/05 16:42:00 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiaccel.c,v 1.13 2003/04/24 21:19:22 tsi Exp $ */
 /*
  * Copyright 2001 through 2004 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
@@ -19,6 +19,9 @@
  * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * DRI support by:
+ *    Leif Delgass <ldelgass@retinalburn.net>
  */
 
 #include "atiaccel.h"
@@ -64,6 +67,12 @@ ATIInitializeAcceleration
 
 #endif /* AVOID_CPIO */
 
+#ifdef XF86DRI_DEVEL
+
+        /* If DRI is enabled, we've already set up the FB manager in ATIScreenInit */
+        if (!pATI->directRenderingEnabled)
+
+#endif /* XF86DRI */
     {
         /*
          * Note:  If PixelArea exceeds the engine's maximum, the excess is

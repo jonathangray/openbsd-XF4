@@ -2,7 +2,7 @@
  *  Copyright (C) 1998 Itai Nahshon, Michael Schimek
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.h,v 1.11 2003/08/29 21:08:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.h,v 1.10 2003/07/16 01:38:47 dawes Exp $ */
 #ifndef _XF86I2C_H
 #define _XF86I2C_H
 
@@ -27,6 +27,7 @@ typedef struct _I2CBusRec {
 
     /* Look at the generic routines to see how these functions should behave. */
 
+    Bool        	(*I2CStart)  (I2CBusPtr b, int timeout);
     Bool        	(*I2CAddress)(I2CDevPtr d, I2CSlaveAddr);
     void        	(*I2CStop)   (I2CDevPtr d);
     Bool		(*I2CPutByte)(I2CDevPtr d, I2CByte data);

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimodule.c,v 1.17 2004/01/05 16:42:03 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimodule.c,v 1.16 2003/05/28 14:08:03 tsi Exp $ */
 /*
  * Copyright 1997 through 2004 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
@@ -39,6 +39,7 @@ const char *ATISymbols[] =
     "ATILeaveVT",
     "ATIFreeScreen",
     "ATIValidMode",
+    "ATIFillInScreenInfo",
     NULL
 };
 
@@ -52,7 +53,8 @@ const char *R128Symbols[] =
     "R128LeaveVT",
     "R128FreeScreen",
     "R128ValidMode",
-    "R128Options",
+    "R128OptionsWeak",
+    "R128FillInScreenInfo",
     NULL
 };
 
@@ -66,8 +68,9 @@ const char *RADEONSymbols[] =
     "RADEONLeaveVT",
     "RADEONFreeScreen",
     "RADEONValidMode",
-    "RADEONOptions",
+    "RADEONOptionsWeak",
     "RADEONHandleMessage",
+    "RADEONFillInScreenInfo",
     NULL
 };
 
@@ -77,7 +80,7 @@ static XF86ModuleVersionInfo ATIVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     ATI_VERSION_MAJOR, ATI_VERSION_MINOR, ATI_VERSION_PATCH,
     ABI_CLASS_VIDEODRV,
     ABI_VIDEODRV_VERSION,

@@ -20,7 +20,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_memory.c,v 1.5 2004/01/29 03:13:25 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_memory.c,v 1.4 2004/01/27 02:25:07 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -31,14 +31,18 @@
 #include "via_capture.h"
 #include "via.h"
 #include "ddmpeg.h"
+#ifdef XF86DRI
 #include "xf86drm.h"
+#endif
 
 #include "via_overlay.h"
 #include "via_driver.h"
 #include "via_regrec.h"
 #include "via_priv.h"
 #include "via_swov.h"
+#ifdef XF86DRI
 #include "via_common.h"
+#endif
 
 
 /*

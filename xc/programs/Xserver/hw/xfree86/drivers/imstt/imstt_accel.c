@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_accel.c,v 1.6 2001/05/16 06:48:09 keithp Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_accel.c,v 1.5 2001/04/05 21:29:14 dawes Exp $ */
 
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>

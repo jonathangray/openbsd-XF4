@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atipreinit.c,v 1.75 2004/01/05 16:42:03 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atipreinit.c,v 1.74 2003/12/22 17:48:09 tsi Exp $ */
 /*
  * Copyright 1999 through 2004 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
@@ -1451,7 +1451,7 @@ ATIPreInit
             Message += snprintf(Message, Buffer + SizeOf(Buffer) - Message,
                 ";  %s I/O base is 0x%04lX",
                 (pATI->CPIODecoding == SPARSE_IO) ? "sparse" : "block",
-                (unsigned int)pATI->CPIOBase);
+                (unsigned long)pATI->CPIOBase);
         }
 
 #endif /* AVOID_CPIO */
@@ -1479,7 +1479,7 @@ ATIPreInit
 
     if (pATI->Chip >= ATI_CHIP_264GT)
         xf86DrvMsg(pScreenInfo->scrnIndex, X_NOTICE,
-            "For information on using the multimedia capabilities\n of this"
+            "For information on using the multimedia capabilities\n\tof this"
             " adapter, please see http://gatos.sf.net.\n");
 
     if ((pATI->DAC & ~0x0FU) == ATI_DAC_INTERNAL)

@@ -69,7 +69,7 @@
 #include "xf86Priv.h"
 #include "xf86Config.h"
 #include "xf86_OSlib.h"
-#include "xf86Version.h"
+#include "xorgVersion.h"
 #include "xf86Date.h"
 #include "xf86Build.h"
 #include "mipointer.h"
@@ -92,6 +92,11 @@
 #include "atKeynames.h"
 extern int xtest_command_key;
 #endif /* XTESTEXT1 */
+
+#ifdef DPMSExtension
+#define DPMS_SERVER
+#include "extensions/dpms.h"
+#endif
 
 
 /* forward declarations */
@@ -139,7 +144,7 @@ static int numFormats = 6;
 #endif
 static Bool formatsDone = FALSE;
 
-InputDriverRec xf86KEYBOARD = {
+InputDriverRec XF86KEYBOARD = {
 	1,
 	"keyboard",
 	NULL,
@@ -149,7 +154,7 @@ InputDriverRec xf86KEYBOARD = {
 	0
 };
 
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
 static Bool xf86KeepPriv = FALSE;
 #endif 
 
@@ -422,8 +427,10 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
       xfree(modulelist);
     }
 
+#ifdef USE_DEPRECATED_KEYBOARD_DRIVER
     /* Setup the builtin input drivers */
-    xf86AddInputDriver(&xf86KEYBOARD, NULL, 0);
+    xf86AddInputDriver(&XF86KEYBOARD, NULL, 0);
+#endif
     /* Load all input driver modules specified in the config file. */
     if ((modulelist = xf86InputDriverlistFromConfig())) {
       xf86LoadModules(modulelist, NULL);
@@ -905,6 +912,8 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	xf86Screens[i]->DPMSSet = NULL;
 	xf86Screens[i]->LoadPalette = NULL; 
 	xf86Screens[i]->SetOverscan = NULL;
+	xf86Screens[i]->RRFunc = NULL;
+	xf86Screens[i]->pScreen = NULL;
 	scr_index = AddScreen(xf86Screens[i]->ScreenInit, argc, argv);
       if (scr_index == i) {
 	/*
@@ -1016,12 +1025,18 @@ InitInput(argc, argv)
     if (serverGeneration == 1) {
 	/* Call the PreInit function for each input device instance. */
 	for (pDev = xf86ConfigLayout.inputs; pDev && pDev->identifier; pDev++) {
+#ifdef USE_DEPRECATED_KEYBOARD_DRIVER
 	    /* XXX The keyboard driver is a special case for now. */
 	    if (!xf86NameCmp(pDev->driver, "keyboard")) {
-		xf86Msg(X_INFO, "Keyboard \"%s\" handled by legacy driver\n",
+		xf86MsgVerb(X_WARNING, 0, "*** WARNING the legacy keyboard driver \"keyboard\" is deprecated\n");
+		xf86MsgVerb(X_WARNING, 0, "*** and will be removed in the next release of the Xorg server.\n");
+		xf86MsgVerb(X_WARNING, 0, "*** Please consider using the the new \"kbd\" driver for \"%s\".\n",
 			pDev->identifier);
+
 		continue;
 	    }
+#endif
+
 	    if ((pDrv = MatchInput(pDev)) == NULL) {
 		xf86Msg(X_ERROR, "No Input driver matching `%s'\n", pDev->driver);
 		/* XXX For now, just continue. */
@@ -1101,11 +1116,15 @@ InitInput(argc, argv)
       xf86Info.kbdEvents = NULL; /* to prevent the internal keybord driver usage*/
     }
     else {
+#ifdef USE_DEPRECATED_KEYBOARD_DRIVER
+      /* Only set this if we're allowing the old driver. */
       xf86Info.pKeyboard = AddInputDevice(xf86Info.kbdProc, TRUE);
+#endif
     }
     if (corePointer)
 	xf86Info.pMouse = corePointer->dev;
-    RegisterKeyboardDevice(xf86Info.pKeyboard); 
+    if (xf86Info.pKeyboard)
+      RegisterKeyboardDevice(xf86Info.pKeyboard); 
 
   miRegisterPointerDevice(screenInfo.screens[0], xf86Info.pMouse);
 #ifdef XINPUT
@@ -1125,11 +1144,11 @@ InitInput(argc, argv)
  *      is called by dix before establishing the well known sockets.
  */
 
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
 extern void xf86DropPriv(char *);
 extern void xf86PrivilegedInit(void);
 #endif
-
+ 
 void
 OsVendorInit(void)
 {
@@ -1173,8 +1192,7 @@ OsVendorInit(void)
   }
 #endif
 #endif
-
-#if defined(__OpenBSD__)
+#if defined(X_PRIVSEP)
   if (!beenHere && !xf86KeepPriv) {
 	  xf86PrivilegedInit();
 	  xf86DropPriv(display);
@@ -1245,7 +1263,7 @@ AbortDDX()
   /*
    * try to deinitialize all input devices
    */
-  if (xf86Info.pKeyboard)
+  if (xf86Info.pKeyboard != NULL && xf86Info.kbdProc != NULL)
     (xf86Info.kbdProc)(xf86Info.pKeyboard, DEVICE_CLOSE);
 
   /*
@@ -1266,6 +1284,10 @@ AbortDDX()
 	       * screen explicitely.
 	       */
 	      xf86EnableAccess(xf86Screens[i]);
+#ifdef DPMSExtension
+	      if (xf86Screens[i]->DPMSSet)
+		  xf86Screens[i]->DPMSSet(xf86Screens[i],DPMSModeOn,0);
+#endif
 	      (xf86Screens[i]->LeaveVT)(i, 0);
 	  }
   }
@@ -1282,12 +1304,17 @@ AbortDDX()
 void
 OsVendorFatalError()
 {
-  ErrorF("\nWhen reporting a problem related to a server crash, please send\n"
-	 "the full server output, not just the last messages.\n");
-  if (xf86LogFile && xf86LogFileWasOpened)
-    ErrorF("This can be found in the log file \"%s\".\n", xf86LogFile);
-  ErrorF("Please report problems to %s.\n", BUILDERADDR);
-  ErrorF("\n");
+#ifdef VENDORSUPPORT
+    ErrorF("\nPlease refer to your Operating System Vendor support pages\n"
+	   "at %s for support on this crash.\n",VENDORSUPPORT);
+#else
+    ErrorF("\nPlease consult the "XVENDORNAME" support \n"
+	   "\t at "__VENDORDWEBSUPPORT__"\n for help. \n");
+#endif
+    if (xf86LogFile && xf86LogFileWasOpened)
+	ErrorF("Please also check the log file at \"%s\" for additional "
+              "information.\n", xf86LogFile);
+    ErrorF("\n");
 }
 
 int
@@ -1359,18 +1386,18 @@ ddxProcessArgument(int argc, char **argv, int i)
       return 2;
     }
   }
-  if (!strcmp(argv[i], "-xf86config"))
+  if (!strcmp(argv[i], "-config") || !strcmp(argv[i], "-xf86config"))
   {
     if (!argv[i + 1])
       return 0;
     if (getuid() != 0 && !xf86PathIsSafe(argv[i + 1])) {
-      FatalError("\nInvalid argument for -xf86config\n"
-	  "\tFor non-root users, the file specified with -xf86config must be\n"
+      FatalError("\nInvalid argument for -config\n"
+	  "\tFor non-root users, the file specified with -config must be\n"
 	  "\ta relative path and must not contain any \"..\" elements.\n"
-	  "\tUsing default XF86Config search path.\n\n");
+	  "\tUsing default "__XCONFIGFILE__" search path.\n\n");
     }
     xf86ConfigFile = argv[i + 1];
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
     /* Cannot drop privs when -xf86config is used with unsafe path */
     if (!xf86PathIsSafe(xf86ConfigFile))
 	    xf86KeepPriv = TRUE;
@@ -1655,12 +1682,12 @@ ddxProcessArgument(int argc, char **argv, int i)
     }
     xf86DoConfigure = TRUE;
     xf86AllowMouseOpenFail = TRUE;
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
     xf86KeepPriv = TRUE;
 #endif
     return 1;
   }
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
   if (!strcmp(argv[i], "-keepPriv")) 
   {
 	  if (getuid() != 0) {
@@ -1673,6 +1700,11 @@ ddxProcessArgument(int argc, char **argv, int i)
 #endif
   /* OS-specific processing */
   return xf86ProcessArgument(argc, argv, i);
+}
+
+/* ddxInitGlobals - called by |InitGlobals| from os/util.c */
+void ddxInitGlobals(void)
+{
 }
 
 /*
@@ -1689,15 +1721,14 @@ ddxUseMsg()
   ErrorF("Device Dependent Usage\n");
   if (getuid() == 0)
   {
-    ErrorF("-xf86config file       specify a configuration file\n");
     ErrorF("-modulepath paths      specify the module search path\n");
     ErrorF("-logfile file          specify a log file name\n");
-    ErrorF("-configure             probe for devices and write an XF86Config\n");
+    ErrorF("-configure             probe for devices and write an "__XCONFIGFILE__"\n");
   }
   else
   {
-    ErrorF("-xf86config file       specify a configuration file, relative to the\n");
-    ErrorF("                       XF86Config search path, only root can use absolute\n");
+    ErrorF("-config file       specify a configuration file, relative to the\n");
+    ErrorF("                       "__XCONFIGFILE__" search path, only root can use absolute\n");
   }
   ErrorF("-probeonly             probe for devices, then exit\n");
   ErrorF("-scanpci               execute the scanpci module and exit\n");
@@ -1732,7 +1763,7 @@ ddxUseMsg()
   ErrorF("-bestRefresh           choose modes with the best refresh rate\n");
   ErrorF("-ignoreABI             make module ABI mismatches non-fatal\n");
   ErrorF("-version               show the server version\n");
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
   ErrorF("-keepPriv		 don't revoque privs when running as root\n");
 #endif
   /* OS-specific usage */
@@ -1748,7 +1779,7 @@ ddxUseMsg()
 #define OSVENDOR ""
 #endif
 #ifndef PRE_RELEASE
-#define PRE_RELEASE XF86_VERSION_SNAP
+#define PRE_RELEASE XORG_VERSION_SNAP
 #endif
 
 static void
@@ -1756,27 +1787,34 @@ xf86PrintBanner()
 {
 #if PRE_RELEASE
   ErrorF("\n"
-    "This is a pre-release version of XFree86, and is not supported in any\n"
-    "way.  Bugs may be reported to XFree86@XFree86.Org and patches submitted\n"
-    "to fixes@XFree86.Org.  Before reporting bugs in pre-release versions,\n"
-    "please check the latest version in the XFree86 CVS repository\n"
-    "(http://www.XFree86.Org/cvs).\n");
+    "This is a pre-release version of the " XVENDORNAME " X11.\n"
+    "It is not supported in any way.\n"
+    "Bugs may be filed in the bugzilla at http://bugs.freedesktop.org/.\n"
+    "Select the \"xorg\" product for bugs you find in this release.\n"
+    "Before reporting bugs in pre-release versions please check the\n"
+    "latest version in the " XVENDORNAME " \"monolithic tree\" CVS\n"
+    "repository hosted at http://www.freedesktop.org/Software/xorg/");
 #endif
-  ErrorF("\nXFree86 Version %d.%d.%d", XF86_VERSION_MAJOR, XF86_VERSION_MINOR,
-					XF86_VERSION_PATCH);
-#if XF86_VERSION_SNAP > 0
-  ErrorF(".%d", XF86_VERSION_SNAP);
+  ErrorF("\nX Window System Version %d.%d.%d",
+	 XORG_VERSION_MAJOR,
+	 XORG_VERSION_MINOR,
+	 XORG_VERSION_PATCH);
+#if XORG_VERSION_SNAP > 0
+  ErrorF(".%d", XORG_VERSION_SNAP);
 #endif
 
-#if XF86_VERSION_SNAP >= 900
-  ErrorF(" (%d.%d.0 RC %d)", XF86_VERSION_MAJOR, XF86_VERSION_MINOR + 1,
-				XF86_VERSION_SNAP - 900);
+#if XORG_VERSION_SNAP >= 900
+  ErrorF(" (%d.%d.0 RC %d)", XORG_VERSION_MAJOR, XORG_VERSION_MINOR + 1,
+				XORG_VERSION_SNAP - 900);
 #endif
 
-#ifdef XF86_CUSTOM_VERSION
-  ErrorF(" (%s)", XF86_CUSTOM_VERSION);
+#ifdef XORG_CUSTOM_VERSION
+  ErrorF(" (%s)", XORG_CUSTOM_VERSION);
 #endif
-  ErrorF("\nRelease Date: %s\n", XF86_DATE);
+#ifndef XORG_DATE
+#define XORG_DATE XF86_DATE
+#endif
+  ErrorF("\nRelease Date: %s\n", XORG_DATE);
   ErrorF("X Protocol Version %d, Revision %d, %s\n",
          X_PROTOCOL, X_PROTOCOL_REVISION, XORG_RELEASE );
   ErrorF("Build Operating System:%s%s\n", OSNAME, OSVENDOR);
@@ -1821,7 +1859,7 @@ xf86PrintBanner()
 #if defined(BUILDERSTRING)
   ErrorF("%s \n",BUILDERSTRING);
 #endif
-  ErrorF("\tBefore reporting problems, check http://www.XFree86.Org/\n"
+  ErrorF("\tBefore reporting problems, check "__VENDORDWEBSUPPORT__"\n"
 	 "\tto make sure that you have the latest version.\n");
 #ifdef XFree86LOADER
   ErrorF("Module Loader present\n");

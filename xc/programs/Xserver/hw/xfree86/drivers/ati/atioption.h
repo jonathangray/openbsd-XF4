@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atioption.h,v 1.13 2004/01/05 16:42:03 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atioption.h,v 1.12 2003/04/23 21:51:29 tsi Exp $ */
 /*
  * Copyright 1999 through 2004 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
@@ -19,6 +19,9 @@
  * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * DRI support by:
+ *    Leif Delgass <ldelgass@retinalburn.net>
  */
 
 #ifndef ___ATIOPTION_H___
@@ -43,6 +46,17 @@ typedef enum
     ATI_OPTION_LINEAR,
 
 #endif /* AVOID_CPIO */
+
+#ifdef XF86DRI_DEVEL
+
+    ATI_OPTION_IS_PCI,
+    ATI_OPTION_DMA_MODE,
+    ATI_OPTION_AGP_MODE,
+    ATI_OPTION_AGP_SIZE,
+    ATI_OPTION_LOCAL_TEXTURES,
+    ATI_OPTION_BUFFER_SIZE,
+
+#endif /* XF86DRI_DEVEL */
 
     ATI_OPTION_MMIO_CACHE,
     ATI_OPTION_TEST_MMIO_CACHE,

@@ -1,5 +1,5 @@
 /* OS/2 REXX */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.cmd,v 1.3 2003/11/12 00:10:30 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.cmd,v 1.2 2003/03/25 04:18:26 dawes Exp $ */
 
 '@echo off'
 call RxFuncAdd 'SysCls','RexxUtil','SysCls'

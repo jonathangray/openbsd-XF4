@@ -22,7 +22,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyInit.c,v 3.9 2003/11/17 22:20:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyInit.c,v 3.8 2001/01/17 22:36:53 dawes Exp $ */
 
 /*
  * Copyright 1987 by the Regents of the University of California

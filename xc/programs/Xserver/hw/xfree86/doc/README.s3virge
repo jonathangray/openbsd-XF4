@@ -6,14 +6,14 @@
 
 1.  Supported hardware
 
-The s3virge driver in XFree86 4.3.99.903 supports the S3 ViRGE, ViRGE DX, GX,
-GX2, MX, MX+, and VX chipsets.  It also supports Trio3D and Trio3D/2x chips.
-A majority of testing is done on ViRGE DX chips, making them the most stable
-to date.  This release has added support for doublescan modes on DX.
+The s3virge driver in X11R6.8.1 supports the S3 ViRGE, ViRGE DX, GX, GX2, MX,
+MX+, and VX chipsets.  It also supports Trio3D and Trio3D/2x chips.  A major-
+ity of testing is done on ViRGE DX chips, making them the most stable to
+date.  This release has added support for doublescan modes on DX.
 
 This driver is moderately stable, however please use caution with any new
-install.  Please report any problems to <XFree86@XFree86.org> using the
-appropriate bug report sheet.
+install.  Please report any problems to bugzilla.freedesktop.org, using the
+xorg component.
 
 2.  Features:
 
@@ -40,14 +40,13 @@ these in your "Device" section.
 4.  Documentation:
 
 The driver has several supported options which are documented in the s3virge
-man page.  Please refer to it for additional details about XF86Config
+man page.  Please refer to it for additional details about configuration
 options.
 
 5.  Support:
 
-For support with XFree86 video drivers please refer to our web site at
-XFree86 <URL:http://www.XFree86.org>.  For problems not addressed in the web
-page please contact our support email address  <XFree86@XFree86.org>
+For support with X11R6.8.1 video drivers please refer to our web site at
+wiki.x.org <URL:http://wiki.x.org>.
 
 6.  Authors
 
@@ -61,7 +60,5 @@ page please contact our support email address  <XFree86@XFree86.org>
 
    o Kevin Brosius <cobra@compuserve.com>
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/s3virge.sgml,v 1.6 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.s3virge,v 1.21 2004/01/28 02:13:13 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.s3virge,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

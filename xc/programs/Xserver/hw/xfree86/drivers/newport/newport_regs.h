@@ -4,7 +4,7 @@
  * Register Layouts of the various newport chips
  * mostly as found in linux/include/asm/newport.h 
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_regs.h,v 1.3 2002/12/10 04:03:00 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_regs.h,v 1.2 2001/11/23 19:50:45 dawes Exp $ */
 
 typedef volatile unsigned long npireg_t;
 

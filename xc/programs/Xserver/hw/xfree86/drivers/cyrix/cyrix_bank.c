@@ -26,7 +26,7 @@
  *          Dirk H. Hohndel (hohndel@suse.de),
  *          Portions: the GGI project & confidential CYRIX databooks.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_bank.c,v 1.3 2002/11/06 11:38:59 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_bank.c,v 1.1 2000/02/13 00:56:10 dawes Exp $ */
 
 #define PSZ 8
 

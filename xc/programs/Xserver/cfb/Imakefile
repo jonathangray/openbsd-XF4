@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile,v 3.28 2002/05/31 16:12:18 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile,v 3.27 2002/05/31 15:12:55 dawes Exp $
 
 #define PixelSize 8
 

@@ -138,4 +138,4 @@ calibration program !
 
 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/fpit/readme.txt,v 1.2 2002/11/22 03:37:37 dawes Exp $ */
+/* $XFree86$ */

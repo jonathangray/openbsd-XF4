@@ -31,7 +31,7 @@
  * authorization  from Martin Kroeker or Daveg GmbH.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.c,v 1.8 2003/01/15 03:43:58 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.c,v 1.7 2003/01/12 03:55:50 tsi Exp $ */
 
 #define _CALCOMP_C_
 /*****************************************************************************
@@ -95,7 +95,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

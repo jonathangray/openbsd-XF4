@@ -1,4 +1,4 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN"[
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN"[
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
@@ -8,7 +8,6 @@
 <date>9 June 2000, last update by Dejan Ilic <email>dejan.ilic@home.se</email>
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/rendition.sgml,v 1.13 2003/10/19 19:47:17 dawes Exp $
 </ident>
 
 <toc>
@@ -20,7 +19,7 @@ was tested on a miroCRYSTAL VRX (V1000), Intergraph Intense-100 3D (V1000), Diam
 <sect>Limitations <p>
 V1000 cards can only work as primary display card due to hardware limitations. <p>
 V2x00 cards can work even if not primary, but primary display card will be disabled when server is run. This is a driver limitation.<p>
-Hopefully these limitations will be workaround and fixed before final XFree86 4.0 release.<p>
+Hopefully these limitations were worked around and fixed before final XFree86 4.0 release.<p>
 
 <sect>Important notices <p>
 Some V1000-based video cards are known to lock up the computer if you have write-combine activated. Disabling it removes the problem. Look for settings in the motherboards BIOS and disable ALL settings that has to do with write-combine (usually called USWC or just WC for short). <p>
@@ -47,7 +46,7 @@ acceleration are next on the list of features to be included.<p>
 </itemize>
 </itemize>
 
-<sect>XF86Config Option <p>
+<sect>xorg.conf Option <p>
 <descrip>
 <tag>Option "SW_Cursor"</tag>
 Disables use of the hardware cursor.
@@ -60,7 +59,10 @@ Set custom ramdac limit. We have currently no way of knowing if the v2x00 chip i
 <tag>Option "FramebufferWC"</tag>
 If writecombine is disabled in BIOS, and you add this option in configuration file, then the driver will try to request writecombined access to the framebuffer. This can drastically increase the performance on unaccelerated server. Requires that "MTRR"-support is compiled into the OS-kernel.
 <tag>Option "NoDDC"</tag>
-Disable probing of DDC-information from your monitor. This information is not used yet and is only there for informational purposes. This might change before final XFree86 4.0 release. Safe to disable if you experience problems during startup of X-server.
+Disable probing of DDC-information from your monitor. This information is
+not used yet and is only there for informational purposes. This might
+have changed before final XFree86 4.0 release. Safe to disable if you experience
+problems during startup of X-server.
 <tag>Option "ShadowFB"</tag>
 If this option is enabled, the driver will cause the CPU to do each drawing
 operation first into a shadow frame buffer in system virtual memory and then
@@ -77,7 +79,10 @@ Notice that this option requires "ShadowFB" and automatically enable it. It also
 The option is not activated by default.
 </descrip>
 
-<sect>News in this release (XFree86 4.1)<p>
+<sect>News in the X11R&relvers; release<p>
+This driver was originally part of the XFree86 4.4 rc2 release.
+
+<sect>News in the XFree86 4.1 release <p>
 <itemize>
 <item>DirectColor support
 <item>SilkenMouse support

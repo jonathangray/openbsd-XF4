@@ -9,11 +9,14 @@ XCOMM $XFree86: xc/programs/Xserver/GL/Imakefile,v 1.12 2003/08/06 14:04:01 eich
  CORE_SUBDIR = /* opengl */
 #elif defined(DarwinArchitecture) && DarwinQuartzSupport
  CORE_SUBDIR = apple mesa
+#elif defined(cygwinArchitecture) && GlxUseWindows
+ CORE_SUBDIR = windows mesa
 #else
  CORE_SUBDIR = mesa
 #endif
 
-#if BuildXF86DRI
+#if BuildXF86DRI && ((defined(XF86Server) && XF86Server) \
+	|| (defined(XorgServer) && XorgServer))
 DRI_SUBDIR = dri
 #endif
 

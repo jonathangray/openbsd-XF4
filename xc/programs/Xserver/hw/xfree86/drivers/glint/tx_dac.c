@@ -27,7 +27,7 @@
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen and
  * Siemens Nixdorf Informationssysteme
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/tx_dac.c,v 1.16 2003/11/03 05:11:14 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/tx_dac.c,v 1.15tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

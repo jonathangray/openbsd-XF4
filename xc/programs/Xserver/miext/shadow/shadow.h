@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/miext/shadow/shadow.h,v 1.7 2002/12/02 20:37:24 tsi Exp $
+ * $XFree86: xc/programs/Xserver/miext/shadow/shadow.h,v 1.6tsi Exp $
  *
  * Copyright © 2000 Keith Packard
  *
@@ -162,6 +162,13 @@ shadowUpdateRotate16_270 (ScreenPtr    pScreen,
 void
 shadowUpdateRotate32_270 (ScreenPtr    pScreen,
 			  shadowBufPtr pBuf);
+
+typedef void (* shadowUpdateProc)(ScreenPtr, shadowBufPtr);
+
+shadowUpdateProc shadowUpdatePackedWeak(void);
+shadowUpdateProc shadowUpdatePlanar4Weak(void);
+shadowUpdateProc shadowUpdatePlanar4x8Weak(void);
+shadowUpdateProc shadowUpdateRotatePackedWeak(void);
 
 void
 shadowWrapGC (GCPtr pGC);

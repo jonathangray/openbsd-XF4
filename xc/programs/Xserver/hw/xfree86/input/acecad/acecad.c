@@ -23,7 +23,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/acecad/acecad.c,v 1.5 2003/11/05 20:56:29 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/acecad/acecad.c,v 1.4 2003/10/30 00:40:45 dawes Exp $ */
 
 #define _ACECAD_C_
 /*****************************************************************************
@@ -90,7 +90,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

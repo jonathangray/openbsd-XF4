@@ -1,4 +1,5 @@
 XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile,v 1.4 2002/10/17 02:22:49 dawes Exp $
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/sunos/Imakefile,v 1.2 2004/04/23 19:54:13 eich Exp $
 XCOMM
 XCOMM Copyright 2001 The XFree86 Project, Inc.  All Rights Reserved.
 XCOMM
@@ -32,8 +33,18 @@ XCOMM
 #include <Server.tmpl>
 
 #if !HasGcc && defined(i386Architecture)
+#if HasSunC
+PROWORKS_INOUT_SRC = solaris-ia32.S
+PROWORKS_INOUT_OBJ = solaris-ia32.o
+
+includes:: ia32.il
+
+CppFileTarget(ia32.il,solaris-ia32.S,-DINLINE_ASM,NullParameter)
+ObjectFromAsmSource(solaris-ia32,NullParameter)
+#else
 PROWORKS_INOUT_SRC = sun_inout.s
-PROWORKS_INOUT_OBJ = sun_inout.s
+PROWORKS_INOUT_OBJ = sun_inout.o
+#endif
 #endif
 
 #if defined(i386Architecture) && (OSMinorVersion < 8)

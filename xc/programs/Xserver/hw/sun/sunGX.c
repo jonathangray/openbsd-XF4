@@ -27,7 +27,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.9 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.8 2003/07/19 13:22:28 tsi Exp $ */
 
 #include	"sun.h"
 

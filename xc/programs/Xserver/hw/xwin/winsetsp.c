@@ -28,9 +28,19 @@
  * Authors:	Harold L Hunt II
  * 		Alan Hourihane <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winsetsp.c,v 1.8 2003/08/07 23:47:58 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winsetsp.c,v 1.7 2001/11/01 12:19:42 alanh Exp $ */
 
 #include "win.h"
+
+
+/*
+ * References to external symbols
+ */
+
+extern int			g_iPixmapPrivateIndex;
+extern int			g_iGCPrivateIndex;
+extern int                      g_copyROP[];
+
 
 /* See Porting Layer Definition - p. 55 */
 void

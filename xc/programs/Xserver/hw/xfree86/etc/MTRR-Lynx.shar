@@ -27,7 +27,7 @@ echo x - sys/drivers/mtrr/Makefile
 sed 's/^X//' >sys/drivers/mtrr/Makefile << 'END-of-sys/drivers/mtrr/Makefile'
 X#************************************************************
 X# 
-X# $XFree86: xc/programs/Xserver/hw/xfree86/etc/MTRR-Lynx.shar,v 1.1 1999/12/08 06:10:11 dawes Exp $
+X# $XFree86$
 X# 
 X#************************************************************
 X
@@ -51,9 +51,7 @@ X
 XDFILES = mtrr.x support.x i686_mem.x k6_mem.x
 XDOBJS=$(DFILES:.x=.o)
 X
-Xifneq "240" "$(LYNXVER)"
-Xinclude	../../OBJ_RULES
-Xendif
+Xinclude	$(ENV_PREFIX)/sys/OBJ_RULES
 X
 Xifneq "386" "$(PROCESSOR)"
 Xabort ::
@@ -67,7 +65,7 @@ XDRV_LD=$(NEW_GCC_LD)
 Xendif
 X
 XSPECIAL_INCLUDES = 
-XSPECIAL_CFLAGS = -DKERNEL -D__NO_INCLUDE_WARN__ -Wall -Wunused
+XSPECIAL_CFLAGS = -DKERNEL -D__NO_INCLUDE_WARN__ -Wall -Wunused -DLVER=$(LYNXVER)
 XASFLAGS=-DLOCORE
 X
 X%.o: %.S 
@@ -185,7 +183,9 @@ X
 X/*
 X * LynxOS doesn't have vm_offset_t
 X */
+X#if LVER!=400
 Xtypedef unsigned int vm_offset_t;
+X#endif
 Xtypedef unsigned int vm_size_t;
 X
 X
@@ -216,7 +216,9 @@ X#define vtophys(x)	((unsigned long)(get_phys((long)x) - PHYSBASE + DRAMBASE))
 X#define btoc(x)		(((unsigned)(x)+PAGE_OFFSET_MASK)>>PAGESHIFT)
 X
 X#define IO_NDELAY	FNDELAY
+X#ifndef ERESTART
 X#define ERESTART	0		/* usually we don't do this */
+X#endif
 X
 X/* device driver entry points */
 X
@@ -819,11 +821,12 @@ X#include "opt_smp.h"
 X#endif
 X
 X#include <sys/param.h>
-X#include <sys/kernel.h>
 X#ifndef __Lynx__
+X#include <sys/kernel.h>
 X#include <sys/systm.h>
 X#include <sys/malloc.h>
 X#else
+X#include <kernel.h>
 X#include <proc.h>
 X#include <mem.h>
 X#include <sys/file.h>
@@ -1439,12 +1442,13 @@ X *
 X */
 X
 X#include <sys/param.h>
-X#include <sys/kernel.h>
 X#ifndef __Lynx__
+X#include <sys/kernel.h>
 X#include <sys/systm.h>
 X#include <sys/ioccom.h>
 X#include <sys/malloc.h>
 X#else
+X#include <kernel.h>
 X#include <proc.h>
 X#include <mem.h>
 X#include <sys/file.h>
@@ -1681,12 +1685,16 @@ X
 X/* kernel printf's */
 X
 Xextern void cprintf             _AP((char *, ...));
+X#if LVER!=400
 Xextern void kkprintf            _AP((char *, ...));
+X#endif
 Xextern void ksprintf            _AP((char *, ...));
 X
 X/* I/O interrupts */
 X
+X#if LVER!=400
 Xextern int iointset   _AP((int vector, void (*function)(void *), char *argument));
+X#endif
 Xextern int iointclr             _AP((int));
 Xextern void ioint_link          _AP((int));
 X
@@ -1694,8 +1702,10 @@ Xextern void panic               _AP((char *));
 X
 X/* timeout */
 X
+X#if LVER!=400
 Xextern int timeout              _AP((void (*)(char *), char *, int));
 Xextern void cancel_timeout      _AP((int));
+X#endif
 X
 X/* time */
 Xextern unsigned long nanotime	_AP((unsigned long *secs));
@@ -1713,10 +1723,14 @@ Xextern int pgeterr              _AP((void));
 X
 X/* from mem.h: */
 X
+X#if LVER!=400
 Xextern int sysfree              _AP((char *, int));
+X#endif
 X
 X/* allocate physically-contiguous memory */
+X#if LVER!=400
 Xextern char *alloc_cmem         _AP((int size));
+X#endif
 Xextern void free_cmem           _AP((char *, int size));
 Xextern char *permap		_AP((long physaddr, long size));
 X
@@ -1732,7 +1746,9 @@ Xextern void stsetprio           _AP((int stid, int prio));
 Xextern int stgetprio            _AP((int stid));
 Xextern int stgetid              _AP((void));
 Xextern void stgetowne           _AP((int stid));
+X#if LVER!=400
 Xextern void stkill              _AP((int stid, int signal));
+X#endif
 Xextern void stsignal  _AP((int (*handler)(char *arg, int signum), char *arg));
 X
 X/* get priority of current proces */
@@ -1746,7 +1762,9 @@ X
 X/* user proc signals */
 Xextern int _kill		_AP((int pid, int signal));
 Xextern int _killpg		_AP((int pgrp, int signal));
+X#if LVER!=400
 Xextern int getpid		_AP((void));
+X#endif
 Xextern int suser		_AP((void));
 X
 X#endif
@@ -2006,7 +2024,7 @@ X**
 X**----------------------------------------------------------------------
 X*/
 X
-Xstatic const char __RCSid[] = "$XFree86: xc/programs/Xserver/hw/xfree86/etc/MTRR-Lynx.shar,v 1.1 1999/12/08 06:10:11 dawes Exp $";
+Xstatic const char __RCSid[] = "$XFree86$";
 X
 X/*
 X** Includes and imports
@@ -2558,8 +2576,10 @@ X/*
 X * Bits in 486 special registers:
 X */
 X#define	CR0_NE	0x00000020	/* Numeric Error enable (EX16 vs IRQ13) */
+X#ifndef CR0_WP
 X#define	CR0_WP	0x00010000	/* Write Protect (honor page protect in
 X							   all modes) */
+X#endif
 X#define	CR0_AM	0x00040000	/* Alignment Mask (set to enable AC flag) */
 X#define	CR0_NW  0x20000000	/* Not Write-through */
 X#define	CR0_CD  0x40000000	/* Cache Disable */

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/dix/cursor.c,v 3.9 2003/11/17 22:20:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/cursor.c,v 3.8 2003/01/12 02:44:26 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -67,6 +67,10 @@ typedef struct _GlyphShare {
 } GlyphShare, *GlyphSharePtr;
 
 static GlyphSharePtr sharedGlyphs = (GlyphSharePtr)NULL;
+
+#ifdef XFIXES
+static CARD32	cursorSerial;
+#endif
 
 static void
 FreeCursorBits(CursorBitsPtr bits)
@@ -189,6 +193,10 @@ AllocCursorARGB(psrcbits, pmaskbits, argb, cm,
 
     pCurs->bits = bits;
     pCurs->refcnt = 1;		
+#ifdef XFIXES
+    pCurs->serialNumber = ++cursorSerial;
+    pCurs->name = None;
+#endif
 
     pCurs->foreRed = foreRed;
     pCurs->foreGreen = foreGreen;
@@ -379,6 +387,10 @@ AllocGlyphCursor(source, sourceChar, mask, maskChar,
     CheckForEmptyMask(bits);
     pCurs->bits = bits;
     pCurs->refcnt = 1;
+#ifdef XFIXES
+    pCurs->serialNumber = ++cursorSerial;
+    pCurs->name = None;
+#endif
 
     pCurs->foreRed = foreRed;
     pCurs->foreGreen = foreGreen;

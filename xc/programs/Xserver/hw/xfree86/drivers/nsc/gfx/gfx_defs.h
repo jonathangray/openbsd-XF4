@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/gfx_defs.h,v 1.3 2003/11/03 05:11:23 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/gfx_defs.h,v 1.2tsi Exp $ */
 /*
  * $Workfile: gfx_defs.h $
  *

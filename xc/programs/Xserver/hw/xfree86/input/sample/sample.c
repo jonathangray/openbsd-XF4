@@ -29,7 +29,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/sample/sample.c,v 1.11 2002/01/15 15:32:45 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/sample/sample.c,v 1.10 2002/01/02 15:09:14 herrb Exp $ */
 
 #define _SAMPLE_C_
 /*****************************************************************************
@@ -63,7 +63,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

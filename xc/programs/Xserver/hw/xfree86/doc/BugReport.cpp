@@ -54,4 +54,4 @@ REPORT:
 
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/BugReport.cpp,v 1.1 2001/01/15 23:00:01 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/BugReport,v 1.3 2000/08/03 12:24:02 dawes Exp $

@@ -35,7 +35,7 @@
  * TORTIOUS ACTIONS, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/hyperpen/xf86HyperPen.c,v 1.10 2003/11/17 22:20:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/hyperpen/xf86HyperPen.c,v 1.9 2003/09/24 03:16:59 dawes Exp $ */
 
 #include <xf86Version.h>
 
@@ -1484,7 +1484,7 @@ XF86ModuleVersionInfo xf86HyperPenVersion = {
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     0x00010000,
     {0,0,0,0}
 };
@@ -1766,7 +1766,7 @@ static XF86ModuleVersionInfo xf86HypVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

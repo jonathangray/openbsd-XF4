@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaTEGlyph.c,v 1.9 2000/09/01 05:49:45 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaTEGlyph.c,v 1.7 1999/11/06 23:14:46 mvojkovi Exp $ */
 
 
 #include "xaa.h"
@@ -74,7 +74,7 @@ static CARD32 *DrawTETextScanlineWidth9(CARD32 *base, unsigned int **glyphp,
 #endif
 
 #define glyph_scanline_func EXPNAME(XAAGlyphScanlineFunc)
-
+#define glyph_get_scanline_func EXPNAME(XAAGetGlyphScanlineFunc)
 
 
 GlyphScanlineFuncPtr glyph_scanline_func[32] = {
@@ -124,6 +124,10 @@ GlyphScanlineFuncPtr glyph_scanline_func[32] = {
    DrawTETextScanlineGeneric, DrawTETextScanlineGeneric, 
    DrawTETextScanlineGeneric, DrawTETextScanlineGeneric
 };
+
+GlyphScanlineFuncPtr *glyph_get_scanline_func(void) {
+   return glyph_scanline_func;
+}
 
 
 /********************************************************************

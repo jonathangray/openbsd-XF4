@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhwstub.c,v 1.13 2003/10/30 17:37:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhwstub.c,v 1.12 2001/10/28 03:33:55 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86cmap.h"
@@ -168,3 +168,27 @@ fbdevHWSaveScreen(ScreenPtr pScreen, int mode)
 {
 	return FALSE;
 }
+
+xf86SwitchModeProc *
+fbdevHWSwitchModeWeak(void) { return fbdevHWSwitchMode; }
+
+xf86AdjustFrameProc *
+fbdevHWAdjustFrameWeak(void) { return fbdevHWAdjustFrame; }
+
+xf86EnterVTProc *
+fbdevHWEnterVTWeak(void) { return fbdevHWEnterVT; }
+
+xf86LeaveVTProc *
+fbdevHWLeaveVTWeak(void) { return fbdevHWLeaveVT; }
+
+xf86ValidModeProc *
+fbdevHWValidModeWeak(void) { return fbdevHWValidMode; }
+
+xf86DPMSSetProc *
+fbdevHWDPMSSetWeak(void) { return fbdevHWDPMSSet; }
+
+xf86LoadPaletteProc *
+fbdevHWLoadPaletteWeak(void) { return fbdevHWLoadPalette; }
+
+SaveScreenProcPtr
+fbdevHWSaveScreenWeak(void) { return fbdevHWSaveScreen; }

@@ -1,43 +1,44 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 <!ENTITY % onediff 'IGNORE'>	 <!-- patch is a single diff file -->
 <!ENTITY % twodiffs 'IGNORE'>	 <!-- patch is split into two diff files -->
 <!ENTITY % threediffs 'IGNORE'> <!-- patch is split into three diff files -->
-<!ENTITY % fourdiffs 'INCLUDE'> <!-- patch is split into four diff files -->
-<!ENTITY % difftar 'INCLUDE'> <!-- patch also contains a tarball -->
-<!ENTITY % removefiles 'INCLUDE'> <!-- patching requires removing some files -->
+<!ENTITY % fourdiffs 'IGNORE'> <!-- patch is split into four diff files -->
+<!ENTITY % difftar 'IGNORE'> <!-- patch also contains a tarball -->
+<!ENTITY % removefiles 'IGNORE'> <!-- patching requires removing some files -->
 ]>
 
 
 <article>
 
-<title>README for XFree86&tm; &relvers;
-<author>The XFree86 Project, Inc
-<date>18 December 2003
+<title>README for X11R&relvers;
+<author>The X.Org Foundation
+<date>&reldate;
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml,v 3.138 2003/12/19 04:26:12 dawes Exp $
+$Id: README.sgml,v 1.2 2004/11/03 00:08:20 matthieu Exp $.
 </ident>
 
 <abstract>
 
-XFree86 is an Open Source version of the X Window System that supports
-many UNIX(R) and UNIX-like operating systems (such as Linux, FreeBSD,
-NetBSD, OpenBSD and Solaris x86) on Intel and other platforms.  This
-version is compatible with X11R6.6.
+X11R&relvers; is an Open Source version of the X Window System that
+supports many UNIX(R) and UNIX-like operating systems (such as Linux,
+FreeBSD, NetBSD, OpenBSD and Solaris x86) on Intel and other platforms.
+This version is compatible with X11R&prevrelvers; and other X window
+system implementations which support the X11R&majorvers; standard.
 
 </abstract>
 
 <toc>
 
-<sect>What is XFree86 &relvers;?
+<sect>What is X11R&relvers;?
 <p>
-
 <![ %updaterel [
-XFree86 &relvers; is the &whichupdaterel; update to &fullrelvers;,
+X11R&relvers; is the &whichupdaterel; update to X11R&majorvers;,
 the &whichfullrel; full release in the
 <![ %earlyrel; [new]]>
-XFree86 4.x series.
+X11R&relvers; series.
+
 
 Update releases are taken from a stable/maintenance branch.  They are
 designed to be installed on top of the full release that they are
@@ -47,32 +48,30 @@ stability.
 ]]>
 
 <![ %fullrel [
-XFree86 &relvers; is the &whichfullrel; full release in the
+X11R&relvers; is the &whichfullrel; full release in the
 <![ %earlyrel; [new]]>
-XFree86 4.x series.
+X11R&majorvers; series.
 ]]>
 
 <![ %snapshot [
-XFree86 &relvers; is a pre-release snapshot of XFree86 &nextfullrelvers;.
+X11R&relvers; is a pre-release snapshot of X11R&fullrelvers;.
 <![ %relcandidate [
-This snapshot is release candidate &rcnum; for version &nextfullrelvers;.
+This snapshot is release candidate &rcnum; for version &fullrelvers;.
 ]]>
 Pre-release snapshots are provided for beta testing.  You should only install
 snapshots if you're comfortable dealing with possibly unstable beta-level
 software.  If you find problems with this snapshot, you are encouraged
-to report your findings to the public XFree86 mailing list:
-<email>devel@XFree86.org</email>.
+to report your findings to the public X.Org server mailing list:
+<email>xorg@freedesktop.org</email>.
 
 <![ %relcandidate [
-XFree86 &relvers; is a feature-complete snapshot of XFree86
-&nextfullrelvers;.
+X11R&relvers; is a feature-complete snapshot of X11R&fullrelvers;.
 ]]>
 ]]> 
 
 <p>
-XFree86 4.x is the current XFree86 release series.  The first release in
-this series was in early 2000.  The core of XFree86 4.x is a modular
-X server.
+X11R&relvers; is the current X.Org Foundation release series.
+The core of X11R&relvers; is a modular X server.
 <![ %fullrel [The &relvers; version is a new release that includes
 additional hardware support, functional enhancements and bug fixes.]]>
 <![ %haverelnotes [
@@ -80,23 +79,33 @@ Specific release enhancements can be viewed in the
 <htmlurl name="Release Notes" url="RELNOTES.html">.
 ]]>
 
-Most modern PC video hardware is supported in XFree86 &relvers;, and
+Most modern PC video hardware is supported in X11R&relvers;, and
 most PC video hardware that isn't supported explicitly can be used with
-the "vesa" driver.  The <htmlurl name="Releaes Notes" url="RELNOTES3.html">
-has a table showing the drivers provided with XFree86 &relvers;, and links
+the "vesa" driver.  The <htmlurl name="Release Notes" url="RELNOTES3.html">
+has a table showing the drivers provided with X11R&relvers;, and links
 to related documentation.
 
-XFree86 is produced by The XFree86 Project, Inc, which is a group of
-mostly volunteer independent developers.  XFree86 is a non-commercial
-organisation, and would not be viable without the invaluable development
-contributions of volunteers.  This release is dedicated to the greater
-XFree86 community.
+The X.Org Foundation X releases are produced by the X.Org Foundation.
+The X.Org Foundation has been formed as a Delaware corporation organized to operate as a 
+scientific charity under IRS code 501(c)(3) to chartered to develop and 
+execute effective strategies which provide world-wide stewardship of the 
+X Window System technology and standards. Membership in the X.Org 
+Foundation is free to all participants. 
+Applications for Membership are now being accepted, 
+and active participants in the further development of the X Window 
+Technology are invited to complete a
+<url url="http://www.x.org/XOrg_Foundation_Membership.html" name="membership application">.
+The X11R&relvers; codebase forms the second X window system release since
+the formation of the X.org foundataion and includes code from the X
+Consortium, the Open Group and the XFree86&trade; project.
+This release is dedicated to the greater X community, developers
+and users alike.
 
 <![ %snapshot [
 <sect>Redistribution of Snapshots
 <p>
 
-While the XFree86 <htmlurl name="License" url="LICENSE.html"> doesn't
+While the X.Org Foundation <htmlurl name="License" url="LICENSE.html"> doesn't
 prohibit vendors and others redistributing binaries of this snapshot
 release, we don't recommend including them in production releases.
 ]]>
@@ -104,95 +113,79 @@ release, we don't recommend including them in production releases.
 <sect>Licensing
 <p>
 
-XFree86 source code is covered by many licenses.  All of these licenses
-have in common the fact that they do not impose conditions on the
-modification or redistribution or either source code or binaries other
-than requiring that the copyright and/or license notices are left intact,
-and in some cases, that attributions are included with documentation
-accompanying binaries.  Most of these licenses are based on the MIT or
-BSD licenses, and all of them are consistent with the <htmlurl name="Open
-Source definition" url="http://www.opensource.org/docs/definition.php">.
+X Window System source code is covered by many licenses.  All of these licenses
+have in common the fact that they do not impose significant conditions
+on the modification or redistribution or either source code or binaries
+beyond requiring one or more of the following:
 
-Copyright and Licensing information for XFree86, including the attributions
-required by some of the licenses for binary distributions, can be found
-in the <htmlurl name="License Document" url="LICENSE.html">.
+<enum>
+<item>Copyright and/or license notices are left intact.
+<item>Copyright and/or license notices are reproduced verbatim in
+	documentation accompanying binary distributions.
+<item>Attributions are included with documentation accompanying binaries.
+</enum>
 
+Most of these licenses are based on the MIT, X Consortium, or BSD
+(original and revised) licenses.  All of them are consistent with the
+<htmlurl name="Open Source Definition"
+url="http://www.opensource.org/docs/definition.php">, and most are
+consistent with the Free Software Foundation's <htmlurl name="Free
+Software Definition" url="http://www.fsf.org/philosophy/free-sw.html">.
+
+Copyright and Licensing information for X, including the reproduction
+of copyright and/or license notices and attributions required by some
+of the licenses for binary distributions, can be found in the <htmlurl
+name="License Document" url="LICENSE.html">.  If you find any omissions
+in that document, please contact us with details at
+<email>xf_board@x.org</email>.
+While the current licenses are all open source licenses, the
+X.Org Foundation is attempting, with time, to bring as much as 
+possible of the code's licenses in the distribution into compliance with the 
+<htmlurl name="Debian Free Software Guidelines" 
+url="http://www.debian.org/social_contract#guidelines">.
 <sect>Pointers to additional information
 <p>
 
 The documentation for this release can be found online at the <url
-name="XFree86 web site" url="http://www.xfree86.org/&relvers;/">.
-Documentation for the latest release version can always be found <url
-name="here" url="http://www.xfree86.org/current/">, and documentation
-for the latest pre-release snapshot can be found <url name="here"
-url="http://www.xfree86.org/snapshot/">.  Checking those last two links
-is a good way of finding out the latest versions available from XFree86.
-
+name="X.Org web site" url="http://wiki.x.org/">.
 Information about binary distributions and the attendant installation
 instructions can be found in the <htmlurl name="Installation Document"
 url="Install.html">.
 
-The XFree86 version numbering system (including historical information)
+The X11 version numbering system (including historical information)
 can be found in the <htmlurl name="Versions Document" url="Versions.html">.
 
 Additional information may be available at the <url
-name="XFree86 web site" url="http://www.xfree86.org/">, and pointers to
-other information are available at the <url name="XFree86 support page"
-url="http://www.xfree86.org/support.html">.
+name="X.Org Foundation Wiki" url="http://wiki.x.org/">.
 
 <sect>The Public Mailing Lists
 <p>
-Current information about the XFree86 public mailing lists can be found
-at our <url name="web site" url="http://www.xfree86.org/lists.html">.
+Current information about the X.Org Foundation public mailing lists 
+is available on <url name="the X.Org mailing list page" url="http://www.x.org/XOrg_Foundation_Join_OpenLists.html"> and related desktop technology
+mailing lists can be found on <url name="Freedesktop.org's mailing list page"
+url="http://freedesktop.org/mailman/listinfo">.
 
-<sect1>CVS Commit
-<p>
-For those who want to see what has been committed recently to our CVS
-repository this is the list that will show you those updates.  This list
-is updated dynamically every time the repository is updated after the
-the commit happens.
-
-<sect1>Devel
-<p>
-This list is available for discussions about XFree86 development and
-for following up well-defined bug reports.  Many experienced XFree86
-developers are present on this list.
-
-<sect1>XFree86
-<p>
-This list is available for any discussions and questions related to XFree86.
-Support related questions should be sent here.  Many experienced XFree86
-developers monitor this list.
-
-<sect1>Forum
-<p>
-This list is available for high level discussions about XFree86 and related
-technologies, their future, and for inter-project communication.
-
-<sect>Contributing to XFree86
+<sect>Contributing to the X.Org Foundation's X efforts.
 <p>
 If you have any new work or enhancements/bug fixes for existing work,
-please submit them to <email>patch@XFree86.org</email> or to our <url
-name="bug tracking system" url="http://bugs.xfree86.org/">.  This will
-ensure that they are included in future releases.  New works should be
-discussed on our <email>devel@XFree86.org</email> list prior to submission.
+please send them to <email>xorg@freedesktop.org</email> or to our <url
+name="bug tracking system" url="http://bugzilla.freedesktop.org/"> using
+the xorg component.  This will
+ensure that they are included in future releases.
 
-Current information about the XFree86 development process can be found
-at our <url name="web site" url="http://www.xfree86.org/developer.html">.
-
-<sect>How to get XFree86 &relvers;
+<sect>How to get X11R&relvers;
 <p>
 <![ %snapshot; [
-XFree86 &relvers; can be found at the <url name="XFree86 ftp server"
-url="ftp://ftp.xfree86.org/pub/XFree86/snapshots/&relvers;/">, and at
-mirrors of this server.  This snapshot is available primarily in binary
-form for several popular platforms.
+X11R&relvers; can be found from the <url name="X.Org Foundation wiki at"
+url="http://wiki.x.org">, and at
+mirrors of this server.
 ]]>
 
 <![ %release; [
-XFree86 &relvers; can be found at the <url name="XFree86 ftp server"
-url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/">,
-and at mirrors of this server.  Information about obtaining and installing
+X11R&relvers; can be found from the <url name="X.Org Foundation wiki at"
+url="http://wiki.x.org">, and at
+mirrors of this server.
+Information about obtaining and installing
 binary distributions of this release can be found in the
 <htmlurl name="Installation Document" url="Install.html">.  Information about
 obtaining the release in source form is given below.
@@ -214,27 +207,36 @@ gzip -d &lt; &prevrelvers;-&relvers;.diff.gz | patch -p0 -E
 
 Information about getting the source for &prevrelvers can be found in the
 README file for that version, which can be found on the
-<url name="XFree86 web site" url="http://www.xfree86.org/pub/XFree86/&prevrelvers;/README.html">.
+<url name="X.Org foundation wiki" url="http://wiki.x.org">.
 ]]>
 
 <![ %fullrel [
 The source for version &fullrelvers; is split into seven tarballs:
-<tt>X&fullsrcvers;src-1.tgz</tt>, <tt>X&fullsrcvers;src-2.tgz</tt>,
-<tt>X&fullsrcvers;src-3.tgz</tt>, <tt>X&fullsrcvers;src-4.tgz</tt>,
-<tt>X&fullsrcvers;src-5.tgz</tt>, <tt>X&fullsrcvers;src-6.tgz</tt> and
-<tt>X&fullsrcvers;src-7.tgz</tt>.  The first three contain everything
+
+<tscreen><verb>
+X11R&fullrelvers;-src1.tar.gz
+X11R&fullrelvers;-src2.tar.gz
+X11R&fullrelvers;-src3.tar.gz
+X11R&fullrelvers;-src4.tar.gz
+X11R&fullrelvers;-src5.tar.gz
+X11R&fullrelvers;-src6.tar.gz
+X11R&fullrelvers;-src7.tar.gz
+</verb></tscreen>
+
+The first three contain everything
 except the fonts and general X11 documentation.  Those three are sufficient
-for building XFree86 if you already have a set of fonts.  The fourth
+for building X11R&relvers; if you already have a set of fonts.  The fourth
 and fifth contain the fonts.  The sixth contains the source for the
 general X11 documentation.  The seventh contains the general X11
 documentation in hardcopy format.
 
 <![ %onediff; [
 A source patch relative to version &prevfullrelvers; is also available.
-The patch file is <tt>&prevfullrelvers;-&fullrelvers;.diff.gz</tt>.
+The patch file is <tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff.gz</tt>.
 <![ %difftar; [
 There is also a tarball that contains some files that have components that
-can't be included in a diff.  It is <tt>&fullrelvers;.tgz</tt>.
+can't be included in a diff.  It is
+<tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz</tt>.
 ]]>
 The patch
 should be applied to a clean &prevfullrelvers; source tree, working from
@@ -242,23 +244,23 @@ the directory containing the <tt>xc/</tt> directory.  The patch should
 be applied by running:
 
 <tscreen><verb>
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff.gz | patch -p0 -E
 </verb></tscreen>
 <![ %difftar; [
 <tscreen><verb>
-gzip -d &lt; &fullrelvers;.tgz | tar vxf -
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz | tar vxf -
 </verb></tscreen>
 ]]>
 ]]>
 
 <![ %twodiffs; [
 A source patch relative to version &prevfullrelvers; is also available.
-Because of its size, it is split into two parts.
-The patch files are <tt>&prevfullrelvers;-&fullrelvers;.diff1.gz</tt> and
-<tt>&prevfullrelvers;-&fullrelvers;.diff2.gz</tt>.
+Because of its size, it is split into two parts.  The patch files are
+<tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz</tt> and
+<tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz</tt>.
 <![ %difftar; [
 There is also a tarball that contains some files that have components that
-can't be included in a diff.  It is <tt>&fullrelvers;.tgz</tt>.
+can't be included in a diff.  It is <tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz</tt>.
 ]]>
 These patches should
 be applied to a clean &prevfullrelvers; source tree, working from the directory
@@ -266,12 +268,12 @@ containing the <tt>xc/</tt> directory.  The patches should be applied by
 running:
 
 <tscreen><verb>
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
 </verb></tscreen>
 <![ %difftar; [
 <tscreen><verb>
-gzip -d &lt; &fullrelvers;.tgz | tar vxf -
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz | tar vxf -
 </verb></tscreen>
 ]]>
 ]]>
@@ -279,12 +281,18 @@ gzip -d &lt; &fullrelvers;.tgz | tar vxf -
 <![ %threediffs; [
 A source patch relative to version &prevfullrelvers; is also available.
 Because of its size, it is split into three parts.
-The patch files are <tt>&prevfullrelvers;-&fullrelvers;.diff1.gz</tt>,
-<tt>&prevfullrelvers;-&fullrelvers;.diff2.gz</tt> and
-<tt>&prevfullrelvers;-&fullrelvers;.diff3.gz</tt>.
+The patch files are:
+
+<tscreen><verb>
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff3.gz
+</verb></tscreen>
+
 <![ %difftar; [
 There is also a tarball that contains some files that have components that
-can't be included in a diff.  It is <tt>&fullrelvers;.tgz</tt>.
+can't be included in a diff.  It is
+<tt>X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz</tt>.
 ]]>
 These patches should
 be applied to a clean &prevfullrelvers; source tree, working from the directory
@@ -292,13 +300,13 @@ containing the <tt>xc/</tt> directory.  The patches should be applied by
 running:
 
 <tscreen><verb>
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff3.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff3.gz | patch -p0 -E
 </verb></tscreen>
 <![ %difftar; [
 <tscreen><verb>
-gzip -d &lt; &fullrelvers;.tgz | tar vxf -
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz | tar vxf -
 </verb></tscreen>
 ]]>
 ]]>
@@ -306,13 +314,24 @@ gzip -d &lt; &fullrelvers;.tgz | tar vxf -
 <![ %fourdiffs; [
 A source patch relative to version &prevfullrelvers; is also available.
 Because of its size, it is split into four parts.
-The patch files are <tt>&prevfullrelvers;-&fullrelvers;.diff1.gz</tt>,
-<tt>&prevfullrelvers;-&fullrelvers;.diff2.gz</tt>,
-<tt>&prevfullrelvers;-&fullrelvers;.diff3.gz</tt> and
-<tt>&prevfullrelvers;-&fullrelvers;.diff4.gz</tt>.
+The patch files are:
+
+<tscreen><verb>
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff3.gz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff4.gz
+</verb></tscreen>
+
 <![ %difftar; [
-There is also a tarball that contains some files that have components that
-can't be included in a diff.  It is <tt>&fullrelvers;.tgz</tt>.
+There is also a tarball and a cleanup script that handle files that have
+components that can't be included in a diff.  These are:
+
+<tscreen><verb>
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz
+X11R&relvers;-&prevfullrelvers;-&fullrelvers;-cleanup.sh
+</verb></tscreen>
+
 ]]>
 These patches should
 be applied to a clean &prevfullrelvers; source tree, working from the directory
@@ -320,30 +339,15 @@ containing the <tt>xc/</tt> directory.  The patches should be applied by
 running:
 
 <tscreen><verb>
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff3.gz | patch -p0 -E
-gzip -d &lt; &prevfullrelvers;-&fullrelvers;.diff4.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff1.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff2.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff3.gz | patch -p0 -E
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;.diff4.gz | patch -p0 -E
 </verb></tscreen>
 <![ %difftar; [
-<![ %removefiles; [
 <tscreen><verb>
-rm -f xc/doc/hardcopy/Xext/mit-shm.PS.gz
-rm -f xc/doc/hardcopy/saver/saver.PS.gz
-rm -fr xc/fonts/scaled/Ethiopic
-rm -fr xc/fonts/scaled/Meltho
-rm -fr xc/programs/Xserver/hw/darwin/bundle
-rm -f xc/programs/Xserver/hw/hp/input/drivers/XHPKeymaps
-rm -f xc/programs/Xserver/hw/hp/ngle/ngledoblt.o.8.07
-rm -f xc/programs/Xserver/hw/xwin/X.ico
-rm -fr xc/programs/xcursorgen/redglass
-rm -fr xc/programs/xcursorgen/whiteglass
-touch xc/extras/Mesa/src/Trace/tr_attrib.c
-touch xc/lib/fontconfig/NEWS
-</verb></tscreen>
-]]>
-<tscreen><verb>
-gzip -d &lt; &fullrelvers;.tgz | tar vxf -
+sh X11R&relvers;-&prevfullrelvers;-&fullrelvers;-cleanup.sh
+gzip -d &lt; X11R&relvers;-&prevfullrelvers;-&fullrelvers;-diff0.tgz | tar vxf -
 </verb></tscreen>
 ]]>
 ]]>
@@ -356,18 +360,15 @@ with a clean &prevrelvers; source tree.
 ]]>
 -->
 
-To format the XFree86 documentation use the latest version of our doctools
-package available from the XFree86 CVS repository's "doctools" module,
-and from our <url name="ftp site"
-url="ftp://ftp.xfree86.org/pub/XFree86/misc/doctools-&doctoolsvers;.tgz">.
+To format the X11R&relvers; documentation use the latest version of our doctools
+package available from the Xorg CVS repository's "doctools" module.
 ]]>  <!-- fullrel -->
 
-The XFree86 source code for this and all releases/snapshots as well as
-development versions can also be accessed via the XFree86 CVS repository.
-Information about accessing this can be found at the <url name="CVS page"
-url="http://www.xfree86.org/cvs/"> on our web site.  It's also possible
-to browse the XFree86 CVS repository at our <url name="CVSWeb server"
-url="http://cvsweb.xfree86.org/">.  The CVS tag for this version is
+The X source code for this and all releases/snapshots as well as
+development versions can also be accessed via the Freedesktop.org 
+CVS repository.
+It's also possible to browse the <url name="freedesktop CVS repository"
+url="http://cvs.freedesktop.org/">.  The CVS tag for this version is
 "&reltag;".
 <![ %notsnapshot [
 The CVS tag for the stable branch for this release is "&relbranchtag;".
@@ -378,13 +379,14 @@ To check out the latest development version, don't specify any tag.
 <sect>Reporting Bugs
 <p>
 
-Bugs should be reported to <email>XFree86@XFree86.org</email>.  Before
-reporting bugs, please check the XFree86 server log file, which can be
-found at <tt>/var/log/XFree86.0.log</tt> on most platforms.  If you
+Bugs should be reported to <url
+name="bug tracking system" url="http://bugzilla.freedesktop.org/"> using
+the xorg compoent.   Before
+reporting bugs, please check the server log file, which can be
+found at <tt>/var/log/Xorg.0.log</tt> on most platforms.  If you
 can't resolve the problem yourself, send the entire log file with your
 bug report but not the operating system core dump.  Do not edit  the
 log file as our developers use it to reproduce and debug your problem.
-
-
+Please attach it to your bug report.
 
 </article>

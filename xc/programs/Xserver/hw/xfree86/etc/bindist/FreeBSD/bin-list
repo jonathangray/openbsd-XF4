@@ -1,4 +1,4 @@
-.XFree86_Version
+.X.Org_Version
 bin
 lib/aout
 lib/libFS.so.6

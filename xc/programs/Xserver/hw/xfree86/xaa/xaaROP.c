@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaROP.c,v 1.2 2000/09/28 20:48:01 mvojkovi Exp $ */
+/* $XFree86$ */
 
 #include "X.h"
 #include "misc.h"
@@ -94,6 +94,25 @@ int XAAPatternROP_PM[16] =
    ROP_DPo
 };
 
+int XAAGetCopyROP(int i)
+{
+    return XAACopyROP[i];
+}
+
+int XAAGetCopyROP_PM(int i)
+{
+    return XAACopyROP_PM[i];
+}
+
+int XAAGetPatternROP(int i)
+{
+    return XAAPatternROP[i];
+}
+
+int XAAGetPatternROP_PM(int i)
+{
+    return XAAPatternROP_PM[i];
+}
 
 int
 XAAHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, int pm, int *rop)

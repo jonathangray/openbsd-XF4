@@ -1,4 +1,4 @@
-bin/XF86_*
+bin/Xorg_*
 bin/XF86Setup
 bin/Xnest
 bin/Xprt
@@ -6,4 +6,4 @@ bin/Xvfb
 bin/X
 bin/xfs
 bin/xmseconfig
-bin/XFree86
+bin/Xorg

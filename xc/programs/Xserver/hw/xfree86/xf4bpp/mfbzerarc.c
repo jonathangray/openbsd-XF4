@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbzerarc.c,v 1.5 2003/02/18 21:29:59 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbzerarc.c,v 1.4tsi Exp $ */
 
 /************************************************************
 
@@ -108,7 +108,7 @@ v16ZeroArcSS
     int pmask;
     register int *paddr;
 
-    if (((mfbPrivGC *)(pGC->devPrivates[mfbGCPrivateIndex].ptr))->rop ==
+    if (((mfbPrivGC *)(pGC->devPrivates[mfbGetGCPrivateIndex()].ptr))->rop ==
 	RROP_BLACK)
 	pixel = 0;
     else

@@ -344,11 +344,6 @@ void os2PostKbdEvent(unsigned scanCode, Bool down)
 	}
 #endif /* not PC98 */	
 
-	/* check for an autorepeat-event */
-	if ((down && KeyPressed(keycode)) &&
-	    (xf86Info.autoRepeat != AutoRepeatModeOn || keyc->modifierMap[keycode]))
-		return;
-
 	/* normal, non-keypad keys */
 	if (scanCode < KEY_KP_7 || scanCode > KEY_KP_Decimal) {
 		/* magic ALT_L key on AT84 keyboards for multilingual support */
@@ -363,6 +358,12 @@ void os2PostKbdEvent(unsigned scanCode, Bool down)
 #ifdef XKB /* Warning: got position wrong first time */
 	}
 #endif
+
+	/* check for an autorepeat-event */
+	if ((down && KeyPressed(keycode)) &&
+	    (xf86Info.autoRepeat != AutoRepeatModeOn || keyc->modifierMap[keycode]))
+		return;
+
 	xf86Info.lastEventTime = 
 		kevent.u.keyButtonPointer.time = 
 		GetTimeInMillis();

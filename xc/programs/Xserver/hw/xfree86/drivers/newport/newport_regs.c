@@ -1,7 +1,7 @@
 /*
  * Id: newport_regs.c,v 1.3 2000/11/29 20:58:10 agx Exp $
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_regs.c,v 1.7 2002/12/10 04:03:00 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_regs.c,v 1.6 2001/12/21 15:37:23 tsi Exp $ */
 
 #include "newport.h"
 

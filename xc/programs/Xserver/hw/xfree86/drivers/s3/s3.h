@@ -24,7 +24,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3.h,v 1.18 2003/07/17 08:19:35 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3.h,v 1.17 2003/07/04 16:24:28 eich Exp $ */
 
 
 #ifndef _S3_H

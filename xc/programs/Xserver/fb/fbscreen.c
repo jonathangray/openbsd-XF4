@@ -1,4 +1,4 @@
-/*
+/* $XdotOrg: xc/programs/Xserver/fb/fbscreen.c,v 1.3 2004/05/16 05:08:39 alanc Exp $
  * Id: fbscreen.c,v 1.1 1999/11/02 03:54:45 keithp Exp $
  *
  * Copyright © 1998 Keith Packard
@@ -229,7 +229,7 @@ fbFinishScreenInit(ScreenPtr	pScreen,
     if (! miScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width,
 			rootdepth, ndepths, depths,
 			defaultVisual, nvisuals, visuals
-#ifdef FB_OLD_SCREEN
+#ifdef FB_OLD_MISCREENINIT
 		       , (miBSFuncPtr) 0
 #endif
 		       ))

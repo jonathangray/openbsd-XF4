@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_swov.c,v 1.11 2004/02/04 04:15:09 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_swov.c,v 1.10 2003/12/17 19:01:59 dawes Exp $ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -32,14 +32,18 @@
 #include "via_capture.h"
 #include "via.h"
 #include "ddmpeg.h"
+#ifdef XF86DRI
 #include "xf86drm.h"
+#endif
 
 #include "via_overlay.h"
 #include "via_driver.h"
 #include "via_regrec.h"
 #include "via_priv.h"
 #include "via_swov.h"
+#ifdef XF86DRI
 #include "via_common.h"
+#endif
 
 
 

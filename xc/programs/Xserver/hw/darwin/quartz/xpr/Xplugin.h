@@ -1,5 +1,5 @@
 /* Xplugin.h -- windowing API for rootless X11 server
-   $Id: Xplugin.h,v 1.1.1.1 2004/02/13 21:44:47 matthieu Exp $
+   $Id: Xplugin.h,v 1.2 2004/11/03 00:07:59 matthieu Exp $
 
    Copyright (c) 2002 Apple Computer, Inc. All rights reserved.
 
@@ -30,7 +30,7 @@
 
    Note that these interfaces are provided solely for the use of the
    X11 server. Any other uses are unsupported and strongly discouraged. */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/Xplugin.h,v 1.3 2003/06/27 20:21:42 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/Xplugin.h,v 1.2 2003/05/02 00:08:49 torrey Exp $ */
 
 #ifndef XPLUGIN_H
 #define XPLUGIN_H 1

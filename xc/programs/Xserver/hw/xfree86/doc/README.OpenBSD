@@ -1,32 +1,35 @@
-                  README for XFree86 4.3.99.903 on OpenBSD
+                       README for X11R6.8.1 on OpenBSD
 
                                Matthieu Herrb
 
-                      Last modified on: 9 December 2003
+ Last modified on: 9 December 2003; updated 25 March 2004 by Jim Gettys for
+                                  X11R6.8.1
 
-1.  What and Where is XFree86?
+1.  What and Where is X11R6.8.1?
 
-XFree86 is an Open Source version of the X Window System that supports sev-
-eral UNIX(R) and UNIX-like operating systems (such as Linux, the BSDs and
-Solaris x86) on Intel and other platforms.  This version is compatible with
-X11R6.6.
+The X.org Foundation X11R6.8.1 is an Open Source version of the X Window Sys-
+tem that supports several UNIX(R) and UNIX-like operating systems (such as
+Linux, the BSDs and Solaris x86) on Intel and other platforms.
 
 See the Copyright Notice.
 
-XFree86 also builds on other OpenBSD architectures. See section Building on
+The sources for X11R6.8.1 are available from
+
+http://wiki.x.org
+
+X11R6.8.1 also builds on other OpenBSD architectures. See section Building on
 other architectures (section 8., page 1) for details.
 
 2.  Bug Reports for This Document
 
-Use the XFree86 bugzilla at <URL:http://bugs.xfree86.org> to submit comments
-or suggestions about this file.
+Use the X.org Bugzilla at urlnam <URL:http://bugzilla.freedesktop.org> to
+submit comments or suggestions about this file, using the xorg product.
 
 3.  New OS dependent features
 
-See the Release Notes for non-OS dependent new features in XFree86
-4.3.99.903.
+See the Release Notes for non-OS dependent new features in X11R6.8.1.
 
-3.1  New OS related features in 4.4
+3.1  New OS related features
 
    o The IPv6 support is enabled on OpenBSD, but XDMCP over IPv6 is not cur-
      rently enabled since the code uses IPv6 mapped IPv4 addresses which are
@@ -112,7 +115,7 @@ Refer to the Installation Document for detailed installation instructions.
 
 5.  Configuring X for Your Hardware
 
-The /etc/X11/XF86Config file tells the X server what kind of monitor, video
+The /etc/X11/xorg.conf file tells the X server what kind of monitor, video
 card and mouse you have.  You must create it to tell the server what specific
 hardware you have.
 
@@ -124,25 +127,25 @@ You'll need info on your hardware:
 
    o Your monitor's sync frequencies.
 
-The recommended way to generate an XF86Config file is to use the xf86cfg
-utility.  The xf86config text utility is still there for the (few) cases
-where xf86cfg can't be used. Also, there is a sample file installed as
-/usr/X11R6/lib/X11/XF86Config.eg, which can be used as a starting point.
+The recommended way to generate an xorg.conf file is to use the xorgcfg util-
+ity.  The xorgconfig text utility is still there for the (few) cases where
+xorgcfg can't be used. Also, there is a sample file installed as
+/usr/X11R6/lib/X11/xorg.conf.eg, which can be used as a starting point.
 
-For details about the XF86Config file format, refer to the XF86Config(5) man-
-ual page.
+For details about the xorg.conf file format, refer to the xorg.conf(5) manual
+page.
 
-Once you've set up a XF86Config file, you can fine tune the video modes with
+Once you've set up a xorg.conf file, you can fine tune the video modes with
 the xvidtune utility.
 
 5.1  About mouse configuration
 
-XFree86 4.3.99.903 has support for the mouse driver included in the new
-wscons console driver introduced by OpenBSD-2.9.  Specify ``wsmouse'' as the
-protocol and ``/dev/wsmouse0'' as the  device in /etc/X11/XF86Config if
-you're using OpenBSD-2.9 or later with a PS/2 or USB mouse.
+X11R6.8.1 has support for the mouse driver included in the new wscons console
+driver introduced by OpenBSD-2.9.  Specify ``wsmouse'' as the protocol and
+``/dev/wsmouse0'' as the  device in /etc/X11/xorg.conf if you're using
+OpenBSD-2.9 or later with a PS/2 or USB mouse.
 
-See README.mouse  for general instruction on mouse configuration in XFree86.
+See README.mouse  for general instruction on mouse configuration.
 
 6.  Running X
 
@@ -160,10 +163,6 @@ to:
      xdm_flags=""            # for normal use: xdm_flags=""
 
 in /etc/rc.conf.
-
-Note that the binary distributions of XFree86 for OpenBSD on ftp.xfree86.org
-and its mirrors don't include support for the XDM-AUTHORIZATION-1 protocol,
-because of the US export rules.
 
 6.2  Running X without the display manager
 
@@ -192,7 +191,7 @@ ported on those releases.
 7.2  Aperture Driver
 
 By default OpenBSD includes the BSD 4.4 kernel security feature that disables
-access to the /dev/mem device when in multi-user mode. But the XFree86 server
+access to the /dev/mem device when in multi-user mode. But the X server
 requires linear access to the display memory in most cases.
 
 OpenBSD requires the aperture driver to be enabled for all X servers, because
@@ -217,27 +216,26 @@ in /etc/rc.securelevel.
 
 7.3  MIT-SHM
 
-OpenBSD supports System V shared memory. If XFree86 detects this support in
-your kernel, it will support the MIT-SHM extension.
+OpenBSD supports System V shared memory. If X detects this support in your
+kernel, it will support the MIT-SHM extension.
 
-8.  Rebuilding the XFree86 Distribution
+8.  Rebuilding the X Distribution
 
 You should configure the distribution by editing xc/config/cf/host.def
 before compiling.  To compile the sources, invoke ``make World'' in the xc
 directory."
 
-Note that OpenBSD project now has its own source tree, based on the XFree86
-source tree, with some local modifications. You may want to start with this
-tree to rebuild from sources.  The OpenBSD XF4 source tree is available by
-anoncvs from all OpenBSD anoncvs servers. See http://www.openbsd.org/anon-
-cvs.html for details on anoncvs.
+Note that OpenBSD project now has its own source tree, with some local modi-
+fications. You may want to start with this tree to rebuild from sources.  The
+OpenBSD XF4 source tree is available by anoncvs from all OpenBSD anoncvs
+servers. See http://www.openbsd.org/anoncvs.html for details on anoncvs.
 
-XFree86  also compiles on other OpenBSD architectures.
+X11R6.8.1  also compiles on other OpenBSD architectures.
 
-8.1  XFree86 on OpenBSD/alpha
+8.1  X11R6.8.1 on OpenBSD/alpha
 
-The XFree86 server is known to work on some VGA cards in alpha machines that
-support BWX I/O, with OpenBSD 3.2 and higher.
+The X server is known to work on some VGA cards in alpha machines that sup-
+port BWX I/O, with OpenBSD 3.2 and higher.
 
 The following cards have been successfully tested for now:
 
@@ -251,36 +249,35 @@ The following cards have been successfully tested for now:
 
    o Matrox MGA 2064 (8, 16 and 24 bits depth)
 
-Note that this version of XFree86 doesn't work on TGA cards. The version
-shipped with OpenBSD 3.1 and higher includes an OS-specific driver wsfb that
-is used to support TGA cards.
+Note that this version of doesn't work on TGA cards. The version shipped with
+OpenBSD 3.1 and higher includes an OS-specific driver wsfb that is used to
+support TGA cards.
 
-8.2  XFree86 on OpenBSD/macppc
+8.2  X11R6.8.1 on OpenBSD/macppc
 
-The XFree86 server is currently known to work on the G4 Macs and new iBooks
-with ATI Rage 128 cards running OpenBSD 3.0 or later.  Other machines are
-more or less untested. Earlier OpenBSD versions lack some kernel support for
-it.
+The X server is currently known to work on the G4 Macs and new iBooks with
+ATI Rage 128 cards running OpenBSD 3.0 or later.  Other machines are more or
+less untested. Earlier OpenBSD versions lack some kernel support for it.
 
-Use xf86config to build a /etc/X11/XF86Config file before starting the server
+Use xorgconfig to build a /etc/X11/xorg.conf file before starting the server
 for the first time.
 
 For the Titanium Powerbook G4, you can try the following mode line in
-/etc/X11/XF86Config to match the flat panel resolution:
+/etc/X11/xorg.conf to match the flat panel resolution:
 
      Modeline "1152x768" 64.995 1152 1213 1349 1472  768 771 777 806 -HSync -VSync
 
-8.3  XFree86 on OpenBSD/sparc
+8.3  OpenBSD/sparc
 
 OpenBSD 3.2 on sparc switched to the wscons device driver and now uses the OS
-specific wsfb driver in the XFree86 server. This driver is not included in
-XFree86 4.3. Please use the version shipped with OpenBSD instead.
+specific wsfb driver in the X server. This driver is not included in
+X11R6.8.1. Please use the version shipped with OpenBSD instead.
 
-8.4  XFree86 on OpenBSD/sparc64
+8.4  OpenBSD/sparc64
 
-This version of XFree68 only has support for X clients on OpenBSD/sparc64.
-Note that the version shipped with OpenBSD also has support for the X server
-on both SBus and PCI based machines.
+This version only has support for X clients on OpenBSD/sparc64. Note that the
+version shipped with OpenBSD also has support for the X server on both SBus
+and PCI based machines.
 
 9.  Building New X Clients
 
@@ -292,12 +289,10 @@ whatis /usr/X11R6/man''.
 
 10.  Thanks
 
-Many thanks to all people who contributed to make XFree86 work on *BSD, in
+Many thanks to all people who contributed to make X11R6.8.1 work on *BSD, in
 particular: David Dawes, Todd Fries, Rod Grimes, Charles Hannum, Amancio
 Hasty, Christoph Robitschko, Matthias Scheler, Michael Smith, Ignatios Sou-
 vatzis, Jack Velte, Nate Williams and Pace Willison.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/OpenBSD.sgml,v 1.32 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.OpenBSD,v 1.46 2004/01/28 02:13:13 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.OpenBSD,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

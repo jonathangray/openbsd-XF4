@@ -1,4 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Beta.c,v 3.10 2003/08/24 17:36:49 dawes Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/common/xf86Beta.c,v 1.2 2004/04/23 19:20:32 eich Exp $ */
 /*
  * Copyright (c) 1996-2002 by The XFree86 Project, Inc.
  *
@@ -187,11 +188,11 @@ xf86CheckBeta(int extraDays, char *key)
     if (m) {
       putc('\007', m);
       fprintf(m, "\n");
-      fprintf(m, "             This is a beta version of XFree86.\n\n");
+      fprintf(m, "             This is a beta version of X.\n\n");
       fprintf(m, " This binary may be redistributed providing it is not"
 		 " modified in any way.\n\n");
       fprintf(m, " Please send success and problem reports to"
-		 " <report@XFree86.org>.\n\n");
+		 " <&&&&&@X.org>.\n\n");
       if (expired) {
 	fprintf(m, " This version (%s) has expired.\n", XF86_VERSION);
 	fprintf(m, " Please get the release version or a newer beta"

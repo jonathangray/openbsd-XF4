@@ -26,7 +26,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /*
  * Copyright 2002 SuSE Linux AG, Author: Egbert Eich
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_video.c,v 1.7 2003/11/10 18:22:23 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_video.c,v 1.6tsi Exp $ */
 
 #include "neo.h"
 #include "neo_video.h"
@@ -82,7 +82,7 @@ NEOInitVideo(ScreenPtr pScreen)
 
     numAdaptors = xf86XVListGenericAdaptors(pScrn, &overlayAdaptors);
 
-    if (nPtr->NeoChipset >= NM2160 
+    if (nPtr->NeoChipset > NM2070 
 	&& !nPtr->noLinear 
 	&& nPtr->NeoMMIOBase2 != NULL){
 	nPtr->video = TRUE;
@@ -397,6 +397,9 @@ NEOPutVideo(ScrnInfoPtr pScrn,
 
     switch (nPtr->NeoChipset) {
     default:
+    case NM2090:
+    case NM2093:
+    case NM2097:
     case NM2160: 
 	offset/=2;
 	OUTGR(0xbc, 0x4f);
@@ -850,6 +853,9 @@ NEODisplayVideo(ScrnInfoPtr pScrn, int id, int offset,
     
     switch (nPtr->NeoChipset) {
     default:
+    case NM2090:
+    case NM2093:
+    case NM2097:
     case NM2160: 
         offset/=2;
 	pitch/=2;

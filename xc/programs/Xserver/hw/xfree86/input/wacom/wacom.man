@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/wacom.man,v 1.2 2001/01/27 18:20:59 dawes Exp $ 
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/wacom.man,v 1.1 2001/01/24 00:06:39 dawes Exp $ 
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH WACOM __drivermansuffix__ __vendorversion__
@@ -15,7 +15,7 @@ wacom \- Wacom input driver
 .fi
 .SH DESCRIPTION
 .B wacom 
-is an XFree86 input driver for Wacom devices.
+is an __xservername__ input driver for Wacom devices.
 .PP
 The
 .B wacom
@@ -25,7 +25,7 @@ X server's core pointer.
 This driver supports the Wacom IV and Wacom V protocols.
 Preliminary support is available for USB devices on some Linux platforms.
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 .PP
@@ -111,6 +111,6 @@ sets the pressure threshold used to generate a button 1 events of stylus
 devices for some models of tablets (Intuos and Graphire).
 .RE
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
 .SH AUTHORS
 Frederic Lepied <lepied@xfree86.org>

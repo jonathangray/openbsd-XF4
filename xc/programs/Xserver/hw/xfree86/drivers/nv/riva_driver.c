@@ -23,7 +23,7 @@
 /* Hacked together from mga driver and 3.3.4 NVIDIA driver by Jarno Paananen
    <jpaana@s2.org> */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_driver.c,v 1.6 2004/01/10 22:31:53 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_driver.c,v 1.5 2003/11/03 05:11:26 tsi Exp $ */
 
 #include "riva_include.h"
 
@@ -88,12 +88,12 @@ static const char *fbSymbols[] = {
 };
 
 static const char *xaaSymbols[] = {
-    "XAACopyROP",
+    "XAAGetCopyROP",
     "XAACreateInfoRec",
     "XAADestroyInfoRec",
-    "XAAFallbackOps",
+    "XAAGetFallbackOps",
     "XAAInit",
-    "XAAPatternROP",
+    "XAAGetPatternROP",
     NULL
 };
 
@@ -138,16 +138,16 @@ static const char *fbdevHWSymbols[] = {
     "fbdevHWGetVidmem",
 
     /* colormap */
-    "fbdevHWLoadPalette",
+    "fbdevHWLoadPaletteWeak",
 
     /* ScrnInfo hooks */
-    "fbdevHWAdjustFrame",
+    "fbdevHWAdjustFrameWeak",
     "fbdevHWEnterVT",
-    "fbdevHWLeaveVT",
+    "fbdevHWLeaveVTWeak",
     "fbdevHWModeInit",
     "fbdevHWSave",
-    "fbdevHWSwitchMode",
-    "fbdevHWValidMode",
+    "fbdevHWSwitchModeWeak",
+    "fbdevHWValidModeWeak",
 
     "fbdevHWMapMMIO",
     "fbdevHWMapVidmem",
@@ -172,7 +172,7 @@ static XF86ModuleVersionInfo rivaVersRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     RIVA_MAJOR_VERSION, RIVA_MINOR_VERSION, RIVA_PATCHLEVEL,
     ABI_CLASS_VIDEODRV,                     /* This is a video driver */
     ABI_VIDEODRV_VERSION,
@@ -688,11 +688,11 @@ RivaPreInit(ScrnInfoPtr pScrn, int flags)
 	    xf86FreeInt10(pRiva->pInt);
 	    return FALSE;
 	}
-	pScrn->SwitchMode    = fbdevHWSwitchMode;
-	pScrn->AdjustFrame   = fbdevHWAdjustFrame;
+	pScrn->SwitchMode    = fbdevHWSwitchModeWeak();
+	pScrn->AdjustFrame   = fbdevHWAdjustFrameWeak();
 	pScrn->EnterVT       = RivaEnterVTFBDev;
-	pScrn->LeaveVT       = fbdevHWLeaveVT;
-	pScrn->ValidMode     = fbdevHWValidMode;
+	pScrn->LeaveVT       = fbdevHWLeaveVTWeak();
+	pScrn->ValidMode     = fbdevHWValidModeWeak();
     }
     pRiva->Rotate = 0;
     if ((s = xf86GetOptValString(pRiva->Options, OPTION_ROTATE))) {
@@ -1317,7 +1317,7 @@ RivaScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
     /* Initialize colormap layer.  
 	Must follow initialization of the default colormap */
     if(!xf86HandleColormaps(pScreen, 256, 8,
-	(pRiva->FBDev ? fbdevHWLoadPalette : Rivadac->LoadPalette), 
+	(pRiva->FBDev ? fbdevHWLoadPaletteWeak() : Rivadac->LoadPalette), 
 	NULL, CMAP_RELOAD_ON_MODE_SWITCH | CMAP_PALETTED_TRUECOLOR))
 	return FALSE;
 

@@ -12,7 +12,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Events.c,v 1.3 2003/11/16 05:05:20 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Events.c,v 1.2 2001/08/01 00:44:57 tsi Exp $ */
 
 #include "X.h"
 #define NEED_EVENTS
@@ -34,6 +34,7 @@ is" without express or implied warranty.
 #include "Screen.h"
 #include "XNWindow.h"
 #include "Events.h"
+#include "mipointer.h"
 
 CARD32 lastEventTime = 0;
 
@@ -41,6 +42,7 @@ void
 ProcessInputEvents()
 {
   mieqProcessInputEvents();
+  miPointerUpdate();
 }
 
 int
@@ -131,11 +133,15 @@ xnestCollectEvents()
       break;
       
     case MotionNotify:
+#if 0
       x.u.u.type = MotionNotify;
       x.u.keyButtonPointer.rootX = X.xmotion.x;
       x.u.keyButtonPointer.rootY = X.xmotion.y;
       x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
       mieqEnqueue(&x);
+#endif 
+      miPointerAbsoluteCursor (X.xmotion.x, X.xmotion.y, 
+			       lastEventTime = GetTimeInMillis());
       break;
       
     case FocusIn:
@@ -162,11 +168,15 @@ xnestCollectEvents()
 	pScreen = xnestScreen(X.xcrossing.window);
 	if (pScreen) {
 	  NewCurrentScreen(pScreen, X.xcrossing.x, X.xcrossing.y);
+#if 0
 	  x.u.u.type = MotionNotify;
 	  x.u.keyButtonPointer.rootX = X.xcrossing.x;
 	  x.u.keyButtonPointer.rootY = X.xcrossing.y;
 	  x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
 	  mieqEnqueue(&x);
+#endif
+	  miPointerAbsoluteCursor (X.xcrossing.x, X.xcrossing.y, 
+				   lastEventTime = GetTimeInMillis());
 	  xnestDirectInstallColormaps(pScreen);
 	}
       }

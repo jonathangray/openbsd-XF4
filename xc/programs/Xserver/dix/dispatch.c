@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/Xserver/dix/dispatch.c,v 1.5 2004/07/31 01:48:27 anholt Exp $ */
 /* $Xorg: dispatch.c,v 1.5 2001/02/09 02:04:40 xorgcvs Exp $ */
 /************************************************************
 
@@ -47,28 +48,35 @@ SOFTWARE.
 ********************************************************/
 
 /* The panoramix components contained the following notice */
-/****************************************************************
-*                                                               *
-*    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
-*                                                               *
-*   All Rights Reserved.  Unpublished rights  reserved  under   *
-*   the copyright laws of the United States.                    *
-*                                                               *
-*   The software contained on this media  is  proprietary  to   *
-*   and  embodies  the  confidential  technology  of  Digital   *
-*   Equipment Corporation.  Possession, use,  duplication  or   *
-*   dissemination of the software and media is authorized only  *
-*   pursuant to a valid written license from Digital Equipment  *
-*   Corporation.                                                *
-*                                                               *
-*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
-*   by the U.S. Government is subject to restrictions  as  set  *
-*   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
-*   or  in  FAR 52.227-19, as applicable.                       *
-*                                                               *
-*****************************************************************/
+/*****************************************************************
 
-/* $XFree86: xc/programs/Xserver/dix/dispatch.c,v 3.33 2003/11/17 22:20:33 dawes Exp $ */
+Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software.
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
+BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of Digital Equipment Corporation
+shall not be used in advertising or otherwise to promote the sale, use or other
+dealings in this Software without prior written authorization from Digital
+Equipment Corporation.
+
+******************************************************************/
+
+/* $XFree86: xc/programs/Xserver/dix/dispatch.c,v 3.32 2003/11/10 18:21:45 tsi Exp $ */
 
 #ifdef PANORAMIX_DEBUG
 #include <stdio.h>
@@ -124,6 +132,7 @@ extern char *ConnectionInfo;
 
 Selection *CurrentSelections;
 int NumCurrentSelections;
+CallbackListPtr SelectionCallback = NULL;
 
 static ClientPtr grabClient;
 #define GrabNone 0
@@ -245,7 +254,7 @@ FlushClientCaches(id)
 #define SMART_SCHEDULE_DEFAULT_INTERVAL	20	    /* ms */
 #define SMART_SCHEDULE_MAX_SLICE	200	    /* ms */
 
-Bool	    SmartScheduleDisable;
+Bool	    SmartScheduleDisable = FALSE;
 long	    SmartScheduleSlice = SMART_SCHEDULE_DEFAULT_INTERVAL;
 long	    SmartScheduleInterval = SMART_SCHEDULE_DEFAULT_INTERVAL;
 long	    SmartScheduleMaxSlice = SMART_SCHEDULE_MAX_SLICE;
@@ -455,6 +464,9 @@ Dispatch(void)
 					  client->errorValue, result);
 		    break;
 	        }
+#ifdef DAMAGEEXT
+		FlushIfCriticalOutputPending ();
+#endif
 	    }
 	    FlushAllOutput();
 #ifdef SMART_SCHEDULE
@@ -466,6 +478,9 @@ Dispatch(void)
 	}
 	dispatchException &= ~DE_PRIORITYCHANGE;
     }
+#if defined(DDXBEFORERESET)
+    ddxBeforeReset ();
+#endif
     KillAllClients();
     DEALLOCATE_LOCAL(clientReady);
     dispatchException &= ~DE_RESET;
@@ -620,7 +635,7 @@ ProcChangeSaveSet(client)
         return BadMatch;
     if ((stuff->mode == SetModeInsert) || (stuff->mode == SetModeDelete))
     {
-        result = AlterSaveSetForClient(client, pWin, stuff->mode);
+        result = AlterSaveSetForClient(client, pWin, stuff->mode, FALSE, TRUE);
 	if (client->noClientException != Success)
 	    return(client->noClientException);
 	else
@@ -1033,6 +1048,14 @@ ProcSetSelectionOwner(client)
 	CurrentSelections[i].window = stuff->window;
 	CurrentSelections[i].pWin = pWin;
 	CurrentSelections[i].client = (pWin ? client : NullClient);
+	if (SelectionCallback)
+	{
+	    SelectionInfoRec	info;
+
+	    info.selection = &CurrentSelections[i];
+	    info.kind= SelectionSetOwner;
+	    CallCallbacks(&SelectionCallback, &info);
+	}
 	return (client->noClientException);
     }
     else 
@@ -2106,7 +2129,9 @@ DoGetImage(client, format, drawable, x, y, width, height, planemask, im_return)
     Mask		plane = 0;
     char		*pBuf;
     xGetImageReply	xgi;
+#ifdef XCSECURITY
     RegionPtr pVisibleRegion = NULL;
+#endif
 
     if ((format != XYPixmap) && (format != ZPixmap))
     {
@@ -3713,7 +3738,7 @@ void InitClient(client, i, ospriv)
     client->lastGC = (GCPtr) NULL;
     client->lastGCID = INVALID;
     client->numSaved = 0;
-    client->saveSet = (pointer *)NULL;
+    client->saveSet = (SaveSetElt *)NULL;
     client->noClientException = Success;
 #ifdef DEBUG
     client->requestLogIndex = 0;
@@ -4046,6 +4071,14 @@ DeleteWindowFromAnySelections(pWin)
     for (i = 0; i< NumCurrentSelections; i++)
         if (CurrentSelections[i].pWin == pWin)
         {
+	    if (SelectionCallback)
+	    {
+	        SelectionInfoRec    info;
+
+		info.selection = &CurrentSelections[i];
+		info.kind = SelectionWindowDestroy;
+		CallCallbacks(&SelectionCallback, &info);
+	    }
             CurrentSelections[i].pWin = (WindowPtr)NULL;
             CurrentSelections[i].window = None;
 	    CurrentSelections[i].client = NullClient;
@@ -4061,6 +4094,14 @@ DeleteClientFromAnySelections(client)
     for (i = 0; i< NumCurrentSelections; i++)
         if (CurrentSelections[i].client == client)
         {
+	    if (SelectionCallback)
+	    {
+	        SelectionInfoRec    info;
+
+		info.selection = &CurrentSelections[i];
+		info.kind = SelectionWindowDestroy;
+		CallCallbacks(&SelectionCallback, &info);
+	    }
             CurrentSelections[i].pWin = (WindowPtr)NULL;
             CurrentSelections[i].window = None;
 	    CurrentSelections[i].client = NullClient;

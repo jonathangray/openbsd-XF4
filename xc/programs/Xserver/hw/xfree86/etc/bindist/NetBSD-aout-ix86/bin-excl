@@ -3,4 +3,4 @@ bin/Xprt
 bin/Xvfb
 bin/X
 bin/xfs
-bin/XFree86
+bin/Xorg

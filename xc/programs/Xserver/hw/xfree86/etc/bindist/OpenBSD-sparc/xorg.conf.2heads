@@ -1,0 +1,121 @@
+#
+# Unaccelerated, dual-headed display configuration
+#
+# $OpenBSD: xorg.conf.2heads,v 1.1 2004/11/03 00:09:07 matthieu Exp $
+#
+Section "ServerLayout"
+	Identifier	"wsfb"
+	Screen  0       "Screen0" 0 0
+	Screen  1       "Screen1" LeftOf "Screen0"
+	InputDevice	"zsmouse0" "CorePointer"
+	InputDevice	"Keyboard0" "CoreKeyboard"
+EndSection
+
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/CID/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+EndSection
+
+Section "Module"
+    Load        "freetype"
+    Load        "glx"
+    Load        "extmod"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "keyboard"
+	Option	    "Protocol" 	  "wskbd"
+	Option	    "Device" 	  "/dev/wskbd0"
+	Option	    "XkbRules" 	  "xorg"
+	Option	    "XkbModel"	  "sun"
+	Option	    "XkbLayout"   "us"
+EndSection
+
+Section "InputDevice"
+	Identifier	"zsmouse0"
+	Driver		"mouse"
+	Option		"Protocol" "SunMouse"
+	Option		"Device" "/dev/ttyc"
+	Option		"Baudrate" "1200"
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor"
+	VendorName   "Unknown"
+	ModelName    "Unknown"
+# Adjust these to your monitor before using device other than wsfb 
+# or you could damage it!
+	HorizSync    31.5-60
+	VertRefresh  50-70
+EndSection
+
+# All framebuffers
+Section "Device"
+	Identifier	"Wsdisplay0"
+	Driver		"wsfb"
+	Option		"device" "/dev/ttyC0"
+EndSection
+
+# All framebuffers
+Section "Screen"
+	Identifier "Screen0"
+	Device     "Wsdisplay0"
+	Monitor    "Monitor"
+	SubSection "Display"
+		Depth     1
+	EndSubSection
+	SubSection "Display"
+		Depth     8
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+	EndSubSection
+	SubSection "Display"
+		Depth     32
+	EndSubSection
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor1"
+	VendorName   "Unknown"
+	ModelName    "Unknown"
+# Adjust those to your monitor before using another device than wsfb
+# or you can destroy it !!
+	HorizSync    31.5-60
+	VertRefresh  50-70
+EndSection
+
+Section "Screen"
+	Identifier "Screen1"
+	Device     "Wsdisplay1"
+	Monitor    "Monitor1"
+	SubSection "Display"
+		Depth     1
+	EndSubSection
+	SubSection "Display"
+		Depth     8
+	EndSubSection
+	SubSection "Display"
+	Depth     16
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+	EndSubSection
+	SubSection "Display"
+		Depth     32
+	EndSubSection
+EndSection
+  
+Section "Device"
+	Identifier      "Wsdisplay1"
+	Driver          "wsfb"
+	Option          "device" "/dev/ttyD0"
+EndSection
+

@@ -1,18 +1,19 @@
+.\" $XdotOrg: xc/programs/Xserver/hw/xfree86/doc/man/XF86VM.man,v 1.2 2004/04/23 19:23:08 eich Exp $
 .\" $TOG: XF86VM.man /main/6 1997/07/19 10:30:39 kaleb $
 .\"
 .\"
 .\"
 .\"
 .\" Copyright (c) 1996  Joe Moss, The XFree86 Project
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/doc/man/XF86VM.man,v 3.15 2003/11/23 05:40:36 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/doc/man/XF86VM.man,v 3.14 2003/10/02 13:29:56 eich Exp $
 .\" 
 .de ZN
 .ie t \fB\^\\$1\^\fR\\$2
 .el \fI\^\\$1\^\fP\\$2
 ..
-.TH XF86VIDMODE 3X11 __vendorversion__ "X FUNCTIONS"
+.TH XF86VIDMODE __libmansuffix__ __vendorversion__
 .SH NAME
-XF86VidModeQueryExtension, XF86VidModeQueryVersion, XF86VidModeSetClientVersion, XF86VidModeGetModeLine, XF86VidModeGetAllModeLines, XF86VidModeDeleteModeLine, XF86VidModeModModeLine, XF86VidModeValidateModeLine, XF86VidModeSwitchMode, XF86VidModeSwitchToMode, XF86VidModeLockModeSwitch, XF86VidModeGetMonitor, XF86VidModeGetViewPort, XF86VidModeSetViewPort, XF86VidModeGetDotClocks, XF86VidModeGetGamma, XF86VidModeSetGamma, XF86VidModeGetGammaRamp, XF86VidModeSetGammaRamp, XF86VidModeGetGammaRampSize, XF86VidModeGetPermissions \- XFree86-VidMode extension interface functions
+XF86VidModeQueryExtension, XF86VidModeQueryVersion, XF86VidModeSetClientVersion, XF86VidModeGetModeLine, XF86VidModeGetAllModeLines, XF86VidModeDeleteModeLine, XF86VidModeModModeLine, XF86VidModeValidateModeLine, XF86VidModeSwitchMode, XF86VidModeSwitchToMode, XF86VidModeLockModeSwitch, XF86VidModeGetMonitor, XF86VidModeGetViewPort, XF86VidModeSetViewPort, XF86VidModeGetDotClocks, XF86VidModeGetGamma, XF86VidModeSetGamma, XF86VidModeGetGammaRamp, XF86VidModeSetGammaRamp, XF86VidModeGetGammaRampSize, XF86VidModeGetPermissions \- Extension libary for the XFree86-VidMode X extension
 .SH SYNTAX
 .nf
 .LP
@@ -419,7 +420,6 @@ XF86VidModeGetPermissions
 functions need to be documented.  In the meantime, check the source
 code for information about how to use them.
 .SH SEE ALSO
-XFree86(1), XF86Config(__filemansuffix__), XFlush(3),
-XSetErrorHandler(3), xvidtune(1)
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), XFlush(__libmansuffix__), XSetErrorHandler(__libmansuffix__), xvidtune(__appmansuffix__)
 .SH AUTHORS
 Kaleb Keithley, Jon Tombs, David Dawes, and Joe Moss

@@ -25,7 +25,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/GL/glxmodule.c,v 1.12 2003/09/28 20:15:40 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/glxmodule.c,v 1.11 2001/06/15 21:22:38 dawes Exp $ */
 
 /*
  * Authors:
@@ -113,6 +113,8 @@ static const char *glcoreSymbols[] = {
     "__glTexGeniv_size",
     "__glTexParameterfv_size",
     "__glTexParameteriv_size",
+    "__glXglDDXExtensionInfo",
+    "__glXglDDXScreenInfo",
     "__glXActiveScreens",
     "__glXAssociateContext",
     "__glXBadContext",
@@ -776,7 +778,6 @@ static const char *glcoreSymbols[] = {
     "__glXFogfvReqSize",
     "__glXFogivReqSize",
     "__glXForceCurrent",
-    "__glXFormatGLModes",
     "__glXFree",
     "__glXFreeBuffers",
     "__glXFreeContext",
@@ -1222,7 +1223,7 @@ static XF86ModuleVersionInfo VersRec =
         MODULEVENDORSTRING,
         MODINFOSTRING1,
         MODINFOSTRING2,
-        XF86_VERSION_CURRENT,
+        XORG_VERSION_CURRENT,
         1, 0, 0,
         ABI_CLASS_EXTENSION,
         ABI_EXTENSION_VERSION,

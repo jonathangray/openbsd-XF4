@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxcontext.h,v 1.5 2003/09/28 20:15:43 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/glx/glxcontext.h,v 1.4 2002/02/22 21:45:07 dawes Exp $ */
 #ifndef _GLX_context_h_
 #define _GLX_context_h_
 
@@ -80,7 +80,6 @@ struct __GLXcontextRec {
     ** This context is created with respect to this visual.
     */
     VisualRec *pVisual;
-    __GLXvisualConfig *pGlxVisual;
 
     /*
     ** The XID of this context.

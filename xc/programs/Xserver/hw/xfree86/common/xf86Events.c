@@ -49,6 +49,7 @@
  */
 
 /* $XConsortium: xf86Events.c /main/46 1996/10/25 11:36:30 kaleb $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 1.3 2004/07/30 20:56:53 eich Exp $ */
 
 /* [JCH-96/01/21] Extended std reverse map to four buttons. */
 
@@ -92,6 +93,12 @@
 
 #ifdef XKB
 extern Bool noXkbExtension;
+#endif
+
+#ifdef DPMSExtension
+#define DPMS_SERVER
+#include "extensions/dpms.h"
+#include "dpmsproc.h"
 #endif
 
 #define XE_POINTER  1
@@ -402,7 +409,7 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
 	    /*                                                        */
 	    /* otherwise fallback to sending a key event message to   */
 	    /* the current screen's driver:                           */
-	    if (*pScr->HandleMessage) {
+	    if (*pScr->HandleMessage != NULL) {
 		(void) (*pScr->HandleMessage)(pScr->scrnIndex,
 			"KeyEventMessage", message, &retstr);
 	    }
@@ -606,8 +613,8 @@ xf86PostKbdEvent(unsigned key)
     case 0x36:
 	return;
     default:
-	    /* xf86MsgVerb(X_INFO, 4, "Unreported Prefix0 scancode: 0x%02x\n",
-	       scanCode); XXXX */
+      xf86MsgVerb(X_INFO, 4, "Unreported Prefix0 scancode: 0x%02x\n",
+		  scanCode);
       /*
        * "Internet" keyboards are generating lots of new codes.  Let them
        * pass.  There is little consistency between them, so don't bother
@@ -1349,7 +1356,11 @@ xf86VTSwitch()
 #endif /* !__UNIXOS2__ */
     xf86EnterServerState(SETUP);
     for (i = 0; i < xf86NumScreens; i++) {
-      xf86Screens[i]->LeaveVT(i, 0);
+#ifdef DPMSExtension
+	if (xf86Screens[i]->DPMSSet)
+	    xf86Screens[i]->DPMSSet(xf86Screens[i],DPMSModeOn,0);
+#endif
+	xf86Screens[i]->LeaveVT(i, 0);
     }
     for (ih = InputHandlers; ih; ih = ih->next)
       xf86DisableInputHandler(ih);
@@ -1604,7 +1615,7 @@ XTestGenerateEvent(int dev_type, int keycode, int keystate, int mousex,
 
 /* XXX Currently XKB is mandatory. */
 
-extern int WSKbdToKeycode(int);
+extern int xf86WSKbdToKeycode(int);
 
 void
 xf86PostWSKbdEvent(struct wscons_event *event)
@@ -1618,7 +1629,7 @@ xf86PostWSKbdEvent(struct wscons_event *event)
     Bool down = (type == WSCONS_EVENT_KEY_DOWN ? TRUE : FALSE);
 
     /* map the scancodes to standard XFree86 scancode */  	
-    keycode = WSKbdToKeycode(value);
+    keycode = xf86WSKbdToKeycode(value);
     if (!down) keycode |= 0x80;
     /* It seems better to block SIGIO there */
     blocked = xf86BlockSIGIO();

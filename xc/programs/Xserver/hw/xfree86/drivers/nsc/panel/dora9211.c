@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/dora9211.c,v 1.1 2002/12/10 15:12:28 alanh Exp $ */
+/* $XFree86$ */
 /*
  * $Workfile: dora9211.c $
- * $Revision: 1.1.1.1 $
+ * $Revision: 1.2 $
  *
  * File Contents: This file contains the panel functions to interface 
  *                the dorado platform.

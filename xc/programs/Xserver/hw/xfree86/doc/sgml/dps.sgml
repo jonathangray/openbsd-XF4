@@ -1,18 +1,37 @@
-<!doctype LINUXDOC PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!doctype LINUXDOC PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
 <article>
 
-<title>XFree86 and DPS
-<author>Juliusz Chroboczek, <email/jch@xfree86.org/
-<date>27 February 2001</date>
+<title>X and DPS
+<author>Juliusz Chroboczek, <email/jch@pps.jussieu.fr/
+<date>27 February 2001, updated 25 March 2004</date>
 
-<ident>$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/dps.sgml,v 1.2 2003/01/20 03:43:07 dawes Exp $</ident>
+<ident>
+Updated by Jim Gettys.
+$Id: dps.sgml,v 1.2 2004/11/03 00:08:21 matthieu Exp $
+</ident>
 
 <toc>
 
 <sect>Introduction
+
+<p> Note that DPS is now obsolete.
+<p>
+At the time when I started this project, there was no decent rendering interface for X11 other than DPS.
+<p>
+Since then, there has been a large amount of work on a simple and clean X server extension, Xrender, which provides the basis for just such an interface.
+<p>
+Rendering libraries that are being built above Xrender include Xft, 
+a font rendering library built on FreeType; 
+Cairo, a geometry rendering library that provides PostScript-like 
+rendering primitives but with intrinsic support for Porter-Duff 
+compositing (transparency); Pango, a high-level typesetting library. 
+<p>
+If your application uses DPS, please consider porting it to the above libraries.
+See <url url="http://dps.sourceforge.net" name="the DPS extension site">
+for more details
 
 <p>Display Postscript (or DPS for short) is a rendering extension for
 X11.  DPS is slightly atypical in that it is based on <it/code
@@ -23,7 +42,7 @@ line to be drawn.
 
 <p>This document does not aim at teaching programming with DPS; it is
 only a summary description of the DPS support code included with
-XFree86.  More information about DPS, including a DPS bibliography, is
+X11R&relvers;.  More information about DPS, including a DPS bibliography, is
 available from
 <url url="http://dps.sourceforge.net" name="the DPS extension site">.
 
@@ -40,7 +59,7 @@ side may consist either of an X server extension, or of a client-side
 process known as the ``DPS agent.''  In this latter case, the term
 ``server-side'' is somewhat misleading.
 
-At the time of writing, only the client side is included with XFree86;
+At the time of writing, only the client side is included with X11R&relvers;;
 the server side must be obtained separately.  Please see <ref
 id="sec:server-side" name="server side"> later in this document for
 more information.
@@ -49,7 +68,7 @@ more information.
 
 <p>The DPS client side consists of four libraries and a number of
 basic tools for programming and configuration; these are all included
-with XFree86.
+with X11R&relvers;.
 
 <sect1>Libraries
 
@@ -82,7 +101,7 @@ summary Scrolling Widget documentation is available in the <tt/doc/
 subdirectory of the <tt/DPS.tar.gz/ file, available from <url
 url="ftp://dps.sourceforge.net/pub/dps/DPS.tar.gz">.
 
-The source code for <tt/libdpstkXm/ is included with XFree86; however,
+The source code for <tt/libdpstkXm/ is included with X11R&relvers;; however,
 as it depends on Motif, this library is not built by default.
 A GTK-based library providing some of the functionality of
 <tt/libdpstkXm/ is available from
@@ -97,7 +116,7 @@ code on DPS events; with this addition, all programs that link with
 <tt/libdps/ need to link with <tt/libXt/, whether they use Xt or not.
 
 This state of affairs is unfortunately true of the version of
-<tt/libdps/ included with XFree86.  We are currently considering
+<tt/libdps/ included with X11R&relvers;.  We are currently considering
 various solutions to this problem (including the use of weak linker
 symbols or splitting off the guilty functions into a separate
 library).
@@ -122,7 +141,7 @@ pre-tokenised form to the DPS extension.  <tt/Pswrap/ is documented in
 
 <sect1>Sample clients
 
-<p>XFree86 contains three sample DPS clients, <tt/dpsinfo/,
+<p>X11R&relvers; contains three sample DPS clients, <tt/dpsinfo/,
 <tt/dpsexec/ and <tt/texteroids/.  They are documented in their
 respective manual pages.
 

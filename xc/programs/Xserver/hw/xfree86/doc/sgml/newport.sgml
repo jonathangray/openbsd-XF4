@@ -1,4 +1,4 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
@@ -7,7 +7,6 @@
 <author>Guido G&uuml;nther
 <date>24 February 2003
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/newport.sgml,v 1.7 2003/10/19 19:47:17 dawes Exp $
 </ident>
 <toc>
 
@@ -27,7 +26,7 @@ working.
 <sect>Notes
 <p>
 <itemize>
-  <item>X -configure does not generate a XF86Config file.
+  <item>X -configure does not generate a xorg.conf file.
   <item>There's only a 1280x1024 mode.
 </itemize>
 
@@ -36,7 +35,7 @@ working.
 <p>
 The driver auto-detects all device information necessary to
 initialize the card on the Indy. The only lines you need in the "Device"
-section of your XF86Config file are:
+section of your xorg.conf file are:
 <verb>
        Section "Device"
            Identifier "SGI newport"

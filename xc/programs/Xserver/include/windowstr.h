@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/windowstr.h,v 1.7 2003/04/27 21:31:05 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/include/windowstr.h,v 1.6 2001/12/14 19:59:57 dawes Exp $ */
 
 #ifndef WINDOWSTRUCT_H
 #define WINDOWSTRUCT_H
@@ -136,6 +136,9 @@ typedef struct _Window {
     unsigned		dstBuffer:1;	/* destination buffer for rendering */
     unsigned		srcBuffer:1;	/* source buffer for rendering */
 #endif
+#ifdef COMPOSITE
+    unsigned		redirectDraw:1;	/* rendering is redirected from here */
+#endif
     DevUnion		*devPrivates;
 } WindowRec;
 
@@ -221,5 +224,9 @@ extern ScreenSaverStuffRec savedScreenInfo[MAXSCREENS];
 
 extern int numSaveUndersViewable;
 extern int deltaSaveUndersViewable;
+
+#ifdef XEVIE
+extern WindowPtr xeviewin;
+#endif
 
 #endif /* WINDOWSTRUCT_H */

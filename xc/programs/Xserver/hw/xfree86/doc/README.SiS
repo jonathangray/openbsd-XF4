@@ -24,7 +24,7 @@ The driver supports:
 
    o 8/16/24 bits color depth; old series also 15;
 
-   o XAA (XFree86 Acceleration Architecture)
+   o XAA
 
    o XVideo (Xv)
 
@@ -47,10 +47,10 @@ options.  Please see http://www.winischhofer.net/linuxsisvga.shtml for
 detailed documentation and updates. Support for the 661, 741 and 760 is
 entirely untested as of this writing, and possibly incomplete for LCD output.
 
-2.  XF86Config Options
+2.  xorg.conf Options
 
 The following options are of particular interest for the SiS driver. Each of
-them must be specified in the Device section of the XF86Config file for this
+them must be specified in the Device section of the xorg.conf file for this
 card.
 
 2.1  For all chipsets
@@ -178,7 +178,7 @@ card.
       Option "MaxXFBMem"
             DRI requires the linux kernel's SiS framebuffer driver "sisfb"
             and some other modules which come with either the linux kernel or
-            XFree86. (On *BSD, the DRI driver does not require any frame-
+            X11R6.8.1. (On *BSD, the DRI driver does not require any frame-
             buffer driver.)  Sisfb takes care of memory management for tex-
             ture data. In order to prevent the X driver and sisfb from over-
             writing each others video memory, sisfb reserves an amount of
@@ -188,9 +188,9 @@ card.
             to know about the amount of RAM sisfb reserved. For this purpose,
             the Option "MaxXFBMem" exists.
 
-            XFree 4.3.0 disabled SiS DRI support due to a lack of main-
-            tainance of the SiS DRI driver. XFree86 4.4 contains a newly
-            written SiS DRI driver by Eric Anholt.
+            XFree 4.3.0 disabled SiS DRI support due to a lack of maintenance
+            of the SiS DRI driver. X11R6.8.1 and X11R6.8.1 and XFree86 4.4
+            contains a newly written SiS DRI driver by Eric Anholt.
 
             If you intend to use DRI, I recommend setting the total video
             memory in the BIOS to 64MB in order to at least overcome the lack
@@ -230,7 +230,5 @@ card.
 Document based on 4.1 version written by Joanjo Santamarta and 3.3 version
 written by Xavier Ducoin.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/SiS.sgml,v 3.8 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.SiS,v 3.19 2003/10/19 19:57:13 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.SiS,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

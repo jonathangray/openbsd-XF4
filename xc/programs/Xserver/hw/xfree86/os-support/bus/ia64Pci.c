@@ -45,15 +45,17 @@ ia64ScanPCIWrapper(scanpciWrapperOpt flags)
 	    return;
 	if (xf86PreScanE8870())
 	    return;
+#if 0
 	if (xf86PreScanZX1())
 	    return;
-
+#endif
     } else /* if (flags == SCANPCI_TERM) */ {
 
 	xf86PostScan460GX();
 	xf86PostScanE8870();
+#if 0
 	xf86PostScanZX1();
-
+#endif
     }
 
 }

@@ -1,7 +1,9 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.39 2003/12/20 20:04:34 dawes Exp $ */
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.38 2003/10/02 13:30:02 eich Exp $ */
 
-
-
+XCOMM #define ProPoliceSupport YES in host.def if you're on a propolice system
+#if ProPoliceSupport
+SSPOPTIONS=-D__SSP__
+#endif
 
 #include <Server.tmpl>
 #ifdef LoaderTest
@@ -38,12 +40,17 @@ USBDEFINES = -DUSB_HID
     SHM_DEFINES = -DHAS_SHM
 #endif
 
+#if DoPrivSep
+PRIVSEP_DEFINES = -DX_PRIVSEP
+#endif
+
 #if defined (AMD64Architecture) && defined(linux)
 ARCHDEFINES = -DDoMMAPedMerge -DMmapPageAlign
 #endif
 
 DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OS_DEFINES) $(COMPAT_DEFINES) \
-	  $(SHM_DEFINES) $(FONTCACHE_DEFINES) $(ARCHDEFINES) $(USBDEFINES)
+	  $(SHM_DEFINES) $(FONTCACHE_DEFINES) $(ARCHDEFINES) $(USBDEFINES) \
+	  $(PRIVSEP_DEFINES)
 
 MODULEDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
 
@@ -81,8 +88,13 @@ NormalLibraryTarget(loader,$(OBJS) )
 NormalLibraryTarget(xloader,$(XOBJS) )
 
 SpecialCObjectRule(loadmod,NullParameter,$(MODULEDEFINES) $(EXT_DEFINES))
-SpecialCObjectRule(xf86sym,NullParameter,$(EXT_DEFINES))
 SpecialCObjectRule(dixsym,NullParameter,$(EXT_DEFINES))
+
+#if ProPoliceSupport
+SpecialCObjectRule(xf86sym,NullParameter,$(SSPOPTIONS) $(EXT_DEFINES))
+#else
+SpecialCObjectRule(xf86sym,NullParameter,$(EXT_DEFINES))
+#endif
 
 #ifdef SparcArchitecture
 ObjectFromAsmSource(SparcMulDiv,NullParameter)

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/vid_rdcl.c,v 1.4 2003/11/03 05:11:23 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/vid_rdcl.c,v 1.3tsi Exp $ */
 /*
  * $Workfile: vid_rdcl.c $
  *

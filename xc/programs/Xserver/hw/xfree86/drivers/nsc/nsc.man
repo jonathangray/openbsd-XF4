@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc.man,v 1.2 2003/05/29 21:48:09 herrb Exp $ 
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc.man,v 1.1 2002/12/10 15:12:23 alanh Exp $ 
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH NSC __drivermansuffix__ __vendorversion__
@@ -14,7 +14,7 @@ nsc \- Nsc video driver
 .fi
 .SH DESCRIPTION
 .B nsc
-is an XFree86 driver for National Semiconductors GEODE processor family.
+is an __xservername__ driver for National Semiconductors GEODE processor family.
 It uses the DURANGO kit provided by National Semiconductor.
 The driver is accelerated, and provides support for the following 
 framebuffer depths: 8, 16 and 24.
@@ -24,7 +24,7 @@ The
 driver supports GXLV (5530 companion chip), SC1200, SC1400 and
 GX2 (5535 companion chip).
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details.  This section only covers configuration details specific to this
 driver.
 .PP
@@ -129,6 +129,6 @@ view on TV. The parameters xx: X-offset, yy: Y-offset, ww: Viewable width,
 hh: Viewable height.
 Default: no TV.
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__)
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__)
 .SH AUTHOR
 Author: Sarma V. Kolluru

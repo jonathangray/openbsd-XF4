@@ -49,6 +49,7 @@ HEV hevServerHasFocus;
 HEV hevSwitchRequested;
 HEV hevErrorPopupDetected;
 extern HEV hevPopupPending;
+extern HEV hSwitchToSem;
 BOOL os2PopupErrorPending=FALSE;
 
 /*
@@ -79,13 +80,15 @@ Bool xf86VTSwitchAway()
 Bool xf86VTSwitchTo()
 {
 	APIRET rc;
-	ULONG drive;
+	ULONG drive,postCount;
 
-        xf86Info.vtRequestsPending=FALSE;
-        SwitchedToWPS=FALSE;
+	xf86Info.vtRequestsPending=FALSE;
+	SwitchedToWPS=FALSE;
+	rc = DosResetEventSem(hSwitchToSem,&postCount);
 	DosPostEventSem(hevSwitchRequested);
 	rc = DosQuerySysInfo(5,5,&drive,sizeof(drive));
 	rc = DosSuppressPopUps(0x0001L,drive+96);     /* Disable popups */
+
 	/* We reset the state of the control key */
 	os2PostKbdEvent(KEY_LCtrl,1);
 	os2PostKbdEvent(KEY_LCtrl,0);
@@ -124,9 +127,12 @@ void * arg;
                    FirstTime=FALSE;
                    if(NotifyType==1) NotifyType=65535; /* In case a redraw is requested on first call */
                 }
-  
-/* Sanity check */
+
 	  if(NotifyType==1){
+/* Notify os2PseudoSelect() that we are back */
+			rc=DosPostEventSem(hSwitchToSem);
+			if (rc) xf86Msg(X_ERROR,"Post SwitchToSem returned %d\n");
+/* Sanity check */
 		if (!SwitchedToWPS) {
 			xf86Msg(X_ERROR,
 				"Abnormal switching back to server detected\n");
@@ -185,6 +191,7 @@ void * arg;
 	   rc=VioModeWait(Indic,&NotifyType,(HVIO)0);
 	   if(NotifyType==0){
                 os2PopupErrorPending=TRUE;
+                rc=DosPostEventSem(hSwitchToSem);
                 rc=DosResetEventSem(hevErrorPopupDetected,&postCount);
                 rc=DosWaitEventSem(hevErrorPopupDetected,20000L);
                 if(rc==ERROR_TIMEOUT) GiveUp(0);  /* Shutdown on timeout of semaphore */
@@ -196,10 +203,10 @@ void * arg;
 
 static BOOL is_redirected = FALSE;
 
-static void 
-redirect_output(void) 
+static void
+redirect_output(void)
 {
-	/* hv300996 create redirect file on boot drive, instead 
+	/* hv300996 create redirect file on boot drive, instead
 	 * anywhere you are just standing
 	 */
 	char buf[20],dr[3];
@@ -219,12 +226,12 @@ redirect_output(void)
 
 	ErrorF("\nThis is the XFree86/OS2-4.0 server\n");
 	ErrorF("\nAll output from now on will be redirected to %s\n",buf);
-	freopen(buf,"w",stderr); 
+	freopen(buf,"w",stderr);
 
 	is_redirected = TRUE;
 }
 
-void 
+void
 os2ServerVideoAccess()
 {
    APIRET rc;
@@ -235,7 +242,7 @@ os2ServerVideoAccess()
    /* Redirect output as early as possible */
    /* redirect_output(); */
    /* too many logfiles, server will log to /usr/adm */
-  
+
 /* Wait for screen access. This is called at server reset or at server startup */
 /* Here we do some waiting until this session comes in the foreground before *
  * going any further. This is because we may have been started in the bg      */
@@ -262,6 +269,8 @@ os2ServerVideoAccess()
 void os2RecoverFromPopup()
 {
 	int j;
+	ULONG postCount;
+
 	if (os2PopupErrorPending) {
 #if 0
 		for (j = 0; j < screenInfo.numScreens; j++)
@@ -269,9 +278,11 @@ void os2RecoverFromPopup()
 		for (j = 0; j < screenInfo.numScreens; j++)
 			(XF86SCRNINFO(screenInfo.screens[j])->EnterLeaveVT)(ENTER, j);
 #endif
+		DosResetEventSem(hSwitchToSem,&postCount);
+
 		for (j = 0; j < xf86NumScreens; j++) {
 			if (xf86Screens[j]->EnableDisableFBAccess)
-			  (*xf86Screens[j]->EnableDisableFBAccess)(j, FALSE);
+				(*xf86Screens[j]->EnableDisableFBAccess)(j, FALSE);
 		}
 		xf86EnterServerState(SETUP);
 		for (j = 0; j < xf86NumScreens; j++)
@@ -282,16 +293,16 @@ void os2RecoverFromPopup()
 		xf86EnterServerState(OPERATING);
 		for (j = 0; j < xf86NumScreens; j++) {
 			if (xf86Screens[j]->EnableDisableFBAccess)
-			  (*xf86Screens[j]->EnableDisableFBAccess)(j, TRUE);
+				(*xf86Screens[j]->EnableDisableFBAccess)(j, TRUE);
 		}
 
-                /* We reset the state of the control key */
-                os2PostKbdEvent(KEY_LCtrl,1);
-                os2PostKbdEvent(KEY_LCtrl,0);
-                os2PostKbdEvent(KEY_RCtrl,1);
-                os2PostKbdEvent(KEY_RCtrl,0);
-                os2PostKbdEvent(KEY_Alt,1);
-                os2PostKbdEvent(KEY_Alt,0);
+		/* We reset the state of the control key */
+		os2PostKbdEvent(KEY_LCtrl,1);
+		os2PostKbdEvent(KEY_LCtrl,0);
+		os2PostKbdEvent(KEY_RCtrl,1);
+		os2PostKbdEvent(KEY_RCtrl,0);
+		os2PostKbdEvent(KEY_Alt,1);
+		os2PostKbdEvent(KEY_Alt,0);
 
 		/* Turn screen saver off when switching back */
 		SaveScreens(SCREEN_SAVER_FORCER,ScreenSaverReset);

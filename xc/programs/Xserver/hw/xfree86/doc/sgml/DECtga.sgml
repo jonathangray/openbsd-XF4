@@ -1,14 +1,14 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 <article>
 
 <title>Information for DEC 21030 Users (aka TGA)
 <author>The XFree86 Project, Inc.
-<date>March 5th, 2000
+<and>Updates for X11R&relvers; by Jim Gettys
+<date>March 25th, 2004
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DECtga.sgml,v 3.9 2000/03/06 22:59:23 dawes Exp $
 </ident>
 
 <toc>
@@ -17,7 +17,8 @@ $XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DECtga.sgml,v 3.9 2000/03/06 2
 <sect>DEC 21030
 <p>
 <itemize>
-<item>The DEC 21030 is supported by XFree86 &relvers;.  The driver is now
+<item>The DEC 21030 is supported by X11R&relvers;.
+The driver is now
 partially accelerated.  The built-in graphics on the Multia is
 supported in 8-plane mode, and PCI cards with 8 or 16 MB framebuffers
 are supported in 24-plane mode.  TGA2 (aka PowerStorm 3D30/4D20)

@@ -1,4 +1,4 @@
-/* $Id: citron.c,v 1.1.1.4 2004/02/13 21:45:13 matthieu Exp $
+/* $Id: citron.c,v 1.2 2004/11/03 00:09:09 matthieu Exp $
  * Copyright (c) 1998  Metro Link Incorporated
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.c,v 1.12 2003/11/06 18:38:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.c,v 1.11tsi Exp $ */
 
 /*
  * Based, in part, on code with the following copyright notice:
@@ -279,7 +279,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,			/* vendor specific string */
 	MODINFOSTRING1,				
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,		/* Current XFree version */
+	XORG_VERSION_CURRENT,		/* Current XFree version */
 	CITOUCH_VERSION_MAJOR,		/* Module-specific major version */
 	CITOUCH_VERSION_MINOR,		/* Module-specific minor version */
 	CITOUCH_VERSION_PATCH,		/* Module-specific patch level */

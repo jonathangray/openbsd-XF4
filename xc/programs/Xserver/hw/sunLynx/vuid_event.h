@@ -43,7 +43,7 @@
  *	@(#)vuid_event.h	8.1 (Berkeley) 6/11/93
  */
 /*	$NetBSD: vuid_event.h,v 1.2 1994/11/20 20:53:39 deraadt Exp $ */
-/*	$XFree86: xc/programs/Xserver/hw/sunLynx/vuid_event.h,v 3.2 2001/01/17 22:36:53 dawes Exp $ */
+/*	$XFree86: xc/programs/Xserver/hw/sunLynx/vuid_event.h,v 3.1 1996/12/27 06:51:43 dawes Exp $ */
 
 /*
  * The following is a minimal emulation of Sun's `Firm_event' structures

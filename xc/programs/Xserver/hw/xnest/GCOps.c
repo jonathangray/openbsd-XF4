@@ -12,7 +12,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/GCOps.c,v 3.6 2003/11/16 05:05:20 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/GCOps.c,v 3.5 2003/07/16 01:38:51 dawes Exp $ */
 
 #include "X.h"
 #include "Xproto.h"
@@ -310,5 +310,16 @@ void
 xnestPushPixels(GCPtr pGC, PixmapPtr pBitmap, DrawablePtr pDst,
 		int width, int height, int x, int y)
 {
-  ErrorF("xnest warning: function xnestPushPixels not implemented\n");
+  /* only works for solid bitmaps */
+  if (pGC->fillStyle == FillSolid)
+  {
+    XSetStipple (xnestDisplay, xnestGC(pGC), xnestPixmap(pBitmap));
+    XSetTSOrigin (xnestDisplay, xnestGC(pGC), x, y);
+    XSetFillStyle (xnestDisplay, xnestGC(pGC), FillStippled);
+    XFillRectangle (xnestDisplay, xnestDrawable(pDst),
+		    xnestGC(pGC), x, y, width, height);
+    XSetFillStyle (xnestDisplay, xnestGC(pGC), FillSolid);
+  }
+  else
+    ErrorF("xnest warning: function xnestPushPixels not implemented\n");
 }

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/ginfo.h,v 1.4 2003/08/31 01:02:04 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/ginfo.h,v 1.3tsi Exp $ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/Xext/panoramiXsrv.h,v 1.9 2001/08/11 21:00:06 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/panoramiXsrv.h,v 1.8 2001/08/01 00:44:44 tsi Exp $ */
 
 #ifndef _PANORAMIXSRV_H_
 #define _PANORAMIXSRV_H_
@@ -19,6 +19,8 @@ extern PanoramiXRes * PanoramiXFindIDOnAnyScreen(RESTYPE, XID);
 extern WindowPtr PanoramiXChangeWindow(int, WindowPtr);
 extern Bool XineramaRegisterConnectionBlockCallback(void (*func)(void));
 extern int XineramaDeleteResource(pointer, XID);
+
+extern void XineramaReinitData(ScreenPtr);
 
 extern RegionRec XineramaScreenRegions[MAXSCREENS];
 

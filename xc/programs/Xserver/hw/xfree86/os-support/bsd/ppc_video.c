@@ -1,5 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/ppc_video.c,v 1.6 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.9 2004/02/13 22:41:21 matthieu Exp $ */
+/* $XFree86: ppc_video.c,v 1.5 2003/03/14 13:46:04 tsi Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.10 2004/11/03 00:09:15 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -45,8 +45,9 @@
 /* Video Memory Mapping section                                            */
 /***************************************************************************/
 
-#ifdef __OpenBSD__
-#undef DEV_MEM
+#ifndef __OpenBSD__
+#define DEV_MEM "/dev/mem"
+#else
 #define DEV_MEM "/dev/xf86"
 #endif
 
@@ -120,6 +121,7 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 
 	lseek(kmem, Base + Offset, 0);
 	rv = read(kmem, Buf, Len);
+
 	return rv;
 }
 
@@ -141,6 +143,7 @@ xf86EnableInterrupts()
 	return;
 }
 
+#ifdef X_PRIVSEP
 /*
  * Do all initialisation that need root privileges 
  */
@@ -155,3 +158,4 @@ xf86PrivilegedInit(void)
 	pciInit();
 	xf86OpenConsole();
 }
+#endif

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_driver.c,v 1.21 2003/08/23 15:03:02 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_driver.c,v 1.20 2002/09/24 15:23:55 tsi Exp $ */
 
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>
@@ -160,20 +160,20 @@ static const char *xaaSymbols[] = {
 
 
 static const char *fbdevHWSymbols[] = {
-	"fbdevHWAdjustFrame",
-	"fbdevHWEnterVT",
+	"fbdevHWAdjustFrameWeak",
+	"fbdevHWEnterVTWeak",
 	"fbdevHWGetVidmem",
 	"fbdevHWInit",
-	"fbdevHWLeaveVT",
-	"fbdevHWLoadPalette",
+	"fbdevHWLeaveVTWeak",
+	"fbdevHWLoadPaletteWeak",
 	"fbdevHWMapVidmem",
 	"fbdevHWModeInit",
 	"fbdevHWSave",
-	"fbdevHWSwitchMode",
+	"fbdevHWSwitchModeWeak",
 	"fbdevHWUnmapMMIO",
 	"fbdevHWUnmapVidmem",
 	"fbdevHWUseBuildinMode",
-	"fbdevHWValidMode",
+	"fbdevHWValidModeWeak",
 	NULL
 };
 
@@ -192,7 +192,7 @@ static XF86ModuleVersionInfo IMSTTVersRec = {
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL,
 	ABI_CLASS_VIDEODRV,
 	ABI_VIDEODRV_VERSION,
@@ -417,11 +417,11 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 		xf86LoaderReqSymLists(fbdevHWSymbols, NULL);
 		if (!fbdevHWInit(pScrn, iptr->PciInfo, NULL))
 			return FALSE;
-		pScrn->SwitchMode = fbdevHWSwitchMode;
-		pScrn->AdjustFrame = fbdevHWAdjustFrame;
-		pScrn->EnterVT = fbdevHWEnterVT;
-		pScrn->LeaveVT = fbdevHWLeaveVT;
-		pScrn->ValidMode = fbdevHWValidMode;
+		pScrn->SwitchMode = fbdevHWSwitchModeWeak();
+		pScrn->AdjustFrame = fbdevHWAdjustFrameWeak();
+		pScrn->EnterVT = fbdevHWEnterVTWeak();
+		pScrn->LeaveVT = fbdevHWLeaveVTWeak();
+		pScrn->ValidMode = fbdevHWValidModeWeak();
 	}
 
 	if (pScrn->numEntities > 1) {
@@ -440,6 +440,9 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86RegisterResources(pEnt->index, NULL, ResNone);
 	xf86SetOperatingState(resVgaIo, pEnt->index, ResUnusedOpr);
 	xf86SetOperatingState(resVgaMem, pEnt->index, ResDisableOpr);
+
+	pScrn->memPhysBase = iptr->PciInfo->memBase[0];
+	pScrn->fbOffset = 0;
 
 	if (pEnt->device->chipset && *pEnt->device->chipset) {
 		pScrn->chipset = pEnt->device->chipset;
@@ -830,7 +833,7 @@ static Bool IMSTTScreenInit(int scrnIndex, ScreenPtr pScreen,
 	if (!miCreateDefColormap(pScreen))
 		return FALSE;
 
-	if (!xf86HandleColormaps(pScreen, 256, 8, fbdevHWLoadPalette,
+	if (!xf86HandleColormaps(pScreen, 256, 8, fbdevHWLoadPaletteWeak(),
 				 NULL, CMAP_PALETTED_TRUECOLOR))
 		return FALSE;
 

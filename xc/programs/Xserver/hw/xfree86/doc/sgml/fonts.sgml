@@ -1,24 +1,23 @@
-<!doctype LINUXDOC PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!doctype LINUXDOC PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
 <article>
 
-<title>Fonts in XFree86
-<author>Juliusz Chroboczek, <email/jch@xfree86.org/
-<date>17 November 2003</date>
+<title>Fonts in X11R&relvers;
+<author>Juliusz Chroboczek, <email/jch@pps.jussieu.fr/
+<date>25 March 2004</date>
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/fonts.sgml,v 1.24 2003/12/20 19:30:35 dawes Exp $
 </ident>
 
 <toc>
 
 <sect>Introduction
 
-<p>This document describes the support for fonts in XFree86.  <ref
+<p>This document describes the support for fonts in X11R&relvers;.  <ref
 id="sec:installing" name="Installing fonts"> is aimed at the 
-casual user wishing to install fonts in XFree86; the rest of the
+casual user wishing to install fonts in X11R&relvers; the rest of the
 document describes the font support in more detail.
 
 We assume some familiarity with digital fonts.  If anything is not
@@ -28,10 +27,10 @@ information.
 
 <sect1>Two font systems
 
-<p>XFree86 includes two font systems: the core X11 fonts system, which
+<p>X includes two font systems: the original core X11 fonts system, which
 is present in all implementations of X11, and the Xft fonts system,
-which is not currently distributed with implementations of X11 that
-are not based on XFree86 but will hopefully be included by them in
+which may not be distributed with implementations of X11 that
+are not based on X11R&relvers; but will hopefully be included by them in
 the future
 
 The core X11 fonts system is directly derived from the fonts system
@@ -49,7 +48,7 @@ installed system-wide for displaying documents with embedded fonts.
 
 Xft is not compatible with the core fonts system: usage of Xft
 requires making fairly extensive changes to toolkits (user-interface
-libraries).  While XFree86 will continue to maintain the core fonts
+libraries).  While X.org will continue to maintain the core fonts
 system, toolkit authors are encouraged to switch to Xft as soon as
 possible.
 
@@ -62,14 +61,14 @@ system to access newly-installed fonts.
 
 <p>Xft has no configuration mechanism itself, rather it relies upon
 the fontconfig library to configure and customize fonts.  That library
-is not specific to XFree86 or indeed on any particular font output
+is not specific to X11R&relvers; or indeed on any particular font output
 mechanism.  This discussion describes how fontconfig, rather than Xft,
 works.
 
 <sect2>Installing fonts in Xft
 
 <p>Fontconfig looks for fonts in a set of well-known directories that
-include all of XFree86's standard font directories
+include all of X11R&relvers;'s standard font directories
 (`<tt>/usr/X11R6/lib/X11/lib/fonts/*</tt>') by default) as well as a
 directory called `<tt>.fonts/</tt>' in the user's home directory.
 Installing a font for use by Xft applications is as simple
@@ -137,7 +136,7 @@ Anti-aliasing can be disabled for all fonts by the following incantation:
 &lt;/match&gt;
 </verb></tscreen>
 
-Xft supports sub-pixel rasterisation on LCD displays.  XFree86 should
+Xft supports sub-pixel rasterisation on LCD displays.  X11R&relvers; should
 automatically enable this feature on laptops and when using an LCD
 monitor connected with a DVI cable; you can check whether this was
 done by typing
@@ -196,8 +195,8 @@ anti-aliasing in case it was disabled by your Xft configuration file.
 <sect2>Troubleshooting <label id="sec:troubleshooting-xft">
 
 <p>If some Xft-based applications don't seem to notice the changes you
-are making to your configuration files, they may be linked against the
-XFree86 4.2 version of Xft.  In order to fix the problem, you should
+are making to your configuration files, they may be linked against an
+old version of Xft.  In order to fix the problem, you should
 relink them against a current version of Xft; on most systems, it is
 enough to install the current version of the Xft and Fontconfig
 libraries.
@@ -217,9 +216,9 @@ including it in the <it/font path/.
 
 <sect2>Installing bitmap fonts
 
-<p>The XFree86 server can use bitmap fonts in both the cross-platform
+<p>The X11R&relvers; server can use bitmap fonts in both the cross-platform
 BDF format and the somewhat more efficient binary PCF format.
-(XFree86 also supports the obsolete SNF format.)
+(X11R&relvers; also supports the obsolete SNF format.)
 
 Bitmap fonts are normally distributed in the BDF format.  Before
 installing such fonts, it is desirable (but not absolutely necessary)
@@ -251,7 +250,7 @@ server font path"> below.
 
 <sect2>Installing scalable fonts
 
-<p>The XFree86 server supports scalable fonts in four formats:
+<p>The X11R&relvers; server supports scalable fonts in four formats:
 Type&nbsp;1, Speedo, TrueType and CIDFont.  This section only applies
 to the former three; for information on CIDFonts, please see
 <ref id="sec:cid-fonts" name="Installing CIDFonts"> later in this
@@ -294,7 +293,7 @@ called
 Munhwa-Regular--UniKS-UCS2-H
 </verb></tscreen>
 
-The CIDFont code in XFree86 requires a very rigid directory
+The CIDFont code in X11R&relvers; requires a very rigid directory
 structure.  The main directory must be called `<tt/CID/' (its location
 defaults to `<tt>/usr/X11R6/lib/X11/fonts/CID</tt>' but it may be
 located anywhere), and it should contain a subdirectory for every CID
@@ -357,8 +356,7 @@ For best results, scalable fonts should appear in the font path before
 the bitmap fonts; this way, the server will prefer bitmap fonts to
 scalable fonts when an exact match is possible, but will avoid scaling
 bitmap fonts when a scalable font can be used.  (The `<tt/:unscaled/'
-hack, while still supported, should no longer be necessary in XFree86
-4.0 and later.)
+hack, while still supported, should no longer be necessary in X11R&relvers;.)
 
 You may check the font path of the running server by typing the command
 <tscreen><verb>
@@ -388,7 +386,7 @@ url="xset.1.html"> manual page.
 
 <p>The default font path (the one used just after server startup or
 after `<tt/xset fp default/') is specified in the X server's
-`<tt/XF86Config/' file.  It is computed by appending all the
+`<tt/xorg.conf/' file.  It is computed by appending all the
 directories mentioned in the `<tt/FontPath/' entries of the
 `<tt/Files/' section in the order in which they appear.
 <tscreen><verb>
@@ -397,8 +395,8 @@ FontPath "/usr/local/fonts/Type1"
 FontPath "/usr/local/fonts/bitmap"
 </verb></tscreen>
 
-For more information, please consult the <htmlurl name="XF86Config(5)"
-url="XF86Config.5.html"> manual page.
+For more information, please consult the <htmlurl name="xorg.conf(5)"
+url="xorg.conf.5.html"> manual page.
 
 <sect2>Troubleshooting <label id="sec:troubleshooting-core">
 
@@ -409,13 +407,13 @@ usually runs as root, beware of NFS-mounted font directories).  If
 this doesn't help, it is quite possible that you are trying to use a
 font in a format that is not supported by your server.
 
-XFree86 supports the BDF, PCF, SNF, Type 1, Speedo, TrueType, OpenType
-and CIDFont font formats.  However, not all XFree86 servers come with
-all the font backends configured in.
+X11R&relvers; supports the BDF, PCF, SNF, Type 1, Speedo, TrueType, OpenType
+and CIDFont font formats.  However, not all X11R&relvers; servers
+come with all the font backends configured in.
 
-On most platforms, the XFree86 servers are <it/modular/: the font
+On most platforms, the X11R&relvers; servers are <it/modular/: the font
 backends are included in modules that are loaded at runtime.  The
-modules to be loaded are specified in the `<tt/XF86Config/' file using
+modules to be loaded are specified in the `<tt/xorg.conf/' file using
 the `<tt/Load/' directive:
 <tscreen><verb>
 Load "type1"
@@ -423,7 +421,7 @@ Load "type1"
 If you have trouble installing fonts in a specific format, you may
 want to check the server's log file in order to see whether the
 relevant modules are properly loaded.  The list of font modules
-distributed with XFree86 is as follows:
+distributed with X11R&relvers; is as follows:
 <itemize>
 <item> <tt/"bitmap"/: bitmap fonts (`<tt/*.bdf/', `<tt/*.pcf/'
 and `<tt/*.snf/');
@@ -439,7 +437,7 @@ Type&nbsp;1 fonts (`<tt/*.pfa/' and `<tt/*.pfb/');
 Please note that the argument of the `<tt/Load/' directive is
 case-sensitive.
 
-<sect>Fonts included with XFree86
+<sect>Fonts included with X11R&relvers;
 
 <sect1>Standard bitmap fonts
 
@@ -449,7 +447,7 @@ of Courier, Times, Helvetica and some members of the Lucida family.  In
 the SI, these fonts are provided in the ISO&nbsp;8859-1 encoding (ISO
 Latin Western-European).
 
-In XFree86, a number of these fonts are provided in Unicode-encoded
+In X11R&relvers;, a number of these fonts are provided in Unicode-encoded
 font files instead.  At build time, these fonts are split into font
 files encoded according to legacy encodings, a process which allows
 us to provide the standard fonts in a number of regional encodings
@@ -530,7 +528,7 @@ may be useful for improved presentation of text.
 
 <sect1>Standard scalable fonts
 
-<p>XFree86 includes all the scalable fonts distributed with X11R6.
+<p>X11R&relvers; includes all the scalable fonts distributed with X11R6.
 
 <sect2>Standard Type&nbsp;1 fonts
 
@@ -555,7 +553,7 @@ and reside in the font files
 /usr/X11R6/lib/X11/fonts/Type1/UT*.pfa
 </verb></tscreen>
 
-Finally, XFree86 also comes with Type&nbsp;1 versions of Bitstream
+Finally, X11R&relvers; also comes with Type&nbsp;1 versions of Bitstream
 Courier and Charter.  These fonts have XLFD
 <tscreen><verb>
 -bitstream-courier-*-*-normal--0-0-0-0-m-0-iso8859-1
@@ -568,7 +566,7 @@ and reside in the font files
 
 <sect2>Standard Speedo fonts
 
-<p>XFree86 includes Speedo versions of the Bitstream Courier and
+<p>X11R&relvers; includes Speedo versions of the Bitstream Courier and
 Charter fonts.  In order to use these fonts, you should ensure that
 your X server is loading the `<tt/Speedo/' font backend; see 
 <ref id="sec:troubleshooting-core" name="Troubleshooting">.
@@ -586,7 +584,7 @@ and reside in the font files
 
 <sect1>The Bigelow &amp; Holmes Luxi family
 
-<p>XFree86 includes the <it/Luxi/ family of scalable fonts, in both
+<p>X11R&relvers; includes the <it/Luxi/ family of scalable fonts, in both
 TrueType and Type&nbsp;1 format.  This family consists of the fonts
 <it/Luxi Serif/, with XLFD
 <tscreen><verb>
@@ -640,11 +638,11 @@ For more information, please contact
 An earlier version of the Luxi fonts was made available under the
 name <em/Lucidux/.  This name should no longer be used due to trademark
 uncertainties, and all traces of the <em/Lucidux/ name have been
-removed from XFree86.
+removed from X11R&relvers;.
 
 <sect>More about core fonts <label id="sec:more-core">
 
-<p>This section describes XFree86-specific enhancements to the core
+<p>This section describes X11R&relvers;-specific enhancements to the core
 X11 fonts system.
 
 <sect1>Core fonts and internationalisation <label id="sec:internationalisation">
@@ -668,12 +666,9 @@ font re-encoding.  This allows these backends to share their encoding
 data, and allows simple configuration of new locales independently of
 font type.
 
-<it/Please note:/ the X-TrueType (X-TT) backend does not use the
-<it/fontenc/ layer, but instead uses its own method for font
-reencoding.  If you are only interested in X-TT you may want to skip
-to <ref id="sec:symbol-fonts" name="Using Symbol Fonts">, as
-the intervening information does not apply to X-TT.  X-TT itself is
-described in more detail in <ref id="sec:X-TT" name="X-TrueType">.
+<it/Please note:/ the X-TrueType (X-TT) backend is not included
+in X11R&relvers;.  That functionality has been merged into the FreeType
+backend.>
 
 In the <it/fontenc/ layer, an encoding is defined by a name (such as
 <tt/iso8859-1/), possibly a number of aliases (alternate names), and
@@ -722,7 +717,7 @@ files.  Please see the <htmlurl name="mkfontdir(1)" url="mkfontdir.1.html">
 manual page for more details.
 
 A number of encoding files for common encodings are included with
-XFree86.  Information on writing new encoding files can be found in
+X11R&relvers;.  Information on writing new encoding files can be found in
 <ref id="sec:format-encoding-directory-files" name="Format of
 encodings directory files"> and <ref id="sec:format-encoding-files"
 name="Format of encoding files"> later in this document.
@@ -1093,7 +1088,7 @@ encodings, but instead uses its own database of encodings.
 
 Since the functionalities for CJKV support introduced by X-TT have been
 merged into the new <it/FreeType/ backend, the X-TT backend will be
-removed from XFree86's tree near the future.  Therefore, the use of
+removed from X11R&relvers;'s tree near the future.  Therefore, the use of
 <it/FreeType/ backend is preferred over the X-TT backend.
 
 General information on X-TrueType may be found at <url
@@ -1258,7 +1253,7 @@ have the last two fields of their XLFD set to `<tt/iso10646-1/'.
 
 <sect>References
 
-<p>XFree86 comes with extensive documentation in the form of manual
+<p>X11R&relvers; comes with extensive documentation in the form of manual
 pages and typeset documents.  Before installing fonts, you really should
 read the <htmlurl name="fontconfig(3)" url="fontconfig.3.html"> and
 <htmlurl name="mkfontdir(1)" url="mkfontdir.1.html"> manual pages; other
@@ -1270,10 +1265,10 @@ url="showfont.1.html">.  In addition, you may want to read the X Logical
 Font Description document, by Jim Flowers, which is provided in the file
 `<tt>xc/doc/xlfd.PS.Z</tt>'.
 
-The latest released version of the XFree86 documentation (including
-this document and all manual pages) is available as
-<url name="current XFree86 documentation"
-     url="http://www.xfree86.org/current/">.
+The latest released version of the X11R&relvers; documentation (including
+this document and all manual pages) can be found from
+<url name="current X11R&relvers; documentation"
+     url="http://wiki.x.org/">.
 
 The <url name="comp.fonts FAQ"
          url="http://www.netmeg.net/faq/computers/fonts/">, 

@@ -22,7 +22,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/elographics/xf86Elo.c,v 1.14 2001/08/17 13:27:56 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/elographics/xf86Elo.c,v 1.13 2001/04/01 14:00:13 tsi Exp $ */
 
 /*
  *******************************************************************************
@@ -1165,13 +1165,13 @@ xf86EloPrintIdent(unsigned char	*packet,
  *
  ***************************************************************************
  */
-#if 0
+
 static void
 xf86EloPtrControl(DeviceIntPtr	dev,
 		  PtrCtrl	*ctrl)
 {
 }
-#endif
+
 
 
 /*
@@ -1283,7 +1283,10 @@ xf86EloControl(DeviceIntPtr	dev,
 	ErrorF("Unable to allocate Elographics touchscreen FocusClassDeviceStruct\n");
 	return !Success;
       }
-      
+      if (InitPtrFeedbackClassDeviceStruct(dev, xf86EloPtrControl) == FALSE) {
+	  ErrorF("unable to init ptr feedback\n");
+	  return !Success;
+      }  
       /*
        * Device reports motions on 2 axes in absolute coordinates.
        * Axes min and max values are reported in raw coordinates.
@@ -1467,9 +1470,9 @@ xf86EloControl(DeviceIntPtr	dev,
     dev->public.on = FALSE;
     if (local->fd >= 0) {
 #ifdef XFREE86_V4
-      xf86RemoveEnabledDevice(local);
+	xf86RemoveEnabledDevice(local);
 #else
-      RemoveEnabledDevice(local->fd);
+	RemoveEnabledDevice(local->fd);
 #endif
     }
     SYSCALL(close(local->fd));
@@ -1776,7 +1779,7 @@ static XF86ModuleVersionInfo version_rec = {
   MODULEVENDORSTRING,
   MODINFOSTRING1,
   MODINFOSTRING2,
-  XF86_VERSION_CURRENT,
+  XORG_VERSION_CURRENT,
   1, 0, 0,
   ABI_CLASS_XINPUT,
   ABI_XINPUT_VERSION,

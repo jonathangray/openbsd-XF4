@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/92xx.h,v 1.1 2002/12/10 15:12:28 alanh Exp $ */
+/* $XFree86$ */
 /*
  * $Workfile: 92xx.h $
- * $Revision: 1.1.1.1 $
+ * $Revision: 1.2 $
  *
  * File Contents: This header file defines the Durango routines and 
  *                variables used to access the memory mapped regions.

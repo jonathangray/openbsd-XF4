@@ -21,9 +21,10 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/fb/fbfill.c,v 1.6 2003/01/31 00:01:45 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/fb/fbfill.c,v 1.5 2003/01/29 00:43:33 torrey Exp $ */
 
 #include "fb.h"
+#include "fbmmx.h"
 
 void
 fbFill (DrawablePtr pDrawable,
@@ -43,6 +44,11 @@ fbFill (DrawablePtr pDrawable,
 
     switch (pGC->fillStyle) {
     case FillSolid:
+#ifdef USE_GCC34_MMX
+	if (!pPriv->and && fbHaveMMX())
+	    if (fbSolidFillmmx (pDrawable, x, y, width, height, pPriv->xor))
+		return;
+#endif	    
 	fbSolid (dst + (y + dstYoff) * dstStride, 
 		 dstStride, 
 		 (x + dstXoff) * dstBpp,

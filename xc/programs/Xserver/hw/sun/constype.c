@@ -17,7 +17,7 @@
  *
  * Author:  Doug Moran, SRI
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/constype.c,v 3.9 2003/11/21 05:17:01 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/constype.c,v 3.8 2003/10/07 21:40:07 herrb Exp $ */
 
 /*
 SUN-SPOTS DIGEST         Thursday, 17 March 1988       Volume 6 : Issue 31

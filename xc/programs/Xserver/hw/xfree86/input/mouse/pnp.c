@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/pnp.c,v 1.21 2003/11/03 05:11:49 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/pnp.c,v 1.20tsi Exp $ */
 /*
  * Copyright 1998 by Kazutaka YOKOTA <yokota@zodiac.mech.utsunomiya-u.ac.jp>
  *

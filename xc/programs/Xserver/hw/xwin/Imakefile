@@ -1,4 +1,3 @@
-XCOMM $XConsortium: Imakefile /main/10 1996/12/02 10:20:33 lehors $
 XCOMM $XFree86: xc/programs/Xserver/hw/xwin/Imakefile,v 1.18 2003/10/02 13:30:09 eich Exp $
 
 #include <Server.tmpl>
@@ -9,63 +8,112 @@ SHMDEF = -DHAS_SHM
 
 MMAPDEF = -DHAS_MMAP
 
-
-SRCS =	InitInput.c \
-	InitOutput.c \
-	stubs.c \
-	wingc.c \
-	winpolyline.c \
-	winfillsp.c \
-	wingetsp.c \
-	winsetsp.c \
-	winwindow.c \
-	winpntwin.c \
-	winpixmap.c \
-	winfont.c \
-	wincmap.c \
-	winclip.c \
-	winallpriv.c \
-	winscrinit.c \
-	winmisc.c \
-	winblock.c \
-	winwakeup.c \
-	wincursor.c \
-	winwndproc.c \
-	winshadgdi.c \
-	winshaddd.c \
-	winshadddnl.c \
-	winpfbdd.c \
-	winkeybd.c \
-	winmouse.c \
-	wincutpaste.c \
-	winnativegdi.c \
-	winlayer.c \
-	winerror.c \
-	winengine.c \
-	wincreatewnd.c \
-	winregistry.c \
-	winconfig.c \
-	winmsg.c \
-	winmultiwindowclass.c \
-	winmultiwindowicons.c \
-	winmultiwindowshape.c \
-	winmultiwindowwindow.c \
-	winmultiwindowwm.c \
-	winmultiwindowwndproc.c \
+#if BuildXWinClipboard
+SRCS_CLIPBOARD = \
 	winclipboardinit.c \
 	winclipboardtextconv.c \
 	winclipboardthread.c \
 	winclipboardunicode.c \
 	winclipboardwndproc.c \
-	winclipboardxevents.c \
-	winvideo.c \
-	wintrayicon.c \
-	windialogs.c \
-	winrop.c \
+	winclipboardwrappers.c \
+	winclipboardxevents.c
+#endif
+
+#if GlxUseWindows
+SRCS_GLX_WINDOWS = \
+	winpriv.c
+#endif
+
+#if BuildXWinMultiWindow
+SRCS_MULTIWINDOW = \
+	winmultiwindowshape.c \
+	winmultiwindowwindow.c \
+	winmultiwindowwm.c \
+	winmultiwindowwndproc.c
+#endif
+
+#if BuildXWinMultiWindowExtWM
+SRCS_MULTIWINDOWEXTWM = \
+	winwin32rootless.c \
+	winwin32rootlesswindow.c \
+	winwin32rootlesswndproc.c \
+	winwindowswm.c
+#endif
+
+#if BuildXWinNativeGDI
+SRCS_NATIVEGDI = \
+	winclip.c \
+	winfillsp.c \
+	winfont.c \
+	wingc.c \
+	wingetsp.c \
+	winnativegdi.c \
+	winpixmap.c \
+	winpntwin.c \
+	winpolyline.c \
 	winpushpxl.c \
-	winprefsyacc.y \
+	winrop.c \
+	winsetsp.c
+#endif
+
+#if BuildXWinPrimaryFB
+SRCS_PRIMARYFB = \
+	winpfbdd.c
+#endif
+
+#if BuildRandR
+SRCS_RANDR = \
+	winrandr.c
+#endif
+
+#if BuildXvExt
+SRCS_XV = \
+	winvideo.c
+#endif
+
+SRCS =	InitInput.c \
+	InitOutput.c \
+	stubs.c \
+	winallpriv.c \
+	winauth.c \
+	winblock.c \
+	wincmap.c \
+	winconfig.c \
+	wincreatewnd.c \
+	wincursor.c \
+	windialogs.c \
+	winengine.c \
+	winerror.c \
+	winglobals.c \
+	winkeybd.c \
+	winkeyhook.c \
+	winmisc.c \
+	winmouse.c \
+	winmsg.c \
+	winmultiwindowclass.c \
+	winmultiwindowicons.c \
+	winprefs.c \
 	winprefslex.l \
-	winprefs.c
+	winprefsyacc.y \
+	winprocarg.c \
+	winregistry.c \
+	winscrinit.c \
+	winshaddd.c \
+	winshadddnl.c \
+	winshadgdi.c \
+	wintrayicon.c \
+	winvalargs.c \
+	winwakeup.c \
+	winwindow.c \
+	winwndproc.c \
+	$(SRCS_CLIPBOARD) \
+	$(SRCS_GLX_WINDOWS) \
+	$(SRCS_MULTIWINDOW) \
+	$(SRCS_MULTIWINDOWEXTWM) \
+	$(SRCS_NATIVEGDI) \
+	$(SRCS_PRIMARYFB) \
+	$(SRCS_RANDR) \
+	$(SRCS_XV)
 
 winprefsyacc.c: winprefsyacc.y
 	bison -d -o winprefsyacc.c winprefsyacc.y
@@ -73,101 +121,163 @@ winprefsyacc.c: winprefsyacc.y
 winprefsyacc.h: winprefsyacc.c
 
 winprefslex.c: winprefsyacc.y winprefslex.l winprefsyacc.h
-	flex -owinprefslex.c winprefslex.l
+	flex -i -owinprefslex.c winprefslex.l
 
 clean::
 	$(RM) winprefslex.c winprefsyacc.h winprefsyacc.c
 
 depend:: winprefslex.c winprefsyacc.h winprefsyacc.c
 
-/*
- * NOTE: The XWin.rc file is compiled into XWin.res.
- * This compiled-resource file must be directly linked into XWin.exe
- * by the commands in xc/programs/Xserver/Imakefile; it cannot be
- * linked into libXwin.a because it will not be correctly positioned
- * in the XWin.exe image for Windows to be able to find the resources.
- */
-
-OBJS =	InitInput.o \
-	InitOutput.o \
-	stubs.o \
-	wingc.o \
-	winpolyline.o \
-	winfillsp.o \
-	wingetsp.o \
-	winsetsp.o \
-	winwindow.o \
-	winpntwin.o \
-	winpixmap.o \
-	winfont.o \
-	wincmap.o \
-	winclip.o \
-	winallpriv.o \
-	winscrinit.o \
-	winmisc.o \
-	winblock.o \
-	winwakeup.o \
-	wincursor.o \
-	winwndproc.o \
-	winshadgdi.o \
-	winshaddd.o \
-	winshadddnl.o \
-	winpfbdd.o \
-	winkeybd.o \
-	winmouse.o \
-	wincutpaste.o \
-	winnativegdi.o \
-	winlayer.o \
-	winerror.o \
-	winengine.o \
-	wincreatewnd.o \
-	winregistry.o \
-	winconfig.o \
-	winmsg.o \
-	winmultiwindowclass.o \
-	winmultiwindowicons.o \
-	winmultiwindowshape.o \
-	winmultiwindowwindow.o \
-	winmultiwindowwm.o \
-	winmultiwindowwndproc.o \
+#if BuildXWinClipboard
+OBJS_CLIPBOARD = \
 	winclipboardinit.o \
 	winclipboardtextconv.o \
 	winclipboardthread.o \
 	winclipboardunicode.o \
 	winclipboardwndproc.o \
-	winclipboardxevents.o \
-	winvideo.o \
-	wintrayicon.o \
-	windialogs.o \
-	winrop.o \
+	winclipboardwrappers.o \
+	winclipboardxevents.o
+#endif
+
+#if GlxUseWindows
+OBJS_GLX_WINDOWS = \
+	winpriv.o
+#endif
+
+#if BuildXWinMultiWindow
+OBJS_MULTIWINDOW = \
+	winmultiwindowshape.o \
+	winmultiwindowwindow.o \
+	winmultiwindowwm.o \
+	winmultiwindowwndproc.o
+#endif
+
+#if BuildXWinMultiWindowExtWM
+OBJS_MULTIWINDOWEXTWM = \
+	winwin32rootless.o \
+	winwin32rootlesswindow.o \
+	winwin32rootlesswndproc.o \
+	winwindowswm.o
+#endif
+
+#if BuildXWinNativeGDI
+OBJS_NATIVEGDI = \
+	winclip.o \
+	winfillsp.o \
+	winfont.o \
+	wingc.o \
+	wingetsp.o \
+	winnativegdi.o \
+	winpixmap.o \
+	winpntwin.o \
+	winpolyline.o \
 	winpushpxl.o \
+	winrop.o \
+	winsetsp.o
+#endif
+
+#if BuildXWinPrimaryFB
+OBJS_PRIMARYFB = \
+	winpfbdd.o
+#endif
+
+#if BuildRandR
+OBJS_RANDR = \
+	winrandr.o
+#endif
+
+#if BuildXvExt
+OBJS_XV = \
+	winvideo.o
+#endif
+
+OBJS =	InitInput.o \
+	InitOutput.o \
+	stubs.o \
+	winallpriv.o \
+	winauth.o \
+	winblock.o \
+	wincmap.o \
+	winconfig.o \
+	wincreatewnd.o \
+	wincursor.o \
+	windialogs.o \
+	winengine.o \
+	winerror.o \
+	winglobals.o \
+	winkeybd.o \
+	winkeyhook.o \
+	winmisc.o \
+	winmouse.o \
+	winmsg.o \
+	winmultiwindowclass.o \
+	winmultiwindowicons.o \
 	winprefs.o \
+	winprefslex.o \
 	winprefsyacc.o \
-	winprefslex.o
+	winprocarg.o \
+	winregistry.o \
+	winscrinit.o \
+	winshaddd.o \
+	winshadddnl.o \
+	winshadgdi.o \
+	wintrayicon.o \
+	winvalargs.o \
+	winwakeup.o \
+	winwindow.o \
+	winwndproc.o \
+	$(OBJS_CLIPBOARD) \
+	$(OBJS_GLX_WINDOWS) \
+	$(OBJS_MULTIWINDOW) \
+	$(OBJS_MULTIWINDOWEXTWM) \
+	$(OBJS_NATIVEGDI) \
+	$(OBJS_PRIMARYFB) \
+	$(OBJS_RANDR) \
+	$(OBJS_XV)
 
 INCLUDES = -I. -I$(XBUILDINCDIR) -I$(FONTINCSRC) \
 	   -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
-	   -I$(SERVERSRC)/miext/shadow -I$(SERVERSRC)/miext/layer \
+	   -I$(SERVERSRC)/miext/shadow \
+	   -I$(SERVERSRC)/miext/rootless \
+	   -I$(SERVERSRC)/miext/rootless/safeAlpha \
 	   -I$(SERVERSRC)/include -I$(SERVERSRC)/os  \
            -I$(EXTINCSRC) -I$(XINCLUDESRC) \
-	   -I$(SERVERSRC)/render -I$(SERVERSRC)/randr
+	   -I$(SERVERSRC)/render -I$(SERVERSRC)/randr \
+	   -I$(WINDOWSWMLIBSRC)
 
-DEFINES = $(OS_DEFINES) $(SHMDEF) $(MMAPDEF) -UXFree86LOADER -UXF86DRI \
-          -DPROJECTROOT="\"$(PROJECTROOT)\""
+#ifdef XVendorString
+VENDORSTRING = XVendorString
+   VENDOR_STRING = -DVENDOR_STRING=\"$(VENDORSTRING)\"
+#endif
+
+#ifdef XVendorContact
+VENDORCONTACT = XVendorContact
+   VENDOR_CONTACT = -DVENDOR_CONTACT=\"$(VENDORCONTACT)\"
+#endif
+
+#ifdef CygxVersionString
+CYGXVERSIONSTRING = CygxVersionString
+   VERSION_STRING = -DVERSION_STRING=\"$(CYGXVERSIONSTRING)\"
+#endif
+
+VENDOR_DEFINES = $(VENDOR_STRING) $(VENDOR_CONTACT) $(VERSION_STRING)
+
+DEFINES = $(OS_DEFINES) $(SHMDEF) $(MMAPDEF) \
+	-DPROJECTROOT="\"$(PROJECTROOT)\""
 
 LinkSourceFile(stubs.c,$(SERVERSRC)/Xi)
 SpecialCObjectRule(stubs,$(ICONFIGFILES),$(EXT_DEFINES))
 
+SpecialCObjectRule(winerror,$(ICONFIGFILES),$(DEFINES) $(VENDOR_DEFINES))
+SpecialCObjectRule(winprocarg,$(ICONFIGFILES),$(DEFINES) $(VENDOR_DEFINES))
 
-/*
- * Build the Windows resource file (contains the program icon, etc.)
- */
-
-ResourceObjectRule(XWin,X.ico,)
+/* Build the Windows resource file (contains the program icon, etc.) */
+ResourceObjectRule(XWin,X.ico X-boxed.ico,)
 
 NormalLibraryObjectRule()
-NormalLibraryTarget(Xwin,$(OBJS))
+NormalLibraryTarget(XWin,$(OBJS))
 
 InstallManPage(XWin,$(MANDIR))
+InstallManPage(XWinrc,$(MANDIR))
 
 DependTarget()

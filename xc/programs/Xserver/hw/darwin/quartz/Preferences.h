@@ -25,7 +25,7 @@
  * sale, use or other dealings in this Software without prior written
  * authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/Preferences.h,v 1.3 2003/09/16 00:36:12 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/Preferences.h,v 1.2 2003/01/15 02:34:05 torrey Exp $ */
 
 #import <Cocoa/Cocoa.h>
 
@@ -84,6 +84,7 @@
 + (void)setModeWindow:(BOOL)newModeWindow;
 + (void)setStartupHelp:(BOOL)newStartupHelp;
 + (void)setSystemBeep:(BOOL)newSystemBeep;
++ (void)setEnableKeyEquivalents:(BOOL)newKeyEquivs;
 + (void)setXinerama:(BOOL)newXinerama;
 + (void)setAddToPath:(BOOL)newAddToPath;
 + (void)setAddToPathString:(NSString *)newAddToPathString;
@@ -110,6 +111,7 @@
 + (BOOL)modeWindow;
 + (BOOL)startupHelp;
 + (BOOL)systemBeep;
++ (BOOL)enableKeyEquivalents;
 + (BOOL)xinerama;
 + (BOOL)addToPath;
 + (NSString *)addToPathString;

@@ -40,15 +40,15 @@
 5.  Configuration
 
 The driver auto-detects all device information necessary to initialize the
-card.  The only lines you need in the "Device" section of your XF86Config
-file are:
+card.  The only lines you need in the "Device" section of your xorg.conf file
+are:
 
             Section "Device"
                 Identifier "Rage 128"
                 Driver     "r128"
             EndSection
 
-or let xf86config do this for you.
+or let xorgconfig do this for you.
 
 However, if you have problems with auto-detection, you can specify:
 
@@ -77,6 +77,8 @@ However, if you have problems with auto-detection, you can specify:
    o None
 
 8.  Authors
+
+The X11R6.8.1 driver was originally part of XFree86 4.4 rc2.
 
 The XFree86 4 driver was ported from XFree86 3.3.x and enhanced by:
 
@@ -116,7 +118,5 @@ http://www.precisioninsight.com
 
 http://www.suse.com
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/r128.sgml,v 1.8 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.r128,v 1.15 2003/07/15 02:28:31 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.r128,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

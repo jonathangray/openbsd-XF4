@@ -60,7 +60,7 @@
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 
-#ifdef __OpenBSD__
+#ifdef X_PRIVSEP
 extern int priv_open_device(const char *);
 #endif
 
@@ -130,8 +130,7 @@ xf86OpenSerial (pointer options)
 		xf86Msg (X_ERROR, "xf86OpenSerial: No Device specified.\n");
 		return (-1);
 	}
-
-#ifndef __OpenBSD__
+#ifndef X_PRIVSEP
 	SYSCALL (fd = open (dev, O_RDWR | O_NONBLOCK));
 #else
 	fd = priv_open_device (dev);

@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.62 2003/11/06 18:38:13 tsi Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.2 2004/04/23 19:54:06 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.61tsi Exp $ */
 
 /*
  *
@@ -137,7 +138,7 @@
 # if !defined(linux)
 #  error    No MAP_ANON?
 # endif
-# if !defined (__AMD64__) || !defined(__linux__)
+# if !defined (__amd64__) || !defined(__linux__)
 # define MMAP_FLAGS     (MAP_PRIVATE | MAP_ANON)
 # else
 # define MMAP_FLAGS     (MAP_PRIVATE | MAP_ANON | MAP_32BIT)
@@ -155,7 +156,7 @@
 
 #if defined (__alpha__) || \
     defined (__ia64__) || \
-    defined (__AMD64__) || \
+    defined (__amd64__) || \
     (defined (__sparc__) && \
      (defined (__arch64__) || \
       defined (__sparcv9)))
@@ -247,8 +248,7 @@ typedef Elf32_Word Elf_Word;
     defined(__alpha__) || \
     defined(__sparc__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
-    defined(__amd64__) 
+    defined(__amd64__)
 typedef Elf_Rela Elf_Rel_t;
 #else
 typedef Elf_Rel Elf_Rel_t;
@@ -442,7 +442,6 @@ ElfDelayRelocation(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel)
     defined(__alpha__) || \
     defined(__sparc__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
     defined(__amd64__)
     ELFDEBUG(", r_addend 0x%lx", rel->r_addend);
 # endif
@@ -478,7 +477,6 @@ ElfCOMMONSize(void)
 	size += common->sym->st_size;
 #if defined(__alpha__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
     defined(__amd64__) || \
     (defined(__sparc__) && \
      (defined(__arch64__) || \
@@ -503,7 +501,6 @@ ElfCreateCOMMON(ELFModulePtr elffile, LOOKUP *pLookup)
 	size += common->sym->st_size;
 #if defined(__alpha__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
     defined(__amd64__) || \
     (defined(__sparc__) && \
      (defined(__arch64__) || \
@@ -559,7 +556,6 @@ ElfCreateCOMMON(ELFModulePtr elffile, LOOKUP *pLookup)
 	offset += common->sym->st_size;
 #if defined(__alpha__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
     defined(__amd64__) || \
     (defined(__sparc__) && \
      (defined(__arch64__) || \
@@ -926,7 +922,7 @@ ELFCreateGOT(ELFModulePtr elffile, int maxalign)
 	    ErrorF("ELFCreateGOT() Unable to reallocate memory!!!!\n");
 	    return FALSE;
 	}
-#   if defined(linux) && defined(__ia64__) || defined(__OpenBSD__)
+#   if defined(linux) || defined(__OpenBSD__)
 	{
 	    unsigned long page_size = getpagesize();
 	    unsigned long round;
@@ -1101,6 +1097,18 @@ ELFCreatePLT(ELFModulePtr elffile)
 	ErrorF("ELFCreatePLT() Unable to allocate memory!!!!\n");
 	return;
     }
+#   if defined(linux) || defined(__OpenBSD__)
+    {
+	unsigned long page_size = getpagesize();
+	unsigned long round;
+
+	round = (unsigned long)elffile->plt & (page_size - 1);
+	mprotect(elffile->plt - round,
+		 (elffile->pltsize + round + page_size - 1) & ~(page_size - 1),
+		 PROT_READ | PROT_WRITE | PROT_EXEC);
+    }
+#   endif
+									      
     elffile->sections[elffile->pltndx].sh_size = elffile->pltsize;
 # ifdef ELFDEBUG
     ELFDEBUG("ELFCreatePLT: PLT address %lx\n", elffile->plt);
@@ -1221,7 +1229,7 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
     unsigned long *dest64;
     unsigned short *dest16;
 #endif
-#if  defined(__AMD64__) || defined(__amd64__)
+#if  defined(__amd64__)
     unsigned long *dest64;
     int *dest32s;
 #endif
@@ -1239,7 +1247,6 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
     defined(__alpha__) || \
     defined(__sparc__) || \
     defined(__ia64__) || \
-    defined(__AMD64__) || \
     defined(__amd64__)
     ELFDEBUG("%lx", rel->r_addend);
 # endif
@@ -1299,7 +1306,7 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
 
 	break;
 #endif /* i386 */
-#if defined(__AMD64__) || defined(__amd64__)
+#if defined(__amd64__)
     case R_X86_64_32:
 	dest32 = (unsigned int *)(secp + rel->r_offset);
 # ifdef ELFDEBUG
@@ -1356,7 +1363,7 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
 	ELFDEBUG("*dest64=%8.8lx\n", *dest64);
 # endif
 	break;
-#endif /* __AMD64__ */
+#endif /* __amd64__ */
 #if defined(__alpha__)
     case R_ALPHA_NONE:
     case R_ALPHA_LITUSE:
@@ -2702,6 +2709,8 @@ ELFCollectSections(ELFModulePtr elffile, int pass, int *totalsize,
 		continue;
 	    if (!strcmp(name, ".stabstr"))	/* ignore debug info */
 		continue;
+	    if (!strcmp(name, ".stab.indexstr")) /* ignore more debug info */
+		continue;
 	case SHT_SYMTAB:
 	    if (pass)
 		continue;
@@ -2766,10 +2775,16 @@ ELFCollectSections(ELFModulePtr elffile, int pass, int *totalsize,
 	elffile->lsection[j].size = SecSize(i);
 	elffile->lsection[j].flags = flags;
 	switch (SecType(i)) {
-#ifdef __OpenBSD__
+#if defined(linux) || defined(__OpenBSD__)
 	case SHT_PROGBITS:
-	    mprotect(elffile->lsection[j].saddr, SecSize(i),
-		     PROT_READ | PROT_WRITE | PROT_EXEC);
+	    {
+		unsigned long page_size = getpagesize();
+		unsigned long round;
+
+		round = (unsigned long)elffile->lsection[j].saddr & (page_size -1);
+		mprotect( (char *)elffile->lsection[j].saddr - round,
+			 SecSize(i) + round, PROT_READ | PROT_WRITE | PROT_EXEC);
+	    }
 	    break;
 #endif
 	case SHT_SYMTAB:
@@ -2964,7 +2979,7 @@ ELFLoadModule(loaderPtr modrec, int elffd, LOOKUP **ppLookup)
 	ErrorF("Unable to allocate ELF sections\n");
 	return NULL;
     }
-#  if defined(linux) && defined(__ia64__) || defined(__OpenBSD__)
+#  if defined(linux) || defined(__OpenBSD__)
     {
 	unsigned long page_size = getpagesize();
 	unsigned long round;

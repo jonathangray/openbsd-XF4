@@ -26,7 +26,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.h,v 1.2 2001/10/28 03:33:55 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.h,v 1.1 2001/08/12 22:48:43 alanh Exp $ */
 
 #ifndef	_CALCOMP_H_
 #define _CALCOMP_H_

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_bci.h,v 1.4 2002/10/02 20:39:54 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_bci.h,v 1.3 2002/05/14 20:19:51 alanh Exp $ */
 
 #ifndef _S3BCI_H_
 #define _S3BCI_H_
@@ -10,10 +10,10 @@
     dword |= (temp & 0xFF0000) >> 8; \
     dword |= (temp & 0xFF000000) >> 24; }
 
-#define BCI_GET_PTR volatile unsigned int * bci_ptr = (unsigned int *) psav->BciMem
-#define BCI_RESET bci_ptr = (unsigned int *) psav->BciMem
+#define BCI_GET_PTR volatile CARD32 * bci_ptr = (CARD32 *) psav->BciMem
+#define BCI_RESET bci_ptr = (CARD32 *) psav->BciMem
 
-#define BCI_SEND(dw)   (*bci_ptr++ = (unsigned int)(dw))
+#define BCI_SEND(dw)   (*bci_ptr++ = (CARD32)(dw))
 
 #define BCI_CMD_NOP                  0x40000000
 #define BCI_CMD_RECT                 0x48000000

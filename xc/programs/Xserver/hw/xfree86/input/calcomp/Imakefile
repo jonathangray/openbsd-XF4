@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/Imakefile,v 1.2 2002/10/16 01:47:01 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/Imakefile,v 1.1 2001/08/12 22:48:43 alanh Exp $
 
 #define IHaveModules
 #include <Server.tmpl>

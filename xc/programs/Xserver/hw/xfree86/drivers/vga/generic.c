@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vga/generic.c,v 1.65 2003/10/30 17:37:15 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vga/generic.c,v 1.64 2003/08/23 16:09:23 dawes Exp $ */
 /*
  * Copyright (C) 1998 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -178,7 +178,7 @@ static XF86ModuleVersionInfo GenericVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     VGA_VERSION_MAJOR, VGA_VERSION_MINOR, VGA_PATCHLEVEL,
     ABI_CLASS_VIDEODRV,
     ABI_VIDEODRV_VERSION,

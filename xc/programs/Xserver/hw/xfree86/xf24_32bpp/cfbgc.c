@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbgc.c,v 1.3 2001/12/14 19:59:51 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbgc.c,v 1.2 1999/08/21 13:48:43 dawes Exp $ */
 
 /***********************************************************
 

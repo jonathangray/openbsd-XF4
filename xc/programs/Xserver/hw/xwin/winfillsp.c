@@ -28,9 +28,19 @@
  * Authors:	Harold L Hunt II
  * 		Alan Hourihane <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winfillsp.c,v 1.10 2003/08/07 23:47:58 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winfillsp.c,v 1.9 2001/11/01 12:19:40 alanh Exp $ */
 
 #include "win.h"
+
+
+/*
+ * References to external symbols
+ */
+
+extern int			g_iPixmapPrivateIndex;
+extern int			g_iGCPrivateIndex;
+extern int                      g_copyROP[];
+
 
 extern void ROP16(HDC hdc, int rop);
 
@@ -118,7 +128,7 @@ winFillSpansNativeGDI (DrawablePtr	pDrawable,
       if (hbmpOrig == NULL)
 	FatalError ("winFillSpans - DRAWABLE_PIXMAP - "
 		    "SelectObject () failed on\n\tpPixmapPriv->hBitmap: "
-		    "%08x\n", pPixmapPriv->hBitmap);
+		    "%08x\n", (unsigned int) pPixmapPriv->hBitmap);
       
       /* Branch on the fill type */
       switch (pGC->fillStyle)

@@ -30,7 +30,7 @@
  * Probably buggy as hell, no idea what the initialisation strings are,
  * no idea how to ack it. If the tablet stops responding power cycle it.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/digitaledge/DigitalEdge.c,v 1.9 2003/11/17 22:20:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/digitaledge/DigitalEdge.c,v 1.8 2003/09/24 03:16:58 dawes Exp $ */
 
 #include "xf86Version.h"
 
@@ -1458,7 +1458,7 @@ static XF86ModuleVersionInfo xf86SumVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

@@ -1,4 +1,4 @@
-.XFree86_Version
+.X.Org_Version
 bin
 lib/libFS.so
 lib/libFS.so.6
@@ -37,7 +37,7 @@ lib/libXaw.so.7
 lib/libXaw.so.7.0
 lib/libXcursor.so
 lib/libXcursor.so.1
-lib/libXcursor.so.1.0
+lib/libXcursor.so.1.0.2
 lib/libXext.so
 lib/libXext.so.6
 lib/libXext.so.6.4
@@ -51,7 +51,7 @@ lib/libXft.so
 lib/libXft.so.1
 lib/libXft.so.1.1
 lib/libXft.so.2
-lib/libXft.so.2.1
+lib/libXft.so.2.1.2
 lib/libXi.so
 lib/libXi.so.6
 lib/libXi.so.6.0
@@ -75,7 +75,7 @@ lib/libXrandr.so.2
 lib/libXrandr.so.2.0
 lib/libXrender.so
 lib/libXrender.so.1
-lib/libXrender.so.1.2
+lib/libXrender.so.1.2.2
 lib/libXss.so
 lib/libXss.so.1
 lib/libXss.so.1.0
@@ -115,7 +115,7 @@ lib/libexpat.so.4
 lib/libexpat.so.4.0
 lib/libfontconfig.so
 lib/libfontconfig.so.1
-lib/libfontconfig.so.1.0
+lib/libfontconfig.so.1.0.4
 lib/libfontenc.so
 lib/libfontenc.so.1
 lib/libfontenc.so.1.0

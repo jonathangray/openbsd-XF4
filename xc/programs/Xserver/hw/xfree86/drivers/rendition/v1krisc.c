@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/v1krisc.c,v 1.7 2002/01/25 21:56:07 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/v1krisc.c,v 1.6 2000/03/31 20:13:25 dawes Exp $ */
 /*
  *
  */

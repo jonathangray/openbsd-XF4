@@ -38,6 +38,7 @@
 #define INCL_DOSPROCESS
 #define INCL_KBD
 #define INCL_MOU
+#define INCL_DOSDEVIOCTL
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
@@ -86,7 +87,42 @@ int xf86GetKbdLeds()
 
 void xf86SetKbdRepeat(char rad)
 {
+  int rc;
+  int delay = 250;      /* Default delay */
+  int rate = 30;       /* Default repeat rate */
+
+  struct {
+    USHORT Delay;
+    USHORT Rate;
+  } rateDelay;
+
+  ULONG rateDelaySize = sizeof(rateDelay);
+
 	/*notyet*/
+  return;
+
+  if (xf86Info.kbdRate >= 0) 
+    rate = xf86Info.kbdRate;
+  if (xf86Info.kbdDelay >= 0)
+    delay = xf86Info.kbdDelay;
+
+  rateDelay.Delay = delay;
+  rateDelay.Rate = rate;
+
+  xf86Msg(X_INFO,"Setting typematic rate: Delay=%d, Rate=%d\n",delay,rate);
+
+  rc = DosDevIOCtl( (HFILE) xf86Info.consoleFd,
+           IOCTL_KEYBOARD,
+           KBD_SETTYPAMATICRATE,
+           &rateDelay,
+           rateDelaySize,
+           &rateDelaySize,
+           NULL,
+           0,
+           NULL);
+  if (rc!=0) {
+    xf86Msg(X_ERROR,"xf86SetKbdRepeat: DosDevIOCtl returned %d\n",rc);
+  }
 }
 
 void xf86KbdInit()

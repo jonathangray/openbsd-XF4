@@ -30,13 +30,12 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
-/* $XFree86: xc/programs/Xserver/Xprint/ddxInit.c,v 1.15 2003/06/23 17:35:44 eich Exp $ */
 
 #include "X.h"
+#include "Xos.h"
 #include "Xproto.h"
 #include "windowstr.h"
 #include "servermd.h"
-#include "Xos.h"
 #include "DiPrint.h"
 
 /*-
@@ -68,10 +67,13 @@ copyright holders.
 
 void 
 InitOutput(
-    ScreenInfo 	  *pScreenInfo,
-    int     	  argc,
-    char    	  **argv)
+    ScreenInfo   *pScreenInfo,
+    int          argc,
+    char         **argv)
+
 {
+    int i;
+
     pScreenInfo->imageByteOrder = IMAGE_BYTE_ORDER;
     pScreenInfo->bitmapScanlineUnit = BITMAP_SCANLINE_UNIT;
     pScreenInfo->bitmapScanlinePad = BITMAP_SCANLINE_PAD;
@@ -168,10 +170,10 @@ PointerProc(
 
 void
 InitInput(
-     int	argc,
+     int       argc,
      char **argv)
 {
-    DeviceIntPtr ptr, kbd;
+    DevicePtr ptr, kbd;
 
     ptr = AddInputDevice((DeviceProc)PointerProc, TRUE);
     kbd = AddInputDevice((DeviceProc)KeyboardProc, TRUE);
@@ -195,9 +197,25 @@ ProcessInputEvents(void)
 }
 
 #ifdef __DARWIN__
+#include "micmap.h"
+
+void GlxExtensionInit(void);
+void GlxWrapInitVisuals(miInitVisualsProcPtr *procPtr);
+
 void
 DarwinHandleGUI(int argc, char *argv[])
 {
+}
+
+void DarwinGlxExtensionInit(void)
+{
+    GlxExtensionInit();
+}
+
+void DarwinGlxWrapInitVisuals(
+    miInitVisualsProcPtr *procPtr)
+{
+    GlxWrapInitVisuals(procPtr);
 }
 #endif
 
@@ -215,6 +233,12 @@ OsVendorFatalError(void)
 }
 #endif
 
+void
+ddxBeforeReset(void)
+{
+    return;
+}
+
 #ifdef DDXTIME
 CARD32
 GetTimeInMillis(void)
@@ -226,6 +250,12 @@ GetTimeInMillis(void)
 }
 #endif
 
+/* ddxInitGlobals - called by |InitGlobals| from os/util.c */
+void ddxInitGlobals(void)
+{
+    XprintInitGlobals();
+}
+
 /****************************************
 * ddxUseMsg()
 *
@@ -235,7 +265,11 @@ GetTimeInMillis(void)
 
 void ddxUseMsg(void)
 {
-	/* Right now, let's just do nothing */
+/* Enable |XprintUseMsg()| only if |XprintOptions()| is called
+ * by |ddxProcessArgument|, too (see below...) */
+#ifdef PRINT_ONLY_SERVER
+    XprintUseMsg();
+#endif /* PRINT_ONLY_SERVER */
 }
 
 void AbortDDX (void)
@@ -269,12 +303,12 @@ extern  int     BadDevice;
 
 int
 ChangePointerDevice (
-    DeviceIntPtr        old_dev,
-    DeviceIntPtr        new_dev,
-    unsigned char	x,
-    unsigned char	y)
+    DeviceIntPtr       old_dev,
+    DeviceIntPtr       new_dev,
+    unsigned char      x,
+    unsigned char      y)
 {
-    return (BadDevice);
+        return (BadDevice);
 }
 
 int

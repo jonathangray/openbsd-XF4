@@ -1,5 +1,5 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/input/magictouch/xf86MagicTouch.c,v 1.3 2003/01/12 03:55:50 tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/input/magictouch/xf86MagicTouch.c,v 1.2tsi Exp $
  */
 
 #include <xf86Version.h>

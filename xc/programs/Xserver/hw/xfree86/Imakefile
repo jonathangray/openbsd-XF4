@@ -1,9 +1,10 @@
 XCOMM $XConsortium: Imakefile /main/12 1996/12/16 12:31:46 rws $
 
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/Imakefile,v 1.3 2004/08/18 18:41:40 kem Exp $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/Imakefile,v 3.86 2003/10/08 14:58:25 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/Imakefile,v 3.85 2003/08/31 12:59:58 tsi Exp $
 
 #include <Server.tmpl>
 #define IHaveSubdirs
@@ -95,17 +96,17 @@ SUBDIRS = os-support common $(I2CDIR) $(XAADIR) $(XF1BPPDIR) $(XF4BPPDIR) \
 	  $(XF8_32WIDDIR) getconfig
 
 #if !defined(OS2Architecture) && !defined(cygwinArchitecture)
-XF86CONFIG = XF86Config
+XORGCONFIG = XConfigFile
 XF98CONFIG = XF98Config
 #else
-XF86CONFIG = XF86Conf
+XORGCONFIG = xorg.cfg
 #endif
 
-SAMPLE_CONFIG_FILES = $(XF86CONFIG) $(XF98CONFIG)
+SAMPLE_CONFIG_FILES = $(XORGCONFIG) $(XF98CONFIG)
 
 all:: $(SAMPLE_CONFIG_FILES) xf86Build.h
 
-CHANGELOGFILE = CHANGELOG
+CHANGELOGFILE = $(TOP)/CHANGELOG-$(RELEASE_VERSION)
 
 #if defined(BuildDate)
     BUILD_DATE = BuildDate
@@ -136,9 +137,9 @@ xf86Build.h: FRC
 FRC:
 
 #if defined(i386BsdArchitecture) && !defined(FreeBSDArchitecture)
-MANPAGE=Concat(FileManDir,/XF86Config.0)
+MANPAGE=Concat(FileManDir,/$(XCONFIGFILE).0)
 #else
-MANPAGE=Concat3(FileManDir,/XF86Config.,FileManSuffix)
+MANPAGE=Concat3(FileManDir,/$(XCONFIGFILE).,FileManSuffix)
 #endif
 
 RGBPATH=\"DefaultRGBDatabase\"
@@ -149,6 +150,7 @@ CIDFONTPATH=\"$(LIBDIR)/fonts/CID/\"
 SPFONTPATH=\"$(LIBDIR)/fonts/Speedo/\"
 DPI75FONTPATH=\"$(LIBDIR)/fonts/75dpi/\"
 DPI100FONTPATH=\"$(LIBDIR)/fonts/100dpi/\"
+TRUETYPEFONTPATH=\"$(LIBDIR)/fonts/TTF/\"
 DPI75USFONTPATH=\"$(LIBDIR)/fonts/75dpi/:unscaled\"
 DPI100USFONTPATH=\"$(LIBDIR)/fonts/100dpi/:unscaled\"
 
@@ -177,7 +179,7 @@ DPI100USFONTPATH=\"$(LIBDIR)/fonts/100dpi/:unscaled\"
   LINUXMOUSEDEV="XCOMM    Option	\"Device\"	\"/dev/mouse\""
 #endif
 
-CppFileTarget($(XF86CONFIG), XF86Conf.cpp, \
+CppFileTarget($(XORGCONFIG), xorgconf.cpp, \
     -DRGBPATH=$(RGBPATH) -DMISCFONTPATH=$(MISCFONTPATH) \
     -DLOCALFONTPATH=$(LOCALFONTPATH) \
     -DT1FONTPATH=$(T1FONTPATH) \
@@ -186,6 +188,7 @@ CppFileTarget($(XF86CONFIG), XF86Conf.cpp, \
     -DDPI75FONTPATH=$(DPI75FONTPATH) \
     -DDPI100FONTPATH=$(DPI100FONTPATH) \
     -DDPI75USFONTPATH=$(DPI75USFONTPATH) \
+    -DTRUETYPEFONTPATH=$(TRUETYPEFONTPATH)\
     -DDPI100USFONTPATH=$(DPI100USFONTPATH) \
     -DMANPAGE=$(MANPAGE) '-DMODULEPATH="$(MODULEDIR)"', \
     $(ICONFIGFILES))
@@ -198,6 +201,7 @@ CppFileTarget($(XF98CONFIG), XF98Conf.cpp, \
     -DDPI75FONTPATH=$(DPI75FONTPATH) \
     -DDPI100FONTPATH=$(DPI100FONTPATH) \
     -DDPI75USFONTPATH=$(DPI75USFONTPATH) \
+    -DTRUETYPEFONTPATH=$(TRUETYPEFONTPATH)\
     -DDPI100USFONTPATH=$(DPI100USFONTPATH) \
     -DFREEBSDMOUSEDEV=$(FREEBSDMOUSEDEV) \
     -DNETBSDOLDMOUSEDEV=$(NETBSDOLDMOUSEDEV) \
@@ -206,18 +210,20 @@ CppFileTarget($(XF98CONFIG), XF98Conf.cpp, \
     -DMANPAGE=$(MANPAGE) '-DMODULEPATH="$(MODULEDIR)"', \
     $(ICONFIGFILES))
 
-InstallDriverSDKNonExecFile($(XF86CONFIG),$(DRIVERSDKDIR))
+InstallDriverSDKNonExecFile($(XORGCONFIG),$(DRIVERSDKDIR))
 InstallDriverSDKNonExecFile($(XF98CONFIG),$(DRIVERSDKDIR))
 
 EXTRAMANDEFS=-D__logdir__=$(LOGDIRECTORY)
-InstallManPage(XFree86,$(MANDIR))
-InstallGenManPage(XF86Config,$(FILEMANDIR),$(FILEMANSUFFIX))
+InstallManPage(Xorg,$(MANDIR))
+InstallGenManPage(xorg.conf,$(FILEMANDIR),$(FILEMANSUFFIX))
 
-InstallNamedNonExec($(XF86CONFIG),XF86Config.eg,$(LIBDIR))
+#if 0
+InstallNamedNonExec($(XORGCONFIG),XF86Config.eg,$(LIBDIR))
 InstallNamedNonExec($(XF98CONFIG),XF86Config.98,$(LIBDIR))
+#endif
 InstallNamedNonExec(Options,Options,$(LIBDIR))
 
-InstallDriverSDKNamedNonExec($(XF86CONFIG),XF86Config.eg,$(DRIVERSDKDIR))
+InstallDriverSDKNamedNonExec($(XORGCONFIG),XF86Config.eg,$(DRIVERSDKDIR))
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))

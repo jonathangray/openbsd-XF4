@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcWindow.c,v 1.4 1999/09/25 14:38:17 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcWindow.c,v 1.3 1999/06/06 08:49:06 dawes Exp $ */
 /*
 
 Copyright (c) 1987  X Consortium
@@ -214,7 +214,7 @@ register WindowPtr pWin ;
 
     TRACE(("xf4bppCreateWindowForXYhardware (pWin= 0x%x)\n", pWin));
 
-    pPrivWin = (mfbPrivWin *)(pWin->devPrivates[mfbWindowPrivateIndex].ptr);
+    pPrivWin = (mfbPrivWin *)(pWin->devPrivates[mfbGetWindowPrivateIndex()].ptr);
     pPrivWin->pRotatedBorder = NullPixmap;
     pPrivWin->pRotatedBackground = NullPixmap;
     pPrivWin->fastBackground = 0;

@@ -291,20 +291,6 @@
 #define KEY_0x75		0xD4
 #define KEY_0x76		0xD5
 
-/*
- * Pseudo scan codes for Sun keyboards 
- * XXX OpenBSD-specific hack which should go away
- */
-#define KEY_Stop  /* Stop */	110
-#define KEY_Again /* Again */	111
-#define KEY_Props /* Props */	112
-#define KEY_Undo  /* Undo */	113
-#define KEY_Front /* Front */	114 
-#define KEY_Copy /* Copy */	115
-#define KEY_Open /* Open */	116
-#define KEY_Paste /* Paste */	117
-#define KEY_Find /* Find */	118
-#define KEY_Cut /* Cut */	119
 
 /* These are for "notused" and "unknown" entries in translation maps. */
 #define KEY_NOTUSED	  0

@@ -28,7 +28,7 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_kbd.c,v 1.2 2003/11/03 05:36:33 tsi Exp $ */
+/* $XFree86$ */
 
 #define I_NEED_OS2_H
 #include "X.h"

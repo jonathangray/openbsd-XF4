@@ -1,4 +1,7 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/Imakefile,v 1.26 2003/12/12 03:02:28 dawes Exp $
+XCOMM $XdotOrg: xc/programs/Xserver/hw/xfree86/xf86cfg/Imakefile,v 1.3 2004/09/02 01:10:29 kem Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/Imakefile,v 1.25 2003/10/31 15:02:55 tsi Exp $
+
+#include <Server.tmpl>
 
 XCOMM CDEBUGFLAGS=-g -Wall -ansi -pedantic
 
@@ -68,7 +71,7 @@ OBJS	=\
 	vidmode.o\
 	xf86config.o
 
-PROG	= xf86cfg
+PROG	= xorgcfg
 
 XBMPICS =\
 	card.xbm\
@@ -110,6 +113,10 @@ CURSESLIB = NCursesLibName
 CURSESDEFINES  = -DHAS_NCURSES
 #endif
 
+#if DoPrivSep
+PRIVSEPDEFINES= -DX_PRIVSEP
+#endif
+
 XF86CONFIGFILE = XConfigFile
 XF86CONFIGDIR = XConfigDir
 XF86CONSOLEDEFS = XFree86ConsoleDefines
@@ -117,7 +124,8 @@ XF86CONSOLEDEFS = XFree86ConsoleDefines
 DEFINES        = -DXF86CONFIG=\"$(XF86CONFIGFILE)\" $(MODULEDEFINES) \
 		 $(CURSESDEFINES) \
 		 -DPROJECT_ROOT=\"$(PROJECTROOT)\" \
-		 -DXF86CONFIGDIR=\"$(XF86CONFIGDIR)\" $(XF86CONSOLEDEFS)
+		 -DXF86CONFIGDIR=\"$(XF86CONFIGDIR)\" $(XF86CONSOLEDEFS) \
+		 $(CONFIG_DEFINES) $(XKBDEFRULESDEFS) $(PRIVSEPDEFINES)
 
 #if HasDlopen
 DLLIB = DlLibrary
@@ -125,16 +133,17 @@ DLLIB = DlLibrary
 
 LOCAL_LIBRARIES = $(XKBUILIB) $(XKBFILELIB) -lxf86config $(XXF86MISCLIB) \
 		  $(XXF86VMLIB) $(XAWLIB) $(XMULIB) $(XTOOLLIB) \
-		  $(XPMLIB) $(LOADERLIB) $(DLLIB) $(XLIB) $(CURSESLIB) \
-		  RegexLibrary -lm
+		  $(XPMLIB) $(EXTRAXAWCLIENTLIBS) $(LOADERLIB) $(DLLIB) \
+		  $(XLIB) $(CURSESLIB) RegexLibrary -lm
 
 NormalProgramTarget($(PROG),$(OBJS),,$(LOCAL_LIBRARIES),)
 InstallProgramWithFlags($(PROG),$(BINDIR),NullParameter)
 InstallMultipleFlags($(XBMPICS),$(INCDIR)/X11/bitmaps,$(INSTINCFLAGS))
 InstallMultipleFlags($(XPMPICS),$(INCDIR)/X11/pixmaps,$(INSTINCFLAGS))
-InstallAppDefaults(XF86Cfg)
+CppRawFileTarget(XOrgCfg.ad,XOrgCfg.cpp,-D__VENDORNAME__="$(VENDORNAMESHORT)",NullParameter)
+InstallAppDefaults(XOrgCfg)
 
-InstallManPage(xf86cfg,$(MANDIR))
+InstallManPage(xorgcfg,$(MANDIR))
 
 NormalLibraryObjectRule()
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $XFree86: xc/programs/Xserver/hw/xfree86/input/confdrv.sh,v 1.5 1999/06/12 15:37:09 dawes Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/input/confdrv.sh,v 1.4 1999/05/17 13:17:16 dawes Exp $
 #
 # This script generates drvConf.c
 #
@@ -8,7 +8,6 @@
 #
 
 DRVCONF=./drvConf.c
-BUILTIN="xf86KEYBOARD"
 
 cat > $DRVCONF <<EOF
 /*
@@ -20,7 +19,7 @@ cat > $DRVCONF <<EOF
 
 extern InputDriverRec
 EOF
-Args="$BUILTIN `echo $* | tr '[a-z]' '[A-Z]'`"
+Args=`echo $* | tr '[a-z]' '[A-Z]'`
 set - $Args
 while [ $# -gt 1 ]; do
   echo "#undef $1" >> $DRVCONF

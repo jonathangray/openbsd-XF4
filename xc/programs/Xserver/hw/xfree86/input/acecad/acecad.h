@@ -23,7 +23,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/acecad/acecad.h,v 1.3 2003/11/06 18:38:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/acecad/acecad.h,v 1.2tsi Exp $ */
 
 #ifndef	_ACECAD_H_
 #define _ACECAD_H_

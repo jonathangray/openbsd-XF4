@@ -29,7 +29,8 @@
  * sale, use or other dealings in this Software without prior written
  * authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XServer.h,v 1.17 2003/11/24 05:39:01 torrey Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/darwin/quartz/XServer.h,v 1.3 2004/07/30 19:12:17 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XServer.h,v 1.16 2003/11/23 06:04:01 torrey Exp $ */
 
 #define BOOL xBOOL
 #include "Xproto.h"
@@ -38,7 +39,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface XServer : NSObject {
-    // server state
+    // Server state
     int serverState;
     NSRecursiveLock *serverLock;
     NSMutableArray *pendingClients;
@@ -48,6 +49,7 @@
     BOOL quitWithoutQuery;
     BOOL pendingAppQuitReply;
     UInt32 mouseState;
+    unsigned short swallowedKey;
     BOOL sendServerEvents;
     BOOL x11Active;
 
@@ -72,7 +74,7 @@
 - (BOOL)translateEvent:(NSEvent *)anEvent;
 - (BOOL)getMousePosition:(xEvent *)xe fromEvent:(NSEvent *)anEvent;
 
-+ (void)append:(NSString *)value toEnv:(NSString *)name;
+- (NSString *)makeSafePath:(NSString *)path;
 
 - (BOOL)loadDisplayBundle;
 - (void)startX;

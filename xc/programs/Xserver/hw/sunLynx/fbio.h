@@ -42,7 +42,7 @@
  * Frame buffer ioctls (from Sprite, trimmed to essentials for X11).
  */
 /*	$NetBSD: fbio.h,v 1.3 1994/11/20 20:53:03 deraadt Exp $ */
-/*	$XFree86: xc/programs/Xserver/hw/sunLynx/fbio.h,v 3.2 2001/01/17 22:36:52 dawes Exp $ */
+/*	$XFree86: xc/programs/Xserver/hw/sunLynx/fbio.h,v 3.1 1996/12/27 06:51:34 dawes Exp $ */
 
 /*
  * Frame buffer type codes.

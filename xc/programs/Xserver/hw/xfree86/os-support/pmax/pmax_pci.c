@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/pmax_pci.c,v 1.7 2002/08/27 22:07:08 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/pmax_pci.c,v 1.6 2002/07/24 19:06:53 tsi Exp $ */
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *

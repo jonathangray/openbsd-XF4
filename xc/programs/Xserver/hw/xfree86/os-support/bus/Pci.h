@@ -112,7 +112,7 @@
 /*
  * Global Definitions
  */
-#define MAX_PCI_DEVICES 64	/* Max number of devices accomodated */
+#define MAX_PCI_DEVICES 128	/* Max number of devices accomodated */
 				/* by xf86scanpci		     */
 #if defined(sun) && defined(SVR4) && defined(sparc)
 # define MAX_PCI_BUSES   4096	/* Max number of PCI buses           */
@@ -289,7 +289,7 @@
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
-#elif defined(__powerpc__)
+#elif defined(__powerpc__) || defined(__powerpc64__)
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
@@ -321,14 +321,14 @@
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
-#elif defined(__sparc__)
+#elif defined(__sparc__) || defined(sparc)
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 # elif defined(sun)
 #  define ARCH_PCI_INIT sparcPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
-# elif defined(__OpenBSD__)
+# elif defined(__FreeBSD__) && defined(__sparc64__) || defined(__OpenBSD__)
 #  define  ARCH_PCI_INIT freebsdPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
@@ -337,12 +337,12 @@
 #  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
 # endif
 #elif defined(__sparc64__) 
-# if defined(__OpenBSD__) || defined(__FreeBSD__)
+# if defined(__OpenBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
-#elif defined(__AMD64__) || defined(__amd64__)
+#elif defined(__amd64__)
 # if defined(__FreeBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit
 # else

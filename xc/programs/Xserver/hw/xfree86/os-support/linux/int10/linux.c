@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/linux.c,v 1.33 2004/02/25 12:53:15 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/linux.c,v 1.32 2004/02/05 18:24:59 eich Exp $ */
 /*
  * linux specific part of the int10 module
- * Copyright 1999 Egbert Eich
+ * Copyright 1999, 2000, 2001, 2002, 2003, 2004 Egbert Eich
  */
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -172,6 +172,9 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	    if (errno == ENOSYS)
 		xf86DrvMsg(screen, X_ERROR, "shmget error\n Please reconfigure"
 			   " your kernel to include System V IPC support\n");
+	    else
+		xf86DrvMsg(screen, X_ERROR,
+			   "shmget(highmem) error: %s\n",strerror(errno));
 	    goto error1;
 	}
     } else {
@@ -198,16 +201,27 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     ErrorF("Mapping 640kB area\n");
 #endif
     if ((low_mem = shmget(counter++, V_RAM,
-			      IPC_CREAT | SHM_R | SHM_W)) == -1)
+			  IPC_CREAT | SHM_R | SHM_W)) == -1) {
+	xf86DrvMsg(screen, X_ERROR,
+		   "shmget(lowmem) error: %s\n",strerror(errno));
 	goto error2;
+    }
 
     ((linuxInt10Priv*)pInt->private)->lowMem = low_mem;
     base = shmat(low_mem, 0, 0);
-    if (base == SHMERRORPTR) goto error4;
+    if (base == SHMERRORPTR) {
+	xf86DrvMsg(screen, X_ERROR,
+		   "shmat(low_mem) error: %s\n",strerror(errno));
+	goto error3;
+    }
     ((linuxInt10Priv *)pInt->private)->base = base;
     if (high_mem > -1) {
 	base_high = shmat(high_mem, 0, 0);
-	if (base_high == SHMERRORPTR) goto error4;
+	if (base_high == SHMERRORPTR) {
+	    xf86DrvMsg(screen, X_ERROR,
+		       "shmat(high_mem) error: %s\n",strerror(errno));
+	    goto error3;
+	}
 	((linuxInt10Priv*)pInt->private)->base_high = base_high;
     } else
 	((linuxInt10Priv*)pInt->private)->base_high = NULL;
@@ -388,8 +402,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     xfree(options);
     return pInt;
 
-error4:
-    xf86DrvMsg(screen, X_ERROR, "shmat() call returned errno %d\n", errno);
 error3:
     if (base_high)
 	shmdt(base_high);
@@ -429,6 +441,8 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
     addr = shmat(((linuxInt10Priv*)pInt->private)->lowMem, (char*)1, SHM_RND);
     if (addr == SHMERRORPTR) {
 	xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot shmat() low memory\n");
+	xf86DrvMsg(pInt->scrnIndex, X_ERROR,
+		   "shmat(low_mem) error: %s\n",strerror(errno));
 	return FALSE;
     }
     
@@ -438,6 +452,8 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
 	if (addr == SHMERRORPTR) {
 	    xf86DrvMsg(pInt->scrnIndex, X_ERROR,
 		       "Cannot shmat() high memory\n");
+	    xf86DrvMsg(pInt->scrnIndex, X_ERROR,
+		       "shmget error: %s\n",strerror(errno));
 	    return FALSE;
 	}
     } else {

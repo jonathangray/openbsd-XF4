@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhw.h,v 1.12 2003/10/30 17:37:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhw.h,v 1.11 2001/10/01 13:44:12 eich Exp $ */
 
 #ifndef _FBDEVHW_H_
 #define _FBDEVHW_H_
@@ -48,5 +48,14 @@ void  fbdevHWLeaveVT(int scrnIndex, int flags);
 void  fbdevHWDPMSSet(ScrnInfoPtr pScrn, int mode, int flags);
 
 Bool  fbdevHWSaveScreen(ScreenPtr pScreen, int mode);
+
+xf86SwitchModeProc	*fbdevHWSwitchModeWeak(void);
+xf86AdjustFrameProc	*fbdevHWAdjustFrameWeak(void);
+xf86EnterVTProc		*fbdevHWEnterVTWeak(void);
+xf86LeaveVTProc		*fbdevHWLeaveVTWeak(void);
+xf86ValidModeProc	*fbdevHWValidModeWeak(void);
+xf86DPMSSetProc		*fbdevHWDPMSSetWeak(void);
+xf86LoadPaletteProc	*fbdevHWLoadPaletteWeak(void);
+SaveScreenProcPtr	fbdevHWSaveScreenWeak(void);
 
 #endif

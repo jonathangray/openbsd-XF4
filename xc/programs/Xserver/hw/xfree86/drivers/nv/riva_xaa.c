@@ -40,7 +40,7 @@
 /* Hacked together from mga driver and 3.3.4 NVIDIA driver by
    Jarno Paananen <jpaana@s2.org> */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_xaa.c,v 1.1 2003/07/31 20:24:31 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_xaa.c $ */
 
 #include "riva_include.h"
 #include "xaalocal.h"
@@ -92,7 +92,7 @@ RivaSetRopSolid(RivaPtr pRiva, int rop)
             RivaSetPattern(pRiva, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
         pRiva->currentRop = rop;
         RIVA_FIFO_FREE(pRiva->riva, Rop, 1);
-        pRiva->riva.Rop->Rop3 = XAACopyROP[rop];
+        pRiva->riva.Rop->Rop3 = XAAGetCopyROP(rop);
     }
 }
 
@@ -102,7 +102,7 @@ RivaSetRopPattern(RivaPtr pRiva, int rop)
     if (pRiva->currentRop != (rop + 16)) {
         pRiva->currentRop = rop + 16; /* +16 is important */
         RIVA_FIFO_FREE(pRiva->riva, Rop, 1);
-        pRiva->riva.Rop->Rop3 = XAAPatternROP[rop];
+        pRiva->riva.Rop->Rop3 = XAAGetPatternROP(rop);
     }
 }
 
@@ -458,7 +458,7 @@ RivaValidatePolyPoint(
    unsigned long changes,
    DrawablePtr pDraw
 ){
-   pGC->ops->PolyPoint = XAAFallbackOps.PolyPoint;
+   pGC->ops->PolyPoint = XAAGetFallbackOps()->PolyPoint;
 
    if(pGC->planemask != ~0) return;
 

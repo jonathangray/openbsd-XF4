@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbscrinit.c,v 1.12 2003/07/16 01:38:50 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbscrinit.c,v 1.11 2001/04/14 21:17:49 mvojkovi Exp $ */
 
 
 #include "X.h"
@@ -38,7 +38,9 @@ static BSFuncRec cfb8_32BSFuncRec = {
 
 
 int cfb8_32GCPrivateIndex;
+int cfb8_32GetGCPrivateIndex(void) { return cfb8_32GCPrivateIndex; }
 int cfb8_32ScreenPrivateIndex;
+int cfb8_32GetScreenPrivateIndex(void) { return cfb8_32ScreenPrivateIndex; }
 static unsigned long cfb8_32Generation = 0;
 
 static Bool

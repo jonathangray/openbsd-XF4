@@ -9,7 +9,8 @@
  *   - pdflatex
  *   - GhostScript (with pdfwrite support)
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/common/host.def,v 1.14 2003/12/05 01:03:24 dawes Exp $
+ * $XdotOrg: xc/programs/Xserver/hw/xfree86/etc/bindist/common/host.def,v 1.2 2004/04/23 19:54:01 eich Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/common/host.def,v 1.13 2003/10/19 02:42:28 dawes Exp $
  */
 
 #define HasSgmlFmt		YES

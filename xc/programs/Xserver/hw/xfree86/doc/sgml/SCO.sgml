@@ -1,4 +1,6 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN">
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
+<!ENTITY % defs SYSTEM "defs.ent"> %defs;
+]>
 <article>
 
 <!-- TitleS information -->
@@ -8,7 +10,7 @@
 <date>14 February 2003
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/SCO.sgml,v 3.23 2003/12/18 16:38:38 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/sgml/SCO.sgml,v 1.3 2004/09/03 18:48:11 keithp Exp $
 </ident>
 
 <!-- Table of contents -->
@@ -19,11 +21,11 @@ $XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/SCO.sgml,v 3.23 2003/12/18 16:
 <sect>Requirements<p>
 
 Before you can either compile or execute a binary distribution of
-XFree86, the following conditions must be met:
+X11R&relvers, the following conditions must be met:
 <itemize>
   <item>Ensure that you are running Release 5.0.4 or later. This is required
     because OSS646 is only supported on those platforms. There are no plans
-    to support XFree86 on earlier releases of OpenServer.
+    to support X11R&relvers; on earlier releases of OpenServer.
   <item>Ensure that OSS646, the ``Execution Environment Update'' package is
     installed, if appropriate.  Check the release notes for that update
     to see whether or not your current operating system requires this
@@ -38,7 +40,7 @@ XFree86, the following conditions must be met:
     the release notes for GWXLIBS to see if your platform requires the
     update.  The latest version can always be found at the
     <url name="SCO FTP site" url="ftp://ftp.sco.com/pub/openserver5/opensrc">.
-  <item>To compile XFree86, you must use the SCO-supported version of
+  <item>To compile X11R&relvers;, you must use the SCO-supported version of
     the GNU C Compiler.  It is possible that Skunkware versions of the
     compiler will work too, but this has not been tested.  The ``GNU
     Development System'' is available for all releases from (and including)
@@ -50,7 +52,7 @@ XFree86, the following conditions must be met:
   <item>If you are not using OSR 5.0.7 or later, you need to get an updated
     console driver.  See <url url="http://www.sco.com"> for details on
     OpenServer supplements.  If you can't or don't want to upgrade your
-    console driver, XFree86 will still compile, but you may run into
+    console driver, X11R&relvers; will still compile, but you may run into
     problems with some cards such as the Riva TNT and ATI Rage cards.
     The problem with the console driver in 5.0.6A and earlier is that
     when the X server sets graphics mode, the driver does not set a
@@ -60,20 +62,20 @@ XFree86, the following conditions must be met:
     happens to be slap bang in the middle of palette data for the Riva
     TNT, so you get color map corruption.  The updated console driver
     also has an improved mechanism for allocating video memory that
-    XFree86 detects at compile time, and it will use it if it exists.
+    X11R&relvers; detects at compile time, and it will use it if it exists.
     It is STRONGLY recommended that you get the console driver update.
 
 </itemize>
 
-<sect>Compiling XFree86<p>
+<sect>Compiling X11R&relvers;<p>
 
-Using the GNU Development System, compiling XFree86 should be fairly
+Using the GNU Development System, compiling the distribution should be fairly
 straightforward.  Before attempting to compile the system though, you
 should make sure that you have met all of the requirements above.
 To actually start the compilation, perform the following steps:
 
 <itemize>
-  <item>Copy the unmodified <tt>xf86site.def</tt> in <tt>xc/config/cf</tt>
+  <item>Copy the unmodified <tt>xorgsite.def</tt> in <tt>xc/config/cf</tt>
     to <tt>host.def</tt>. Edit <tt>host.def</tt> and make any changes you
     think you need. The most useful options to change are <tt>HasTcl</tt>,
     <tt>HasTk</tt>, <tt>HasXdmAuth</tt> if you have the file
@@ -101,23 +103,23 @@ To actually start the compilation, perform the following steps:
     <tt>make install.man 2&gt;&amp;1 | tee -a install.log</tt> as root.
 </itemize>
 
-<sect>Before Running XFree86<p><label id="sec-runxf86">
+<sect>Before Running X11R&relvers;<p><label id="sec-runxorg">
 
 The SCO <tt/xterm/ terminfo description is not compatible with the <tt/xterm/
 in the R5 distribution.<p>
 
 To use a Bus/Keyboard or PS2 mouse you should configure the mouse drivers
 using '<tt>mkdev mouse</tt>'.  You may then use the 
-<tt>OsMouse</tt> option in your <tt>XF86Config</tt> to specify that XFree86
+<tt>OsMouse</tt> option in your <tt>xorg.conf</tt> to specify that X
 should use the SCO mouse drivers.  To do this, set the <tt>Protocol</tt> to
 "<tt>OsMouse</tt>" in the <tt>Pointer</tt> section of your
-<tt>XF86Config</tt> file.  You can also use "<tt>OsMouse</tt>" for your 
+<tt>xorg.conf</tt> file.  You can also use "<tt>OsMouse</tt>" for your 
 serial mouse, especially if you are having trouble getting your mouse to
-work using the XFree86 mouse drivers.<p>
+work using the X mouse drivers.<p>
 
 <sect>Switching Consoles<p>
 
-XFree86 uses similar console switching keys as the SCO R4 and R5
+X11R&relvers; uses similar console switching keys as the SCO R4 and R5
 servers.  That is, <tt>Ctrl-PrntScr</tt> takes you to the next console along
 from the one X is running on.  If this is the last console it will take
 you to console 1. <tt>Ctrl-Alt-FXX</tt>, where <tt>XX</tt> is a function
@@ -136,7 +138,7 @@ applications to terminate in an unpredictable way.  You can set the
 <sect>Setting up Man Pages<p>
 
 After compiling the tree, or after installing the binary distribution you
-can get <tt>man</tt> to recognise the XFree86 man pages by adding 
+can get <tt>man</tt> to recognise the Xorg man pages by adding 
 <tt>/usr/X11R6/man</tt> to
 the <tt>MANPATH</tt> in <tt>/etc/default/man</tt>. The line should 
 look similar to:
@@ -159,8 +161,8 @@ script to format the manual pages yourself.
 
 <sect>Using SCO binaries/servers.<p>
 
-XFree86 will accept connections from SCO binaries (R3 upwards) and the
-SCO R5 server will also accept connections from XFree86 binaries. This
+X11R&relvers; will accept connections from SCO binaries (R3 upwards) and the
+SCO R5 server will also accept connections from X11R&relvers binaries. This
 means you may mix and match the two if you have ODT.  For example you may
 still use the Panning Motif window manager (pmwm) if you prefer.
 

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.67 2004/01/28 07:16:02 torrey Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.72 2004/02/26 16:58:51 dawes Exp $
 #
 # Copyright © 2000 by Precision Insight, Inc.
 # Copyright © 2000, 2001 by VA Linux Systems, Inc.
-# Copyright © 1996-2003 by The XFree86 Project, Inc.
+# Copyright © 1996-2004 by The XFree86 Project, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -45,11 +45,11 @@
 # Fallbacks for when the bindist version can't be auto-detected.
 # These should be updated for each release.
 
-SNAPSHOT=y
+SNAPSHOT=n
 
 if [ $SNAPSHOT = y ]; then
 	FULLPREFIX=XXX
-	VERSION=4.3.99.902
+	VERSION=4.3.99.903
 	PATCHLEVEL=0
 	FULLVERSION=$VERSION
 else
@@ -356,7 +356,7 @@ GetOsInfo()
 	# Find the object type, where needed
 
 	case "$OsName" in
-	FreeBSD|NetBSD)
+	FreeBSD|NetBSD|OpenBSD)
 		CheckUtil file
 		if file -L /bin/sh | grep ELF > /dev/null 2>&1; then
 			OsObjFormat=ELF
@@ -694,6 +694,20 @@ FindDistName()
 				;;
 			esac
 			;;
+		x86_64|amd64)
+			case "$OsLibcMajor.$OsLibcMinor" in
+			6.2)
+				DistName="Linux-amd64-glibc22"
+				;;
+			6.[3-9]*)
+				Message="No dist available for glibc 2.$OsLibcMinor.  Try Linux-amd64-glibc22"
+				;;
+			*)
+				Message="No Linux/AMD64 binaries for this libc version"
+				;;
+			esac
+			;;
+		
 		*)
 			Message="No Linux binaries available for this architecture"
 			;;
@@ -712,7 +726,7 @@ FindDistName()
 					DistName="NetBSD-1.4.x"
 					;;
 				*)
-					DistName="NetBSD-1.6"
+					DistName="NetBSD-1.6 or NetBSD 1.5"
 					;;
 				esac
 				;;
@@ -730,11 +744,14 @@ FindDistName()
 		case "$OsArch" in
 		i386)
 			case "$OsVersion" in
-			3.2*)	# Check this
-				DistName="OpenBSD-3.2"
+			2.*)
+				DistName="OpenBSD-2.8"
+				;;
+			3.4*)	# Check this
+				DistName="OpenBSD-3.4"
 				;;
 			*)
-				Message="No OpenBSD/i386 binaries available for this version"
+				Message="No OpenBSD/i386 binaries available for this version.   Try OpenBSD-3.4."
 				;;
 			esac
 			;;
@@ -754,7 +771,10 @@ FindDistName()
 				DistName="Solaris-8"
 				;;
 			5.9*)
-				Message="No Solaris/x86 binaries available for this version.  Try Solaris-8."
+				DistName="Solaris-9"
+				;;
+			5.10*)
+				Message="No Solaris/x86 binaries available for this version.  Try Solaris-9."
 				;;
 			esac
 			;;

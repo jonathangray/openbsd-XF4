@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/fb/module/Imakefile,v 1.1 2002/05/31 16:12:17 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/cfb/module/Imakefile,v 1.1 2002/05/31 15:12:56 dawes Exp $
 
 #define IHaveModules
 #define LinkDirectory ..

@@ -1088,10 +1088,10 @@ static CARD8 wsAdbMap[] = {
 
 static CARD8 wsSunMap[] = {
 	/* 0x00 */ KEY_NOTUSED,
-	/* 0x01 */ KEY_Stop,		/* stop */
-	/* 0x02 */ KEY_NOTUSED,	/* BrightnessDown / S-VolumeDown */
-	/* 0x03 */ KEY_Again,		/* again */
-	/* 0x04 */ KEY_NOTUSED,	/* BridgtnessUp / S-VolumeUp */
+	/* 0x01 */ KEY_L1,		/* stop */
+	/* 0x02 */ KEY_NOTUSED,		/* BrightnessDown / S-VolumeDown */
+	/* 0x03 */ KEY_L2,		/* again */
+	/* 0x04 */ KEY_NOTUSED,		/* BridgtnessUp / S-VolumeUp */
 	/* 0x05 */ KEY_F1,
 	/* 0x06 */ KEY_F2,
 	/* 0x07 */ KEY_F10,
@@ -1112,8 +1112,8 @@ static CARD8 wsSunMap[] = {
 	/* 0x16 */ KEY_Print,
 	/* 0x17 */ KEY_ScrollLock,
 	/* 0x18 */ KEY_Left,
-	/* 0x19 */ KEY_Props,		/* props */
-	/* 0x1a */ KEY_Undo,		/* undo */
+	/* 0x19 */ KEY_L3,		/* props */
+	/* 0x1a */ KEY_L4,		/* undo */
 	/* 0x1b */ KEY_Down,
 	/* 0x1c */ KEY_Right,
 	/* 0x1d */ KEY_Escape,
@@ -1136,9 +1136,9 @@ static CARD8 wsSunMap[] = {
 	/* 0x2e */ KEY_KP_Divide,
 	/* 0x2f */ KEY_KP_Multiply,
 	/* 0x30 */ KEY_NOTUSED,
-	/* 0x31 */ KEY_Front,		/* front */
+	/* 0x31 */ KEY_L5,		/* front */
 	/* 0x32 */ KEY_KP_Decimal,
-	/* 0x33 */ KEY_Copy,		/* copy */
+	/* 0x33 */ KEY_L6,		/* copy */
 	/* 0x34 */ KEY_Home,
 	/* 0x35 */ KEY_Tab,
 	/* 0x36 */ KEY_Q,
@@ -1159,8 +1159,8 @@ static CARD8 wsSunMap[] = {
 	/* 0x45 */ KEY_KP_8,
 	/* 0x46 */ KEY_KP_9,
 	/* 0x47 */ KEY_KP_Minus,
-	/* 0x48 */ KEY_Open,		/* open */
-	/* 0x49 */ KEY_Paste,		/* paste */
+	/* 0x48 */ KEY_L7,		/* open */
+	/* 0x49 */ KEY_L8,		/* paste */
 	/* 0x4a */ KEY_End,
 	/* 0x4b */ KEY_NOTUSED,
 	/* 0x4c */ KEY_LCtrl,
@@ -1182,9 +1182,9 @@ static CARD8 wsSunMap[] = {
 	/* 0x5c */ KEY_KP_5,
 	/* 0x5d */ KEY_KP_6,
 	/* 0x5e */ KEY_KP_0,
-	/* 0x5f */ KEY_Find,		/* find */
+	/* 0x5f */ KEY_L9,		/* find */
 	/* 0x60 */ KEY_PgUp,
-	/* 0x61 */ KEY_Cut,		/* cut */
+	/* 0x61 */ KEY_L10,		/* cut */
 	/* 0x62 */ KEY_NumLock,
 	/* 0x63 */ KEY_ShiftL,
 	/* 0x64 */ KEY_Z,
@@ -1224,7 +1224,7 @@ static CARD8 wsSunMap[] = {
  * (based on the AT keyboard scan codes using the tables above
  */
 int 
-WSKbdToKeycode(int keycode)
+xf86WSKbdToKeycode(int keycode)
 {
 	switch (xf86Info.wsKbdType) {
 	case WSKBD_TYPE_PC_XT:

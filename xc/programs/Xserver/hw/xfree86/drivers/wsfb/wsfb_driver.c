@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.20 2004/10/24 21:07:06 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.21 2004/11/03 00:08:59 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.

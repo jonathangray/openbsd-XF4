@@ -1,3 +1,4 @@
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/input/wacom/xf86Wacom.c,v 1.2 2004/04/23 19:54:06 eich Exp $ */
 /* $XConsortium: xf86Wacom.c /main/20 1996/10/27 11:05:20 kaleb $ */
 /*
  * Copyright 1995-2001 by Frederic Lepied, France. <Lepied@XFree86.org>
@@ -22,7 +23,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/xf86Wacom.c,v 1.45 2003/12/31 01:18:45 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/xf86Wacom.c,v 1.44tsi Exp $ */
 
 /*
  * This driver is only able to handle the Wacom IV and Wacom V protocols.
@@ -5263,7 +5264,7 @@ static XF86ModuleVersionInfo xf86WcmVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XF86_VERSION_CURRENT,
+    XORG_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,

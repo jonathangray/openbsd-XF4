@@ -7,7 +7,7 @@
    Mark Vojkovich's work.
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/cfbscrinit.c,v 1.1 2000/05/21 01:02:43 mvojkovi Exp $ */
+/* $XFree86$ */
 
 #include "X.h"
 #include "Xmd.h"
@@ -36,6 +36,10 @@
 	compiled with CFB_NEED_SCREEN_PRIVATE */
 
 int cfb8_32WidScreenPrivateIndex;
+int cfb8_32WidGetScreenPrivateIndex(void)
+{
+    return cfb8_32WidScreenPrivateIndex;
+}
 
 static unsigned long cfb8_32WidGeneration = 0;
 extern WindowPtr *WindowTable;

@@ -19,7 +19,7 @@ tions.
 V2x00 cards can work even if not primary, but primary display card will be
 disabled when server is run. This is a driver limitation.
 
-Hopefully these limitations will be workaround and fixed before final XFree86
+Hopefully these limitations were worked around and fixed before final XFree86
 4.0 release.
 
 3.  Important notices
@@ -57,7 +57,7 @@ on the list of features to be included.
 
         o 32 bits per pixel (true colour, sparse 24bit, 16M colors)
 
-5.  XF86Config Option
+5.  xorg.conf Option
 
       Option "SW_Cursor"
             Disables use of the hardware cursor.
@@ -83,8 +83,9 @@ on the list of features to be included.
       Option "NoDDC"
             Disable probing of DDC-information from your monitor. This infor-
             mation is not used yet and is only there for informational pur-
-            poses. This might change before final XFree86 4.0 release. Safe
-            to disable if you experience problems during startup of X-server.
+            poses. This might have changed before final XFree86 4.0 release.
+            Safe to disable if you experience problems during startup of X-
+            server.
 
       Option "ShadowFB"
             If this option is enabled, the driver will cause the CPU to do
@@ -106,21 +107,25 @@ on the list of features to be included.
             "ShadowFB" and automatically enable it. It also disables the
             acceleration.  The option is not activated by default.
 
-6.  News in this release (XFree86 4.1)
+6.  News in the X11R6.8.1 release
+
+This driver was originally part of the XFree86 4.4 rc2 release.
+
+7.  News in the XFree86 4.1 release
 
    o DirectColor support
 
    o SilkenMouse support
 
-7.  Major changes in this release
+8.  Major changes in this release
 
    o Gamma works now for >8bpp
 
-8.  Bugfixes
+9.  Bugfixes
 
    o Only some code cleanup done. No real bugfixes.
 
-9.  Known problems in current driver
+10.  Known problems in current driver
 
    o The acceleration code hangs the computer during X-server startup.
 
@@ -136,13 +141,11 @@ on the list of features to be included.
 
    o Depth 15 & 16 has problems with colors when DirectColor is used.
 
-10.  Work in progress (not finished in time for release)
+11.  Work in progress (not finished in time for release)
 
    o Acceleration is disabled for the moment. If you want to play with it
      enable the "USE_ACCEL" define in rendition.c file! Beware as it has sev-
      eral bugs left to clear out before if is stable for general use.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/rendition.sgml,v 1.13 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.rendition,v 1.15 2003/10/19 19:57:14 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/README.rendition,v 1.3.2.1 2004/09/17 15:38:19 kem Exp $

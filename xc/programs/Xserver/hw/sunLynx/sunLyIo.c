@@ -22,7 +22,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyIo.c,v 3.6 2003/11/17 22:20:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyIo.c,v 3.5 2001/05/25 18:40:59 dawes Exp $ */
 
  /*
  *
@@ -293,6 +293,11 @@ void
 ddxGiveUp()
 {
     AbortDDX ();
+}
+
+/* ddxInitGlobals - called by |InitGlobals| from os/util.c */
+void ddxInitGlobals(void)
+{
 }
 
 int

@@ -24,7 +24,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/spaceorb/spaceorb.c,v 1.13 2001/11/26 16:25:54 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/spaceorb/spaceorb.c,v 1.12 2001/10/28 03:33:58 tsi Exp $ */
 
 #define _SPACEORB_C_
 /*****************************************************************************
@@ -72,7 +72,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

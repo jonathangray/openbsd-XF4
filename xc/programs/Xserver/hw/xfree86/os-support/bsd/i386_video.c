@@ -1,5 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/i386_video.c,v 1.5 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: i386_video.c,v 1.13 2004/02/29 13:40:03 matthieu Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/i386_video.c,v 1.4 2003/09/24 02:43:34 dawes Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -120,64 +119,78 @@ checkDevMem(Bool warn)
 	    return;
 	devMemChecked = TRUE;
 
-#ifdef HAS_APERTURE_DRV
-	/* Try the aperture driver first */
-	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0) {
+	if ((fd = open(DEV_MEM, O_RDWR)) >= 0)
+	{
 	    /* Try to map a page at the VGA address */
 	    base = mmap((caddr_t)0, 4096, PROT_READ | PROT_WRITE,
-		MAP_FLAGS, fd, (off_t)0xA0000);
-	    
-	    if (base != MAP_FAILED) {
+				 MAP_FLAGS, fd, (off_t)0xA0000);
+	
+	    if (base != MAP_FAILED)
+	    {
 		munmap((caddr_t)base, 4096);
 		devMemFd = fd;
 		useDevMem = TRUE;
-		xf86Msg(X_PROBED, "checkDevMem: using aperture driver %s\n",
+		return;
+	    } else {
+		/* This should not happen */
+		if (warn)
+		{
+		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
+			    DEV_MEM, strerror(errno));
+		}
+		useDevMem = FALSE;
+		return;
+	    }
+	}
+#ifndef HAS_APERTURE_DRV
+	if (warn)
+	{ 
+	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s (%s)\n",
+		    DEV_MEM, strerror(errno));
+	} 
+	useDevMem = FALSE;
+	return;
+#else
+	/* Failed to open /dev/mem, try the aperture driver */
+	if ((fd = open(DEV_APERTURE, O_RDWR)) >= 0)
+	{
+	    /* Try to map a page at the VGA address */
+	    base = mmap((caddr_t)0, 4096, PROT_READ | PROT_WRITE,
+			     MAP_FLAGS, fd, (off_t)0xA0000);
+	
+	    if (base != MAP_FAILED)
+	    {
+		munmap((caddr_t)base, 4096);
+		devMemFd = fd;
+		useDevMem = TRUE;
+		xf86Msg(X_INFO, "checkDevMem: using aperture driver %s\n",
 		        DEV_APERTURE);
 		return;
 	    } else {
-		if (warn) {
+
+		if (warn)
+		{
 		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
 			    DEV_APERTURE, strerror(errno));
 		}
 	    }
-	} 
-#endif
-	if ((fd = open(DEV_MEM, O_RDWR)) >= 0) {
-	    /* Try to map a page at the VGA address */
-	    base = mmap((caddr_t)0, 4096, PROT_READ | PROT_WRITE,
-		MAP_FLAGS, fd, (off_t)0xA0000);
-	
-	    if (base != MAP_FAILED) {
-		munmap((caddr_t)base, 4096);
-		devMemFd = fd;
-		useDevMem = TRUE;
-		return;
-	    } else {
-		if (warn) {
-		    xf86Msg(X_WARNING, "checkDevMem: failed to mmap %s (%s)\n",
-			    DEV_MEM, strerror(errno));
-		}
+	} else {
+	    if (warn)
+	    {
+#ifndef __OpenBSD__
+		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+			"\t(%s)\n", DEV_MEM, DEV_APERTURE, strerror(errno));
+#else /* __OpenBSD__ */
+		xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
+			"\t(%s)\n%s", DEV_MEM, DEV_APERTURE, strerror(errno),
+			SYSCTL_MSG);
+#endif /* __OpenBSD__ */
 	    }
 	}
-	if (warn) {
-#ifndef HAS_APERTURE_DRV
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open/mmap %s (%s)\n",
-		    DEV_MEM, strerror(errno));
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
-#else
-#ifndef __OpenBSD__
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-		"\t(%s)\n", DEV_APERTURE, DEV_MEM, strerror(errno));
-#else /* __OpenBSD__ */
-	    xf86Msg(X_WARNING, "checkDevMem: failed to open %s and %s\n"
-		    "\t(%s)\n%s", DEV_APERTURE, DEV_MEM, strerror(errno),
-		    SYSCTL_MSG);
-#endif /* __OpenBSD__ */
-
-	    xf86ErrorF("\tlinear framebuffer access unavailable\n");
-	}
+	
 	useDevMem = FALSE;
 	return;
+
 #endif
 }
 
@@ -245,7 +258,8 @@ mapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int flags)
 		    (flags & VIDMEM_READONLY) ?
 		     PROT_READ : (PROT_READ | PROT_WRITE),
 		    MAP_FLAGS, xf86Info.screenFd,
-		    (unsigned long)Base - 0xA0000);
+		    (unsigned long)Base - 0xA0000
+	    );
 	if (base == MAP_FAILED)
 	{
 	    FatalError("xf86MapVidMem: Could not mmap /dev/vga (%s)",
@@ -343,12 +357,9 @@ xf86DisableIO()
 	if (!ExtendedEnabled)
 		return;
 
-	if (i386_iopl(FALSE) == 0) {
-		ExtendedEnabled = FALSE;
-	}
-	/* Otherwise, the X server has revoqued its root uid, 
-	   and thus cannot give up IO privileges any more */
-	   
+	i386_iopl(FALSE);
+	ExtendedEnabled = FALSE;
+
 	return;
 }
 
@@ -975,6 +986,7 @@ amd64undoWC(int screenNum, pointer list)
 }
 #endif /* OpenBSD/amd64 */
 
+#ifdef X_PRIVSEP
 /*
  * Do all things that need root privileges early 
  * and revoke those privileges 
@@ -987,3 +999,4 @@ xf86PrivilegedInit(void)
 	xf86OpenConsole();
 	xf86AgpGARTSupported();
 }
+#endif

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c,v 1.9 2004/01/07 17:05:28 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c,v 1.8 2003/11/04 03:16:58 tsi Exp $ */
 
 /*
  * Copyright (c) 2002 by The XFree86 Project, Inc.
@@ -22,6 +22,8 @@
 #include "xf86OSKbd.h"
 #include "atKeynames.h"
 #include "bsd_kbd.h"
+
+extern int priv_open_device(char *);
 
 extern Bool VTSwitchEnabled;
 #ifdef USE_VT_SYSREQ
@@ -197,7 +199,7 @@ KbdOn(InputInfoPtr pInfo, int what)
 				    "or use for example:\n\n"
 				    "Option \"Protocol\" \"wskbd\"\n"
 				    "Option \"Device\" \"/dev/wskbd0\"\n"
-				    "\nin your XF86Config(5) file\n");
+				    "\nin your xorg.conf(5) file\n");
 		 }
 		 break;
 #endif
@@ -380,22 +382,30 @@ stdReadInput(InputInfoPtr pInfo)
 }
 
 #ifdef WSCONS_SUPPORT
+
 static void
 WSReadInput(InputInfoPtr pInfo)
 {
     KbdDevPtr pKbd = (KbdDevPtr) pInfo->private;
     struct wscons_event events[64];
-    int n, i;
+    int type;
+    int blocked, n, i;
+
     if ((n = read( pInfo->fd, events, sizeof(events))) > 0) {
         n /=  sizeof(struct wscons_event);
-        for (i = 0; i < n; i++)
-           pKbd->PostEvent(pInfo, events[i].value,
-	             events[i].type == WSCONS_EVENT_KEY_DOWN ? TRUE : FALSE);
-	}
+        for (i = 0; i < n; i++) {
+	    type = events[i].type;
+	    if (type == WSCONS_EVENT_KEY_UP || type == WSCONS_EVENT_KEY_DOWN) {
+		/* It seems better to block SIGIO there */
+		blocked = xf86BlockSIGIO();
+		pKbd->PostEvent(pInfo, (unsigned int)(events[i].value),
+				type == WSCONS_EVENT_KEY_DOWN ? TRUE : FALSE);
+		xf86UnblockSIGIO(blocked);
+	    }
+	} /* for */
+    }
 }
-#endif
 
-#ifdef WSCONS_SUPPORT
 static void
 printWsType(char *type, char *devname)
 {
@@ -448,7 +458,11 @@ OpenKeyboard(InputInfoPtr pInfo)
            pKbd->consType = xf86Info.consType;
        }
     } else {
-       pInfo->fd = open(s, O_RDONLY | O_NONBLOCK | O_EXCL);
+#ifndef X_PRIVSEP
+	pInfo->fd = open(s, O_RDONLY | O_NONBLOCK | O_EXCL);
+#else
+	pInfo->fd = priv_open_device(s);
+#endif
        if (pInfo->fd == -1) {
            xf86Msg(X_ERROR, "%s: cannot open \"%s\"\n", pInfo->name, s);
            xfree(s);
@@ -495,6 +509,11 @@ OpenKeyboard(InputInfoPtr pInfo)
                printWsType("Sun", pInfo->name);
                break;
 #endif
+#ifdef WSKBD_TYPE_SUN5
+     case WSKBD_TYPE_SUN5:
+	     xf86Msg(X_PROBED, "Keyboard type: Sun5\n");
+	     break;
+#endif
            default:
                xf86Msg(X_ERROR, "%s: Unsupported wskbd type \"%d\"",
                                 pInfo->name, pKbd->wsKbdType);
@@ -535,4 +554,3 @@ xf86OSKbdPreInit(InputInfoPtr pInfo)
     }
     return TRUE;
 }
-

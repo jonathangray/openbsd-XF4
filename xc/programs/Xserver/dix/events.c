@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/dix/events.c,v 3.52 2004/01/23 07:23:34 herrb Exp $ */
+/* $XdotOrg: xc/programs/Xserver/dix/events.c,v 1.6 2004/08/09 02:08:35 kem Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/events.c,v 3.51 2004/01/12 17:04:52 tsi Exp $ */
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -47,26 +48,33 @@ SOFTWARE.
 ********************************************************/
 
 /* The panoramix components contained the following notice */
-/****************************************************************
-*                                                               *
-*    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
-*                                                               *
-*   All Rights Reserved.  Unpublished rights  reserved  under   *
-*   the copyright laws of the United States.                    *
-*                                                               *
-*   The software contained on this media  is  proprietary  to   *
-*   and  embodies  the  confidential  technology  of  Digital   *
-*   Equipment Corporation.  Possession, use,  duplication  or   *
-*   dissemination of the software and media is authorized only  *
-*   pursuant to a valid written license from Digital Equipment  *
-*   Corporation.                                                *
-*                                                               *
-*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
-*   by the U.S. Government is subject to restrictions  as  set  *
-*   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
-*   or  in  FAR 52.227-19, as applicable.                       *
-*                                                               *
-*****************************************************************/
+/*****************************************************************
+
+Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software.
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
+BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of Digital Equipment Corporation
+shall not be used in advertising or otherwise to promote the sale, use or other
+dealings in this Software without prior written authorization from Digital
+Equipment Corporation.
+
+******************************************************************/
 
 /* $Xorg: events.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
 
@@ -96,6 +104,20 @@ extern Bool XkbFilterEvents(ClientPtr, int, xEvent *);
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
 #include "security.h"
+#endif
+
+#ifdef XEVIE
+extern WindowPtr *WindowTable;
+extern int       xevieFlag;
+extern int       xevieClientIndex;
+extern DeviceIntPtr     xeviemouse;
+extern DeviceIntPtr     xeviekb;
+extern Mask      xevieMask;
+extern Mask      xevieFilters[128];
+extern int       xevieEventSent;
+extern int       xevieKBEventSent;
+int    xeviegrabState = 0;
+xEvent *xeviexE;
 #endif
 
 #include "XIproto.h"
@@ -174,11 +196,6 @@ static WindowPtr *spriteTrace = (WindowPtr *)NULL;
 static int spriteTraceSize = 0;
 static int spriteTraceGood;
 
-typedef struct {
-    int		x, y;
-    ScreenPtr	pScreen;
-} HotSpot;
-
 static  struct {
     CursorPtr	current;
     BoxRec	hotLimits;	/* logical constraints of hot spot */
@@ -198,6 +215,11 @@ static  struct {
     WindowPtr	confineWin;	/* confine window */ 
 #endif
 } sprite;			/* info about the cursor sprite */
+
+#ifdef XEVIE
+WindowPtr xeviewin;
+HotSpot xeviehot;
+#endif
 
 static void DoEnterLeaveEvents(
     WindowPtr /*fromWin*/,
@@ -2028,6 +2050,46 @@ WindowsRestructured()
     (void) CheckMotion((xEvent *)NULL);
 }
 
+#ifdef PANORAMIX
+/* This was added to support reconfiguration under Xdmx.  The problem is
+ * that if the 0th screen (i.e., WindowTable[0]) is moved to an origin
+ * other than 0,0, the information in the private sprite structure must
+ * be updated accordingly, or XYToWindow (and other routines) will not
+ * compute correctly. */
+void ReinitializeRootWindow(WindowPtr win, int xoff, int yoff)
+{
+    ScreenPtr pScreen = win->drawable.pScreen;
+    GrabPtr   grab;
+
+    if (noPanoramiXExtension) return;
+    
+    sprite.hot.x        -= xoff;
+    sprite.hot.y        -= yoff;
+
+    sprite.hotPhys.x    -= xoff;
+    sprite.hotPhys.y    -= yoff;
+
+    sprite.hotLimits.x1 -= xoff; 
+    sprite.hotLimits.y1 -= yoff;
+    sprite.hotLimits.x2 -= xoff;
+    sprite.hotLimits.y2 -= yoff;
+
+    if (REGION_NOTEMPTY(sprite.screen, &sprite.Reg1))
+        REGION_TRANSLATE(sprite.screen, &sprite.Reg1,    xoff, yoff);
+    if (REGION_NOTEMPTY(sprite.screen, &sprite.Reg2))
+        REGION_TRANSLATE(sprite.screen, &sprite.Reg2,    xoff, yoff);
+
+    /* FIXME: if we call ConfineCursorToWindow, must we do anything else? */
+    if ((grab = inputInfo.pointer->grab) && grab->confineTo) {
+	if (grab->confineTo->drawable.pScreen != sprite.hotPhys.pScreen)
+	    sprite.hotPhys.x = sprite.hotPhys.y = 0;
+	ConfineCursorToWindow(grab->confineTo, TRUE, TRUE);
+    } else
+	ConfineCursorToWindow(WindowTable[sprite.hotPhys.pScreen->myNum],
+			      TRUE, FALSE);
+}
+#endif
+
 void
 DefineInitialRootWindow(win)
     register WindowPtr win;
@@ -2630,6 +2692,52 @@ ProcessKeyboardEvent (xE, keybd, count)
     GrabPtr         grab = keybd->grab;
     Bool            deactivateGrab = FALSE;
     register KeyClassPtr keyc = keybd->key;
+#ifdef XEVIE
+    static Window           rootWin = 0;
+
+    if(!xeviegrabState && xevieFlag && clients[xevieClientIndex] &&
+          (xevieMask & xevieFilters[xE->u.u.type])) {
+      key = xE->u.u.detail;
+      kptr = &keyc->down[key >> 3];
+      bit = 1 << (key & 7);
+      if((xE->u.u.type == KeyPress &&  (*kptr & bit)) ||
+         (xE->u.u.type == KeyRelease && !(*kptr & bit)))
+      {} else {
+#ifdef XKB
+        if(!noXkbExtension)
+          xevieKBEventSent = 0;
+#endif
+        if(!xevieKBEventSent)
+        {
+          xeviekb = keybd;
+          if(!rootWin) {
+            WindowPtr pWin = xeviewin->parent;
+            while(pWin) {
+              if(!pWin->parent) {
+                rootWin = pWin->drawable.id;
+                break;
+              }
+              pWin = pWin->parent;
+            };
+          }
+          xE->u.keyButtonPointer.event = xeviewin->drawable.id;
+          xE->u.keyButtonPointer.root = rootWin;
+          xE->u.keyButtonPointer.child = (xeviewin->firstChild) ? xeviewin->firstChild->
+drawable.id:0;
+          xE->u.keyButtonPointer.rootX = xeviehot.x;
+          xE->u.keyButtonPointer.rootY = xeviehot.y;
+          xE->u.keyButtonPointer.state = keyc->state;
+          WriteToClient(clients[xevieClientIndex], sizeof(xEvent), (char *)xE);
+#ifdef XKB
+          if(noXkbExtension)
+#endif
+            return;
+        }else {
+          xevieKBEventSent = 0;
+        }
+      }
+    }
+#endif
 
     if (!syncEvents.playingEvents)
     {
@@ -2774,6 +2882,18 @@ ProcessPointerEvent (xE, mouse, count)
     register ButtonClassPtr butc = mouse->button;
 #ifdef XKB
     XkbSrvInfoPtr xkbi= inputInfo.keyboard->key->xkbInfo;
+#endif
+#ifdef XEVIE
+    if(xevieFlag && clients[xevieClientIndex] && !xeviegrabState &&
+       (xevieMask & xevieFilters[xE->u.u.type])) {
+      if(xevieEventSent)
+        xevieEventSent = 0;
+      else {
+        xeviemouse = mouse;
+        WriteToClient(clients[xevieClientIndex], sizeof(xEvent), (char *)xE);
+        return;
+      }
+    }
 #endif
 
     if (!syncEvents.playingEvents)

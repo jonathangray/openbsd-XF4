@@ -1,7 +1,7 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/pnl_bios.c,v 1.3 2003/01/14 09:34:36 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/pnl_bios.c,v 1.2 2002/12/11 22:51:02 dawes Exp $ */
 /*
  * $Workfile: pnl_bios.c $
- * $Revision: 1.1.1.1 $
+ * $Revision: 1.2 $
  *
  * File Contents: This file panel functions which query for the BIOS for current FP 
  *                Paramters.

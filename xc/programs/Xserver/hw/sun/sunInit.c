@@ -15,7 +15,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.13 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.12 2002/12/06 02:11:44 tsi Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.

@@ -24,7 +24,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_dga.c,v 1.1 2001/07/02 10:46:04 alanh Exp $ */
+/* $XFree86: $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

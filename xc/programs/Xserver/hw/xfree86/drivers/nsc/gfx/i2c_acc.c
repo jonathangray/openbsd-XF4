@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/i2c_acc.c,v 1.2 2003/11/03 05:11:23 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/i2c_acc.c,v 1.1tsi Exp $ */
 /*
  * $Workfile: i2c_acc.c $
  *

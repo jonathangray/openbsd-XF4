@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfb24_32.h,v 1.6 2003/07/16 01:38:49 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfb24_32.h,v 1.5 2000/04/01 00:17:19 mvojkovi Exp $ */
 
 #ifndef _CFB24_32_H
 #define _CFB24_32_H

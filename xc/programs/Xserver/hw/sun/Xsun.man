@@ -24,7 +24,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/Xserver/hw/sun/Xsun.man,v 1.8 2001/12/14 19:59:42 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/sun/Xsun.man,v 1.7 2001/01/27 18:20:40 dawes Exp $
 .\"
 .TH XSUN 1 __xorgversion__
 .SH NAME

@@ -54,7 +54,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.15 2003/10/07 21:43:09 herrb Exp $ */
+/* $XFree86: sunCfb.c,v 3.14 2001/12/14 19:59:42 dawes Exp $ */
 
 /*
  * Copyright 1987 by the Regents of the University of California

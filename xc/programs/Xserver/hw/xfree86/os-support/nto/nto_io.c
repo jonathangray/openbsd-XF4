@@ -24,7 +24,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Sebastien Marineau.
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_io.c,v 1.5 2003/02/17 15:11:58 dawes Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_io.c,v 1.4 2002/10/11 01:40:35 dawes Exp $
  */
 
 /* This module contains the NTO-specific functions to access the keyboard

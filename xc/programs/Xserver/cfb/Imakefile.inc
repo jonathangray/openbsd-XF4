@@ -1,8 +1,9 @@
+XCOMM $XdotOrg: xc/programs/Xserver/cfb/Imakefile.inc,v 1.3 2004/04/26 02:39:58 alanc Exp $
 XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:48:12 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile.inc,v 1.4 2002/11/22 22:56:02 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile.inc,v 1.3tsi Exp $
 
 #if DoLoadableServer
 #if !BuildModuleInSubdir
@@ -32,18 +33,31 @@ STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
 #endif
 #ifdef SparcArchitecture
+#ifndef Sparc64Architecture
 STIPPLESRC = stipsparc.s stipsparcte.s
 STIPPLEOBJ = stipsparc.o stipsparcte.o
 STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
 #endif
+#endif
 
 #if PixelSize == 32
 #ifdef SparcArchitecture
+#ifndef Sparc64Architecture
 STIPPLESRC = stipsprc32.s stipsprcte32.s
 STIPPLEOBJ = stipsprc32.o stipsprcte32.o
 STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
+#endif
+#endif
+
+#ifdef SparcArchitecture
+# if DoLoadableServer && MakeDllModules
+#  define SharedAsmDefines -DSHAREDCODE
+# else
+#  define SharedAsmDefines /**/
+# endif
+ASMDEFINES = AsmDefines SharedAsmDefines
 #endif
 
 #if defined(IHaveModules)
@@ -88,7 +102,7 @@ OBJS =   cfbgc.o cfbrrop.o cfbwindow.o \
 	 cfbply1rctC.o cfbply1rctG.o cfbcppl.o $(PSZOBJS) $(STIPPLEOBJ) \
 	 $(XFMODOBJ)
 
-#ifdef XFree86Version
+#if (defined(XFree86Version) || defined(XorgVersion))
 PLATFORMDEFS = -DXFREE86
 #endif
 
@@ -246,10 +260,10 @@ clean::
 	$(RM) stipsparcte.s
 
 stipsparc.o: stipsparc.s
-	$(CPP) stipsparc.s AsmDefines | $(AS) -o $@ -
+	$(CPP) stipsparc.s $(ASMDEFINES) | $(AS) -o $@ -
 
 stipsparcte.o: stipsparcte.s
-	$(CPP) -DTETEXT stipsparcte.s AsmDefines | $(AS) -o $@ -
+	$(CPP) -DTETEXT stipsparcte.s $(ASMDEFINES) | $(AS) -o $@ -
 #endif
 #endif
 
@@ -262,10 +276,10 @@ clean::
 	$(RM) stipsprcte32.s
 
 stipsprc32.o: stipsprc32.s
-	$(CPP) stipsprc32.s AsmDefines | $(AS) -o $@ -
+	$(CPP) stipsprc32.s $(ASMDEFINES) | $(AS) -o $@ -
 
 stipsprcte32.o: stipsprcte32.s
-	$(CPP) -DTETEXT stipsprcte32.s AsmDefines | $(AS) -o $@ -
+	$(CPP) -DTETEXT stipsprcte32.s $(ASMDEFINES) | $(AS) -o $@ -
 #endif
 #endif
 

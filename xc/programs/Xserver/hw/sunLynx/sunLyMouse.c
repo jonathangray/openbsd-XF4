@@ -22,7 +22,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyMouse.c,v 3.4 2003/11/17 22:20:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyMouse.c,v 3.3 2001/01/17 22:36:53 dawes Exp $ */
 
 /*-
  * Copyright 1987 by the Regents of the University of California

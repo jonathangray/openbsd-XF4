@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vboard.c,v 1.19 2003/11/06 18:38:04 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vboard.c,v 1.18tsi Exp $ */
 /*
  * includes
  */

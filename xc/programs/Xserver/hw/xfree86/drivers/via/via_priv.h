@@ -1,18 +1,23 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_priv.h,v 1.4 2003/12/17 18:57:18 dawes Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/drivers/via/via_priv.h,v 1.3 2004/07/16 04:38:54 anholt Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_priv.h,v 1.3 2003/08/27 15:16:12 tsi Exp $ */
 
 #ifndef _VIA_PRIV_H_
 #define _VIA_PRIV_H_ 1
 
 #include "ddmpeg.h"
+#ifdef XF86DRI
 #include "via_common.h"
+#endif
 
 #define MEM_BLOCKS		4
 
 typedef struct {
     unsigned long   base;		/* Offset into fb */
     int    pool;			/* Pool we drew from */
+#ifdef XF86DRI
     int    drm_fd;			/* Fd in DRM mode */
     drmViaMem drm;			/* DRM management object */
+#endif
     int    slot;			/* Pool 3 slot */
     void  *pVia;			/* VIA driver pointer */
     FBLinearPtr linear;			/* X linear pool info ptr */

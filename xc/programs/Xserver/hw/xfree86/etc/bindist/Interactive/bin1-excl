@@ -1,5 +1,5 @@
 bin/[A-Za-w]*
-bin/XF86_*
+bin/Xorg_*
 bin/XF98_*
 bin/XF86Setup
 bin/Xnest

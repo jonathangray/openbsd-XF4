@@ -1,5 +1,5 @@
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng.h,v 1.38 2003/11/03 05:11:44 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng.h,v 1.37tsi Exp $ */
 
 
 

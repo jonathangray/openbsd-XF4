@@ -45,7 +45,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/window.h,v 1.6 2003/11/03 05:36:35 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef WINDOW_H
 #define WINDOW_H
@@ -251,5 +251,15 @@ void ResizeChildrenWinSize(
     int /*dy*/,
     int /*dw*/,
     int /*dh*/);
+
+extern void SendShapeNotify(
+    WindowPtr /* pWin */,
+    int /* which */ );
+
+extern RegionPtr CreateBoundingShape(
+    WindowPtr /* pWin */ );
+
+extern RegionPtr CreateClipShape(
+    WindowPtr /* pWin */ );
 
 #endif /* WINDOW_H */

@@ -21,7 +21,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_i2c.h,v 1.1 2003/04/15 15:35:47 alanh Exp $ */
+/* $XFree86$ */
 #ifndef __VIAI2C_H
 #define __VIAI2C_H
 

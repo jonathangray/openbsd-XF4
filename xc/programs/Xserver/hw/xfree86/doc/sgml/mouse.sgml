@@ -1,31 +1,30 @@
-<!DOCTYPE linuxdoc PUBLIC "-//XFree86//DTD linuxdoc//EN" [
+<!DOCTYPE linuxdoc PUBLIC "-//Xorg//DTD linuxdoc//EN" [
 <!ENTITY % defs SYSTEM "defs.ent"> %defs;
 ]>
 
 <article>
-<title>Mouse Support in XFree86
+<title>Mouse Support in X11R&relvers;
 <author>Kazutaka Yokota
 <date>17 December 2002
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/mouse.sgml,v 1.13 2002/12/17 20:55:22 dawes Exp $
 </ident>
 
 <toc>
  
 <sect>Introduction <p>
 
-This document describes mouse support in XFree86 &relvers;.
+This document describes mouse support in X.org Foundation's X11R&relvers; server.
 
 Mouse configuration has often been mysterious task for
 novice users.
 However, once you learn several basics, it is straightforward
 to write the mouse <tt>"InputDevice"</tt>
-section in the <tt>XF86Config</tt> file by hand.
+section in the <tt>xorg.conf</tt> file by hand.
 
 <sect>Supported Hardware <p>
 
-The XFree86 X server supports three classes of mice:
+The X.org Foundation X server supports three classes of mice:
 serial, bus and PS/2 mice.
 
 <descrip>
@@ -41,7 +40,7 @@ to the host computer.
 The modern serial mouse conforms to the PnP COM device specification
 so that the host computer can automatically detect the mouse
 and load an appropriate driver.
-The XFree86 X server supports this specification and can detect
+The X server supports this specification and can detect
 popular PnP serial mouse models on most platforms.
 
 <tag>Bus mouse</tag>
@@ -73,7 +72,7 @@ USB (Universal Serial Bus) ports are present on most modern
 computers. Several devices can be plugged into this bus, including
 mices and keyboards. 
 
-The XFree86 server includes support for USB mices on some systems.
+The server includes support for USB mices on some systems.
 </descrip>
 
 Many mice nowadays can be used both as a serial mouse and as a PS/2 mouse.
@@ -84,7 +83,7 @@ used in such a way, even if you can find an appropriate
 adapter with which you can connect the PS/2 mouse to a serial port
 or visa versa.
 
-XFree86 supports the mouse with a wheel, a roller or a knob.
+X11R&relvers; supports the mouse with a wheel, a roller or a knob.
 Its action is detected as the Z (third) axis motion of the mouse.
 As the X server or clients normally do not use the Z axis movement of the 
 pointing device, a configuration option, <tt>"ZAxisMapping"</tt>,
@@ -112,7 +111,7 @@ NetBSD/pc98       Ok        ?         Ok        NA        NA         NA
 OpenBSD           Ok        Ok        Ok        Ok*1      Ok*1       Ok*1
 OS/2              SP*2      SP*2      SP*2      SP*2      SP*2       ?
 SCO               Ok        ?         SP*1      SP*1      NA         ?
-Solaris 2.x       Ok        NA*1      ?*1       Ok        Ok         ?
+Solaris 2.x       Ok        NA*1      ?*1       Ok        Ok         SP*1
 SVR4              Ok        NA*1      SP*1      SP*1      NA         ?
 PANIX             Ok        ?         SP*1      SP*1      NA         ?
 
@@ -120,7 +119,7 @@ Ok: support is available,  NA: not available, ?: untested or unknown.
 SP: support is available in a different form
 
 *1 Refer to the following sections for details.
-*2 XFree86/OS2 will support any type of mouse that the OS supports, 
+*2 X11R&relvers;/OS2 will support any type of mouse that the OS supports, 
    whether it is serial, bus mouse, or PnP type. 
 
 </verb>
@@ -229,11 +228,11 @@ generic Human Interface Device (hid) <tt>/dev/uhid*</tt>. Select the
 corresponding to your mouse as the device name.
 
 <sect1>OS/2 <p>
-XFree86/OS2 always uses the native mouse driver of the operating system
+X11R&relvers;/OS2 always uses the native mouse driver of the operating system
 and will support any type of pointer that the OS supports, whether it is
 serial, bus mouse, or PnP type.
 If the mouse works under Presentation Manager, 
-it will also work under XFree86/OS2.
+it will also work under X11R&relvers;/OS2.
 
 Always specify <tt>"OSMouse"</tt> as the protocol type.
 
@@ -244,14 +243,21 @@ protocol type.
 The <tt>"OSMouse"</tt> may also be used with the serial mouse.
 
 <sect1>Solaris <p>
-Testing has been done with Solaris 2.5.1 and 2.6.  Logitech and
-Microsoft bus mice
+Testing has been done with Solaris 2.5.1, 2.6, 7, 8, 9 and pre-release
+versions of Solaris 10.  Logitech and Microsoft bus mice
 have not been tested, but might work with the <tt>/dev/logi</tt> and
 <tt>/dev/msm</tt> devices.
 Standard 2 and 3 button PS/2 mice work with the <tt>"PS/2"</tt> protocol
 type and the <tt>/dev/kdmouse</tt> device.
+USB mice work with the <tt>"VUID"</tt> protocol type and the 
+<tt>/dev/mouse</tt> device.
 The PnP serial mouse support (the <tt>"Auto"</tt> protocol) has been tested
-and does not work.
+and does not work.  The <tt>"Auto"</tt> protocol can however detect PS/2 and
+USB mice correctly.
+
+Additional USB mice can be connected using the <tt>"VUID"</tt> protocol type
+and the appropriate <tt>"/dev/usb/hid"</tt> device with the <tt>Option "StreamsModule" "usbms"</tt> line included in the associated <tt>"InputDevice"</tt>
+section.
 
 <sect1>SVR4 <p>
 The bus and PS/2 mouse may be supported with the <tt>"Xqueue"</tt> 
@@ -270,7 +276,7 @@ The PC-98 version of PANIX supports the bus mouse with the
 
 <sect>Configuring Your Mouse <p>
 
-Before using the <tt>xf86config</tt> program
+Before using the <tt>xorgconfig</tt> program
 to set up mouse configuration, you must identify the interface type,
 the device name and the protocol type of your mouse.
 Blindly trying every possible combination of mouse settings 
@@ -329,7 +335,7 @@ protocol type for the PS/2 mouse and the X server will automatically
 adjust itself.
 
 <tag>Serial mouse</tag>
-The XFree86 server supports a wide range of mice, both old and new.
+The server supports a wide range of mice, both old and new.
 If your mouse is of a relatively new model, it may conform to the
 PnP COM device specification and the X server may be able to 
 detect an appropriate protocol type for the mouse automatically.
@@ -389,8 +395,8 @@ but you find that not all features of the mouse is available, that is
 because the X server does not have native support for that model of mouse
 and is using a ``compatible'' protocol according to PnP information.
 
-If you suspect this is the case with your mouse, please send a report to
-<email>XFree86@XFree86.Org</email>.
+If you suspect this is the case with your mouse, please enter a
+bugreport in bugzilla.freedesktop.org, using the xorg product.
 
 <tag>USB mouse</tag>
 If your mouse is connected to the USB port, it can either be supported 
@@ -407,7 +413,7 @@ Please refer to the OS support section of this file for more information.
 
 </descrip>
 
-<sect>XF86Config Options <p>
+<sect>xorg.conf Options <p>
 
 The old <tt>Pointer</tt> section has been replaced by a more general
 <tt>InputDevice</tt> section.  The following is a minimal example
@@ -469,7 +475,7 @@ If the buttons <tt>N3</tt> and <tt>N4</tt> actually exist in this mouse,
 their actions won't be detected by the X server.
 
 NOTE #1: horizontal movement may not always be detected
-by the current version of the XFree86 X servers,
+by the current version of the X11R&relvers; X servers,
 because there appears to be no accepted standard as to how the horizontal
 direction is encoded in mouse data.
 
@@ -479,8 +485,7 @@ Moreover, there are some mice whose two wheels are both mounted vertically,
 and the direction of the second vertical wheel does not match the
 first one's.
 
-Currently this option can not be set in the <tt>XF86Setup</tt> program.
-You need to edit the <tt>XF86Config</tt> file by hand to add this option.
+You need to edit the <tt>xorg.conf</tt> file by hand to add this option.
 
 <sect1>Resolution <p>
 The following option will set the mouse device resolution to <tt>N</tt>
@@ -491,7 +496,6 @@ counts per inch, if possible:
 </verb>
 
 Not all mice and OSs can support this option.
-This option can be set in the <tt>XF86Setup</tt> program.
 
 <sect1>Drag Lock Buttons <p>
 Some people find it difficult or inconvenient to hold a trackball

@@ -225,36 +225,16 @@ void xf86CloseConsole()
 
 /* ARGSUSED */
 
-extern ULONG hrt_delay;
 int xf86ProcessArgument (argc, argv, i)
 int argc;
 char *argv[];
 int i;
 {
-	if (!strcmp(argv[i], "-os2HRTimer")) {
-		os2HRTimerFlag = TRUE;
-		if (++i < argc && argv[i]) {
-			char *end;
-			long val;
-			val = strtoul(argv[i], &end, 0);
-			if (*end == '\0') {
-				hrt_delay = val;
-				return 2;
-				}
-			else {
-				hrt_delay = 12;
-			}
-		}
-		return 1;
-	}
 	return 0;
 }
 
 void xf86UseMsg()
 {
-        ErrorF("-os2HRTimer [n]        ");
-        ErrorF("use the OS/2 high-resolution timer driver (TIMER0.SYS)\n");
-        ErrorF("                       ");
-        ErrorF("post semaphore every n milliseconds. Default: 12\n");
 	return;
 }
+

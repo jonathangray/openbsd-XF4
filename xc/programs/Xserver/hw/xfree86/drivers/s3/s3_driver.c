@@ -34,7 +34,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_driver.c,v 1.20 2003/11/03 05:11:28 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_driver.c,v 1.19tsi Exp $ */
 
 
 #include "xf86.h"
@@ -171,6 +171,8 @@ static OptionInfoRec S3Options[] = {
 RamDacSupportedInfoRec S3IBMRamdacs[] = {
 	{ IBM524_RAMDAC },
 	{ IBM524A_RAMDAC },
+	{ IBM526_RAMDAC },
+	{ IBM526DB_RAMDAC },
 	{ -1 }
 };
 
@@ -234,7 +236,7 @@ static const char *ramdacSymbols[] = {
 	"RamDacGetHWIndex",
 	"IBMramdacProbe",
 	"IBMramdac526CalculateMNPCForClock",
-	"IBMramdac526SetBpp",
+	"IBMramdac526SetBppWeak",
 	NULL
 };
 
@@ -256,7 +258,7 @@ static XF86ModuleVersionInfo S3VersRec = {
         MODULEVENDORSTRING,
         MODINFOSTRING1,
         MODINFOSTRING2,
-        XF86_VERSION_CURRENT,
+        XORG_VERSION_CURRENT,
         VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL,
         ABI_CLASS_VIDEODRV,
         ABI_VIDEODRV_VERSION,
@@ -544,6 +546,9 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 	}
 
 	pS3->FBAddress = pS3->PciInfo->memBase[0];
+	pScrn->memPhysBase = pS3->FBAddress;
+	pScrn->fbOffset = 0;
+	
 	if (pS3->S3NewMMIO)
 		pS3->IOAddress = pS3->FBAddress + S3_NEWMMIO_REGBASE;
 
@@ -657,7 +662,7 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 		pS3->DacSave = S3IBMRGB_Save;
 		pS3->DacRestore = S3IBMRGB_Restore;
 		pS3->CursorInit = S3IBMRGB_CursorInit;
-		pS3->RamDac->SetBpp = IBMramdac526SetBpp;
+		pS3->RamDac->SetBpp = IBMramdac526SetBppWeak();
 		pS3->MaxClock = 170000;
 		pScrn->rgbBits = 8;
 		pS3->LoadPalette = S3GenericLoadPalette;

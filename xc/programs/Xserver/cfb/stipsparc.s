@@ -1,5 +1,6 @@
 /*
  * $Xorg: stipsparc.s,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $
+ * $XdotOrg: xc/programs/Xserver/cfb/stipsparc.s,v 1.3 2004/04/26 02:39:58 alanc Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -25,7 +26,7 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/programs/Xserver/cfb/stipsparc.s,v 1.5 2001/12/14 19:59:26 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/stipsparc.s,v 1.4 2001/01/17 22:36:38 dawes Exp $ */
 
 /*
  * SPARC assembly code for optimized text rendering.
@@ -101,9 +102,17 @@ in this Software without prior written authorization from The Open Group.
 	.globl	_cfbStippleStack
 _cfbStippleStack:
 	save	%sp,-64,%sp
+#ifdef SHAREDCODE
+1:
+        call    2f
+        nop
+2:
+        mov     %o7,sbase                       /* sbase = 1b(1:) */
+        add     sbase, CaseBegin-1b, sbase
+#else /* !SHAREDCODE */
 	sethi	%hi(CaseBegin),sbase		/* load up switch table */
 	or	sbase,%lo(CaseBegin),sbase
-
+#endif /* SHAREDCODE */
 	mov	4,lshift			/* compute offset within */
 	sub	lshift, shift, lshift		/*  stipple of remaining bits */
 #ifdef LITTLE_ENDIAN

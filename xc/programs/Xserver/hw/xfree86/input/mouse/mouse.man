@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mouse.man,v 1.7 2003/05/29 21:48:10 herrb Exp $ 
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/mouse/mouse.man,v 1.6 2003/04/03 22:18:31 dawes Exp $ 
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH MOUSE __drivermansuffix__ __vendorversion__
@@ -16,7 +16,7 @@ mouse \- Mouse input driver
 .fi
 .SH DESCRIPTION
 .B mouse 
-is an XFree86 input driver for mice.  The driver supports most available
+is an __xservername__ input driver for mice.  The driver supports most available
 mouse types and interfaces.  USB mice are only supported on some OSs,
 and the level of support for PS/2 mice depends on the OS.
 .PP
@@ -34,7 +34,7 @@ document.  This can be found
 in __projectroot__/lib/X11/doc/, or online at
 http://www.xfree86.org/current/mouse.html.
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details and for options that can be used with all input drivers.  This
 section only covers configuration details specific to this driver.
 .PP
@@ -224,5 +224,5 @@ There are some other options that may be used to control various parameters
 for serial port communication, but they are not documented here because
 the driver sets them correctly for each mouse protocol type.
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__),
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__),
 README.mouse.

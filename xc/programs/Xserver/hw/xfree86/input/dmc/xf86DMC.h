@@ -27,7 +27,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/dmc/xf86DMC.h,v 1.1 2001/08/17 13:27:55 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef	_DMC_H_
 #define _DMC_H_

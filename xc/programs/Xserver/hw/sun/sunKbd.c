@@ -39,7 +39,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.9 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.8 2001/10/28 03:33:11 tsi Exp $ */
 
 #define NEED_EVENTS
 #include "sun.h"
@@ -88,8 +88,13 @@ long	  	  sunAutoRepeatDelay = 1000 * AUTOREPEAT_DELAY;
 static int		autoRepeatKeyDown = 0;
 static int		autoRepeatReady;
 static int		autoRepeatFirst;
+#if defined(_LP64) || defined(_I32LPx)
+static struct timeval32	autoRepeatLastKeyDownTv;
+static struct timeval32	autoRepeatDeltaTv;
+#else
 static struct timeval	autoRepeatLastKeyDownTv;
 static struct timeval	autoRepeatDeltaTv;
+#endif
 
 void sunKbdWait()
 {

@@ -3,7 +3,7 @@ XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:28 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xnest/Imakefile,v 3.29 2003/11/16 05:05:20 dawes Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xnest/Imakefile,v 3.28 2003/10/02 13:30:08 eich Exp $
 
 #include <Server.tmpl>
 
@@ -60,7 +60,7 @@ INCLUDES = -I. -I$(XBUILDINCDIR) -I$(FONTINCSRC) \
            -I$(EXTINCSRC) -I$(XINCLUDESRC) -I$(LIBSRC) -I$(SERVERSRC)/Xext
 
 DEFINES = $(OS_DEFINES) $(EXT_DEFINES) -DNO_HW_ONLY_EXTS \
-	  -UXFree86LOADER  -UMITSHM
+	  -UXFree86LOADER  -UMITSHM $(XKBDEFRULESDEFS)
 
 XKB_DEFINES = -DXKB_BASE_DIRECTORY=\"$(LIBDIR)/xkb/\"
 

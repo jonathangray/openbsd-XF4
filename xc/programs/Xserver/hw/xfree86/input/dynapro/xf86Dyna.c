@@ -27,7 +27,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/dynapro/xf86Dyna.c,v 1.4 2001/11/26 16:25:53 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/dynapro/xf86Dyna.c,v 1.3 2000/08/11 19:10:43 dawes Exp $ */
 
 #define _DYNAPRO_C_
 
@@ -62,7 +62,7 @@ static XF86ModuleVersionInfo VersionRec =
 	MODULEVENDORSTRING,
 	MODINFOSTRING1,
 	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
+	XORG_VERSION_CURRENT,
 	1, 0, 0,
 	ABI_CLASS_XINPUT,
 	ABI_XINPUT_VERSION,

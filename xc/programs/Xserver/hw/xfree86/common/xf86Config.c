@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.277 2003/10/15 22:51:48 dawes Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 1.5 2004/08/16 20:17:51 kem Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.276 2003/10/08 14:58:26 dawes Exp $ */
 
 
 /*
@@ -127,6 +128,7 @@ static Bool addDefaultModes(MonPtr monitorp);
 #ifdef XF86DRI
 static Bool configDRI(XF86ConfDRIPtr drip);
 #endif
+static Bool configExtensions(XF86ConfExtensionsPtr conf_ext);
 
 /*
  * xf86GetPathElem --
@@ -372,12 +374,13 @@ xf86DriverlistFromConfig()
 Bool
 xf86BuiltinInputDriver(const char *name)
 {
+#ifdef USE_DEPRECATED_KEYBOARD_DRIVER
     if (xf86NameCmp(name, "keyboard") == 0)
 	return TRUE;
     else
+#endif
 	return FALSE;
 }
-
 
 char **
 xf86InputDriverlistFromConfig()
@@ -1101,7 +1104,7 @@ configInputKbd(IDevPtr inputp)
 #endif
 #ifdef XKB
   if (!xf86IsPc98()) {
-    xf86Info.xkbrules      = "xfree86";
+    xf86Info.xkbrules      = __XKBDEFRULES__;
     xf86Info.xkbmodel      = "pc105";
     xf86Info.xkblayout     = "us";
     xf86Info.xkbvariant    = NULL;
@@ -1147,7 +1150,11 @@ configInputKbd(IDevPtr inputp)
 			 " the \"wskbd\" keyboard protocol");
 	 return FALSE;
      }
+#ifndef X_PRIVSEP
+     xf86Info.kbdFd = open(s, O_RDWR | O_NONBLOCK | O_EXCL);
+#else
      xf86Info.kbdFd = priv_open_device(s);
+#endif
      if (xf86Info.kbdFd == -1) {
        xf86ConfigError("cannot open \"%s\"", s);
        xfree(s);
@@ -1191,7 +1198,8 @@ configInputKbd(IDevPtr inputp)
 	     close(xf86Info.kbdFd);
 	     return FALSE;
      }
-#endif
+     close (xf86Info.kbdFd);
+#endif /* WSCONS_SUPPORT */
   } else {
     xf86ConfigError("\"%s\" is not a valid keyboard protocol name", s);
     xfree(s);
@@ -2395,6 +2403,62 @@ configDRI(XF86ConfDRIPtr drip)
 #endif
 
 static Bool
+configExtensions(XF86ConfExtensionsPtr conf_ext)
+{
+    XF86OptionPtr o;
+
+    /* Extension enable/disable in miinitext.c */
+    extern Bool EnableDisableExtension(char *name, Bool enable);
+
+    if (conf_ext && conf_ext->ext_option_lst) {
+	for (o = conf_ext->ext_option_lst; o; o = xf86NextOption(o)) {
+	    char *name   = xf86OptionName(o);
+	    char *val    = xf86OptionValue(o);
+	    char *n;
+	    Bool  enable = TRUE;
+
+	    /* Handle "No<ExtensionName>" */
+	    n = xf86NormalizeName(name);
+	    if (strncmp(n, "no", 2) == 0) {
+		name += 2;
+		enable = FALSE;
+	    }
+
+	    if (!val ||
+		xf86NameCmp(val, "enable") == 0 ||
+		xf86NameCmp(val, "on") == 0 ||
+		xf86NameCmp(val, "1") == 0 ||
+		xf86NameCmp(val, "yes") == 0 ||
+		xf86NameCmp(val, "true") == 0) {
+		/* NOTHING NEEDED -- enabling is handled below */
+	    } else if (xf86NameCmp(val, "disable") == 0 ||
+		       xf86NameCmp(val, "off") == 0 ||
+		       xf86NameCmp(val, "0") == 0 ||
+		       xf86NameCmp(val, "no") == 0 ||
+		       xf86NameCmp(val, "false") == 0) {
+		enable = !enable;
+	    } else {
+		xf86Msg(X_ERROR,
+			"%s is not a valid value for the Extension option\n",
+			val);
+		return FALSE;
+	    }
+
+	    if (EnableDisableExtension(name, enable)) {
+		xf86Msg(X_CONFIG, "Extension \"%s\" is %s\n",
+			name, enable ? "enabled" : "disabled");
+	    } else {
+		xf86Msg(X_ERROR,
+			    "Extension \"%s\" is unrecognized\n", name);
+		return FALSE;
+	    }
+	}
+    }
+
+    return TRUE;
+}
+
+static Bool
 configInput(IDevPtr inputp, XF86ConfInputPtr conf_input, MessageType from)
 {
     xf86Msg(from, "|-->Input Device \"%s\"\n", conf_input->inp_identifier);
@@ -2550,7 +2614,8 @@ xf86HandleConfigFile(Bool autoconfig)
 
     if (!configFiles(xf86configptr->conf_files) ||
         !configServerFlags(xf86configptr->conf_flags,
-			   xf86ConfigLayout.options)
+			   xf86ConfigLayout.options) ||
+	!configExtensions(xf86configptr->conf_extensions)
 #ifdef XF86DRI
 	|| !configDRI(xf86configptr->conf_dri)
 #endif

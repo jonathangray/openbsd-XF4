@@ -1,11 +1,11 @@
-XCOMM $XFree86: xc/programs/Xserver/miext/layer/Imakefile,v 1.4 2003/08/22 19:27:31 eich Exp $
+XCOMM $XFree86: xc/programs/Xserver/miext/layer/Imakefile,v 1.1 2001/05/29 04:54:13 keithp Exp $
 XCOMM
 XCOMM
 
 #define IHaveModules
 #include <Server.tmpl>
 
-#ifdef XFree86Version
+#if (defined(XFree86Version) || defined(XorgVersion))
 #if DoLoadableServer
 XFMODSRC = laymodule.c
 XFMODOBJ = laymodule.o

@@ -1,4 +1,4 @@
-                Notes on Rebuilding XFree86/OS2 from Scratch
+               Notes on Rebuilding X11R6.8.1/OS2 from Scratch
 
                                  Holger Veit
 
@@ -6,28 +6,21 @@
 
 1.  Preface
 
-X11 and XFree86 were initially developed on Unix-based systems. Usually Unix
-systems provide a rich number of tools and utilities to get certain things
-done. Under OS/2, these tools are not installed, but ports are available
-which are sometimes functionally equivalent to Unix utilities with the same
-name, but also differ sometimes in a subtle way.  This guide will give you
-hints if you intend to rebuild the system from scratch under OS/2.
+X11 was initially developed on Unix-based systems. Usually Unix systems pro-
+vide a rich number of tools and utilities to get certain things done. Under
+OS/2, these tools are not installed, but ports are available which are some-
+times functionally equivalent to Unix utilities with the same name, but also
+differ sometimes in a subtle way.  This guide will give you hints if you
+intend to rebuild the system from scratch under OS/2.
 
 Please also read README.OS2 for end-user information, and set at least the
 environment variables described there.
 
-At the current time, the most recent version available is XFree86-4.0.  This
-is a full and unrestricted version which comes with complete source code. 4.0
-is a highly experimental release, so many features that might have worked in
-earlier versions, may now no longer work, or work differently.  Be aware that
-for OS/2, XFree86-4.0 is considered to be alpha software.
-
-If you want to join the XFree86 developer team, e.g. to add support for cer-
-tain hardware, please send a request to <BOD@XFree86.org>.  Please think
-about such a step carefully before, though, since much work is involved.
-Please use the XFree86-4.0 source code as a test example how to compile the
-system. The ability to manage that is a basic requirement for becoming a
-developer.
+At the current time, the most recent version available is X11R6.8.1 This is a
+full and unrestricted version which comes with complete source code. 4.0 is a
+highly experimental release, so many features that might have worked in ear-
+lier versions, may now no longer work, or work differently.  Be aware that
+for OS/2, X11R6.8.1 is considered to be alpha software.
 
 2.  Tools required
 
@@ -76,9 +69,9 @@ If there is no version number given, any new version will do. Particularly
 critical is only EMX/gcc and GNU make. Note that the second GCC implementa-
 tion which might still be available from some archives is NOT compatible.
 
-Furthermore, you need the XFree86 sources. These are available from the com-
-mon XFree86 repositories. Look into a directory which is often named
-/pub/XFree86/4.0/source.
+Furthermore, you need the X11R6.8.1 sources. These are available from the
+common X.org repositories. Look into a directory which is often named
+/pub/R6.8.1.
 
 3.  Compiling and Installing
 
@@ -105,7 +98,7 @@ installed them. Nor did I install the test subtree.
       but non-fatal message "gzip: stdout Broken pipe". Ignore it.
 
   4.  After that, is is likely necessary to apply some patches, either from
-      the XConsortium or from the XFree86 project. Before you do this, enter
+      the X.Org Foundation. Before you do this, enter
 
                  chmod -R a+rw \x11\xc
 
@@ -148,19 +141,20 @@ installed them. Nor did I install the test subtree.
 
                  find \x11 -name *.orig -print -exec rm {} ;
 
-  7.  Go to the xc/config/cf directory and edit the xf86site.def file to
+  7.  Go to the xc/config/cf directory and edit the xorgsite.def file to
       match your requirements (you probably don't want to compile all X
       servers). Certain changes must be set to the following values:
 
          o Disable if not already done any PC98 server; PC98 (Japanese
-           XFree86) does not work yet. Porters from Japan are welcome!
+           X11R6.8.1) does not work yet. Porters from Japan are welcome!
 
          o #define WacomSupport            NO #define ElographicsSupport
            NO Both options are not yet supported.
 
          o Tcl* and Tk* don't need to be set explicitly. Reasonable defaults
            are in the other config files, provided you have a complete
-           XFree86/OS2 binary tree with the tcl/tk runtime support installed.
+           X11R6.8.1/OS2 binary tree with the tcl/tk runtime support
+           installed.
 
          o #define BuildDynamicLoading   NO This does not work.
 
@@ -173,14 +167,14 @@ installed them. Nor did I install the test subtree.
 
   9.  Set the environment variable X11ROOT to something different than it is;
       otherwise the installation process will overwrite your original
-      XFree86/OS2 installation. If you have not set this variable, go back to
-      the prefix section of this document: you have forgotten something.
+      X11R6.8.1/OS2 installation. If you have not set this variable, go back
+      to the prefix section of this document: you have forgotten something.
 
  10.  Copy the file xc/pro-
       grams/Xserver/hw/xfree86/etc/bindist/OS2/host.def.os2 to the location
       xc/config/cf/host.def. Use this file to do any specific modifications
-      to imake variables, rather than editing the file xfree86.cf,
-      imake.tmpl, or os2.cf directly.
+      to imake variables, rather than editing the file xorg.cf, imake.tmpl,
+      or os2.cf directly.
 
  11.  Copy the file xc/config/util/buildos2.cmd into the xc directory. If
       this is a second or later attempt, you might need to copy the saved
@@ -208,21 +202,13 @@ installed them. Nor did I install the test subtree.
             lation.  This is no problem and has no effect on the rest of the
             system.
 
-        2.  The imake.exe which is installed in \XFree86\bin is usually
+        2.  The imake.exe which is installed in \X11R6.8.1\bin is usually
             defective.  The one which was built initially and installed in
             the root directory of the drive where you have the source tree is
-            okay. So simply copy this \imake.exe to the \XFree86\bin direc-
+            okay. So simply copy this \imake.exe to the \X11R6.8.1\bin direc-
             tory manually. Some day this might be fixed.
-
-        3.  XF86Setup is not ported yet and won't work with the tcl/tk port
-            available for XFree86/OS2. My idea was to replace this by some
-            native installation tool, which I didn't find the time to do yet.
-            Feel free to spend a bit of time to play with XF86Setup if you
-            like.
 
 Well, you see, this was quite easy :-)
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/OS2Notes.sgml,v 1.2 dawes Exp $
 
-
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/OS2.Notes,v 3.21 2003/07/15 02:28:28 dawes Exp $
+$XdotOrg: xc/programs/Xserver/hw/xfree86/doc/OS2.Notes,v 1.3.2.1 2004/09/17 15:38:18 kem Exp $
