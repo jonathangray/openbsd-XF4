@@ -1,0 +1,8 @@
+Post-installation instructions for XFree86 on OpenBSD/sparc64
+-------------------------------------------------------------
+
+Currently, OpenBSD/sparc64 doesn't support any Xserver, so, sorry, 
+there is nothing to configure (yet).
+
+$OpenBSD: README.sparc64,v 1.1 2001/10/06 16:47:59 matthieu Exp $
+
