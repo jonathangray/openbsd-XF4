@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vga256/drivers/s3_savage/s3sav_cursor.c,v 1.1.2.2 1999/12/01 12:49:33 hohndel Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vga256/drivers/s3_savage/s3sav_cursor.c,v 1.1.2.1 1999/07/30 11:21:32 hohndel Exp $ */
 
 /*
  *
@@ -83,7 +83,6 @@ extern int vgaCRIndex, vgaCRReg;
 static int s3vCursGeneration = -1;
 static int s3vHotX;
 static int s3vHotY;
-static int s3vCursorVRAMMemSegment;
 static CursorPtr s3vCursorpCurs;
 
 #define MAX_CURS 64
@@ -110,18 +109,17 @@ S3SAVCursorInit(pm, pScr)
     * buffer.  Savage4 requires 4k alignment for the cursor image.
     */
 
-#define S3_IN32(off) (*(unsigned int*)(((char*)s3savMmioMem)+(off)))
+    if(OFLG_ISSET(OPTION_NOACCEL, &vga256InfoRec.options)) {
+       if( s3vPriv.chip < S3_SAVAGE2000) {
+	  s3vPriv.CursorKByte = (S3_IN32(0x48C14) & 0x3FFF) * 2 - 4;
+       } else {
+	  s3vPriv.CursorKByte = ((S3_IN32(0x48C18) >> 4) & 0x3FFF) * 2 - 4;
+       }
+    }
+    else
+       s3vPriv.CursorKByte = vga256InfoRec.videoRam - 1;
 
-   if( s3vPriv.chip < S3_SAVAGE2000) {
-      s3vCursorVRAMMemSegment = (S3_IN32(0x48C14) & 0x3FFF) * 2 - 4;
-   } else {
-      s3vCursorVRAMMemSegment = ((S3_IN32(0x48C18) >> 4) & 0x3FFF) * 2 - 4;
-   }
-
-   if( !s3vCursorVRAMMemSegment )
-      s3vCursorVRAMMemSegment = vga256InfoRec.videoRam - 1;
-
-   return TRUE;
+    return TRUE;
 }
 
 /* This allows the cursor to be displayed */
@@ -252,7 +250,7 @@ S3SAVLoadCursor(pScr, pCurs, x, y)
    /* VerticalRetraceWait(); */
 
    /* turn cursor off */
-   S3VHideCursor();
+   S3SAVHideCursor();
 
    /* move cursor off-screen */
    outb(vgaCRIndex, 0x46);
@@ -270,12 +268,12 @@ S3SAVLoadCursor(pScr, pCurs, x, y)
 
    /* Load storage location.  */
    outb(vgaCRIndex, 0x4d);
-   outb(vgaCRReg, (0xff & s3vCursorVRAMMemSegment));
+   outb(vgaCRReg, (0xff & s3vPriv.CursorKByte));
    outb(vgaCRIndex, 0x4c);
-   outb(vgaCRReg, (0xff00 & s3vCursorVRAMMemSegment) >> 8);
+   outb(vgaCRReg, (0xff00 & s3vPriv.CursorKByte) >> 8);
 
    ram = (unsigned short *)pCurs->bits->devPriv[index];
-   MemToBus(videobuffer + s3vCursorVRAMMemSegment * 1024, (char *) ram, 1024);
+   MemToBus(videobuffer + s3vPriv.CursorKByte * 1024, (char *) ram, 1024);
 
    if( s3vPriv.chip == S3_SAVAGE4 ) {
       /*
@@ -416,16 +414,13 @@ S3SAVRecolorCursor(pScr, pCurs, displayed)
    xColorItem sourceColor, maskColor;
    Bool bNeedExtra = FALSE;
 
-   if( S3_SAVAGE_SERIES(s3vPriv.chip) )
+   /* Clock doubled modes need an extra cursor stack write. */
+   outb(0x3c4, 0x18);
+   if( inb(0x3c5) & 0x80 ) 
    {
-      /* Clock doubled modes need an extra cursor stack write. */
-      outb(0x3c4, 0x18);
-      if( inb(0x3c5) & 0x80 ) 
-      {
-         outb(0x3c4, 0x15);
-	 if( inb(0x3c5) & 0x50 )
-	    bNeedExtra = TRUE;
-      }
+      outb(0x3c4, 0x15);
+      if( inb(0x3c5) & 0x50 )
+	 bNeedExtra = TRUE;
    }
 
    if (!xf86VTSema)
@@ -434,49 +429,31 @@ S3SAVRecolorCursor(pScr, pCurs, displayed)
    if (!displayed)
       return;
 
-   switch (vgaBitsPerPixel) {
-   case 8:
-     if (!(S3_ViRGE_GX2_SERIES(s3vPriv.chip) || S3_ViRGE_MX_SERIES(s3vPriv.chip))) {
-      vgaGetInstalledColormaps(pScr, &pmap);
-      sourceColor.red = pCurs->foreRed;
-      sourceColor.green = pCurs->foreGreen;
-      sourceColor.blue = pCurs->foreBlue;
-      FakeAllocColor(pmap, &sourceColor);
-      maskColor.red = pCurs->backRed;
-      maskColor.green = pCurs->backGreen;
-      maskColor.blue = pCurs->backBlue;
-      FakeAllocColor(pmap, &maskColor);
-      FakeFreeColor(pmap, sourceColor.pixel);
-      FakeFreeColor(pmap, maskColor.pixel);
+   /*
+    * The /MX family is apparently unique among the Savages, in that
+    * the cursor color is always straight RGB.  The rest of the Savages
+    * use palettized values at 8-bit when not clock doubled.
+    */
 
-      outb(vgaCRIndex, 0x45);
-      inb(vgaCRReg);	/* reset stack pointer */
-      outb(vgaCRIndex, 0x4A);
-      outb(vgaCRReg, sourceColor.pixel);
-      outb(vgaCRReg, sourceColor.pixel);
-      outb(vgaCRIndex, 0x45);
-      inb(vgaCRReg);	/* reset stack pointer */
-      outb(vgaCRIndex, 0x4B);
-      outb(vgaCRReg, maskColor.pixel);
-      outb(vgaCRReg, maskColor.pixel);
-      break;
-     }  /* else fall through for ViRGE/MX... */
+   if( s3vPriv.chip == S3_SAVAGE_MX )
+      bNeedExtra = TRUE;
+
+   switch (vgaBitsPerPixel) {
    case 16:
-     if (!(S3_ViRGE_GX2_SERIES(s3vPriv.chip) || S3_ViRGE_MX_SERIES(s3vPriv.chip))) {
-      if (vga256InfoRec.weight.green == 5 && s3vPriv.chip != S3_ViRGE_VX) {
+      if (vga256InfoRec.weight.green == 5) {
 	 packedcolfg = ((pCurs->foreRed   & 0xf800) >>  1)
 	    | ((pCurs->foreGreen & 0xf800) >>  6)
-	       | ((pCurs->foreBlue  & 0xf800) >> 11);
+	    | ((pCurs->foreBlue  & 0xf800) >> 11);
 	 packedcolbg = ((pCurs->backRed   & 0xf800) >>  1)
 	    | ((pCurs->backGreen & 0xf800) >>  6)
-	       | ((pCurs->backBlue  & 0xf800) >> 11);
+	    | ((pCurs->backBlue  & 0xf800) >> 11);
       } else {
 	 packedcolfg = ((pCurs->foreRed   & 0xf800) >>  0)
 	    | ((pCurs->foreGreen & 0xfc00) >>  5)
-	       | ((pCurs->foreBlue  & 0xf800) >> 11);
+	    | ((pCurs->foreBlue  & 0xf800) >> 11);
 	 packedcolbg = ((pCurs->backRed   & 0xf800) >>  0)
 	    | ((pCurs->backGreen & 0xfc00) >>  5)
-	       | ((pCurs->backBlue  & 0xf800) >> 11);
+	    | ((pCurs->backBlue  & 0xf800) >> 11);
       }
       outb(vgaCRIndex, 0x45);
       inb(vgaCRReg);		/* reset stack pointer */
@@ -499,7 +476,35 @@ S3SAVRecolorCursor(pScr, pCurs, displayed)
 	  outb(vgaCRReg, packedcolbg>>8);
       }
       break;
-     }  /* else fall through for ViRGE/MX... */
+   case 8:
+      if( !bNeedExtra )
+      {
+	 vgaGetInstalledColormaps(pScr, &pmap);
+	 sourceColor.red = pCurs->foreRed;
+	 sourceColor.green = pCurs->foreGreen;
+	 sourceColor.blue = pCurs->foreBlue;
+	 FakeAllocColor(pmap, &sourceColor);
+	 maskColor.red = pCurs->backRed;
+	 maskColor.green = pCurs->backGreen;
+	 maskColor.blue = pCurs->backBlue;
+	 FakeAllocColor(pmap, &maskColor);
+	 FakeFreeColor(pmap, sourceColor.pixel);
+	 FakeFreeColor(pmap, maskColor.pixel);
+
+	 outb(vgaCRIndex, 0x45);
+	 inb(vgaCRReg);	/* reset stack pointer */
+	 outb(vgaCRIndex, 0x4A);
+	 outb(vgaCRReg, sourceColor.pixel);
+	 outb(vgaCRReg, sourceColor.pixel);
+	 outb(vgaCRIndex, 0x45);
+	 inb(vgaCRReg);	/* reset stack pointer */
+	 outb(vgaCRIndex, 0x4B);
+	 outb(vgaCRReg, maskColor.pixel);
+	 outb(vgaCRReg, maskColor.pixel);
+	 break;
+      }
+      /* else */
+      /* FALLTHROUGH */
    case 24:
    case 32:
       outb(vgaCRIndex, 0x45);
@@ -513,7 +518,7 @@ S3SAVRecolorCursor(pScr, pCurs, displayed)
       inb(vgaCRReg);		/* reset stack pointer */
       outb(vgaCRIndex, 0x4B);
       outb(vgaCRReg, pCurs->backBlue >>8);
-	 outb(vgaCRReg, pCurs->backGreen>>8);
+      outb(vgaCRReg, pCurs->backGreen>>8);
       outb(vgaCRReg, pCurs->backRed  >>8);
       break;
    }

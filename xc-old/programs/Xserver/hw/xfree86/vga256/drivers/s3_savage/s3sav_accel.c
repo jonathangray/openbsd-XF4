@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vga256/drivers/s3_savage/s3sav_accel.c,v 1.1.2.4 1999/12/02 12:30:36 hohndel Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vga256/drivers/s3_savage/s3sav_accel.c,v 1.1.2.1 1999/07/30 11:21:31 hohndel Exp $ */
 
 /*
  *
@@ -7,7 +7,7 @@
  */
 
 /*
- * The accel file for the ViRGE driver.  
+ * The accel file for the Savage driver.  
  * 
  * Created 20/03/97 by Sebastien Marineau
  * Revision: 
@@ -15,8 +15,7 @@
  * Note: we use a few macros to query the state of the coprocessor. 
  * WaitIdle() waits until the GE is idle.
  * WaitIdleEmpty() waits until the GE is idle and its FIFO is empty.
- * WaitCommandEmpty() waits until the command FIFO is empty. The command FIFO
- *       is what handles direct framebuffer writes. We should call this 
+ *       We should call this 
  *       before starting any GE functions to make sure that there are no
  *       framebuffer writes left in the FIFO. 
  */
@@ -38,6 +37,9 @@ extern S3VPRIV s3vPriv;
 
 /* Globals used in driver */
 extern pointer s3savMmioMem;
+#ifdef __alpha__
+extern pointer s3savMmioMemSparse;
+#endif
 static int s3DummyTransferArea;
 static int s3LineHWClipSet = 0;
 
@@ -85,73 +87,90 @@ void S3SAVSetupForFill8x8Pattern();
 void S3SAVSubsequentFill8x8Pattern();
 void S3SAVSubsequentTwoPointLine();
 void S3SAVSetClippingRectangle();
-void S3SAVSubsequentFillTrapezoidSolid();
-Bool S3SAVROPHasSrc();
-Bool S3SAVROPHasDst();
 void S3SAVSetGBD();
 #include "s3bitmap.c"
-
-static struct {
-    unsigned long Index;	/* command overflow buffer size index */
-    unsigned long Size;		/* command overflow buffer size */
-    unsigned long Offset;	/* command overflow buffer offset */
-} cob;
-
 
 
 
 void
 S3SAVInitialize2DEngine()
 {
-    unsigned long cobWater;
-
     outw(vgaCRIndex, 0x0140);
-    outb(vgaCRIndex, 0x31);
-    outb(vgaCRReg, 0x0c);
+    outw(vgaCRIndex, 0x0c31);
 
-#define S3_IN32(off) (*(volatile unsigned int*)(((char*)s3savMmioMem)+(off)))
-#define S3_OUT32(off, val) (*(volatile unsigned int*)(((char*)s3savMmioMem)+(off)) = val)
-#define S3_OUT16(off, val) (*(volatile unsigned short*)(((char*)s3savMmioMem)+(off)) = val)
     /* Setup plane masks */
     S3_OUT32(0x8128, ~0); /* enable all write planes */
     S3_OUT32(0x812C, ~0); /* enable all read planes */
     S3_OUT16(0x8134, 0x27);
     S3_OUT16(0x8136, 0x07);
 
-    if( s3vPriv.chip < S3_SAVAGE2000 )
-    {
-	/* Sav4 doc shows the smaller value in the upper DWORD. */
-	/* However, that's not what the NT driver does. */
-	if( s3vPriv.chip == S3_SAVAGE4 ) {
-	    cobWater = (cob.Size >> 7) * 0x10001 - 0x01400300;
-	}
-	else {
-	    cobWater = (cob.Size >> 2) * 0x10001 - 0x01C00EC0;
-	}
+    switch( s3vPriv.chip ) {
+
+    case S3_SAVAGE3D:
+    case S3_SAVAGE_MX:
 	/* Disable BCI */
 	S3_OUT32(0x48C18, S3_IN32(0x48C18) & 0x3FF0);
-	/* Disable shadow status update */
-	S3_OUT32(0x48C0C, 0);
 	/* Setup BCI command overflow buffer */
-	S3_OUT32(0x48C14, (cob.Offset >> 11) | (cob.Index << 29));
-	/* Command overflow buffer HI/LOW watermarks */
-	S3_OUT32(0x48C10, cobWater);
-	/* Enable BCI and command overflow buffer */
-	S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x0C);
-    }
-    else
-    {
+	S3_OUT32(0x48C14, (s3vPriv.cobOffset >> 11) | (s3vPriv.cobIndex << 29));
+	/* Program shadow status update. */
+	S3_OUT32(0x48C10, 0x78207220);
+	if( s3vPriv.ShadowPhysical )
+	{
+	    S3_OUT32(0x48C0C, s3vPriv.ShadowPhysical | 1 );
+	    /* Enable BCI and command overflow buffer */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x0E);
+	}
+	else
+	{
+	    S3_OUT32(0x48C0C, 0);
+	    /* Enable BCI and command overflow buffer */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x0C);
+	}
+	break;
+
+    case S3_SAVAGE4:
+    case S3_PROSAVAGE:
+	/* Disable BCI */
+	S3_OUT32(0x48C18, S3_IN32(0x48C18) & 0x3FF0);
+	/* Program shadow status update */
+	S3_OUT32(0x48C10, 0x00700040);
+	if( s3vPriv.ShadowPhysical )
+	{
+	    S3_OUT32(0x48C0C, s3vPriv.ShadowPhysical | 1 );
+	    /* Enable BCI without the COB */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x0a);
+	}
+	else
+	{
+	    S3_OUT32(0x48C0C, 0);
+	    /* Enable BCI without the COB */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x08);
+	}
+	break;
+
+    case S3_SAVAGE2000:
 	/* Disable BCI */
 	S3_OUT32(0x48C18, 0);
-	/* Disable shadow status update */
-	S3_OUT32(0x48A30, 0);
 	/* Setup BCI command overflow buffer */
-	S3_OUT32(0x48C18, (cob.Offset >> 7) | (cob.Index));
-	/* Command overflow buffer HI/LOW watermarks */
-	S3_OUT32(0x48C10, 0x6090);
-	S3_OUT32(0x48C14, 0x70A8);
-	/* Enable BCI and command overflow buffer */
-	S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x00280000 );
+	S3_OUT32(0x48C18, (s3vPriv.cobOffset >> 7) | (s3vPriv.cobIndex));
+	if( s3vPriv.ShadowPhysical )
+	{
+	    /* Set shadow update threshholds. */
+	    S3_OUT32(0x48C10, 0x6090 );
+	    S3_OUT32(0x48C14, 0x70A8 );
+	    /* Enable shadow status update */
+	    S3_OUT32(0x48A30, s3vPriv.ShadowPhysical );
+	    /* Enable BCI, command overflow buffer and shadow status. */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x00380000 );
+	}
+	else
+	{
+	    /* Disable shadow status update */
+	    S3_OUT32(0x48A30, 0);
+	    /* Enable BCI and command overflow buffer */
+	    S3_OUT32(0x48C18, S3_IN32(0x48C18) | 0x00280000 );
+	}
+	break;
     }
 
     /* Use and set global bitmap descriptor. */
@@ -162,10 +181,6 @@ S3SAVInitialize2DEngine()
     /* stride.  Writing the register later, after the mode switch, works */
     /* correctly.  This needs to get resolved. */
 
-    s3SavedGbd = 1 | 8 | BCI_BD_BW_DISABLE;
-    BCI_BD_SET_BPP(s3SavedGbd, vgaBitsPerPixel);
-    BCI_BD_SET_STRIDE(s3SavedGbd, s3vPriv.Width);
-
     S3SAVSetGBD();
 } 
 
@@ -173,12 +188,9 @@ S3SAVInitialize2DEngine()
 void
 S3SAVSetGBD( )
 {
-    if( !s3SavedGbd )
-    {
-	s3SavedGbd = 1 | 8 | BCI_BD_BW_DISABLE;
-	BCI_BD_SET_BPP(s3SavedGbd, vgaBitsPerPixel);
-	BCI_BD_SET_STRIDE(s3SavedGbd, s3vPriv.Width);
-    }
+    s3SavedGbd = 1 | 8 | BCI_BD_BW_DISABLE;
+    BCI_BD_SET_BPP(s3SavedGbd, vgaBitsPerPixel);
+    BCI_BD_SET_STRIDE(s3SavedGbd, s3vPriv.Width);
 
     /* Turn on 16-bit register access. */
 
@@ -339,6 +351,7 @@ S3SAVAccelInit()
 
     xf86AccelInfoRec.ColorExpandFlags = SCANLINE_PAD_DWORD |
 					CPU_TRANSFER_PAD_DWORD | 
+					BIT_ORDER_IN_BYTE_MSBFIRST |
 					VIDEO_SOURCE_GRANULARITY_PIXEL |
 					LEFT_EDGE_CLIPPING;
     /* WriteBitmap color expand */
@@ -355,13 +368,12 @@ S3SAVAccelInit()
              S3SAVSubsequentCPUToScreenColorExpand;
 #endif
 
-#if 0
+#if 1
     xf86AccelInfoRec.SetupForCPUToScreenColorExpand =
              S3SAVSetupForCPUToScreenColorExpand;
     xf86AccelInfoRec.SubsequentCPUToScreenColorExpand =
              S3SAVSubsequentCPUToScreenColorExpand;
     xf86AccelInfoRec.CPUToScreenColorExpandBase = s3vPriv.BciMem;
-             (void *) &IMG_TRANS;
     xf86AccelInfoRec.CPUToScreenColorExpandRange = 128 * 1024;
 #endif
 
@@ -392,10 +404,6 @@ S3SAVAccelInit()
 	    S3SAVSubsequentTwoPointLine;
     xf86AccelInfoRec.SetClippingRectangle = 
             S3SAVSetClippingRectangle;
-#if 0
-    xf86AccelInfoRec.SubsequentFillTrapezoidSolid = 
-            S3SAVSubsequentFillTrapezoidSolid; 
-#endif
 
 
     /*
@@ -405,28 +413,16 @@ S3SAVAccelInit()
      * enabled the PIXMAP_CACHE flag, then these lines can be omitted.
      */
 
-     if( s3vPriv.chip == S3_SAVAGE4 ) {
-	 cob.Index = 2 /*4*/;
-	 cob.Size = 0x8000 << cob.Index;
-     }
-     else {
-         cob.Index = 7;
-	 cob.Size = 0x400 << cob.Index;
-     }
-
-     /* The command overflow buffer must be placed at the end of RAM. */
-     cob.Offset = (vga256InfoRec.videoRam << 10) - cob.Size;
-
      xf86InitPixmapCache(&vga256InfoRec, vga256InfoRec.virtualY *
 	vga256InfoRec.displayWidth * vga256InfoRec.bitsPerPixel / 8,
-	cob.Offset);
+	s3vPriv.cobOffset);
 
      /* And these are screen parameters used to setup the GE */
 
      s3vPriv.Width = vga256InfoRec.displayWidth;
      s3vPriv.Bpp = vgaBitsPerPixel / 8;
      s3vPriv.Bpl = s3vPriv.Width * s3vPriv.Bpp;
-     s3vPriv.ScissB = (vga256InfoRec.videoRam * 1024 - 4096 - cob.Size) / s3vPriv.Bpl;
+     s3vPriv.ScissB = (vga256InfoRec.videoRam * 1024 - 4096 - s3vPriv.cobSize) / s3vPriv.Bpl;
      if (s3vPriv.ScissB > 2047)
          s3vPriv.ScissB = 2047;
 }
@@ -438,16 +434,6 @@ S3SAVAccelInit()
 void
 S3SAVAccelSync()
 {
-#if 0
-    BCI_GET_PTR;
-
-    WaitQueue(3);
-    BCI_SEND(BCI_CMD_NOP | BCI_CMD_CLIP_NEW);
-    BCI_SEND(BCI_CLIP_TL(0, 0));
-    BCI_SEND(BCI_CLIP_BR(s3vPriv.ScissB, s3vPriv.Width));
-#endif
-
-    WaitCommandEmpty();
     WaitIdleEmpty();
 }
 
@@ -484,7 +470,7 @@ S3SAVGEReset(int from_timeout, int line, char *file)
     tmp = inb(vgaCRReg);
 
     usleep(10000);
-    for (r=1; r<10; r++) {  /* try multiple times to avoid lockup of ViRGE/MX */
+    for (r=1; r<10; r++) {  /* try multiple times to avoid lockup */
       int success;
       outb(vgaCRReg, tmp | 0x02);
       usleep(10000);
@@ -498,10 +484,11 @@ S3SAVGEReset(int from_timeout, int line, char *file)
       usleep(10000);
       switch( s3vPriv.chip ) {
         case S3_SAVAGE3D:
-        case S3_SAVAGE3D_MV:
+        case S3_SAVAGE_MX:
 	  success = (STATUS_WORD0 & 0x0008ffff) == 0x00080000;
 	  break;
 	case S3_SAVAGE4:
+	case S3_PROSAVAGE:
 	  success = (ALT_STATUS_WORD0 & 0x0081ffff) == 0x00800000;
 	  break;
 	case S3_SAVAGE2000:
@@ -542,10 +529,10 @@ S3SAVGEReset(int from_timeout, int line, char *file)
     s3vCached_PAT_BGCLR = -1;
     s3vCached_CMD_SET = -1;
     if (xf86Verbose > 1)
-        ErrorF("ViRGE register cache hits: %d misses: %d\n",
+        ErrorF("Savage register cache hits: %d misses: %d\n",
             s3vCacheHit, s3vCacheMiss);    
     s3vCacheHit = 0; s3vCacheMiss = 0;
-
+    S3SAVSetGBD();
 }
 
 
@@ -579,9 +566,7 @@ transparency_color)
     BCI_SEND(cmd);
     if (transparency_color != -1) {
         BCI_SEND(transparency_color);
-	ErrorF("CopyRect transparency\n");
     }
-    /*ErrorF("CopyRect command 0x%.8x sent\n", cmd);*/
 #endif
     s3SavedBciCmd = cmd;
     s3SavedBgColor = transparency_color;
@@ -609,13 +594,11 @@ int x1, y1, x2, y2, w, h;
 
 #if BCI_REPEAT
     WaitQueue(4);
-    if (s3SavedBgColor != -1) 
-	BCI_SEND(s3SavedBgColor);
     BCI_SEND(BCI_X_Y(x1, y1));
     BCI_SEND(BCI_X_Y(x2, y2));
     BCI_SEND(BCI_W_H(w, h));
 #else
-    WaitQueue(5);
+    WaitQueue(6);
     BCI_SEND(s3SavedBciCmd);
     if (s3SavedBgColor != -1) 
 	BCI_SEND(s3SavedBgColor);
@@ -642,6 +625,16 @@ unsigned planemask;
     cmd = BCI_CMD_RECT
         | BCI_CMD_RECT_XP | BCI_CMD_RECT_YP
         | BCI_CMD_DEST_GBD | BCI_CMD_SRC_SOLID;
+
+    /* Don't send a color if we don't have to. */
+
+    if( rop == GXcopy )
+    {
+	if( color == 0 )
+	    rop = GXclear;
+	else if( color == MaxMask[s3vPriv.Bpp] )
+	    rop = GXset;
+    }
 
     if(
       (rop != GXclear) &&
@@ -690,7 +683,7 @@ int x, y, w, h;
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
 #else
-    WaitQueue(4);
+    WaitQueue(5);
     BCI_SEND(s3SavedBciCmd);
     if( s3SavedBciCmd & BCI_CMD_SEND_COLOR )
 	BCI_SEND(s3SavedFgColor);
@@ -745,6 +738,7 @@ unsigned planemask;
     int cmd;
 
     cmd = BCI_CMD_RECT | BCI_CMD_RECT_XP | BCI_CMD_RECT_YP
+	| BCI_CMD_CLIP_LR
         | BCI_CMD_DEST_GBD | BCI_CMD_SRC_MONO;
 
     if(
@@ -759,7 +753,8 @@ unsigned planemask;
 
     if (bg != -1)
         cmd |= BCI_CMD_SEND_COLOR;
-    else cmd |= BCI_CMD_SRC_TRANSPARENT;
+    else 
+	cmd |= BCI_CMD_SRC_TRANSPARENT;
 
 #if BCI_REPEAT    
     WaitQueue(3);
@@ -783,51 +778,24 @@ int x, y, w, h, skipleft;
     WaitQueue(4);
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
-    BCI_SEND(((w + 31) / 32) * h);
 #else
+    /* 7 is not enough.  XAA will be sending bitmap data next.  We */
+    /* should probably wait for empty/idle here. */
+
     WaitQueue(7);
-    if ( 0 ) {
+
     BCI_SEND(s3SavedBciCmd);
-#if 0
-    if(skipleft != 0)  
-        BCI_SEND(BCI_CLIP_LR(x + skipleft, s3vPriv.Width)); 
-    else
-        BCI_SEND(BCI_CLIP_LR(0, s3vPriv.Width));
-#endif
-    BCI_SEND(s3SavedFgColor);
-    if (s3SavedBgColor != -1)  
+    BCI_SEND(BCI_CLIP_LR(x, x+w-1));
+    x -= skipleft;
+    w += skipleft;
+    w = (w + 31) & ~31;
+    if( s3SavedBciCmd & BCI_CMD_SEND_COLOR )
+	BCI_SEND(s3SavedFgColor);
+    if( s3SavedBgColor != -1 )
 	BCI_SEND(s3SavedBgColor);
-    else BCI_SEND(0);
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
-    /*BCI_SEND(((w + 31) / 32) * h);*/
-    } else {
-        int i, j, count;
-	s3SavedBciCmd = 0;
-        BCI_SEND(0x4bcc8060);
-        BCI_SEND(s3SavedFgColor);
-        BCI_SEND(s3SavedBgColor);
-	count = (w + 31) / 32;
-	for (j = 0; j < 1; j ++) {
-	    BCI_SEND(BCI_X_Y(x, y+j));
-	    BCI_SEND(BCI_W_H(w, 1));
-	    for (i = count; i > 0; i--) {
-	        BCI_SEND(0xffffffff);
-	    }
-	}
-    }
 #endif
-
-    if(S3SAVROPHasSrc(s3SavedBciCmd<<1)) {
-       xf86AccelInfoRec.CPUToScreenColorExpandBase = 
-             (void *) bci_ptr;
-       xf86AccelInfoRec.ColorExpandFlags &= (~CPU_TRANSFER_BASE_FIXED); 
-       }
-    else {    /* Fix for XAA bug */
-       xf86AccelInfoRec.CPUToScreenColorExpandBase = 
-             (void *) &s3DummyTransferArea;
-       xf86AccelInfoRec.ColorExpandFlags |= CPU_TRANSFER_BASE_FIXED; 
-       }
 }
 
 
@@ -978,7 +946,7 @@ int x1, x2, y1, y2, bias;
     dx = x2 - x1;
     dy = y2 - y1;
 
-#if 0
+#ifdef DEBUG_EXTRA
     ErrorF("TwoPointLine, (%4d,%4d)-(%4d,%4d), clr %08x, last pt %s\n",
         x1, y1, x2, y2, s3SavedFgColor, (bias & 0x100)?"NO ":"YES");
 #endif
@@ -1013,9 +981,10 @@ int x1, x2, y1, y2, bias;
 
     if( s3LineHWClipSet ) {
 	cmd |= BCI_CMD_CLIP_CURRENT;
+	s3LineHWClipSet = FALSE;
     }
 
-    WaitQueue(5); 
+    WaitQueue(5);
     BCI_SEND( cmd );
     if( cmd & BCI_CMD_SEND_COLOR )
 	BCI_SEND( s3SavedFgColor );
@@ -1031,6 +1000,10 @@ int x1, y1, x2, y2;
     BCI_GET_PTR;
     int cmd;
 
+#ifdef DEBUG_EXTRA
+    ErrorF("ClipRect, (%4d,%4d)-(%4d,%4d) \n", x1, y1, x2, y2 );
+#endif
+
     cmd = BCI_CMD_NOP | BCI_CMD_CLIP_NEW;
     WaitQueue(3);
     BCI_SEND(cmd);
@@ -1038,74 +1011,3 @@ int x1, y1, x2, y2;
     BCI_SEND(BCI_CLIP_BR(y2, x2));
     s3LineHWClipSet = TRUE;
 }
-
-
-/* Trapezoid solid fills. XAA passes the coordinates of the top start
- * and end points, and the slopes of the left and right vertexes. We
- * use this info to generate the bottom points. We use a mixture of
- * floating-point and fixed point logic; the biases are done in fixed
- * point. Essentially, these were determined experimentally. The function
- * passes xtest, but I suspect that it will not match cfb for large polygons.
- *
- * Remaining bug: no planemask support, have to tell XAA somehow.
- */
-
-#if 0
-void
-S3SAVSubsequentFillTrapezoidSolid(y, h, left, dxl, dyl, el, right, dxr, dyr, er)
-int y, h, left, dxl, dyl, el, right, dxr, dyr, er;
-{
-int l_xdelta, r_xdelta;
-double lendx, rendx, dl_delta, dr_delta;
-int lbias, rbias;
-unsigned int cmd;
-double l_sgn = -1.0, r_sgn = -1.0;
-
-    cmd |= (CMD_POLYFILL | CMD_AUTOEXEC | MIX_MONO_PATT) ;
-    cmd |= (s3SavedRectCmdForLine & (0xff << 17));
-   
-    l_xdelta = -(dxl << 20)/ dyl;
-    r_xdelta = -(dxr << 20)/ dyr;
-
-    dl_delta = -(double) dxl / (double) dyl;
-    dr_delta = -(double) dxr / (double) dyr;
-    if (dl_delta < 0.0) l_sgn = 1.0;
-    if (dr_delta < 0.0) r_sgn = 1.0;
-   
-    lendx = l_sgn * ((double) el / (double) dyl) + left + ((h - 1) * dxl) / (double) dyl;
-    rendx = r_sgn * ((double) er / (double) dyr) + right + ((h - 1) * dxr) / (double) dyr;
-
-    /* We now have four cases */
-
-    if (fabs(dl_delta) > 1.0) {  /* XMAJOR line */
-        if (dxl > 0) { lbias = ((1 << 20) - h); }
-        else { lbias = 0; }
-        }
-    else {
-        if (dxl > 0) { lbias = ((1 << 20) - 1) + l_xdelta / 2; }
-        else { lbias = 0; }
-        }
-
-    if (fabs(dr_delta) > 1.0) {   /* XMAJOR line */
-        if (dxr > 0) { rbias = (1 << 20); }
-        else { rbias = ((1 << 20) - 1); }
-        }
-    else {
-        if (dxr > 0) { rbias = (1 << 20); }
-        else { rbias = ((1 << 20) - 1); }
-        }
-
-    WaitQueue(8);
-    CACHE_SETP_CMD_SET(cmd);
-    SETP_PRDX(r_xdelta);
-    SETP_PLDX(l_xdelta);
-    SETP_PRXSTART(((int) (rendx * (double) (1 << 20))) + rbias);
-    SETP_PLXSTART(((int) (lendx * (double) (1 << 20))) + lbias);
-
-    SETP_PYSTART(y + h - 1);
-    SETP_PYCNT((h) | 0x30000000);
-
-    CACHE_SETB_CMD_SET(s3SavedRectCmdForLine);
-
-}
-#endif
