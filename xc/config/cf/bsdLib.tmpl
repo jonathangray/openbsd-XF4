@@ -21,6 +21,9 @@ XCOMM $XFree86: xc/config/cf/bsdLib.tmpl,v 3.12 2003/01/12 02:44:25 dawes Exp $
 #  define SharedXmuReqs $(LDPRELIBS) $(XTOOLLIB) $(EXTENSIONLIB) $(XONLYLIB)
 # endif
 #endif
+#ifndef SharedXcursorReqs
+#define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
+#endif
 
 #else /* UseElfFormat */
 
