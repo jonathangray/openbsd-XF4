@@ -1467,6 +1467,8 @@ main (int argc, char *argv[])
 	int mode;
 	char *my_class = DEFCLASS;
 
+	ProgramName = argv[0];
+
 #ifndef AMOEBA
 	/* extra length in case longer tty name like /dev/ttyq255 */
 	ttydev = (char *) malloc (sizeof(TTYDEV) + 80);
@@ -1478,7 +1480,7 @@ main (int argc, char *argv[])
 #endif
 	{
 	    fprintf (stderr,
-		     "%s:  unable to allocate memory for ttydev or ptydev\n",
+		     "%s: unable to allocate memory for ttydev or ptydev\n",
 		     ProgramName);
 	    exit (1);
 	}
@@ -1494,7 +1496,6 @@ main (int argc, char *argv[])
 #endif /* __OpenBSD__ */
 
 	/* Do these first, since we may not be able to open the display */
-	ProgramName = argv[0];
 	TRACE_OPTS(options, optionDescList, XtNumber(optionDescList));
 	TRACE_ARGV("Before XtAppInitialize", argv);
 	if (argc > 1) {
