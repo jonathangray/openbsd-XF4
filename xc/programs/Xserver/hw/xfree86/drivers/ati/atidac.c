@@ -403,7 +403,7 @@ ATILoadPalette
 
         CARD8 fChanged[SizeOf(pATI->NewHW.lut) / 3];
 
-        (void)memset(fChanged, SizeOf(fChanged), 0);
+        (void)memset(fChanged, 0, SizeOf(fChanged));
 
         minShift = redShift;
         if (minShift > greenShift)
