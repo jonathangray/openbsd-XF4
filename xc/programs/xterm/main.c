@@ -4502,9 +4502,9 @@ int
 GetBytesAvailable(int fd)
 {
 #if defined(FIONREAD)
-    long arg;
-    ioctl(fd, FIONREAD, (char *) &arg);
-    return (int) arg;
+    int arg;    
+    ioctl(fd, FIONREAD, &arg);
+    return arg;
 #elif defined(__CYGWIN__)
     fd_set set;
     struct timeval timeout =
