@@ -25,7 +25,7 @@ while [	 -f $log.$i ]
 	done
 	log=$log.$i
 fi
-nohup sh -c "(echo \$\$ > ${log}.lock ; echo START: \$(date); make && make release; rm ${log}.lock; echo STOP: \$(date) ) > $log 2>&1 &"
+nohup sh -c "(echo \$\$ > ${log}.lock ; echo START: \$(date); make build && make release; rm ${log}.lock; echo STOP: \$(date) ) > $log 2>&1 &"
 sleep 10
 while [ -f ${log}.lock ]
 do
