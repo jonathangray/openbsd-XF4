@@ -614,6 +614,8 @@ void GetLoadPoint(w, closure, call_data)
 #else /* not __bsdi__ */
 #if defined(BSD) && (BSD >= 199306)
 
+#include <stdlib.h>
+
 void InitLoadPoint()
 {
 }
