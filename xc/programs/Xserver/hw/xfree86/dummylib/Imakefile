@@ -6,9 +6,12 @@ INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
 	   -I$(SERVERSRC)/include -I$(XINCLUDESRC)
 
 SRCS = \
+	dispatchException.c \
 	fatalerror.c \
 	getvalidbios.c \
 	pcitestmulti.c \
+	serverGeneration.c \
+	useMsg.c \
 	verrorf.c \
 	verrorfverb.c \
 	xalloc.c \
@@ -30,9 +33,12 @@ SRCS = \
 	sigiostubs.c
 
 OBJS = \
+	dispatchException.o \
 	fatalerror.o \
 	getvalidbios.o \
 	pcitestmulti.o \
+	serverGeneration.o \
+	useMsg.o \
 	verrorf.o \
 	verrorfverb.o \
 	xalloc.o \
