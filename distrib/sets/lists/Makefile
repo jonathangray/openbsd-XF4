@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.2 2001/04/09 15:37:36 todd Exp $
+# $OpenBSD: Makefile,v 1.3 2001/04/12 12:17:36 todd Exp $
 
 # Various list maintenance functions
 
@@ -18,7 +18,7 @@ sort:
 		mv $$f.tmp $$f; \
 	done;
 
-archs  = powerpc sparc alpha i386
+archs  = powerpc sparc alpha i386 mac68k
 #archs+= sun3 mac68k mvme68k hp300
 		
 mdtomi:
