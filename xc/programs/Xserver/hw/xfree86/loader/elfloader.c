@@ -1880,13 +1880,9 @@ int		force;
 		 */
 		symval += rel->r_addend;
 		dest32[2] = 0x81c06000 | (symval & 0x3ff);
-#ifndef __OpenBSD__
 		__asm __volatile("flush %0 + 0x8" : : "r" (dest32));
-#endif
 		dest32[1] = 0x03000000 | (symval >> 10);
-#ifndef __OpenBSD__
 		__asm __volatile("flush %0 + 0x4" : : "r" (dest32));
-#endif
 		break;
 
 	case R_SPARC_RELATIVE:	/* 22 */
