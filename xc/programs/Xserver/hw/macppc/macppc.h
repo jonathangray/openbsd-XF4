@@ -138,12 +138,10 @@ typedef struct {
 } fbFd;
 
 typedef Bool (*macppcFbInitProc)(
-#if NeedFunctionPrototypes
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
     char** /* argv */
-#endif
 );
 
 typedef struct {
@@ -162,101 +160,38 @@ extern long		sunAutoRepeatDelay;
 #endif
 extern macppcFbDataRec	macppcFbData[];
 extern fbFd		macppcFbs[];
-#if 0
-extern Bool		sunFlipPixels;
-extern Bool		sunActiveZaphod;
-extern Bool		sunFbInfo;
-#endif
 extern int		macppcScreenIndex;
 
-extern void macppcDisableCursor(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */
-#endif
-);
+extern void macppcDisableCursor(ScreenPtr /* pScreen */);
 
-extern void macppcEnqueueEvents(
-#if NeedFunctionPrototypes
-    void
-#endif
-);
+extern void macppcEnqueueEvents(void);
 
-extern Bool macppcSaveScreen(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */,
-    int /* on */
-#endif
-);
+extern Bool macppcSaveScreen(ScreenPtr /* pScreen */, int /* on */);
 
-extern Bool macppcScreenInit(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */
-#endif
-);
+extern Bool macppcScreenInit(ScreenPtr /* pScreen */);
 
-extern pointer macppcMemoryMap(
-#if NeedFunctionPrototypes
-    size_t /* len */,
-    off_t /* off */,
-    int /* fd */
-#endif
-);
+extern pointer macppcMemoryMap(size_t /* len */, off_t /* off */, 
+			       int /* fd */);
 
-extern Bool macppcScreenAllocate(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */
-#endif
-);
+extern Bool macppcScreenAllocate(ScreenPtr /* pScreen */);
 
-extern Firm_event* macppcKbdGetEvents(
-#if NeedFunctionPrototypes
-    int /* fd */,
-    int* /* pNumEvents */,
-    Bool* /* pAgain */
-#endif
-);
+extern Firm_event* macppcKbdGetEvents(int /* fd */, int* /* pNumEvents */,
+				      Bool* /* pAgain */);
 
-extern Firm_event* macppcMouseGetEvents(
-#if NeedFunctionPrototypes
-    int /* fd */,
-    int* /* pNumEvents */,
-    Bool* /* pAgain */
-#endif
-);
+extern Firm_event* macppcMouseGetEvents(int /* fd */, int* /* pNumEvents */,
+					Bool* /* pAgain */);
 
-extern void macppcKbdEnqueueEvent(
-#if NeedFunctionPrototypes
-    DeviceIntPtr /* device */,
-    Firm_event* /* fe */
-#endif
-);
+extern void macppcKbdEnqueueEvent(DeviceIntPtr /* device */,
+				  Firm_event* /* fe */);
 
-extern void macppcMouseEnqueueEvent(
-#if NeedFunctionPrototypes
-    DeviceIntPtr /* device */,
-    Firm_event* /* fe */
-#endif
-);
+extern void macppcMouseEnqueueEvent(DeviceIntPtr /* device */,
+				    Firm_event* /* fe */);
 
-extern int macppcKbdProc(
-#if NeedFunctionPrototypes
-    DeviceIntPtr /* pKeyboard */,
-    int /* what */
-#endif
-);
+extern int macppcKbdProc(DeviceIntPtr /* pKeyboard */,    int /* what */);
 
-extern int macppcMouseProc(
-#if NeedFunctionPrototypes
-    DeviceIntPtr /* pMouse */,
-    int /* what */
-#endif
-);
+extern int macppcMouseProc(DeviceIntPtr /* pMouse */, int /* what */);
 
-extern void macppcKbdWait(
-#if NeedFunctionPrototypes
-    void
-#endif
-);
+extern void macppcKbdWait(void);
 
 /*-
  * TVTOMILLI(tv)
@@ -265,23 +200,11 @@ extern void macppcKbdWait(
 #define TVTOMILLI(tv)	(((tv).tv_usec/1000)+((tv).tv_sec*1000))
 #define TSTOMILLI(ts)	(((ts).tv_nsec/1000000)+((ts).tv_sec*1000))
 
-extern void macppcInstallColormap(
-#if NeedFunctionPrototypes
-    ColormapPtr /* cmap */
-#endif
-);
+extern void macppcInstallColormap(ColormapPtr /* cmap */);
 
-extern void macppcUninstallColormap(
-#if NeedFunctionPrototypes
-    ColormapPtr /* cmap */
-#endif
-);
+extern void macppcUninstallColormap(ColormapPtr /* cmap */);
 
-extern int macppcListInstalledColormaps(
-#if NeedFunctionPrototypes
-    ScreenPtr /* pScreen */,
-    Colormap* /* pCmapList */
-#endif
-);
+extern int macppcListInstalledColormaps(ScreenPtr /* pScreen */,
+					Colormap* /* pCmapList */);
 
 #endif
