@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD: gensetlist,v 1.1 2003/04/07 16:24:06 todd Exp $
+#	$OpenBSD: gensetlist,v 1.2 2003/04/12 16:32:05 todd Exp $
 
 arch=$MACHINE
 listsdir=`pwd`/lists
@@ -17,9 +17,3 @@ fi
 
 
 cat $listsdir/$setname/mi $listsdir/$setname/md.${arch} 
-
-echo ./var/db/pkg/${setname}-${Release}
-echo ./var/db/pkg/${setname}-${Release}/+COMMENT
-echo ./var/db/pkg/${setname}-${Release}/+CONTENTS
-echo ./var/db/pkg/${setname}-${Release}/+DEINSTALL
-echo ./var/db/pkg/${setname}-${Release}/+DESCR

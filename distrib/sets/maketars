@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD: maketars,v 1.5 2003/04/07 16:24:06 todd Exp $
+#	$OpenBSD: maketars,v 1.6 2003/04/12 16:32:05 todd Exp $
 
 # xy
 RELEASE=$1
@@ -34,26 +34,8 @@ if [ "$arch" != "vax" -a "$arch" != "hppa" ]; then
 	lists="$lists xfont"
 fi
 
-gencontents() {
-	local setname="$1"
-	echo "@name ${setname}-$Release"
-	echo "@cwd /"
-	echo "@comment subdir=XF4 cdrom=yes ftp=yes"
-	(cd $pwd; sh gensetlist $setname $Release) | while read f; do
-		[ -f "$f" ] || continue
-		echo "${f#./*}"
-		echo "@comment MD5:$(md5 < $f)"
-	done
-}
-
 for setname in $lists; do
 	echo -n "${setname}: "
-	setdir=${DESTDIR}/var/db/pkg/${setname}-${Release}
-	install -d -m 755 -o root -g wheel ${setdir}
-	gencontents $setname > ${setdir}/+CONTENTS
-	echo "X11R6 $setname package for OpenBSD/$arch ${Release}" \
-		> ${setdir}/+COMMENT
-	chmod 755 ${setdir}/+DEINSTALL
 	(cd $pwd; sh gensetlist $setname $Release) | sort | \
 	    pax -w -d | gzip -9 > ${tardir}/${setname}${RELEASE}.tgz
 	echo    "done."
