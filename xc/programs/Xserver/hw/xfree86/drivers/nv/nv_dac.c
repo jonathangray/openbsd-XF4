@@ -146,9 +146,9 @@ NVDACRestore(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, NVRegPtr nvReg,
 {
     NVPtr pNv = NVPTR(pScrn);
     DEBUG(xf86DrvMsg(pScrn->scrnIndex, X_INFO, "NVDACRestore\n"));
+    pNv->riva.LoadStateExt(&pNv->riva, nvReg);
     vgaHWRestore(pScrn, vgaReg, VGA_SR_CMAP | VGA_SR_MODE | 
 			(restoreFonts? VGA_SR_FONTS : 0));
-    pNv->riva.LoadStateExt(&pNv->riva, nvReg);
 }
 
 /*
