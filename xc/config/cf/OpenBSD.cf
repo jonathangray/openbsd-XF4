@@ -451,6 +451,12 @@ install:: fonts.alias							@@\
 # ifndef BuildSuperProbe
 #  define BuildSuperProbe	YES
 # endif
+
+/* Build configuration tools on the i386 */
+# ifndef BuildXFree86ConfigTools
+#  define BuildXFree86ConfigTools	YES
+# endif
+
 # include <xfree86.cf>
 
 #endif /* i386Architecture */
@@ -799,6 +805,10 @@ install:: fonts.alias							@@\
 
 #ifndef BuildScreenSaverLibrary
 # define BuildScreenSaverLibrary	YES
+#endif
+
+#ifndef BuildXFree86ConfigTools
+# define BuildXFree86ConfigTools	NO
 #endif
 
 #ifndef ForceNormalLib
