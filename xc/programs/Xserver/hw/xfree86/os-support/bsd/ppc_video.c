@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.45 2001/10/28 03:34:00 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.6 2002/09/28 15:50:02 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.7 2002/09/29 19:20:42 todd Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -162,7 +162,7 @@ xf86PrivilegedInit(void)
  	kmem = open("/dev/xf86", 2);
  	if (kmem == -1) {
 		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86DropPriv: open /dev/xf86");
+ 		FatalError("xf86PrivilegedInit: open /dev/xf86");
  	}
 	pciInit();
 	xf86OpenConsole();
