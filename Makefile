@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.6 2001/02/26 23:18:51 todd Exp $
+#	$OpenBSD: Makefile,v 1.7 2001/03/06 17:17:08 espie Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -126,6 +126,8 @@ install-xc-old:
 .endif
 
 install-distrib:
+	${INSTALL} ${INSTALL_COPY} -o root -g wheel -m 444 \
+		distrib/ports.cf ${DESTDIR}/usr/X11R6/lib/X11/config
 	cd distrib/notes; ${MAKE} install
 
 fix-appd:
