@@ -100,7 +100,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.63 2000/11/06 19:24:00 dawes Exp $
 #  define SparcArchitecture
 #  undef sparc
 # endif
-# ifdef mips
+# if defined(__mips__) || defined(mips)
 #   define MipsArchitecture
 #   ifdef arc
 #     define ArcArchitecture
@@ -112,11 +112,11 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.63 2000/11/06 19:24:00 dawes Exp $
 #   endif
 #   undef mips
 # endif
-# ifdef __alpha__
+# if defined(__alpha__) || defined(alpha)
 #   define AlphaArchitecture
-#   undef __alpha__
+#   undef alpha
 # endif
-# ifdef mc68020
+# if defined(__mc68020__) || defined(mc68020)
 #  define Mc68020Architecture
 #  if defined(amiga)
 #   define AmigaArchitecture
