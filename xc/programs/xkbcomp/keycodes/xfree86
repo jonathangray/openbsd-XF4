@@ -146,6 +146,9 @@ xkb_keycodes "basic" {
     <FK17> =  122;
     <KPDC> =  123;
 
+    // This is found on Macintoch USB keyboards at least 
+    <KPEQ> =  126;
+
     // Keys that are generated on Japanese keyboards
 
     alias <HZTG> = <TLDE>;	// Hankaku_Zenkaku toggle
