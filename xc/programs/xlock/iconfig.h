@@ -371,11 +371,6 @@ PASSWDDEF = -DHAVE_SHADOW
 XCOMM Problems finding libXext.so.0 when sticky bit is set
 EXTRA_LDOPTIONS = -R/usr/lib:/usr/openwin/lib:/usr/dt/lib:/usr/local/lib
 
-#if OSMajorVersion == 2 && OSMinorVersion < 7
-PIXMAPTYPE = sol
-#else
-PIXMAPTYPE = solaris
-#endif
 #else
 SYSTEMDEF = -DSUNOS4 -DUSE_MATHERR
 SLEEPDEF = -DHAVE_USLEEP
@@ -383,9 +378,7 @@ SLEEPDEF = -DHAVE_USLEEP
 XCOMM  PASSWDDEF = -DSUNOS_ADJUNCT_PASSWD
 PASSWDDEF = -DHAVE_SHADOW
 #endif
-PIXMAPTYPE = sun
 #endif
-BITMAPTYPE = sun
 #else
 #if HasShadowPasswd
 PASSWDDEF = -DHAVE_SHADOW
@@ -405,19 +398,13 @@ SYSTEMDEF = -D_HPUX_SOURCE -DSYSV -DUSE_MATHERR
 SLEEPDEF = -DHAVE_USLEEP
 #endif
 EXTRA_LIBRARIES = -lXhp11
-BITMAPTYPE = hp
-PIXMAPTYPE = hp
 #else
 #ifdef i386SVR4Architecture
 EXTRA_LIBRARIES = -lsocket -lnsl -lgen
 PASSWDDEF = -DHAVE_SHADOW
-BITMAPTYPE = x11
-PIXMAPTYPE = x11
 #else
 #if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(i386BsdArchitecture) || defined(OpenBSDArchitecture)
 SLEEPDEF = -DHAVE_USLEEP
-BITMAPTYPE = x11
-PIXMAPTYPE = x11
 #ifndef OpenBSDArchitecture
 INSTPGMFLAGS = -s -o root -m 4111
 #else
@@ -426,19 +413,11 @@ INSTPGMFLAGS = -s -g auth -m 2755
 #else
 #ifdef LinuxArchitecture
 SLEEPDEF = -DHAVE_USLEEP
-BITMAPTYPE = linux
-PIXMAPTYPE = linux
 #if HasShadowPasswd && !UseElfFormat
 EXTRA_LIBRARIES = -lgdbm
 #endif
 #else
-#ifdef SGIArchitecture
-BITMAPTYPE = sgi
-PIXMAPTYPE = sgi
-#else
 #ifdef AIXArchitecture
-BITMAPTYPE = ibm
-PIXMAPTYPE = ibm
 XCOMM If AIX 3.1 or less, do not have struct passwd and other things
 #if OSMajorVersion < 3 || (OSMajorVersion == 3 && OSMinorVersion < 2)
 SYSTEMDEF = -DLESS_THAN_AIX3_2
@@ -458,8 +437,6 @@ XCOMM  EXTRA_LIBRARIES = -laudit
 
 #else
 #ifdef UltrixArchitecture
-BITMAPTYPE = dec
-PIXMAPTYPE = dec
 EXTRA_LIBRARIES = -lauth
 XCOMM Use this if your site is using SIA:
 XCOMM  PASSWDDEF = -DSIA
@@ -468,21 +445,17 @@ XCOMM  PASSWDLIB = -lsecurity
 
 #ifdef SCOArchitecture
 PASSWDDEF = -DHAVE_SHADOW -DSVR4
-BITMAPTYPE = sco
-PIXMAPTYPE = sco
-#else
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+
 BITMAPTYPE = x11
 PIXMAPTYPE = x11
-
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
 
 XLOCKINC = -I$(top_srcdir) -I. -I$(UTILSDIR)
 
