@@ -13,8 +13,8 @@ Post-installation instructions for XFree86[tm] on OpenBSD/i386
 	machdep.allowaperture=2
 
    in /etc/sysctl.conf.  See xf86(4) for more details about security
-   issues related to this.  After changing this variable in rc.conf, you
-   will need to reboot for the change to take effect. Most drivers for
+   issues related to this.  After changing this variable in sysctl.conf,
+   you will need to reboot for the change to take effect. Most drivers for
    XFree86 4.0.x servers require this value set to 2.
 
 2. Find out about your hardware:
