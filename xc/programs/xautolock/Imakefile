@@ -1,48 +1,38 @@
-/*
- *  Imakefile for xautolock. Edit to your likings.
- */
-
-#define HasScreenSaver 1  /* by default assume to have MIT ScreenSaver */
-#define HasXidle       0  /* by default assume not to have Xidle       */
-
+/************************************************************************/
+/*  Imakefile for xautolock. Edit to your likings.                      */
+/************************************************************************/
 
 /*
- *  No need to modify these, Imake fill take care of them.
+ *  Tell it what extensions to use.
  */
-#if HasPrototypes
-     PROTOTYPES = -DHasPrototypes 
+#ifndef HPArchitecture
+#define HasScreenSaver 1  /* By default assume to have MIT ScreenSaver, */
+#else
+#define HasScreenSaver 0  /* except on HP machines (sigh...)            */
 #endif
 
-#if HasVFork
-          VFORK = -DHasVFork
-#endif 
-
-#if HasVoidSignalReturn
-     VOIDSIGNAL = -DHasVoidSignalReturn
-#endif 
-
+#define HasXidle       0  /* By default assume not to have Xidle.       */
 
 /*
- *  This solves the wait() problems on DEC OSF/1, but there has to 
- *  be a more general fix. DEC OSF/1 also has problems with getenv.
+ *  Uncomment the following if you want xautolock to read your 
+ *  .Xdefaults file as a last resort for getting resource info.
+ *  This is not a good idea. For the reason why, see the comment
+ *  about it in src/options.c. This is not implemented on VMS.
  */
-#ifdef OSF
-  EXTRA_DEFINES = -DSYSV
-#endif 
+/*#define ReadXdefaultsFile */
 
+/************************************************************************/
+/*  No modifications needed below this line if you're not using Xidle.  */
+/************************************************************************/
 
-/*
- *  If DEC needs a special option, for sure HP cannot lag behind... :-)
- */
-#ifdef HPArchitecture
-      CCOPTIONS = -Ae
+#if HasScreenSaver
+HASSAVER        = -DHasScreenSaver
+SAVERLIB        = $(XSSLIB)
+DEPSAVERLIB     = $(DEPXSSLIB)
 #endif
-
-           SRCS = xautolock.c 
-           OBJS = $(SRCS:.c=.o)
 
 #if HasXidle
-       HASXIDLE = -DHasXidle
+HASXIDLE        = -DHasXidle
 /*
  *  Since Xidle is rather rare, I don't know of a generic way to
  *  refer to the required libraries and include files. Users of
@@ -50,15 +40,30 @@
  */
 #endif
 
-#if HasScreenSaver
-       HASSAVER = -DHasScreenSaver
-       SAVERLIB = $(XSSLIB)
-    DEPSAVERLIB = $(DEPXSSLIB)
-#endif
+#if HasVFork
+VFORK           = -DHasVFork
+#endif 
+
+#ifdef OSF
+EXTRA_DEFINES   = -DSYSV      /* Solves wait() problems on DEC OSF/1. */
+#endif 
+
+SRCS            = src/diy.c src/options.c src/message.c src/state.c \
+                  src/engine.c src/xautolock.c
+OBJS            = $(SRCS:.c=.o)
+INCLUDES        = -Iinclude
 
 LOCAL_LIBRARIES = $(SAVERLIB) $(XLIB)
-        DEPLIBS = $(DEPSAVERLIB) $(DEPXLIB)
-        DEFINES = $(PROTOTYPES) $(VOIDSIGNAL) $(VFORK) \
+DEPLIBS         = $(DEPSAVERLIB) $(DEPXLIB)
+DEFINES         = $(PROTOTYPES) $(VOIDSIGNAL) $(VFORK) \
 	          $(HASXIDLE) $(HASSAVER)
 
-SimpleProgramTarget(xautolock)
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c -o $*.o 
+
+ComplexProgramTarget(xautolock)
+
+clean::
+	$(RM) $(OBJS)
+
+distclean:: clean

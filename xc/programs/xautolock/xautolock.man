@@ -1,10 +1,10 @@
-.TH xautolock l "March 13, 1999"
+.TH xautolock l "May 6, 2001"
 
 .SH NAME
 xautolock \- fire up programs in case of user inactivity under X
 
 .SH VERSION
-This man page applies to xautolock patchlevel 15.
+This man page applies to xautolock version 2.0.
 
 .SH SYNOPSIS 
 .TP 10
@@ -23,6 +23,7 @@ This man page applies to xautolock patchlevel 15.
 [\fB\-nocloseout\fR] [\fB\-nocloseerr\fR] [\fB\-noclose\fR]
 [\fB\-disable\fR] [\fB\-enable\fR] [\fB\-toggle\fR] [\fB\-exit\fR]
 [\fB\-locknow\fR] [\fB\-unlocknow\fR] [\fB\-nowlocker\fR \fIlocker\fR]
+[\fB\-restart\fR]
 
 .SH DESCRIPTION 
 Xautolock monitors the user activity on an X Window display. If none is
@@ -77,7 +78,7 @@ option can be used to specify the time-out interval to be used if and only
 if the mouse is sitting in a `+' corner and has not been moved since the 
 previous \fIlocker\fR exited.
 
-A running xautolock process can be disabled (unless the \fB\-secure\fR
+A running xautolock process can be disabled (unless if the \fB\-secure\fR
 option has been specified), in which case it will not attempt to start the
 \fIlocker\fR. To disable an already running xautolock process, use the
 \fB\-disable\fR option. To re-enable it, use \fB\-enable\fR. To toggle it
@@ -85,7 +86,7 @@ between both states, use \fB\-toggle\fR. Using this method is preferable
 to using sending it SIGSTOP and SIGCONT signals, because while disabled 
 xautolock will still be emptying its event queue. 
 
-A running xautolock process can also be told to exit (unless the 
+A running xautolock process can also be told to exit (unless if the 
 \fB\-secure\fR option has been specified). To do this, use the
 \fB\-exit\fR option.
 
@@ -101,13 +102,13 @@ doesn't (indirectly) cause xautolock to get killed, and assuming that
 no user activity is detected, the secondary trigger will periodically
 expire every \fIkillmins\fR minutes for as long as the \fIlocker\fR runs.
 
-In combination with \fB\-killtime\fR and \fB\-killer\fR, the \fB-secure\fR
-option allows system administrators to enforce xautolock as a part of
-their security procedures, and to prevent people from locking shared 
-displays for an excessive amount of time. One way to achieve this is 
-to start xautolock (using \fB-secure\fR and optionally \fB\-killtime\fR
-and \fB\-killer\fR) from within XDM's Xsession file in such a way that
-the session automatically ends if xautolock itself is killed.
+In combination with \fB\-killtime\fR and \fB\-killer\fR, the \fB\-secure\fR
+option allows system administrators to enforce xautolock as a part of their
+security procedures, and to prevent people from locking shared displays for
+an excessive amount of time. One way to achieve this is to start xautolock
+(using \fB-secure\fR and optionally \fB\-killtime\fR and \fB\-killer\fR)
+from within XDM's Xsession file in such a way that the session
+automatically ends if xautolock itself is killed.
 
 By default xautolock closes stdout and stderr. This prevents the \fIlocker\fR
 from writing error messages to these files in case you manually lock your
@@ -207,8 +208,9 @@ X screen saver.
 .TP 
 \fB\-secure\fR
 Instructs xautolock to run in secure mode. In this mode, xautolock
-becomes immune to the effects of \fB\-enable\fR, \fB\-disable\fR, 
-\fB\-toggle\fR, and \fB\-exit\fR. The default is `false'.
+becomes imune to the effects of \fB\-enable\fR, \fB\-disable\fR, 
+\fB\-toggle\fR, and \fB\-exit\fR. The default is to honour these 
+actions.
 .TP 
 \fB\-nocloseout\fR
 Don't close stdout.
@@ -249,13 +251,19 @@ invocation of xautolock exits.
 \fB\-unlocknow\fR
 Causes an already running xautolock process (if there is one, if
 it does not have \fB\-secure\fR switched on, and is not currently
-disabled) to unlock the display immediately (if it's locked). 
-In any case, the current invocation of xautolock exits.
-.TP
+disabled) to unlock the display immediately (if it's locked) by
+sending the \fIlocker\fR a SIGTERM signal. In any case, the current
+invocation of xautolock exits.
+.TP 
 \fB\-nowlocker\fR
-Specifies the \fIlocker\fR to be used if lock is initiated with 
-\fB\-unlocknow\fR option. The default is to use the \fIlocker\fR
+Specifies the \fIlocker\fR to be used if the lock is initiated with 
+\fB\-locknow\fR option. The default is to use the \fIlocker\fR
 program given with \fB\-locker\fR option, which defaults to xlock. 
+.TP
+\fB\-restart\fR
+Causes an already running xautolock process (if there is one and 
+it does not have \fB\-secure\fR switched on) to restart. In any
+case, the current invocation of xautolock exits.
 
 .SH RESOURCES
 .TP 16
@@ -328,6 +336,13 @@ Each command line option takes precedence over the corresponding
 (default) resource specification.
 
 .SH KNOWN\ BUGS 
+
+The \fB\-disable\fR, \fB\-enable\fR, \fB\-toggle\fR, \fB\-exit\fR,
+\fB\-locknow\fR, \fB\-unlocknow\fR, and \fB\-restart\fR options depend 
+on access to the X server to do their work. This implies that they will
+be suspended in case some other application has grabbed the server 
+all for itself.
+
 If, when creating a window, an application waits for more than 30 seconds 
 before selecting KeyPress events on non-leaf windows, xautolock may
 interfere with the event propagation mechanism. This effect is theoretical
@@ -336,13 +351,13 @@ xautolock has been compiled without support for both the Xidle
 and the MIT ScreenSaver extensions, or in case the X server does 
 not support these extensions.
 
-xautolock does not properly handle the secure keyboard mode of terminal
-emulators like xterm, since that mode will prevent xautolock from noticing
-the keyboard events occurring on the terminal. Therefore, xautolock
-sometimes thinks that there is no keyboard activity while in reality there
-is. This can only occur in case xautolock has been compiled without support
-for both the Xidle and the MIT ScreenSaver extensions, or in case the 
-X server does not support these extensions.
+xautolock does not always properly handle the secure keyboard mode of 
+terminal emulators like xterm, since that mode will prevent xautolock 
+from noticing the keyboard events occurring on the terminal. Therefore,
+xautolock sometimes thinks that there is no keyboard activity while in 
+reality there is. This can only occur in case xautolock has been 
+compiled without support for both the Xidle and the MIT ScreenSaver
+extensions, or in case the X server does not support these extensions.
 
 xautolock does not check whether \fInotifier\fR and/or \fIlocker\fR are
 available.
@@ -357,32 +372,21 @@ xnlock(1),
 xscreensaver(1).
 
 .SH COPYRIGHT
-Copyright 1990, 1992-1999 by S. De Troch and M. Eyckmans (MCE).
+Copyright 1990, 1992-1999, 2001 by Stefan De Troch and Michel Eyckmans.
 
-Permission to use, copy, modify and distribute this software and the
-supporting documentation without fee is hereby granted, provided that
-.TP 4
-.B 1:
-Both the above copyright notice and this permission notice appear in all
-copies of both the software and the supporting documentation.
-.TP 4
-.B 2:
-No commercial use is made out of it.
-.TP 0
-THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-EVENT SHALL THEY BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
-DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA
-OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
-TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
+Versions 2.0 and above of xautolock are available under version 2 of the
+GNU GPL. Earlier versions are available under other conditions. For more
+information, see the License file.
 
 .SH AUTHORS   
 Xautolock was conceived, written, and performed by:
 
-Michel Eyckmans (MCE)    eyckmans@imec.be
+Michel Eyckmans (MCE) 
 .br
-Stefan De Troch          stefan@specs.philips.com
+Stefan De Troch 
+
+Please send queries for help, feature suggestions, bug reports, etc.
+to eyckmans@imec.be.
 
 .SH SPECIAL\ THANKS\ TO
-Kris Croes               croes@imec.be
+Kris Croes             
