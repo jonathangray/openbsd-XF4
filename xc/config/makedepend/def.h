@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/def.h,v 3.14 2003/01/17 17:09:49 tsi Exp $ */
+/* $XFree86: xc/config/makedepend/def.h,v 3.13tsi Exp $ */
 
 #include "Xos.h"
 #include "Xfuncproto.h"

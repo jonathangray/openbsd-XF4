@@ -23,7 +23,7 @@
 .\" dealing in this Software without prior written authorization from The
 .\" Open Group.
 .\"
-.\" $XFree86: xc/config/util/makestrs.man,v 3.9 2003/05/29 21:48:03 herrb Exp $
+.\" $XFree86: xc/config/util/makestrs.man,v 3.8 2001/12/14 19:53:22 dawes Exp $
 .\"
 .TH MAKESTRS 1 __xorgversion__
 .SH NAME

@@ -60,7 +60,7 @@ XCOMM site:  $Xorg: site.sample,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 
 #ifdef AfterVendorCF
 
-#define ProjectRoot /usr/X11R6.4
+#define ProjectRoot Concat(/usr/X11R,XORG_VERSION_MAJOR.XORG_VERSION_MINOR)
 
 /* Only set HasXdmAuth to YES if you have a Wraphelp.c file. */
 /* #define HasXdmAuth YES */
@@ -109,7 +109,7 @@ XCOMM site:  $Xorg: site.sample,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 /* You MAY need SetUID if users run the server by hand or under xinit */
 /* Consult your system administrator before making the X server setuid */
 /*
-#ifdef XFree86Version
+#if defined(XFree86Version) || defined(XorgVersion)
 #define InstallXserverSetUID YES
 #endif
 */

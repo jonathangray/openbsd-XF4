@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/pswtypes.h,v 1.3 2001/07/29 05:01:10 tsi Exp $ */
+/* $XFree86$ */
 
 #ifndef PSWTYPES_H
 #define PSWTYPES_H

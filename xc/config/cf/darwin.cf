@@ -1,4 +1,5 @@
-XCOMM platform:  $XFree86: xc/config/cf/darwin.cf,v 1.51 2004/02/11 00:30:27 torrey Exp $
+XCOMM $XdotOrg: xc/config/cf/darwin.cf,v 1.4 2004/09/02 01:23:45 kem Exp $
+XCOMM platform:  $XFree86: xc/config/cf/darwin.cf,v 1.50 2004/01/20 23:54:50 torrey Exp $
 
 /* Darwin / Mac OS X configuration by John Carmack <johnc@idsoftware.com> */
 
@@ -250,14 +251,21 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # define InstallXserverSetUID   NO
 #endif
 
+/* Allow Xtrans to work with non-SetUID server. */
+#ifndef XtransFailSoft
+# define XtransFailSoft         YES
+#endif
+
 /* disable XKB by default as it can cause problems */
 #define DfltDisableXKB          YES
 
 /* no direct graphics extension */
 #define BuildXF86DGA            NO
 
-/* no server support for extra tablets and weird input devices */
-#define BuildXInputExt          NO
+/* Support for tablets and other non-standard input devices */
+#ifndef BuildXInputExt
+# define BuildXInputExt         YES
+#endif
 #define BuildXInputLib          YES
 
 /* no Display Power Management extension */
@@ -303,5 +311,5 @@ clean::									@@\
 #endif
 
 /* include all the XFree86 rules */
-#include <xfree86.cf>
+#include <xorg.cf>
 

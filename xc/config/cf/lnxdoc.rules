@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/lnxdoc.rules,v 3.28 2003/10/18 02:14:21 dawes Exp $
+XCOMM $XFree86: xc/config/cf/lnxdoc.rules,v 3.27 2003/01/15 03:17:29 dawes Exp $
 XCOMM
 XCOMM Rules for formatting Linuxdoc-SGML documentation
 XCOMM
@@ -59,7 +59,7 @@ textfile: sgmlfile $(SGMLDEPENDS)					@@\
 	  set -x;\							@@\
 	  RemoveFile($$BASE.latin1);\					@@\
 	  $(SGMLFMTCMD) -f latin1 -b -n sgmlfile && \			@@\
-	  $(XFREE86IDENTFIX) < $$BASE.latin1 > _$@ && $(MV) _$@ $@ && \	@@\
+	  $(CVSIDENTFIX) < $$BASE.latin1 | $(XORGIDENTFIX) | $(XFREE86IDENTFIX) > _$@ && $(MV) _$@ $@ && \	@@\
 	  RemoveFile($$BASE.latin1))					@@\
 									@@\
 LinuxDocInstall(textfile,$(XFREE86DOCDIR))				@@\
@@ -103,11 +103,11 @@ update.docs:: textfile							@@\
 		fi; \							@@\
 		cp textfile dstdir/dstfile; \				@@\
 		echo "" >> dstdir/dstfile; \				@@\
-		echo "\$$XFree86\$$" >> dstdir/dstfile; \		@@\
+		echo "\$$XdotOrg\$$" >> dstdir/dstfile; \		@@\
 	    else \							@@\
 		$(RM) __tmp1__ __tmp2__; \				@@\
-		fgrep -v "\$$XFree86:" textfile > __tmp1__; \		@@\
-		fgrep -v "\$$XFree86:" dstdir/dstfile > __tmp2__; \	@@\
+		fgrep -v "\$$XdotOrg:" textfile > __tmp1__; \		@@\
+		fgrep -v "\$$XdotOrg:" dstdir/dstfile > __tmp2__; \	@@\
 		if diff -B __tmp1__ __tmp2__ > /dev/null 2>&1; then :; \	@@\
 		else set -x; \						@@\
 			if [ "$(FOLLOWLINK)" = no ]; then \		@@\
@@ -115,7 +115,7 @@ update.docs:: textfile							@@\
 			fi; \						@@\
 			cp textfile dstdir/dstfile ; \			@@\
 			echo "" >> dstdir/dstfile; \			@@\
-			echo "\$$XFree86"": \$$" >> dstdir/dstfile; \	@@\
+			echo "\$$XdotOrg"": \$$" >> dstdir/dstfile; \	@@\
 		fi; \							@@\
 	    fi; \							@@\
 	fi								@@\

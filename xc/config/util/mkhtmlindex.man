@@ -20,13 +20,13 @@ section of each page.
 .I mkhtmlindex
 takes only one argument: the directory to process.
 .SH NOTES
-This utility is currently rather specific to XFree86.
+This utility is currently rather specific to X manual pages.
 In particular, the format of the index files it outputs is not configurable,
 nor is the HTML formatting it expects of manual pages.
 .SH AUTHOR
-.PP
-David Dawes wrote the
+The version of the 
 .I mkhtmlindex
-program for XFree86.
+included in this X.Org Foundation release was originally written 
+by David Dawes wrote as a part of XFree86.
 .PP
 Colin Watson wrote this manual page, originally for the Debian Project.

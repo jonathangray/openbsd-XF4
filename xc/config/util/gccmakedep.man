@@ -116,8 +116,10 @@ normally.
 .BR make (1),
 .BR makedepend (1).
 .SH AUTHOR
+The version of the 
 .B gccmakedep
-was written by the XFree86 Project based on code supplied by Hongjiu Lu.
+included in this X.Org Foundation release was originally 
+written by the XFree86 Project based on code supplied by Hongjiu Lu.
 .PP
 Colin Watson wrote this manual page, originally for the Debian Project,
 based partly on the manual page for

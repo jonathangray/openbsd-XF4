@@ -23,7 +23,7 @@ XCOMM (c) Copyright 1996 Hitachi.
 XCOMM
 XCOMM #########################################################################
 XCOMM
-XCOMM $XFree86: xc/config/util/elistgen.usl,v 1.2 2002/10/08 23:07:42 dawes Exp $
+XCOMM $XFree86$
 
 XCOMM Utility programs
 FILTER=CXXFILT			# C++ symbol demangler

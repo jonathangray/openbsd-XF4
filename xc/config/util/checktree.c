@@ -24,7 +24,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
-/* $XFree86: xc/config/util/checktree.c,v 1.4 2001/12/14 19:53:22 dawes Exp $ */
+/* $XFree86: xc/config/util/checktree.c,v 1.3 2001/07/29 05:01:10 tsi Exp $ */
 
 #include <X11/Xos.h>
 #include <stdio.h>

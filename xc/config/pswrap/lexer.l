@@ -36,7 +36,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/lexer.l,v 1.11 2002/05/31 16:31:21 dawes Exp $ */
+/* $XFree86: xc/config/pswrap/lexer.l,v 1.10 2001/10/28 03:32:03 tsi Exp $ */
 
 #include <ctype.h>
 #include <stdlib.h>

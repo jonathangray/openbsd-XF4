@@ -1,10 +1,11 @@
 XCOMM $Xorg: sunLib.tmpl,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
+XCOMM $XdotOrg: xc/config/cf/sunLib.tmpl,v 1.6 2004/09/02 01:10:28 kem Exp $
 
 
 
 
 
-XCOMM $XFree86: xc/config/cf/sunLib.tmpl,v 3.13 2003/07/11 22:17:41 tsi Exp $
+XCOMM $XFree86: xc/config/cf/sunLib.tmpl,v 3.12tsi Exp $
 
 /*
  * SunOS shared library template
@@ -50,11 +51,49 @@ XCOMM $XFree86: xc/config/cf/sunLib.tmpl,v 3.13 2003/07/11 22:17:41 tsi Exp $
 # if ThreadedX
 #  if OSMinorVersion > 3
 #   define SharedThreadReqs /**/
-#   define SharedX11Reqs /**/
 #  endif
 # endif
-# define SharedXmuReqs $(LDPRELIBS) $(XTOOLLIB) $(XLIB)
-# define SharedXrenderReqs $(LDPRELIB) $(XLIB)
+
+# define SharedX11Reqs $(LDPRELIB) SharedThreadReqs $(EXTRA_LIBRARIES) -lc -ldl
+# define SharedXlibi18nReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedOldXReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedXtReqs $(LDPRELIB) $(XLIBONLY) $(SMLIB) $(ICELIB) -lc
+# define SharedXawReqs $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWREQS) $(XLIB) -lc
+# define SharedXaw7Reqs $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB) -lc
+# define SharedXaw6Reqs $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XLIB) -lc
+# define SharedXmuReqs $(LDPRELIB) $(XTOOLLIB) $(XLIB) -lnsl -lc
+# define SharedXmuuReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedXextReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedXiReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXtstReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedFSReqs $(EXTRA_LIBRARIES) -lc
+# define SharedICEReqs $(EXTRA_LIBRARIES) -lc
+# define SharedSMReqs $(LDPRELIB) $(ICELIB) $(EXTRA_LIBRARIES) -lc
+# define SharedXineramaReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXpReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXpmReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedXResReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXrenderReqs $(LDPRELIB) $(XLIBONLY) -lc
+# define SharedXrandrReqs  $(LDPRELIB) $(XRENDERLIB) $(XLIB) -lc
+# define SharedXssReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXvReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXvMCReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXfontReqs $(LDPRELIB) $(FREETYPE2LIB) GzipLibrary -lsocket MathLibrary -lc
+# define SharedXfontcacheReqs $(LDPRELIB) $(XLIB)
+# define SharedFontencReqs $(LDPRELIB) GzipLibrary -lc
+# define SharedXxf86dgaReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXxf86miscReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedXxf86vmReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedDPSReqs $(LDPRELIB) $(SMLIB) $(ICELIB) $(XTOOLLIB) $(XLIBONLY) $(EXTRA_LIBRARIES) -lc
+# define SharedDPSTKReqs $(LDPRELIB) $(SMLIB) $(ICELIB) $(XTOOLLIB) $(DPSLIB) $(XLIBONLY) -lc
+# define SharedPSResReqs -lc
+# define SharedGLReqs $(LDPRELIB) $(XLIB) -lc
+# define SharedOSMesaReqs $(LDPRELIB) $(XLIB) $(GLXLIB) MathLibrary -lc
+# define SharedxkbfileReqs $(LDPRELIB) $(XONLYLIB) -lc
+# define SharedxkbuiReqs $(LDPRELIB) $(XKBFILELIB) $(XONLYLIB) MathLibrary -lc
+# define SharedXauReqs -lc
+# define SharedXdmcpReqs -lsocket -lc
+
 # define FixupLibReferences() /**/
 
 # define SharedPamReqs -ldl
@@ -85,7 +124,11 @@ ICONV_INBUF_DEFINE = -DICONV_INBUF_CONST=const
 UNSHARED_CXXLIB = -static -lC
 #  elif HasSunCplusplus
 #   if CplusplusCompilerMajorVersion > 3
+#    ifdef CplusplusWhatdir
+UNSHARED_CXXLIB = -Bstatic -L`CplusplusWhatdir CC`/../lib -lC -Bdynamic
+#    else
 UNSHARED_CXXLIB = -Bstatic -L/opt/SUNWspro/SC4.0/lib -lC -Bdynamic
+#    endif
 #   else
 UNSHARED_CXXLIB = -Bstatic -lC -Bdynamic -lm -lc -Bstatic
 #   endif

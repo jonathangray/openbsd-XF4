@@ -2,7 +2,7 @@ XCOMM $Xorg: os2Lib.rules,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/config/cf/os2Lib.rules,v 3.20 2003/11/12 00:10:23 dawes Exp $
+XCOMM $XFree86: xc/config/cf/os2Lib.rules,v 3.19 2003/10/11 09:40:15 herrb Exp $
 
 /*
  * OS2/EMX shared library rules (DLL version)

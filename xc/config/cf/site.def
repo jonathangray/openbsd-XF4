@@ -21,7 +21,7 @@ XCOMM site:  $TOG: site.sample /main/r64_final/1 1998/02/05 16:28:49 kaleb $
  * .cf file, not overridden in site.def.                                   *
  *                                                                         *
  ***************************************************************************/
-XCOMM site:  $XFree86: xc/config/cf/site.def,v 3.25 2002/02/27 00:51:12 dawes Exp $
+XCOMM site:  $XFree86: xc/config/cf/site.def,v 3.24 2000/06/25 20:17:29 dawes Exp $
 
 /* if you want host-specific customization, this is one way to do it */
 /*
@@ -38,12 +38,12 @@ XCOMM site:  $XFree86: xc/config/cf/site.def,v 3.25 2002/02/27 00:51:12 dawes Ex
  * Include this for easy XFree86 customisations
  */
 #ifndef SiteIConfigFiles
-#define SiteIConfigFiles $(IRULESRC)/xf86site.def $(IRULESRC)/host.def
+#define SiteIConfigFiles $(IRULESRC)/xorgsite.def $(IRULESRC)/host.def
 #endif
 
 #include <host.def>
 
-#include <xf86site.def>
+#include <xorgsite.def>
 
 /* On systems where cpp doesn't correctly expand macros in include directives
  * the two following macros need to be defined directly (where "X11" is
@@ -138,7 +138,7 @@ XCOMM site:  $XFree86: xc/config/cf/site.def,v 3.25 2002/02/27 00:51:12 dawes Ex
 /* You MAY need SetUID if users run the server by hand or under xinit */
 /* Consult your system administrator before making the X server setuid */
 /*
-#ifdef XFree86Version
+#if defined(XFree86Version) || defined (XorgVersion)
 #define InstallXserverSetUID YES
 #endif
 */

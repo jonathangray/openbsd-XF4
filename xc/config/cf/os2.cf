@@ -2,7 +2,7 @@ XCOMM $Xorg: os2.cf,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 
 
 
-XCOMM platform:  $XFree86: xc/config/cf/os2.cf,v 3.41 2003/11/14 02:17:19 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/os2.cf,v 3.40 2003/06/10 17:03:50 dawes Exp $
 
 XCOMM hv: This file will now require a compiler that defines
 XCOMM hv: the symbol __UNIXOS2__ (currently a modified EMX gcc,
@@ -90,7 +90,6 @@ XCOMM hv: but in future a separate system)
 #define StdIncDir	/usr/include
 #define HasStickyDirBit		NO
 #define HasMkstemp		NO
-#define BuildThreadStubLibrary	NO
 #define HasBasename		NO	/* C-function, not shell utility!! */
 
 
@@ -208,6 +207,6 @@ _NULLCMD_ =
 #include <os2.rules>
 #include <os2Lib.rules>
 
-# include <xfree86.cf>
+# include <xorg.cf>
 
 	

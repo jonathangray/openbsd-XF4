@@ -1,4 +1,4 @@
-XCOMM $OpenBSD: OpenBSDLib.rules,v 1.6 2004/02/17 22:07:13 matthieu Exp $
+XCOMM $OpenBSD: OpenBSDLib.rules,v 1.7 2004/11/02 23:08:23 matthieu Exp $
 
 
 
@@ -7,7 +7,7 @@ XCOMM $OpenBSD: OpenBSDLib.rules,v 1.6 2004/02/17 22:07:13 matthieu Exp $
  * OpenBSD shared library rules
  */
 
-XCOMM $XFree86: xc/config/cf/OpenBSDLib.rules,v 1.11 2004/01/27 01:37:38 dawes Exp $
+XCOMM $XFree86: xc/config/cf/OpenBSDLib.rules,v 1.10 2003/10/31 20:49:03 herrb Exp $
 
 #ifndef UseElfFormat
 #define UseElfFormat NO

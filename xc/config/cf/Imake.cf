@@ -1,3 +1,4 @@
+XCOMM $XdotOrg: xc/config/cf/Imake.cf,v 1.4 2004/08/11 21:14:01 kem Exp $
 XCOMM $Xorg: Imake.cf,v 1.4 2000/08/17 19:41:45 cpqbld Exp $
 /*
  * To add support for another platform:
@@ -17,7 +18,7 @@ XCOMM $Xorg: Imake.cf,v 1.4 2000/08/17 19:41:45 cpqbld Exp $
  *
  *     4.  Create a .cf file with the name given by MacroFile.
  */
-XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
+XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.88 2003/12/16 21:30:21 herrb Exp $
 
 #if defined(__APPLE__)
 # undef __APPLE__
@@ -131,20 +132,17 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 # endif
 # if defined(__mips__) || defined(mips)
 #   define MipsArchitecture
-#   ifdef __LP64__
-#     define Mips64Architecture
-#   endif
 #   ifdef arc
 #     define ArcArchitecture
 #     undef arc
 #   endif
-#   ifdef pmax
-#     define PmaxArchitecture
-#     undef pmax
-#   endif
 #   ifdef sgi
 #     define SGIArchitecture
 #     undef sgi
+#   endif
+#   ifdef pmax
+#     define PmaxArchitecture
+#     undef pmax
 #   endif
 #   undef mips
 #   undef __mips__
@@ -159,10 +157,6 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 #   undef __amd64__
 #   undef __x86_64__
 #   undef amd64
-# endif
-# if defined(__arm__)
-#   define Arm32Architecture
-#   undef __arm__
 # endif
 # if defined(__mc68020__) || defined(mc68020)
 #  define Mc68020Architecture
@@ -527,7 +521,11 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.89 2004/01/25 01:12:20 dawes Exp $
 # endif
 # ifdef _IBMR2
 #  undef _IBMR2
-#  define RsArchitecture
+#  if (DefaultOSMajorVersion < 5)
+#   define RsArchitecture
+#  else
+#   define PpcArchitecture
+#  endif
 # endif
 #endif /* ibm */
 
@@ -847,6 +845,12 @@ XCOMM Keep cpp from replacing path elements containing i486/i586/i686
 #  endif
 #  undef __powerpc__
 # endif
+# ifdef __powerpc64__
+#  ifndef Ppc64Architecture
+#   define Ppc64Architecture
+#  endif
+#  undef __powerpc64__
+# endif
 # ifdef sparc
 #  define SparcArchitecture
 #  undef sparc
@@ -922,13 +926,13 @@ XCOMM Keep cpp from replacing path elements containing i486/i586/i686
 #  define s390xArchitecture
 #  undef __s390x__
 # endif
-# if defined(__AMD64__) || defined (__x86_64__)
-#  undef __AMD64__
+# if defined(__amd64__) || defined (__x86_64__)
+#  undef __amd64__
 #  undef __x86_64__
 #  define AMD64Architecture
 # endif
-# if defined(AMD64__) || defined (x86_64__)
-#  undef AMD64__
+# if defined(amd64__) || defined (x86_64__)
+#  undef amd64__
 #  undef x86_64__
 #  ifndef AMD64Architecture
 #   define AMD64Architecture

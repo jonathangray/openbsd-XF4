@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/imake/imakemdep.h,v 3.72 2003/12/30 01:53:52 tsi Exp $ */
+/* $XFree86: xc/config/imake/imakemdep.h,v 3.71 2003/06/12 14:12:26 eich Exp $ */
 
 
 /* 
@@ -371,14 +371,11 @@ char *cpp_argv[ARGUMENTS] = {
 # ifdef __ia64__
 	"-D__ia64__",
 # endif
-# ifdef __AMD64__
-	"-D__AMD64__",
-# endif
 # ifdef __amd64__
 	"-D__amd64__",
 # endif
 # ifdef __x86_64__
-	"-D__AMD64__",
+	"-D__amd64__",
 # endif
 # ifdef __s390__
 	"-D__s390__",
@@ -621,6 +618,9 @@ char *cpp_argv[ARGUMENTS] = {
 # ifdef ppc
 	"-Dppc",
 # endif
+# ifdef ppc64
+	"-Dppc64",
+# endif
 # if defined(m68k)  || defined(M68k) || defined(m68040)
 	"-Dm68k",
 	"-DM68k",
@@ -682,6 +682,9 @@ char *cpp_argv[ARGUMENTS] = {
 # ifdef __powerpc__
 	"-D__powerpc__",
 # endif
+# ifdef __powerpc64__
+	"-D__powerpc64__",
+# endif
 # ifdef PowerMAX_OS
 	"-DPowerMAX_OS",
 # endif
@@ -713,6 +716,9 @@ char *cpp_argv[ARGUMENTS] = {
         "-D__DARWIN__",
 # ifdef __ppc__
         "-D__ppc__",
+# endif
+# ifdef __ppc64__
+        "-D__ppc64__",
 # endif
 # ifdef __i386__
         "-D__i386__",
@@ -1258,6 +1264,9 @@ struct symtab	predefs[] = {
 # ifdef __powerpc__
 	{"__powerpc__", "1"},
 # endif
+# ifdef __powerpc64__
+	{"__powerpc64__", "1"},
+# endif
 # ifdef PowerMAX_OS
 	{"PowerMAX_OS", "1"},
 # endif
@@ -1267,16 +1276,13 @@ struct symtab	predefs[] = {
 # ifdef __ia64__
 	{"__ia64__", "1"},
 # endif
-# if defined (AMD64) || defined (x86_64)
-	{"AMD64", "1"},
+# if defined (amd64) || defined (x86_64)
+	{"amd64", "1"},
 	{"x86_64", "1"},
 # endif
-# if defined (__AMD64__) || defined (__x86_64__)
-	{"__AMD64__", "1"},
-	{"__x86_64__", "1"},
-# endif
-# if defined (__amd64__)
+# if defined (__amd64__) || defined (__x86_64__)
 	{"__amd64__", "1"},
+	{"__x86_64__", "1"},
 # endif
 # ifdef __i386
 	{"__i386", "1"},
@@ -1338,11 +1344,17 @@ struct symtab	predefs[] = {
 #if defined(__ppc__)
         {"__ppc__", "1"},
 #endif
+#if defined(__ppc64__)
+        {"__ppc64__", "1"},
+#endif
 #if defined(__BIG_ENDIAN__)
       {"__BIG_ENDIAN__", "1"},
 #endif
 #if defined(__LITTLE_ENDIAN__)
       {"__LITTLE_ENDIAN__", "1"},
+#endif
+#if defined (__CHAR_BIT__)
+	{"__CHAR_BIT__", DEF_STRINGIFY(__CHAR_BIT__)},
 #endif
 	/* add any additional symbols before this line */
 	{NULL, NULL}

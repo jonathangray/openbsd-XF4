@@ -1,4 +1,5 @@
-XCOMM platform:  $XFree86: xc/config/cf/gnu.cf,v 1.13 2004/01/09 00:35:00 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/gnu.cf,v 1.12 2003/11/24 02:02:26 dawes Exp $
+XCOMM $XdotOrg: xc/config/cf/gnu.cf,v 1.2 2004/04/23 18:41:58 eich Exp $
 
 #ifndef OSName
 #define OSName			DefaultOSName
@@ -180,5 +181,5 @@ XCOMM i386Architecture
 XCOMM XXX Might need this if they are not careful with slashes.
 XCOMM #define DirFailPrefix -
 
-#include <xfree86.cf>
+#include <xorg.cf>
 

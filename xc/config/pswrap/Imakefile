@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/pswrap/Imakefile,v 1.9 2003/10/21 17:41:44 tsi Exp $
+XCOMM $XFree86: xc/config/pswrap/Imakefile,v 1.8tsi Exp $
 
      FRIENDSDEF = -DFRIENDSFILE='"<DPS/dpsfriends.h>"'
         DEFINES = -DXENVIRONMENT

@@ -1,5 +1,5 @@
 XCOMM platform:  $Xorg: sgi.cf,v 1.4 2000/08/17 19:41:48 cpqbld Exp $
-XCOMM $XFree86: xc/config/cf/sgi.cf,v 1.13 2003/10/21 17:41:44 tsi Exp $
+XCOMM $XFree86: xc/config/cf/sgi.cf,v 1.12tsi Exp $
 
 #ifndef OSName
 # define OSName		DefaultOSName
@@ -159,9 +159,7 @@ XCOMM operating system: OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVer
 #define BuildIPv6	NO
 #endif
 
-#undef  BuildXF86DRM
 #undef  BuildXF86DRI
-#define BuildXF86DRM	NO
 #define BuildXF86DRI	NO
 
 #if !HasGcc
@@ -218,12 +216,14 @@ XCOMM operating system: OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVer
 
 #define ServerOSDefines		-DDDXTIME XFree86ServerOSDefines
 
+#ifndef ServerExtraDefines
 #ifndef Mips64Architecture
 #define ServerExtraDefines	-DNEED_LINEHELPER AllocateLocalDefines \
 				XFree86ServerDefines
 #else
 #define ServerExtraDefines	-DNEED_LINEHELPER AllocateLocalDefines \
 				XFree86ServerDefines -D_XSERVER64
+#endif
 #endif
 
 /* Changed to a single shell command for pmake/smake */
@@ -316,4 +316,8 @@ clean::									@@\
 #define DoLoadableServer YES
 #endif
 
-#include <xfree86.cf>
+#ifndef UseDeprecatedKeyboardDriver
+#define UseDeprecatedKeyboardDriver YES
+#endif
+
+#include <xorg.cf>

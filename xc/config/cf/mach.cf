@@ -2,7 +2,7 @@ XCOMM $Xorg: mach.cf,v 1.3 2000/08/17 19:41:47 cpqbld Exp $
 
 
 
-XCOMM platform:  $XFree86: xc/config/cf/mach.cf,v 3.13 2001/04/19 19:54:43 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/mach.cf,v 3.12 2001/01/17 16:22:32 dawes Exp $
 
 #define OSName           Mach 2.5/3.0
 #define OSVendor          /**/
@@ -67,6 +67,10 @@ XCOMM operating system:  OSName
 # define ExtraFilesToClean *.core
 #endif
 
+#ifndef UseDeprecatedKeyboardDriver
+#define UseDeprecatedKeyboardDriver YES
+#endif
+
 #ifdef i386Architecture
-# include <xfree86.cf>
+# include <xorg.cf>
 #endif

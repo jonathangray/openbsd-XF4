@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/parse.c,v 1.12 2002/02/26 05:09:10 tsi Exp $ */
+/* $XFree86: xc/config/makedepend/parse.c,v 1.11 2001/12/17 20:52:22 dawes Exp $ */
 
 #include "def.h"
 

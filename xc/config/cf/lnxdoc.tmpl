@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/lnxdoc.tmpl,v 3.12 2003/04/23 15:43:29 tsi Exp $
+XCOMM $XFree86: xc/config/cf/lnxdoc.tmpl,v 3.11tsi Exp $
 XCOMM
 
 #ifndef HasSgmlFmt
@@ -16,6 +16,16 @@ XCOMM
 #ifndef XFree86IdentFix
 #define XFree86IdentFix	  sed -e '/\$$\XFree86:/s/....\/..\/.. ..:..:.. *//' \
 			      -e '/\$$\XFree86:/s/\$$/Generated from /'
+#endif
+
+#ifndef XorgIdentFix
+#define XorgIdentFix	  sed -e '/\$$\XdotOrg:/s/....\/..\/.. ..:..:.. *//' \
+			      -e '/\$$\XdotOrg:/s/\$$/Generated from /'
+#endif
+
+#ifndef CVSIdentFix
+#define CVSIdentFix	  sed -e '/\$$\Id:/s/....\/..\/.. ..:..:.. *//' \
+			      -e '/\$$\Id:/s/\$$/Generated from /'
 #endif
 
 #ifndef HasLatex
@@ -60,6 +70,8 @@ XCOMM
 
 
   XFREE86IDENTFIX = XFree86IdentFix
+     XORGIDENTFIX = XorgIdentFix
+      CVSIDENTFIX = CVSIdentFix
             DVIPS = DvipsCmd
      DVIPSOPTIONS = DvipsOptions
        SGMLFMTCMD = SgmlFmtCmd

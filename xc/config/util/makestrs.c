@@ -25,7 +25,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/util/makestrs.c,v 3.7 2001/12/14 19:53:22 dawes Exp $ */
+/* $XFree86: xc/config/util/makestrs.c,v 3.6 2001/07/25 15:04:41 dawes Exp $ */
 
 /* Constructs string definitions */
 

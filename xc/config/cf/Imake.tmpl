@@ -1,11 +1,12 @@
 XCOMM ----------------------------------------------------------------------
 XCOMM Makefile generated from IMAKE_TEMPLATE and INCLUDE_IMAKEFILE
 XCOMM $Xorg: Imake.tmpl,v 1.4 2000/08/17 19:41:46 cpqbld Exp $
+XCOMM $XdotOrg: xc/config/cf/Imake.tmpl,v 1.6 2004/07/28 03:24:29 gisburn Exp $
 XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM $XFree86: xc/config/cf/Imake.tmpl,v 3.156 2004/01/12 21:43:18 herrb Exp $
+XCOMM $XFree86: xc/config/cf/Imake.tmpl,v 3.155 2003/12/24 18:58:41 dickey Exp $
 XCOMM ----------------------------------------------------------------------
 
 /*
@@ -61,6 +62,10 @@ XCOMM the platform-specific parameters - edit site.def to change
 
 #ifndef HasClearmake
 # define HasClearmake NO
+#endif
+
+#ifndef ProPoliceSupport
+#define ProPoliceSupport NO
 #endif
 
 /*
@@ -370,6 +375,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasMotif
 #define HasMotif		NO
 #endif
+#ifndef HasMotif2
+#define HasMotif2		NO      /* only if system has working Motif2 or OpenMotif */
+#endif
 #ifndef HasBSDAuth
 #define HasBSDAuth		NO
 #endif
@@ -464,6 +472,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasGetpeereid
 #define HasGetpeereid		NO
 #endif
+#ifndef HasGetpeerucred
+#define HasGetpeerucred		NO
+#endif
 #ifndef NoStrstr
 #define NoStrstr		NO
 #endif
@@ -503,7 +514,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #define ByteOrder		X_BIG_ENDIAN
 #elif defined(Arm32Architecture)
 #define ByteOrder		X_LITTLE_ENDIAN
-#elif defined(PpcArchitecture)
+#elif defined(RsArchitecture)
+#define ByteOrder		X_BIG_ENDIAN
+#elif defined(PpcArchitecture) || defined(Ppc64Architecture)
 #define ByteOrder		X_BIG_ENDIAN
 #elif defined(HPArchitecture)
 #define ByteOrder		X_BIG_ENDIAN
@@ -891,6 +904,9 @@ TCLIBDIR = TclLibDir
 #ifndef AppLoadDefs
 #define AppLoadDefs -D__apploaddir__=$(XAPPLOADDIR)
 #endif
+#ifndef AppManDefs
+#define AppManDefs -D__appmansuffix__=$(MANSUFFIX)
+#endif
 #ifndef LibManDefs
 #define LibManDefs -D__libmansuffix__=$(LIBMANSUFFIX)
 #endif
@@ -908,6 +924,18 @@ TCLIBDIR = TclLibDir
 #endif
 #ifndef ProjectManDefs
 #define ProjectManDefs -D__projectroot__=$(PROJECTROOT)
+#endif
+#ifndef XConfigFileManDefs
+#define XConfigFileManDefs -D__xconfigfile__=$(XCONFIGFILE)
+#endif
+#ifndef XConfigDirManDefs
+#define XConfigDirManDefs -D__xconfigdir__=$(XCONFIGDIR)
+#endif
+#ifndef XLogFileManDefs
+#define XLogFileManDefs -D__xlogfile__=$(XLOGFILE)
+#endif
+#ifndef XServerManDefs
+#define XServerManDefs -D__xservername__=$(XSERVERNAME)
 #endif
 
 #ifndef CompressManCmd
@@ -1001,7 +1029,11 @@ TCLIBDIR = TclLibDir
 #define NoRConst NO /* YES if const for structs of funcs is bad */
 #endif
 #ifndef InstPgmFlags
-#define InstPgmFlags -s
+# ifdef CrossCompiling
+#  define InstPgmFlags
+# else
+#  define InstPgmFlags -s
+# endif
 #endif
 #ifndef InstBinFlags
 #define InstBinFlags -m 0755
@@ -1164,6 +1196,9 @@ TCLIBDIR = TclLibDir
 #endif
 #ifndef InstallFlags
 #define InstallFlags -c
+#endif
+#ifndef StripCmd
+#define StripCmd strip
 #endif
 #ifndef LdCmd
 #define LdCmd ld
@@ -1505,10 +1540,16 @@ TCLIBDIR = TclLibDir
 #ifndef GhostScriptCmd
 #define GhostScriptCmd gs
 #endif
+#ifndef HasGhostPCL
+#define HasGhostPCL NO
+#endif
 #ifndef HasGhostScript
 #define HasGhostScript NO
 #endif
-#if HasGhostScript
+#ifndef BuildPDFdocs
+#define BuildPDFdocs (HasGhostScript)
+#endif
+#if BuildPDFdocs
 #define PsToPdfCmd GhostScriptCmd -q -sOutputFile=- -sDEVICE=pdfwrite -dSAFER -dNOPAUSE -
 #endif
 #if HasSentinel
@@ -1667,6 +1708,9 @@ TCLIBDIR = TclLibDir
 # ifndef CrossAsCmd
 #  define CrossAsCmd Concat3(CrossCompileDir,/,StripPath(AsCmd))
 # endif
+# ifndef CrossStripCmd
+#  define CrossStripCmd Concat3(CrossCompileDir,/,StripPath(StripCmd))
+# endif
 #endif
 
           PATHSEP = PathSeparator
@@ -1815,7 +1859,7 @@ CXXEXTRA_INCLUDES = CplusplusExtraIncludes
    ADMINMANSUFFIX = AdminManSuffix	/* suffix for admin command man pages */
      MANSRCSUFFIX = ManSrcSuffix	/* suffix for man page source */
      MANNEWSUFFIX = ManNewSuffix	/* suffix for preprocessed man source */
-          MANDEFS = AppLoadDefs FileManDefs LibManDefs MiscManDefs DriverManDefs AdminManDefs ProjectManDefs $(XORGMANDEFS) $(VENDORMANDEFS)
+          MANDEFS = AppLoadDefs AppManDefs FileManDefs LibManDefs MiscManDefs DriverManDefs AdminManDefs ProjectManDefs XConfigFileManDefs XConfigDirManDefs XLogFileManDefs XServerManDefs $(XORGMANDEFS) $(VENDORMANDEFS)
 
    COMPRESSMANCMD = CompressManCmd
 
@@ -2108,6 +2152,7 @@ FixupLibReferences()
        LDPOSTLIBS = LdPostLibs
      TOP_INCLUDES = TopIncludes
   PROJECT_DEFINES = ProjectDefines
+   VENDOR_DEFINES = VendorDefines
 #if HasCplusplus
 CXXPROJECT_DEFINES = CplusplusProjectDefines
 #endif
@@ -2193,6 +2238,9 @@ CleanSubdirs($(SUBDIRS))
 
 #endif
 
+#if !DontPreprocessManPages || defined(PreprocessManPages)
+    PREPROCESSMANPAGES = true
+#endif
 /* must be after all install.man rules that install anything */
 #ifndef MakeManKeywords
 #define MakeManKeywords		NO

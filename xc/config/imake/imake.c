@@ -7,7 +7,7 @@
  * be passed to the template file.                                         *
  *                                                                         *
  ***************************************************************************/
-/* $XFree86: xc/config/imake/imake.c,v 3.64 2003/03/26 20:43:47 tsi Exp $ */
+/* $XFree86: xc/config/imake/imake.c,v 3.63tsi Exp $ */
 
 /*
  *
@@ -1038,7 +1038,7 @@ get_stackprotector(FILE *inFile)
     abort();
   while (fgets(buf, sizeof(buf), fp)) {
     if (strstr(buf, "propolice") != NULL) {
-      fprintf(inFile, "#define HasGccStackProtector YES\n");
+      fprintf(inFile, "#define ProPoliceSupport YES\n");
       break;
     }
   }
@@ -1178,67 +1178,133 @@ get_binary_format(FILE *inFile)
 #endif
 
 #if defined(sun) && defined(__SVR4)
+/* Runs Sun compiler command and parses output - this is a bit of a hack
+ * as it depends on the particular output format of the -V flag, but it's
+ * worked for many releases.
+ *
+ * Input : cmd - command to run (called with -V flag)
+ *	   path - path to command to run (use $PATH if NULL)
+ * Output: cmajor & cminor - major and minor versions if found
+ * Returns: 0 if successful, -1 if not.
+ */
+static int
+ask_sun_compiler_for_versions(const char *cmd, const char *path, 
+  int *cmajor, int *cminor)
+{
+  char buf[BUFSIZ];
+  char cmdtorun[PATH_MAX];
+  char* vptr;
+  FILE* ccproc;
+  const char vflag[] = " -V 2>&1";
+  int retval = -1;
+  
+  int len = strlen(cmd) + sizeof(vflag);
+
+  if (path != NULL) {
+      len += strlen(path) + 1;
+  }
+
+  if (len < sizeof(cmdtorun)) {
+      if (path != NULL) {
+	  sprintf(cmdtorun, "%s/%s %s", path, cmd, vflag);
+      } else {
+	  sprintf(cmdtorun, "%s %s", cmd, vflag);
+      }
+
+      if ((ccproc = popen (cmdtorun, "r")) != NULL) {
+	  if (fgets (buf, sizeof(buf), ccproc) != NULL) {
+	      vptr = strrchr (buf, 'C');
+	      if (vptr) {
+		  for (; (*vptr != '\0') && !isdigit(*vptr); vptr++) {
+		      /* Do nothing - just scanning for first digit */
+		  }
+		  if (*vptr != '\0') {
+		      if (sscanf (vptr, "%d.%d", cmajor, cminor) == 2) {
+			  retval = 0;
+		      }
+		  }
+	      }
+	      if (retval != 0) {
+		  fprintf(stderr, 
+		    "warning: could not parse version number in output of:\n"
+		    "         %s\n", cmdtorun);
+	      }
+	      while (fgets (buf, sizeof(buf), ccproc) != NULL) {};
+	  }
+	  pclose (ccproc);
+      }
+  }
+  return retval;
+}
+
+/* Find Sun compilers and their versions if present */
 static void
 get_sun_compiler_versions (FILE *inFile)
 {
-  char buf[PATH_MAX];
-  char cmd[PATH_MAX];
-  static char* sunpro_cc = "/opt/SUNWspro/bin/cc";
-  static char* sunpro_CC = "/opt/SUNWspro/bin/CC";
-  int cmajor, cminor;
-  char* vptr;
+  const char* sunpro_path = "/opt/SUNWspro/bin";
+  int cmajor, cminor, found = 0;
   struct stat sb;
-  FILE* ccproc;
+
+  /* If cross-compiling, only check CrossCompilerDir for compilers.
+   * If not cross-compiling, first check cc in users $PATH, 
+   * then try /opt/SUNWspro if not found in the users $PATH
+   */
 
 #if defined CROSSCOMPILE
   if (CrossCompiling) {
-      int len = strlen(CrossCompileDir);
-      len += 3;
-      sunpro_cc = (char *) malloc(len);
-      sunpro_CC = (char *) malloc(len);
-      strcpy(sunpro_cc,CrossCompileDir);
-      strcpy(sunpro_CC,CrossCompileDir);
-      strcat(sunpro_cc,"/cc");
-      strcat(sunpro_CC,"/CC");
-  }
+      if (ask_sun_compiler_for_versions("cc", CrossCompileDir,
+	&cmajor, &cminor) == 0) {
+	      found = 1;
+      }
+  } 
+  else
 #endif
-  if (lstat (sunpro_cc, &sb) == 0) {
-    strcpy (cmd, sunpro_cc);
-    strcat (cmd, " -V 2>&1");
-    if ((ccproc = popen (cmd, "r")) != NULL) {
-      if (fgets (buf, PATH_MAX, ccproc) != NULL) {
-	vptr = strrchr (buf, 'C');
-	for (; !isdigit(*vptr); vptr++);
-	(void) sscanf (vptr, "%d.%d", &cmajor, &cminor);
-	fprintf (inFile,
-		 "#define DefaultSunProCCompilerMajorVersion %d\n",
-		 cmajor);
-	fprintf (inFile,
-		 "#define DefaultSunProCCompilerMinorVersion %d\n",
-		 cminor);
+  {    
+      if (ask_sun_compiler_for_versions("cc", NULL, &cmajor, &cminor) == 0) {
+	  found = 1;
+      } else if (ask_sun_compiler_for_versions("cc", sunpro_path,
+	&cmajor, &cminor) == 0) {
+	  found = 1;
+	  fprintf(inFile, "#define DefaultSunProCCompilerDir %s", sunpro_path);
       }
-      while (fgets (buf, PATH_MAX, ccproc) != NULL) {};
-      pclose (ccproc);
-    }
   }
-  if (lstat (sunpro_CC, &sb) == 0) {
-    strcpy (cmd, sunpro_CC);
-    strcat (cmd, " -V 2>&1");
-    if ((ccproc = popen (cmd, "r")) != NULL) {
-      if (fgets (buf, PATH_MAX, ccproc) != NULL) {
-	vptr = strrchr (buf, 'C');
-	for (; !isdigit(*vptr); vptr++);
-	(void) sscanf (vptr, "%d.%d", &cmajor, &cminor);
-	fprintf (inFile,
-		 "#define DefaultSunProCplusplusCompilerMajorVersion %d\n",
-		 cmajor);
-	fprintf (inFile,
-		 "#define DefaultSunProCplusplusCompilerMinorVersion %d\n",
-		 cminor);
+
+  if (found) {
+      fprintf (inFile,
+	"#define DefaultSunProCCompilerMajorVersion %d\n", cmajor);
+      fprintf (inFile,
+	"#define DefaultSunProCCompilerMinorVersion %d\n", cminor);
+  }
+
+  /* Now do it again for C++ compiler (CC) */
+  found = 0;
+#if defined CROSSCOMPILE
+  if (CrossCompiling) {
+      if (ask_sun_compiler_for_versions("CC", CrossCompileDir,
+	&cmajor, &cminor) == 0) {
+	      found = 1;
       }
-      while (fgets (buf, PATH_MAX, ccproc) != NULL) {};
-      pclose (ccproc);
-    }
+  } 
+  else
+#endif
+  {    
+      if (ask_sun_compiler_for_versions("CC", NULL, &cmajor, &cminor) == 0) {
+	  found = 1;
+      } else if (ask_sun_compiler_for_versions("CC", sunpro_path,
+	&cmajor, &cminor) == 0) {
+	  found = 1;
+	  fprintf(inFile, 
+		"#define DefaultSunProCplusplusCompilerDir %s", sunpro_path);
+      }
+  }
+
+  if (found) {
+      fprintf (inFile,
+	"#define DefaultSunProCplusplusCompilerMajorVersion %d\n",
+	cmajor);
+      fprintf (inFile,
+	"#define DefaultSunProCplusplusCompilerMinorVersion %d\n",
+	cminor);
   }
 }
 #endif
@@ -1384,6 +1450,21 @@ define_os_defaults(FILE *inFile)
 	  name = &uts_name;
       }
 #endif
+# ifdef __FreeBSD__
+       /* Override for compiling in chroot of other OS version, such as
+        * in the bento build cluster.
+        */
+       {
+	 char *e;
+	 if ((e = getenv("OSREL")) != NULL && 
+	     strlen(name->sysname) + strlen(e) + 1 < SYS_NMLN) {
+	  strcpy(name->release, e);
+	  strcpy(name->version, name->sysname);
+	  strcat(name->version, " ");
+	  strcat(name->version, e);
+	 }
+       }
+# endif
 
 #  if defined DEFAULT_OS_NAME
 #   if defined CROSSCOMPILE

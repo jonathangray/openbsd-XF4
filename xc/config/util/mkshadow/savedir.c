@@ -14,7 +14,7 @@
    (The FSF has modified its usual distribution terms, for this file,
    as a courtesy to the X project.)  */
 
-/* $XFree86: xc/config/util/mkshadow/savedir.c,v 1.2 2001/07/25 15:04:41 dawes Exp $ */
+/* $XFree86$ */
 
 /* Written by David MacKenzie <djm@ai.mit.edu>.
    Modified to use <dirent.h> by default.  Per Bothner <bothner@cygnus.com>. */

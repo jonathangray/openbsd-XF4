@@ -1,7 +1,7 @@
 /*
  * GNU/Hurd shared library rules
  *
- * $XFree86: xc/config/cf/gnuLib.rules,v 1.10 2004/01/27 01:37:39 dawes Exp $
+ * $XFree86: xc/config/cf/gnuLib.rules,v 1.9 2003/10/11 09:40:13 herrb Exp $
  */
 
 /*
@@ -80,7 +80,7 @@ XCOMM XXX Maybe superfluous.
 install:: Concat(lib,libname.so.rev) 					@@\
 	MakeDir($(DESTDIR)dest)						@@\
 	$(INSTALL) $(INSTALLFLAGS) $(INSTBINFLAGS) Concat(lib,libname.so.rev) $(DESTDIR)dest @@\
-	@T=`echo Concat($(DESTDIR)dest/lib,libname.so.rev) | sed 's/\.[^\.]*$$//'`;\
+	@T=`echo Concat($(DESTDIR)dest/lib,libname.so.rev) | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`;\
 	  set -x; $(RM) $$T && $(LN) Concat(lib,libname.so.rev) $$T	@@\
 	@if $(SOSYMLINK); then (set -x; \
 	  $(RM) Concat($(DESTDIR)dest/lib,libname.so); \		@@\
@@ -106,7 +106,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  solist $(EXTRALIBRARYDEPS)			@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 		(cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs); \ @@\
 		$(RM) $$SONAME; $(LN) $@ $$SONAME; \			@@\
 		LinkBuildSonameLibrary($$SONAME)			@@\
@@ -119,7 +119,7 @@ Concat(lib,libname.so.rev):  solist $(EXTRALIBRARYDEPS)			@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.so),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.so.$$MAJREV)			@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 
@@ -134,7 +134,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 		(cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs); \ @@\
 		$(RM) $$SONAME; $(LN) $@ $$SONAME; \			@@\
 		LinkBuildSonameLibrary($$SONAME)			@@\
@@ -147,7 +147,7 @@ Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.so),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.so.$$MAJREV)			@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 

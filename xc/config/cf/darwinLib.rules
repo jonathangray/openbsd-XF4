@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/darwinLib.rules,v 1.9 2003/10/11 09:40:12 herrb Exp $
+XCOMM $XFree86: xc/config/cf/darwinLib.rules,v 1.8 2003/10/09 22:43:18 herrb Exp $
 /*
  * Darwin/Mac OS X shared library rules
  */
@@ -43,7 +43,7 @@ XCOMM $XFree86: xc/config/cf/darwinLib.rules,v 1.9 2003/10/11 09:40:12 herrb Exp
 install:: Concat(lib,libname.rev.dylib)					@@\
 	MakeDir($(DESTDIR)dest)						@@\
 	$(INSTALL) $(INSTALLFLAGS) $(INSTLIBFLAGS) Concat(lib,libname.rev.dylib) $(DESTDIR)dest @@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	  set -x; $(RM) Concat($(DESTDIR)dest/lib,libname.$$MAJREV.dylib) && \ @@\
 	  $(LN) Concat(lib,libname.rev.dylib) Concat($(DESTDIR)dest/lib,libname.$$MAJREV.dylib) @@\
 	@if $(SOSYMLINK); then (set -x; \				@@\
@@ -62,7 +62,7 @@ AllTarget(Concat(lib,libname.rev.dylib))				@@\
 									@@\
 Concat(lib,libname.rev.dylib):  solist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	  INSTALLNAME=Concat(lib,libname.$$MAJREV.dylib); \		@@\
 	  set -x; (cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -install_name $(USRLIBDIR)/$$INSTALLNAME -current_version rev -compatibility_version rev solist $(REQUIREDLIBS)); \ @@\
 	  $(RM) $$INSTALLNAME; $(LN) $@ $$INSTALLNAME; \		@@\
@@ -76,7 +76,7 @@ Concat(lib,libname.rev.dylib):  solist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.dylib),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.$$MAJREV.dylib)		@@\
 	$(RM) Concat(lib,libname.rev.dylib) Concat(lib,libname.dylib)
 
@@ -91,7 +91,7 @@ AllTarget(Concat(lib,libname.rev.dylib))				@@\
 									@@\
 Concat(lib,libname.rev.dylib):  deplist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	  INSTALLNAME=Concat(lib,libname.$$MAJREV.dylib); \		@@\
 	  set -x; (cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -install_name $(USRLIBDIR)/$$INSTALLNAME -current_version rev -compatibility_version rev solist $(REQUIREDLIBS)); \ @@\
 	  $(RM) $$INSTALLNAME; $(LN) $@ $$INSTALLNAME; \		@@\
@@ -105,7 +105,7 @@ Concat(lib,libname.rev.dylib):  deplist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.dylib),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.$$MAJREV.dylib)		@@\
 	$(RM) Concat(lib,libname.rev.dylib) Concat(lib,libname.dylib)
 
@@ -120,7 +120,7 @@ AllTarget(Concat(lib,libname.rev.dylib))				@@\
 									@@\
 Concat(lib,libname.rev.dylib):  deplist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	  INSTALLNAME=Concat(lib,libname.$$MAJREV.dylib); \		@@\
 	  set -x; (cd down; $(CXX) -o up/$@~ $(SHLIBLDFLAGS) -install_name $(USRLIBDIR)/$$INSTALLNAME -current_version rev -compatibility_version rev solist $(REQUIREDLIBS)); \ @@\
 	  $(RM) $$INSTALLNAME; $(LN) $@ $$INSTALLNAME; \		@@\
@@ -134,7 +134,7 @@ Concat(lib,libname.rev.dylib):  deplist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.dylib),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.$$MAJREV.dylib)		@@\
 	$(RM) Concat(lib,libname.rev.dylib) Concat(lib,libname.dylib)
 

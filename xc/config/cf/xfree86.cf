@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/xfree86.cf,v 3.467 2004/01/28 01:47:26 dawes Exp $
+XCOMM $XFree86: xc/config/cf/xfree86.cf,v 3.466 2004/01/11 18:48:11 dawes Exp $
 /*
  * This configuration file contains all of the configuration
  * information for the XFree86 based X Servers.
@@ -85,7 +85,7 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 #endif
 
 #ifndef XVendorString
-# define XVendorString	"The XFree86 Project, Inc"
+# define XVendorString	"The X.Org Foundation, Inc"
 #endif
 
 #ifndef XVendorRelease
@@ -128,7 +128,7 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 #define XConfigFile		XF86Config
 #endif
 #ifndef XConfigDir
-#define XConfigDir		EtcX11Directory
+#define XConfigDir		$(LIBDIR)
 #endif
 #ifndef XLogFile
 #define XLogFile		XFree86
@@ -226,9 +226,6 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 /* The glide driver only works for the loadable server at the moment */
 #ifndef HasGlide2
 #define HasGlide2 NO
-#endif
-#ifndef HasGlide3
-#define HasGlide3 NO
 #endif
 #if HasGlide2 && DoLoadableServer
 #define GlideDriver glide
@@ -405,9 +402,6 @@ XCOMM $Xorg: xfree86.cf,v 1.4 2000/08/17 19:41:49 cpqbld Exp $
 #if defined(AMD64Architecture)
 # ifndef XF86Server
 #  define XF86Server		YES
-# endif
-# ifndef XF86AFB
-#  define XF86AFB		!DoLoadableServer
 # endif
 /* 1bpp module */
 # ifndef XF1Bpp
@@ -1198,10 +1192,6 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 #define BuildXF86DRI	NO
 #endif
 
-#ifndef BuildXF86DRM
-#define BuildXF86DRM	NO
-#endif
-
 #ifndef GlxUseSGISI
 #define GlxUseSGISI	NO
 #endif
@@ -1586,11 +1576,11 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
  * Include fonts support
  */
 #ifndef BuildSpeedo
-# define BuildSpeedo		YES
+# define BuildSpeedo		NO
 #endif
 
 #ifndef BuildType1
-# define BuildType1		YES
+# define BuildType1		NO
 #endif
 
 #ifndef BuildCID
@@ -1599,10 +1589,6 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 
 #ifndef BuildFreeType
 # define BuildFreeType		YES
-#endif
-
-#ifndef BuildXTrueType
-# define BuildXTrueType		YES
 #endif
 
 /*
@@ -1615,7 +1601,7 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 # define Build100DpiFonts	YES
 #endif
 #ifndef BuildSpeedoFonts
-# define BuildSpeedoFonts	YES
+# define BuildSpeedoFonts	NO
 #endif
 #ifndef BuildType1Fonts
 # define BuildType1Fonts	YES
@@ -1763,8 +1749,8 @@ IPLAN2P8_DEFS = -DUSE_IPLAN2P8
 # define UsbMouseSupport NO
 #endif
 /* Does this OS have libusb ? */
-#ifndef HasLibUsbHid
-# define HasLibUsbHid	NO
+#ifndef HasLibUsb
+# define HasLibUsb	NO
 #endif
 
 #ifndef UseServerLock
@@ -1871,8 +1857,7 @@ XFREE86JAPANESEDOCDIR = $(DOCDIR)/Japanese
 #  if XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
 			  -Wmissing-prototypes -Wmissing-declarations \
-			  -Wredundant-decls -Wnested-externs -Wbounded \
-			  Gcc28Warnings
+			  -Wredundant-decls -Wnested-externs Gcc28Warnings
 #  else
 #   define GccWarningOptions -Wall -Wpointer-arith Gcc28Warnings
 #  endif

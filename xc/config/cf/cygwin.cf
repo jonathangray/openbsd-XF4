@@ -1,10 +1,54 @@
-XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dickey Exp $
+/* Cygwin/X vendor strings and version */
+#ifndef CygxVersionMajor
+# define CygxVersionMajor	6
+#endif
+#ifndef CygxVersionMinor
+# define CygxVersionMinor	8
+#endif
+#ifndef CygxVersionPatch
+# define CygxVersionPatch	1
+#endif
+#ifndef CygxVersionSnap
+# define CygxVersionSnap	0
+#endif
+#ifndef CygxVersionServer
+# define CygxVersionServer	0
+#endif
 
+#ifndef CygxVersion
+# define CygxVersion (10000000 * CygxVersionMajor + 100000 * CygxVersionMinor + 1000 * CygxVersionPatch + CygxVersionSnap)
+#endif
+
+#ifndef CygxVersionString
+# define CygxVersionString `echo CygxVersionMajor CygxVersionMinor CygxVersionPatch CygxVersionSnap%CygxVersionServer| sed -e 's/ /./g' -e 's/%/-/g'`
+#endif
+
+#ifndef CygxManVersionString
+# define CygxManVersionString `echo CygxVersionMajor CygxVersionMinor CygxVersionPatch CygxVersionSnap| sed -e 's/ /./g' -e 's/^/Version\\\ /'`
+#endif
+
+#ifndef XVendorString
+# define XVendorString "The Cygwin/X Project"
+#endif
+#ifndef XVendorRelease
+# define XVendorRelease CygxVersion
+#endif
+#ifndef XVendorManVersionString
+# define XVendorManVersionString CygxManVersionString
+#endif
+#ifndef XVendorManNameString
+# define XVendorManNameString "Cygwin/X"
+#endif
+#ifndef XVendorContact
+# define XVendorContact "cygwin-xfree@cygwin.com"
+#endif
+
+/* Operating system strings and version */
 #ifndef OSName
-# define OSName                 Cygwin
+# define OSName			Cygwin
 #endif
 #ifndef OSVendor
-# define OSVendor               Red Hat Inc.
+# define OSVendor		Red Hat Inc.
 #endif
 #ifndef OSMajorVersion
 # define OSMajorVersion		DefaultOSMajorVersion
@@ -16,68 +60,54 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
 # define OSTeenyVersion		DefaultOSTeenyVersion
 #endif
 
-#define ProjectRoot 		/usr/X11R6
-
-/* We always want to enable server building */
-#define BuildServer		YES
-
-#ifndef UnixCpp
-# define UnixCpp
+#ifndef ProjectRoot
+# define ProjectRoot 		/usr/X11R6
 #endif
 
 #if !CrossCompiling
 # define HasGcc2		YES
 #endif /* !CrossCompiling */
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+#define GnuCpp			YES
+#define UnixCpp /* Just a flag that affects Concat macros in Imake.rules */
 
-#define HasGcc2ForCplusplus     YES
-#define GccUsesGas              YES
-#define UseGas                  YES
-#define GnuCpp                  YES
+#define ExtraLoadFlags		-Wl,--enable-auto-import,--enable-runtime-pseudo-reloc
 
-#define ExtraLoadFlags		-Wl,--enable-auto-import
-
-#define HasShadowPasswd         NO
-#define HasLibCrypt             YES
-#define HasPutenv               YES
+#define HasShadowPasswd		NO
+#define HasLibCrypt		YES
+#define HasPutenv		YES
 #define HasPoll			NO
-
 #if (OSMajorVersion > 1) || (OSMajorVersion == 1 && OSMinorVersion >= 5)
-#define HasStrlcat		YES
+# define HasStrlcat		YES
 #endif
-
-#ifndef UseCygIPC
-# define UseCygIPC		YES
-#endif
-#if UseCygIPC
-# define HasShm			YES
-# define ServerExtraSysLibs	-lcygipc
-#else
-# define HasShm                 NO
-# define ServerExtraSysLibs	/**/
-#endif
+#define HasShm			YES
 
 #define HasSnprintf		YES
-
 #ifndef HasMakefileSafeInclude
 # define HasMakefileSafeInclude YES
 #endif
+
 /*
  * Cygwin has Tcl/Tk, but you need to keep the version numbers
  * of the libs in sync.  These version numbers may change
  * occassionally.
  */
-#define Hastcl                  YES
-#define Hastk                   YES
-#define TclLibName              tcl80
-#define TkLibName               tk80
+#define Hastcl			YES
+#define Hastk			YES
+#define TclLibName		tcl80
+#define TkLibName		tk80
 
-#define HasSockets              YES
+#define HasSockets		YES
 #define GzipFontCompression	YES
 #define HasZlib			YES
-#define GzipLibrary             -lz.dll
+#ifndef GzipLibrary
+# define GzipLibrary		-lz.dll
+#endif
 
 /* We don't need -lm */
-#define MathLibrary             /**/
+#define MathLibrary		/**/
 
 /*
  * /lib/libtermcap.a doesn't have tgetent, which is needed for
@@ -85,62 +115,71 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
  */
 #define TermcapLibrary		-lncurses.dll
 
-#define AvoidNullMakeCommand    YES
-#define StripInstalledPrograms  YES
-#define CompressAllFonts        YES
-#define Malloc0ReturnsNull      NO
-#define NeedConstPrototypes     YES
-#define NeedFunctionPrototypes  YES
-#define NeedNestedPrototypes    YES
-#define NeedVarargsPrototypes   YES
-#define NeedWidePrototypes      NO
-#define SetTtyGroup             YES
-#define ExpandManNames          YES
-#define HasDlopen	        NO
+#define AvoidNullMakeCommand	YES
+#define StripInstalledPrograms	YES
+#define CompressAllFonts	YES
+#define Malloc0ReturnsNull	NO
+#define NeedConstPrototypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+#define SetTtyGroup		YES
+#define ExpandManNames		YES
+#define HasDlopen		NO
 #define HasGnuMake		YES
 #define UseGccMakeDepend	NO
-#define ThreadedX               YES
-#define HasThreadSafeAPI        YES
-#define CaseSensitiveFileSystem NO
+#define ThreadedX		YES
+#define HasThreadSafeAPI	YES
+#if !CrossCompiling
+#define CaseSensitiveFileSystem	NO
+#endif
+#define HasWChar32		YES
 #define HasBasename		NO /* basename() in libc */
 
-#define LnCmd                   ln -s
-
+#define LnCmd			ln -s
 #ifndef CcCmd
-# define CcCmd                   gcc
+# define CcCmd			gcc
 #endif /* CcCmd */
 #ifndef CplusplusCmd
 # define CplusplusCmd		g++
 #endif /* CplusplusCmd */
 #ifndef AsCmd
-# define AsCmd                   as
+# define AsCmd			as
 #endif /* AsCmd */
 
-#define GccGasOption	        -DGCCUSESGAS
-#define AsmDefines	        -DUSE_GAS -DGCCUSESGAS
+#define GccGasOption		-DGCCUSESGAS
+#define AsmDefines		-DUSE_GAS -DGCCUSESGAS
 
 #ifndef LdCmd
-# define LdCmd                   gcc -lautomode
+# define LdCmd			gcc -lautomode
 #endif /* LdCmd */
 
-#define MkdirHierCmd            mkdir -p
+#define MkdirHierCmd		mkdir -p
 
 #ifndef CppCmd
-# define CppCmd                  cpp
+# define CppCmd			cpp
 #endif /* CppCmd */
 #ifndef YaccCmd
-# define YaccCmd                 byacc
+# define YaccCmd		bison -y
 #endif /* YaccCmd */
 
-#define LexCmd                  flex -l
-#define LexLib                  -lfl
+#define LexCmd			flex -l
+#define LexLib			-lfl
 #define HasFlex			YES
-#define HasExpat		YES
+#ifndef CrossCompileDir
+# ifndef HasExpat
+#  define HasExpat		YES
+# endif
+# ifndef HasFreetype2
+#  define HasFreetype2		YES
+# endif
+# ifndef HasFontconfig
+#  define HasFontconfig		YES
+# endif
+#endif
 
-/*
- * Cygwin-specific Windows resource compiler command
- */
-
+/* Cygwin-specific Windows resource compiler command */
 #ifdef CrossCompileDir
 # ifndef WindresCmd
 #  define WindresCmd		Concat3(CrossCompileDir,/,windres)
@@ -151,7 +190,7 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
 # endif
 #endif
 
-#define PreProcessCmd           CcCmd -E
+#define PreProcessCmd		CcCmd -E
 
 #ifndef PostIncDir
 # ifdef CrossCompileDir
@@ -168,20 +207,21 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
 # endif
 #endif
 
-#define LdCombineFlags          -r
-
+#ifndef BourneShell
 /*
- * We do not define -ansi yet as newlib (which is Cygwin's library) does not
- * define some needed prototypes when -ansi is set, when that is fixed
- * we can remove these lines and use the default XFree86 options.
+ * This will cause builds/installs to terminate on errors, as on other
+ * platforms.
  */
-#ifndef DefaultCCOptions
-# define DefaultCCOptions	/* -ansi -pedantic */ GccWarningOptions
+#define BourneShell		/bin/sh -e
 #endif
 
-/*
- * Cygwin 1.5.x now includes alloca
- */
+#define LdCombineFlags		-r
+
+#ifndef DefaultCCOptions
+# define DefaultCCOptions	-Wall -Wpointer-arith
+#endif
+
+/* Cygwin 1.5.x now includes alloca */
 #if OSMinorVersion >= 5
 # define AllocateLocalDefines	-DINCLUDE_ALLOCA_H
 #else
@@ -189,208 +229,213 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
 #endif
 
 #ifndef OptimizedCDebugFlags
-# define OptimizedCDebugFlags	DefaultGcc2i386Opt
+# define OptimizedCDebugFlags	-O2 -fno-strength-reduce
 #endif
 
-#define StandardDefines         -D__i386__ -DWIN32_LEAN_AND_MEAN -DX_LOCALE \
+/*
+ * -DFD_SETSIZE=256 is needed for xfs and the xserver. cygwin defines the
+ * FD_SETSIZE as 64 but some code expects it to be larger. 
+ */ 
+#define StandardDefines		-D__i386__ -DWIN32_LEAN_AND_MEAN -DX_LOCALE \
 				-D_X86_ -D__CYGWIN__ -D_XOPEN_SOURCE \
 				-D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE \
-				-D_SVID_SOURCE -D_GNU_SOURCE
-
+				-D_SVID_SOURCE -D_GNU_SOURCE -DFD_SETSIZE=256 \
+				-DXResExtension
 #define XawI18nDefines		-DHAS_WCHAR_H -DHAS_WCTYPE_H \
 				-DHAS_ISW_FUNCS -DNO_WIDEC_H
-#define HasWChar32              YES
 #define StandardCppOptions	-traditional
 
-/*
- * Cygwin only has shared memory support when using the cygipc package,
- * or the newer cygserver package.
- */
+/* Cygwin shared memory requires cygipc package or cygserver. */
 #if UseCygIPC
 # if ThreadedX
-#  define StandardCppDefines      -DHAS_THREADS -DHAS_SHM StandardDefines
+#  define StandardCppDefines	-DHAS_THREADS -DHAS_SHM StandardDefines
 # else
-#  define StandardCppDefines      -DHAS_SHM StandardDefines
+#  define StandardCppDefines	-DHAS_SHM StandardDefines
 # endif
 #else
 # if ThreadedX
-#  define StandardCppDefines      -DHAS_THREADS StandardDefines
+#  define StandardCppDefines	-DHAS_THREADS StandardDefines
 # else
-#  define StandardCppDefines      StandardDefines
+#  define StandardCppDefines	StandardDefines
 # endif
 #endif
-
-/*
- * Do not use XFree86ServerDefines here because it always defines
- * XFree86Server.  Defining XFree86Server causes fb to not expose its
- * fbSetVisualTypesAndMasks.  Instead, we create a local
- * XWinServerDefines, which has everything that XFree86ServerDefines
- * has in it, but it allows us to easily remove the XFree86Server
- * define for experimental development purposes.
- */
-#define XWinServerDefines	-DAVOID_GLYPHBLT -DPIXPRIV -DSINGLEDEPTH \
-				XFree86DGADefines XFree86XvDefines \
-				XFree86LoaderDefines -DXFree86Server \
-				VidModeExtensionDefines \
-				XFree86XvMCDefines \
-				SmartScheduleDefines \
-				DebugDefines XFree86XResDefines \
-				-DX_BYTE_ORDER=$(X_BYTE_ORDER)
-#define ServerOSDefines         XWinServerDefines \
-				-DDDXTIME -DFD_SETSIZE=256 -DDDXOSINIT \
-				-DDDXOSVERRORF -DDDXOSFATALERROR
-#define XkbServerDefines        -DXKB_ALWAYS_USES_SOFT_REPEAT
-#define ServerExtraDefines      -DGCCUSESGAS XWinServerDefines \
-				AllocateLocalDefines
-#define ConnectionFlags         -DTCPCONN -DUNIXCONN
-#define ExtraLibraries          
-#define InstUidFlags            -m 4711
-#define UseRgbTxt               YES
-#define ExtraFilesToClean	*.obj *.orig *.rej junk.c *.exe *.dll *.lib *~
 
 /* IPv6 not yet supported */
 #ifndef BuildIPv6
 # define BuildIPv6		NO
 #endif
 
-/*
- * You'll probably want BuildDebug to be YES if you are debugging :)
- */
-#define BuildDebug		NO
-#define XFree86Devel		NO
+#if 0
+/* 2004/02/29 - Harold - This doesn't do anything yet.  Stay tuned. */
+/* Support for accelerating OpenGL with Win32's OpenGL layer. */
+#ifndef BuildXWinDRI
+# define BuildXWinDRI		NO
+#endif
+#if BuildXWinDRI
+# define GlxExtraDefines	-DGLX_DIRECT_RENDERING GlxArchDefines
+#endif
+#endif
+
+/* XWin Server specific build flags */
+#ifndef GlxUseWindows
+# define GlxUseWindows		YES
+#endif
+#ifndef BuildXWinClipboard
+# define BuildXWinClipboard	YES
+#endif
+#ifndef BuildXWinEmulatePseudo
+# define BuildXWinEmulatePseudo	NO
+#endif
+#ifndef BuildXWinMultiWindow
+# define BuildXWinMultiWindow	YES
+#endif
+#ifndef BuildXWinMultiWindowExtWM
+# define BuildXWinMultiWindowExtWM YES
+#endif
+#ifndef BuildXWinNativeGDI
+# define BuildXWinNativeGDI	NO
+#endif
+#ifndef BuildXWinPrimaryFB
+# define BuildXWinPrimaryFB	NO
+#endif
+#ifndef BuildXWinUpdateStats
+# define BuildXWinUpdateStats	NO
+#endif
+#ifndef BuildXWinXF86Config
+# define BuildXWinXF86Config	NO
+#endif
+
+/* XWin specific build flags - 1st order dependency */
+#if BuildXWinMultiWindowExtWM && !defined(BuildWindowsWMLibrary)
+# define BuildWindowsWMLibrary	YES
+#elif !defined(BuildWindowsWMLibrary)
+# define BuildWindowsWMLibrary	NO
+#endif /* BuildXWinMultiWindowExtWM && BuildWindowsWMLibrary */
+
+/* XWin Server specific defines */
+#if BuildXWinClipboard
+# define XWinClipboardDefines	-DXWIN_CLIPBOARD
+#else
+# define XWinClipboardDefines 
+#endif /* BuildXWinClipboard */
+#if BuildXWinEmulatePseudo
+# define XWinEmulatePseudoDefines -DXWIN_EMULATEPSEUDO
+#else
+# define XWinEmulatePseudoDefines 
+#endif /* BuildXWinEmulatePseudo */
+#if BuildXWinMultiWindow
+# define XWinMultiWindowDefines	-DXWIN_MULTIWINDOW
+#else
+# define XWinMultiWindowDefines 
+#endif /* BuildXWinMultiWindow */
+#if BuildXWinMultiWindowExtWM
+# define XWinMultiWindowExtWMDefines -DXWIN_MULTIWINDOWEXTWM
+#else /* BuildXWinMultiWindowExtWM */
+# define XWinMultiWindowExtWMDefines 
+#endif /* BuildXWinMultiWindowExtWM */
+#if BuildXWinNativeGDI
+# define XWinNativeGDIDefines	-DXWIN_NATIVEGDI
+#else
+# define XWinNativeGDIDefines 
+#endif /* BuildXWinNativeGDI */
+#if BuildXWinPrimaryFB
+# define XWinPrimaryFBDefines	-DXWIN_PRIMARYFB
+#else
+# define XWinPrimaryFBDefines 
+#endif /* BuildXWinPrimaryFB */
+#if BuildXWinUpdateStats
+# define XWinUpdateStatsDefines	-DXWIN_UPDATESTATS
+#else
+# define XWinUpdateStatsDefines 
+#endif /* BuildXWinUpdateStats */
+#if BuildXWinXF86Config
+# define XWinXF86ConfigDefines	-DXWIN_XF86CONFIG
+#else
+# define XWinXF86ConfigDefines 
+#endif /* BuildXWinXF86Config */
 
 /*
- * Xinerama is multiple monitor support and will require special code,
- * if it even makes sense to enable such a beast in Cygwin/XFree86.
+ * XFree86Server is defined for the w32api headers, which protects some
+ * colliding names with #ifdef XFree86Server.
  */
-#define BuildXinerama		NO
+#define XWinServerDefines	-DAVOID_GLYPHBLT -DPIXPRIV -DSINGLEDEPTH \
+				-DXFree86Server \
+				-DX_BYTE_ORDER=ByteOrder \
+				XvExtensionDefines \
+				XWinXF86ConfigDefines XWinNativeGDIDefines \
+				XWinPrimaryFBDefines \
+				XWinEmulatePseudoDefines \
+				XWinUpdateStatsDefines \
+				XWinClipboardDefines XWinMultiWindowDefines \
+				XWinMultiWindowExtWMDefines \
+				-DDDXBEFORERESET
+#define ServerOSDefines		-DDDXTIME -DDDXOSINIT \
+				-DDDXOSVERRORF -DDDXOSFATALERROR
+#define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+#define ServerExtraDefines	-DGCCUSESGAS XWinServerDefines \
+				AllocateLocalDefines
+#define ConnectionFlags		-DTCPCONN -DUNIXCONN
+#define ExtraLibraries 
+#define InstUidFlags		-m 4711
+#define UseRgbTxt		YES
+#define ExtraFilesToClean	*.obj *.orig *.rej junk.c *.exe *.dll *.lib *~
 
-/*
- * PEX and XIE were deprecated on 2001-05-29, as Keith Packard says,
- * "they are so broken as to be unusable in real applications," furthermore,
- * "neither PEX nor XIE have seen any development for almost a decade".
- * 
- * XIE is the X Image Extension Protocol, not to be confused with
- * XInputExt, which is the X Input Extension.
- */
-#define BuildPexExt		NO
-#define BuildXIE		NO
-
-/*
- * Rush is a non standard extension for cooperation between the glide
- * library and the X server.  Cygwin/XFree86 will never need Rush,
- * as all graphics requests are processed through GDI or DirectDraw.
- */
-#define BuildXF86RushExt	NO
-
-/*
- * DPMS is the Display Power Management System.  Cygwin/XFree86 doesn't
- * own the display hardware, Windows does, so it doesn't make sense
- * for Cygwin/XFree86 to try to provide power management.
- */
-#define BuildDPMS		NO
-#define BuildDPMSExt		NO
-#define DPMSDefines		/**/
-
-#define BuildGlxExt             YES
-#define BuildXInputExt		YES
-#define BuildXF86VidModeExt     NO
-#define BuildXF86DGA		NO	/* No direct access to hardware */
-#define BuildXvExt		YES
-#define BuildXF86MiscExt	NO
-#define BuildRender		YES
-#define BuildRandR		NO
-#define BuildXF86DRI		NO	/* No direct access to hardware */
-#define BuildXF86DRM		NO	/* No direct access to hardware */
-#define BuildXKB		YES
-#define BuildXCMiscExt		YES
-#define BuildTestExt		YES
-#define BuildMITMiscExt		YES
-#define BuildSyncExt		YES
-#define BuildBigReqsExt		YES
-#define BuildEVI		YES
-#define BuildXF86BigfontExt	YES
-#define BuildRECORD		YES
-#define BuildDBE		YES
-#define BuildFontCache		YES
-#define BuildLBX		YES
-#define BuildCup		YES
-#define BuildXCSecurity		YES
-#define BuildAppgroup		YES
-#define BuildShapeExt		YES
-#define BuildScanpci		NO	/* No direct access to hardware */
-
-#define BuildScreenSaverExt	NO
-
-#define BuildWindowsWMLibrary  YES
-
-
-/*
- * What is Plugin?
- */
-#define BuildPlugin		NO
-
-/*
- * Doing a loadable server would probably take some extra work.
- */
-#define DoLoadableServer	NO
-
-/*
- * Don't build the XFree86 server
- */
-#define XF86Server		NO
-
-/*
- * Try to avoid building anything related to graphics cards
- */
-#define XFShadowFB		NO
-#define XF24_32Bpp		NO
-#define XF8_16Bpp		NO
-#define XF8_32Bpp		NO
-#define XF4Bpp			NO
-#define XF1Bpp			NO
-#define XF86VgaHw		NO
-#define XF86FBDevHw		NO
-#define XF86XAA			NO
-#define XF86Ramdac		NO
-#define XF86I2C			NO
-#define XF86DDC			NO
-#define XF86RAC			NO
-#define XF86Int10		NO
-
-#define XF86AFB			NO
-
-#define XF86CardDrivers		/**/
+/* Flags for which the default in X11.tmpl is not what we want. */
+#ifndef BuildXinerama
+# define BuildXinerama		NO	/* Not supported by XWin Server */
+#endif
+#ifndef BuildXIE
+# define BuildXIE		NO	/* Deprecated */
+#endif
+#ifndef BuildDPMS
+# define BuildDPMS		NO	/* Not supported by XWin Server */
+#endif
+#ifndef BuildXInputExt
+# define BuildXInputExt		YES	/* Not enabled by default */
+#endif
+#ifndef BuildRandR
+# define BuildRandR		YES	/* Not supported by XWin Server */
+#endif
+#ifndef BuildXF86BigfontExt
+# define BuildXF86BigfontExt	YES	/* Not enabled by default */
+#endif
+#ifndef BuildGlxExt
+# define BuildGlxExt		YES	/* Not enabled by default */
+#endif
+#ifndef BuildXprintLib
+# define BuildXprintLib		YES     /* Not enabled when Xprt disabled */
+#endif
+#ifndef BuildXterm
+# define BuildXterm		NO	/* Built separately on Cygwin */
+#endif
+#ifndef BuildXResExt
+# define BuildXResExt		YES	/* Not enabled by default */
+#endif
+#ifndef BuildFreeType
+# define BuildFreeType		YES	/* Not enabled by default */
+#endif
+#ifndef BuildXTrueType
+# define BuildXTrueType		YES	/* Not enabled by default */
+#endif
 
 /* Server build rules */
 #ifndef XnestServer
-# define XnestServer			YES
-#endif
-#ifndef BuildXprint
-# define BuildXprint			YES
+# define XnestServer		YES
 #endif
 #ifndef XprtServer
-# define XprtServer			YES
+# define XprtServer		NO
 #endif
 #ifndef XVirtualFramebufferServer
-# define XVirtualFramebufferServer	YES
+# define XVirtualFramebufferServer YES
+#endif
+#ifndef XWinServer
+# define XWinServer		YES
 #endif
 
-#define XWinServer			YES
-
-/*
- * We need libX11 and libXext for the X11 Server
- */ 
+/* We need libX11 and libXext for the XWin Server */
 #if XWinServer
-# define BuildX11Lib         YES
-# define BuildXextLib        YES
+# define BuildX11Lib		YES
 #endif
-
-/*
- * 2001-06-19 - SmartScheduler is terribly slow on Cygwin.  It causes
- * visible delays in updating of windows, cursor position, etc.
- */
-#define UseSmartScheduler		NO
 
 /*
  * --unix option of Cygwin make fools the standard MakeFlagsToShellFlags macro
@@ -399,5 +444,19 @@ XCOMM platform:  $XFree86: xc/config/cf/cygwin.cf,v 3.57 2003/12/24 18:58:41 dic
 	for flag in ${MAKEFLAGS} ''; do \				@@\
 	  case "$$flag" in *=*) ;;--*) ;; *[makeflags]*) shellcmd;; esac; done
 
+#define MakeNamedTargetSubdir(dir,flags,subname)\
+	$(MAKE) -C dir $(MFLAGS) $(PARALLELMFLAGS) flags subname
+
+#ifndef ManSuffix
+# define ManSuffix	1
+#endif
+
+#ifndef XtransFailSoft
+#define XtransFailSoft		YES
+#endif
+
 #include <cygwin.rules>
-#include <xfree86.cf>
+
+#if CrossCompiling
+#include <cross.def>
+#endif

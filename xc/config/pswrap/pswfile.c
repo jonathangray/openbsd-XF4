@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/pswfile.c,v 1.6 2003/05/27 22:26:20 tsi Exp $ */
+/* $XFree86: xc/config/pswrap/pswfile.c,v 1.5tsi Exp $ */
 
 #include <stdio.h>
 #include "pswversion.h"

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.187 2003/09/06 23:38:04 dawes Exp $
+XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.186 2003/06/25 18:06:22 eich Exp $
 /******************************************************************************/
 /*
  * This file is to provide a quick method for most people to change the
@@ -54,6 +54,12 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.187 2003/09/06 23:38:04 dawes Exp 
  * To disable building Xvfb, uncomment this.
  *
 #define XVirtualFramebufferServer	NO
+ */
+
+/*
+ * To enable building Xdmx, uncomment this.
+ *
+#define XdmxServer		YES
  */
 
 /*
@@ -184,7 +190,6 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.187 2003/09/06 23:38:04 dawes Exp 
  * To disable support for TrueType fonts, uncomment these.
  *
 #define BuildFreeType		NO
-#define BuildXTrueType		NO
  */
 
 /*
@@ -192,15 +197,6 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.187 2003/09/06 23:38:04 dawes Exp 
  * add them here and uncomment.
  *
 #define Freetype2BuildDefines	-DFREETYPE_BUILD_DEFINES
- */
-
-/*
- * If you want to use FreeType 1.x build options that differ from the FreeType2
- * build options, set them here and uncomment.  Otherwise the Freetype2 build
- * options will be used for both FreeType 2.x and 1.x.  Note: FreeType 1.x
- * is currently only used for the X-TrueType (xtt) module.
- *
-#define Freetype1BuildDefines	-DFREETYPE1_BUILD_DEFINES
  */
 
 /*

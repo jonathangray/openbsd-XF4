@@ -2,12 +2,12 @@ XCOMM $Xorg: xf86.tmpl,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/config/cf/xf86.tmpl,v 3.33 2002/12/16 23:01:43 herrb Exp $
+XCOMM $XFree86: xc/config/cf/xf86.tmpl,v 3.32 2002/11/14 21:01:14 tsi Exp $
 
 #ifdef BuilderEMailAddr
 BUILDERADDR = BuilderEMailAddr
 #else 
-BUILDERADDR = "xfree86@xfree86.org"
+BUILDERADDR = "xorg@freedesktop.org"
 #endif
 BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
 
@@ -44,10 +44,6 @@ BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
  * because they will replace rules after having seen the first lines
  * of Imakefile (include <Server.tmpl>)
  */
-
-#ifndef HasGccStackProtector
-#define HasGccStackProtector	NO
-#endif
 
 #ifndef HasGccMergeConstants
 #define HasGccMergeConstants	NO

@@ -169,7 +169,7 @@ XCOMM operating system:  OSName V/**/OSMajorVersion./**/OSMinorVersion./**/OSTee
 #define BuildXF86MiscExt	NO	/* turn off the server portion */
 #define BuildXF86VidModeExt	NO	/* turn off the server portion */
 #define BuildXInputExt		YES
-#define BuildXKBuilib		YES	/* override NO set in xfree86.cf */
+#define BuildXKBuilib		YES	/* override NO set in xorg.cf */
 #define ConnectionFlags		-DTCPCONN
 #define DefaultSystemPath	/bin:/etc:/usr/bin:$(BINDIR)
 #define DefaultUserPath		:/bin:/usr/bin:$(BINDIR)
@@ -443,6 +443,6 @@ XCOMM HIDESYMS is for filtering system library symbols.
 #endif /* UseHidesymsLists */
 
 #if OSMajorVersion >= 4
-#include <xfree86.cf>
+#include <xorg.cf>
 #include <sequentLib.rules>	/* include after macros, before Motif.rules */
 #endif /* OSMajorVersion >= 4 */

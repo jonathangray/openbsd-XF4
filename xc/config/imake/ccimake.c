@@ -24,7 +24,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group .
 
 */
-/* $XFree86: xc/config/imake/ccimake.c,v 1.4 2002/04/04 14:05:34 eich Exp $ */
+/* $XFree86: xc/config/imake/ccimake.c,v 1.2 2001/04/01 13:59:56 tsi Exp $ */
 
 /* 
  * Warning:  This file must be kept as simple as possible so that it can 

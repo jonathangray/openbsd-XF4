@@ -3,7 +3,7 @@ XCOMM platform:  $Xorg: ncr.cf,v 1.3 2000/08/17 19:41:47 cpqbld Exp $
 
 
 
-XCOMM platform:  $XFree86: xc/config/cf/ncr.cf,v 3.21 2001/01/23 23:31:49 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/ncr.cf,v 3.20 2001/01/17 16:22:32 dawes Exp $
 
 #ifndef OSName
 #define OSName			Unix System V Release 4/MP-RAS

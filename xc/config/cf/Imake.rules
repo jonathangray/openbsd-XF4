@@ -1,11 +1,12 @@
 XCOMM ---------------------------------------------------------------------
 XCOMM Imake rules for building libraries, programs, scripts, and data files
 XCOMM rules:  $Xorg: Imake.rules,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
+XCOMM rules:  $XdotOrg: xc/config/cf/Imake.rules,v 1.6 2004/08/13 17:21:43 krh Exp $
 XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.129 2004/02/16 18:14:33 dawes Exp $
+XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.128 2003/11/15 03:25:17 dawes Exp $
 
 /*
  *		   MACHINE-INDEPENDENT RULES; DO NOT MODIFY
@@ -188,6 +189,7 @@ XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.129 2004/02/16 18:14:33 daw
  * DynamicModuleTarget		(module,modlist)
  * InstallDynamicModule		(module,dest,subdir)
  * InstallDynamicNamedModule	(module,instname,dest,subdir)
+ * LinkerRuntimeLibraryPathFlag	(path)
  *
  *
  * The following are in specific <os>Lib.rules:
@@ -554,6 +556,13 @@ clean cleantc::								@@\
 install::								@@\
 	MakeDir(dir)
 #endif /* InstallDirectory */
+
+#ifndef InstallCreateLink
+# define InstallCreateLink(dest,from,to)				@@\
+install:: $(DESTDIR)dest/from						@@\
+	  cd $(DESTDIR)dest && \					@@\
+	  $(LN) -sf from to
+#endif
 
 #ifndef BuildIncludesTop
 #define BuildIncludesTop(srclist)					@@\
@@ -1485,6 +1494,7 @@ clean::									@@\
 #if BuildHtmlManPages
 #define InstallHtmlManPageAliases(file,aliases,suffix)			@@\
 install.man:: file.suffix.html						@@\
+	MakeDir($(DESTDIR)$(DOCHTMLDIR))				@@\
 	@SUF=`expr suffix \: '\(.\)'`; \				@@\
 	for i in aliases; do (set -x; \					@@\
 	  RemoveFile($(DESTDIR)$(DOCHTMLDIR)/$$i.$$SUF.html); \		@@\
@@ -1500,6 +1510,7 @@ install.man:: file.suffix.html						@@\
 #if BuildHtmlManPages
 #define HtmlManIndex							@@\
 html_index::								@@\
+	MakeDir($(DESTDIR)$(DOCHTMLDIR))				@@\
 	$(HTMLINDEXCMD) $(DESTDIR)$(DOCHTMLDIR)
 #else
 #define HtmlManIndex	html_index::
@@ -1585,8 +1596,14 @@ install:: file								@@\
  * using given install flags.
  */
 #ifndef InstallProgramWithFlags
+#if StripInstalledPrograms && CrossCompiling
+#define InstallProgramWithFlags(program,dest,flags)			@@\
+InstallTarget(install,ProgramTargetName(program),$(INSTPGMFLAGS) flags,dest) @@\
+	CrossStripCmd $(DESTDIR)dest/ProgramTargetName(program)
+#else
 #define InstallProgramWithFlags(program,dest,flags)			@@\
 InstallTarget(install,ProgramTargetName(program),$(INSTPGMFLAGS) flags,dest)
+#endif /* StripInstalledPrograms && CrossCompiling */
 #endif /* InstallProgramWithFlags */
 
 
@@ -3086,7 +3103,7 @@ NamedTargetSubdirs(includes,dirs,including,NullParameter,includes)
 #endif
 
 /*
- * InstallDriverSDKSubdirs - generate rules to recursively install Driver
+ * InstallDriverSDKObjectModule - generate rules to recursively install Driver
  *                         SDK (only used for XFree86). This is a no-op
  *                         rule so that Imakefiles on non-XFree86 systems
  *                         continue to build Makefiles correctly.
@@ -3341,22 +3358,22 @@ clean::									@@\
  * CppManTarget - preprocess man pages.  OS-specific man sections are replaced.
  */
 #ifndef CppManTarget
-#if !DontPreprocessManPages || defined(PreprocessManPages)
-#define CppManTarget(name,defs)						@@\
-AllTarget(name.$(MANNEWSUFFIX))						@@\
-CppRawFileTarget(name.$(MANNEWSUFFIX),name.$(MANSRCSUFFIX),$(MANDEFS) defs,NullParameter)
-#else
 #define CppManTarget(name,defs)						@@\
 AllTarget(name.$(MANNEWSUFFIX))						@@\
 									@@\
 name.$(MANNEWSUFFIX): name.$(MANSRCSUFFIX)				@@\
 	RemoveFile($@)							@@\
-	cd `dirname name` && \						@@\
-		$(LN) `basename name.$(MANSRCSUFFIX)` `basename $@`	@@\
+	if test -z "$(PREPROCESSMANPAGES)" ; then \			@@\
+	   cd `dirname name` && \					@@\
+	   $(LN) `basename name.$(MANSRCSUFFIX)` `basename $@`; \	@@\
+	else \								@@\
+	     ClearmakeOSName \
+	     $(RAWCPP) CppNoLineInfoOption $(MANDEFS) defs \		@@\
+	     < name.$(MANSRCSUFFIX) | CppSedMagic >$@; \		@@\
+	fi								@@\
 									@@\
 clean::									@@\
 	RemoveFile(name.$(MANNEWSUFFIX))
-#endif
 #endif /* CppManTarget */
 
 /*
@@ -3582,3 +3599,29 @@ clean::									@@\
 #define BuildObjectFromLibrary(libname,objname) BuildObjectFromLibraryWithPath(.,libname,objname)
 #endif
 
+/*
+ * LinkerRuntimeLibraryPathFlag - defined here to be a no-op for systems that
+ * don't need it.   Overridden in system-specific config files for systems that
+ * need it, usually with something like "Concat(-R,path)"
+ */
+#ifndef LinkerRuntimeLibraryPathFlag
+# define LinkerRuntimeLibraryPathFlag(path)  /* */
+#endif
+
+/* Phony targets - GNU make has a feature to mark a target as phony,
+ * which means that it wont consider that target to be the name of a
+ * file.  In general this speeds up make, since it doesn't have to
+ * look for those files when it sets out to create a phony target.
+ * However, on cygwin, this is actually required for correct
+ * operation, since the Win32 filesystems are case insensitive and the
+ * install target conflicts with the INSTALL file present in some
+ * (autotooled) directories.
+ *
+ * We probably don't need the #ifdef protection, since other make
+ * implementations would just consider this a normal rule.  Better
+ * safe than sorry, though.
+ */
+#if HasGnuMake
+.PHONY: all interfaces install install.man install.lib install.sdk \
+	depend includes clean
+#endif

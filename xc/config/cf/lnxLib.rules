@@ -1,5 +1,5 @@
 XCOMM $Xorg: lnxLib.rules,v 1.3 2000/08/17 19:41:47 cpqbld Exp $
-XCOMM $XFree86: xc/config/cf/lnxLib.rules,v 3.53 2004/01/27 01:37:39 dawes Exp $
+XCOMM $XFree86: xc/config/cf/lnxLib.rules,v 3.52 2003/10/31 20:49:03 herrb Exp $
 
 /*
  * Linux shared library rules (DLL & ELF versions)
@@ -115,7 +115,7 @@ XCOMM $XFree86: xc/config/cf/lnxLib.rules,v 3.53 2004/01/27 01:37:39 dawes Exp $
 install:: Concat(lib,libname.so.rev) 					@@\
 	MakeDir($(DESTDIR)dest)						@@\
 	$(INSTALL) $(INSTALLFLAGS) $(INSTBINFLAGS) Concat(lib,libname.so.rev) $(DESTDIR)dest @@\
-	@T=`echo Concat($(DESTDIR)dest/lib,libname.so.rev) | sed 's/\.[^\.]*$$//'`;\
+	@T=`echo Concat($(DESTDIR)dest/lib,libname.so.rev) | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`;\
 	  set -x; $(RM) $$T && $(LN) Concat(lib,libname.so.rev) $$T	@@\
 	@if $(SOSYMLINK); then (set -x; \
 	  $(RM) Concat($(DESTDIR)dest/lib,libname.so); \		@@\
@@ -161,7 +161,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  solist $(EXTRALIBRARYDEPS)			@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; (set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; (set -x; \	@@\
 		cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs) || exit 1; \ @@\
 		(set -x; $(RM) $$SONAME; $(LN) $@ $$SONAME); \		@@\
 		LinkBuildSonameLibrary($$SONAME)			@@\
@@ -174,7 +174,7 @@ Concat(lib,libname.so.rev):  solist $(EXTRALIBRARYDEPS)			@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.so),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.so.$$MAJREV)			@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 
@@ -221,7 +221,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 		(cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs); \ @@\
 		$(RM) $$SONAME; $(LN) $@ $$SONAME; \			@@\
 		LinkBuildSonameLibrary($$SONAME)			@@\
@@ -234,7 +234,7 @@ Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.so),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.so.$$MAJREV)			@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 
@@ -249,7 +249,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 		(cd down; $(CXX) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs); \ @@\
 		$(RM) $$SONAME; $(LN) $@ $$SONAME; \			@@\
 		LinkBuildSonameLibrary($$SONAME)			@@\
@@ -262,7 +262,7 @@ Concat(lib,libname.so.rev):  deplist $(EXTRALIBRARYDEPS)		@@\
 	LinkBuildLibraryMaybe(Concat(lib,libname.so),$(SOSYMLINK))	@@\
 									@@\
 clean::									@@\
-	@MAJREV=`echo rev | sed 's/\.[^\.]*$$//'`; \			@@\
+	@MAJREV=`echo rev | sed 's/\([0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \	@@\
 	set -x; $(RM) Concat(lib,libname.so.$$MAJREV)			@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 
@@ -663,7 +663,7 @@ jumpclean_1:								@@\
 install:: $(JUMP_SA) $(JUMP_SO)						@@\
 	MakeDir($(DESTDIR)dest)						@@\
 	@if [ "$(JUMP_IS_HOST)" = YES ]; then \
-		(T=$(DESTDIR)dest/`echo $(JUMP_SO)|sed 's/\.[^\.]*$$//'`;\
+		(T=$(DESTDIR)dest/`echo $(JUMP_SO)|sed '/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/`;\
 		set -x; \
 		$(INSTALL) -s -c $(INSTSOLIBFLAGS) $(JUMP_SO) $(DESTDIR)dest; \
 		$(RM) $$T && $(LN) $(JUMP_SO) $$T); fi			@@\

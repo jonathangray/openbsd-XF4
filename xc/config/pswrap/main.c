@@ -35,7 +35,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/main.c,v 1.5 2001/08/18 02:47:10 dawes Exp $ */
+/* $XFree86: xc/config/pswrap/main.c,v 1.4 2000/06/07 19:50:47 tsi Exp $ */
 
 #include <stdio.h>
 

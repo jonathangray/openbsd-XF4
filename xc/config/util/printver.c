@@ -5,7 +5,7 @@
  * build process.
  */
 
-/* $XFree86: xc/config/util/printver.c,v 1.3 2004/02/01 02:08:48 dawes Exp $ */
+/* $XFree86: xc/config/util/printver.c,v 1.2 2003/02/26 09:21:33 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

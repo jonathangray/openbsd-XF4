@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $XFree86: xc/config/util/mkhtmlindex.pl,v 1.3 2001/03/18 14:49:01 dawes Exp $
+# $XFree86: xc/config/util/mkhtmlindex.pl,v 1.2 2001/03/15 19:02:31 dawes Exp $
 #
 # Copyright © 2000,2001 by VA Linux Systems, Inc.
 #
@@ -43,11 +43,11 @@ foreach $vol (@vollist) {
 <HTML>
 <HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-<TITLE>XFree86[tm] Manual pages: Section $vol</TITLE>
+<TITLE>X.Org Manual pages: Section $vol</TITLE>
 </HEAD>
 <BODY BGCOLOR="#efefef" TEXT="black" LINK="blue" VLINK="#551A8B" ALINK="red">
 
-<H1>XFree86[tm] Manual pages: Section $vol</H1>
+<H1>X.Org Manual pages: Section $vol</H1>
 <P>
 <UL>
 EOF
@@ -57,15 +57,15 @@ EOF
 			open(file, "<$dir/$file") || die "Can't open $dir/$file";
 			while (<file>) {
 				chop;
-				if (/^<H2>/) {
-					if (! /<\/H2>$/) {
-						while (<file> && ! /<\/H2>$/) {
+				if (/^<[hH]2>/) {
+					if (! /<\/[hH]2>$/) {
+						while (<file> && ! /<\/[hH]2>$/) {
 							;
 						}
 					}
 					$heading = "";
 					while (<file>) {
-						if (/^<H2>/) {
+						if (/^<[hH]2>/) {
 							last;
 						}
 						$heading = "$heading" . "$_";
@@ -76,7 +76,7 @@ EOF
 						($name, $descr) = split(/-/, $heading, 2);
 						$file =~ /(.*)\.$vol\.html/;
 						$fname = $1;
-						$descr =~ s/<[P]>//g;
+						$descr =~ s/<[pP]>//g;
 						print mindex
 							"<LI><A href=\"$file\">$fname</A> - $descr</LI>";
 					}

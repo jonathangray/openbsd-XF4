@@ -4,7 +4,7 @@ XCOMM $Xorg: sv4Lib.rules,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
  * SVR4 shared library rules
  */
 
-XCOMM $XFree86: xc/config/cf/sv4Lib.rules,v 3.9 2002/11/22 22:55:56 tsi Exp $
+XCOMM $XFree86: xc/config/cf/sv4Lib.rules,v 3.8tsi Exp $
 
 #ifndef HasSharedLibraries
 # define HasSharedLibraries YES
@@ -23,6 +23,9 @@ XCOMM $XFree86: xc/config/cf/sv4Lib.rules,v 3.9 2002/11/22 22:55:56 tsi Exp $
 #endif
 #ifndef ShLibIncludeFile
 # define ShLibIncludeFile <sv4Lib.tmpl>
+#endif
+#ifndef SharedLibraryLdCmd
+# define SharedLibraryLdCmd $(LD)
 #endif
 #ifndef SharedLibraryLoadFlags
 # define SharedLibraryLoadFlags -G -z text
@@ -85,17 +88,17 @@ install:: Concat(lib,libname.so.rev) 					@@\
 #ifndef LinkWithExports
 # if UseExportLists
 #  define LinkWithExports(libname,rev,solist,down,up) \
-	(cd down; $(CCENVSETUP) $(LD) -o up/$@~ $(SHLIBLDFLAGS) -h $@ solist $(REQUIREDLIBS))	@@\
+	(cd down; $(CCENVSETUP) SharedLibraryLdCmd -o up/$@~ $(SHLIBLDFLAGS) -h $@ solist $(REQUIREDLIBS))	@@\
 	if [ -f Concat(lib,libname.elist) ]; then \			@@\
 	    $(RM) down/$@.exports $@.list; \				@@\
 	    $(CPP) $(ALLINCLUDES) $(EXTRA_DEFINES) $(PROTO_DEFINES) $(THREADS_DEFINES) $(DEFINES) Concat(lib,libname.elist) | CppSedMagic >$@.list; \	@@\
 	    $(EXPORTLISTGEN) $@~ $@.list > down/$@.exports; \		@@\
-	    (cd down; $(CCENVSETUP) $(LD) -o up/$@~ $(SHLIBLDFLAGS) -h $@ ShlibExportListOpt($@.exports) solist $(REQUIREDLIBS)); \	@@\
+	    (cd down; $(CCENVSETUP) SharedLibraryLdCmd -o up/$@~ $(SHLIBLDFLAGS) -h $@ ShlibExportListOpt($@.exports) solist $(REQUIREDLIBS)); \	@@\
 	    $(RM) down/$@.exports $@.list; \				@@\
 	fi;
 # else
 #  define LinkWithExports(libname,rev,solist,down,up) \
-	(cd down; $(CCENVSETUP) $(LD) -o up/$@~ $(SHLIBLDFLAGS) -h $@ solist $(REQUIREDLIBS))
+	(cd down; $(CCENVSETUP) SharedLibraryLdCmd -o up/$@~ $(SHLIBLDFLAGS) -h $@ solist $(REQUIREDLIBS))
 # endif
 #endif
 
@@ -154,7 +157,7 @@ AllTarget(name)								@@\
 									@@\
 name: deps								@@\
 	$(RM) $@~							@@\
-	$(LD) -o $@~ $(SHLIBLDFLAGS) solist $(REQUIREDLIBS)		@@\
+	SharedLibraryLdCmd -o $@~ $(SHLIBLDFLAGS) solist $(REQUIREDLIBS) @@\
 	$(RM) $@							@@\
 	$(MV) $@~ $@							@@\
 									@@\

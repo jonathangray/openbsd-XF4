@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/darwinLib.tmpl,v 1.20 2003/11/18 19:04:54 torrey Exp $
+XCOMM $XFree86: xc/config/cf/darwinLib.tmpl,v 1.19 2003/11/04 00:24:36 torrey Exp $
 /*
  * Darwin/Mac OS X shared library template
  */
@@ -10,7 +10,7 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #endif
 
 #ifndef XawClientLibs
-#define XawClientLibs $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XPMLIB) $(XLIB)
+#define XawClientLibs $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWCLIENTLIBS) $(XLIB)
 #endif
 
 /* Allow for libpthread, as overridden by OS definitions */
@@ -27,7 +27,8 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedGLUReqs       $(LDPRELIB) $(XLIB) $(GLXLIB)
 #define SharedOSMesaReqs    $(LDPRELIB) $(XLIB) $(GLXLIB)
 #define SharedSMReqs        $(LDPRELIB) $(ICELIB)
-#define SharedXawReqs       $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
+#define SharedXawReqs       $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWREQS) $(XLIB)
+#define SharedXaw7Reqs      $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
 #define SharedXaw6Reqs      $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XLIB)
 #define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
 #define SharedXextReqs      $(LDPRELIB) $(XONLYLIB)
@@ -54,3 +55,7 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXxf86vmReqs   $(LDPRELIB) $(XLIB)
 #define SharedxkbfileReqs   $(LDPRELIB) $(XONLYLIB)
 #define SharedxkbuiReqs	    $(LDPRELIB) $(XKBFILELIB) $(XONLYLIB)
+#define SharedXfixesReqs    $(LDPRELIB) $(XLIB)
+#define SharedXdamageReqs   $(LDPRELIB) $(XFIXESLIB) $(XLIB)
+#define SharedXcompositeReqs $(LDPRELIB) $(XDAMAGELIB) $(XFIXESLIB) $(XLIB)
+#define SharedXevieReqs     $(LDPRELIB) $(XLIB)

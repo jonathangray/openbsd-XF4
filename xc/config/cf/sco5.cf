@@ -1,4 +1,5 @@
-XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.16 2004/01/07 04:30:27 dawes Exp $
+XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.15 2003/12/19 02:05:37 dawes Exp $
+XCOMM $XdotOrg: xc/config/cf/sco5.cf,v 1.5 2004/09/02 01:10:28 kem Exp $
 
 /*
  * This is for SCO Open Server 5.0.6A or later. You must have the
@@ -80,6 +81,10 @@ XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.16 2004/01/07 04:30:27 dawes Exp $
 
 #define	HasNCurses		YES
 #define NCursesLibName		-lcurses
+
+#ifndef UseDeprecatedKeyboardDriver
+#define UseDeprecatedKeyboardDriver YES
+#endif
 
 #define LogDirectory		/var/adm
 
@@ -211,7 +216,7 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #endif
 
 #ifndef XawClientLibs
-#define XawClientLibs $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XPMLIB) $(XLIB)
+#define XawClientLibs $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWCLIENTLIBS) $(XLIB)
 #endif
 
 #define SharedXlibi18nReqs $(LDPRELIB) $(XLIBONLY)
@@ -224,7 +229,8 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedPexReqs       $(LDPRELIB) $(XONLYLIB) MathLibrary
 #define SharedSMReqs        $(LDPRELIB) $(ICELIB)
 #define SharedX11Reqs       $(LDPRELIB) -lsocket
-#define SharedXawReqs       $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
+#define SharedXawReqs       $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWREQS) $(XLIB)
+#define SharedXaw7Reqs      $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
 #define SharedXaw6Reqs      $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XLIB)
 #define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
 #define SharedXextReqs      $(LDPRELIB) $(XONLYLIB)
@@ -266,4 +272,4 @@ src.o: src.S								@@\
 #include <scoLib.rules>  /* minor changes to sv4Lib.rules */
 #include <sv4Lib.rules>
 
-#include <xfree86.cf>
+#include <xorg.cf>

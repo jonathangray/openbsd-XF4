@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/bsdiLib.rules,v 3.4 2003/10/11 09:40:12 herrb Exp $
+XCOMM $XFree86: xc/config/cf/bsdiLib.rules,v 3.3 2003/10/09 22:43:18 herrb Exp $
 
 /*
  * BSDI shared library rules (converted from SVr4/Linux rules)
@@ -73,7 +73,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  solist					@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 	(cd down; $(CCENVSETUP) SharedCCLdCmd -o up/$@~ $(SHLIBLDFLAGS)	  \
 	   -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs);	  \
 	$(RM) $$SONAME; $(LN) $@ $$SONAME;				  \
@@ -86,7 +86,7 @@ Concat(lib,libname.so.rev):  solist					@@\
 	LinkBuildLibrary(Concat(lib,libname.so))			@@\
 									@@\
 clean::									@@\
-	@SONAME=`echo Concat(lib,libname.so.rev) | sed 's/\.[^\.]*$$//'`; \ @@\
+	@SONAME=`echo Concat(lib,libname.so.rev) | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \ @@\
 	set -x; $(RM) $$SONAME						@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 
@@ -103,7 +103,7 @@ AllTarget(Concat(lib,libname.so.rev))					@@\
 									@@\
 Concat(lib,libname.so.rev):  deplist					@@\
 	$(RM) $@~							@@\
-	@SONAME=`echo $@ | sed 's/\.[^\.]*$$//'`; set -x; \		@@\
+	@SONAME=`echo $@ | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; set -x; \		@@\
 	(cd down; $(CCENVSETUP) SharedCCLdCmd -o up/$@~ $(SHLIBLDFLAGS)	  \
 	   -Wl,-soname,$$SONAME solist $(REQUIREDLIBS) BaseShLibReqs);	  \
 	$(RM) $$SONAME; $(LN) $@ $$SONAME;				  \
@@ -116,7 +116,7 @@ Concat(lib,libname.so.rev):  deplist					@@\
 	LinkBuildLibrary(Concat(lib,libname.so))			@@\
 									@@\
 clean::									@@\
-	@SONAME=`echo Concat(lib,libname.so.rev) | sed 's/\.[^\.]*$$//'`; \ @@\
+	@SONAME=`echo Concat(lib,libname.so.rev) | sed 's/\(lib[^\.]*\.so\.[0-9]*\)\(\.[0-9]*\)\{1,2\}/\1/'`; \ @@\
 	set -x; $(RM) $$SONAME						@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so)
 

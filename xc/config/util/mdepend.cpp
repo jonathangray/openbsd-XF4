@@ -22,7 +22,7 @@ XCOMM	work on both USG and BSD systems.  However, when System V.4 comes out,
 XCOMM	USG users will probably have to change "silent" to "-s" instead of
 XCOMM	"-" (at least, that is what the documentation implies).
 XCOMM
-XCOMM $XFree86: xc/config/util/mdepend.cpp,v 3.10 2001/08/17 13:27:50 dawes Exp $
+XCOMM $XFree86: xc/config/util/mdepend.cpp,v 3.9 2001/04/26 20:55:10 dawes Exp $
 XCOMM
 
 CC=PREPROC

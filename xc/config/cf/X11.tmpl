@@ -1,11 +1,12 @@
 XCOMM ----------------------------------------------------------------------
 XCOMM X Window System Build Parameters and Rules
+XCOMM $XdotOrg: xc/config/cf/X11.tmpl,v 1.35 2004/09/03 16:18:18 kem Exp $
 XCOMM $Xorg: X11.tmpl,v 1.6 2000/08/17 19:41:46 cpqbld Exp $
 XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.249 2004/02/16 18:14:33 dawes Exp $
+XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 
 /***************************************************************************
  *                                                                         *
@@ -41,15 +42,28 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.249 2004/02/16 18:14:33 dawes Exp $
 
 /* X.Org release string */
 #ifndef XOrgReleaseString
-#define XOrgReleaseString	Release 6.6
+# if defined XorgVersionString
+#   define XOrgReleaseString	Release XorgVersionString
+# else
+#   define XOrgReleaseString	Release 6.8
+# endif
 #endif
 
 #ifndef XOrgManNameString
 #define XOrgManNameString	X Version 11
 #endif
-
-XORGRELSTRING = XOrgReleaseString
-XORGMANNAME = XOrgManNameString
+#ifndef XOrgNameString
+# define XOrgNameString   The X.Org Foundation
+#endif
+#ifndef XOrgNameStringShort
+# define XOrgNameStringShort   X.Org
+#endif
+#ifndef XOrgStdFilePrefix
+# define XOrgStdFilePrefix     xorg
+#endif
+#ifndef XOrgWebSupportAddress
+# define XOrgWebSupportAddress http://wiki.X.Org
+#endif
 
 #ifndef XOrgManDefs
 #define XOrgManDefs -D__xorgversion__='"$(XORGRELSTRING)" "$(XORGMANNAME)"'
@@ -61,14 +75,32 @@ XORGMANNAME = XOrgManNameString
 #ifndef XVendorManVersionString
 #define XVendorManVersionString XOrgReleaseString
 #endif
-
-VENDORMANNAME = XVendorManNameString
-VENDORMANVERSION = XVendorManVersionString
+#ifndef XVendorNameString
+# define XVendorNameString XOrgNameString
+#endif
+#ifndef XVendorNameStringShort
+# define XVendorNameStringShort XOrgNameStringShort
+#endif
+#ifndef XVendorWebSupport
+# define XVendorWebSupport XOrgWebSupportAddress
+#endif
+#ifndef XVendorStdFilePrefix
+# define XVendorStdFilePrefix XOrgStdFilePrefix
+#endif
 
 #ifndef VendorManDefs
 #define VendorManDefs -D__vendorversion__="$(VENDORMANVERSION) $(VENDORMANNAME)"
 #endif
 
+#ifndef VendorDefines
+#define VendorDefines -DXVENDORNAME='"$(VENDORNAME)"' -DXVENDORNAMESHORT='"$(VENDORNAMESHORT)"'
+#endif
+
+#ifndef VendorSupportDefines
+# if defined XVendorWebSupport
+#  define VendorSupportDefines -D__VENDORDWEBSUPPORT__='"$(VENDORWEBSUPPORT)"'
+# endif
+#endif
 /*
  * X-specific things
  */
@@ -83,6 +115,12 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef HasXServer
 #define HasXServer		YES
 #endif
+/* xorg.cf sets XorgServer to YES - to build Xorg you must include xorg.cf 
+ * from the .cf file for your platform.
+ */
+#ifndef XorgServer
+#define XorgServer		NO  
+#endif
 #ifndef BuildServer
 #define BuildServer		HasXServer
 #endif
@@ -95,8 +133,18 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef BuildDocs
 #define BuildDocs		!BuildServersOnly
 #endif
+#ifndef BuildDmx
+#define BuildDmx		NO
+#endif
+#ifndef XdmxServer
+#define XdmxServer		BuildDmx
+#endif
+#ifndef BuildLibrariesForDmx
+#define BuildLibrariesForDmx	XdmxServer
+#endif
 #ifndef BuildLibraries
-#define BuildLibraries		(!BuildServersOnly || BuildClients)
+#define BuildLibraries		(!BuildServersOnly || BuildClients || \
+				 BuildLibrariesForDmx)
 #endif
 #ifndef BuildLibrariesForXServers
 #define BuildLibrariesForXServers	BuildServer
@@ -108,22 +156,16 @@ VENDORMANVERSION = XVendorManVersionString
 #define XserverStaticFontLib	YES
 #endif
 #ifndef BuildSpeedo
-#define BuildSpeedo		YES
+#define BuildSpeedo		NO
 #endif
 #ifndef BuildType1
-#define BuildType1		YES
+#define BuildType1		NO
 #endif
 #ifndef BuildCID
 #define BuildCID		YES
 #endif
 #ifndef BuildFreeType
 #define BuildFreeType		NO
-#endif
-#ifndef BuildXTrueType
-#define BuildXTrueType		NO
-#endif
-#ifndef XTTInLibFont
-#define XTTInLibFont		NO
 #endif
 #ifndef BuildBuiltinFonts
 #define BuildBuiltinFonts	NO
@@ -138,7 +180,7 @@ VENDORMANVERSION = XVendorManVersionString
 #define Build100DpiFonts	YES
 #endif
 #ifndef BuildSpeedoFonts
-#define BuildSpeedoFonts	YES
+#define BuildSpeedoFonts	NO
 #endif
 #ifndef BuildType1Fonts
 #define BuildType1Fonts		YES
@@ -315,7 +357,8 @@ VENDORMANVERSION = XVendorManVersionString
 #define BuildXInputExt		NO
 #endif
 #ifndef BuildXInputLib
-#define BuildXInputLib		(BuildXInputExt && !BuildServersOnly)
+#define BuildXInputLib		(BuildXInputExt && \
+				 (!BuildServersOnly || BuildLibrariesForDmx))
 #endif
 #ifndef BuildEVI
 #define BuildEVI		YES
@@ -333,17 +376,17 @@ VENDORMANVERSION = XVendorManVersionString
 #define BuildDPMS		YES
 #endif
 #ifndef BuildFontLib
-#if !defined(XF86Server) || !XF86Server
+#if (!defined(XF86Server) || !XF86Server) && (!defined (XorgServer) || !XorgServer)
 #define BuildFontLib		(BuildLibraries || BuildServer)
 #else
 #define BuildFontLib		(BuildLibraries || \
 				 (BuildServer && !DoLoadableServer) || \
 				 XnestServer || XVirtualFramebufferServer || \
-				 XprtServer || KDriveXServer)
+				 XprtServer || XdmxServer)
 #endif
 #endif
 #ifndef BuildFontCache
-#define BuildFontCache		YES
+#define BuildFontCache		NO
 #endif
 #ifndef BuildFontCacheLib
 #define BuildFontCacheLib	(BuildFontCache && !BuildServersOnly)
@@ -374,7 +417,8 @@ VENDORMANVERSION = XVendorManVersionString
 #define BuildXKB		YES
 #endif
 #ifndef BuildXKBlib
-#define BuildXKBlib		(BuildXKB && !BuildServersOnly)
+#define BuildXKBlib		(BuildXKB && (!BuildServersOnly || \
+					      XnestServer || XdmxServer))
 #endif
 #ifndef BuildXKBuilib
 #define BuildXKBuilib		(BuildXKB && !BuildServersOnly)
@@ -412,6 +456,13 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef BuildXineramaLibrary
 #define BuildXineramaLibrary	(BuildXinerama && !BuildServersOnly)
 #endif
+#ifndef BuildDmxDevelTools
+#define BuildDmxDevelTools	NO
+#endif
+#ifndef BuildDmxLibrary
+#define BuildDmxLibrary		(BuildDmx && \
+				 (!BuildServersOnly || BuildDmxDevelTools))
+#endif
 #ifndef BuildXCSecurity
 #define BuildXCSecurity		YES
 #endif
@@ -427,19 +478,38 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef BuildPlugin
 #define BuildPlugin		HasPlugin
 #endif
-#ifndef XprtServer
-#define XprtServer		BuildServer
+#ifndef XpRasterDDX
+#define XpRasterDDX             YES
 #endif
+#ifndef XpColorPclDDX
+#define XpColorPclDDX           YES
+#endif
+#ifndef XpMonoPclDDX
+#define XpMonoPclDDX            YES
+#endif
+#ifndef XpPostScriptDDX
+#define XpPostScriptDDX         YES
+#endif
+#ifndef XpPdfDDX
+#define XpPdfDDX                YES
+#endif
+#ifndef XpSvgDDX
+#define XpSvgDDX                YES
+#endif
+
 #ifndef BuildXprint
-#if XprtServer
 #define BuildXprint		YES
-#else
-#define BuildXprint		NO
 #endif
+#ifndef XprtServer
+#define XprtServer		(BuildServer && BuildXprint)
 #endif
 #ifndef BuildXprintLib
-#define BuildXprintLib		(BuildXprint && !BuildServersOnly)
+#define BuildXprintLib		(!BuildServersOnly && BuildXprint)
 #endif
+#ifndef BuildXprintClients
+#define BuildXprintClients	BuildXprintLib
+#endif
+
 #ifndef BuildScreenSaverExt
 #define BuildScreenSaverExt	NO
 #endif
@@ -471,7 +541,8 @@ VENDORMANVERSION = XVendorManVersionString
 #define BuildXResExt            NO
 #endif
 #ifndef BuildXResLibrary
-#define BuildXResLibrary        (BuildXResExt && !BuildServersOnly)
+#define BuildXResLibrary        (BuildXResExt && \
+				 (!BuildServersOnly || BuildDmxDevelTools))
 #endif
 #ifndef BuildXvExt
 #define BuildXvExt		NO
@@ -488,12 +559,10 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef BuildGlxExt
 #define BuildGlxExt		NO
 #else
-#if     BuildGlxExt && !defined(XFree86Version)
+#if     BuildGlxExt && !defined(XFree86Version) && !defined(XorgVersion)
 #undef  BuildXF86DRI
-#undef  BuildXF86DRM
 #undef  BuildXF86DRIDriverSupport
 #define BuildXF86DRI			NO
-#define BuildXF86DRM			NO
 #define BuildXF86DRIDriverSupport	NO
 #endif
 #endif
@@ -509,6 +578,9 @@ VENDORMANVERSION = XVendorManVersionString
 #endif
 #ifndef BuildGLwLibrary
 #define BuildGLwLibrary		(BuildGLXLibrary && BuildLibraries)
+#endif
+#ifndef BuildXDriInfo
+#define BuildXDriInfo		(BuildGLXLibrary && !BuildServersOnly)
 #endif
 #ifndef BuildXF86RushExt
 #define BuildXF86RushExt	NO
@@ -535,7 +607,7 @@ VENDORMANVERSION = XVendorManVersionString
 #define BuildRender		YES
 #endif
 #ifndef BuildRenderLibrary
-#define BuildRenderLibrary	!BuildServersOnly
+#define BuildRenderLibrary	(XdmxServer || !BuildServersOnly)
 #endif
 #ifndef BuildXftLibrary
 #define BuildXftLibrary		BuildRenderLibrary
@@ -553,11 +625,14 @@ VENDORMANVERSION = XVendorManVersionString
 #define UseFreetype2		(BuildXftLibrary || BuildXft1Library || \
 				 UseFontconfig || BuildFreeType)
 #endif
+#ifndef InstallFontconfigLibrary
+# define InstallFontconfigLibrary  YES
+#endif
 #ifndef HasExpat
 #define HasExpat		NO
 #endif
 #ifndef UseExpat
-#define UseExpat		(UseFontconfig)
+#define UseExpat		(UseFontconfig || BuildXF86DRI)
 #endif
 #ifndef BuildExpatLibrary
 #define BuildExpatLibrary	(UseExpat && !HasExpat)
@@ -568,16 +643,45 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef Freetype2BuildDefines
 #define Freetype2BuildDefines	/**/
 #endif
-/* For FreeType 1.x */
-#ifndef Freetype1BuildDefines
-#define Freetype1BuildDefines	Freetype2BuildDefines
-#endif
 
 #ifndef BuildRandR
 #define BuildRandR		YES
 #endif
 #ifndef BuildRandRLibrary
 #define BuildRandRLibrary	!BuildServersOnly
+#endif
+
+#ifndef BuildXfixes
+#define BuildXfixes		YES
+#endif
+#ifndef BuildXfixesLibrary
+#define BuildXfixesLibrary	!BuildServersOnly
+#endif
+
+#ifndef BuildDamage
+#define BuildDamage		BuildXfixes
+#endif
+#ifndef BuildDamageLibrary
+#define BuildDamageLibrary	!BuildServersOnly
+#endif
+
+#ifndef BuildComposite
+#define BuildComposite		(BuildXfixes && BuildDamage)
+#endif
+#ifndef BuildCompositeLibrary
+#define BuildCompositeLibrary	!BuildServersOnly && (BuildXfixesLibrary && \
+				BuildDamageLibrary)
+#endif
+
+#ifndef BuildXevie
+#define BuildXevie		YES
+#endif
+#ifndef BuildXevieLibrary
+#define BuildXevieLibrary	!BuildServersOnly
+#endif
+
+#ifndef BuildXterm
+#define BuildXterm		BuildClients
 #endif
 
 #ifndef BuildXcursorLibrary
@@ -611,11 +715,11 @@ VENDORMANVERSION = XVendorManVersionString
 #endif
 
 #ifndef InstallHardcopyDocs
-#define InstallHardcopyDocs	NO
+#define InstallHardcopyDocs	YES
 #endif
 
 #ifndef InstallMiscManPages
-#define InstallMiscManPages	NO
+#define InstallMiscManPages	YES
 #endif
 
 #ifndef FSUseSyslog
@@ -669,12 +773,6 @@ VENDORMANVERSION = XVendorManVersionString
 #ifndef ThreadedProject
 #define ThreadedProject ThreadedX
 #endif
-#ifndef BuildThreadStubLibrary
-#define BuildThreadStubLibrary	NO
-#endif
-#ifndef NeedUIThrStubs
-#define NeedUIThrStubs		NO
-#endif
 #ifndef HasWChar32
 #define HasWChar32		SystemV4
 #endif
@@ -686,16 +784,16 @@ VENDORMANVERSION = XVendorManVersionString
 #endif
 #ifndef DefaultFontPath
 	/*
-	 * Turn off building Speedo, Type1 and CID fonts if you are building
+	 * Turn off building Type1 and CID fonts if you are building
 	 * for low memory footprint
 	 */
 #if BuildLowMem
 #define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
 #else
 #if PrimaryScreenResolution < 88		/* (75 + 100) / 2 */
-#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
+#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
 #else
-#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
+#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
 #endif
 #endif
 #endif
@@ -706,9 +804,9 @@ VENDORMANVERSION = XVendorManVersionString
          */
 #if BuildLowMem
 #if PrimaryScreenResolution < 88                /* (75 + 100) / 2 */
-#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
+#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
 #else
-#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
+#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
 #endif
 #else
 #define DefaultFSFontPath DefaultFontPath
@@ -868,6 +966,9 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #define GlxDefines /**/
 #endif
 #endif
+#ifndef DRMSrcDir
+#define DRMSrcDir $(TOP)/extras/drm
+#endif
 #ifndef MesaSrcDir
 #define MesaSrcDir $(TOP)/extras/Mesa
 #endif
@@ -925,6 +1026,12 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 #ifndef XkbServerDefines
 #define XkbServerDefines /**/
+#endif
+#ifndef XkbDefRulesDefines
+#define XkbDefRulesDefines  -D__XKBDEFRULES__='"$(XKBDEFRULES)"'
+#endif
+# ifndef XkbDefaultRulesFile
+# define XkbDefaultRulesFile  XVendorStdFilePrefix
 #endif
 #ifndef LbxDefines
 #if BuildLBX
@@ -1095,6 +1202,38 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 #endif
 
+#ifndef XfixesDefines
+#if BuildXfixes
+#define XfixesDefines -DXFIXES
+#else
+#define XfixesDefines /**/
+#endif
+#endif
+
+#ifndef XDamageDefines
+#if BuildDamage
+#define XDamageDefines -DDAMAGE
+#else
+#define XDamageDefines /**/
+#endif
+#endif
+
+#ifndef CompositeDefines
+#if BuildComposite
+#define CompositeDefines -DCOMPOSITE
+#else
+#define CompositeDefines /**/
+#endif
+#endif
+
+#ifndef XevieDefines
+#if BuildXevie
+#define XevieDefines -DXEVIE
+#else
+#define XevieDefines /**/
+#endif
+#endif
+
 #ifndef SitePervasiveExtensionDefines
 #define SitePervasiveExtensionDefines /**/
 #endif
@@ -1104,7 +1243,8 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 	XCSecurityDefines CupDefines PervasiveDBEDefines \
 	XF86BigfontExtensionDefines DPMSDefines \
 	LowMemDefines XprintDefines XineramaDefines \
-	SitePervasiveExtensionDefines RenderDefines RandRDefines
+	SitePervasiveExtensionDefines RenderDefines RandRDefines \
+	XfixesDefines XDamageDefines CompositeDefines XevieDefines
 #endif
 #ifndef SiteExtensionDefines
 #define SiteExtensionDefines /**/
@@ -1259,45 +1399,6 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #define DefaultFSConfigFile $(LIBDIR)/fs/config
 #endif
 
-/* X-TrueType settings */
-#ifndef HasBlindFaithInUnicode
-#define HasBlindFaithInUnicode YES
-#endif
-#ifndef XTrueTypeCConvModule
-#if DoLoadableServer
-#define XTrueTypeCConvModule YES
-#else
-#define XTrueTypeCConvModule NO
-#endif
-#endif
-#ifndef XTrueTypeUseOptEncodings
-#define XTrueTypeUseOptEncodings YES
-#endif
-#ifndef XTrueTypeCConvIncDir
-#define XTrueTypeCConvIncDir $(INCROOT)/X11/fonts/codeconv
-#endif
-#ifndef XTrueTypeInstallCConvHeaders
-#define XTrueTypeInstallCConvHeaders BuildLibraries
-#endif
-#ifndef XTrueTypeCConvModuleDir
-#define XTrueTypeCConvModuleDir $(USRLIBDIR)/modules
-#endif
-#ifndef XTrueTypeCConvModuleSubDir
-#define XTrueTypeCConvModuleSubDir codeconv
-#endif
-#ifndef XTrueTypeDebugXTT
-#define XTrueTypeDebugXTT NO
-#endif
-#ifndef XTrueTypeStandAloneCConv
-#define XTrueTypeStandAloneCConv NO
-#endif
-#ifndef XTrueTypeSrcDir
-#define XTrueTypeSrcDir $(TOP)/extras/X-TrueType
-#endif
-#ifndef FreeTypeSrcDir
-#define FreeTypeSrcDir $(TOP)/extras/FreeType
-#endif
-
 #ifndef BinDir
 #ifdef ProjectRoot
 #define BinDir Concat(ProjectRoot,/bin)
@@ -1351,6 +1452,9 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 #ifndef BuildModuleDir
 #define BuildModuleDir $(BUILDLIBDIR)/modules
+#endif
+#ifndef BuildI18NDir
+# define BuildI18NDir $(BUILDLIBDIR)/locale
 #endif
 #ifndef BuildModuleTop
 #define BuildModuleTop $(BUILDLIBTOP)/..
@@ -1499,7 +1603,11 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 
 #ifndef PsWrap
-#define PsWrap $(PSWRAPSRC)/pswrap
+# ifndef UseInstalled
+#  define PsWrap $(PSWRAPSRC)/pswrap
+# else
+#  define PsWrap pswrap
+# endif
 #endif
 
 #ifndef ResourceConfigurationManagement
@@ -1527,6 +1635,7 @@ XCOMM X Window System make variables; these need to be coordinated with rules
       BUILDBINDIR = BuildBinDir		/* built binaries */
       BUILDBINTOP = BuildBinTop		/* top relative to BUILDBINDIR */
    BUILDMODULEDIR = BuildModuleDir	/* built server modules */
+     BUILDI18NDIR = BuildI18NDir	/* built i81n modules */
    BUILDMODULETOP = BuildModuleTop	/* top relative to BUILDMODULEDIR */
     XBUILDINCROOT = XBuildIncRoot	/* base of X build loc */
      XBUILDINCDIR = XBuildIncDir
@@ -1538,6 +1647,7 @@ XCOMM X Window System make variables; these need to be coordinated with rules
        LIBEXECDIR = LibexecDir
         MODULEDIR = ModuleDir
    TOP_X_INCLUDES = TopXInclude
+          XBINDIR = XBinDir		/* BINDIR for X11ProjectRoot */
 
        INSTSRCDIR = InstSrcDir		/* Installed source (kernel modules). */
 
@@ -1571,15 +1681,14 @@ XCOMM X Window System make variables; these need to be coordinated with rules
      INSTAPPFLAGS = $(INSTDATFLAGS)	/* XXX - this should go away - XXX */
 
 #if UseInstalledX11
-          XBINDIR = Concat(ProjectRoot,/bin)
               RGB = $(XBINDIR)/rgb
             FONTC = $(XBINDIR)/bdftopcf
       MKFONTSCALE = $(XBINDIR)/mkfontscale
         MKFONTDIR = $(XBINDIR)/mkfontdir
       MKHTMLINDEX = $(XBINDIR)/mkhtmlindex
-          UCS2ANY = $(XBINDIR)/ucs2any
+          UCS2ANY = $(XBINDIR)/ProgramTargetName(ucs2any)
       BDFTRUNCATE = $(XBINDIR)/bdftruncate
-     UCSMAPPREFIX = $(XFONTDIR)/util/map-
+     UCSMAPPREFIX = $(FONTDIR)/util/map-
        XCURSORGEN = $(XBINDIR)/xcursorgen
 #else
               RGB = $(CLIENTENVSETUP) $(XBUILDBINDIR)/rgb
@@ -1588,18 +1697,19 @@ XCOMM X Window System make variables; these need to be coordinated with rules
       MKFONTSCALE = $(CLIENTENVSETUP) $(PRELOADFREETYPESETUP) $(XBUILDBINDIR)/mkfontscale
         MKFONTDIR = $(MKFONTSCALE) -b -s -l
        XCURSORGEN = $(CLIENTENVSETUP) $(PRELOADSETUP) $(XBUILDBINDIR)/xcursorgen
+          UCS2ANY = $(XBUILDBINDIR)/ProgramTargetName(ucs2any)
 # elif UseInstalledOnCrossCompile
-        MKFONTDIR = $(BINDIR)/mkfontdir
-      MKFONTSCALE = $(BINDIR)/mkfontscale
-            FONTC = $(BINDIR)/bdftopcf
-       XCURSORGEN = $(BINDIR)/xcursorgen
+        MKFONTDIR = $(XBINDIR)/mkfontdir
+      MKFONTSCALE = $(XBINDIR)/mkfontscale
+            FONTC = $(XBINDIR)/bdftopcf
+       XCURSORGEN = $(XBINDIR)/xcursorgen
+          UCS2ANY = $(XBINDIR)/ucs2any
 # endif
 # if HasPerl
       MKHTMLINDEX = RunPerlScript($(CONFIGSRC)/util/mkhtmlindex.pl,)
 # else
       MKHTMLINDEX = $(SHELL) $(CONFIGSRC)/util/mkhtmlindex.sh
 # endif
-          UCS2ANY = $(XBUILDBINDIR)/ProgramTargetName(ucs2any)
       BDFTRUNCATE = $(FONTSRC)/util/bdftruncate.pl
      UCSMAPPREFIX = $(FONTSRC)/util/map-
 #endif
@@ -1628,19 +1738,36 @@ XCOMM X Window System make variables; these need to be coordinated with rules
        FONTINCSRC = $(XTOP)/include/fonts
         EXTINCSRC = $(XTOP)/include/extensions
       FTSOURCEDIR = FreeTypeSrcDir
-     XTTSOURCEDIR = XTrueTypeSrcDir
+        DRMSRCDIR = DRMSrcDir
        MESASRCDIR = MesaSrcDir
   OGLSAMPLESRCDIR = OglSampleSrcDir
         PSWRAPSRC = $(XTOP)/config/pswrap
      TRANSCOMMSRC = $(LIBSRC)/xtrans
    TRANS_INCLUDES = -I$(TRANSCOMMSRC)
  CONNECTION_FLAGS = ConnectionFlags ExtraConnectionDefs
+XTRANS_FAILDEFINES = XtransFailDefine 
 #ifdef X11ProjectRoot
      XPROJECTROOT = X11ProjectRoot
 #endif
-
+    VENDORMANNAME = XVendorManNameString
+ VENDORMANVERSION = XVendorManVersionString
       XORGMANDEFS = XOrgManDefs
     VENDORMANDEFS = VendorManDefs
+       VENDORNAME = XVendorNameString
+  VENDORNAMESHORT = XVendorNameStringShort
+
+#if defined (XVendorWebSupport)
+ VENDORWEBSUPPORT = XVendorWebSupport
+#endif
+VENDORSUPPORTDEFS = VendorSupportDefines
+
+      XKBDEFRULES = XkbDefaultRulesFile
+  XKBDEFRULESDEFS = XkbDefRulesDefines
+  
+     XCONFIGFILE = XConfigFile
+      XCONFIGDIR = XConfigDir
+        XLOGFILE = XLogFile
+     XSERVERNAME = XServerName
 
 #if HasSharedLibraries
 #ifndef DontUseLibPathVar
@@ -1653,8 +1780,9 @@ XCOMM X Window System make variables; these need to be coordinated with rules
 # ifdef SystemBuildLibPath
   SYSTEMENVLIBDIR = SystemBuildLibPath
 # endif
+#define XlocaleClientSetup Concat3(XLOCALEDIR,=,BuildI18NDir)
        XENVLIBDIR = X11BuildLibPath
-   CLIENTENVSETUP = Concat3(BuildLibPathVar,=,BuildLibPath)
+   CLIENTENVSETUP = Concat3(BuildLibPathVar,=,BuildLibPath) XlocaleClientSetup
 #else
    CLIENTENVSETUP =
 #endif
@@ -1711,39 +1839,7 @@ ProjectUnsharedLibReferences(XONLY,X11,$(XLIBSRC),XBuildLibDir)
       /* Common alternate spellings */
       DEPXLIBONLY = $(DEPXONLYLIB)
          XLIBONLY = $(XONLYLIB)
-
-#if BuildThreadStubLibrary
-#ifndef SharedLibXThrStub
-#define SharedLibXThrStub	YES
-#endif
-#ifndef NormalLibXThrStub
-#define NormalLibXThrStub	NO
-#endif
-#ifndef DebugLibXThrStub
-#define DebugLibXThrStub	NO
-#endif
-#ifndef ProfileLibXThrStub
-#define ProfileLibXThrStub	NO
-#endif
-   XTHRSTUBLIBSRC = $(LIBSRC)/XThrStub
-#if SharedLibXThrStub
-#ifndef SharedXThrStubRev
-#define SharedXThrStubRev 6.1
-#endif
-SharedLibReferences(XTHRSTUB,XThrStub,$(XTHRSTUBLIBSRC),SOXTHRSTUBREV,SharedXThrStubRev)
-#else
-ProjectUnsharedLibReferences(XTHRSTUB,XThrStub,$(XTHRSTUBSRC),XBuildLibDir)
-#endif
-#else
-#undef  SharedLibXThrStub
-#define SharedLibXThrStub	NO
-#undef  NormalLibXThrStub
-#define NormalLibXThrStub	NO
-#undef  DebugLibXThrStub
-#define DebugLibXThrStub	NO
-#undef  ProfileLibXThrStub
-#define ProfileLibXThrStub	NO
-#endif
+     LINTXONLYLIB = $(LINTXONLY)
 
 #if BuildScreenSaverLibrary
 #ifndef SharedLibXss
@@ -2058,27 +2154,123 @@ ProjectUnsharedLibReferences(XTHRSTUB,XThrStub,$(XTHRSTUBSRC),XBuildLibDir)
 #endif
 
 #if BuildRandRLibrary
-#ifndef SharedLibXrandr
-#define SharedLibXrandr		HasSharedLibraries
+# ifndef SharedLibXrandr
+#  define SharedLibXrandr		HasSharedLibraries
+# endif
+# ifndef NormalLibXrandr
+#  define NormalLibXrandr		(!SharedLibXrandr || ForceNormalLib)
+# endif
+# ifndef DebugLibXrandr
+#  define DebugLibXrandr	NO
+# endif
+# ifndef ProfileLibXrandr
+#  define ProfileLibXrandr	NO
+# endif
+#else
+# undef  SharedLibXrandr
+# define SharedLibXrandr	NO
+# undef  NormalLibXrandr
+# define NormalLibXrandr	NO
+# undef  DebugLibXrandr
+# define DebugLibXrandr		NO
+# undef  ProfileLibXrandr
+# define ProfileLibXrandr	NO
 #endif
-#ifndef NormalLibXrandr
-#define NormalLibXrandr		(!SharedLibXrandr || ForceNormalLib)
+
+#if BuildXfixesLibrary
+#ifndef SharedLibXfixes
+#define SharedLibXfixes		HasSharedLibraries
 #endif
-#ifndef DebugLibXrandr
-#define DebugLibXrandr		NO
+#ifndef NormalLibXfixes
+#define NormalLibXfixes		(!SharedLibXfixes || ForceNormalLib)
 #endif
-#ifndef ProfileLibXrandr
-#define ProfileLibXrandr	NO
+#ifndef DebugLibXfixes
+#define DebugLibXfixes		NO
+#endif
+#ifndef ProfileLibXfixes
+#define ProfileLibXfixes	NO
 #endif
 #else
-#undef  SharedLibXrandr
-#define SharedLibXrandr		NO
-#undef  NormalLibXrandr
-#define NormalLibXrandr		NO
-#undef  DebugLibXrandr
-#define DebugLibXrandr		NO
-#undef  ProfileLibXrandr
-#define ProfileLibXrandr	NO
+#undef  SharedLibXfixes
+#define SharedLibXfixes		NO
+#undef  NormalLibXfixes
+#define NormalLibXfixes		NO
+#undef  DebugLibXfixes
+#define DebugLibXfixes		NO
+#undef  ProfileLibXfixes
+#define ProfileLibXfixes	NO
+#endif
+
+#if BuildDamageLibrary
+#ifndef SharedLibXdamage
+#define SharedLibXdamage	HasSharedLibraries
+#endif
+#ifndef NormalLibXdamage
+#define NormalLibXdamage	(!SharedLibXdamage || ForceNormalLib)
+#endif
+#ifndef DebugLibXdamage
+#define DebugLibXdamage		NO
+#endif
+#ifndef ProfileLibXdamage
+#define ProfileLibXdamage	NO
+#endif
+#else
+#undef  SharedLibXdamage
+#define SharedLibXdamage	NO
+#undef  NormalLibXdamage
+#define NormalLibXdamage	NO
+#undef  DebugLibXdamage
+#define DebugLibXdamage		NO
+#undef  ProfileLibXdamage
+#define ProfileLibXdamage	NO
+#endif
+
+#if BuildCompositeLibrary
+#ifndef SharedLibXcomposite
+#define SharedLibXcomposite	HasSharedLibraries
+#endif
+#ifndef NormalLibXcomposite
+#define NormalLibXcomposite	(!SharedLibXcomposite || ForceNormalLib)
+#endif
+#ifndef DebugLibXcomposite
+#define DebugLibXcomposite	NO
+#endif
+#ifndef ProfileLibXcomposite
+#define ProfileLibXcomposite	NO
+#endif
+#else
+#undef  SharedLibXcomposite
+#define SharedLibXcomposite	NO
+#undef  NormalLibXcomposite
+#define NormalLibXcomposite	NO
+#undef  DebugLibXcomposite
+#define DebugLibXcomposite	NO
+#undef  ProfileLibXcomposite
+#define ProfileLibXcomposite	NO
+#endif
+
+#if BuildXevieLibrary
+#ifndef SharedLibXevie
+#define SharedLibXevie		HasSharedLibraries
+#endif
+#ifndef NormalLibXevie
+#define NormalLibXevie		(!SharedLibXevie || ForceNormalLib)
+#endif
+#ifndef DebugLibXevie
+#define DebugLibXevie		NO
+#endif
+#ifndef ProfileLibXevie
+#define ProfileLibXevie		NO
+#endif
+#else
+#undef  SharedLibXevie
+#define SharedLibXevie		NO
+#undef  NormalLibXevie
+#define NormalLibXevie		NO
+#undef  DebugLibXevie
+#define DebugLibXevie		NO
+#undef  ProfileLibXevie
+#define ProfileLibXevie		NO
 #endif
 
 #if BuildXcursorLibrary
@@ -2320,6 +2512,29 @@ SharedLibReferences(XXF86DGA,Xxf86dga,$(XXF86DGALIBSRC),SOXXF86DGAREV,SharedXxf8
 ProjectUnsharedLibReferences(XXF86DGA,Xxf86dga,$(XXF86DGALIBSRC),XBuildLibDir)
 #endif
 
+#if BuildDmxLibrary
+#ifndef SharedLibDmx
+#define SharedLibDmx		NO
+#endif
+#ifndef NormalLibDmx
+#define NormalLibDmx		YES
+#endif
+#ifndef DebugLibDmx
+#define DebugLibDmx		NO
+#endif
+#ifndef ProfileLibDmx
+#define ProfileLibDmx		NO
+#endif
+#else /* BuildDmxLibrary */
+#undef SharedLibDmx
+#define SharedLibDmx		NO
+#undef NormalLibDmx
+#define NormalLibDmx		NO
+#undef DebugLibDmx
+#define DebugLibDmx		NO
+#undef ProfileLibDmx
+#define ProfileLibDmx		NO
+#endif /* BuildDmxLibrary */
 
     XXF86RUSHLIBSRC = $(LIBSRC)/Xxf86rush
 #if SharedLibXxf86rush
@@ -2373,6 +2588,15 @@ SharedLibReferences(XRES,XRes,$(XRESLIBSRC),SOXRESREV,SharedXResRev)
 ProjectUnsharedLibReferences(XRES,XRes,$(XRESLIBSRC),XBuildLibDir)
 #endif
 
+    DMXLIBSRC = $(LIBSRC)/dmx
+#if SharedLibDmx
+#ifndef SharedDmxRev
+#define SharedDmxRev 1.0
+#endif
+SharedLibReferences(DMX,dmx,$(DMXLIBSRC),SODMXREV,SharedDmxRev)
+#else
+ProjectUnsharedLibReferences(DMX,dmx,$(DMXLIBSRC),XBuildLibDir)
+#endif
 
     DPSLIBSRC = $(LIBSRC)/dps
 #if SharedLibDps
@@ -2440,14 +2664,14 @@ ProjectUnsharedLibReferences(GLW,GLw,$(GLWIDGETSRC),XBuildLibDir)
     XRENDERLIBSRC = $(LIBSRC)/Xrender
 #if SharedLibXrender
 #ifndef SharedXrenderRev
-#define SharedXrenderRev 1.2
+#define SharedXrenderRev 1.2.2
 #endif
 SharedLibReferences(XRENDER,Xrender,$(XRENDERLIBSRC),SOXRENDERREV,SharedXrenderRev)
 #else
 ProjectUnsharedLibReferences(XRENDER,Xrender,$(XRENDERLIBSRC),XBuildLibDir)
 #endif
 
-    XRANDRRLIBSRC = $(LIBSRC)/Xrandr
+    XRANDRLIBSRC = $(LIBSRC)/Xrandr
 #if SharedLibXrandr
 #ifndef SharedXrandrRev
 #define SharedXrandrRev 2.0
@@ -2457,10 +2681,50 @@ SharedLibReferences(XRANDR,Xrandr,$(XRANDRLIBSRC),SOXRANDRREV,SharedXrandrRev)
 ProjectUnsharedLibReferences(XRANDR,Xrandr,$(XRANDRLIBSRC),XBuildLibDir)
 #endif
 
-   XCURSORRLIBSRC = $(LIBSRC)/Xcursor
+    XFIXESLIBSRC = $(LIBSRC)/Xfixes
+#if SharedLibXfixes
+#ifndef SharedXfixesRev
+#define SharedXfixesRev 3.0
+#endif
+SharedLibReferences(XFIXES,Xfixes,$(XFIXESLIBSRC),SOXFIXESREV,SharedXfixesRev)
+#else
+ProjectUnsharedLibReferences(XFIXES,Xfixes,$(XFIXESLIBSRC),XBuildLibDir)
+#endif
+
+   XDAMAGELIBSRC = $(LIBSRC)/Xdamage
+#if SharedLibXdamage
+#ifndef SharedXdamageRev
+#define SharedXdamageRev 1.0
+#endif
+SharedLibReferences(XDAMAGE,Xdamage,$(XDAMAGELIBSRC),SOXDAMAGEREV,SharedXdamageRev)
+#else
+ProjectUnsharedLibReferences(XDAMAGE,Xdamage,$(XDAMAGELIBSRC),XBuildLibDir)
+#endif
+
+XCOMPOSITELIBSRC = $(LIBSRC)/Xcomposite
+#if SharedLibXcomposite
+#ifndef SharedXcompositeRev
+#define SharedXcompositeRev 1.0
+#endif
+SharedLibReferences(XCOMPOSITE,Xcomposite,$(XCOMPOSITELIBSRC),SOXCOMPOSITEREV,SharedXcompositeRev)
+#else
+ProjectUnsharedLibReferences(XCOMPOSITE,Xcomposite,$(XCOMPOSITELIBSRC),XBuildLibDir)
+#endif
+
+XEVIELIBSRC = $(LIBSRC)/Xevie
+#if SharedLibXevie
+#ifndef SharedXevieRev
+#define SharedXevieRev 1.0
+#endif
+SharedLibReferences(XEVIE,Xevie,$(XEVIELIBSRC),SOXEVIEREV,SharedXevieRev)
+#else
+ProjectUnsharedLibReferences(XEVIE,Xevie,$(XEVIELIBSRC),XBuildLibDir)
+#endif
+
+   XCURSORLIBSRC = $(LIBSRC)/Xcursor
 #if SharedLibXcursor
 #ifndef SharedXcursorRev
-#define SharedXcursorRev 1.0
+#define SharedXcursorRev 1.0.2
 #endif
 SharedLibReferences(XCURSOR,Xcursor,$(XCURSORLIBSRC),SOXCURSORREV,SharedXcursorRev)
 #else
@@ -2698,6 +2962,14 @@ SharedLibReferences(XA,Xa,$(XALIBSRC),SOXAREV,SharedXaRev)
 UnsharedLibReferences(XA,Xa,$(XALIBSRC))
 #endif
 
+#ifndef BuildXaw
+#define BuildXaw (BuildXprintLib && !BuildServersOnly)
+#endif
+
+       /* AWIDGETSRC is needed by libXaw6 and libXaw7 */
+       AWIDGETSRC = $(LIBSRC)/Xaw
+
+#if BuildXaw
 #ifndef SharedLibXaw
 #define SharedLibXaw HasSharedLibraries
 #endif
@@ -2710,18 +2982,53 @@ UnsharedLibReferences(XA,Xa,$(XALIBSRC))
 #ifndef ProfileLibXaw
 #define ProfileLibXaw		NO	/* profiled widget library */
 #endif
-       AWIDGETSRC = $(LIBSRC)/Xaw
 #if SharedLibXaw
 #ifndef SharedXawRev
-#define SharedXawRev 7.0
+#define SharedXawRev 8.0
 #endif
 SharedDSLibReferences(XAW,Xaw,$(AWIDGETSRC),SOXAWREV,SharedXawRev)
 #else
 ProjectUnsharedLibReferences(XAW,Xaw,$(AWIDGETSRC),XBuildLibDir)
 #endif
+#endif
+
+#ifndef BuildXaw7
+#define BuildXaw7 (HasSharedLibraries && !BuildServersOnly)
+#endif
+
+#if BuildXaw7
+#ifndef SharedLibXaw7
+#define SharedLibXaw7 HasSharedLibraries
+#endif
+#ifndef NormalLibXaw7
+#define NormalLibXaw7		NO
+#endif
+#ifndef DebugLibXaw7
+#define DebugLibXaw7		NO	/* debugged widget library */
+#endif
+#ifndef ProfileLibXaw7
+#define ProfileLibXaw7		NO	/* profiled widget library */
+#endif
+       AWIDGET7SRC = $(LIBSRC)/Xaw7
+#if SharedLibXaw7
+#ifndef SharedXaw7Rev
+#define SharedXaw7Rev 7.0
+#endif
+SharedDSLibReferences(XAW7,Xaw,$(AWIDGET7SRC),SOXAW7REV,SharedXaw7Rev)
+#if !BuildXaw
+SharedDSLibReferences(XAW,Xaw,$(AWIDGET7SRC),SOXAWREV,SharedXawRev)
+#endif
+#else
+ProjectUnsharedLibReferences(XAW7,Xaw,$(AWIDGET7SRC),XBuildLibDir)
+#if !BuildXaw
+ProjectUnsharedLibReferences(XAW,Xaw,$(AWIDGET7SRC),XBuildLibDir)
+#endif
+#endif
+#endif
+
 
 #ifndef BuildXaw6
-#define BuildXaw6 HasSharedLibraries
+#define BuildXaw6 (HasSharedLibraries && !BuildServersOnly)
 #endif
 
 #if BuildXaw6
@@ -2743,8 +3050,14 @@ ProjectUnsharedLibReferences(XAW,Xaw,$(AWIDGETSRC),XBuildLibDir)
 #define SharedXaw6Rev 6.1
 #endif
 SharedDSLibReferences(XAW6,Xaw,$(AWIDGET6SRC),SOXAW6REV,SharedXaw6Rev)
+#if !BuildXaw && !BuildXaw7
+SharedDSLibReferences(XAW,Xaw,$(AWIDGET6SRC),SOXAWREV,SharedXawRev)
+#endif
 #else
 ProjectUnsharedLibReferences(XAW6,Xaw,$(AWIDGET6SRC),XBuildLibDir)
+#if !BuildXaw && !BuildXaw7
+ProjectUnsharedLibReferences(XAW,Xaw,$(AWIDGET6SRC),XBuildLibDir)
+#endif
 #endif
 #endif
 
@@ -2980,23 +3293,23 @@ ProjectUnsharedLibReferences(XPM,Xpm,$(XPMLIBSRC),XBuildLibDir)
  * Get the library version information from version_info in
  * in xc/extras/freetype2/builds/unix/configure.ac.
  *
- * current:revision:age = 9:3:3
+ * current:revision:age = 9:5:3
  *
  * The LibtoolMinorVersions revision is "(current - age).age".
  * The !LibtoolMinorVersions revision is "current.0".
  * Freetype2Version should be set to "current.revision.age"
  */
 #ifndef Freetype2Version
-#define Freetype2Version 9.3.3
+#define Freetype2Version 9.6.3
 #endif
 
 #if SharedLibFreetype2
 #ifndef SharedLibtoolFreetype2Rev
-#define SharedLibtoolFreetype2Rev	9:3:3
+#define SharedLibtoolFreetype2Rev	9:6:3
 #endif
 #ifndef SharedFreetype2Rev
 #if LibtoolMinorVersions
-#define SharedFreetype2Rev 6.3
+#define SharedFreetype2Rev 6.3.5
 #else
 #define SharedFreetype2Rev 9.0
 #endif
@@ -3049,7 +3362,7 @@ FREETYPE2INCDIR = Freetype2IncDir
 #if Freetype2LibDirStandard
 FREETYPE2LIB = -lfreetype
 #else
-FREETYPE2LIB = -L$(FREETYPE2LIBDIR) -lfreetype
+FREETYPE2LIB = -L$(FREETYPE2LIBDIR) LinkerRuntimeLibraryPathFlag($(FREETYPE2LIBDIR)) -lfreetype
 #endif
 
 #endif /* HasFreetype2 */
@@ -3062,14 +3375,61 @@ FREETYPE2LIB = -L$(FREETYPE2LIBDIR) -lfreetype
 
 #if BuildFreetype2Library || HasFreetype2
 #if Freetype2IncDirStandard
-FREETYPE2INCLUDES = -I$(FREETYPE2INCDIR)/freetype2
+FREETYPE2INCLUDES = -I$(FREETYPE2INCDIR)/freetype2 -I$(FREETYPE2INCDIR)/freetype2/config
 #else
-FREETYPE2INCLUDES = -I$(FREETYPE2INCDIR) -I$(FREETYPE2INCDIR)/freetype2
+FREETYPE2INCLUDES = -I$(FREETYPE2INCDIR) -I$(FREETYPE2INCDIR)/freetype2 -I$(FREETYPE2INCDIR)/freetype2/config
 #endif
 FREETYPE2DEFINES = -DFREETYPE2
 #endif
 
 #endif /* UseFreetype2 */
+
+#if HasMotif
+
+#ifndef MotifDir
+#define MotifDir /usr/X11R6
+#endif
+#ifndef MotifDirStandard
+#define MotifDirStandard NO
+#endif
+
+#ifndef MotifLibDir
+# define MotifLibDir MotifDir/LibDirName
+# if MotifDirStandard
+#  define MotifLibDirStandard YES
+# endif
+#endif
+#ifndef MotifLibDirStandard
+# define MotifLibDirStandard NO
+#endif
+
+#ifndef MotifIncDir
+# define MotifIncDir MotifDir/include
+# if MotifDirStandard
+#  define MotifIncDirStandard YES
+# endif
+#endif
+#ifndef MotifIncDirStandard
+# define MotifIncDirStandard NO
+#endif
+
+MOTIFDIR = MotifDir
+MOTIFLIBDIR = MotifLibDir
+MOTIFINCDIR = MotifIncDir
+
+#if MotifLibDirStandard
+MOTIFLIB = -lXm
+#else
+MOTIFLIB = -L$(MOTIFLIBDIR) LinkerRuntimeLibraryPathFlag($(MOTIFLIBDIR)) -lXm
+#endif
+
+#if MotifIncDirStandard
+MOTIFINCLUDES = 
+#else
+MOTIFINCLUDES = -I$(MOTIFINCDIR)
+#endif
+
+#endif /* HasMotif */
 
 #ifndef SharedLibExpat
 #define SharedLibExpat HasSharedLibraries
@@ -3228,7 +3588,7 @@ ProjectUnsharedLibReferences(XFT1,Xft,$(XFT1LIBSRC),XBuildLibDir)
           XFTLIBSRC = $(LIBSRC)/Xft
 #if SharedLibXft
 #ifndef SharedXftRev
-#define SharedXftRev 2.1
+#define SharedXftRev 2.1.2
 #endif
 SharedLibReferences(XFT,Xft,$(XFTLIBSRC),SOXFTREV,SharedXftRev)
 #else
@@ -3261,7 +3621,7 @@ ProjectUnsharedLibReferences(XFT,Xft,$(XFTLIBSRC),XBuildLibDir)
           FONTCONFIGLIBSRC = $(LIBSRC)/fontconfig
 #if SharedLibFontconfig
 #ifndef SharedFontconfigRev
-#define SharedFontconfigRev 1.4
+#define SharedFontconfigRev 1.0.4
 #endif
 SharedLibReferences(FONTCONFIG,fontconfig,$(FONTCONFIGLIBSRC),SOFONTCONFIGREV,SharedFontconfigRev)
 #else
@@ -3490,7 +3850,7 @@ ProjectUnsharedLibReferences(XKBFILE,xkbfile,$(XKBFILELIBSRC),XBuildLibDir)
 # endif
 
 # if defined(UseInstalled) || (CrossCompiling &&  UseInstalledOnCrossCompile)
-     XKBCOMPCMD = $(BINDIR)/XkbComp
+     XKBCOMPCMD = $(XBINDIR)/XkbComp
 # else
      XKBCOMPSRC = $(PROGRAMSRC)/XkbComp
 #  if CrossCompiling
@@ -3552,11 +3912,42 @@ ProjectUnsharedLibReferences(XKBUI,xkbui,$(XKBUILIBSRC),XBuildLibDir)
 # define	XkbuiDepLibs $(DEPXKBFILELIB)
 #endif
 
-#ifndef XawClientDepLibs
-#define XawClientDepLibs $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXPMLIB) $(DEPXLIB)
+#ifndef ExtraXawReqs
+# if BuildXaw
+#  define ExtraXawReqs $(XPLIB)
+# else
+#  define ExtraXawReqs /**/
+# endif
 #endif
+
+EXTRAXAWREQS = ExtraXawReqs
+
+#ifndef ExtraXawClientDepLibs
+# if BuildXaw
+#  define ExtraXawClientDepLibs $(DEPXPLIB)
+# else
+#  define ExtraXawClientDepLibs /**/
+# endif
+#endif
+
+EXTRAXAWCLIENTDEPLIBS = ExtraXawClientDepLibs
+
+#ifndef XawClientDepLibs
+#define XawClientDepLibs $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXPMLIB) $(EXTRAXAWCLIENTDEPLIBS) $(DEPXLIB)
+#endif
+
+#ifndef ExtraXawClientLibs
+# if BuildXaw
+#  define ExtraXawClientLibs $(XPLIB)
+# else
+#  define ExtraXawClientLibs /**/
+# endif
+#endif
+
+EXTRAXAWCLIENTLIBS = ExtraXawClientLibs
+
 #ifndef XawClientLibs
-#define XawClientLibs $(XAWLIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
+#define XawClientLibs $(XAWLIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(EXTRAXAWCLIENTLIBS) $(XLIB)
 #endif
 
 #ifndef SharedLibXTrap
@@ -3981,6 +4372,41 @@ clean::									@@\
 #endif
 #endif
 
+/* 
+ * InstallXpPMFLink - install link for a Xprint PMF "font" from one
+ * print model to another
+ */
+#ifndef InstallXpPMFLink
+#define InstallXpPMFLink(fontfilename,srcmodelfontdir,destmodelfontdir)				@@\
+	InstallLink(install,srcmodelfontdir/fontfilename,fontfilename,destmodelfontdir)
+#endif /* InstallXpPMFLink */
+/* 
+ * InstallXpMultiplePMFLinks - install multiple links for PMF fonts
+ * from one print model to another
+ */
+#ifndef InstallXpMultiplePMFLinks
+#define InstallXpMultiplePMFLinks(list,srcmodelfontdir,destmodelfontdir)			@@\
+install::											@@\
+	MakeDir($(DESTDIR)destmodelfontdir)							@@\
+	for i in list ; do \									@@\
+	    $(RM) $(DESTDIR)destmodelfontdir/$$i ; \						@@\
+	    $(LN) -s -f srcmodelfontdir/$$i $(DESTDIR)destmodelfontdir/$$i ; \			@@\
+	done
+#endif /* InstallXpPMFLink */
+
+/*
+ * InstallXpPMFFontsDir - make and install a fonts.dir index for model-config fonts
+ */
+#ifndef InstallXpPMFFontsDir
+#if BuildServersOnly
+#define InstallXpPMFFontsDir(destmodelfontdir) /**/
+#else
+#define InstallXpPMFFontsDir(destmodelfontdir)			@@\
+install::							@@\
+	($(MKFONTSCALE) -b -s -l $(DESTDIR)destmodelfontdir)
+#endif
+#endif /* InstallXpPMFFontsDir */
+
 
 /*
  * MakeXkbDir
@@ -4233,14 +4659,12 @@ install:: deps								@@\
 	@if [ -f name.ps -a X$(NOPS) = X ]; then set -x; \		@@\
 	  $(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) name.ps \		@@\
 		$(DESTDIR)$(DOCPSDIR); \				@@\
-	fi								@@\
-	RemoveOldFile(name.ps,name.PS,$(DOCPSDIR))			@@\
+	fi ; RemoveOldFile(name.ps,name.PS,$(DOCPSDIR))			@@\
 	MakeDir($(DESTDIR)$(DOCDIR))					@@\
 	@if [ -f name.txt -a X$(NOTXT) = X ]; then set -x; \		@@\
 	  $(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) name.txt \		@@\
 		$(DESTDIR)$(DOCDIR); \					@@\
-	fi								@@\
-	RemoveOldFile(name.txt,name.TXT,$(DOCDIR))			@@\
+	fi ; RemoveOldFile(name.txt,name.TXT,$(DOCDIR))			@@\
 	MakeDir($(DESTDIR)$(DOCHTMLDIR))				@@\
 	@if [ -f name.html -a X$(NOHTML) = X ]; then (set -x; \		@@\
 	  $(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) name.html \	@@\
@@ -4271,6 +4695,19 @@ install:: deps								@@\
 #endif
 #endif
 
+#ifndef LinkHardcopyPS
+# if CaseSensitiveFileSystem
+#  define LinkHardcopyPS(name)						  \
+	@if [ -f name.PS ]; then set -x; \				@@\
+	  RemoveFile(name.ps); \					@@\
+	  $(LN) name.PS name.ps; \					@@\
+	fi
+# else
+#  define LinkHardcopyPS(name)
+# endif
+#endif
+
+
 #ifndef InstallHardcopyDoc
 #define InstallHardcopyDoc(name,deps)					@@\
 all:: name.ps PdfTarget(name)						@@\
@@ -4280,10 +4717,7 @@ name.ps: deps								@@\
 	  RemoveFile(name.ps); \					@@\
 	  gzip -d < name.PS.gz > name.ps; \				@@\
 	fi								@@\
-	@if [ -f name.PS ]; then set -x; \				@@\
-	  RemoveFile(name.ps); \					@@\
-	  $(LN) name.PS name.ps; \					@@\
-	fi								@@\
+	LinkHardcopyPS(name)						@@\
 									@@\
 ConvertPsToPdf(name)							@@\
 									@@\

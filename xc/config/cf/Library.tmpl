@@ -19,7 +19,7 @@ XCOMM $Xorg: Library.tmpl,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
 
 
 
-XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.24 2003/10/21 17:41:43 tsi Exp $
+XCOMM $XFree86: xc/config/cf/Library.tmpl,v 3.23tsi Exp $
 
 #ifndef DoNormalLib
 #define DoNormalLib NO
@@ -389,7 +389,8 @@ CenterLoadTarget(debug_src,basename.SRCsuf,NullParameter,$(ALLDEFINES) options)
  */
 
 #ifndef MakeStringsDependency
-# define MakeStringsDependency						@@\
+# ifndef UseInstalled
+#  define MakeStringsDependency						@@\
 MAKESTRS = $(CONFIGSRC)/util/makestrs					@@\
 NoCmpScript(HostProgramTargetName($(MAKESTRS)) $(MAKESTRS).Osuf)	@@\
 									@@\
@@ -397,6 +398,9 @@ HostProgramTargetName($(MAKESTRS)) $(MAKESTRS).Osuf:			@@\
 	cd $(CONFIGSRC)/util && $(MAKE) HostProgramTargetName(makestrs)	@@\
 									@@\
 includes:: HostProgramTargetName($(MAKESTRS))
+# else
+#  define MakeStringsDependency  /**/
+# endif
 #endif
 
 #ifndef ToolkitMakeStrings
@@ -543,14 +547,18 @@ AllTarget($(EXTRAUNSHAREDOBJS))
 # endif /* LibCreate */
 # ifdef IncSubdir
 #  ifdef IncSubSubdir
+#   if !defined(LibHeaders) || LibHeaders
 BuildIncludes($(HEADERS),IncSubdir/IncSubSubdir,../..)
-#   if BuildLibraries
+#    if BuildLibraries
 InstallMultipleFlags($(HEADERS),$(INCDIR)/IncSubdir/IncSubSubdir,$(INSTINCFLAGS))
+#     endif
 #   endif
 #  else
+#   if !defined(LibHeaders) || LibHeaders
 BuildIncludes($(HEADERS),IncSubdir,..)
-#   if BuildLibraries
+#    if BuildLibraries
 InstallMultipleFlags($(HEADERS),$(INCDIR)/IncSubdir,$(INSTINCFLAGS))
+#    endif
 #   endif
 #  endif
 # else
