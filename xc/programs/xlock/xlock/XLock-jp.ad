@@ -2,8 +2,8 @@
 ! XLock-jp: Japanese class resource for xlock (xlockmore-5.01)
 !!!!
 !! By: YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>
-XLock.mode: random
-!XLock.mode: blank
+XLock.mode: blank
+!XLock.mode: random
 !XLock.mode: life
 !XLock.erasemode: no_fade
 XLock.erasedelay: 400
