@@ -1,5 +1,4 @@
 /* $Xorg: xclock.c,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $ */
-/* $OpenBSD: xclock.c,v 1.2 2003/05/07 21:44:29 matthieu Exp $ */
 
 /*
  * xclock --  Hacked from Tony Della Fera's much hacked clock program.
@@ -69,8 +68,8 @@ static XrmOptionDescRec options[] = {
 {"-strftime",	"*clock.strftime",	XrmoptionSepArg,	NULL},
 #ifdef XRENDER
 {"-face",	"*clock.face",		XrmoptionSepArg,	NULL},
-{"-render",	"*clock.render",	XrmoptionNoArg,		"FALSE"},
-{"-norender",	"*clock.render",	XrmoptionNoArg,		"TRUE"},
+{"-render",	"*clock.render",	XrmoptionNoArg,		"TRUE"},
+{"-norender",	"*clock.render",	XrmoptionNoArg,		"FALSE"},
 {"-sharp",	"*clock.sharp",		XrmoptionNoArg,		"TRUE"},
 #endif
 };

@@ -1,4 +1,5 @@
 /* $Xorg: Clock.c,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $ */
+/* $OpenBSD: Clock.c,v 1.2 2003/05/07 21:53:11 matthieu Exp $ */
 
 /***********************************************************
 
@@ -125,7 +126,7 @@ static XtResource resources[] = {
     	offset (backing_store), XtRString, "default"},
 #ifdef XRENDER
     {XtNrender, XtCBoolean, XtRBoolean, sizeof(Boolean),
-	offset(render), XtRImmediate, (XtPointer) TRUE },
+	offset(render), XtRImmediate, (XtPointer) FALSE },
     {XtNbuffer, XtCBoolean, XtRBoolean, sizeof(Boolean),
 	offset(buffer), XtRImmediate, (XtPointer) TRUE },
     {XtNsharp, XtCBoolean, XtRBoolean, sizeof(Boolean),
