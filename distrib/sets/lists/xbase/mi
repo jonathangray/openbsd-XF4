@@ -1,5 +1,6 @@
 ./etc
 ./etc/X11
+./etc/X11/app-defaults
 ./etc/X11/rstart
 ./etc/X11/rstart/rstartd.real
 ./etc/X11/xdm
@@ -76,7 +77,6 @@
 ./usr/X11R6/bin/xfs
 ./usr/X11R6/bin/xfsinfo
 ./usr/X11R6/bin/xfwp
-./usr/X11R6/bin/xgamma
 ./usr/X11R6/bin/xgc
 ./usr/X11R6/bin/xhost
 ./usr/X11R6/bin/xieperf

@@ -1,4 +1,3 @@
-./etc/X11/app-defaults
 ./etc/X11/app-defaults/Bitmap
 ./etc/X11/app-defaults/Bitmap-color
 ./etc/X11/app-defaults/Chooser
@@ -60,7 +59,6 @@
 ./etc/X11/xdm/TakeConsole
 ./etc/X11/xdm/Xaccess
 ./etc/X11/xdm/Xsession
-./etc/X11/xdm/Xsetup
 ./etc/X11/xdm/Xsetup_0
 ./etc/X11/xdm/Xwilling
 ./etc/X11/xdm/authdir
@@ -520,7 +518,6 @@
 ./usr/X11R6/include/X11/Xthreads.h
 ./usr/X11R6/include/X11/Xutil.h
 ./usr/X11R6/include/X11/ap_keysym.h
-./usr/X11R6/include/X11/bitmaps
 ./usr/X11R6/include/X11/bitmaps/1x1
 ./usr/X11R6/include/X11/bitmaps/2x2
 ./usr/X11R6/include/X11/bitmaps/Dashes
@@ -541,7 +538,6 @@
 ./usr/X11R6/include/X11/bitmaps/box6
 ./usr/X11R6/include/X11/bitmaps/boxes
 ./usr/X11R6/include/X11/bitmaps/calculator
-./usr/X11R6/include/X11/bitmaps/card.xbm
 ./usr/X11R6/include/X11/bitmaps/ccode.icon
 ./usr/X11R6/include/X11/bitmaps/cntr_ptr
 ./usr/X11R6/include/X11/bitmaps/cntr_ptrmsk
@@ -550,7 +546,6 @@
 ./usr/X11R6/include/X11/bitmaps/dimple1
 ./usr/X11R6/include/X11/bitmaps/dimple3
 ./usr/X11R6/include/X11/bitmaps/dot
-./usr/X11R6/include/X11/bitmaps/down.xbm
 ./usr/X11R6/include/X11/bitmaps/dropbar7
 ./usr/X11R6/include/X11/bitmaps/dropbar8
 ./usr/X11R6/include/X11/bitmaps/escherknot
@@ -569,10 +564,8 @@
 ./usr/X11R6/include/X11/bitmaps/hlines2
 ./usr/X11R6/include/X11/bitmaps/hlines3
 ./usr/X11R6/include/X11/bitmaps/icon
-./usr/X11R6/include/X11/bitmaps/keyboard.xbm
 ./usr/X11R6/include/X11/bitmaps/keyboard16
 ./usr/X11R6/include/X11/bitmaps/ldblarrow
-./usr/X11R6/include/X11/bitmaps/left.xbm
 ./usr/X11R6/include/X11/bitmaps/left_ptr
 ./usr/X11R6/include/X11/bitmaps/left_ptrmsk
 ./usr/X11R6/include/X11/bitmaps/letters
@@ -587,9 +580,6 @@
 ./usr/X11R6/include/X11/bitmaps/menu16
 ./usr/X11R6/include/X11/bitmaps/menu6
 ./usr/X11R6/include/X11/bitmaps/menu8
-./usr/X11R6/include/X11/bitmaps/monitor.xbm
-./usr/X11R6/include/X11/bitmaps/mouse.xbm
-./usr/X11R6/include/X11/bitmaps/narrower.xbm
 ./usr/X11R6/include/X11/bitmaps/noletters
 ./usr/X11R6/include/X11/bitmaps/ocode.icon
 ./usr/X11R6/include/X11/bitmaps/opendot
@@ -597,25 +587,20 @@
 ./usr/X11R6/include/X11/bitmaps/plaid
 ./usr/X11R6/include/X11/bitmaps/prog.icon
 ./usr/X11R6/include/X11/bitmaps/rdblarrow
-./usr/X11R6/include/X11/bitmaps/right.xbm
 ./usr/X11R6/include/X11/bitmaps/right_ptr
 ./usr/X11R6/include/X11/bitmaps/right_ptrmsk
 ./usr/X11R6/include/X11/bitmaps/root_weave
 ./usr/X11R6/include/X11/bitmaps/scales
-./usr/X11R6/include/X11/bitmaps/shorter.xbm
 ./usr/X11R6/include/X11/bitmaps/sipb
 ./usr/X11R6/include/X11/bitmaps/star
 ./usr/X11R6/include/X11/bitmaps/starMask
 ./usr/X11R6/include/X11/bitmaps/stipple
-./usr/X11R6/include/X11/bitmaps/taller.xbm
 ./usr/X11R6/include/X11/bitmaps/target
 ./usr/X11R6/include/X11/bitmaps/terminal
 ./usr/X11R6/include/X11/bitmaps/tie_fighter
-./usr/X11R6/include/X11/bitmaps/up.xbm
 ./usr/X11R6/include/X11/bitmaps/vlines2
 ./usr/X11R6/include/X11/bitmaps/vlines3
 ./usr/X11R6/include/X11/bitmaps/weird_size
-./usr/X11R6/include/X11/bitmaps/wider.xbm
 ./usr/X11R6/include/X11/bitmaps/wide_weave
 ./usr/X11R6/include/X11/bitmaps/wingdogs
 ./usr/X11R6/include/X11/bitmaps/woman
@@ -703,7 +688,6 @@
 ./usr/X11R6/include/X11/fonts/fsmasks.h
 ./usr/X11R6/include/X11/keysym.h
 ./usr/X11R6/include/X11/keysymdef.h
-./usr/X11R6/include/X11/pixmaps
 ./usr/X11R6/include/X11/pixmaps/Jlock.xpm
 ./usr/X11R6/include/X11/pixmaps/Jnews.xpm
 ./usr/X11R6/include/X11/pixmaps/Jrecycle.xpm
@@ -824,11 +808,6 @@
 ./usr/X11R6/include/X11/pixmaps/xterm.xpm
 ./usr/X11R6/include/X11/pixmaps/xv.xpm
 ./usr/X11R6/include/X11/pixmaps/xv2.xpm
-./usr/X11R6/include/X11/pixmaps/card.xpm
-./usr/X11R6/include/X11/pixmaps/computer.xpm
-./usr/X11R6/include/X11/pixmaps/keyboard.xpm
-./usr/X11R6/include/X11/pixmaps/monitor.xpm
-./usr/X11R6/include/X11/pixmaps/mouse.xpm
 ./usr/X11R6/include/X11/xpm.h
 ./usr/X11R6/lib/X11/XErrorDB
 ./usr/X11R6/lib/X11/XKeysymDB
@@ -1020,7 +999,6 @@
 ./usr/X11R6/lib/X11/doc/html/ScreenOfDisplay.3.html
 ./usr/X11R6/lib/X11/doc/html/ScreenWhitePointOfCCC.3.html
 ./usr/X11R6/lib/X11/doc/html/ServerVendor.3.html
-./usr/X11R6/lib/X11/doc/html/SuperProbe.1.html
 ./usr/X11R6/lib/X11/doc/html/VendorRelease.3.html
 ./usr/X11R6/lib/X11/doc/html/VisualOfCCC.3.html
 ./usr/X11R6/lib/X11/doc/html/WhitePixel.3.html
@@ -1968,6 +1946,7 @@
 ./usr/X11R6/lib/X11/doc/html/imake.1.html
 ./usr/X11R6/lib/X11/doc/html/kbd_mode.1.html
 ./usr/X11R6/lib/X11/doc/html/kx.1.html
+./usr/X11R6/lib/X11/doc/html/kxd.1.html
 ./usr/X11R6/lib/X11/doc/html/lbxproxy.1.html
 ./usr/X11R6/lib/X11/doc/html/listres.1.html
 ./usr/X11R6/lib/X11/doc/html/makedepend.1.html
@@ -2022,7 +2001,6 @@
 ./usr/X11R6/lib/X11/doc/html/xfs.1.html
 ./usr/X11R6/lib/X11/doc/html/xfsinfo.1.html
 ./usr/X11R6/lib/X11/doc/html/xfwp.1.html
-./usr/X11R6/lib/X11/doc/html/xgamma.1.html
 ./usr/X11R6/lib/X11/doc/html/xgc.1.html
 ./usr/X11R6/lib/X11/doc/html/xhost.1.html
 ./usr/X11R6/lib/X11/doc/html/xieperf.1.html
@@ -2055,7 +2033,6 @@
 ./usr/X11R6/lib/X11/doc/html/xsm.1.html
 ./usr/X11R6/lib/X11/doc/html/xstdcmap.1.html
 ./usr/X11R6/lib/X11/doc/html/xterm.1.html
-./usr/X11R6/lib/X11/doc/html/xvidtune.1.html
 ./usr/X11R6/lib/X11/doc/html/xvinfo.1.html
 ./usr/X11R6/lib/X11/doc/html/xwd.1.html
 ./usr/X11R6/lib/X11/doc/html/xwininfo.1.html
@@ -2292,7 +2269,6 @@
 ./usr/X11R6/man/cat1/xfs.0
 ./usr/X11R6/man/cat1/xfsinfo.0
 ./usr/X11R6/man/cat1/xfwp.0
-./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xgc.0
 ./usr/X11R6/man/cat1/xhost.0
 ./usr/X11R6/man/cat1/xieperf.0
