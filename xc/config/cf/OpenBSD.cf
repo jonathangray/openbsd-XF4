@@ -312,16 +312,6 @@ install:: fonts.alias							@@\
  * The code for an Alpha XF86_TGA server compiles, but it DOES NOT work
  */
 # define BuildAlphaXF86		NO
-/*
-# define BuildGlxExt		YES
-# define BuildGLXLibrary	YES
-# define BuildGLULibrary	YES
-# define HasGcc2ForCplusplus	YES
-
-# if BuildAlphaXF86
-#  include <xf86.rules>
-# endif
-*/
 
 #  define UseElfFormat		YES
 
@@ -381,9 +371,7 @@ install:: fonts.alias							@@\
 # define BuildXF86DGA		NO
 # define BuildXInputExt		NO
 
-# if 1
-#  include <xfree86.cf>
-# endif
+# include <xfree86.cf>
 
 #endif /* AlphaArchitecture */
 
