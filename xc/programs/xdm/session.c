@@ -278,7 +278,11 @@ ManageSession (struct display *d)
     Debug ("ManageSession %s\n", d->name);
     (void)XSetIOErrorHandler(IOErrorHandler);
     (void)XSetErrorHandler(ErrorHandler);
+#ifndef HAS_SETPROCTITLE
     SetTitle(d->name, (char *) 0);
+#else
+    setproctitle("%s", d->name);
+#endif
     /*
      * Load system default Resources
      */

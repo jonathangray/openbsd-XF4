@@ -385,7 +385,9 @@ extern void BecomeOrphan (void);
 extern void CloseOnFork (void);
 extern void RegisterCloseOnFork (int fd);
 extern void StartDisplay (struct display *d);
+#ifndef HAS_SETPROCTITLE
 extern void SetTitle (char *name, ...);
+#endif
 
 /* in dpylist.c */
 extern int AnyDisplaysLeft (void);

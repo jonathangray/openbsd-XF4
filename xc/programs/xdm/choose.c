@@ -597,7 +597,11 @@ RunChooser (struct display *d)
     char    **env;
 
     Debug ("RunChooser %s\n", d->name);
+#ifndef HAS_SETPROCTITLE
     SetTitle (d->name, "chooser", (char *) 0);
+#else
+    setproctitle("chooser %s", d->name);
+#endif
     LoadXloginResources (d);
     args = parseArgs ((char **) 0, d->chooser);
     strcpy (buf, "-xdmaddress ");

@@ -865,6 +865,7 @@ UnlockPidFile (void)
 }
 #endif
 
+#ifndef HAS_SETPROCTITLE
 void SetTitle (char *name, ...)
 {
 #ifndef NOXDMTITLE
@@ -894,3 +895,4 @@ void SetTitle (char *name, ...)
     va_end(args);
 #endif	
 }
+#endif
