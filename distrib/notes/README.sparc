@@ -73,6 +73,6 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
 
 ------------------------
 If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.2.0/
+http://www.xfree86.org/4.2.1/
 
-$OpenBSD: README.sparc,v 1.8 2002/08/29 22:27:01 miod Exp $
+$OpenBSD: README.sparc,v 1.9 2002/10/07 20:25:50 todd Exp $
