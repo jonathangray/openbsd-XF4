@@ -1140,6 +1140,34 @@ get_sun_compiler_versions (FILE *inFile)
 }
 #endif
 
+#if defined(__OpenBSD__) 
+static void
+get_stackprotector(FILE *inFile)
+{
+  FILE *fp;
+  char *cc;
+  char command[1024], buf[1024];
+  
+  cc = getenv("CC");
+  if (cc == NULL) {
+    cc = "cc";
+  }
+  snprintf(command, sizeof(command), "%s -v 2>&1", cc);
+  fp = popen(command, "r");
+  if (fp == NULL) 
+    abort();
+  while (fgets(buf, sizeof(buf), fp)) {
+    if (strstr(buf, "propolice") != NULL) {
+      fprintf(inFile, "#define HasGccStackProtector YES\n");
+      break;
+    }
+  }
+  if (pclose(fp)) 
+    abort();
+}
+#endif
+	
+
 #ifdef __GNUC__
 static void
 get_gcc_version(FILE *inFile)
@@ -1266,6 +1294,9 @@ define_os_defaults(FILE *inFile)
 #endif
 #ifdef __FreeBSD__
     get_binary_format(inFile);
+#endif
+#ifdef __OpenBSD__
+    get_stackprotector(inFile);
 #endif
 #else /* WIN32 */
 #ifndef __EMX__
