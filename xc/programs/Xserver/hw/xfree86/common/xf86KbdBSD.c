@@ -667,7 +667,7 @@ static CARD8 wsUsbMap[] = {
 	/* 70 */ KEY_Print,	/* PrintScrn SysReq */
 	/* 71 */ KEY_ScrollLock,	/* Scroll Lock */
 	/* 72 */ KEY_Pause,	/* Pause Break */
-	/* 73 */ KEY_Insert,	/* Insert */
+	/* 73 */ KEY_Insert,	/* Insert XXX  Help on some Mac Keyboards */
 	/* 74 */ KEY_Home,	/* Home */
 	/* 75 */ KEY_PgUp,	/* Page Up */
 	/* 76 */ KEY_Delete,	/* Delete */
@@ -697,7 +697,7 @@ static CARD8 wsUsbMap[] = {
 	/* 100 */ KEY_Less,	/* < > on some keyboards */
 	/* 101 */ KEY_Menu,	/* Menu */
 	/* 102 */ KEY_NOTUSED,
-	/* 103 */ KEY_NOTUSED,
+	/* 103 */ KEY_KP_Equal, /* Keypad = on Mac keyboards */
 	/* 104 */ KEY_NOTUSED,
 	/* 105 */ KEY_NOTUSED,
 	/* 106 */ KEY_NOTUSED,
@@ -825,7 +825,7 @@ static CARD8 wsUsbMap[] = {
 	/* 228 */ KEY_RCtrl,	/* Right Control */
 	/* 229 */ KEY_ShiftR,	/* Right Shift */
 	/* 230 */ KEY_AltLang,	/* Right Alt, AKA AltGr */
-	/* 231 */ KEY_RMeta,	/* Right Meta */
+	/* 231 */ KEY_LMeta,	/* Right Meta XXX */
 };
 
 #define WS_USB_MAP_SIZE (sizeof(wsUsbMap)/sizeof(unsigned char))
@@ -913,7 +913,7 @@ static CARD8 wsAdbMap[] = {
 	/* 78 */ KEY_KP_Minus,
 	/* 79 */ KEY_NOTUSED,
 	/* 80 */ KEY_NOTUSED,
-	/* 81 */ KEY_UNKNOWN,	/* Keypad = */
+	/* 81 */ KEY_KP_Equal,	/* Keypad = */
 	/* 82 */ KEY_KP_0,
 	/* 83 */ KEY_KP_1,
 	/* 84 */ KEY_KP_2,
@@ -1072,17 +1072,17 @@ WSKbdToKeycode(int keycode)
 	case WSKBD_TYPE_PC_XT:
 	case WSKBD_TYPE_PC_AT:
 		/* No translation needed */
-		return MIN_KEYCODE + keycode;
+		return keycode;
 	case WSKBD_TYPE_USB:
 		if (keycode < 0 || keycode >= WS_USB_MAP_SIZE) 
 			return KEY_UNKNOWN;
 		else 
-			return wsUsbMap[keycode] + MIN_KEYCODE;
+			return wsUsbMap[keycode];
 	case WSKBD_TYPE_ADB:
 		if (keycode < 0 || keycode >= WS_ADB_MAP_SIZE) 
 			return KEY_UNKNOWN;
 		else 
-			return wsAdbMap[keycode] + MIN_KEYCODE;
+			return wsAdbMap[keycode];
 	default:
 		ErrorF("Unkown wskbd type %d\n", xf86Info.wsKbdType);
 		return KEY_UNKNOWN;
