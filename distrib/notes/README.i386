@@ -25,12 +25,12 @@ Conventions used in this document:
 
 2. Find out about your hardware:
 
-   Run SuperProbe(1) to find out what chipset is used by your video board.
-   Write this information down. The dmesg(8) command output is useful too.
+   Find out what chipset is used by your video board.  Write this
+   information down. The dmesg(8) command output is useful.
 
-   You need to decide if you can use the newer XFree86 4.2.0 server,
+   You need to decide if you can use the XFree86 4.2.0 server,
    XFree86(1), or if you have some legacy VGA card supported only by
-   one of the older XFree86 3.3.6 servers:
+   one of the old XFree86 3.3.6 servers:
 
         XF86_3DLabs(1) XF86_Mach8(1)  XF86_S3(1)   XF86_VGA16(1)
         XF86_I128(1)   XF86_Mach32(1) XF86_S3V(1)  XF86_SVGA(1)
@@ -79,7 +79,7 @@ Conventions used in this document:
 
               /usr/X11R6/lib/X11/doc/XFree86-3.3.6/QuickStart.doc
 
-   For manual configuration information, see XF86Config-3(4).
+   For manual configuration information, see XF86Config-3(5).
 
 4. Start either xdm(1) or startx(1).
 
