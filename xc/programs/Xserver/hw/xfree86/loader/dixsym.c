@@ -57,6 +57,8 @@
 #include "mipict.h"
 #endif
 
+extern int priv_open_device(const char *);
+
 /* DIX things */
 
 LOOKUP dixLookupTab[] = {
@@ -291,6 +293,8 @@ LOOKUP dixLookupTab[] = {
   /* utils.c */
   SYMFUNC(AdjustWaitForDelay)
   SYMVAR(noTestExtensions)
+  /* privsep.c */
+  SYMFUNC(priv_open_device)
 
   /* devices.c */
   SYMFUNC(InitPointerDeviceStruct)

@@ -1026,7 +1026,7 @@ configInputKbd(IDevPtr inputp)
 			 " the \"wskbd\" keyboard protocol");
 	 return FALSE;
      }
-     xf86Info.kbdFd = open(s, O_RDWR | O_NONBLOCK | O_EXCL);
+     xf86Info.kbdFd = priv_open_device(s);
      if (xf86Info.kbdFd == -1) {
        xf86ConfigError("cannot open \"%s\"", s);
        xfree(s);
