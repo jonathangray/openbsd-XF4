@@ -76,7 +76,8 @@
 ./etc/X11/xkb/keymap/sgi/be
 ./etc/X11/xkb/keymap/sgi/bg
 ./etc/X11/xkb/keymap/sgi/ca
-./etc/X11/xkb/keymap/sgi/cs
+./etc/X11/xkb/keymap/sgi/cz
+./etc/X11/xkb/keymap/sgi/cz_qwerty
 ./etc/X11/xkb/keymap/sgi/de
 ./etc/X11/xkb/keymap/sgi/de_CH
 ./etc/X11/xkb/keymap/sgi/dk
@@ -95,6 +96,8 @@
 ./etc/X11/xkb/keymap/sgi/pt
 ./etc/X11/xkb/keymap/sgi/ru
 ./etc/X11/xkb/keymap/sgi/se
+./etc/X11/xkb/keymap/sgi/sk
+./etc/X11/xkb/keymap/sgi/sk_qwerty
 ./etc/X11/xkb/keymap/sgi/th
 ./etc/X11/xkb/keymap/sgi/us
 ./etc/X11/xkb/keymap/sony
@@ -131,12 +134,12 @@
 ./etc/X11/xkb/symbols/be
 ./etc/X11/xkb/symbols/bg
 ./etc/X11/xkb/symbols/br
+./etc/X11/xkb/symbols/by
 ./etc/X11/xkb/symbols/ca
 ./etc/X11/xkb/symbols/ca_enhanced
-./etc/X11/xkb/symbols/cs
-./etc/X11/xkb/symbols/cs_qwerty
 ./etc/X11/xkb/symbols/ctrl
-./etc/X11/xkb/symbols/czsk
+./etc/X11/xkb/symbols/cz
+./etc/X11/xkb/symbols/cz_qwerty
 ./etc/X11/xkb/symbols/de
 ./etc/X11/xkb/symbols/de_CH
 ./etc/X11/xkb/symbols/digital
@@ -147,6 +150,7 @@
 ./etc/X11/xkb/symbols/dk
 ./etc/X11/xkb/symbols/dvorak
 ./etc/X11/xkb/symbols/ee
+./etc/X11/xkb/symbols/el
 ./etc/X11/xkb/symbols/en_US
 ./etc/X11/xkb/symbols/es
 ./etc/X11/xkb/symbols/fi
@@ -156,10 +160,10 @@
 ./etc/X11/xkb/symbols/fujitsu/jp
 ./etc/X11/xkb/symbols/fujitsu/us
 ./etc/X11/xkb/symbols/gb
-./etc/X11/xkb/symbols/gr
 ./etc/X11/xkb/symbols/group
 ./etc/X11/xkb/symbols/hp
 ./etc/X11/xkb/symbols/hp/us
+./etc/X11/xkb/symbols/hr
 ./etc/X11/xkb/symbols/hu
 ./etc/X11/xkb/symbols/hu_US
 ./etc/X11/xkb/symbols/il
@@ -174,6 +178,7 @@
 ./etc/X11/xkb/symbols/lt
 ./etc/X11/xkb/symbols/lt_p
 ./etc/X11/xkb/symbols/lt_std
+./etc/X11/xkb/symbols/lv
 ./etc/X11/xkb/symbols/macintosh
 ./etc/X11/xkb/symbols/macintosh/de
 ./etc/X11/xkb/symbols/macintosh/de_CH
@@ -203,6 +208,8 @@
 ./etc/X11/xkb/symbols/sgi
 ./etc/X11/xkb/symbols/sgi/jp
 ./etc/X11/xkb/symbols/si
+./etc/X11/xkb/symbols/sk
+./etc/X11/xkb/symbols/sk_qwerty
 ./etc/X11/xkb/symbols/sony
 ./etc/X11/xkb/symbols/sony/us
 ./etc/X11/xkb/symbols/sr
@@ -225,6 +232,7 @@
 ./etc/X11/xkb/types/cancel
 ./etc/X11/xkb/types/complete
 ./etc/X11/xkb/types/default
+./etc/X11/xkb/types/extra
 ./etc/X11/xkb/types/iso9995
 ./etc/X11/xkb/types/mousekeys
 ./etc/X11/xkb/types/nocancel
@@ -268,6 +276,7 @@
 ./usr/X11R6/include/xf86Optrec.h
 ./usr/X11R6/include/xf86Parser.h
 ./usr/X11R6/lib/X11/Cards
+./usr/X11R6/lib/X11/Options
 ./usr/X11R6/lib/X11/XF86Config.98
 ./usr/X11R6/lib/X11/XF86Config.eg
 ./usr/X11R6/lib/X11/XF86Setup
@@ -358,15 +367,16 @@
 ./usr/X11R6/lib/X11/doc/README.ati
 ./usr/X11R6/lib/X11/doc/README.chips
 ./usr/X11R6/lib/X11/doc/README.cyrix
+./usr/X11R6/lib/X11/doc/README.dps
 ./usr/X11R6/lib/X11/doc/README.fonts
 ./usr/X11R6/lib/X11/doc/README.i740
 ./usr/X11R6/lib/X11/doc/README.i810
 ./usr/X11R6/lib/X11/doc/README.mouse
 ./usr/X11R6/lib/X11/doc/README.newport
 ./usr/X11R6/lib/X11/doc/README.r128
+./usr/X11R6/lib/X11/doc/README.rapidaccess
 ./usr/X11R6/lib/X11/doc/README.rendition
 ./usr/X11R6/lib/X11/doc/README.s3virge
-./usr/X11R6/lib/X11/doc/RELNOTES
 ./usr/X11R6/lib/X11/doc/ServersOnly
 ./usr/X11R6/lib/X11/doc/Status
 ./usr/X11R6/lib/X11/doc/Versions
@@ -445,6 +455,8 @@
 ./usr/X11R6/lib/libXft.so.1.0
 ./usr/X11R6/lib/libXi.so.6.0
 ./usr/X11R6/lib/libXmu.so.6.2
+./usr/X11R6/lib/libXmuu.a
+./usr/X11R6/lib/libXmuu.so.1.0
 ./usr/X11R6/lib/libXp.so.6.2
 ./usr/X11R6/lib/libXpm.so.4.11
 ./usr/X11R6/lib/libXrender.so.1.0

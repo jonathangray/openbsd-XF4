@@ -1,5 +1,6 @@
 ./etc
 ./etc/X11
+./etc/X11/XftConfig
 ./etc/X11/app-defaults/Beforelight
 ./etc/X11/xdm
 ./etc/X11/xdm/Xresources
@@ -8,6 +9,7 @@
 ./etc/X11/xdm/xdm-config
 ./usr
 ./usr/X11R6
+./usr/X11R6/.XFree86_Version
 ./usr/X11R6/README
 ./usr/X11R6/bin
 ./usr/X11R6/bin/appres
@@ -17,11 +19,16 @@
 ./usr/X11R6/bin/beforelight
 ./usr/X11R6/bin/bitmap
 ./usr/X11R6/bin/bmtoa
+./usr/X11R6/bin/ccmakedep
+./usr/X11R6/bin/cleanlinks
 ./usr/X11R6/bin/cxpm
+./usr/X11R6/bin/dpsexec
+./usr/X11R6/bin/dpsinfo
 ./usr/X11R6/bin/editres
 ./usr/X11R6/bin/fslsfonts
 ./usr/X11R6/bin/fstobdf
 ./usr/X11R6/bin/fvwm
+./usr/X11R6/bin/glxgears
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/iceauth
 ./usr/X11R6/bin/ico
@@ -47,6 +54,7 @@
 ./usr/X11R6/bin/smproxy
 ./usr/X11R6/bin/ssh-askpass
 ./usr/X11R6/bin/sxpm
+./usr/X11R6/bin/texteroids
 ./usr/X11R6/bin/twm
 ./usr/X11R6/bin/ucs2any.pl
 ./usr/X11R6/bin/viewres
@@ -72,6 +80,7 @@
 ./usr/X11R6/bin/xfontsel
 ./usr/X11R6/bin/xfs
 ./usr/X11R6/bin/xfsinfo
+./usr/X11R6/bin/xftcache
 ./usr/X11R6/bin/xfwp
 ./usr/X11R6/bin/xgc
 ./usr/X11R6/bin/xhost

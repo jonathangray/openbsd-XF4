@@ -26,8 +26,10 @@
 ./usr/X11R6/lib/modules/codeconv/libARABIC.a
 ./usr/X11R6/lib/modules/codeconv/libARMSCII8.a
 ./usr/X11R6/lib/modules/codeconv/libBIG5.a
+./usr/X11R6/lib/modules/codeconv/libBIG5HKSCS.a
 ./usr/X11R6/lib/modules/codeconv/libDOSENCODING.a
 ./usr/X11R6/lib/modules/codeconv/libGB2312.a
+./usr/X11R6/lib/modules/codeconv/libGBK.a
 ./usr/X11R6/lib/modules/codeconv/libGEORGIAN.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_1.a
 ./usr/X11R6/lib/modules/codeconv/libISO8859_10.a
@@ -81,6 +83,7 @@
 ./usr/X11R6/lib/modules/drivers/tseng_drv.o
 ./usr/X11R6/lib/modules/drivers/vesa_drv.o
 ./usr/X11R6/lib/modules/drivers/vga_drv.o
+./usr/X11R6/lib/modules/drivers/vmware_drv.o
 ./usr/X11R6/lib/modules/extensions
 ./usr/X11R6/lib/modules/extensions/libGLcore.a
 ./usr/X11R6/lib/modules/extensions/libdbe.a
@@ -191,5 +194,6 @@
 ./usr/X11R6/man/cat4/tseng.0
 ./usr/X11R6/man/cat4/vesa.0
 ./usr/X11R6/man/cat4/vga.0
+./usr/X11R6/man/cat4/vmware.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
