@@ -62,7 +62,6 @@
 ./etc/X11/xkb/keycodes/sgi/iris
 ./etc/X11/xkb/keycodes/sony
 ./etc/X11/xkb/keycodes/sun
-./etc/X11/xkb/keycodes/wscons
 ./etc/X11/xkb/keycodes/xfree86
 ./etc/X11/xkb/keycodes/xfree98
 ./etc/X11/xkb/keymap
