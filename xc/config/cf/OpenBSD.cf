@@ -91,6 +91,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasSetUserContext	YES
 #endif
 
+/* OpenBSD after 2.9 has BSD authentication -- kludged for now */
+#define HasBSDAuth		YES
+
 /*
  * Compiler Features
  */
