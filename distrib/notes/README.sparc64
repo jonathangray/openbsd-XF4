@@ -45,6 +45,10 @@ Section "ServerLayout"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
 
+- For systems with UPA Creator/Creator3D framebuffers use 
+	DefaultDepth 24
+  in the "Screen" section.
+
 - What follows is the whole X config.
 
 -- Cut Here --
@@ -257,4 +261,4 @@ See XF86Config(5) for more options.
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.7 2002/05/20 17:45:42 matthieu Exp $
+$OpenBSD: README.sparc64,v 1.8 2002/05/22 03:21:39 jason Exp $
