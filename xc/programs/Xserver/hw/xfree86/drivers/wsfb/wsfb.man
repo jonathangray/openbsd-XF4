@@ -1,4 +1,4 @@
-.\" $OpenBSD: wsfb.man,v 1.9 2003/08/30 08:23:14 brad Exp $
+.\" $OpenBSD: wsfb.man,v 1.10 2003/08/30 10:51:55 matthieu Exp $
 .\"
 .\" Copyright (c) 2001,2002 Matthieu Herrb
 .\" All rights reserved.
@@ -65,12 +65,12 @@ This section only covers configuration details specific to this driver.
 .PP
 For this driver it is not required to specify modes in the 
 .B Screen
-section of the config file.
+section of the configuration file.
 The
 .B wsfb
 driver picks up the currently used video mode from the framebuffer
 driver and uses it.
-Video modes specifications in the config file are ignored.
+Video modes specifications in the configuration file are ignored.
 .PP
 The following driver options are supported in the 
 .B Device
