@@ -58,6 +58,7 @@ extern FILE *popen();
 
 #include <X11/Xos.h>
 #include <X11/Xfuncs.h>
+#include <X11/Xmd.h>		/* for LONG64 */
 
 #ifdef VMS
 #include <unixio.h>
