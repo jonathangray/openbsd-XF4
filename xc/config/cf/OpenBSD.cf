@@ -678,6 +678,16 @@ install:: fonts.alias							@@\
 #  define ServerExtraDefines GccGasOption
 #endif
 
+#ifndef BuildCyrillicFonts
+# define BuildCyrillicFonts	YES
+#endif
+#ifndef BuildLatin2Fonts
+# define BuildLatin2Fonts	YES
+#endif
+#ifndef UseKoi8RForCyrillic
+# define UseKoi8RForCyrillic	YES
+#endif
+
 #ifndef HasWeakSymbols
 #define HasWeakSymbols YES
 #endif
