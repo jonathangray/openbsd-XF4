@@ -198,7 +198,7 @@ AutoResetServer (sig)
     isItTimeToYield = TRUE;
 #ifdef GPROF
     chdir ("/tmp");
-    exit (0);
+    _exit (0);
 #endif
 #ifdef SYSV
     signal (SIGHUP, AutoResetServer);
