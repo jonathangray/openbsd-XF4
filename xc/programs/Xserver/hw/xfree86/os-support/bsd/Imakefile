@@ -121,12 +121,31 @@ AGP_SRC=agp_noop.c
 AGP_OBJ=agp_noop.o
 #endif
 
-SRCS = bsd_init.c bsd_video.c bsd_io.c bsd_VTsw.c \
+#if defined(i386Architecture)
+VIDEO_SRC = i386_video.c
+VIDEO_OBJ = i386_video.o
+#elif defined(AlphaArchitecture)
+VIDEO_SRC = alpha_video.c
+VIDEO_OBJ = alpha_video.o
+#elif defined(PpcArchitecture)
+VIDEO_SRC = ppc_video.c
+VIDEO_OBJ = ppc_video.o
+#elif defined(Arm32Architecture)
+VIDEO_SRC = arm_video.c
+VIDEO_OBJ = arm_video.o
+#elif defined(Sparc64Architecture)
+VIDEO_SRC = sparc64_video.c
+VIDEO_OBJ = sparc64_video.o
+#elif
+#error Unknown architecture !
+#endif
+
+SRCS = bsd_init.c $(VIDEO_SRC) bsd_io.c bsd_VTsw.c \
        libc_wrapper.c $(IOPERM_SRC) std_kbdEv.c posix_tty.c $(MOUSESRC) \
        $(RES_SRC) stdPci.c vidmem.c $(JOYSTICK_SRC) sigio.c $(APMSRC) \
        $(AXP_SRC) $(KMODSRC) $(AGP_SRC)
 
-OBJS = bsd_init.o bsd_video.o bsd_io.o bsd_VTsw.o \
+OBJS = bsd_init.o $(VIDEO_OBJ) bsd_io.o bsd_VTsw.o \
        libc_wrapper.o $(IOPERM_OBJ) std_kbdEv.o posix_tty.o $(MOUSEOBJ) \
        $(RES_OBJ) stdPci.o vidmem.o $(JOYSTICK_OBJ) sigio.o $(APMOBJ) \
        $(AXP_OBJ) $(KMODOBJ) $(AGP_OBJ)
