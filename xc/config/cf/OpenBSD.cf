@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.91 2002/05/22 20:03:49 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.92 2002/05/24 20:37:34 matthieu Exp $
 
 
 
@@ -142,18 +142,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #undef CcCmd
 #define CcCmd 			gcc
-#ifndef DefaultCCOptions
-#if defined(UseInstalled)
-#define DefaultCCOptions 	/**/
-#else
-#  ifdef  PpcArchitecture
-#    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm \
-				GccWarningOptions
-#  else
-#    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
-#  endif
-#endif
-#endif
 
 #define GccGasOption 		-DGCCUSESGAS
 #define AsmDefines 		-DUSE_GAS
@@ -352,8 +340,6 @@ install:: fonts.alias							@@\
  */
 
 #ifdef AlphaArchitecture
-
-# define OptimizedCDebugFlags	-O2
 
 # if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
 #  define HasWeakSymbols		YES
@@ -586,7 +572,6 @@ install:: fonts.alias							@@\
 
 # include <xf86.rules>
 
-# define OptimizedCDebugFlags  -O2
 # define ServerOSDefines       -DDDXOSINIT
 # define BootstrapCFlags       -Dsun3
 # define UnalignedReferencesAllowed	YES /* changes _XtCopyArgs() */
@@ -661,7 +646,6 @@ install:: fonts.alias							@@\
  */
 #ifdef PpcArchitecture
 
-# define OptimizedCDebugFlags 	-O2
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 # ifndef XFree86ConsoleDefines
 #   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
@@ -720,7 +704,6 @@ install:: fonts.alias							@@\
 #ifdef SparcArchitecture
 
 #define HasWeakSymbols		YES
-# define OptimizedCDebugFlags	-O2
 # define ServerOSDefines 	-DDDXOSINIT
 # define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
 				ServerSnprintfDefines DebugDefines \
@@ -752,8 +735,6 @@ install:: fonts.alias							@@\
  */
 
 #ifdef Sparc64Architecture
-
-# define OptimizedCDebugFlags	-O2
 
 # if 1 /* OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3 */
 #  define HasWeakSymbols	YES
@@ -792,6 +773,27 @@ install:: fonts.alias							@@\
  * Generic settings for all architectures
  * which can be overridden by architecture specific sections above
  */
+
+#ifndef DefaultCCOptions
+# if defined(UseInstalled)
+#  define DefaultCCOptions 	/**/
+# else
+#  ifdef  PpcArchitecture
+#    define DefaultCCOptions	-ansi -fsigned-char -Dasm=__asm \
+				GccWarningOptions
+#  else
+#    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
+#  endif
+# endif
+#endif
+
+#if !defined(OptimizedCDebugFlags)
+# define OptimizedCDebugFlags	-O2
+#endif
+
+#if !defined(GccWarningOptions)
+# define GccWarningOptions -Wall -Wpointer-arith
+#endif
 
 #ifndef ServerOSDefines
 #  define ServerOSDefines 		/**/
@@ -903,10 +905,6 @@ install:: fonts.alias							@@\
 #  define DlLibrary /**/
 # endif
 #endif
-
-#  if !defined(GccWarningOptions)
-#    define GccWarningOptions -Wall -Wpointer-arith
-#  endif
 
 /* This must come last */
 #if OSMajorVersion == 2 && OSMinorVersion >= 8 || OSMajorVersion > 2
