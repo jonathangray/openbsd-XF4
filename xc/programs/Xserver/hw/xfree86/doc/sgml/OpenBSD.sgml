@@ -211,7 +211,6 @@ To make sure X support is enabled under  OpenBSD, the following
 line must be in your config file in <tt>/sys/arch/i386/conf</tt>:
 
 <tscreen>
- option XSERVER
  option APERTURE
 </tscreen>
 
