@@ -164,6 +164,10 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.88 2003/12/16 21:30:21 herrb Exp $
 # if defined(__arm__)
 #   define Arm32Architecture
 #   undef __arm__
+#   if defined(zaurus)
+#     undef zaurus
+#     define ZaurusArchitecture
+#   endif
 # endif
 # if defined(__mc68020__) || defined(mc68020)
 #  define Mc68020Architecture
