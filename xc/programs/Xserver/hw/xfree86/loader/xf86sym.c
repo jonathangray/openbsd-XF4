@@ -65,6 +65,10 @@
 int sysctlbyname(const char*, void *, size_t *, void *, size_t);
 #endif
 
+#ifdef USB_HID
+#include <usbhid.h>
+#endif
+
 #if defined(__alpha__)
 # ifdef linux
 extern unsigned long _bus_base(void);
@@ -981,6 +985,24 @@ LOOKUP xfree86LookupTab[] = {
 
 #ifdef __FreeBSD__
    SYMFUNC(sysctlbyname)
+#endif
+
+#ifdef USB_HID
+   SYMFUNC(hid_get_report_desc)
+   SYMFUNC(hid_use_report_desc)
+   SYMFUNC(hid_dispose_report_desc)
+   SYMFUNC(hid_start_parse)
+   SYMFUNC(hid_end_parse)
+   SYMFUNC(hid_get_item)
+   SYMFUNC(hid_report_size)
+   SYMFUNC(hid_locate)
+   SYMFUNC(hid_usage_page)
+   SYMFUNC(hid_usage_in_page)
+   SYMFUNC(hid_parse_usage_page)
+   SYMFUNC(hid_parse_usage_in_page)
+   SYMFUNC(hid_init)
+   SYMFUNC(hid_get_data)
+   SYMFUNC(hid_set_data)
 #endif
 
 /*
