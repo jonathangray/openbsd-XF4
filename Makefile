@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.45 2005/01/26 18:42:34 miod Exp $
+#	$OpenBSD: Makefile,v 1.46 2005/01/26 23:42:06 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -104,7 +104,7 @@ release-mkdir:
 release-install:
 	@${MAKE} install
 .if ${MACHINE} == alpha || ${MACHINE} == hp300 || \
-    ${MACHINE} == hp300 || ${MACHINE} == sparc
+    ${MACHINE} == macppc || ${MACHINE} == sparc || ${MACHINE} == zaurus
 	@if [ -f $(DESTDIR)/etc/X11/xorg.conf ]; then \
 	 echo "Not overwriting existing" $(DESTDIR)/etc/X11/xorg.conf; \
 	else set -x; \
