@@ -186,9 +186,9 @@ XTerm*Page: 3 2 1
 During initialization, \fIfvwm\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
 format of these files will be described later.  First, \fIfvwm\fP will
-search for a file named .fvwm2rc in the user's home directory, then in
+search for a file named .fvwmrc in the user's home directory, then in
 ${sysconfdir} (typically /usr/local/etc).
-Failing that, it will look for system.fvwm2rc in ${sysconfdir} for
+Failing that, it will look for system.fvwmrc in ${sysconfdir} for
 system-wide defaults.  If that file is not found, \fIfvwm\fP will be
 basically useless.
 
@@ -255,7 +255,7 @@ system's maximum number of simultaneously open files, usually between
 
 Modules simply transmit text commands to the \fIfvwm\fP built-in
 command engine.  Text commands are formatted just as in the case of a
-mouse binding in the .fvwm2rc setup file.  Certain auxiliary
+mouse binding in the .fvwmrc setup file.  Certain auxiliary
 information is also transmitted, as in the sample module FvwmButtons.
 The FvwmButtons module is documented in its own man page.
 
@@ -286,10 +286,10 @@ this ICCCM rule.
 M4 pre-processing is handled by a module in fvwm-2.0.  To get more
 details, try man FvwmM4.  In short, if you want fvwm to parse your
 files with m4, then replace the word "Read" with "FvwmM4" in
-your .fvwm2rc file (if it appears at all), and start fvwm with the
+your .fvwmrc file (if it appears at all), and start fvwm with the
 command
 .EX
-fvwm -cmd "FvwmM4 .fvwm2rc"
+fvwm -cmd "FvwmM4 .fvwmrc"
 .EE
 
 .SH CPP PREPROCESSING
@@ -310,7 +310,7 @@ These are the command line options that are recognized by \fIfvwm\fP:
 The screen is blacked out during window recaptures and startup. This option
 is provided for backwards compatibility only.
 .IP "\fB-cmd\fP \fIconfig_command\fP"
-Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc"
+Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwmrc"
 as its initialization command.
 (Note that up to 10 \fB-f\fP and \fB-cmd\fP parameters can be given,
 and they are executed in the order specified.)
@@ -322,7 +322,7 @@ Puts X transactions in synchronous mode, which dramatically slows things
 down, but guarantees that \fIfvwm\fP's internal error messages are correct.
 Also causes \fIfvwm\fP to output debug messages while running.
 .IP "\fB-f\fP \fIconfig_file\fP"
-Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwm2rc"
+Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwmrc"
 as its initialization file.  This is equivalent to
 \fB-cmd\fP "Read \fIconfig_file\fP".
 .IP "\fB-h\fP"
@@ -338,7 +338,7 @@ Print the version of \fIfvwm\fP to stderr.
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
 colors, the virtual display size, and related items.  The
-initialization configuration file is typically called ".fvwm2rc".  By
+initialization configuration file is typically called ".fvwmrc".  By
 using the "Read" built-in, it is easy to read in new configuration
 files as you go.
 
@@ -362,7 +362,7 @@ should have been "Function (rest of command)" or "Module (rest of
 command)".  This allows complex functions or modules to be invoked in a
 manner which is fairly transparent to the configuration file.
 
-Example: the .fvwm2rc file contains the line "HelpMe".  Fvwm will look
+Example: the .fvwmrc file contains the line "HelpMe".  Fvwm will look
 for a built-in command called "HelpMe", and will fail. Next it will
 look for a user-defined complex function called "HelpMe".  If no such
 user defined function exists, Fvwm will try to execute a module called
@@ -516,7 +516,7 @@ same function with all sorts of different arguments.  I could use
 Key F11 R A Function MailFunction \\
   zmail "-bg pink"
 .EE
-in the same .fvwm2rc, if I wanted.  An example of using $w is:
+in the same .fvwmrc, if I wanted.  An example of using $w is:
 .EX
 AddToFunc PrintFunction
  + "I" Raise
@@ -555,7 +555,7 @@ or
 Mouse 1 R A Popup Utilities
 .EE
 There is no end-of-menu symbol.  Menus do not have to be defined in a
-contiguous region of the .fvwm2rc file.  The quoted portion in the
+contiguous region of the .fvwmrc file.  The quoted portion in the
 above examples is the menu-label, which will appear in the menu when
 the user pops it up.  The remaining portion is a built-in command
 which should be executed if the user selects that menu item.  An empty
@@ -805,7 +805,7 @@ ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
 then the button 2 decoration will use a 4-point pattern consisting of
 a line from (x=50,y=30) to (70,70) in the shadow color (@0), and then
 to (30,70) in the shadow color, and finally to (50,30) in the
-highlight color (@1).  Is that too confusing? See the sample .fvwm2rc
+highlight color (@1).  Is that too confusing? See the sample .fvwmrc
 for a few examples.  This style is partially destructive.
 
 The "VGradient" and "HGradient" styles denote gradient styles.  The H
@@ -936,7 +936,7 @@ grey,   green,  blue, red, cyan,  yellow,  and   magenta.  The command
 "ColorLimit 9" would limit pixmaps to these 9 colors.
 
 It makes the most sense to put this command at the front of the
-.fvwm2rc  file.  This   command should  be   before any  menu
+.fvwmrc  file.  This   command should  be   before any  menu
 definitions that contain mini-icons.
 
 Solid frame and title colors (including shadows and gradients) are not
@@ -1201,7 +1201,7 @@ those farther away.
 
 .IP "Echo \fIstring\fP"
 Prints a message to stderr.  Potentially useful for debugging things
-in your .fvwm2rc.
+in your .fvwmrc.
 .EX
 Echo Beginning style defs...
 .EE
@@ -1234,7 +1234,7 @@ See also, EdgeThickness.
 Specifies the percentage of a page to scroll when the cursor hits the
 edge of a page.  A trailing "p" changes the interpretation to mean "pixels".
 If you don't want any paging or scrolling when you hit the edge of a
-page include "EdgeScroll 0 0" in your .fvwm2rc file,
+page include "EdgeScroll 0 0" in your .fvwmrc file,
 or possibly better, set the EdgeThickness to zero.
 See the EdgeThickness command. If you want whole
 pages, use "EdgeScroll 100 100".  Both horizontal and vertical should
@@ -1922,11 +1922,11 @@ FvwmAnimate (fancy animation of (de)iconification) FvwmAudio (makes
 sounds to go with window manager actions), FvwmAuto
 (an auto raise module), FvwmBacker (to change the background when you
 change desktops), FvwmBanner (to display a spiffy XPM), FvwmButtons
-(brings up a customizable tool bar), FvwmCpp (to preprocess your .fvwm2rc
+(brings up a customizable tool bar), FvwmCpp (to preprocess your .fvwmrc
 with cpp), FvwmEvent (trigger various actions by events), FvwmForm
 (to bring up dialogs), FvwmIconBox (like the mwm IconBox), FvwmIconMan
 (like the twm icon manager), FvwmIdent (to get window info), FvwmM4
-(to preprocess your .fvwm2rc with m4), FvwmPager (a mini version of
+(to preprocess your .fvwmrc with m4), FvwmPager (a mini version of
 the desktop), FvwmSave (saves the desktop state in .xinitrc style),
 FvwmSaveDesk (saves the desktop state in fvwm commands), FvwmScroll
 (puts scrollbars on any window), FvwmTalk (to interactively run fvwm
@@ -2841,7 +2841,7 @@ Standard emacs and vi cursor movement controls (^n, ^p, ^f, ^b, and
 
 
 .SH SUPPLIED CONFIGURATION
-A sample configuration file, .fvwm2rc, is supplied with the \fIfvwm\fP
+A sample configuration file, .fvwmrc, is supplied with the \fIfvwm\fP
 distribution.  It is well commented and can be used as a source of
 examples for \fIfvwm\fP configuration.
 
