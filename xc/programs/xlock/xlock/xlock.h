@@ -492,9 +492,6 @@ extern void finish(Display * display, Bool closeDisplay);
 #define error xlock_error
 #endif
 extern void error(const char *buf);
-#ifndef DECLARED_GETENV
-extern char * getenv(const char *);
-#endif
 #ifdef __cplusplus
   }
 #endif
