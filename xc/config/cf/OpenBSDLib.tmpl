@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.13 2004/06/29 22:04:35 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.14 2004/06/29 22:36:58 matthieu Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.9 2004/01/10 09:09:51 herrb Exp $
 XCOMM
 
@@ -64,6 +64,9 @@ XCOMM
 # endif
 # ifndef SharedGlxRev
 #  define SharedGlxRev 2.0
+# endif
+# ifndef SharedOSMesaRev
+#  define SharedOSMesaRev 4.0
 # endif
 # ifndef SharedGLwRev
 #  define SharedGLwRev 2.0
@@ -157,6 +160,15 @@ XCOMM
 # endif
 # ifndef SharedPSResRev
 #  define SharedPSResRev 2.0
+# endif
+# ifndef SharedXResRev
+#  define SharedXResRev 1.0
+# endif
+# ifndef SharedxkbfileRev
+#  define SharedxkbfileRev 1.0
+# endif
+# ifndef SharedxkbuiRev
+#  define SharedxkbuiRev 1.0
 # endif
 #endif /* OSMajorVersion .. */
 
