@@ -425,7 +425,7 @@ $(UTILOBJDIR)memcheck.o : $(UTILDIR)memcheck.c
 
 $(XLOCKUTILOBJS) :
 	cd $(UTILOBJDIR) ; \
-$(MAKE) $(@F) CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+$(MAKE) $(@F) CC='$(CC)' CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)'
 
 #if 0
 $(GLOBJDIR)cage.o : $(GLDIR)cage.c
