@@ -3,10 +3,10 @@
 ./etc/fonts
 ./etc/fonts/fonts.conf
 ./etc/fonts/fonts.dtd
+./etc/fonts/local.conf
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/fc-cache
 ./usr/X11R6/bin/fc-list
-./usr/X11R6/bin/fontconfig-config
 ./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/mkfontscale
@@ -566,4 +566,3 @@
 ./usr/X11R6/man/cat3/XFree86-DGA.0
 ./usr/X11R6/man/cat3/Xfontcache.0
 ./usr/X11R6/man/cat3/Xft.0
-./usr/X11R6/man/cat3/fontconfig.0

@@ -384,11 +384,11 @@
 ./etc/fonts
 ./etc/fonts/fonts.conf
 ./etc/fonts/fonts.dtd
+./etc/fonts/local.conf
 ./usr/X11R6/.XFree86_Version
 ./usr/X11R6/bin/bdftruncate
 ./usr/X11R6/bin/fc-cache
 ./usr/X11R6/bin/fc-list
-./usr/X11R6/bin/fontconfig-config
 ./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/freetype-config
 ./usr/X11R6/bin/getconfig
@@ -606,7 +606,7 @@
 ./usr/X11R6/lib/libexpat.a
 ./usr/X11R6/lib/libexpat.so.4.0
 ./usr/X11R6/lib/libfontconfig.a
-./usr/X11R6/lib/libfontconfig.so.1.0
+./usr/X11R6/lib/libfontconfig.so.1.4
 ./usr/X11R6/lib/libfontenc.so.2.0
 ./usr/X11R6/lib/libfreetype.a
 ./usr/X11R6/lib/libfreetype.so.11.0
@@ -663,7 +663,6 @@
 ./usr/X11R6/man/cat3/XF86VidModeValidateModeLine.0
 ./usr/X11R6/man/cat3/Xfontcache.0
 ./usr/X11R6/man/cat3/Xft.0
-./usr/X11R6/man/cat3/fontconfig.0
 ./usr/X11R6/man/cat3/glAccum.0
 ./usr/X11R6/man/cat3/glActiveTextureARB.0
 ./usr/X11R6/man/cat3/glAlphaFunc.0
