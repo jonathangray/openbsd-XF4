@@ -1,4 +1,4 @@
-/* $OpenBSD: main.c,v 1.3 2002/09/29 21:30:34 matthieu Exp $ */
+/* $OpenBSD: main.c,v 1.4 2002/12/31 16:31:30 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb
  * All rights reserved.
@@ -36,6 +36,7 @@
 
 #include "callbacks.h"
 #include "interface.h"
+#include "policy.h"
 
 extern char *__progname;
 
@@ -115,6 +116,9 @@ int
 main(int argc, char *argv[])
 {
 	Widget top;
+
+	/* Set up required parameters */
+	parameters();
 
 	XtSetLanguageProc(NULL, (XtLanguageProc)NULL, NULL);
 	top = XtAppInitialize(&appContext, "Xsystrace",

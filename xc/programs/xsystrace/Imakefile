@@ -1,12 +1,12 @@
-XCOMM $OpenBSD: Imakefile,v 1.1 2002/06/04 21:23:41 matthieu Exp $
+XCOMM $OpenBSD: Imakefile,v 1.2 2002/12/31 16:31:30 matthieu Exp $
 
 #define IHaveSubdirs
 SUBDIRS=		pixmaps
 
 DEPLIBS=		XawClientDepLibs
 LOCAL_LIBRARIES=	XawClientLibs
-SRCS=			main.c interface.c callbacks.c
-OBJS=			main.o interface.o callbacks.o
+SRCS=			main.c interface.c callbacks.c policy.c
+OBJS=			main.o interface.o callbacks.o policy.o
 
 ComplexProgramTarget(xsystrace)
 InstallAppDefaults(Xsystrace)

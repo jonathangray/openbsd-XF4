@@ -1,4 +1,4 @@
-! $OpenBSD: Xsystrace.ad,v 1.5 2002/09/29 21:30:34 matthieu Exp $
+! $OpenBSD: Xsystrace.ad,v 1.6 2002/12/31 16:31:30 matthieu Exp $
 !
 ! Copyright (c) 2002 Matthieu Herrb and Niels Provos
 ! All rights reserved.
@@ -27,6 +27,7 @@
 ! ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ! POSSIBILITY OF SUCH DAMAGE.
 !
+
 *background: #d7d7d7
 *.font: -*-helvetica-medium-r-*--12-*-*-*-*-*-iso8859-1
 *borderWidth: 0
@@ -118,7 +119,9 @@ lines           -1,0,0,0,0,-1
 *filter-label.fromVert: syscallInfo-value
 *filter-text.fromHoriz: filter-label
 *filter-text.fromVert: syscallInfo-value
-*filter-button.fromHoriz: filter-text
+*filter-menu-button.fromHoriz: filter-text
+*filter-menu-button.fromVert: syscallInfo-value
+*filter-button.fromHoriz: filter-menu-button
 *filter-button.fromVert: syscallInfo-value
 *status-value.fromVert: status-label
 *errorCode-text.fromVert: errorCode-label
@@ -190,7 +193,7 @@ image xpm:logo.xpm,0,0,0,0
 !
 ! Syscall Filter text entry 
 !
-*filter-text.width: 300
+*filter-text.width: 270
 *filter-text.background: gray90
 *filter-text.translations: #override \
 <Key>Return: filter-changed()
@@ -310,6 +313,16 @@ draw-string 60,35,"Always";
 *review-label.label: Filter List
 *done-button.label: OK
 !
+*filter-menu-button.width: 25
+*filter-menu-button.label: 
+*filter-menu-button.displayList:\
+foreground gray90;\
+lines -1,0,0,0,0,-1;\
+lines 12,15,5,5,20,5;\
+foreground gray40;\
+lines 1,-1,-1,-1,-1,1;\
+lines 12,15,20,5
+!
 *wizard-help-label.label: Systrace Notification
 *wizard-help-text.label: \
 This dialog allows the selection of default policies\n\
@@ -319,9 +332,9 @@ a quick start for a new policy.
 *wizard-label.label: Templates
 *wizard-ok-button.label: OK
 *wizard-cancel-button.label: Cancel
+!
 *errorCode-label.label: Error Code:
 *errorCode-button.label:
-!
 *errorCode-text.width: 200
 *errorCode-text.background: gray90
 *errorCode-text.translations: #override \
@@ -343,9 +356,12 @@ lines 12,15,20,5
 *filter-text.tip: \
 Enter a filter expression that will \n\
 be added to the current policy. \n\
-The names before the colon can be used \n\
-as tokens.  A possible policy could be \n\
-'filename match "/usr/*" then permit'
+A sample policy can be choosed from the \n\
+pull-down list.
+
+*filter-menu-button.tip: \
+Give a choice of sample policies \n\
+for the current system call.
 
 *filter-button.tip: \
 Pops up a dialog that allows to \n\

@@ -1,6 +1,6 @@
-/* $OpenBSD: interface.h,v 1.3 2002/12/31 16:31:30 matthieu Exp $ */
+/* $OpenBSD: policy.h,v 1.1 2002/12/31 16:31:30 matthieu Exp $ */
 /*
- * Copyright (c) 2002 Matthieu Herrb
+ * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-extern XtAppContext appContext;
-extern Atom wm_delete_window;
-extern Widget forms[], errorCodeMenu, errorCodeText, filterText, 
-	filterPopup, wizardButton, timeline, 
-	pName, pId, policyName, syscallName, status, reviewButton;
-extern volatile Boolean done;
+#include <sys/queue.h>
 
-extern Widget makeForm(Widget);
-extern void position_near_mouse(Widget);
-void position_near_center(Widget);
+struct policy_list {
+	char	*line;
+	SIMPLEQ_ENTRY(policy_list) next;
+};
 
+SIMPLEQ_HEAD(plist, policy_list);
 
-
+extern void parameters(void);
+extern struct plist *make_policy_suggestion(char *);

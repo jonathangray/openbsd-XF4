@@ -1,4 +1,4 @@
-/* $OpenBSD: interface.c,v 1.2 2002/09/29 21:30:34 matthieu Exp $ */
+/* $OpenBSD: interface.c,v 1.3 2002/12/31 16:31:30 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -59,14 +59,16 @@ static String formNames[] = {
 
 XtAppContext appContext;
 Atom wm_delete_window;
-Widget errorCodeMenu, errorCodeText, filter, wizardButton, timeline, pName, 
+Widget forms[NUM_FORMS], errorCodeMenu, errorCodeText, 
+	filterText, filterMenu, filterPopup,
+	wizardButton, timeline, pName, 
 	pId, policyName, syscallName, status, reviewButton;
 volatile Boolean done;
 
 Widget
 makeForm(Widget parent)
 {
-	Widget form, forms[NUM_FORMS];
+	Widget form;
 	Widget errorCodePopup, sme, w;
 	time_t when;
 	int i;
@@ -117,10 +119,17 @@ makeForm(Widget parent)
 	XtVaCreateManagedWidget("filter-label", labelWidgetClass,
 				forms[2],
 				NULL);
-	filter = XtVaCreateManagedWidget("filter-text", asciiTextWidgetClass,
-				forms[2], 
-				XtNeditType, XawtextEdit,
-				NULL, 0);
+	filterText = XtVaCreateManagedWidget("filter-text", 
+					     asciiTextWidgetClass,
+					     forms[2], 
+					     XtNeditType, XawtextEdit,
+					     NULL, 0);
+	filterMenu = XtCreateManagedWidget("filter-menu-button",
+					   menuButtonWidgetClass,
+					   forms[2], NULL, 0);
+	filterPopup = XtCreatePopupShell("filter-menu", simpleMenuWidgetClass,
+					 forms[2], NULL, 0);
+
 	wizardButton = XtVaCreateManagedWidget("filter-button", 
 				commandWidgetClass,
 				forms[2],

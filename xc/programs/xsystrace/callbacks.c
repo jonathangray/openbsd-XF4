@@ -1,4 +1,4 @@
-/* $OpenBSD: callbacks.c,v 1.8 2002/12/31 16:09:16 matthieu Exp $ */
+/* $OpenBSD: callbacks.c,v 1.9 2002/12/31 16:31:30 matthieu Exp $ */
 /*
  * Copyright (c) 2002 Matthieu Herrb and Niels Provos
  * All rights reserved.
@@ -8,11 +8,11 @@
  * are met:
  *
  *    - Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
+ *	notice, this list of conditions and the following disclaimer.
  *    - Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
+ *	copyright notice, this list of conditions and the following
+ *	disclaimer in the documentation and/or other materials provided
+ *	with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -36,6 +36,8 @@
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/List.h>
+#include <X11/Xaw/SmeBSB.h>
+#include <X11/Xaw/SimpleMenu.h>
 #include <X11/Shell.h>
 
 #include <ctype.h>
@@ -49,6 +51,7 @@
 
 #include "callbacks.h"
 #include "interface.h"
+#include "policy.h"
 
 #define MAX_WIZARDS 100
 
@@ -116,9 +119,12 @@ void
 getInput(XtPointer clientData, int *file, XtInputId *inputId)
 {
 	char line[_POSIX2_LINE_MAX], *p;
-        char *name, *id, *polname, *filters;
-        time_t curtime;
+	char *name, *id, *polname, *filters;
+	time_t curtime;
 	int nfilters;
+	Widget sme;
+	struct policy_list *pl, *next;
+	struct plist *items;
 
 	if (freadline(line, sizeof(line), *file) == NULL) {
 		done = True;
@@ -213,6 +219,30 @@ getInput(XtPointer clientData, int *file, XtInputId *inputId)
 			XtVaSetValues(reviewButton, XtNsensitive, FALSE, 
 				      NULL);
 		}
+		XtDestroyWidget(filterPopup);
+		filterPopup = XtCreatePopupShell("menu", 
+						 simpleMenuWidgetClass,
+						 forms[2], NULL, 0);
+
+		items = make_policy_suggestion(p);
+		pl = SIMPLEQ_FIRST(items);
+		on_filter_select(filterText, pl->line,
+				 NULL);
+		SIMPLEQ_FOREACH(pl, items, next) {
+			sme = XtCreateManagedWidget(pl->line, 
+						    smeBSBObjectClass, 
+						    filterPopup, NULL, 0);
+			XtAddCallback(sme, XtNcallback, on_filter_select, 
+				      (XtPointer)XtNewString(pl->line));
+			free(pl->line);
+		}
+		for (pl = SIMPLEQ_FIRST(items); pl != SIMPLEQ_END(items);
+		     pl = next) {
+			next = SIMPLEQ_NEXT(pl, next);
+			free(pl);
+		}
+		free(items);
+
 		curtime = time(NULL);
 		snprintf(line, sizeof(line), "%.25s", ctime(&curtime));
 		XtVaSetValues(timeline, XtNlabel, line, NULL);
@@ -225,9 +255,24 @@ getInput(XtPointer clientData, int *file, XtInputId *inputId)
 }
 
 void 
+on_filter_select(Widget w, XtPointer userData, XtPointer clientData)
+{
+	char *filter;
+	XawTextBlock block;
+	
+	filter = (char *)userData;
+	dprintf("filter: %s\n", filter);
+	block.ptr = filter;
+	block.firstPos = 0;
+	block.length = strlen(filter);
+	block.format = FMT8BIT;
+	TextReplace(filterText, 0, TextLength(filterText), &block);
+}
+
+void 
 on_error_select(Widget w, XtPointer userData, XtPointer clientData)
 {
-	XawTextBlock    block;
+	XawTextBlock block;
 	
 	errorcode = (char *)userData;
 	block.ptr = errorcode;
@@ -292,7 +337,7 @@ on_filter_entry_changed(Widget w, XEvent *event, String *params,
 	char *name;
 
 	XtSetArg(args[0], XtNstring, &name);
-	XtGetValues(filter, args, 1);
+	XtGetValues(filterText, args, 1);
 	
 	printf("%s\n", name);
 }
@@ -314,8 +359,8 @@ TextLength(Widget w)
 static void
 TextReplace(Widget w, int start, int end, XawTextBlock *block)
 {
-	Arg		    arg;
-	Widget	    source;
+	Arg arg;
+	Widget source;
 	XawTextEditType edit_mode;
 	
 	source = XawTextGetSource (w);
@@ -331,8 +376,8 @@ TextReplace(Widget w, int start, int end, XawTextBlock *block)
 static void
 TextAppend(Widget w, char *s, int len)
 {
-	long	    last, current;
-	XawTextBlock    block;
+	long last, current;
+	XawTextBlock block;
 	
 	current = XawTextGetInsertionPoint (w);
 	last = TextLength (w);
@@ -428,7 +473,7 @@ on_wizard_clicked(Widget w, XtPointer closure, XtPointer clientData)
 
 	nTemplates = 0;
 	printf("templates\n");
-       	state = WAIT_WIZARD;
+	state = WAIT_WIZARD;
 }
 
 static void
