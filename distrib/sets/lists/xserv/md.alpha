@@ -39,6 +39,9 @@
 ./usr/X11R6/lib/modules/drivers
 ./usr/X11R6/lib/modules/drivers/ati_drv.o
 ./usr/X11R6/lib/modules/drivers/atimisc_drv.o
+./usr/X11R6/lib/modules/drivers/cirrus_alpine.o
+./usr/X11R6/lib/modules/drivers/cirrus_drv.o
+./usr/X11R6/lib/modules/drivers/cirrus_laguna.o
 ./usr/X11R6/lib/modules/drivers/glint_drv.o
 ./usr/X11R6/lib/modules/drivers/mga_drv.o
 ./usr/X11R6/lib/modules/drivers/nv_drv.o
@@ -111,6 +114,7 @@
 ./usr/X11R6/man/cat1/XFree86.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
+./usr/X11R6/man/cat4/cirrus.0
 ./usr/X11R6/man/cat4/citron.0
 ./usr/X11R6/man/cat4/dmc.0
 ./usr/X11R6/man/cat4/dynapro.0
