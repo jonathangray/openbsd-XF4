@@ -18,5 +18,6 @@ b) run the X11R6 font server:	xfs
 2. Start xdm, the X display manager by activating the xdm_flags option
    in /etc/rc.conf.  You may need to disable the console getty.
 
-If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.2.1/
+problem_blurb
+
+$OpenBSD: README.hp300,v 1.5 2002/10/07 21:52:19 todd Exp $

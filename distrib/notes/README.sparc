@@ -71,8 +71,6 @@ Post-installation instructions for XFree86 on OpenBSD/sparc
       the X server and a few X applications, including a window manager.
 
 
-------------------------
-If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.2.1/
+problem_blurb
 
-$OpenBSD: README.sparc,v 1.9 2002/10/07 20:25:50 todd Exp $
+$OpenBSD: README.sparc,v 1.10 2002/10/07 21:52:19 todd Exp $

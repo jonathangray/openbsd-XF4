@@ -17,6 +17,7 @@ Post-installation instructions for XFree86 on OpenBSD/mac68k
    b. Start startx(1) from a console shell.  It is the X script that starts
       the X server and a few X applications, including a window manager.
 
-If you encounter a problem, you can browse the entire documentation 
-in /usr/X11R6/lib/X11/doc.  Alternately, for XFree86 4 documentation,
-you can visit http://www.xfree86.org/4.2.1/.
+problem_blurb  For XFree86 3 documentation,
+visit http://www.xfree86.org/3.3.6/.
+
+$OpenBSD: README.mac68k,v 1.5 2002/10/07 21:52:19 todd Exp $

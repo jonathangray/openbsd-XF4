@@ -29,5 +29,7 @@ Currently, the video hardware marked with "X" below is supported:
    when it has several framebuffers to run on.  This is being worked on
    by the XFree86 project.
 
-If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/3.3.6/ or http://www.xfree86.org/4.2.1/.
+problem_blurb  For XFree86 3 documentation,
+visit http://www.xfree86.org/3.3.6/.
+
+$OpenBSD: README.amiga,v 1.5 2002/10/07 21:52:19 todd Exp $

@@ -256,8 +256,6 @@ EndSection
 
 See XF86Config(5) for more options.
 
-------------------------
-If you encounter a problem, you can browse the entire documentation at
-http://www.xfree86.org/4.2.1/
+problem_blurb
 
-$OpenBSD: README.sparc64,v 1.14 2002/10/07 20:25:50 todd Exp $
+$OpenBSD: README.sparc64,v 1.15 2002/10/07 21:52:19 todd Exp $

@@ -2,3 +2,7 @@ Post-installation instructions for XFree86 on OpenBSD/vax
 -------------------------------------------------------------
 
 There is no X server for vax.  Only userland X.
+
+problem_blurb
+
+$OpenBSD: README.vax,v 1.2 2002/10/07 21:52:19 todd Exp $
