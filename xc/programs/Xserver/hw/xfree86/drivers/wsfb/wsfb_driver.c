@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.13 2002/07/20 20:40:45 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.14 2002/07/25 19:05:58 miod Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -442,7 +442,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	if (pScrn->depth > 8) {
 		rgb zeros = { 0, 0, 0 }, masks;
 
-		if (wstype == WSDISPLAY_TYPE_SUNFFB) {
+		if (wstype == WSDISPLAY_TYPE_SUN24) {
 			masks.red = 0x0000ff;
 			masks.green = 0x00ff00;
 			masks.blue = 0xff0000;
