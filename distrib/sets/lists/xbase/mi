@@ -103,7 +103,6 @@
 ./usr/X11R6/bin/xprop
 ./usr/X11R6/bin/xrdb
 ./usr/X11R6/bin/xrefresh
-./usr/X11R6/bin/xrx
 ./usr/X11R6/bin/xset
 ./usr/X11R6/bin/xsetroot
 ./usr/X11R6/bin/xsm
