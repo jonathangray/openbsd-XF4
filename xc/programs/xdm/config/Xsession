@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # $Xorg: Xsession,v 1.4 2000/08/17 19:54:17 cpqbld Exp $
-# $OpenBSD: Xsession,v 1.8 2003/09/02 23:59:20 todd Exp $
+# $OpenBSD: Xsession,v 1.9 2003/12/31 18:41:50 matthieu Exp $
 #
 #
 #
@@ -69,5 +69,5 @@ else
 	fi
 	xterm &
 	fvwm
-	do_exit
 fi
+do_exit
