@@ -73,6 +73,9 @@ FontFileReadDirectory (directory, pdir)
 
     FontDirectoryPtr	dir = NullFontDirectory;
 
+    if (strlen(directory) + 1 + sizeof(FontDirFile) > sizeof(dir_file))
+       return BadFontPath;
+
 #ifdef FONTDIRATTRIB
     /* Check for font directory attributes */
 #ifndef __EMX__
@@ -160,6 +163,9 @@ FontFileDirectoryChanged(dir)
     char	dir_file[MAXFONTFILENAMELEN];
     struct stat	statb;
 
+    if (strlen(dir->directory) + sizeof(FontDirFile) > sizeof(dir_file))
+       return FALSE;
+
     strcpy (dir_file, dir->directory);
     strcat (dir_file, FontDirFile);
     if (stat (dir_file, &statb) == -1)
@@ -209,6 +215,8 @@ AddFileNameAliases(dir)
 	    continue;
 	
 	len = strlen (fileName) - renderer->fileSuffixLen;
+       if (len >= sizeof(copy))
+           continue;
 	CopyISOLatin1Lowered (copy, fileName, len);
 	copy[len] = '\0';
 	name.name = copy;
@@ -263,6 +271,8 @@ ReadFontAlias(directory, isFile, pdir)
     int			status = Successful;
     struct stat		statb;
 
+    if (strlen(directory) >= sizeof(alias_file))
+       return BadFontPath;
     dir = *pdir;
     strcpy(alias_file, directory);
     if (!isFile) {
@@ -318,6 +328,10 @@ ReadFontAlias(directory, isFile, pdir)
 		status = AllocError;
 		break;
 	    case NAME:
+               if (strlen(lexToken) >= sizeof(font_name)) {
+                   status = BadFontPath;
+                   break;
+               }
 		CopyISOLatin1Lowered((unsigned char *) alias,
 				     (unsigned char *) alias,
 				     strlen(alias));

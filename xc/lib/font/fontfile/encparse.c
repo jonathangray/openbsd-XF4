@@ -833,6 +833,7 @@ FontEncReallyReallyLoad(const char *charset,
     char file_name[MAXFONTFILENAMELEN], encoding_name[MAXFONTNAMELEN],
         buf[MAXFONTFILENAMELEN];
     int count, n;
+    static char format[24] = "";
     
     /* As we don't really expect to open encodings that often, we don't
        take the trouble of caching encodings directories. */
@@ -848,8 +849,12 @@ FontEncReallyReallyLoad(const char *charset,
     }
 
     encoding = NULL;
+    if (!format[0]) {
+	sprintf(format, "%%%ds %%%d[^\n]\n", sizeof(encoding_name) - 1,
+		sizeof(file_name) - 1);
+    }
     for(;;) {
-        count = fscanf(file, "%s %[^\n]\n", encoding_name, file_name);
+        count = fscanf(file, format, encoding_name, file_name);
         if(count == EOF)
             break;
         if(count != 2)
