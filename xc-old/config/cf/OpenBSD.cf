@@ -1,6 +1,6 @@
 XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.1.2.14 1999/12/01 12:49:09 hohndel Exp $
 XCOMM
-XCOMM $OpenBSD: OpenBSD.cf,v 1.8 2002/07/13 16:16:59 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.9 2003/01/04 11:54:25 matthieu Exp $
 XCOMM
 
 #ifdef Ports
@@ -450,66 +450,6 @@ install:: fonts.alias							@@\
 
 #endif /* Mc68020Architecture */
 
-
-/*
- * Definitions for the amiga architecture
- */
-#ifdef AmigaArchitecture
-
-# include <xf86.rules>
-
-/*
- * We need this define to get a working autorepeat under XKB.
- */
-#define	XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
-
-/*
- * These are the defines for the Xamiga Server
- */
-# ifndef XamigaCCmono
-#  define XamigaCCmono		NO
-# endif
-
-# ifndef XamigaCCcolor
-#  define XamigaCCcolor		YES
-# endif
-
-# ifndef XamigaGfxCardSupport
-#  define XamigaGfxCardSupport	YES
-# endif
-
-# ifndef XamigaRetinaZ2Support
-#  define XamigaRetinaZ2Support	NO
-# endif
-
-# ifndef XamigaRetinaZ3Support
-#  define XamigaRetinaZ3Support	YES
-# endif
-
-# ifndef XamigaCl5426Server
-#  define XamigaCl5426Server	YES
-# endif
-
-# ifndef XamigaCV64Support
-#  define XamigaCV64Support	YES
-# endif
-
-/*
- * You need XamigaGfxCardSupport if you enable XamigaCl5426Server,
- * XamigaRetinaZ2Support, XamigaRetinaZ3Support or XamigaCV64Support
- * and you can't use XamigaCCmono if you enable XamigaCCcolor.
- * Don't change the next 8 lines !!!!!!!!!  */
-# if (XamigaCl5426Server || XamigaCV64Support || XamigaRetinaZ3Support || XamigaRetinaZ2Support) && !XamigaGfxCardSupport
-#  undef XamigaGfxCardSupport
-#  define XamigaGfxCardSupport	YES
-# endif
-
-# if XamigaCCcolor
-#  undef XamigaCCmono
-#  define XamigaCCmono		NO
-# endif
-
-#endif /* AmigaArchitecture */
 
 
 /*

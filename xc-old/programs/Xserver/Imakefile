@@ -1620,55 +1620,6 @@ InstallLinkKitNonExecFile(Xnest.def,$(LINKKITDIR))
 #endif
 #endif /* XnestServer */
 
-#if XamigaCCmono || XamigaCCcolor || XamigaGfxCardSupport
-XCOMM
-XCOMM Amiga 24Bit server with Cybervision64/Cirrus 5426/RetinaZ3/ECS/AGA-Support
-XCOMM
-DDXDIR1 = hw/amiga
-#if XamigaGfxCardSupport || XamigaCCmono
-MFBDIR   = mfb
-XAmigaMonoLib = $(MFB)
-#endif
-#if XamigaGfxCardSupport
-CFB8DIR  = cfb
-CFB16DIR = cfb16
-CFB32DIR = cfb32
-XAmigaGfxLibs = $(CFB8DIR)/libcfb.a $(CFB16DIR)/libcfb.a $(CFB32DIR)/libcfb.a
-#endif /* XamigaGfxCardSupport */
-#if XamigaCCcolor
-AfbDir   = $(DDXDIR1)/afb
-AfbLib   = $(AfbDir)/libafb.a
-#endif /* XamigaCCcolor */
-#if XamigaRetinaZ2Support
-RetinaZ2Dir = $(DDXDIR1)/retinaZ2
-RetinaZ2Lib = $(RetinaZ2Dir)/libamigaRetinaZ2.a
-#endif /* XamigaRetinaZ2Support */
-#if XamigaRetinaZ3Support
-RetinaZ3Dir = $(DDXDIR1)/retinaZ3
-RetinaZ3Lib = $(RetinaZ3Dir)/libamigaRetinaZ3.a
-#endif /* XamigaRetinaZ3Support */
-#if XamigaCl5426Server 
-CirrusDir = $(DDXDIR1)/cirrus
-CirrusLib = $(CirrusDir)/libamigaCirrus.a
-#endif /* XamigaCl5426Server */
-#if XamigaCV64Support
-CV64Dir = $(DDXDIR1)/s3
-CV64Lib = $(CV64Dir)/libamigaS3.a
-#endif /* XamigaCV64Support */
-XAmigaDDXLib = $(DDXDIR1)/libamiga.a
-XAmigaDirs = $(STDDIRS) $(MFBDIR) $(CFB8DIR) $(CFB16DIR) $(CFB32DIR) \
-             $(DDXDIR1) $(DEPDIRS) $(RetizaZ2Dir) $(RetinaZ3Dir) \
-	     $(CirrusDir) $(CV64Dir)
-XAmigaObjs =
-XAmigaLibs = PreFbLibs $(XAmigaDDXLib) $(AfbLib) $(RetinaZ2Lib) \
-	     $(RetinaZ3Lib) $(CirrusLib) $(CV64Lib) $(XAmigaGfxLibs) \
-	     $(XAmigaMonoLib) NoMfbPostFbLibs
-XAmigaSysLibs = $(SYSLIBS)
-SetUIDServerTarget(Xamiga,$(XAmigaDirs),$(XAmigaObjs),$(XAmigaLibs),$(XAmigaSysLibs))
-#ifndef ServerToInstall
-#define ServerToInstall Xamiga
-#endif
-#endif
 
 #if XnonServer
 XCOMM
