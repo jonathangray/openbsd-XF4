@@ -694,8 +694,8 @@
 ./etc/X11/xserver/pt_BR.88591
 ./etc/X11/xserver/pt_BR.88591.en
 ./etc/X11/xserver/pt_BR.ISO-8859-1
-./etc/X11/xserver/pt_BR.ISO_8859-1
 ./etc/X11/xserver/pt_BR.ISO8859-1
+./etc/X11/xserver/pt_BR.ISO_8859-1
 ./etc/X11/xserver/pt_BR.UTF-8
 ./etc/X11/xserver/pt_BR.iso88591
 ./etc/X11/xserver/pt_BR.iso885915

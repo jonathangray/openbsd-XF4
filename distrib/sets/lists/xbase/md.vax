@@ -13,7 +13,6 @@
 ./etc/X11/xinit
 ./etc/X11/xsm
 ./usr/X11R6/bin/dga
-./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/include/X11/extensions/xf86dga.h
 ./usr/X11R6/include/X11/extensions/xf86dga1.h
 ./usr/X11R6/include/X11/extensions/xf86dga1str.h
@@ -414,11 +413,6 @@
 ./usr/X11R6/lib/X11/xkb/xkbcomp
 ./usr/X11R6/lib/libXxf86dga.a
 ./usr/X11R6/man/cat1/dga.0
-./usr/X11R6/man/cat3/FontCacheChangeCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheStatistics.0
-./usr/X11R6/man/cat3/FontCacheQueryExtension.0
-./usr/X11R6/man/cat3/FontCacheQueryVersion.0
 ./usr/X11R6/man/cat3/XDGA.0
 ./usr/X11R6/man/cat3/XDGAChangePixmapMode.0
 ./usr/X11R6/man/cat3/XDGACloseFramebuffer.0
@@ -440,5 +434,4 @@
 ./usr/X11R6/man/cat3/XDGASync.0
 ./usr/X11R6/man/cat3/XF86DGA.0
 ./usr/X11R6/man/cat3/XFree86-DGA.0
-./usr/X11R6/man/cat3/Xfontcache.0
 ./usr/X11R6/man/cat7/Xprint.0

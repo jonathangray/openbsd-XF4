@@ -1,6 +1,5 @@
 ./usr/X11R6/bin/bdftruncate
 ./usr/X11R6/bin/dga
-./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/glxgears
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/ucs2any
@@ -26,9 +25,7 @@
 ./usr/X11R6/include/freetype2/freetype/ftgzip.h
 ./usr/X11R6/include/freetype2/freetype/ftincrem.h
 ./usr/X11R6/include/freetype2/freetype/ftpfr.h
-./usr/X11R6/include/freetype2/freetype/ftstroker.h
 ./usr/X11R6/include/freetype2/freetype/ftwinfnt.h
-./usr/X11R6/include/freetype2/freetype/internal/pfr.h
 ./usr/X11R6/include/ft2build.h
 ./usr/X11R6/lib/X11/xkb/README
 ./usr/X11R6/lib/X11/xkb/README.config
@@ -419,11 +416,6 @@
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/glxgears.0
 ./usr/X11R6/man/cat1/glxinfo.0
-./usr/X11R6/man/cat3/FontCacheChangeCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheStatistics.0
-./usr/X11R6/man/cat3/FontCacheQueryExtension.0
-./usr/X11R6/man/cat3/FontCacheQueryVersion.0
 ./usr/X11R6/man/cat3/GLwCreateMDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
@@ -450,7 +442,6 @@
 ./usr/X11R6/man/cat3/XDGASync.0
 ./usr/X11R6/man/cat3/XF86DGA.0
 ./usr/X11R6/man/cat3/XFree86-DGA.0
-./usr/X11R6/man/cat3/Xfontcache.0
 ./usr/X11R6/man/cat3/glAccum.0
 ./usr/X11R6/man/cat3/glActiveTextureARB.0
 ./usr/X11R6/man/cat3/glAlphaFunc.0

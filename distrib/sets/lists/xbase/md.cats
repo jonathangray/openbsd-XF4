@@ -1294,7 +1294,6 @@
 ./usr/X11R6/bin/Xorg
 ./usr/X11R6/bin/bdftruncate
 ./usr/X11R6/bin/dga
-./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/glxgears
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/gtf
@@ -1341,9 +1340,7 @@
 ./usr/X11R6/include/freetype2/freetype/ftgzip.h
 ./usr/X11R6/include/freetype2/freetype/ftincrem.h
 ./usr/X11R6/include/freetype2/freetype/ftpfr.h
-./usr/X11R6/include/freetype2/freetype/ftstroker.h
 ./usr/X11R6/include/freetype2/freetype/ftwinfnt.h
-./usr/X11R6/include/freetype2/freetype/internal/pfr.h
 ./usr/X11R6/include/ft2build.h
 ./usr/X11R6/include/xf86Optrec.h
 ./usr/X11R6/include/xf86Parser.h
@@ -1358,8 +1355,6 @@
 ./usr/X11R6/lib/X11/doc/OS2.Notes
 ./usr/X11R6/lib/X11/doc/README
 ./usr/X11R6/lib/X11/doc/README.DECtga
-./usr/X11R6/lib/X11/doc/README.DRI
-./usr/X11R6/lib/X11/doc/README.DRIcomp
 ./usr/X11R6/lib/X11/doc/README.Darwin
 ./usr/X11R6/lib/X11/doc/README.I128
 ./usr/X11R6/lib/X11/doc/README.LynxOS
@@ -1394,7 +1389,6 @@
 ./usr/X11R6/lib/X11/getconfig/xorg.cfg
 ./usr/X11R6/lib/libFS.so.8.0
 ./usr/X11R6/lib/libGL.a
-./usr/X11R6/lib/libGL.so.3.0
 ./usr/X11R6/lib/libGL.so.3.1
 ./usr/X11R6/lib/libGLU.a
 ./usr/X11R6/lib/libGLU.so.4.0
@@ -1402,28 +1396,21 @@
 ./usr/X11R6/lib/libGLw.so.3.0
 ./usr/X11R6/lib/libICE.so.8.0
 ./usr/X11R6/lib/libOSMesa.a
-./usr/X11R6/lib/libOSMesa.so.5.0
 ./usr/X11R6/lib/libOSMesa.so.6.0
 ./usr/X11R6/lib/libSM.so.8.0
-./usr/X11R6/lib/libX11.so.8.0
 ./usr/X11R6/lib/libX11.so.8.1
 ./usr/X11R6/lib/libXRes.so.2.0
 ./usr/X11R6/lib/libXTrap.so.8.0
 ./usr/X11R6/lib/libXaw.so.10.0
-./usr/X11R6/lib/libXaw.so.9.0
-./usr/X11R6/lib/libXaw6.so.8.0
 ./usr/X11R6/lib/libXaw6.so.8.1
 ./usr/X11R6/lib/libXaw7.so.9.0
 ./usr/X11R6/lib/libXcomposite.so.1.0
-./usr/X11R6/lib/libXcursor.so.2.0
 ./usr/X11R6/lib/libXcursor.so.2.2
 ./usr/X11R6/lib/libXdamage.so.1.0
 ./usr/X11R6/lib/libXevie.so.1.0
 ./usr/X11R6/lib/libXext.so.8.0
 ./usr/X11R6/lib/libXfixes.so.3.0
-./usr/X11R6/lib/libXfont.so.3.0
 ./usr/X11R6/lib/libXfont.so.4.0
-./usr/X11R6/lib/libXfontcache.so.3.0
 ./usr/X11R6/lib/libXft.so.5.0
 ./usr/X11R6/lib/libXft1.so.3.0
 ./usr/X11R6/lib/libXi.so.8.0
@@ -1433,7 +1420,6 @@
 ./usr/X11R6/lib/libXp.so.8.0
 ./usr/X11R6/lib/libXpm.so.6.0
 ./usr/X11R6/lib/libXrandr.so.4.0
-./usr/X11R6/lib/libXrender.so.3.0
 ./usr/X11R6/lib/libXrender.so.3.1
 ./usr/X11R6/lib/libXss.so.3.0
 ./usr/X11R6/lib/libXt.so.8.0
@@ -1449,7 +1435,6 @@
 ./usr/X11R6/lib/libexpat.so.5.0
 ./usr/X11R6/lib/libfontconfig.so.2.0
 ./usr/X11R6/lib/libfontenc.so.3.0
-./usr/X11R6/lib/libfreetype.so.12.0
 ./usr/X11R6/lib/libfreetype.so.13.0
 ./usr/X11R6/lib/liboldX.so.8.0
 ./usr/X11R6/lib/libpsres.so.3.0
@@ -1460,7 +1445,6 @@
 ./usr/X11R6/lib/modules/libcw.a
 ./usr/X11R6/lib/modules/libdamage.a
 ./usr/X11R6/man/cat1/Xorg.0
-./usr/X11R6/man/cat1/Xprt.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/glxgears.0
 ./usr/X11R6/man/cat1/glxinfo.0
@@ -1468,11 +1452,6 @@
 ./usr/X11R6/man/cat1/xdriinfo.0
 ./usr/X11R6/man/cat1/xorgcfg.0
 ./usr/X11R6/man/cat1/xorgconfig.0
-./usr/X11R6/man/cat3/FontCacheChangeCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheSettings.0
-./usr/X11R6/man/cat3/FontCacheGetCacheStatistics.0
-./usr/X11R6/man/cat3/FontCacheQueryExtension.0
-./usr/X11R6/man/cat3/FontCacheQueryVersion.0
 ./usr/X11R6/man/cat3/GLwCreateMDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
@@ -1521,7 +1500,6 @@
 ./usr/X11R6/man/cat3/XF86VidModeSwitchToMode.0
 ./usr/X11R6/man/cat3/XF86VidModeValidateModeLine.0
 ./usr/X11R6/man/cat3/XFree86-DGA.0
-./usr/X11R6/man/cat3/Xfontcache.0
 ./usr/X11R6/man/cat3/glAccum.0
 ./usr/X11R6/man/cat3/glActiveTextureARB.0
 ./usr/X11R6/man/cat3/glAlphaFunc.0
