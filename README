@@ -16,7 +16,7 @@ The XF4 directory has several sub-directories :
 - xc-mit:  a partial X11R5 source tree, used to build the Xhp server
            for the hp300 port.
 - xc-old:  a partial XFree86 3.3.6 source tree, used to build the
-           XFree86 3.3.6 servers on i386 and amiga and mac68k servers.
+           XFree86 3.3.6 servers on i386 and mac68k.
 - xc:      the XFree86 4.2.0 source tree, augmented with some OpenBSD
            additions (xlock, fvwm, wm2, kerberos apps, the wsfb
            module, the usb tablet input driver).
@@ -215,8 +215,8 @@ make load<Server>
 
 in xc/programs/Xserver. 
 
-o About  OpenBSD.cf
-  -----------------
+o About OpenBSD.cf
+  ----------------
 
 xc/config/cf/OpenBSD.cf holds most of the OpenBSD specific imake
 configuration for OpenBSD. It has basically 2 parts: 
@@ -423,4 +423,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.10 2002/10/17 20:47:51 matthieu Exp $
+$Id: README,v 1.11 2003/03/16 22:01:36 miod Exp $
