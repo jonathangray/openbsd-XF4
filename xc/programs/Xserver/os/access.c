@@ -1116,7 +1116,7 @@ ResetHosts (char *display)
     snprintf(fname, sizeof(fname), ETC_HOST_PREFIX "%s" ETC_HOST_SUFFIX, 
 	     display);
 #ifdef __UNIXOS2__
-    strcpy(fname, (char*)__XOS2RedirRoot(fname));
+    strlcpy(fname, (char*)__XOS2RedirRoot(fname), sizeof(fname));
 #endif /* __UNIXOS2__ */
 
     if ((fd = fopen (fname, "r")) != 0)

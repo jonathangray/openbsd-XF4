@@ -1521,7 +1521,7 @@ get_addr_by_name(
     if (port == 0) {
 	pport = NULL;
     } else if (port > 0 && port < 65535) {
-	sprintf(portstr, "%d", port);
+	snprintf(portstr, sizeof(portstr), "%d", port);
     } else {
 	ErrorF("Xserver: port out of range: %d\n", port);
 	exit(1);
@@ -1648,7 +1648,7 @@ get_mcast_options(argc, argv, i)
     }
 
     if (xdm_udp_port > 0 && xdm_udp_port < 65535) {
-	sprintf(portstr, "%d", xdm_udp_port);
+	snprintf(portstr, sizeof(portstr), "%d", xdm_udp_port);
     } else {
 	ErrorF("Xserver: port out of range: %d\n", xdm_udp_port);
 	exit(1);

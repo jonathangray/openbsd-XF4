@@ -150,13 +150,15 @@ const char *
 LogInit(const char *fname, const char *backup)
 {
     char *logFileName = NULL;
+    size_t len1, len2;
 
     if (fname && *fname) {
 	/* xalloc() can't be used yet. */
-	logFileName = malloc(strlen(fname) + strlen(display) + 1);
+	len1 = strlen(fname) + strlen(display) + 1;
+	logFileName = malloc(len1);
 	if (!logFileName)
 	    FatalError("Cannot allocate space for the log file name\n");
-	sprintf(logFileName, fname, display);
+	snprintf(logFileName, len1, fname, display);
 
 	if (backup && *backup) {
 	    struct stat buf;
@@ -165,13 +167,15 @@ LogInit(const char *fname, const char *backup)
 		char *suffix;
 		char *oldLog;
 
-		oldLog = malloc(strlen(logFileName) + strlen(backup) +
-				strlen(display) + 1);
-		suffix = malloc(strlen(backup) + strlen(display) + 1);
+		len1 = strlen(logFileName) + strlen(backup) +
+		       strlen(display) + 1;
+		len2 = strlen(backup) + strlen(display) + 1;
+		oldLog = malloc(len1);
+		suffix = malloc(len2);
 		if (!oldLog || !suffix)
 		    FatalError("Cannot allocate space for the log file name\n");
-		sprintf(suffix, backup, display);
-		sprintf(oldLog, "%s%s", logFileName, suffix);
+		snprintf(suffix, len2, backup, display);
+		snprintf(oldLog, len1, "%s%s", logFileName, suffix);
 		free(suffix);
 #ifdef __UNIXOS2__
 		remove(oldLog);
@@ -303,6 +307,7 @@ LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 {
     const char *s  = X_UNKNOWN_STRING;
     char *tmpBuf = NULL;
+    size_t len;
 
     /* Ignore verbosity for X_ERROR */
     if (logVerbosity >= verb || logFileVerbosity >= verb || type == X_ERROR) {
@@ -349,12 +354,13 @@ LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 	 * so that LogVWrite() is only called once per message.
 	 */
 	if (s) {
-	    tmpBuf = malloc(strlen(format) + strlen(s) + 1 + 1);
+	    len = strlen(format) + strlen(s) + 1 + 1;
+	    tmpBuf = malloc(len);
 	    /* Silently return if malloc fails here. */
 	    if (!tmpBuf)
 		return;
-	    sprintf(tmpBuf, "%s ", s);
-	    strcat(tmpBuf, format);
+	    snprintf(tmpBuf, len, "%s ", s);
+	    strlcat(tmpBuf, format, len);
 	    LogVWrite(verb, tmpBuf, args);
 	    free(tmpBuf);
 	} else
@@ -579,13 +585,15 @@ Error(char *str)
 {
     char *err = NULL;
     int saveErrno = errno;
+    size_t len;
 
     if (str) {
-	err = malloc(strlen(strerror(saveErrno)) + strlen(str) + 2 + 1);
+	len = strlen(strerror(saveErrno)) + strlen(str) + 2 + 1;
+	err = malloc(len);
 	if (!err)
 	    return;
-	sprintf(err, "%s: ", str);
-	strcat(err, strerror(saveErrno));
+	snprintf(err, len, "%s: ", str);
+	strlcat(err, strerror(saveErrno), len);
 	LogWrite(-1, err);
     } else
 	LogWrite(-1, strerror(saveErrno));

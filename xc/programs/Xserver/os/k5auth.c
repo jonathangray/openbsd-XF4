@@ -345,7 +345,8 @@ int k5_stage1(client)
 		krb5_free_addresses(localaddrs);
 	    if (creds)
 		krb5_free_creds(creds);
-	    sprintf(kerror, "Krb5 stage1: unknown address family %d from getpeername",
+	    snprintf(kerror, sizeof(kerror), 
+		"Krb5 stage1: unknown address family %d from getpeername",
 		    cli_net_addr.sa_family);    
 	    return(SendConnSetup(client, kerror));
 	}
@@ -367,12 +368,12 @@ int k5_stage1(client)
 	if (creds)
 	    krb5_free_creds(creds);
 	free(rcache);
-	strcpy(kerror, "krb5_rc_resolve_type failed: ");
-	strncat(kerror, error_message(retval), 231);
+	strlcpy(kerror, "krb5_rc_resolve_type failed: ", sizeof(kerror));
+	strlcat(kerror, error_message(retval), sizeof(kerror));
 	return(SendConnSetup(client, kerror));
     }
-    if ((cachename = (char *)malloc(strlen(rc_base) + strlen(display) + 1))
-	== NULL)
+    len = strlen(rc_base) + strlen(display) + 1;
+    if ((cachename = (char *)malloc(len)) == NULL)
     {
 	if (localaddrs)
 	    krb5_free_addresses(localaddrs);
@@ -381,8 +382,8 @@ int k5_stage1(client)
 	free(rcache);
 	return(SendConnSetup(client, "Krb5: malloc bombed for cachename"));
     }
-    strcpy(cachename, rc_base);
-    strcat(cachename, display);
+    strlcpy(cachename, rc_base, len);
+    strlcat(cachename, display, len);
     if (retval = krb5_rc_resolve(rcache, cachename))
     {
 	if (localaddrs)
@@ -391,8 +392,8 @@ int k5_stage1(client)
 	    krb5_free_creds(creds);
 	free(rcache);
 	free(cachename);
-	strcpy(kerror, "krb5_rc_resolve failed: ");
-	strncat(kerror, error_message(retval), 236);
+	strlcpy(kerror, "krb5_rc_resolve failed: ", sizeof(kerror));
+	strlcat(kerror, error_message(retval), sizeof(kerror));
 	return(SendConnSetup(client, kerror));
     }
     free(cachename);
@@ -407,13 +408,13 @@ int k5_stage1(client)
 		krb5_free_creds(creds);
 	    if (retval2 = krb5_rc_close(rcache))
 	    {
-		strcpy(kerror, "krb5_rc_close failed: ");
-		strncat(kerror, error_message(retval2), 238);
+		strlcpy(kerror, "krb5_rc_close failed: ", sizeof(kerror));
+		strlcat(kerror, error_message(retval2), sizeof(kerror));
 		return(SendConnSetup(client, kerror));
 	    }
 	    free(rcache);
-	    strcpy(kerror, "krb5_rc_initialize failed: ");
-	    strncat(kerror, error_message(retval), 233);
+	    strlcpy(kerror, "krb5_rc_initialize failed: ", sizeof(kerror));
+	    strlcat(kerror, error_message(retval), sizeof(kerror));
 	    return(SendConnSetup(client, kerror));
 	}
     }
@@ -450,16 +451,16 @@ int k5_stage1(client)
     {
 	if (retval2 = krb5_rc_close(rcache))
 	{
-	    strcpy(kerror, "krb5_rc_close failed (2): ");
-	    strncat(kerror, error_message(retval2), 230);
+	    strlcpy(kerror, "krb5_rc_close failed (2): ", sizeof(kerror));
+	    strlcat(kerror, error_message(retval2), sizeof(kerror));
 	    return(SendConnSetup(client, kerror));
 	}
 	free(rcache);
     }
     if (retval)
     {
-	strcpy(kerror, "Krb5: Bad application request: ");
-	strncat(kerror, error_message(retval), 224);
+	strlcpy(kerror, "Krb5: Bad application request: ", sizeof(kerror));
+	strlcat(kerror, error_message(retval), sizeof(kerror));
 	return(SendConnSetup(client, kerror));
     }
     cprinc = authdat->ticket->enc_part2->client;
@@ -488,8 +489,8 @@ int k5_stage1(client)
 	    if (retval = krb5_us_timeofday(&ctime, &cusec))
 	    {
 		krb5_free_tkt_authent(authdat);
-		strcpy(kerror, "error in krb5_us_timeofday: ");
-		strncat(kerror, error_message(retval), 234);
+		strlcpy(kerror, "error in krb5_us_timeofday: ", sizeof(kerror));
+		strlcat(kerror, error_message(retval), sizeof(kerror));
 		return(SendConnSetup(client, kerror));
 	    }
 	    rep.ctime = ctime;
@@ -499,8 +500,8 @@ int k5_stage1(client)
 	    if (retval = krb5_mk_rep(&rep, skey, &buf))
 	    {
 		krb5_free_tkt_authent(authdat);
-		strcpy(kerror, "error in krb5_mk_rep: ");
-		strncat(kerror, error_message(retval), 238);
+		strlcpy(kerror, "error in krb5_mk_rep: ", sizeof(kerror));
+		strlcat(kerror, error_message(retval), sizeof(kerror));
 		return(SendConnSetup(client, kerror));
 	    }
 	    prefix.reqType = 2;	/* opcode = authenticate */
@@ -533,8 +534,9 @@ int k5_stage1(client)
 	retval = krb5_unparse_name(cprinc, &kname);
 	if (retval == 0)
 	{
-	    sprintf(kerror, "Principal \"%s\" is not authorized to connect",
-		    kname);
+	    snprintf(kerror, sizeof(kerror), 
+		     "Principal \"%s\" is not authorized to connect",
+		     kname);
 	    if (kname)
 		free(kname);
 	    return(SendConnSetup(client, kerror));
@@ -574,9 +576,10 @@ k5_bad(client)
 {
     if (((OsCommPtr)client->osPrivate)->authstate.srvcreds)
 	krb5_free_creds((krb5_creds *)((OsCommPtr)client->osPrivate)->authstate.srvcreds);
-    sprintf(kerror, "unrecognized Krb5 auth packet %d, expecting %d",
-	    ((xReq *)client->requestBuffer)->reqType,
-	    ((OsCommPtr)client->osPrivate)->authstate.stageno);
+    snprintf(kerror, sizeof(kerror), 
+	     "unrecognized Krb5 auth packet %d, expecting %d",
+	     ((xReq *)client->requestBuffer)->reqType,
+	     ((OsCommPtr)client->osPrivate)->authstate.stageno);
     return(SendConnSetup(client, kerror));
 }
 
@@ -673,7 +676,7 @@ int K5Add(data_length, data, id)
 	    free(nbuf);
 	    return 0;
 	}
-	strcpy(ktname, cp + 1);
+	strlpy(ktname, cp + 1, ktlen + 1);
 	retval = krb5_sname_to_principal(NULL, /* NULL for hostname uses
 						  local host name*/
 					 nbuf, KRB5_NT_SRV_HST,
