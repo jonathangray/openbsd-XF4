@@ -1732,7 +1732,7 @@ int  (*xf86ReadMmio32)(pointer Base, unsigned long Offset)
 
 #endif /* __FreeBSD__ && __alpha__ */
 
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) && defined(__alpha__)
 
 /* XXXX */
 __inline__ void outb(unsigned int port, unsigned char val)
