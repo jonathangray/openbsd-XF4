@@ -243,8 +243,8 @@ and it's logical location relative to the first, eg:
 
 Section "ServerLayout"
 	Identifier	"wsfb"
-	Screen  0       "Screen1" 0 0
-	Screen  1       "Screen0" RightOf "Screen1"
+	Screen  0       "Screen0"
+	Screen  1       "Screen1" RightOf "Screen1"
 	InputDevice	"zsmouse0" "CorePointer"
 	InputDevice	"Keyboard0" "CoreKeyboard"
 EndSection
@@ -255,4 +255,4 @@ See XF86Config(5) for more options.
 If you encounter a problem, you can browse the entire documentation at
 http://www.xfree86.org/4.2.0/
 
-$OpenBSD: README.sparc64,v 1.10 2002/08/21 16:52:35 miod Exp $
+$OpenBSD: README.sparc64,v 1.11 2002/08/27 21:06:40 matthieu Exp $
