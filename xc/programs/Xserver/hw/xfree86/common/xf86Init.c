@@ -1249,6 +1249,11 @@ ddxProcessArgument(int argc, char **argv, int i)
 	  "\tUsing default XF86Config search path.\n\n");
     }
     xf86ConfigFile = argv[i + 1];
+#ifdef __OpenBSD__
+    /* Cannot drop privs when -xf86config is used with unsafe path */
+    if (!xf86PathIsSafe(xf86ConfigFile))
+	    xf86KeepPriv = TRUE;
+#endif
     return 2;
   }
   if (!strcmp(argv[i],"-showunresolved"))
