@@ -62,6 +62,9 @@ extern char *_XawTextGetSTRING(TextWidget ctx, XawTextPosition left,
 #include <X11/Shell.h>
 #include <ctype.h>
 #include <stdlib.h>
+#ifdef __OpenBSD__
+#include <util.h>
+#endif
 
 /* Fix ISC brain damage.  When using gcc fdopen isn't declared in <stdio.h>. */
 #if defined(ISC) && __STDC__ && !defined(ISC30)
@@ -700,16 +703,19 @@ TextInsert(Widget w, char *s, int len)
 #ifdef USE_PTY
 /* This function opens up a pty master and stuffs it's value into pty.
  * If it finds one, it returns a value of 0.  If it does not find one,
- * it returns a value of !0.  This routine is designed to be re-entrant,
- * so that if a pty master is found and later, we find that the slave
- * has problems, we can re-enter this function and get another one.
+ * it returns a value of !0.  
  */
 
 #include    "../xterm/ptyx.h"
 static int
 get_pty(int *pty, int *tty, char *ttydev, char *ptydev)
 {
-#ifdef SVR4
+#if defined(CSRG_BASED) || defined(__osf__) || (defined(__GLIBC__) && !defined(USE_USG_PTYS))
+	if (openpty(pty, tty, ttydev, NULL, NULL) < 0) {
+		return 1;
+	}
+	return 0;
+#elif defined(SVR4)
 	if ((*pty = open ("/dev/ptmx", O_RDWR)) < 0) {
 	    return 1;
 	}
