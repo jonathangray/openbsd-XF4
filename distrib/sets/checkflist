@@ -9,5 +9,5 @@ set fsdir=$DESTDIR
 
 csh makeflist >! /tmp/_CHECK.$$
 ( cd $fsdir ; find . \( -type d -o -type f -o -type l \) ) | sort | \
-    diff /tmp/_CHECK.$$ -
+    diff -u /tmp/_CHECK.$$ -
 /bin/rm -f /tmp/_CHECK.$$
