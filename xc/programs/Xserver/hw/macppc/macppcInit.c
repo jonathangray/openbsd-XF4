@@ -1,3 +1,4 @@
+/* $OpenBSD: macppcInit.c,v 1.4 2001/09/09 13:50:23 matthieu Exp $ */
 
 #include    "macppc.h"
 #include    "gcstruct.h"
@@ -9,23 +10,11 @@ extern Bool macppcFBInit(int /* screen */, ScreenPtr /* pScreen */,
 			 int /* argc */, char** /* argv */);
 #define FBI macppcFBInit
 
-#if 0 /* XXX */
-extern KeySymsRec sunKeySyms[];
-extern SunModmapRec *sunModMaps[];
-extern int sunMaxLayout;
-extern KeySym* sunType4KeyMaps[];
-extern SunModmapRec* sunType4ModMaps[];
-#endif
 
 static Bool macppcDevsInited = FALSE;
 
 #if 0
 Bool sunAutoRepeatHandlersInstalled;	/* FALSE each time InitOutput called */
-Bool sunSwapLkeys = FALSE;
-Bool sunFlipPixels = FALSE;
-Bool sunFbInfo = FALSE;
-Bool sunCG4Frob = FALSE;
-Bool sunNoGX = FALSE;
 #endif
 
 macppcKbdPrivRec macppcKbdPriv = {
@@ -41,17 +30,6 @@ macppcPtrPrivRec macppcPtrPriv = {
     0		/* Current button state */
 };
 
-#if 0
-/*
- * The name member in the following table corresponds to the
- * FBTYPE_* macros defined in /usr/include/machine/fbio.h file
- */
-macppcFbDataRec macppcFbData[] = {
-  { OFBI, "OFB            " },
-  { NULL, "VGA            " },
-  { NULL, "PCIVGA         " },
-};
-#endif
 
 /*
  * a list of devices to try if there is no environment or command
@@ -113,18 +91,6 @@ OpenFrameBuffer(char *device,	/* e.g. "/dev/ttyC0" */
 	    &macppcFbs[screen].linebytes) == -1) {
 		macppcFbs[screen].linebytes = macppcFbs[screen].info.width;
 	}
-
-#if 0
-	if (ret) {
-	    if (macppcFbs[screen].info.fb_type >= FBTYPE_LASTPLUSONE ||
-		!macppcFbData[macppcFbs[screen].info.fb_type].init) {
-		    Error("frame buffer type not supported");
-		    (void) close(macppcFbs[screen].fd);
-		    macppcFbs[screen].fd = -1;
-		    ret = FALSE;
-	    }
-	}
-#endif
     }
     if (!ret)
 	macppcFbs[screen].fd = -1;
@@ -234,7 +200,7 @@ OsVendorInit(void)
 	}
 
 	if (macppcKbdPriv.fd == -1 || macppcPtrPriv.fd == -1)
-	    err(1, "open kbd/mouse");
+	    FatalError("Cannot open kbd/mouse");
 #ifdef XKB
 	noXkbExtension = FALSE;		/* XXX for now */
 #endif
@@ -274,7 +240,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     int     	i, scr;
     int		nonBlockConsole = 0;
     char	**devList;
-    static int	setup_on_exit = 0;
     extern Bool	RunFromSmartParent;
 
     if (!monitorResolution)
