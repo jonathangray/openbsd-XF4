@@ -19,7 +19,7 @@ if [ -f $log.$ext ]
 then
 
 	i=0
-	while [	 -f $log.$i.$ext ]
+	while [	-f $log.$i.$ext -o -f $log.$i.$ext.gz ]
 	do
 		let i=i+1
 	done
