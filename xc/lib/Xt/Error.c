@@ -72,19 +72,22 @@ in this Software without prior written authorization from The Open Group.
 #define GLOBALERRORS 1
 #endif
 
-static void InitErrorHandling();
+static void InitErrorHandling(XrmDatabase *);
 #if GLOBALERRORS
 static XrmDatabase errorDB = NULL;
 static Boolean error_inited = FALSE;
-void _XtDefaultErrorMsg(), _XtDefaultWarningMsg(), 
-	_XtDefaultError(), _XtDefaultWarning();
+void _XtDefaultErrorMsg(String, String, String, String, String *, Cardinal *),
+	_XtDefaultWarningMsg(String, String, String, String, 
+	    String *, Cardinal *), 
+	_XtDefaultError(String), _XtDefaultWarning(String);
 static XtErrorMsgHandler errorMsgHandler = _XtDefaultErrorMsg;
 static XtErrorMsgHandler warningMsgHandler = _XtDefaultWarningMsg;
 static XtErrorHandler errorHandler = _XtDefaultError;
 static XtErrorHandler warningHandler = _XtDefaultWarning;
 #endif /* GLOBALERRORS */
 
-XrmDatabase *XtGetErrorDatabase(void)
+XrmDatabase *
+XtGetErrorDatabase(void)
 {
     XrmDatabase* retval;
 #if GLOBALERRORS
@@ -97,8 +100,8 @@ XrmDatabase *XtGetErrorDatabase(void)
     return retval;
 }
 
-XrmDatabase *XtAppGetErrorDatabase(app)
-	XtAppContext app;
+XrmDatabase *
+XtAppGetErrorDatabase(XtAppContext app)
 {
     XrmDatabase* retval;
 #if GLOBALERRORS
@@ -113,13 +116,9 @@ XrmDatabase *XtAppGetErrorDatabase(app)
     return retval;
 }
 
-void XtGetErrorDatabaseText(
-    register _Xconst char* name,
-    register _Xconst char* type,
-    register _Xconst char* class,
-    _Xconst char* defaultp,
-    String buffer,
-    int nbytes)
+void 
+XtGetErrorDatabaseText(_Xconst char* name, _Xconst char* type,
+    _Xconst char* class, _Xconst char* defaultp, String buffer, int nbytes)
 {
 #if GLOBALERRORS
     XtAppGetErrorDatabaseText(NULL,
@@ -130,15 +129,10 @@ void XtGetErrorDatabaseText(
 #endif /* GLOBALERRORS */
 }
 
-void XtAppGetErrorDatabaseText(
-    XtAppContext app,
-    register _Xconst char* name,
-    register _Xconst char* type,
-    register _Xconst char* class,
-    _Xconst char* defaultp,
-    String buffer,
-    int nbytes,
-    XrmDatabase db)
+void 
+XtAppGetErrorDatabaseText(XtAppContext app, _Xconst char* name,
+    _Xconst char* type, _Xconst char* class, _Xconst char* defaultp,
+    String buffer, int nbytes, XrmDatabase db)
 {
     String str_class;
     String type_str;
@@ -200,8 +194,8 @@ void XtAppGetErrorDatabaseText(
 #endif
 }
 
-static void InitErrorHandling (db)
-    XrmDatabase *db;
+static void 
+InitErrorHandling (XrmDatabase *db)
 {
     XrmDatabase errordb;
 
@@ -209,12 +203,10 @@ static void InitErrorHandling (db)
     XrmMergeDatabases(errordb, db);
 }
 
-static void DefaultMsg (name,type,class,defaultp,params,num_params,error,fn)
-    String name,type,class,defaultp;
-    String* params;
-    Cardinal* num_params;
-    Bool error;
-    void (*fn)(_Xconst _XtString);
+static void 
+DefaultMsg (String name, String type, String class, String defaultp,
+    String *params, Cardinal *num_params, Bool error,
+    void (*fn)(_Xconst _XtString))
 {
 #define BIGBUF 1024
 #ifdef notyet /* older versions don't, might want to wait until more do */
@@ -307,29 +299,23 @@ program as a non-root user or by removing the suid bit on the executable.");
     }
 }
 
-void _XtDefaultErrorMsg (name,type,class,defaultp,params,num_params)
-    String name,type,class,defaultp;
-    String* params;
-    Cardinal* num_params;
+void 
+_XtDefaultErrorMsg (String name, String type, String class, String defaultp,
+    String *params, Cardinal *num_params)
 {
     DefaultMsg (name,type,class,defaultp,params,num_params,True,XtError);
 }
 
-void _XtDefaultWarningMsg (name,type,class,defaultp,params,num_params)
-    String name,type,class,defaultp;
-    String* params;
-    Cardinal* num_params;
+void 
+_XtDefaultWarningMsg (String name, String type, String class, String defaultp,
+    String *params, Cardinal *num_params)
 {
     DefaultMsg (name,type,class,defaultp,params,num_params,False,XtWarning);
 }
 
-void XtErrorMsg(
-    _Xconst char* name,
-    _Xconst char* type,
-    _Xconst char* class,
-    _Xconst char* defaultp,
-    String* params,
-    Cardinal* num_params)
+void 
+XtErrorMsg(_Xconst char* name, _Xconst char* type, _Xconst char* class,
+    _Xconst char* defaultp, String* params, Cardinal* num_params)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -342,13 +328,9 @@ void XtErrorMsg(
 #endif /* GLOBALERRORS */
 }
 
-void XtAppErrorMsg(
-    XtAppContext app,
-    _Xconst char* name,
-    _Xconst char* type,
-    _Xconst char* class,
-    _Xconst char* defaultp,
-    String* params,
+void 
+XtAppErrorMsg(XtAppContext app, _Xconst char* name, _Xconst char* type,
+    _Xconst char* class, _Xconst char* defaultp, String* params,
     Cardinal* num_params)
 {
 #if GLOBALERRORS
@@ -363,13 +345,9 @@ void XtAppErrorMsg(
 #endif /* GLOBALERRORS */
 }
 
-void XtWarningMsg(
-    _Xconst char* name,
-    _Xconst char* type,
-    _Xconst char* class,
-    _Xconst char* defaultp,
-    String* params,
-    Cardinal* num_params)
+void 
+XtWarningMsg(_Xconst char* name, _Xconst char* type, _Xconst char* class,
+    _Xconst char* defaultp, String* params, Cardinal* num_params)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -382,14 +360,10 @@ void XtWarningMsg(
 #endif /* GLOBALERRORS */
 }
 
-void XtAppWarningMsg(
-    XtAppContext app,
-    _Xconst char* name,
-    _Xconst char* type,
-    _Xconst char* class,
-    _Xconst char* defaultp,
-    String* params,
-    Cardinal* num_params)
+void 
+XtAppWarningMsg(XtAppContext app, _Xconst char* name, _Xconst char* type,
+    _Xconst char* class, _Xconst char* defaultp, 
+    String* params, Cardinal* num_params)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -403,8 +377,8 @@ void XtAppWarningMsg(
 #endif /* GLOBALERRORS */
 }
 
-void XtSetErrorMsgHandler(handler)
-    XtErrorMsgHandler handler;
+void 
+XtSetErrorMsgHandler(XtErrorMsgHandler handler)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -416,9 +390,8 @@ void XtSetErrorMsgHandler(handler)
 #endif /* GLOBALERRORS */
 }
 
-XtErrorMsgHandler XtAppSetErrorMsgHandler(
-    XtAppContext app,
-    XtErrorMsgHandler handler)
+XtErrorMsgHandler 
+XtAppSetErrorMsgHandler(XtAppContext app, XtErrorMsgHandler handler)
 {
     XtErrorMsgHandler old;
 #if GLOBALERRORS
@@ -437,8 +410,8 @@ XtErrorMsgHandler XtAppSetErrorMsgHandler(
     return old;
 }
 
-void XtSetWarningMsgHandler(handler)
-    XtErrorMsgHandler handler;
+void 
+XtSetWarningMsgHandler(XtErrorMsgHandler handler)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -450,9 +423,8 @@ void XtSetWarningMsgHandler(handler)
 #endif /* GLOBALERRORS */
 }
 
-XtErrorMsgHandler XtAppSetWarningMsgHandler(
-    XtAppContext app,
-    XtErrorMsgHandler handler)
+XtErrorMsgHandler 
+XtAppSetWarningMsgHandler(XtAppContext app, XtErrorMsgHandler handler)
 {
     XtErrorMsgHandler old;
 #if GLOBALERRORS
@@ -471,24 +443,24 @@ XtErrorMsgHandler XtAppSetWarningMsgHandler(
     return old;
 }
 
-void _XtDefaultError(message)
-    String message;
+void 
+_XtDefaultError(String message)
 {
     if (message && *message)
 	(void)fprintf(stderr, "%sError: %s\n", XTERROR_PREFIX, message);
     exit(1);
 }
 
-void _XtDefaultWarning(message)
-    String message;
+void 
+_XtDefaultWarning(String message)
 {
     if (message && *message)
        (void)fprintf(stderr, "%sWarning: %s\n", XTWARNING_PREFIX, message); 
     return;
 }
 
-void XtError(
-    _Xconst char* message)
+void 
+XtError(_Xconst char* message)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -499,9 +471,8 @@ void XtError(
 #endif /* GLOBALERRORS */
 }
 
-void XtAppError(
-    XtAppContext app,
-    _Xconst char* message)
+void 
+XtAppError(XtAppContext app, _Xconst char* message)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -514,8 +485,8 @@ void XtAppError(
 #endif /* GLOBALERRORS */
 }
 
-void XtWarning(
-    _Xconst char* message)
+void 
+XtWarning(_Xconst char* message)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -526,9 +497,8 @@ void XtWarning(
 #endif /* GLOBALERRORS */
 }
 
-void XtAppWarning(
-    XtAppContext app,
-    _Xconst char* message)
+void 
+XtAppWarning(XtAppContext app, _Xconst char* message)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -541,7 +511,8 @@ void XtAppWarning(
 #endif /* GLOBALERRORS */
 }
 
-void XtSetErrorHandler(XtErrorHandler handler)
+void 
+XtSetErrorHandler(XtErrorHandler handler)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -553,9 +524,8 @@ void XtSetErrorHandler(XtErrorHandler handler)
 #endif /* GLOBALERRORS */
 }
 
-XtErrorHandler XtAppSetErrorHandler(
-    XtAppContext app,
-    XtErrorHandler handler)
+XtErrorHandler 
+XtAppSetErrorHandler(XtAppContext app, XtErrorHandler handler)
 {
     XtErrorHandler old;
 #if GLOBALERRORS
@@ -574,7 +544,8 @@ XtErrorHandler XtAppSetErrorHandler(
     return old;
 }
 
-void XtSetWarningHandler(XtErrorHandler handler)
+void 
+XtSetWarningHandler(XtErrorHandler handler)
 {
 #if GLOBALERRORS
     LOCK_PROCESS;
@@ -586,9 +557,8 @@ void XtSetWarningHandler(XtErrorHandler handler)
 #endif /* GLOBALERRORS */
 }
 
-XtErrorHandler XtAppSetWarningHandler(
-    XtAppContext app,
-    XtErrorHandler handler)
+XtErrorHandler 
+XtAppSetWarningHandler(XtAppContext app, XtErrorHandler handler)
 {
     XtErrorHandler old;
 #if GLOBALERRORS
@@ -607,9 +577,9 @@ XtErrorHandler XtAppSetWarningHandler(
     return old;
 }
 
-void _XtSetDefaultErrorHandlers(errMsg, warnMsg, err, warn)
-    XtErrorMsgHandler *errMsg, *warnMsg;
-    XtErrorHandler *err, *warn;
+void 
+_XtSetDefaultErrorHandlers(XtErrorMsgHandler *errMsg, 
+    XtErrorMsgHandler *warnMsg, XtErrorHandler *err, XtErrorHandler *warn)
 {
 #ifndef GLOBALERRORS
     LOCK_PROCESS;
