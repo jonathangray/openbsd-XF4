@@ -344,11 +344,12 @@ MakeStringsDependency
 
 LibraryObjectRule()
 
+/*
+ * On the xc-old tree we need to export the libraries, but don't want to install them
+ */
 # undef _LinkBuildLibrary
-# if !defined(LibInstall) || LibInstall
+# if !defined(LibInstall) || !LibInstall
 #  define _LinkBuildLibrary(lib) LinkBuildLibrary(lib)
-# else
-#  define _LinkBuildLibrary(lib) $(_NULLCMD_)
 # endif
 
 # if !defined(LibCreate) || LibCreate
