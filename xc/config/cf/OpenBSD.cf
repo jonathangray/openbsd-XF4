@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.138 2004/08/09 18:16:30 mickey Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.139 2004/09/25 08:20:19 matthieu Exp $
 
 
 
@@ -784,51 +784,25 @@ install:: fonts.alias							@@\
 #endif /* Mc88000Architecture */
 
 /*
- * Definitions for the mips architecture (currently arc, pmax)
+ * Definitions for the mips architectures (currently sgi)
  */
 #ifdef MipsArchitecture
-
- /*
-  * Mips ELF shared libs need some special handling.
-  */
-# define PositionIndependentCFlags
-# define SharedLibraryLoadFlags -x -shared --whole-archive -soname `echo $@ | sed 's/\.[0-9]*$$//'`
-# define SharedXtReqs -L$(BUILDLIBDIR) $(XONLYLIB) $(SMLIB) $(ICELIB)
-# define SharedXmuReqs $(LDPRELIB) $(XTOOLONLYLIB) $(XLIB)
-
+/* Nothing there for now... */
 #endif /* MipsArchitecture */
 
+#ifdef SGIArchitecture
 
-/*
- * Definitions for the arc architecture
- */
-#ifdef ArcArchitecture
+# define HasWeakSymbols		YES
 
-#  define ServerExtraDefines GccGasOption XFree86ServerDefines
-#  ifndef XFree86ConsoleDefines
-#    define XFree86ConsoleDefines -DPCCONS_SUPPORT
-#  endif
+# define DependFlags		-D__MIPSEB__
 
-# include <xfree86.cf>
-
-#endif /* ArcArchitecture */
-
-
-/*
- * Definitions for the pmax architecture
- */
-#ifdef PmaxArchitecture
-
-# include <xf86.rules>
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
-/* For the X11R5 server */
-# define CompressAllFonts	NO
-# define InstallFontAliases	InstallFontAliasesNoComment
-# define UseRgbTxt		NO
 
-#endif /* PmaxArchitecture */
+# include <xfree86.cf>
+
+#endif /* SGIArchitecture */
 
 /*
  * Definitions for the ARM architecture 
