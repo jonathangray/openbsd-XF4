@@ -28,7 +28,7 @@
  * authorization from the copyright holder(s) and author(s).
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86xv.c,v 1.37 2003/11/10 18:22:15 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86xv.c,v 1.38 2004/02/19 22:38:12 tsi Exp $ */
 
 #include "misc.h"
 #include "xf86.h"
@@ -1979,10 +1979,10 @@ xf86XVCopyYUV12ToPacked(
 	    Dst[3] = Y[6] | (Y[7] << 16) | (U[3] << 8) | (V[3] << 24);
 #else
 	    /* This assumes a little-endian framebuffer */
-	    Dst[0] = (Y[0] << 24) | (Y[1] << 8) | (U[0] << 16) | Y[0];
-	    Dst[1] = (Y[2] << 24) | (Y[3] << 8) | (U[1] << 16) | Y[1];
-	    Dst[2] = (Y[4] << 24) | (Y[5] << 8) | (U[2] << 16) | Y[2];
-	    Dst[3] = (Y[6] << 24) | (Y[7] << 8) | (U[3] << 16) | Y[3];
+	    Dst[0] = (Y[0] << 24) | (Y[1] << 8) | (U[0] << 16) | V[0];
+	    Dst[1] = (Y[2] << 24) | (Y[3] << 8) | (U[1] << 16) | V[1];
+	    Dst[2] = (Y[4] << 24) | (Y[5] << 8) | (U[2] << 16) | V[2];
+	    Dst[3] = (Y[6] << 24) | (Y[7] << 8) | (U[3] << 16) | V[3];
 #endif
 	    Dst += 4;  Y += 8;  V += 4;  U += 4;
 	    i -= 4;
@@ -1993,7 +1993,7 @@ xf86XVCopyYUV12ToPacked(
 	    Dst[0] = Y[0] | (Y[1] << 16) | (U[0] << 8) | (V[0] << 24);
 #else
 	    /* This assumes a little-endian framebuffer */
-	    Dst[0] = (Y[0] << 24) | (Y[1] << 8) | (U[0] << 16) | Y[0];
+	    Dst[0] = (Y[0] << 24) | (Y[1] << 8) | (U[0] << 16) | V[0];
 #endif
 	    Dst++;  Y += 2;  V++;  U++;
 	}

@@ -5,7 +5,7 @@ XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.128 2003/11/15 03:25:17 dawes Exp $
+XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.129 2004/02/16 18:14:33 dawes Exp $
 
 /*
  *		   MACHINE-INDEPENDENT RULES; DO NOT MODIFY
@@ -1151,11 +1151,15 @@ ServerTargetWithFlags(server,subdirs,objects,libs,syslibs,$(_NOOP_))
 #define LibraryTargetNameSuffix(libname,suffix)Concat3(lib,libname,suffix.a)
 #endif
 
+#ifndef InstallNamedInline
+#define InstallNamedInline(srcname,flags,dest,dstname) $(INSTALL) $(INSTALLFLAGS) flags srcname $(DESTDIR)dest/dstname
+#endif
+
 #ifndef InstallNamedTarget
 #define InstallNamedTarget(step,srcname,flags,dest,dstname)		@@\
 step:: srcname								@@\
 	MakeDir($(DESTDIR)dest)						@@\
-	$(INSTALL) $(INSTALLFLAGS) flags srcname $(DESTDIR)dest/dstname
+	InstallNamedInline(srcname,flags,dest,dstname)
 #endif /* InstallNamedTarget */
 
 /*
@@ -1178,6 +1182,10 @@ step:: srcname								@@\
 #define InstallTarget(step,file,flags,dest)				@@\
 InstallNamedTarget(step,file,flags,dest,file)
 #endif /* InstallTarget */
+
+#ifndef InstallInline
+#define InstallInline(file,flags,dest) InstallNamedInline(file,flags,dest,file)
+#endif
 
 /*
  * InstallLibrary - generate rules to install the indicated library.

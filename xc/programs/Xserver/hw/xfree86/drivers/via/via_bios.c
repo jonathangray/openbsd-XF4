@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_bios.c,v 1.10 2004/02/09 01:45:22 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_bios.c,v 1.11 2004/02/20 21:50:06 dawes Exp $ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -1325,6 +1325,24 @@ unsigned char VIAGetDeviceDetect(VIABIOSInfoPtr pBIOSInfo)
         }
     }
 
+    if ((pBIOSInfo->Chipset == VIA_KM400) && !(tmp & VIA_DEVICE_LCD)) {
+	/* there currently is no infrastructure to check if another device
+	   is already using this i2cbus, this will be solved later when
+	   the whole i2c output detection is reworked.
+	   VT1622 TV encoder does not reply to DDC/EDID. */
+
+	/* if there is a hardwired panel attached then the second i2cbus 
+	   will respond to DDC/EDID address probe (at least on I2CScans 
+	   i have seen from acer aspires) */
+
+	if (xf86I2CProbeAddress(pBIOSInfo->I2C_Port2, 0xA0) || 
+	    xf86I2CProbeAddress(pBIOSInfo->I2C_Port2, 0xA2)) {
+	    tmp |= VIA_DEVICE_LCD;
+	    DEBUG(xf86DrvMsg(pBIOSInfo->scrnIndex, X_PROBED, "DDC/EDID response on I2C_Port2 on km400/kn400: assume hardwired panel.\n"));
+	}
+    }
+
+    DEBUG(xf86DrvMsg(pBIOSInfo->scrnIndex, X_PROBED, "Returning %d.\n", tmp));
     return tmp;
 }
 

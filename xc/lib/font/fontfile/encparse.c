@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/fontfile/encparse.c,v 1.20 2004/02/11 21:11:19 dawes Exp $ */
+/* $XFree86: xc/lib/font/fontfile/encparse.c,v 1.21 2004/02/20 21:35:13 tsi Exp $ */
 
 /* Parser for encoding files */
 
@@ -854,8 +854,8 @@ FontEncReallyReallyLoad(const char *charset,
 
     encoding = NULL;
     if (!format[0]) {
-	sprintf(format, "%%%ds %%%d[^\n]\n", sizeof(encoding_name) - 1,
-		sizeof(file_name) - 1);
+	sprintf(format, "%%%ds %%%d[^\n]\n", (int)sizeof(encoding_name) - 1,
+		(int)sizeof(file_name) - 1);
     }
     for(;;) {
         count = fscanf(file, format, encoding_name, file_name);

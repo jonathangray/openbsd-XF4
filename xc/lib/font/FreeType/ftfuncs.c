@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.43 2004/02/07 04:37:18 dawes Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.44 2004/02/24 01:13:04 dawes Exp $ */
 
 #include "fontmisc.h"
 
@@ -1327,7 +1327,7 @@ FreeTypeUnloadXFont(FontPtr pFont)
 
 static int
 FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info, 
-                      char *fontname, int rawAverageWidth)
+                      char *fontname, int rawAverageWidth, Bool font_properties)
 {
     int i, j, maxprops;
     char *sp, *ep, val[MAXFONTNAMELEN], *vp;
@@ -1376,9 +1376,11 @@ FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info,
     maxprops=
         1 +                     /* NAME */
         (xlfdProps ? 14 : 0) +  /* from XLFD */
-        8 +
-        (os2 ? 6 : 0) +
-        (post || t1info? 3 : 0) +
+        5 +
+        ( !face->bitmap ? 3 : 0 ) +	/* raw_av,raw_asc,raw_dec */
+        ( font_properties ? 2 : 0 ) +	/* asc,dec */
+        ( (font_properties && os2) ? 6 : 0 ) +
+        ( (font_properties && (post || t1info)) ? 3 : 0 ) +
         2;                      /* type */
     
     info->props = (FontPropPtr)xalloc(maxprops * sizeof(FontPropRec));
@@ -1444,29 +1446,41 @@ FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info,
         }
     }
 
+    info->props[i].name = MakeAtom("RAW_PIXEL_SIZE", 14, TRUE);
+    info->props[i].value = 1000;
+    i++;
+
+    info->props[i].name = MakeAtom("RAW_POINT_SIZE", 14, TRUE);
+    info->props[i].value = (long)(72270.0 / (double)vals->y + .5);
+    i++;
+
     if(!face->bitmap) {
         info->props[i].name = MakeAtom("RAW_AVERAGE_WIDTH", 17, TRUE);
         info->props[i].value = rawAverageWidth;
         i++;
     }
 
-    info->props[i].name = MakeAtom("FONT_ASCENT", 11, TRUE);
-    info->props[i].value = info->fontAscent;
-    i++;
+    if ( font_properties ) {
+	info->props[i].name = MakeAtom("FONT_ASCENT", 11, TRUE);
+	info->props[i].value = info->fontAscent;
+	i++;
+    }
 
     if(!face->bitmap) {
-        info->props[i].name = MakeAtom("RAW_ASCENT", 15, TRUE);
+        info->props[i].name = MakeAtom("RAW_ASCENT", 10, TRUE);
         info->props[i].value = 
             ((double)face->face->ascender/(double)upm*1000.0);
         i++;
     }
 
-    info->props[i].name = MakeAtom("FONT_DESCENT", 12, TRUE);
-    info->props[i].value = info->fontDescent;
-    i++;
+    if ( font_properties ) {
+	info->props[i].name = MakeAtom("FONT_DESCENT", 12, TRUE);
+	info->props[i].value = info->fontDescent;
+	i++;
+    }
 
     if(!face->bitmap) {
-        info->props[i].name = MakeAtom("RAW_DESCENT", 16, TRUE);
+        info->props[i].name = MakeAtom("RAW_DESCENT", 11, TRUE);
         info->props[i].value = 
             -((double)face->face->descender/(double)upm*1000.0);
         i++;
@@ -1541,7 +1555,7 @@ FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info,
   /* In what follows, we assume the matrix is diagonal.  In the rare
      case when it is not, the values will be somewhat wrong. */
   
-    if(os2) {
+    if( font_properties && os2 ) {
         info->props[i].name = MakeAtom("SUBSCRIPT_SIZE",14,TRUE);
         info->props[i].value = 
             TRANSFORM_FUNITS_Y(os2->ySubscriptYSize);
@@ -1568,7 +1582,7 @@ FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info,
         i++;
     }
 
-    if(post || t1info) {
+    if( font_properties && (post || t1info) ) {
         int underlinePosition, underlineThickness;
 
 	/* Raw underlineposition counts upwards, 
@@ -1909,8 +1923,8 @@ restrict_code_range_by_str(int count,unsigned short *refFirstCol,
 static int 
 FreeTypeSetUpTTCap( char *fileName, FontScalablePtr vals,
 		    char **dynStrRealFileName, char **dynStrFTFileName,
-		    struct TTCapInfo *ret, int *face_number,
-		    FT_Int32 *load_flags, int *spacing, char **dynStrTTCapCodeRange )
+		    struct TTCapInfo *ret, int *face_number, FT_Int32 *load_flags,
+		    int *spacing, Bool *font_properties, char **dynStrTTCapCodeRange )
 {
     int result = Successful;
     SDynPropRecValList listPropRecVal;
@@ -1920,6 +1934,7 @@ FreeTypeSetUpTTCap( char *fileName, FontScalablePtr vals,
     Bool alwaysEmbeddedBitmap = False;
     int pixel = vals->pixel;
 
+    *font_properties=True;
     *dynStrRealFileName=NULL;
     *dynStrFTFileName=NULL;
     *dynStrTTCapCodeRange=NULL;
@@ -2404,6 +2419,13 @@ FreeTypeSetUpTTCap( char *fileName, FontScalablePtr vals,
         }
     }
 
+    if (SPropRecValList_search_record(&listPropRecVal,
+                                      &contRecValue,
+                                      "FontProperties")) {
+        /* Set or Reset the Flag of FontProperties */
+        *font_properties=SPropContainer_value_bool(contRecValue);
+    }
+
     ret->force_c_scale_b_box_width *= ret->scaleBBoxWidth;
     ret->force_c_scale_b_box_height *= ret->scaleBBoxHeight;
 
@@ -2870,7 +2892,7 @@ FreeTypeLoadXFont(char *fileName,
     long rawWidth = 0, rawAverageWidth = 0;
     int upm, minLsb, maxRsb, ascent, descent, width, averageWidth;
     double scale, base_width, base_height;
-    Bool orig_is_matrix_unit;
+    Bool orig_is_matrix_unit, font_properties;
     int face_number, ttcap_spacing;
     struct TTCapInfo tmp_ttcap;
     struct TTCapInfo *ins_ttcap;
@@ -2890,7 +2912,7 @@ FreeTypeLoadXFont(char *fileName,
 			     &dynStrRealFileName, &dynStrFTFileName,
 			     &tmp_ttcap, &face_number, 
 			     &load_flags, &ttcap_spacing,
-			     &dynStrTTCapCodeRange);
+			     &font_properties, &dynStrTTCapCodeRange);
     if ( xrc != Successful ) {
 	goto quit;
     }
@@ -3319,8 +3341,12 @@ FreeTypeLoadXFont(char *fileName,
     /* set info */
 
     if( info ){
+	/*
 	info->fontAscent = ascent;
 	info->fontDescent = descent;
+	*/
+	info->fontAscent = info->maxbounds.ascent;
+	info->fontDescent = info->maxbounds.descent;
 	/* Glyph metrics are accurate */
 	info->inkMetrics=1;
 	    
@@ -3349,7 +3375,7 @@ FreeTypeLoadXFont(char *fileName,
   
     if(info) {
         xrc = FreeTypeAddProperties(font, vals, info, entry->name.name, 
-                                    rawAverageWidth);
+                                    rawAverageWidth, font_properties);
         if (xrc != Successful) {
             goto quit;
         }

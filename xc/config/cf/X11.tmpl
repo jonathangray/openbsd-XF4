@@ -5,7 +5,7 @@ XCOMM
 XCOMM
 XCOMM
 XCOMM
-XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.247 2004/02/10 10:38:56 alanh Exp $
+XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.249 2004/02/16 18:14:33 dawes Exp $
 
 /***************************************************************************
  *                                                                         *
@@ -3739,8 +3739,13 @@ clean::									@@\
 # if !CrossCompiling ||  UseInstalledOnCrossCompile
 #  define InstallFontsDir(dest)						@@\
 install::								@@\
-	RemoveFile($(DESTDIR)dest/fonts.scale)				@@\
-	RunProgram(MKFONTSCALE, $(DESTDIR)dest)				@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	@if [ X$(STATIC_FONTS_SCALE) = X ]; then (set -x; \		@@\
+	  RemoveFile($(DESTDIR)dest/fonts.scale); \			@@\
+	  RunProgram(MKFONTSCALE, $(DESTDIR)dest)); \			@@\
+	else (set -x; \							@@\
+	  InstallInline(fonts.scale,$(INSTDATFLAGS),dest)); \		@@\
+	fi								@@\
 	RemoveFile($(DESTDIR)dest/fonts.dir)				@@\
 	RunProgram(MKFONTDIR, $(MKFONTDIROPTS) $(DESTDIR)dest)
 # else
