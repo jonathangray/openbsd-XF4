@@ -932,7 +932,7 @@
 ./usr/X11R6/lib/libXxf86dga.a
 ./usr/X11R6/lib/libdps.so.1.0
 ./usr/X11R6/lib/libdpstk.so.1.0
-./usr/X11R6/lib/libfreetype.so.6.0
+./usr/X11R6/lib/libfreetype.so.8.0
 ./usr/X11R6/lib/liboldX.so.6.0
 ./usr/X11R6/lib/libpsres.so.1.0
 ./usr/X11R6/man/cat1/dga.0
