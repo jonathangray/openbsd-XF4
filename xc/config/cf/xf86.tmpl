@@ -49,7 +49,7 @@ BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
 #define HasGccStackProtector	NO
 #endif
 
-#if HasGccStackProtector
+#if HasGccStackProtector && DoLoadableServer
 MODULE_GCC_FLAGS1 = -fno-stack-protector
 #endif 
 
