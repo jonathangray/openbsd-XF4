@@ -465,7 +465,7 @@ extern int errno;
 #       undef CONSOLE_X_MODE_OFF
 #       undef CONSOLE_X_BELL
 #     endif
-#     ifdef WSCONS_SUPPORT
+#     if defined(WSCONS_SUPPORT) && !defined(PCVT_SUPPORT)
 #       include <dev/wscons/wsdisplay_usl_io.h>
 #     endif
 #   endif
@@ -480,10 +480,10 @@ extern int errno;
 #   if defined(PCVT_SUPPORT)
 #    if !defined(SYSCONS_SUPPORT)
       /* no syscons, so include pcvt specific header file */
-#     if defined(__FreeBSD__) || defined(__OpenBSD__)
+#     if defined(__FreeBSD__)
 #      include <machine/pcvt_ioctl.h>
 #     else
-#      if defined(__NetBSD__)
+#      if defined(__NetBSD__) || defined(__OpenBSD__)
 #       if defined(WSCONS_SUPPORT)
          /* NetBSD's wscons has a PCVT-compatibility module. */
 #        include <dev/wscons/wsdisplay_usl_io.h>

@@ -147,7 +147,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  define LdPostLib		/**/
 #  define ServerExtraDefines GccGasOption XFree86ServerDefines
 #  ifndef XFree86ConsoleDefines
-#    define XFree86ConsoleDefines -DWSCONS_SUPPORT
+#    define XFree86ConsoleDefines -DWSCONS_SUPPORT -DPCVT_SUPPORT
 #  endif
 #endif
 
