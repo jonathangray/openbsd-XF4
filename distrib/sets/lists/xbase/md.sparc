@@ -273,6 +273,8 @@
 ./usr/X11R6/bin/showrgb
 ./usr/X11R6/bin/xftcache
 ./usr/X11R6/bin/xrandr
+./usr/X11R6/bin/xsetmode
+./usr/X11R6/bin/xsetpointer
 ./usr/X11R6/bin/xtrapchar
 ./usr/X11R6/bin/xtrapin
 ./usr/X11R6/bin/xtrapinfo
@@ -366,4 +368,6 @@
 ./usr/X11R6/man/cat1/kbd_mode.0
 ./usr/X11R6/man/cat1/showrgb.0
 ./usr/X11R6/man/cat1/xftcache.0
+./usr/X11R6/man/cat1/xsetmode.0
+./usr/X11R6/man/cat1/xsetpointer.0
 ./usr/X11R6/man/cat3/Xft.0
