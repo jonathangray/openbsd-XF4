@@ -1,11 +1,22 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.8 2001/04/03 19:59:58 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.9 2001/04/04 05:41:57 todd Exp $
 #
-# build and install X11, create release tarfiles
+# The purpose of this file is to build and install X11,
+# and create release tarfiles.
 #
-# You need to have set DESTDIR and RELEASEDIR in order to properly
-# create a release
-# 
+# To build a release, you can take two paths:
+#   1. # mkdir -p dest rel && make b-r
+#       .. you will see sparse output, this has been designed for low remote
+#	   network bandwidth consumption
+#   2. # env DESTDIR=/some/dest/dir RELEASEDIR=/some/release/dir
+#      # mkdir -p ${DESTDIR} ${RELEASEDIR} && make build && make release
+#
+#  Option 2 is provided for similar functionality to /usr/src/Makefile and
+#  /usr/src/etc/Makefile.  Option 1 is how the official X releases are built.
+#  It uses the 'build' and 'release' targets, so there is no inconsistency
+#  between the two.
+#
+
 XHP?=${.CURDIR}/XhpBSD
 .if ${MACHINE} == i386
 XMACH= ix86
@@ -14,9 +25,10 @@ XMACH= hppa
 .else
 XMACH= ${MACHINE}
 .endif
-HOSTDEF=xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
+BINDIST=programs/Xserver/hw/xfree86/etc/bindist
+HOSTDEF=xc/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
-HOSTDEFo=xc-old/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
+HOSTDEFo=xc-old/${BINDIST}/OpenBSD-${XMACH}/host.def
 CONFHOSTDEFo=xc-old/config/cf/host.def
 
 .if ${MACHINE} == i386 || ${MACHINE} == amiga || ${MACHINE} == alpha \
@@ -59,7 +71,9 @@ build: compile install fix-appd
 release-rel:
 	${MAKE} RELEASEDIR=`pwd`/rel DESTDIR=`pwd`/dest release
 
-release:
+release: release-clean release-mkdir release-install fix-appd dist
+
+release-clean:
 .if ! ( defined(DESTDIR) && defined(RELEASEDIR) )
 	@echo You must set DESTDIR and RELEASEDIR for a release.; exit 255
 .endif
@@ -77,11 +91,15 @@ release:
 		echo "Cleanup before proceeding."; \
 		exit 255; \
 	fi
+
+release-mkdir:
 	@${MKDIR} -p ${DESTDIR}/usr/X11R6
 	@${MKDIR} -p ${DESTDIR}/var/X11
 	@${MKDIR} -p ${DESTDIR}/etc/X11
 	@${MKDIR} -p ${DESTDIR}/usr/local/lib/X11
 	@${MAKE} perms
+
+release-install:
 	@${MAKE} install
 .if defined(MACHINE) && ${MACHINE} == hp300
 	@${CP} ${XHP} ${DESTDIR}/usr/X11R6/bin
@@ -90,7 +108,6 @@ release:
 	@${ECHO} /dev/grf0 > ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 	@${MAKE} fix-appd
-	@${MAKE} dist
 
 perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/.
