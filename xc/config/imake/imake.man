@@ -224,7 +224,7 @@ Imakefile.c	temporary input file for cpp
 .br
 /tmp/IIf.XXXXXX	temporary Imakefile if specified Imakefile uses # comments
 .br
-/lib/cpp	default C preprocessor
+__cpp__	default C preprocessor
 .DT
 .SH "SEE ALSO"
 make(1), xmkmf(1)
@@ -246,7 +246,7 @@ If defined, this should be a valid path to a preprocessor program.
 E.g., ``/usr/local/cpp''.
 By default,
 .I imake
-will use /lib/cpp.
+will use cc -E or __cpp__, depending on the OS specific configuration.
 .TP 5
 .B IMAKEMAKE
 If defined, this should be a valid path to a make program,

@@ -18,6 +18,7 @@ CPP_DEFINES = -DCPP_PROGRAM="\"$(CPP_PROGRAM)\""
 GCC_COMMAND = $(CC) -fmerge-constants -xc /dev/null -S -o /dev/null 2> /dev/null 1> /dev/null
 GCC_DEFINES = -DHAS_MERGE_CONSTANTS=`if $(GCC_COMMAND); then echo 1; else echo 0; fi`
 DEFINES = $(SIGNAL_DEFINES) $(BOOTSTRAPCFLAGS) $(CPP_DEFINES) $(GCC_DEFINES)
+EXTRAMANDEFS = -D__cpp__=CppCmd
 
 #if defined(MacIIArchitecture) || defined(SequentArchitecture) || defined(i386ScoArchitecture)
 XBSDLIB = /**/
