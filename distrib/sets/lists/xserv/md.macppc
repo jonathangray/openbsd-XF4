@@ -79,6 +79,7 @@
 ./usr/X11R6/lib/modules/input/mutouch_drv.o
 ./usr/X11R6/lib/modules/input/spaceorb_drv.o
 ./usr/X11R6/lib/modules/input/summa_drv.o
+./usr/X11R6/lib/modules/input/usbtablet_drv.o
 ./usr/X11R6/lib/modules/input/void_drv.o
 ./usr/X11R6/lib/modules/input/wacom_drv.o
 ./usr/X11R6/lib/modules/libafb.a
@@ -127,6 +128,7 @@
 ./usr/X11R6/man/cat4/sis.0
 ./usr/X11R6/man/cat4/tdfx.0
 ./usr/X11R6/man/cat4/trident.0
+./usr/X11R6/man/cat4/usbtablet.0
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
