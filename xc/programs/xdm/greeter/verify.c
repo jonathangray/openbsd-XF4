@@ -222,7 +222,7 @@ Verify (struct display *d, struct greet_info *greet, struct verify_info *verify)
 
 	/* Build path of the auth script and call it */
 	snprintf(path, sizeof(path), _PATH_AUTHPROG "%s", style);
-	auth_call(as, path, style, "-s", "response", greet->name, NULL);
+	auth_call(as, path, style, "-s", "response", greet->name, (char *)NULL);
 	authok = auth_getstate(as);
 
 	if ((authok & AUTH_ALLOW) == 0) {
