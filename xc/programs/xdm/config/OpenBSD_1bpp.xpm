@@ -1,4 +1,5 @@
 /* XPM */
+/* $OpenBSD: OpenBSD_1bpp.xpm,v 1.6 2002/10/21 19:46:48 todd Exp $ */
 static char * OpenBSD_1bpp_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "240 175 2 1",
