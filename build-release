@@ -4,6 +4,16 @@
 [ "${RELEASEDIR}" ] || RELEASEDIR=$(pwd)/rel
 export DESTDIR RELEASEDIR
 
+[ -d ${DESTDIR} ] || {
+	echo "${DESTDIR} does not exist"
+	exit 1
+}
+
+[ -d ${RELEASEDIR} ] || {
+	echo "${RELEASEDIR} does not exist"
+	exit 1
+}
+
 log=`/bin/pwd`/snap.log
 if [ -f $log ]
 then
@@ -15,7 +25,7 @@ while [	 -f $log.$i ]
 	done
 	log=$log.$i
 fi
-sh -c "(echo \$\$ > ${log}.lock ; make build && make release; rm ${log}.lock) > $log 2>&1 &"
+sh -c "(echo \$\$ > ${log}.lock ; make && make release; rm ${log}.lock) > $log 2>&1 &"
 sleep 10
 while [ -f ${log}.lock ]
 do

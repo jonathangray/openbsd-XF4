@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.2 2001/02/18 16:11:11 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.3 2001/02/19 17:50:16 todd Exp $
 #
 # build and install X11, create release tarfiles
 #
@@ -7,8 +7,13 @@
 # create a release
 # 
 XHP?=${.CURDIR}/XhpBSD
-XMACH!= ([ "${MACHINE}" = "i386" ] && echo "ix86") || \
-	([ "${MACHINE}" = "hp700" ] && echo "hppa") || echo "${MACHINE}"
+.if ${MACHINE} == i386
+XMACH= ix86
+.elif ${MACHINE} == hp700
+XMACH= hppa
+.else
+XMACH= ${MACHINE}
+.endif
 HOSTDEF=xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-${XMACH}/host.def
 CONFHOSTDEF=xc/config/cf/host.def
 
@@ -31,16 +36,14 @@ RM?= /bin/rm
 
 MACHINE?=`uname -m`
 
-# Some defaults.
-RELEASEDIR?=${.CURDIR}/rel
-DESTDIR?=${.CURDIR}/dest
-
 LOCALAPPD=/usr/local/lib/X11/app-defaults
 LOCALAPPX=/usr/local/lib/X11
 REALAPPD=/etc/X11/app-defaults
 
 
-all:
+all:	compile
+
+compile:
 	${RM} -f ${CONFHOSTDEF}
 	${CP} ${HOSTDEF} ${CONFHOSTDEF}
 	cd xc ; ${MAKE} World WORLDOPTS=
@@ -48,10 +51,7 @@ all:
 	cd xc-old ; ${MAKE} World WORLDOPTS=
 .endif
 
-build: all
-	${MAKE} install
-# kludge, since Todd abuses DESTDIR
-	${MAKE} fix-appd DESTDIR=`echo $$DESTDIR`
+build: compile install fix-appd
 
 release:
 .if ! ( defined(DESTDIR) && defined(RELEASEDIR) )
@@ -73,7 +73,7 @@ release:
 	@${MKDIR} -p ${DESTDIR}/usr/X11R6
 	@${MKDIR} -p ${DESTDIR}/var/X11
 	@${MKDIR} -p ${DESTDIR}/usr/local/lib/X11
-	${MAKE} perms
+	@${MAKE} perms
 	@${MAKE} install
 .if defined(MACHINE) && ${MACHINE} == hp300
 	@${CP} ${XHP} ${DESTDIR}/usr/X11R6/bin
@@ -87,13 +87,10 @@ release:
 perms:
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/.
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr
-	ls -ld ${DESTDIR}/. ${DESTDIR}/usr
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/usr/X11R6
-	ls -al ${DESTDIR}/usr/X11R6/
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var
-	ls -ld ${DESTDIR}/var
 	@${CHOWN} ${BINOWN}.${BINGRP} ${DESTDIR}/var/X11
-	ls -al ${DESTDIR}/var/X11
+	@find ${DESTDIR}/usr/X11R6 ${DESTDIR}/var/X11 \! -user root
 
 dist:
 	${MAKE} perms
