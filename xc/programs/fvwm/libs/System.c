@@ -35,10 +35,10 @@ int getostype(char *buf, int max)
     struct utsname sysname;
 
     if ( uname( &sysname ) >= 0 ) {
-	strncpy( buf, sysname.sysname, max );
+	strlcpy( buf, sysname.sysname, max);
 	return 0;
     }
 #endif
-    strcpy (buf,"");
+    strlcpy (buf,"",max);
     return -1;
 }

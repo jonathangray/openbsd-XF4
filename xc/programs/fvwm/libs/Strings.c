@@ -33,11 +33,11 @@ char *CatString3(char *a, char *b, char *c)
   if(a == NULL)
     CatS[0] = 0;
   else
-    strcpy(CatS, a);
+    strlcpy(CatS, a, sizeof(CatS));
   if(b != NULL)
-    strcat(CatS, b);
+    strlcat(CatS, b, sizeof(CatS));
   if(c != NULL)
-    strcat(CatS, c);
+    strlcat(CatS, c, sizeof(CatS));
   return CatS;
 }
 

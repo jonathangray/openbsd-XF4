@@ -45,9 +45,9 @@ gethostname (name, len)
       name[sizeof (uts.nodename)] = '\0';
       len = sizeof (uts.nodename);
     }
-  strncpy (name, uts.nodename, len);
+  strlcpy (name, uts.nodename, len);
 #else
-  strcpy (name, "");		/* Hardcode your system name if you want.  */
+  strlcpy (name, "", len);	/* Hardcode your system name if you want.  */
 #endif
   return 0;
 }

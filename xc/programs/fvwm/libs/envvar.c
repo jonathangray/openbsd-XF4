@@ -311,7 +311,7 @@ char *envDupExpand(const char *s, int extra)
     /*
      *  now do the real expansion.
      */
-    strcpy(ret, s);
+    strlcpy(ret, s,bufflen);
     envExpand(ret, bufflen - extra);
 
     return ret;

@@ -186,6 +186,7 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
   char *value;
   char *myvalue;
   char *resource;
+  size_t reslen;
 
   /* translate "*(prefix)(suffix)" to "(prefix)(binding)(suffix)",
    * e.g. "*FvwmPagerGeometry" to "FvwmPager.Geometry" */
@@ -208,14 +209,15 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
     value++;
 
   /* prefix*suffix: value */
-  resource = (char *)safemalloc(len + (end - line) + 2);
-  strcpy(resource, prefix);
-  strcat(resource, bindstr);
+  reslen = len + (end - line) + 2;
+  resource = (char *)safemalloc(reslen);
+  strlcpy(resource, prefix,reslen);
+  strlcat(resource, bindstr,reslen);
   strncat(resource, line, end - line);
 
   len = strlen(value);
   myvalue = (char *)safemalloc(len + 1);
-  strcpy(myvalue, value);
+  strlcpy(myvalue, value,len+1);
   for (len--; len >= 0 && isspace(myvalue[len]); len--)
     myvalue[len] = 0;
 
@@ -250,11 +252,13 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
   XrmValue xval = { 0, NULL };
   char *str_type;
   char *name;
+  size_t len;
 
-  name = (char *)safemalloc(strlen(resource) + strlen(prefix) + 2);
-  strcpy(name, prefix);
-  strcat(name, ".");
-  strcat(name, resource);
+  len = strlen(resource) + strlen(prefix) + 2;
+  name = (char *)safemalloc(len);
+  strlcpy(name, prefix,len);
+  strlcat(name, ".",len);
+  strlcat(name, resource,len);
 
   if (!XrmGetResource(db, name, name, &str_type, &xval) || xval.addr == NULL)
     {

@@ -11,7 +11,7 @@
   Some of the logic comes from pixy2, so the copyright is below.
   */
 /*
- * $Id: Picture.c,v 1.4 2004/01/29 22:13:15 matthieu Exp $
+ * $Id: Picture.c,v 1.5 2004/06/25 00:39:55 matthieu Exp $
  * Copyright 1996, Romano Giannetti. No guarantees or warantees or anything
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
@@ -230,19 +230,20 @@ char *findIconFile(char *icon, char *pathlist, int type)
   char *path;
   char *dir_end;
   int l;
+  size_t pathlen;
 
   if (!icon)
     return NULL;
 
   l = (pathlist) ? strlen(pathlist) : 0;
-
-  path = safemalloc(strlen(icon) + l + 10);
+  pathlen = strlen(icon) + l + 10;
+  path = safemalloc(pathlen);
   *path = '\0';
   if (*icon == '/' || pathlist == NULL || *pathlist == '\0')
     {
       /* No search if icon begins with a slash */
       /* No search if pathlist is empty */
-      strcpy(path, icon);
+	    strlcpy(path, icon, pathlen);
       return path;
     }
 
@@ -256,13 +257,13 @@ char *findIconFile(char *icon, char *pathlist, int type)
 	  path[dir_end - pathlist] = 0;
 	}
       else
-	strcpy(path, pathlist);
+	  strlcpy(path, pathlist, pathlen);
 
-      strcat(path, "/");
-      strcat(path, icon);
+      strlcat(path, "/", pathlen);
+      strlcat(path, icon, pathlen);
       if (access(path, type) == 0)
 	return path;
-      strcat(path, ".gz");
+      strlcat(path, ".gz", pathlen);
       if (access(path, type) == 0)
 	return path;
 
@@ -427,6 +428,7 @@ void c200_substitute_color(char **my_color, int color_limit) {
   double mindst=1e20;
   double dst;
   XColor rgb;          /* place to calc rgb for each color in xpm */
+  size_t len;
 
   if (!strcasecmp(*my_color,"none")) {
     return ;                        /* do not substitute the "none" color */
@@ -452,8 +454,9 @@ void c200_substitute_color(char **my_color, int color_limit) {
   }                                   /* end all base colors */
   /* Finally: replace the color string by the newly determined color string */
   free(*my_color);                      /* free old color */
-  *my_color = safemalloc(strlen(base_array[minind].c_color) + 1); /* area for new color */
-  strcpy(*my_color,base_array[minind].c_color); /* put it there */
+  len = strlen(base_array[minind].c_color) + 1;
+  *my_color = safemalloc(len); /* area for new color */
+  strlcpy(*my_color,base_array[minind].c_color,len); /* put it there */
   return;                             /* all done */
  }
 
