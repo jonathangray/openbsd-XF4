@@ -515,12 +515,13 @@ install:: fonts.alias							@@\
  */
 #ifdef Mvme68kArchitecture
 
-# include <xf86.rules>
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
 
 # define ServerExtraDefines	-DXFree86Server
+
+# include <xfree86.cf>
 
 #endif /* Mvme68kArchitecture */
 
