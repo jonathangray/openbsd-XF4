@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.7 2002/05/18 20:58:47 drahn Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.8 2002/05/19 12:12:32 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -861,7 +861,8 @@ WsfbSave(ScrnInfoPtr pScrn)
 	fPtr->saved_cmap.blue = fPtr->saved_blue;
 	if (ioctl(fPtr->fd, WSDISPLAYIO_GETCMAP, 
 		  &(fPtr->saved_cmap)) == -1) {
-		ErrorF("error saving colormap\n");
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
+			   "error saving colormap %s\n", strerror(errno));
 	}
 	
 }
@@ -882,7 +883,8 @@ WsfbRestore(ScrnInfoPtr pScrn)
 	fPtr->saved_cmap.blue = fPtr->saved_blue;
 	if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP, 
 		  &(fPtr->saved_cmap)) == -1) {
-		ErrorF("error restoring colormap\n");
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
+			   "error restoring colormap %s\n", strerror(errno));
 	}
 
 	/* Clear the screen */
@@ -891,7 +893,8 @@ WsfbRestore(ScrnInfoPtr pScrn)
 	/* Restore the text mode */ 
 	mode = WSDISPLAYIO_MODE_EMUL;
 	if (ioctl(fPtr->fd, WSDISPLAYIO_SMODE, &mode) == -1) {
-		ErrorF("error setting text mode\n");
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
+			   "error setting text mode %s\n", strerror(errno));
 	}
 }
 
