@@ -1,4 +1,4 @@
-// $OpenBSD: zaurus,v 1.3 2005/01/27 07:03:38 matthieu Exp $
+// $OpenBSD: zaurus,v 1.4 2005/01/30 00:15:42 matthieu Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "basic" {
@@ -54,7 +54,7 @@ xkb_symbols "basic" {
 	
 	key <RALT> { [ Mode_switch ] };
 	key <LCTL> { [ Control_L ] };
-	key <AE11> { [ minus, at ] };
+	key <AE11> { [ minus, minus, at ] };
 	key <SPCE> { [ space ] };
 	key <AB08> { [ comma, slash, less ] };
 	key <AB09> { [ period, question, greater ] };
