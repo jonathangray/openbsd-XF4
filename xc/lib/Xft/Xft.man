@@ -29,7 +29,7 @@
 .TH XFT 3 "Version 1.0" "XFree86"
 
 .SH NAME
- XFT \- X FreeType interface library
+ Xft \- X FreeType interface library
 
 .SH DESCRIPTION
 .B Xft
