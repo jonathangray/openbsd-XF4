@@ -1,7 +1,8 @@
 /*
- * Host.def for building OpenBSD/sparc bindists
+ * Host.def for building OpenBSD/sparc64 bindists
  *
  * $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/OpenBSD-sparc/host.def,v 1.2.4.1 2001/05/31 22:20:34 dawes Exp $
+ * $OpenBSD: host.def,v 1.2 2001/10/06 16:43:44 matthieu Exp $
  */
 
 #define InstallEmptyHostDef
