@@ -269,12 +269,10 @@ XPFBLIBS = dix/LibraryTargetName(xpstubs)
            FONT = $(LDPRELIB) $(XFONTLIB)
 #endif
        FONTLIBS = $(FONT) $(XPFBLIBS)
-#if UsbMouseSupport 
 #if !HasLibUsb
             USB = $(XF86OSSRC)/bsd/libusb/LibraryTargetName(usb)
 #else
             USB = UsbHidLib
-#endif
 #endif
 #ifdef ServerExtraSysLibs
    EXTRASYSLIBS = ServerExtraSysLibs
