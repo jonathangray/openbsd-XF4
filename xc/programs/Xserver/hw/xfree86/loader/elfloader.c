@@ -23,6 +23,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include <stdlib.h>
 #ifdef __QNX__
@@ -879,6 +880,8 @@ int		maxalign;
 	    ErrorF( "ELFCreateGOT() Unable to reallocate memory!!!!\n" );
 	    return FALSE;
 	}
+	mprotect(elffile->base, elffile->basesize, PROT_READ|PROT_WRITE|PROT_EXEC);
+	
 	elffile->baseptr = ((long)elffile->base + (maxalign - 1)) & ~(maxalign - 1);
 	elffile->got = (unsigned char *)((long)(elffile->base + elffile->basesize - elffile->gotsize) & ~7);
     } else {
@@ -2903,6 +2906,7 @@ LOOKUP **ppLookup;
 	ErrorF( "Unable to allocate ELF sections\n" );
 	return NULL;
     }
+    mprotect(elffile->base, elffile->basesize, PROT_READ|PROT_WRITE|PROT_EXEC);
     elffile->baseptr = ((long)elffile->base + (maxalign - 1)) & ~(maxalign - 1);
 #endif
 
