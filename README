@@ -51,9 +51,13 @@ XF4/xc.
 The Makefile in XF4 is added by OpenBSD to provide a set of high-level
 targets compatibles with the rest of the OpenBSD build environment. 
 
-all, compile: cleans the tree and restart a full compilation
+all, compile: cleans the tree and restart a full compilation. Can be run 
+	as a non root user. 
 install: installs programs and manual pages to ${DESTDIR}. DESTDIR
-         defaults to /
+         defaults to /. Needs to be run as root. 
+build:	 execute 'make compile and make install in sequence'. This 
+	 target knows about the SUDO variable in /etc/mk.conf. So it 
+	 can be run as a non root user if SUDO is set. 
 release: installs programs and manual pages to ${DESTDIR} and builds a
          set of distribution tar balls in ${RELEASEDIR}. Both DESTDIR
          and RELEASEDIR should be set. Any existing X files will be
@@ -61,11 +65,9 @@ release: installs programs and manual pages to ${DESTDIR} and builds a
 clean:   removes produced object files, but not Makefiles 
 distclean: removes every produced file. 
 
-Note that this Makefile has currently no support for ${SUDO}. You need
-to start make as root for the install and release targets manually. 
 
 If you start from the xc directory, you'll need to use the make
-targets defined by X:
+targets, as defined by X:
 
 World: cleans the tree and starts a full build. This is the only safe
        way to start if the tree was not built before. 
@@ -422,4 +424,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.7 2002/08/05 21:54:24 matthieu Exp $
+$Id: README,v 1.8 2002/09/21 16:44:07 matthieu Exp $
