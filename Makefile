@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.17 2001/11/09 15:51:09 todd Exp $
+#	$OpenBSD: Makefile,v 1.18 2001/11/09 15:55:31 espie Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -64,15 +64,16 @@ all:	compile
 
 compile:
 .if (${NEED_XC_MIT:L} == "yes")
-	cd xc-mit ; ${MAKE} -f Makefile.ini World BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000"
+	cd xc-mit && exec ${MAKE} -f Makefile.ini World BOOTSTRAPCFLAGS="-Dhp300 -Dhp9000"
 .endif
 	${RM} -f ${CONFHOSTDEF}
 	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
-	cd xc ; ${MAKE} World WORLDOPTS=
+	cd xc && exec ${MAKE} World WORLDOPTS=
 .if (${NEED_XC_OLD:L} == "yes")
 	${INSTALL} ${HOSTDEFo} ${CONFHOSTDEFo}
-	cd xc-old ; ${MAKE} World WORLDOPTS=
+	cd xc-old && exec ${MAKE} World WORLDOPTS=
 .endif
+	cd extras && ${MAKE} obj && ${MAKE} depend && exec ${MAKE}
 
 build: compile install fix-appd
 
@@ -135,7 +136,7 @@ dist:
 	cd distrib/sets && env MACHINE=${MACHINE} csh ./maketars ${OSrev} && \
 		env MACHINE=${MACHINE} csh ./checkflist
 
-install: install-xc install-xc-old install-distrib
+install: install-xc install-xc-old install-extra install-distrib
 	/usr/libexec/makewhatis ${DESTDIR}/usr/X11R6/man
 
 install-xc:
@@ -145,6 +146,9 @@ install-xc:
 	chown root.wheel ${DESTDIR}/usr/X11R6/lib/X11/X0screens
 .endif
 	cd xc/programs/rstart; ${MAKE} install && ${MAKE} install.man
+
+install-extra:
+	cd extras && exec ${SUDO} ${MAKE} install
 
 install-xc-old:
 .if (${NEED_XC_OLD:L} == "yes")
@@ -184,6 +188,6 @@ b-r:
 
 .PHONY: all build release dist install install-xc install-xc-old \
     install-distrib clean distclean fix-appd b-r \
-    release-clean release-mkdir release-install
+    release-clean release-mkdir release-install install-extra
 
 .include <bsd.own.mk>
