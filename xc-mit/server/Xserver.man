@@ -39,11 +39,6 @@ The server listens on port 6000+\fIn\fP, where \fIn\fP is the display number.
 .I "Unix Domain"
 The X server uses \fI/tmp/.X11-unix/X\fBn\fR as the filename for 
 the socket, where \fIn\fP is the display number.
-.TP 4
-.I "DECnet"
-.br
-The server responds to connections to object \fIX$X\fBn\fR, where \fIn\fP
-is the display number.  This is not supported in all environments.
 .SH OPTIONS
 All of the X servers accept the following command line options:
 .TP 8
@@ -306,7 +301,7 @@ above), it can be overridden using the \fIxset\fP program.
 .PP
 The default font path for the X server contains four directories:
 .TP 8
-.I /usr/lib/X11/fonts/misc
+.I /usr/X11R6/lib/X11/fonts/misc
 This directory contains many miscellaneous bitmap fonts that are useful on all
 systems.  It contains a family of fixed-width fonts,
 a family of fixed-width fonts from Dale Schumacher,
@@ -320,19 +315,19 @@ from Sun Microsystems.
 It also has various font name aliases for the fonts, including
 \fBfixed\fP and \fBvariable\fP.
 .TP 8
-.I /usr/lib/X11/fonts/Speedo
+.I /usr/X11R6/lib/X11/fonts/Speedo
 This directory contains outline fonts for Bitstream's Speedo rasterizer.
 A single font face, in normal, bold, italic, and bold italic, is provided,
 contributed by Bitstream, Inc.
 .TP 8
-.I /usr/lib/X11/fonts/75dpi
+.I /usr/X11R6/lib/X11/fonts/75dpi
 This directory contains bitmap fonts contributed by Adobe Systems, Inc.,
 Digital Equipment Corporation, Bitstream, Inc.,
 Bigelow and Holmes, and Sun Microsystems, Inc.
 for 75 dots per inch displays.  An integrated selection of sizes, styles, 
 and weights are provided for each family.
 .TP 8
-.I /usr/lib/X11/fonts/100dpi
+.I /usr/X11R6/lib/X11/fonts/100dpi
 This directory contains 100 dots per inch versions of some of the fonts in the 
 \fI75dpi\fP directory.  
 .PP
@@ -344,28 +339,28 @@ run, the server will not be able to find any fonts in the directory.\fR
 .SH DIAGNOSTICS
 Too numerous to list them all.
 If run from \fIinit(8)\fP, errors are typically logged
-in the file \fI/usr/adm/X*msgs\fP,
+in the file \fI/var/log/X*msgs\fP,
 .SH FILES
 .TP 30
 /etc/X*.hosts
 Initial access control list
 .TP 30
-/usr/lib/X11/fonts/misc, /usr/lib/X11/fonts/75dpi, /usr/lib/X11/fonts/100dpi 
+/usr/X11R6/lib/X11/fonts/misc, /usr/X11R6/lib/X11/fonts/75dpi, /usr/X11R6/lib/X11/fonts/100dpi 
 Bitmap font directories
 .TP 30
-/usr/lib/X11/fonts/Speedo
+/usr/X11R6/lib/X11/fonts/Speedo
 Outline font directories
 .TP 30
-/usr/lib/X11/fonts/PEX
-PEX font directories
+/usr/lib/X11/rgb.db
+Color database
 .TP 30
 /usr/lib/X11/rgb.txt
-Color database
+Color database (text version)
 .TP 30
 /tmp/.X11-unix/X*
 Unix domain socket
 .TP 30
-/usr/adm/X*msgs
+/var/log/X*msgs
 Error log file
 .SH "SEE ALSO"
 X(1), bdftopcf(1), mkfontdir(1), fs(1), xauth(1), xdm(1), xhost(1),
