@@ -2,6 +2,26 @@
 		Notes on building XFree86 for OpenBSD X hackers 
 
 
+This document presents some techniques that can be useful for people
+wanting to hack the XF4 tree. It assumes some basic knowledge of the
+OpenBSD build system, as described in the release(8) manual page. 
+
+o Source tree
+  -----------
+
+The XF4 directory has several sub-directories :
+
+- distrib: the data files used by the make release process
+- extras:  some extra X application(s) not included anywhere else
+- xc-mit:  a partial X11R5 source tree, used to build the Xhp server
+           for the hp300 port.
+- xc-old:  a partial XFree86 3.3.6 source tree, used to build the
+           XFree86 3.3.6 servers on i386, and the amiga and mac68k
+           servers.
+- xc:      the XFree86 4.2.0 source tree, augmented with some OpenBSD
+           additions (xlock, fvwm, wm2, kerberos apps, the alpha
+           server, the wsfb module, the usb tablet input driver). 
+
 o Shadow trees
   ------------
 
@@ -401,4 +421,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.3 2002/01/26 21:27:54 matthieu Exp $
+$Id: README,v 1.4 2002/02/04 21:33:19 matthieu Exp $
