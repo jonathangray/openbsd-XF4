@@ -42,7 +42,7 @@ SOFTWARE.
 #endif
 
 #ifndef ADMPATH
-#define ADMPATH "/usr/adm/X%smsgs"
+#define ADMPATH "/var/log/X%smsgs"
 #endif
 
 extern char *display;
