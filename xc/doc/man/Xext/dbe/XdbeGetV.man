@@ -29,7 +29,7 @@
 .\"
 .TH XdbeGetVisualInfo 3X11 __xorgversion__ "X FUNCTIONS"
 .SH NAME
-XdbeGetVisualInfo
+XdbeGetVisualInfo - Get dbe Visual Informations
 .SH SYNOPSIS
 \&#include <X11/extensions/Xdbe.h>
 
