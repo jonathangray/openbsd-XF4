@@ -162,7 +162,7 @@ NVDACSave(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, NVRegPtr nvReg,
 {
     NVPtr pNv = NVPTR(pScrn);
     DEBUG(xf86DrvMsg(pScrn->scrnIndex, X_INFO, "NVDACSave\n"));
-    vgaHWSave(pScrn, vgaReg, VGA_SR_MODE | (saveFonts? VGA_SR_FONTS : 0));
+    vgaHWSave(pScrn, vgaReg, VGA_SR_MODE | VGA_SR_CMAP | (saveFonts? VGA_SR_FONTS : 0));
     pNv->riva.UnloadStateExt(&pNv->riva, nvReg);
 }
 

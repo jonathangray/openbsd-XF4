@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.44.2.5 2001/03/02 20:40:45 herrb Exp $
+XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.54 2001/04/22 16:28:18 herrb Exp $
 XCOMM
 
 #ifndef OSName
@@ -110,6 +110,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #undef CcCmd
 #define CcCmd 			gcc
+#ifndef DefaultCCOptions
 #if defined(UseInstalled)
 #define DefaultCCOptions 	/**/
 #else
@@ -118,6 +119,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  else
 #    define DefaultCCOptions 	-ansi -Dasm=__asm GccWarningOptions
 #  endif
+#endif
 #endif
 
 #define GccGasOption 		-DGCCUSESGAS
@@ -176,7 +178,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define NeqnCmd			neqn -Tlatin1
 #define NroffCmd		nroff -Tlatin1
 #define	EqnCmd 			eqn -Tps
-#define TroffCmd        	groff -Tps
+#define HasGroff		YES
+/* Don't build HTML manual pages */
+#define BuildRman		NO
+#define BuildHtmlManPages	NO
 
 #ifndef HasCookieMaker
 #  define HasCookieMaker	YES
@@ -196,11 +201,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define InstallManPageLongBase(file,destdir,dest)			@@\
 all:: file.0								@@\
 									@@\
-file.0:: file.man							@@\
-	@if [ -f file.man ]; \						@@\
+file.0:: file.$(MANNEWSUFFIX)						@@\
+	@if [ -f file.$(MANNEWSUFFIX) ]; \				@@\
 	then \								@@\
-	cat file.man | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) \	@@\
-		| $(COL) > file.0; \					@@\
+	cat file.$(MANNEWSUFFIX) | $(NEQN) | $(TBL) | \			@@\
+		$(NROFF) $(MANMACROS) | $(COL) > file.0; \		@@\
 	fi 								@@\
 									@@\
 install.man::                                                           @@\
@@ -216,10 +221,14 @@ clean::									@@\
 #define InstallManPageLong(file,destdir,dest)				@@\
 BuildInstallHtmlManPage(file,dest,$(MANSUFFIX))				@@\
 									@@\
+CppManTarget(file, $(EXTRAMANDEFS))					@@\
+									@@\
 InstallManPageLongBase(file,destdir,dest)
 
 #define InstallGenManPageLong(file,destdir,dest,suffix)			@@\
 BuildInstallHtmlManPage(file,dest,suffix)				@@\
+									@@\
+CppManTarget(file, $(EXTRAMANDEFS))					@@\
 									@@\
 InstallManPageLongBase(file,destdir,dest)
 

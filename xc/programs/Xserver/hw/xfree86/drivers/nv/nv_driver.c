@@ -1636,7 +1636,7 @@ NVRestore(ScrnInfoPtr pScrn)
     if (pNv->Primary)
         (*pNv->Restore)(pScrn, vgaReg, nvReg, TRUE);
     else
-        vgaHWRestore(pScrn, vgaReg, VGA_SR_MODE);
+        vgaHWRestore(pScrn, vgaReg, VGA_SR_MODE | VGA_SR_CMAP);
     vgaHWProtect(pScrn, FALSE);
 }
 

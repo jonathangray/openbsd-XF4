@@ -1,6 +1,6 @@
 XCOMM!/bin/sh
-XCOMM $XConsortium: xinitrc.cpp,v 1.4 91/08/22 11:41:34 rws Exp $
-XCOMM $OpenBSD: xinitrc.cpp,v 1.5 2001/04/18 23:10:48 todd Exp $
+XCOMM $Xorg: xinitrc.cpp,v 1.3 2000/08/17 19:54:30 cpqbld Exp $
+XCOMM $OpenBSD: xinitrc.cpp,v 1.6 2001/06/04 12:42:30 matthieu Exp $
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap

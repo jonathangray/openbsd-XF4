@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.40.2.1 2001/03/09 18:03:50 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_video.c,v 3.43 2001/04/22 08:48:51 herrb Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -120,9 +120,9 @@ struct memAccess ioMemInfo = { CONSOLE_GET_IO_INFO, NULL, NULL,
 		   "\tin /etc/sysctl.conf and reboot your machine\n" \
 		   "\trefer to xf86(4) for details\n"
 #define SYSCTL_MSG2 \
-                "Check that you have set 'machdep.allowaperture=2'\n" \
-                "\tin /etc/sysctl.conf and reboot your machine\n" \
-                "\trefer to xf86(4) for details\n"
+		"Check that you have set 'machdep.allowaperture=2'\n" \
+		"\tin /etc/sysctl.conf and reboot your machine\n" \
+		"\trefer to xf86(4) for details\n"
 #endif
 
 #ifdef __alpha__
@@ -1512,6 +1512,7 @@ readSparse8(pointer Base, register unsigned long Offset)
     register unsigned long result, shift;
     register unsigned long msb;
 
+    mem_barrier();
     Offset += (unsigned long)Base - (unsigned long)memBase;
     shift = (Offset & 0x3) << 3;
       if (Offset >= (hae_thresh)) {
@@ -1534,6 +1535,7 @@ readSparse16(pointer Base, register unsigned long Offset)
     register unsigned long result, shift;
     register unsigned long msb;
 
+    mem_barrier();
     Offset += (unsigned long)Base - (unsigned long)memBase;
     shift = (Offset & 0x2) << 3;
     if (Offset >= (hae_thresh)) {
@@ -1552,6 +1554,7 @@ readSparse16(pointer Base, register unsigned long Offset)
 static int
 readSparse32(pointer Base, register unsigned long Offset)
 {
+    mem_barrier();
     return *(vuip)((unsigned long)Base+(Offset));
 }
 
@@ -1561,6 +1564,7 @@ writeSparse8(int Value, pointer Base, register unsigned long Offset)
     register unsigned long msb;
     register unsigned int b = Value & 0xffU;
 
+    write_mem_barrier();
     Offset += (unsigned long)Base - (unsigned long)memBase;
     if (Offset >= (hae_thresh)) {
       msb = Offset & hae_mask;
@@ -1571,7 +1575,6 @@ writeSparse8(int Value, pointer Base, register unsigned long Offset)
       }
     }
     *(vuip) ((unsigned long)memSBase + (Offset << 5)) = b * 0x01010101;
-    mem_barrier();
 }
 
 static void
@@ -1580,6 +1583,7 @@ writeSparse16(int Value, pointer Base, register unsigned long Offset)
     register unsigned long msb;
     register unsigned int w = Value & 0xffffU;
 
+    write_mem_barrier();
     Offset += (unsigned long)Base - (unsigned long)memBase;
     if (Offset >= (hae_thresh)) {
       msb = Offset & hae_mask;
@@ -1591,15 +1595,14 @@ writeSparse16(int Value, pointer Base, register unsigned long Offset)
     }
     *(vuip)((unsigned long)memSBase+(Offset<<5)+(1<<(5-2))) =
       w * 0x00010001;
-    mem_barrier();
 
 }
 
 static void
 writeSparse32(int Value, pointer Base, register unsigned long Offset)
 {
+    write_mem_barrier();
     *(vuip)((unsigned long)Base + (Offset)) = Value;
-    mem_barrier();
     return;
 }
 

@@ -26,7 +26,7 @@
  *
  * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/mouse-cfg.c,v 1.5 2000/10/20 14:59:06 alanh Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/mouse-cfg.c,v 1.7 2001/04/22 08:36:31 herrb Exp $
  */
 
 #include "xf86config.h"
@@ -52,7 +52,7 @@ static Bool MouseConfigCheck(void);
  * Initialization
  */
 static char *protocols[] = {
-#if defined(__OpenBSD__) || defined(__NetBSD__)
+#ifdef WSCONS_SUPPORT
     "wsmouse",
 #endif
     "Auto",
@@ -118,8 +118,8 @@ MouseConfig(XtPointer config)
 	    input = (XF86ConfInputPtr)(input->list.next);
 	}
 	do {
-	    ++nmouses;
 	    XmuSnprintf(mouse_name, sizeof(mouse_name), "Mouse%d", nmouses);
+	    ++nmouses;
 	} while (xf86findInput(mouse_name,
 		 XF86Config->conf_input_lst));
 
@@ -305,7 +305,7 @@ MouseDeviceAndProtocol(XF86SetupInfo *info)
     static Widget mouse_dp, listD, listP, emul3, apply;
     static char **devices;
     static char *patterns[] = {
-#if defined(__OpenBSD__) || defined(__NetBSD__)
+#ifdef WSCONS_SUPPORT
 	"wsmouse",
 #endif
 	"cua",

@@ -22,7 +22,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.h,v 3.32 2000/11/29 15:51:20 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.h,v 3.34 2001/04/16 21:08:24 herrb Exp $ */
 
 #ifndef _xf86Xinput_h
 #define _xf86Xinput_h
@@ -30,8 +30,7 @@
 #ifndef NEED_EVENTS
 #define NEED_EVENTS
 #endif
-#include "X.h"
-#include "Xproto.h"
+#include "xf86str.h"
 #include "inputstr.h"
 #ifdef XINPUT
 #include "extensions/XI.h"
@@ -71,6 +70,7 @@
 #endif
 #define HAS_MOTION_HISTORY(local) ((local)->dev->valuator && (local)->dev->valuator->numMotionEvents)
 
+#ifdef XINPUT
 /* This holds the input driver entry and module information. */
 typedef struct _InputDriverRec {
     int			    driverVersion;
@@ -84,6 +84,7 @@ typedef struct _InputDriverRec {
     pointer		    module;
     int			    refCount;
 } InputDriverRec, *InputDriverPtr;
+#endif
 
 #ifdef XINPUT
 /* This is to input devices what the ScrnInfoRec is to screens. */
