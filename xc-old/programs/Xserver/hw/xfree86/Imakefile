@@ -152,6 +152,7 @@ InstallManPage(XF86_SVGA,$(MANDIR))
 InstallManPageLong(XF86_Acc,$(MANDIR),XF86_Accel)
 InstallManPageAliases(XF86_Accel,$(MANDIR),XF86_S3 XF86_Mach32 XF86_Mach64 XF86_P9000 XF86_Mach8 XF86_8514 XF86_AGX XF86_W32 XF86_I128)
 InstallNamedNonExec($(XF86CONFIG),XF86Config.eg,$(LIBDIR))
+InstallManPage(Xwrapper,$(MANDIR))
 
 InstallLinkKitNonExecFile(xf86Version.h,$(LINKKITDIR)/include)
 

@@ -1,0 +1,42 @@
+.\" $OpenBSD: Xwrapper.man,v 1.1 2002/05/20 10:03:47 matthieu Exp $
+.TH XFree86 1 "Version 3.3.6" "XFree86"
+.SH NAME 
+Xwrapper - setuid wrapper for XFreee86 3.3.6 servers
+.SH SYNOPSIS
+.B Xwrapper
+[:displaynumber] [ option ] ...
+.SH DESCRIPTION
+Xwrapper is the setuid wrapper used by 
+.B xinit(1)
+to start the old X servers
+(XF86_*) when not using xdm. 
+This wrapper does a number of checks on the sanity of the arguments
+before launching the real X server, as pointed to by the 
+.B X 
+symbolic link in /usr/X11R6/bin. 
+.PP
+In normal use
+.B Xwrapper 
+is not supposed to be called directly. 
+.SH HISTORY
+.B Xwrapper
+appeared in 
+.I XFree86 3.3.2
+.br
+It has been obsoleted by 
+.I XFree86 4.0
+and later. 
+.br
+.SH FILES
+.nf
+/usr/X11R6/bin/X
+.fi
+.SH "SEE ALSO"
+X(1), Xserver(1), XFree86(1), XF86_SVGA(1), XF86_VGA16(1),
+XF86_Mono(1), XF86_S3(1), XF86_8514(1), XF86_Mach8(1), XF86_Mach32(1),
+XF86_P9000(1), XF86_AGX(1), XF86_W32(1), xinit(1), startx(1).
+.SH AUTHORS
+.PP
+Refer to the
+.I XFree86(1)
+manual page.
