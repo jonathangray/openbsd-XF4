@@ -136,7 +136,7 @@ VIDEO_OBJ = arm_video.o
 #elif defined(Sparc64Architecture)
 VIDEO_SRC = sparc64_video.c
 VIDEO_OBJ = sparc64_video.o
-#elif
+#else
 #error Unknown architecture !
 #endif
 
