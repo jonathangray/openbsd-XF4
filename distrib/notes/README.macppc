@@ -89,7 +89,7 @@ Section "Device"
 # 	These options are required for use on the Ti PBG4.
 #	Option      "PanelWidth"  "1152"
 #	Option      "PanelHeight" "768"
-#	This option may help if your ibook has screen distortion problems
+#	This option may help if your iBook or Mac mini has screen sync problems
 #	Option      "iBookHacks" "on"
 
 EndSection
@@ -176,4 +176,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.17 2005/01/15 14:44:54 matthieu Exp $
+$OpenBSD: README.macppc,v 1.18 2005/03/15 22:17:17 matthieu Exp $

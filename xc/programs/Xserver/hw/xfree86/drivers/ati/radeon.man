@@ -495,8 +495,8 @@ with this enabled.  The default is
 .B off.
 .TP
 .BI "Option \*qiBookHacks\*q \*q" boolean \*q
-On some iBook models the screen is distorted and exiting the X server
-does not reset the console properly.
+On some iBook models and on the Mac mini the screen is distorted and exiting
+the X server does not reset the console properly.
 This option enables a workaround for these problems.
 The default is
 .B off.
