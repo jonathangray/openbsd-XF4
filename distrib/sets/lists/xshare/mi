@@ -893,8 +893,6 @@
 ./usr/X11R6/lib/X11/x11perfcomp/fillblnk
 ./usr/X11R6/lib/X11/x11perfcomp/perfboth
 ./usr/X11R6/lib/X11/x11perfcomp/perfratio
-./usr/X11R6/man
-./usr/X11R6/man/cat1
 ./usr/X11R6/man/cat1/FvwmAuto.0
 ./usr/X11R6/man/cat1/FvwmBacker.0
 ./usr/X11R6/man/cat1/FvwmBanner.0

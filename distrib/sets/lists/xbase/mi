@@ -200,4 +200,6 @@
 ./usr/X11R6/lib/liboldX.a
 ./usr/X11R6/lib/libpsres.a
 ./usr/X11R6/lib/libxkbfile.a
+./usr/X11R6/man
+./usr/X11R6/man/cat1
 ./usr/X11R6/man/whatis.db

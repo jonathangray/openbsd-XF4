@@ -248,20 +248,6 @@
 ./usr/X11R6/include/X11/extensions/xf86mscstr.h
 ./usr/X11R6/include/X11/extensions/xf86vmode.h
 ./usr/X11R6/include/X11/extensions/xf86vmstr.h
-./usr/X11R6/include/X11/pixmaps/Monitor.xpm
-./usr/X11R6/include/X11/pixmaps/button-close.xpm
-./usr/X11R6/include/X11/pixmaps/button-horiz.xpm
-./usr/X11R6/include/X11/pixmaps/button-max.xpm
-./usr/X11R6/include/X11/pixmaps/button-vert.xpm
-./usr/X11R6/include/X11/pixmaps/button.xpm
-./usr/X11R6/include/X11/pixmaps/mini.directory.xpm
-./usr/X11R6/include/X11/pixmaps/mini.dirlink.xpm
-./usr/X11R6/include/X11/pixmaps/mini.file.xpm
-./usr/X11R6/include/X11/pixmaps/mini.filelink.xpm
-./usr/X11R6/include/X11/pixmaps/side.fvwm2.xpm
-./usr/X11R6/include/X11/pixmaps/xterm-bsd.xpm
-./usr/X11R6/lib/X11/fvwm/FvwmRearrange
-./usr/X11R6/lib/X11/fvwm/new-features
 ./usr/X11R6/lib/X11/rgb.txt
 ./usr/X11R6/lib/X11/xkb/compat
 ./usr/X11R6/lib/X11/xkb/compat.dir
@@ -496,6 +482,4 @@
 ./usr/X11R6/lib/libXmuu.so.1.0
 ./usr/X11R6/lib/libXxf86misc.a
 ./usr/X11R6/lib/libXxf86vm.a
-./usr/X11R6/lib/libfvwm.a
-./usr/X11R6/man/cat1/FvwmRearrange.0
 ./usr/X11R6/man/cat1/showrgb.0

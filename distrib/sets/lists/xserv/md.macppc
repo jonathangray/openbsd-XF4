@@ -107,7 +107,6 @@
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xserver.0
 ./usr/X11R6/man/cat1/Xvfb.0
-./usr/X11R6/man/cat4
 ./usr/X11R6/man/cat4/chips.0
 ./usr/X11R6/man/cat4/citron.0
 ./usr/X11R6/man/cat4/dynapro.0
@@ -129,5 +128,3 @@
 ./usr/X11R6/man/cat4/vga.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
-./usr/X11R6/man/cat5
-./usr/X11R6/man/cat5/XF86Config.0
