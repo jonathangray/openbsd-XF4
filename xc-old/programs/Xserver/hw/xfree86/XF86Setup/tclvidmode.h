@@ -6,7 +6,7 @@
 
 /* $XFree86: xc/programs/Xserver/hw/xfree86/XF86Setup/tclvidmode.h,v 3.2 1996/12/27 06:54:21 dawes Exp $ */
 
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 #include <X11/Xmd.h>
 #include <X11/extensions/xf86vmode.h>
 #include <tcl.h>

@@ -13,36 +13,11 @@
 #define RET_OKAY	TCL_OK
 #define RET_ERROR	TCL_ERROR
 
-extern char *XtMalloc(
-#if NeedFunctionPrototypes
-    unsigned int	/* size */
-#endif
-);
 
-extern char *XtCalloc(
-#if NeedFunctionPrototypes
-    unsigned int	/* num */,
-    unsigned int	/* size */
-#endif
-);
-
-extern char *XtRealloc(
-#if NeedFunctionPrototypes
-    char*		/* ptr */,
-    unsigned int	/* num */
-#endif
-);
-
-extern void XtFree(
-#if NeedFunctionPrototypes
-    char*		/* ptr */
-#endif
-);
-
-#define Xcalloc(size)	XtCalloc(1,size)
-#define Xfree		XtFree
-#define Xalloc		XtMalloc
-#define Xrealloc	XtRealloc
+#define Xcalloc(size)	calloc(1,size)
+#define Xfree		free
+#define Xalloc		malloc
+#define Xrealloc	realloc
 
 #ifndef XF86SETUP_NO_FUNC_RENAME
 #define FatalError	return XF86SetupFatalError

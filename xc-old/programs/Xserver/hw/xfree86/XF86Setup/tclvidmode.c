@@ -36,12 +36,14 @@
 
 #define NOT_YET_IMPLEMENTED 0
 
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 #include <X11/Xmd.h>
 #include <X11/extensions/xf86vmode.h>
 #include <tcl.h>
 #include <tk.h>
 #include "tclvidmode.h"
+
+#include "xf86setup.h"
 
 /* Mode flags -- ignore flags not in V_FLAG_MASK */
 #define V_FLAG_MASK	0x1FF;

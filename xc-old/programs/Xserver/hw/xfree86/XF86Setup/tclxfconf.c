@@ -57,6 +57,8 @@
 #include <stdarg.h>
 #endif
 
+#include "xf86setup.h"
+
 int TCL_XF86FindXF86Config(
 #if NeedNestedPrototypes
     ClientData	clientData,

@@ -41,9 +41,11 @@
 
 #include "cards.h"
 
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 #include <X11/Xmd.h>
 #include <X11/Xos.h>
+
+#include "xf86setup.h"
 
 int TCL_XF86GetCardList(
 #if NeedNestedPrototypes

@@ -34,14 +34,18 @@
 
  */
 
-#include <X11/Intrinsic.h>
+/* #include <X11/Intrinsic.h> */
+#include <X11/Xlib.h>
+
 #include <X11/Xmd.h>
 #include <X11/extensions/xf86misc.h>
-#include <X11/Xos.h>
+/* #include <X11/Xos.h> */
 #include <tcl.h>
 #include <tk.h>
 #include <ctype.h>
 #include "tclmisc.h"
+
+#include "xf86setup.h"
 
 #if X_NOT_STDC_ENV
 int atoi(

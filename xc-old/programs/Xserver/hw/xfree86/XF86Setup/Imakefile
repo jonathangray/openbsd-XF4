@@ -73,8 +73,8 @@ includes::
 
  LOCAL_LIBRARIES = $(USEBUILTLIB) $(XKBUILIB) $(XKBFILELIB) \
 		   $(TCLTK_LIBRARIES) $(XXF86VMLIB) $(XXF86MISCLIB) \
-		   $(USEINSTALLEDLIB) XawClientLibs MathLibrary
-         DEPLIBS = XawClientDepLibs $(DEPXXF86VMLIB)
+		   $(USEINSTALLEDLIB)  $(XLIB) MathLibrary
+         DEPLIBS = $(DEP XLIB) $(DEPXXF86VMLIB)
       CARDDBFILE = $(LIBDIR)/old-Cards
       XCONFIGSRC = xf86Config
      XCONFIGFILE = XF86Config

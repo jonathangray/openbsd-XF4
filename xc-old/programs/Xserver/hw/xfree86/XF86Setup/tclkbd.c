@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xfuncs.h>
 #include <X11/Xatom.h>
@@ -51,6 +51,8 @@
 #include <X11/extensions/XKBfile.h>
 #include <X11/extensions/XKBui.h>
 #include <X11/extensions/XKBrules.h>
+
+#include "xf86setup.h"
 
 static int	TCL_XF86GetKBD(
 #if NeedNestedProtoTypes

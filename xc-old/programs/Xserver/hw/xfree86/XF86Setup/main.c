@@ -32,13 +32,15 @@
  */
 
 #include <stdio.h>
-#include <X11/Intrinsic.h>
-#include <X11/Xos.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>  
 #include <tcl.h>
 #include <tk.h>
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
+
+#include "xf86setup.h"
 
 #if !defined(SYSV) && !defined(AMOEBA) && !defined(_MINIX)
 #include <sys/resource.h>
