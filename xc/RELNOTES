@@ -1,4 +1,4 @@
-                     Release Notes for XFree86[tm] 4.0.2
+                     Release Notes for XFree86[tm] 4.1.0
 
                           The XFree86 Project, Inc
 
@@ -7,17 +7,17 @@
                                   Abstract
 
      This document contains some information about the features present
-     in XFree86 4.0.2 and their status.
+     in XFree86 4.1.0 and their status.
 
 1.  Introduction to the 4.x Release Series
 
 XFree86 4.0 was the first official release of the new XFree86 4 series.  The
-current release (4.0.2) is the latest in that series.  XFree86 4 represents a
+current release (4.1.0) is the latest in that series.  XFree86 4 represents a
 significant redesign of the XFree86 X server.  Not all of the hardware
 drivers from 3.3.x have been ported to 4.x yet, but conversely, 4.x has some
 hardware support not present in 3.3.x.  Our Driver Status document summarizes
-how the hardware driver support compares between 3.3.6 and 4.0.2.  Please
-check there first before downloading 4.0.2.
+how the hardware driver support compares between 3.3.6 and 4.1.0.  Please
+check there first before downloading 4.1.0.
 
 The 4.0.1 release introduced a new graphical configuration tool, "xf86cfg",
 and a text mode interface was added to it for the 4.0.2 release.  It is work
@@ -28,7 +28,7 @@ built-in to the X server.  It is included in the release, and it works well
 for some hardware.  To try it out, just run (as root) "XFree86 -configure".
 Each of these configuration options will give you a reasonable starting point
 for a suitable configuration file.  We've put some effort into documenting
-the 4.0.2 config file format, and you can find that information in the
+the 4.1.0 config file format, and you can find that information in the
 XF86Config manual page. Check that, the driver manual pages and the related
 documentation for further information.
 
@@ -37,17 +37,18 @@ release, please have a quick read through the Installation Document.  It may
 save you some time and help you figure out which of the binary releases you
 need.
 
-The next section describes what is new in the latest version (4.0.2).  The
+The next section describes what is new in the latest version (4.1.0).  The
 other sections below describe some of the new features and changes between
 3.3.x and 4.0.  There are lot's of new features, and we definitely don't have
 enough space to cover them all here.
 
-2.  Summary of new features in 4.0.2.
+2.  Summary of new features in 4.1.0.
 
 2.1  X server
 
-   o Darwin/Mac OS X is now supported and the X server runs on PowerPC.  The
-     X server for this platform is called "Xdarwin", and its installation and
+   o Darwin/Mac OS X is now supported on PowerPC and Intel/x86.  The X server
+     runs from the console or in cooperation with the Mac OS X Aqua GUI.  The
+     X server for this platform is called "XDarwin", and its installation and
      configuration is different from the "XFree86" server used on other plat-
      forms.  Please read the XFree86 on Darwin and Mac OS X document for fur-
      ther information.
@@ -289,7 +290,7 @@ enough space to cover them all here.
 
 3.1  Video Drivers
 
-XFree86 4.0.2 includes the following video drivers:
+XFree86 4.1.0 includes the following video drivers:
 
 +--------------+--------------------------+----------------------------------+
 |Driver Name   | Description              | Further Information              |
@@ -341,7 +342,7 @@ Drivers marked with (-) are for Linux/mips only.
 Darwin/Mac OS X uses IOKit drivers and does not use the module loader drivers
 listed above. Further information can be found in README.Darwin.
 
-XFree86 4.0.2 includes the following input drivers:
+XFree86 4.1.0 includes the following input drivers:
 
 3.2  Input Drivers
 
@@ -367,12 +368,12 @@ XFree86 4.0.2 includes the following input drivers:
 4.  Summary of XFree86 4.
 
 Unlike XFree86 3.3.x where there are multiple X server binaries, each of
-which drive different hardware, XFree86 4.0.2 has a single X server binary
+which drive different hardware, XFree86 4.1.0 has a single X server binary
 called XFree86.  This binary can either have one or more video drivers linked
 in statically, or, more usually, dynamically load the video drivers and other
 modules that are needed.
 
-XFree86 4.0.2 has X server support for most UNIX(R) and UNIX-like operating
+XFree86 4.1.0 has X server support for most UNIX(R) and UNIX-like operating
 systems on Intel/x86 platforms, plus support for Linux on Alpha, PowerPC,
 IA-64, Sparc, and Mips platforms, and for Darwin on PowerPC.  Work on support
 for additional architectures and operating systems is in progress, and is
@@ -394,7 +395,7 @@ they do not need to be recompiled for every different operating system.  In
 the future we plan to take advantage of this to provide more frequent driver
 module updates in between major releases.
 
-The loader in version 4.0.2 has support for Intel (x86), Alpha and PowerPC
+The loader in version 4.1.0 has support for Intel (x86), Alpha and PowerPC
 platforms.  It also has preliminary support for Sparc platforms.
 
 The X server makes use of modules for video drivers, X server extensions,
@@ -733,7 +734,7 @@ Known problems:
 
 4.7  DGA version 2
 
-DGA 2.0 is included in 4.0.2, but is not implemented by all drivers.  Prelim-
+DGA 2.0 is included in 4.1.0, but is not implemented by all drivers.  Prelim-
 inary documentation for the client libraries can be found in the README.DGA
 document.  A good degree of backwards compatibility with version 1.0 is pro-
 vided.
@@ -801,7 +802,7 @@ anti-aliased text and geometric objects as well as perform translucent image
 overlays and other image operations not possible with the core X rendering
 system.
 
-XFree86 4.0.2 provides a partial implementation of Render sufficient for
+XFree86 4.1.0 provides a partial implementation of Render sufficient for
 drawing anti-aliased text and image composition.  Still to be implemented are
 geometric primitives and affine transformation of images.
 
@@ -836,10 +837,10 @@ the Xft man page.
 
 4.11.2  FreeType support in Xft
 
-XFree86 4.0.2 includes sources for FreeType version 2.0.1, and, by default,
+XFree86 4.1.0 includes sources for FreeType version 2.0.1, and, by default,
 they are built and installed automatically.
 
-If you prefer, you can configure XFree86 4.0.2 to use an existing Freetype2
+If you prefer, you can configure XFree86 4.1.0 to use an existing Freetype2
 installation by telling XFree86 not to build the internal copy and indicating
 where that external version has been installed. Edit (or create) con-
 fig/cf/host.def to include:
@@ -856,7 +857,7 @@ the FreeType release.
 
 4.11.3  Application Support For Anti-Aliased Text
 
-Only three applications have been modified in XFree86 4.0.2 to work with the
+Only three applications have been modified in XFree86 4.1.0 to work with the
 Render extension and the Xft and FreeType libraries to provide anti-aliased
 text.  Xterm, xditview and x11perf.  Migration of other applications may
 occur in future releases.
@@ -1085,4 +1086,4 @@ symbolic links in the old location.
      Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/RELNOTES.sgml,v 1.60 2001/03/02 17:40:48 dawes Exp $
 
 
-$XFree86: xc/RELNOTES,v 1.2 2001/03/02 17:48:40 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/RELNOTES,v 3.97.2.2 2001/06/02 04:44:36 torrey Exp $
