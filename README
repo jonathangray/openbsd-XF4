@@ -38,7 +38,7 @@ Don't forget to update the shadow tree each time something gets added
 in /source/XF4. 
 
 There is a script to remove dead links from the shadow tree when stuff
-gets removed from /source/XF4: xc/config/utils/cleanlinks.sh (to be
+gets removed from /source/XF4: xc/config/util/cleanlinks.sh (to be
 run from the top of the shadow tree). 
 
 o Makefile targets 
@@ -423,4 +423,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/incluce to install $(HEADERS) to. 
 
 -- 
-$Id: README,v 1.9 2002/09/21 16:49:12 matthieu Exp $
+$Id: README,v 1.10 2002/10/17 20:47:51 matthieu Exp $
