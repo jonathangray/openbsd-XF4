@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD: maketars,v 1.7 2003/11/24 19:01:16 mickey Exp $
+#	$OpenBSD: maketars,v 1.8 2004/06/22 00:37:34 matthieu Exp $
 
 # xy
 RELEASE=$1
@@ -28,7 +28,7 @@ tardir=$RELEASEDIR
 
 cd $DESTDIR
 
-lists="xbase xserv xshare"
+lists="xbase xetc xserv xshare"
 
 if [ "$arch" != "vax" ]; then
 	lists="$lists xfont"

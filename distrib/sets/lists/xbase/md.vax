@@ -1,4 +1,4 @@
-./etc/X11/XftConfig
+./etc/X11
 ./usr/X11R6/bin/dga
 ./usr/X11R6/bin/fonttosfnt
 ./usr/X11R6/bin/xftcache

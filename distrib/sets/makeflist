@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$OpenBSD: makeflist,v 1.6 2003/11/24 19:01:16 mickey Exp $
+#	$OpenBSD: makeflist,v 1.7 2004/06/22 00:37:34 matthieu Exp $
 
 arch=$MACHINE
 Release=$1
 listsdir=`pwd`/lists
 
-lists="xbase xserv xshare"
+lists="xbase xetc xserv xshare"
 
 if [ "$arch" != "vax" ]; then
 	lists="$lists xfont"

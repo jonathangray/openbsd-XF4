@@ -445,7 +445,6 @@
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaSwapBuffers.0
 ./usr/X11R6/man/cat3/GLwMDrawingArea.0
-a./usr/X11R6/man/cat3/glAccum.0
 ./usr/X11R6/man/cat3/glActiveTextureARB.0
 ./usr/X11R6/man/cat3/glAlphaFunc.0
 ./usr/X11R6/man/cat3/glAreTexturesResident.0
@@ -967,3 +966,4 @@ a./usr/X11R6/man/cat3/glAccum.0
 ./var/X11
 ./var/X11/xserver
 ./var/X11/xserver/SecurityPolicy
+a./usr/X11R6/man/cat3/glAccum.0

@@ -1,14 +1,5 @@
 ./etc
-./etc/X11
-./etc/X11/xdm
-./etc/X11/xdm/Xresources
-./etc/X11/xdm/Xservers
-./etc/X11/xdm/chooser
-./etc/X11/xdm/xdm-config
 ./etc/fonts
-./etc/fonts/fonts.conf
-./etc/fonts/fonts.dtd
-./etc/fonts/local.conf
 ./usr
 ./usr/X11R6
 ./usr/X11R6/README

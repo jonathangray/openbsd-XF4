@@ -1,5 +1,3 @@
-./etc/X11/xserver
-./etc/X11/xserver/SecurityPolicy
 ./usr/X11R6/bin/X
 ./usr/X11R6/bin/XFree86
 ./usr/X11R6/bin/Xnest
