@@ -14,9 +14,8 @@ Section "Files"
 EndSection
 
 Section "Module"
-#   Load        "dbe"
     Load        "type1"
-    Load        "freetype"
+#   Load        "freetype"  
     Load        "glx"
     Load        "extmod"
 EndSection
