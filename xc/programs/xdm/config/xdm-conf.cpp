@@ -1,4 +1,5 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.4 2001/08/05 20:51:31 matthieu Exp $
 !
 !
 !
@@ -6,7 +7,7 @@
 ! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.7 2001/01/17 23:45:24 dawes Exp $
 !
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm-errors
-DisplayManager.pidFile:		XDMPIDDIR/xdm-pid
+DisplayManager.pidFile:		XDMPIDDIR/xdm.pid
 DisplayManager.keyFile:		XDMDIR/xdm-keys
 DisplayManager.servers:		XDMDIR/Xservers
 DisplayManager.accessFile:	XDMDIR/Xaccess
