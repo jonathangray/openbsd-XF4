@@ -17,11 +17,33 @@ do
 	fi
 done
 
+# if we have private ssh key(s), start ssh-agent and add the key(s)
+hms=$HOME/.ssh
+if [ -e /usr/bin/ssh-agent ]; then
+	if [ -f $hms/identity -o -f $hms/id_dsa ]; then
+		eval `ssh-agent -s`
+		for f in $hms/identity $hms/id_dsa; do
+			if [ -f $f ]; then
+				ssh-add $f < /dev/null
+			fi
+		done
+	fi
+fi
+
+do_exit() {
+	if [ "$SSH_AGENT_PID" ]; then
+		ssh-add -D < /dev/null
+		eval `ssh-agent -s -k`
+	fi
+	exit
+}
+
 case $# in
 1)
 	case $1 in
 	failsafe)
-		exec xterm -geometry 80x24-0-0
+		xterm -geometry 80x24-0-0
+		do_exit
 		;;
 	esac
 esac
@@ -30,11 +52,13 @@ startup=$HOME/.xsession
 resources=$HOME/.Xresources
 
 if [ -f "$startup" ]; then
-	exec "$startup"
+	"$startup"
+	do_exit
 else
 	if [ -f "$resources" ]; then
 		xrdb -load "$resources"
 	fi
 	xterm &
-	exec fvwm
+	fvwm
+	do_exit
 fi
