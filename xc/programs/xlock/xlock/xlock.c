@@ -668,6 +668,25 @@ Window      parent;
 Bool        parentSet = False;
 Display    *dsp = NULL;		/* server display connection */
 
+#if ultrix
+	extern gid_t rgid;
+
+#else
+	gid_t       rgid;
+
+#endif
+#if defined( HAVE_SETEUID ) || defined( HAVE_SETREUID )
+	uid_t       euid;
+
+#if ultrix
+	extern gid_t egid;
+
+#else
+	gid_t       egid;
+
+#endif
+#endif
+
 extern char user[PASSLENGTH];
 extern char hostname[MAXHOSTNAMELEN];
 extern char *displayname;
@@ -2815,25 +2834,6 @@ main(int argc, char **argv)
 #else
 	static int  old_sigmask;
 
-#endif
-
-#if ultrix
-	extern gid_t rgid;
-
-#else
-	gid_t       rgid;
-
-#endif
-#if defined( HAVE_SETEUID ) || defined( HAVE_SETREUID )
-	uid_t       euid;
-
-#if ultrix
-	extern gid_t egid;
-
-#else
-	gid_t       egid;
-
-#endif
 #endif
 
 #ifdef USE_MB

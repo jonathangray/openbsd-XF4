@@ -313,7 +313,7 @@ XCOMM      *** END DEBUG CHECK SECTION ***
 
 XCOMM      *** DEFINE THIS TO USE A SEPARATE PROCESS (SAFER) ***
 XCOMM      *** TO VALIDATE PASSWORDS                         ***
-PIPEDEF = -DUSE_A_DAMN_PIPE
+XCOMM PIPEDEF = -DUSE_A_DAMN_PIPE
 
 #ifndef __QNX__
 #ifndef MathLibrary

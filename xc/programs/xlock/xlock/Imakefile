@@ -33,6 +33,12 @@ $(DU)spline$(CU)sound$(CU)erase$(C) \
 $(DU)vtlock$(CU)vtlock_proc$(CU)atomicio$(C)
 XLOCKCHECKSRCS = $(DU)memcheck$(C)
 
+XCOMM XXX - the following will be correct when we become OpenBSD 2.9
+XCOMM #if defined(OpenBSDArchitecture) && OSMajorVersion >= 2 && OSMinorVersion > 8
+#if 1
+INSTUIDFLAGS=-g auth -m 2755
+#endif
+
 XCOMM default target
 
 all:: $(XLOCKUTILOBJS) $(XLOCKDEBUGOBJS)

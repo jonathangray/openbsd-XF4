@@ -72,15 +72,13 @@ int passwd_wpipe = -1;
 pid_t passwd_pid;
 #endif
 
-#if defined( __bsdi__ ) && _BSDI_VERSION >= 199608
+#if (defined( __bsdi__ ) && _BSDI_VERSION >= 199608) || defined(__OpenBSD__)
 #define       BSD_AUTH
 #endif
 
 #ifdef        BSD_AUTH
 #include <login_cap.h>
-static login_cap_t *lc = NULL;
-static login_cap_t *rlc = NULL;
-
+#include <bsd_auth.h>
 #endif
 
 #if ( HAVE_SYSLOG_H && defined( USE_SYSLOG ))
@@ -102,9 +100,7 @@ void        set_multiple(int uid);
    screen. */
 struct pwln {
 	char       *pw_name;
-#ifdef        BSD_AUTH
-	login_cap_t *pw_lc;
-#else
+#ifndef	BSD_AUTH
 	char       *pw_passwd;
 #endif
 	struct pwln *next;
@@ -126,9 +122,7 @@ new_pwlnode(void)
 		return ((pwlptr) ENOMEM);
 
 	pwl->pw_name = (char *) NULL;
-#ifdef BSD_AUTH
-	pwl->pw_lc = NULL;
-#else
+#ifndef BSD_AUTH
 	pwl->pw_passwd = (char *) NULL;
 #endif
 	pwl->next = (pwlptr) NULL;
@@ -1111,6 +1105,9 @@ checkPasswd(char *buffer)
 	char       *pass;
 	char       *style;
 	char       *name;
+	extern gid_t egid, rgid;
+
+	(void) setegid(egid);
 
 #if ( HAVE_FCNTL_H && (defined( USE_MULTIPLE_ROOT ) || defined( USE_MULTIPLE_USER )))
 	/* Scan through the linked list until you match a password.  Print
@@ -1119,41 +1116,31 @@ checkPasswd(char *buffer)
 	 * This should be changed to allow the user name to be typed in also
 	 * to make this more secure.
 	 */
-	for (pwll = pwllh; done == 0 && pwll->next; pwll = pwll->next) {
+	for (pwll = pwllh; done == 0 && pwll->next; pwll = pwll->next)
 		name = pwll->pw_name;
-		lc = pwll->pw_lc;
 #else
 	name = user;
 #endif
+
+	/* The buffer may be of the form "style:password" so pull
+	 * out the style (which may or may not exist).
+	 */
 	if ((pass = strchr(buffer, ':')) != NULL) {
 		*pass++ = '\0';
-		style = login_getstyle(lc, buffer, "auth-xlock");
-		if (auth_response(name, lc->lc_class, style,
-				  "response", NULL, "", pass) > 0)
-			done = True;
-		else if (rlc != NULL) {
-			style = login_getstyle(rlc, buffer, "auth-xlock");
-			if (auth_response(ROOT, rlc->lc_class, style,
-					  "response", NULL, "", pass) > 0)
-				done = True;
-		}
-		pass[-1] = ':';
+		style = buffer;
+	} else {
+		pass = buffer;
+		style = NULL;
 	}
-	if (!done) {
-		style = login_getstyle(lc, NULL, "auth-xlock");
-		if (auth_response(name, lc->lc_class, style,
-				  "response", NULL, "", buffer) > 0)
-			done = True;
-		else if (rlc != NULL) {
-			style = login_getstyle(rlc, NULL, "auth-xlock");
-			if (auth_response(ROOT, rlc->lc_class, style,
-					  "response", NULL, "", buffer) > 0)
-				done = True;
-		}
-	}
+	if (auth_userokay(name, style, "auth-xlock", pass) ||
+	    auth_userokay(ROOT, style, "auth-xlock", pass))
+		done = True;
+
 #if ( HAVE_FCNTL_H && (defined( USE_MULTIPLE_ROOT ) || defined( USE_MULTIPLE_USER )))
 }
 #endif
+
+	(void) setegid(rgid);
 
 #else /* !BSD_AUTH */
 
@@ -1690,9 +1677,7 @@ get_multiple(struct passwd *pw)
 		perror("new");
 		exit(1);
 	}
-#ifdef        BSD_AUTH
-	pwll->pw_lc = login_getclass(pw->pw_class);
-#else
+#ifndef        BSD_AUTH
 	if ((pwll->pw_passwd = (char *) strdup(pw->pw_passwd)) == NULL) {
 		perror("new");
 		exit(1);
@@ -1727,7 +1712,6 @@ set_multiple(int uid)
 			perror("new");
 			exit(1);
 		}
-		pwll->pw_lc = login_getclass(pw->pw_class);
 
 		if ((pwll->next = new_pwlnode()) == (pwlptr) ENOMEM) {
 			perror("new");
@@ -1918,15 +1902,8 @@ void
 initPasswd(void)
 {
 	getUserName();
-#if !defined( ultrix ) && !defined( DCE_PASSWD ) && !defined( PAM )
+#if !defined( ultrix ) && !defined( DCE_PASSWD ) && !defined( PAM ) && !defined( BSD_AUTH )
 	if (!nolock && !inroot && !inwindow && grabmouse) {
-#ifdef BSD_AUTH
-		struct passwd *pwd = getpwnam(user);
-
-		lc = login_getclass(pwd->pw_class);
-		if (allowroot && (pwd = getpwnam(ROOT)) != NULL)
-			rlc = login_getclass(pwd->pw_class);
-#else /* !BSD_AUTH */
 #ifdef USE_XLOCKRC
 		gpass();
 #else
@@ -1982,9 +1959,8 @@ initPasswd(void)
 #endif
 		if (allowroot)
 			getCryptedRootPasswd();
-#endif /* !BSD_AUTH */
 	}
-#endif /* !ultrix && !DCE_PASSWD && !PAM */
+#endif /* !ultrix && !DCE_PASSWD && !PAM && !BSD_AUTH */
 #ifdef DCE_PASSWD
 	initDCE();
 #endif
