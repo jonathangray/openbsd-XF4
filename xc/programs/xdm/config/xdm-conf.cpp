@@ -1,5 +1,5 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.4 2001/08/05 20:51:31 matthieu Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.5 2001/10/01 21:44:44 matthieu Exp $
 !
 !
 !
@@ -24,7 +24,7 @@ DisplayManager._0.reset:	XDMDIR/TakeConsole
 !
 DisplayManager*resources:	XDMDIR/Xresources
 DisplayManager*session:		XDMDIR/Xsession
-DisplayManager*authComplain:	false
+DisplayManager*authComplain:	true
 #if HAS_DES_AUTH == YES
 DisplayManager._0.authName:     MIT-MAGIC-COOKIE-1
 #endif
