@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.115 2002/12/02 22:02:56 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSD.cf,v 1.116 2002/12/04 03:49:30 todd Exp $
 
 
 
@@ -27,7 +27,7 @@ XCOMM
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
 
 #ifndef OverrideShlibRevs
-# define OverrideShlibRevs NO
+# define OverrideShlibRevs YES
 #endif
 
 #ifdef Ports
