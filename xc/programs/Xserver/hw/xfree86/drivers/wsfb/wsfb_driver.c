@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.10 2002/07/20 15:45:10 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.11 2002/07/20 17:46:04 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -95,7 +95,8 @@ static Bool WsfbProbe(DriverPtr, int);
 static Bool WsfbPreInit(ScrnInfoPtr, int);
 static Bool WsfbScreenInit(int, ScreenPtr, int, char **);
 static Bool WsfbCloseScreen(int, ScreenPtr);
-static void *WsfbWindowLinear(ScreenPtr, CARD32, CARD32, int, CARD32 *);
+static void *WsfbWindowLinear(ScreenPtr, CARD32, CARD32, int, CARD32 *, 
+			      void *);
 static Bool WsfbEnterVT(int, int);
 static void WsfbLeaveVT(int, int);
 static Bool WsfbSwitchMode(int, DisplayModePtr, int);
@@ -732,7 +733,7 @@ WsfbCloseScreen(int scrnIndex, ScreenPtr pScreen)
 
 static void *
 WsfbWindowLinear(ScreenPtr pScreen, CARD32 row, CARD32 offset, int mode,
-		CARD32 *size)
+		CARD32 *size, void *closure)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	WsfbPtr fPtr = WSFBPTR(pScrn);
