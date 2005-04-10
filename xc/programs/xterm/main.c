@@ -317,6 +317,12 @@ ttyslot()
 #define HAS_SAVED_IDS_AND_SETEUID
 #endif
 
+#ifndef XTERM_IS_SETUID
+# ifndef __OpenBSD__
+#  define XTERM_IS_SETUID
+# endif
+#endif
+
 /* Xpoll.h and <sys/param.h> on glibc 2.1 systems have colliding NBBY's */
 #if defined(__GLIBC__) && ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 1)))
 #ifndef NOFILE
@@ -1522,8 +1528,6 @@ main(int argc, char *argv[]ENVP_ARG)
 
 #ifdef __OpenBSD__
     get_pty(NULL, NULL);
-    seteuid(getuid());
-    setuid(getuid());
 #endif /* __OpenBSD__ */
 
     /* Do these first, since we may not be able to open the display */
@@ -1799,9 +1803,11 @@ main(int argc, char *argv[]ENVP_ARG)
     /* Init the Toolkit. */
     {
 #ifdef HAS_SAVED_IDS_AND_SETEUID
+#ifdef XTERM_IS_SETUID
 	uid_t euid = geteuid();
-	gid_t egid = getegid();
 	uid_t ruid = getuid();
+#endif
+	gid_t egid = getegid();
 	gid_t rgid = getgid();
 
 	if (setegid(rgid) == -1) {
@@ -1811,7 +1817,7 @@ main(int argc, char *argv[]ENVP_ARG)
 		(void) fprintf(stderr, "setegid(%d): %s\n",
 			       (int) rgid, strerror(errno));
 	}
-
+#ifdef XTERM_IS_SETUID
 	if (seteuid(ruid) == -1) {
 #ifdef __MVS__
 	    if (!(errno == EMVSERR))
@@ -1820,7 +1826,7 @@ main(int argc, char *argv[]ENVP_ARG)
 			       (int) ruid, strerror(errno));
 	}
 #endif
-
+#endif
 	XtSetErrorHandler(xt_error);
 #if OPT_SESSION_MGT
 	toplevel = XtOpenApplication(&app_con, my_class,
@@ -1844,6 +1850,7 @@ main(int argc, char *argv[]ENVP_ARG)
 	TRACE_XRES();
 
 #ifdef HAS_SAVED_IDS_AND_SETEUID
+#ifdef XTERM_IS_SETUID
 	if (seteuid(euid) == -1) {
 #ifdef __MVS__
 	    if (!(errno == EMVSERR))
@@ -1851,7 +1858,7 @@ main(int argc, char *argv[]ENVP_ARG)
 		(void) fprintf(stderr, "seteuid(%d): %s\n",
 			       (int) euid, strerror(errno));
 	}
-
+#endif
 	if (setegid(egid) == -1) {
 #ifdef __MVS__
 	    if (!(errno == EMVSERR))
@@ -2280,13 +2287,11 @@ get_pty(int *pty, char *from GCC_UNUSED)
     if (pty == NULL) {
 	result = openpty(&m_pty, &m_tty, ttydev, NULL, NULL);
 
-	seteuid(0);
 	if ((ttygrp = getgrnam(TTY_GROUP_NAME)) != 0) {
 	    set_owner(ttydev, getuid(), ttygrp->gr_gid, 0600);
 	} else {
 	    set_owner(ttydev, getuid(), getgid(), 0600);
 	}
-	seteuid(getuid());
     } else if (m_pty != -1) {
 	*pty = m_pty;
 	result = 0;
@@ -2795,7 +2800,9 @@ spawn(void)
 	set_pty_id(ptydev, passedPty);
 #endif
 	setgid(screen->gid);
+#ifdef XTERM_IS_SETUID
 	setuid(screen->uid);
+#endif
     } else {
 	Bool tty_got_hung;
 
@@ -3992,9 +3999,11 @@ spawn(void)
 		}
 	    }
 #endif
+#ifdef XTERM_IS_SETUID
 	    if (setuid(screen->uid)) {
 		SysError(ERROR_SETUID);
 	    }
+#endif
 #if OPT_PTY_HANDSHAKE
 	    if (resource.ptyHandshake) {
 		/* mark the pipes as close on exec */
