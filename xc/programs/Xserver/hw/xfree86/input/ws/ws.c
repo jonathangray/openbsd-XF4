@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.1 2005/02/16 20:04:16 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.2 2005/04/13 13:52:15 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -25,6 +25,7 @@
 #include <misc.h>
 #include <xf86.h>
 
+#define NEED_XF86_TYPES	/* for xisb.h when !XFree86LOADER */
 #include <xf86_ansic.h>
 #include <xf86_OSproc.h>
 #include <xf86Xinput.h>
