@@ -517,6 +517,14 @@ UnlockServer(void)
   (void) unlink(LockFile);
   }
 }
+
+#ifdef X_PRIVSEP
+int
+ChownLock(uid_t uid, gid_t gid)
+{
+	return chown(LockFile, uid, gid);
+}
+#endif
 #endif /* SERVER_LOCK */
 
 /* Force connections to close on SIGHUP from init */

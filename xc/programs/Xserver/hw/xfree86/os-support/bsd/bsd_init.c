@@ -35,6 +35,7 @@
 
 #include <sys/utsname.h>
 #ifdef X_PRIVSEP
+#include "os.h"
 #include <pwd.h>
 #endif
 #include <stdlib.h>
@@ -755,6 +756,11 @@ xf86DropPriv(char *disp)
 		pw = getpwnam("_x11");
 		if (!pw)
 			return;
+		/* give away lock file to unpriviledged user */
+		if (ChownLock(pw->pw_uid, pw->pw_gid) == -1) {
+			FatalError("Chown Lock");
+		}
+		
 		/* Start privileged child */
 		if (priv_init(pw->pw_uid, pw->pw_gid) == -1) {
 			FatalError("priv_init");

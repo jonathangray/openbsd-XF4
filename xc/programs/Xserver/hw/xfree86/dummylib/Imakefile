@@ -6,6 +6,7 @@ INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
 	   -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(DRMSRCDIR)/shared
 
 SRCS = \
+	chownlock.c \
 	dispatchException.c \
 	fatalerror.c \
 	getvalidbios.c \
@@ -34,6 +35,7 @@ SRCS = \
 	sigiostubs.c
 
 OBJS = \
+	chownlock.o \
 	dispatchException.o \
 	fatalerror.o \
 	getvalidbios.o \
