@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.3 2005/04/25 19:57:39 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.4 2005/04/25 20:45:59 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -326,6 +326,9 @@ wsProc(DeviceIntPtr pWS, int what)
 		xf86InitValuatorDefaults(pWS, 1);
 		AssignTypeAndName(pWS, pInfo->atom, pInfo->name);
 		pWS->public.on = FALSE;
+		/* This sould correspond to the center of the screen */
+		priv->x = (priv->max_x - priv->min_x) / 2;
+		priv->y = (priv->max_y - priv->min_y) / 2;
 		if (wsOpen(pInfo) != Success) {
 			return !Success;
 		}
@@ -446,9 +449,12 @@ wsReadInput(InputInfoPtr pInfo)
 
 		if (dx || dy) {
 			/* relative motion event */
-			xf86PostMotionEvent(pInfo->dev, 0, 0, 2, dx, dy);
+			DBG(3, ErrorF("postMotionEvent dX %d dY %d\n", 
+				      dx, dy));
 			priv->x += dx;
 			priv->y += dy;
+			xf86PostMotionEvent(pInfo->dev, 1, 0, 2, 
+			    priv->x, priv->y);
 		}
 		if (priv->lastButtons != buttons) {
 			/* button event */
