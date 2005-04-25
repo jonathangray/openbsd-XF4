@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.2 2005/04/13 13:52:15 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.3 2005/04/25 19:57:39 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -226,17 +226,19 @@ wsPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 		priv->screen_no = 0;
 	}
 
-	priv->max_x = xf86SetIntOption(pInfo->options, "MaxX", 3000);
-	xf86Msg(X_CONFIG, "%s maximum x position: %d\n", 
+	priv->max_x = xf86SetIntOption(pInfo->options, "MaxX", 
+	    screenInfo.screens[priv->screen_no]->width);
+	xf86Msg(X_INFO, "%s maximum x position: %d\n", 
 	    dev->identifier, priv->max_x);
 	priv->min_x = xf86SetIntOption(pInfo->options, "MinX", 0);
-	xf86Msg(X_CONFIG, "%s minimum x position: %d\n", 
+	xf86Msg(X_INFO, "%s minimum x position: %d\n", 
 	    dev->identifier, priv->min_x);
-	priv->max_y = xf86SetIntOption(pInfo->options, "MaxY", 3000);
-	xf86Msg(X_CONFIG, "%s maximum y position: %d\n", 
+	priv->max_y = xf86SetIntOption(pInfo->options, "MaxY", 
+	    screenInfo.screens[priv->screen_no]->height);
+	xf86Msg(X_INFO, "%s maximum y position: %d\n", 
 	    dev->identifier, priv->max_y);
 	priv->min_y = xf86SetIntOption(pInfo->options, "MinY", 0);
-	xf86Msg(X_CONFIG, "%s minimum y position: %d\n", 
+	xf86Msg(X_INFO, "%s minimum y position: %d\n", 
 	    dev->identifier, priv->min_y);
 
 	priv->swap_axes = xf86SetBoolOption(pInfo->options, "SwapXY", 0);
