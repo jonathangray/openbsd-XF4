@@ -1,4 +1,4 @@
-.\"	$OpenBSD: ws.man,v 1.1 2005/02/16 23:20:56 matthieu Exp $
+.\"	$OpenBSD: ws.man,v 1.2 2005/04/25 20:03:50 matthieu Exp $
 .\"
 .\" Copyright (c) 2005 Matthieu Herrb
 .\"
@@ -58,6 +58,7 @@ This option is mandatory.
 .TP 4
 .B Option \fI"MaxY"\fP \fI"number"\fP
 These options represent the coordinate space returned by the device.
-These information can be obtained by an external calibration utility.
+They default to the screen dimensions, since the calibration is handled in
+the kernel by the zts(4) driver and the ztsscale(8) utility.
 .SH "SEE ALSO"
-Xorg(1), xorg.conf(__filemansuffix__), zts(4).
+Xorg(1), xorg.conf(__filemansuffix__), zts(4), sysctl(8), ztsscale(8).
