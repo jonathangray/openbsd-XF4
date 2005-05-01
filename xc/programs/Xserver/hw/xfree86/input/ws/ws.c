@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.4 2005/04/25 20:45:59 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.5 2005/05/01 19:40:08 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -452,6 +452,10 @@ wsReadInput(InputInfoPtr pInfo)
 			DBG(3, ErrorF("postMotionEvent dX %d dY %d\n", 
 				      dx, dy));
 			priv->x += dx;
+			if (priv->x < priv->min_x) priv->x = priv->min_x;
+			if (priv->x > priv->max_x) priv->x = priv->max_x;
+			if (priv->y < priv->min_y) priv->y = priv->min_y;
+			if (priv->y > priv->max_y) priv->y = priv->max_y;
 			priv->y += dy;
 			xf86PostMotionEvent(pInfo->dev, 1, 0, 2, 
 			    priv->x, priv->y);
