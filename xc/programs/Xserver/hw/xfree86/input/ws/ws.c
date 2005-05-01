@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.5 2005/05/01 19:40:08 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.6 2005/05/01 19:43:44 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -454,9 +454,9 @@ wsReadInput(InputInfoPtr pInfo)
 			priv->x += dx;
 			if (priv->x < priv->min_x) priv->x = priv->min_x;
 			if (priv->x > priv->max_x) priv->x = priv->max_x;
+			priv->y += dy;
 			if (priv->y < priv->min_y) priv->y = priv->min_y;
 			if (priv->y > priv->max_y) priv->y = priv->max_y;
-			priv->y += dy;
 			xf86PostMotionEvent(pInfo->dev, 1, 0, 2, 
 			    priv->x, priv->y);
 		}
