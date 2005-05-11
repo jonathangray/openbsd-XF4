@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.17 2004/11/04 23:30:53 todd Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.18 2005/05/11 18:48:39 espie Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.10 2004/06/29 22:57:46 herrb Exp $
 XCOMM
 
@@ -7,6 +7,7 @@ XCOMM
 # define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB) -lsupc++
 #endif 
 
+#define SharedX11Rev 9.0
 /* Shared Library Revisions. Crank major on API Changes */
 
 #if OverrideShlibRevs
