@@ -200,10 +200,10 @@ set ReConfig 0
 set UseConfigFile 0
 set proceed [mesg [format "%s\n\n%s" \
 		       [parafmt 65 \
-			    "This tool is for configuring XFRee86 3.3.6 \
+			    "This tool is for configuring XFree86 3.3.6 \
 			     servers only. If you want to configure \
-			     XFree86 4.0.3 on your system, use xf86cfg or \
-			     the text-only tool xf86config."] \
+			     X.Org 6.8 on your system, use xorgcfg or \
+			     the text-only tool xorgconfig."] \
 		       "Do you want to continue?"] yesno]
 if !$proceed {
     exit 1
