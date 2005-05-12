@@ -436,6 +436,7 @@
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/glxgears.0
 ./usr/X11R6/man/cat1/glxinfo.0
+./usr/X11R6/man/cat1/xdriinfo.0
 ./usr/X11R6/man/cat3/GLwCreateMDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
@@ -981,4 +982,3 @@
 ./usr/X11R6/man/cat3/gluTessProperty.0
 ./usr/X11R6/man/cat3/gluTessVertex.0
 ./usr/X11R6/man/cat3/gluUnProject.0
-./usr/X11R6/man/cat1/xdriinfo.0

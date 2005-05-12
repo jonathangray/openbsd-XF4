@@ -1395,7 +1395,7 @@
 ./usr/X11R6/lib/libOSMesa.a
 ./usr/X11R6/lib/libOSMesa.so.6.0
 ./usr/X11R6/lib/libSM.so.8.0
-./usr/X11R6/lib/libX11.so.8.1
+./usr/X11R6/lib/libX11.so.9.0
 ./usr/X11R6/lib/libXRes.so.2.0
 ./usr/X11R6/lib/libXTrap.so.8.0
 ./usr/X11R6/lib/libXaw.so.10.0
