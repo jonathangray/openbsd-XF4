@@ -2,7 +2,7 @@
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
-Copyright © 2002 David Dawes
+Copyright Â© 2002 David Dawes
 
 All Rights Reserved.
 
@@ -27,7 +27,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/common.h,v 1.10 2004/01/03 02:11:53 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/common.h,v 1.9 2003/09/24 02:43:23 dawes Exp $ */
 
 /*
  * Authors:
@@ -79,6 +79,7 @@ extern const char *I810vbeSymbols[];
 extern const char *I810ddcSymbols[];
 extern const char *I810fbSymbols[];
 extern const char *I810xaaSymbols[];
+extern const char *I810shadowFBSymbols[];
 #ifdef XF86DRI
 extern const char *I810driSymbols[];
 extern const char *I810drmSymbols[];
@@ -124,7 +125,7 @@ extern void I830DPRINTF_stub(const char *filename, int line,
 
 #if 1
 #define ADVANCE_LP_RING() do {						\
-   RecPtr->LpRing.tail = outring;					\
+   RecPtr->LpRing->tail = outring;					\
    if (outring & 0x07)							\
       ErrorF("ADVANCE_LP_RING: "					\
 	     "outring (0x%x) isn't on a QWord boundary", outring);	\
@@ -132,7 +133,7 @@ extern void I830DPRINTF_stub(const char *filename, int line,
 } while (0)
 #else
 #define ADVANCE_LP_RING() {						\
-   RecPtr->LpRing.tail = outring;					\
+   RecPtr->LpRing->tail = outring;					\
    if (outring & 0x07)							\
       ErrorF("ADVANCE_LP_RING: "					\
 	     "outring (0x%x) isn't on a QWord boundary", outring);	\
@@ -173,25 +174,25 @@ extern void I830DPRINTF_stub(const char *filename, int line,
 #define BEGIN_LP_RING(n)						\
    unsigned int outring, ringmask;					\
    volatile unsigned char *virt;					\
-   unsigned int needed;							\
+   int needed;							\
    if ((n) & 1)								\
       ErrorF("BEGIN_LP_RING called with odd argument: %d\n", n);	\
    if ((n) > 2 && (I810_DEBUG&DEBUG_ALWAYS_SYNC))			\
       DO_RING_IDLE();							\
    needed = (n) * 4;							\
-   if ((RecPtr->LpRing.tail > RecPtr->LpRing.tail_mask - AVOID_SIZE) ||	\
-       (RecPtr->LpRing.tail + needed) >					\
-	RecPtr->LpRing.tail_mask - AVOID_SIZE) {			\
-      needed += RecPtr->LpRing.tail_mask + 1 - RecPtr->LpRing.tail;	\
+   if ((RecPtr->LpRing->tail > RecPtr->LpRing->tail_mask - AVOID_SIZE) ||	\
+       (RecPtr->LpRing->tail + needed) >				\
+	RecPtr->LpRing->tail_mask - AVOID_SIZE) {			\
+      needed += RecPtr->LpRing->tail_mask + 1 - RecPtr->LpRing->tail;	\
       ErrorF("BEGIN_LP_RING: skipping last 64 bytes of "		\
 	     "ring (%d vs %d)\n", needed, (n) * 4);			\
    }									\
-   if (RecPtr->LpRing.space < needed)					\
+   if (RecPtr->LpRing->space < needed)					\
       WaitRingFunc(pScrn, needed, 0);					\
-   RecPtr->LpRing.space -= needed;					\
-   outring = RecPtr->LpRing.tail;					\
-   ringmask = RecPtr->LpRing.tail_mask;					\
-   virt = RecPtr->LpRing.virtual_start;					\
+   RecPtr->LpRing->space -= needed;					\
+   outring = RecPtr->LpRing->tail;					\
+   ringmask = RecPtr->LpRing->tail_mask;				\
+   virt = RecPtr->LpRing->virtual_start;				\
    while (needed > (n) * 4) {						\
       ErrorF("BEGIN_LP_RING: putting MI_NOOP at 0x%x (remaining %d)\n",	\
 	     outring, needed - (n) * 4);				\
@@ -206,18 +207,18 @@ extern void I830DPRINTF_stub(const char *filename, int line,
 #define BEGIN_LP_RING(n)						\
    unsigned int outring, ringmask;					\
    volatile unsigned char *virt;					\
-   unsigned int needed;							\
+   int needed;								\
    if ((n) & 1)								\
       ErrorF("BEGIN_LP_RING called with odd argument: %d\n", n);	\
    if ((n) > 2 && (I810_DEBUG&DEBUG_ALWAYS_SYNC))			\
       DO_RING_IDLE();							\
    needed = (n) * 4;							\
-   if (RecPtr->LpRing.space < needed)					\
+   if (RecPtr->LpRing->space < needed)					\
       WaitRingFunc(pScrn, needed, 0);					\
-   RecPtr->LpRing.space -= needed;					\
-   outring = RecPtr->LpRing.tail;					\
-   ringmask = RecPtr->LpRing.tail_mask;					\
-   virt = RecPtr->LpRing.virtual_start;					\
+   RecPtr->LpRing->space -= needed;					\
+   outring = RecPtr->LpRing->tail;					\
+   ringmask = RecPtr->LpRing->tail_mask;				\
+   virt = RecPtr->LpRing->virtual_start;				\
    if (I810_DEBUG & DEBUG_VERBOSE_RING)					\
       ErrorF( "BEGIN_LP_RING %d in %s\n", n, FUNCTION_NAME);
 
@@ -257,9 +258,7 @@ extern void I830DPRINTF_stub(const char *filename, int line,
  * preprocessor symbol, and equal to zero.
  */
 #if 1
-#ifndef I810_DEBUG
 #define I810_DEBUG 0
-#endif
 #endif
 #ifndef I810_DEBUG
 #warning "Debugging enabled - expect reduced performance"
@@ -302,6 +301,22 @@ extern int I810_DEBUG;
 #define PCI_CHIP_I865_G_BRIDGE	   0x2570
 #endif
 
+#ifndef PCI_CHIP_I915_G
+#define PCI_CHIP_I915_G		   0x2582
+#define PCI_CHIP_I915_G_BRIDGE	   0x2580
+#endif
+
+#ifndef PCI_CHIP_I915_GM
+#define PCI_CHIP_I915_GM	   0x2592
+#define PCI_CHIP_I915_GM_BRIDGE	   0x2590
+#endif
+
+#ifndef PCI_CHIP_E7221_G
+#define PCI_CHIP_E7221_G	   0x258A
+/* Same as I915_G_BRIDGE */
+#define PCI_CHIP_E7221_G_BRIDGE	   0x2580
+#endif
+
 #define IS_I810(pI810) (pI810->PciInfo->chipType == PCI_CHIP_I810 ||	\
 			pI810->PciInfo->chipType == PCI_CHIP_I810_DC100 || \
 			pI810->PciInfo->chipType == PCI_CHIP_I810_E)
@@ -309,9 +324,13 @@ extern int I810_DEBUG;
 #define IS_I830(pI810) (pI810->PciInfo->chipType == PCI_CHIP_I830_M)
 #define IS_845G(pI810) (pI810->PciInfo->chipType == PCI_CHIP_845_G)
 #define IS_I85X(pI810)  (pI810->PciInfo->chipType == PCI_CHIP_I855_GM)
+#define IS_I852(pI810)  (pI810->PciInfo->chipType == PCI_CHIP_I855_GM && (pI810->variant == I852_GM || pI810->variant == I852_GME))
+#define IS_I855(pI810)  (pI810->PciInfo->chipType == PCI_CHIP_I855_GM && (pI810->variant == I855_GM || pI810->variant == I855_GME))
 #define IS_I865G(pI810) (pI810->PciInfo->chipType == PCI_CHIP_I865_G)
+#define IS_I915G(pI810) (pI810->PciInfo->chipType == PCI_CHIP_I915_G || pI810->PciInfo->chipType == PCI_CHIP_E7221_G)
+#define IS_I915GM(pI810) (pI810->PciInfo->chipType == PCI_CHIP_I915_GM)
 
-#define IS_MOBILE(pI810) (IS_I830(pI810) || IS_I85X(pI810))
+#define IS_MOBILE(pI810) (IS_I830(pI810) || IS_I85X(pI810) || IS_I915GM(pI810))
 
 #define GTT_PAGE_SIZE			KB(4)
 #define ROUND_TO(x, y)			(((x) + (y) - 1) / (y) * (y))
@@ -322,6 +341,7 @@ extern int I810_DEBUG;
 #define MIN_SCRATCH_BUFFER_SIZE		KB(16)
 #define MAX_SCRATCH_BUFFER_SIZE		KB(64)
 #define HWCURSOR_SIZE			GTT_PAGE_SIZE
+#define HWCURSOR_SIZE_ARGB		GTT_PAGE_SIZE * 4
 #define OVERLAY_SIZE			GTT_PAGE_SIZE
 
 /* Use a 64x64 HW cursor */

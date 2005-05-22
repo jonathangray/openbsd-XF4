@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/Imakefile,v 1.28 2003/09/28 20:15:57 alanh Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/Imakefile,v 1.27 2003/04/21 18:56:48 sven Exp $
 XCOMM
 XCOMM This is the Imakefile for the i810 driver.  
 XCOMM 
@@ -37,14 +37,14 @@ I830OBJS1 = i830_video.o
 
 #if !I830Only
 I810SRCS = i810_cursor.c i810_accel.c i810_memory.c i810_wmark.c i810_dga.c \
-	   i810_video.c i810_io.c
+	   i810_video.c i810_io.c i830_modes.c
 I810OBJS = i810_cursor.o i810_accel.o i810_memory.o i810_wmark.o i810_dga.o \
-	   i810_video.o i810_io.o
+	   i810_video.o i810_io.o i830_modes.o
 #endif
 I830SRCS = i830_driver.c i830_memory.c i830_cursor.c i830_accel.c i830_io.c \
-	   i830_dga.c $(I830SRCS1) $(I830SRCS2)
+	   i830_dga.c i830_shadow.c $(I830SRCS1) $(I830SRCS2)
 I830OBJS = i830_driver.o i830_memory.o i830_cursor.o i830_accel.o i830_io.o \
-	   i830_dga.o $(I830OBJS1) $(I830OBJS2)
+	   i830_dga.o i830_shadow.o $(I830OBJS1) $(I830OBJS2)
 
 SRCS = 	i810_driver.c \
 	$(I810SRCS) $(I830SRCS) $(DRISRCS)
@@ -127,6 +127,7 @@ InstallDriverSDKNonExecFile(i830_dri.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_dri.h,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_driver.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_memory.c,$(DRIVERSDKDIR)/drivers/i810)
+InstallDriverSDKNonExecFile(i830_shadow.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(i830_video.c,$(DRIVERSDKDIR)/drivers/i810)
 InstallDriverSDKNonExecFile(../../../../../../lib/GL/mesa/src/drv/i830/i830_3d_reg.h,$(DRIVERSDKDIR)/drivers/i810)
 

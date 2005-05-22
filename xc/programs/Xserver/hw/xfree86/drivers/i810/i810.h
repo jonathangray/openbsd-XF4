@@ -2,7 +2,7 @@
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
-Copyright © 2002 David Dawes
+Copyright Â© 2002 David Dawes
 
 All Rights Reserved.
 
@@ -27,7 +27,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810.h,v 1.42 2003/09/28 20:15:57 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810.h,v 1.41 2003/06/18 13:14:17 dawes Exp $ */
 
 /*
  * Authors:
@@ -162,13 +162,17 @@ typedef struct _I810Rec {
    int auxPitch;
    int auxPitchBits;
 
+   Bool CursorIsARGB;
    int CursorOffset;
    unsigned long CursorPhysical;
    unsigned long CursorStart;
+   int CursorARGBOffset;
+   unsigned long CursorARGBPhysical;
+   unsigned long CursorARGBStart;
    unsigned long OverlayPhysical;
    unsigned long OverlayStart;
    int colorKey;
-   int surfaceAllocation[I810_TOTAL_SURFACES];
+   unsigned int surfaceAllocation[I810_TOTAL_SURFACES];
    int numSurfaces;
 
    DGAModePtr DGAModes;
@@ -184,7 +188,7 @@ typedef struct _I810Rec {
    pciVideoPtr PciInfo;
    PCITAG PciTag;
 
-   I810RingBuffer LpRing;
+   I810RingBuffer *LpRing;
    unsigned int BR[20];
 
    int LmFreqSel;
@@ -195,6 +199,8 @@ typedef struct _I810Rec {
    unsigned long DcacheOffset;
    int HwcursKey;
    unsigned long HwcursOffset;
+   int ARGBHwcursKey;
+   unsigned long ARGBHwcursOffset;
 
    int GttBound;
 
@@ -235,14 +241,15 @@ typedef struct _I810Rec {
    unsigned long backHandle;
    unsigned long zHandle;
    unsigned long cursorHandle;
+   unsigned long cursorARGBHandle;
    unsigned long xvmcHandle;
    unsigned long sysmemHandle;
    Bool agpAcquired;
-   drmHandle buffer_map;
-   drmHandle ring_map;
-   drmHandle overlay_map;
-   drmHandle mc_map;
-   drmHandle xvmcContext;
+   drm_handle_t buffer_map;
+   drm_handle_t ring_map;
+   drm_handle_t overlay_map;
+   drm_handle_t mc_map;
+   drm_handle_t xvmcContext;
 #endif
    Bool agpAcquired2d;
 
@@ -288,9 +295,10 @@ extern int I810WaitLpRing(ScrnInfoPtr pScrn, int n, int timeout_millis);
 extern void I810Sync(ScrnInfoPtr pScrn);
 extern unsigned long I810LocalToPhysical(ScrnInfoPtr pScrn,
 					 unsigned long local);
-extern int I810AllocLow(I810MemRange * result, I810MemRange * pool, int size);
+extern int I810AllocLow(I810MemRange * result, I810MemRange * pool, 
+			int size);
 extern int I810AllocHigh(I810MemRange * result, I810MemRange * pool,
-			 int size);
+			int size);
 extern Bool I810AllocateFront(ScrnInfoPtr pScrn);
 
 extern int I810AllocateGARTMemory(ScrnInfoPtr pScrn);
