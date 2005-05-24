@@ -26,7 +26,7 @@ I830DRIOBJS = i830_dri.o
 DRISRCS = $(I810DRISRCS) $(I830DRISRCS)
 DRIOBJS = $(I810DRIOBJS) $(I830DRIOBJS)
 DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri \
-	-I$(XF86OSSRC)/linux/drm/kernel -I$(TOP)/include
+	-I$(TOP)/include -I$(DRMSRCDIR)/shared
 DRIDEFINES = $(GLX_DEFINES)
 #endif
 
@@ -77,12 +77,6 @@ INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC)				\
 	   $(DRIINCLUDES)
 #endif
 DEFINES = $(DRIDEFINES) $(CHIPDEFINES) $(I830XVDEFINES)
-
-#if BuildXF86DRI
-#if !defined(XF86DriverSDK)
-LinkSourceFile(i830_3d_reg.h, $(GLXLIBSRC)/mesa/src/drv/i830)
-#endif
-#endif
 
 ObjectFromSpecialSource(i830_io, i810_io, -DBUILD_FOR_I830)
 

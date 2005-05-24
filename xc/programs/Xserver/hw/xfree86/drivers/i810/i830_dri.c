@@ -438,13 +438,12 @@ I830DRIScreenInit(ScreenPtr pScreen)
       int major, minor, patch;
 
       DRIQueryVersion(&major, &minor, &patch);
-      if (major != DRIINFO_MAJOR_VERSION || minor < DRIINFO_MINOR_VERSION) {
+      if (major != 4 || minor < 0) {
 	 xf86DrvMsg(pScreen->myNum, X_ERROR,
 		    "[dri] %s failed because of a version mismatch.\n"
-		    "[dri] libdri version is %d.%d.%d bug version %d.%d.x is needed.\n"
+		    "[dri] libDRI version is %d.%d.%d bug version 4.0.x is needed.\n"
 		    "[dri] Disabling DRI.\n",
-		    "I830DRIScreenInit", major, minor, patch,
-                    DRIINFO_MAJOR_VERSION, DRIINFO_MINOR_VERSION);
+		    "I830DRIScreenInit", major, minor, patch);
 	 return FALSE;
       }
    }
