@@ -43,6 +43,9 @@
 #include <X11/extensions/XKBsrv.h>
 #endif
 
+extern int XkbDfltRepeatDelay;
+extern int XkbDfltRepeatInterval;
+
 #define CAPSFLAG	1
 #define NUMFLAG		2
 #define SCROLLFLAG	4
@@ -153,6 +156,12 @@ static const char *kbd98Defaults[] = {
     NULL
 };
 
+const char *xkbSymbols[] = {
+	"XkbDfltRepeatDelay",
+	"XkbDfltRepeatInterval",
+	NULL,
+};
+
 #ifdef XKB
 static char *xkb_rules;
 static char *xkb_model;
@@ -230,6 +239,8 @@ KbdPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
     pInfo->private = pKbd;
     pKbd->PostEvent = PostKbdEvent;
 
+    xf86LoaderReqSymLists(xkbSymbols, NULL);
+
     if (!xf86OSKbdPreInit(pInfo))
         return pInfo;
 
@@ -243,7 +254,9 @@ KbdPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
             xf86Msg(X_ERROR, "\"%s\" is not a valid AutoRepeat value", s);
         } else {
             pKbd->delay = delay;
+	    XkbDfltRepeatDelay = delay;
             pKbd->rate = rate;
+	    XkbDfltRepeatInterval = 1000/rate;
         }
         xfree(s);
     }
