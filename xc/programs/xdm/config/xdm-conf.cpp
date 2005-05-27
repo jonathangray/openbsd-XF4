@@ -1,5 +1,5 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.10 2004/11/03 00:22:22 matthieu Exp $
+! $OpenBSD: xdm-conf.cpp,v 1.11 2005/05/27 22:30:20 matthieu Exp $
 !
 !
 !
@@ -31,6 +31,9 @@ DisplayManager._0.authName:     MIT-MAGIC-COOKIE-1
 #ifdef XPM
 DisplayManager*loginmoveInterval:	10
 #endif /* XPM */
+!
+DisplayManager*xrdb: XRDB
+!
 ! SECURITY: do not listen for XDMCP or Chooser requests
 ! Comment out this line if you want to manage X terminals with xdm
 DisplayManager.requestPort:	0
