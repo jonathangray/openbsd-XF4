@@ -487,8 +487,11 @@ DoCmdDefines(String *buff)
 		*val = '=';
 	    } else
 		AddSimpleDef(buff, arg + 2);
-	} else
+	} else if (arg[1] == 'U') {
 	    AddUndef(buff, arg + 2);
+	} else if (!strcmp(arg, "-undef") && oper != OPSYMBOLS) {
+	    addstring(buff, " -undef");
+	}
     }
 }
 
@@ -869,6 +872,13 @@ main(int argc, char *argv[])
 		    cmd_defines[num_cmd_defines++] = arg;
 		} else {
 		    fatal("%s: Too many -U/-D arguments\n", ProgramName);
+		}
+		continue;
+	    } else if (!strcmp ("-undef", arg)) {
+		if (num_cmd_defines < MAX_CMD_DEFINES) {
+		    cmd_defines[num_cmd_defines++] = "-undef";
+		} else {
+		    fatal("%s: Too many cpp arguments\n", ProgramName);
 		}
 		continue;
 	    }
