@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.7 2005/06/07 11:54:21 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.8 2005/06/07 12:04:08 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -66,7 +66,7 @@ static const OptionInfoRec *wsAvailableOptions(void *);
 static InputInfoPtr wsPreInit(InputDriverPtr, IDevPtr, int);
 static int wsProc(DeviceIntPtr, int);
 static void wsReadInput(InputInfoPtr);
-static void wsSendButtons(InputInfoPtr, int, int, int);
+static void wsSendButtons(InputInfoPtr, int);
 static int wsChangeControl(InputInfoPtr, xDeviceCtl *);
 static int wsSwitchMode(ClientPtr, DeviceIntPtr, int);
 static Bool wsOpen(InputInfoPtr);
@@ -225,14 +225,14 @@ wsPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 	}
 
 	priv->max_x = xf86SetIntOption(pInfo->options, "MaxX", 
-	    screenInfo.screens[priv->screen_no]->width);
+	    screenInfo.screens[priv->screen_no]->width - 1);
 	xf86Msg(X_INFO, "%s maximum x position: %d\n", 
 	    dev->identifier, priv->max_x);
 	priv->min_x = xf86SetIntOption(pInfo->options, "MinX", 0);
 	xf86Msg(X_INFO, "%s minimum x position: %d\n", 
 	    dev->identifier, priv->min_x);
 	priv->max_y = xf86SetIntOption(pInfo->options, "MaxY", 
-	    screenInfo.screens[priv->screen_no]->height);
+	    screenInfo.screens[priv->screen_no]->height - 1);
 	xf86Msg(X_INFO, "%s maximum y position: %d\n", 
 	    dev->identifier, priv->max_y);
 	priv->min_y = xf86SetIntOption(pInfo->options, "MinY", 0);
@@ -449,6 +449,7 @@ wsReadInput(InputInfoPtr pInfo)
 			/* relative motion event */
 			DBG(3, ErrorF("postMotionEvent dX %d dY %d\n", 
 				      dx, dy));
+#if 0
 			priv->x += dx;
 			if (priv->x < priv->min_x) priv->x = priv->min_x;
 			if (priv->x > priv->max_x) priv->x = priv->max_x;
@@ -457,10 +458,14 @@ wsReadInput(InputInfoPtr pInfo)
 			if (priv->y > priv->max_y) priv->y = priv->max_y;
 			xf86PostMotionEvent(pInfo->dev, 1, 0, 2, 
 			    priv->x, priv->y);
+#else
+			xf86PostMotionEvent(pInfo->dev, 0, 0, 2, 
+			    dx, dy);
+#endif
 		}
 		if (priv->lastButtons != buttons) {
 			/* button event */
-			wsSendButtons(pInfo, buttons, priv->x, priv->y);
+			wsSendButtons(pInfo, buttons);
 			priv->lastButtons = buttons;
 		}
 		if (ax) {
@@ -483,7 +488,7 @@ wsReadInput(InputInfoPtr pInfo)
 } /* wsReadInput */
 
 static void
-wsSendButtons(InputInfoPtr pInfo, int buttons, int rx, int ry)
+wsSendButtons(InputInfoPtr pInfo, int buttons)
 {
 	WSDevicePtr priv = (WSDevicePtr)pInfo->private;
 	int button, mask;
@@ -545,14 +550,14 @@ wsConvert(InputInfoPtr pInfo, int first, int num,
 	DBG(3, ErrorF("WSConvert: v0(%d), v1(%d)\n", v0, v1));
 
 	if (priv->swap_axes != 0) {
-		*x = xf86ScaleAxis(v1, 0, priv->screen_width, 
+		*x = xf86ScaleAxis(v1, 0, priv->screen_width - 1,
 				   priv->min_y, priv->max_y);
-		*y = xf86ScaleAxis(v0, 0, priv->screen_height, 
+		*y = xf86ScaleAxis(v0, 0, priv->screen_height - 1,
 				   priv->min_x, priv->max_x);
 	} else {
-		*x = xf86ScaleAxis(v0, 0, priv->screen_width, 
+		*x = xf86ScaleAxis(v0, 0, priv->screen_width - 1,
 				   priv->min_x, priv->max_x);
-		*y = xf86ScaleAxis(v1, 0, priv->screen_height, 
+		*y = xf86ScaleAxis(v1, 0, priv->screen_height - 1,
 				   priv->min_y, priv->max_y);
 	}
   
