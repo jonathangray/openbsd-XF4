@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.6 2005/05/01 19:43:44 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.7 2005/06/07 11:54:21 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -142,7 +142,6 @@ InputDriverRec WS = {
 #define DEBUG
 #undef DBG
 static int debug_level = 0;
-#define DEBUG
 #ifdef DEBUG
 # define DBG(lvl, f) { if ((lvl) <= debug_level) f;}
 #else
@@ -160,7 +159,6 @@ SetupProc(pointer module, pointer options, int *errmaj, int *errmin)
 		if (xf86LoaderCheckSymbol("xf86AddModuleInfo"))
 #endif
 			xf86AddModuleInfo(&wsInfo, module);
-		xf86Msg(X_INFO, "wscons input driver\n");
 		xf86AddInputDriver(&WS, module, 0);
 		Initialised = TRUE;
 	}
@@ -197,7 +195,7 @@ wsPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 		goto fail;
 	pInfo->flags = XI86_POINTER_CAPABLE | XI86_SEND_DRAG_EVENTS;
 	pInfo->conf_idev = dev;
-	pInfo->name = XI_TOUCHSCREEN;
+	pInfo->name = "ws";
 	pInfo->private = priv;
 
 	xf86CollectInputOptions(pInfo, NULL, NULL);
@@ -496,9 +494,8 @@ wsSendButtons(InputInfoPtr pInfo, int buttons, int rx, int ry)
 			xf86PostButtonEvent(pInfo->dev, TRUE,
 			    button, (buttons & mask) != 0, 
 					    0, 0); /*2, priv->x, priv->y);*/
-			DBG(3, ErrorF("post button event %d %d %d %d\n",
-				      button, (buttons & mask) != 0,
-				      priv->x, priv->y));
+			DBG(3, ErrorF("post button event %d %d\n",
+				button, (buttons & mask) != 0))
 		}
 	} /* for */
 } /* wsSendButtons */
