@@ -32,7 +32,7 @@
 .SH NAME
 XRes \- X-Resource extension client library
 .SH SYNOPSIS
-.B #include <X11/extension/XRes.h>
+.B #include <X11/extensions/XRes.h>
 .PP
 .nf
 .ta .5i 2i
