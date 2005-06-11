@@ -32,7 +32,7 @@
 .SH NAME
 XScreenSaver \- X11 Screen Saver extension client library
 .SH SYNOPSIS
-.B #include <X11/extension/scrnsaver.h>
+.B #include <X11/extensions/scrnsaver.h>
 .PP
 .nf
 .ta .5i 2i
@@ -42,7 +42,7 @@ typedef struct {
     int kind;                     /\(** ScreenSaver{Blanked,Internal,External} */
     unsigned long til_or_since;   /\(** milliseconds */
     unsigned long idle;           /\(** milliseconds */
-    unsigned long event_mask;     /\(** events */
+    unsigned long eventMask;      /\(** events */
 .br
 } XScreenSaverInfo;
 
