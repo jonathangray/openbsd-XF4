@@ -31,7 +31,8 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 MANSUFFIX=$(LIBMANSUFFIX)
 InstallManPage(LibName,$(LIBMANDIR))
 #if ExpandManNames
-InstallManPageAliases(LibName,$(LIBMANDIR), XScreenSaverQueryExtension \ @@\
+InstallManPageAliases(LibName,$(LIBMANDIR), XScreenSaver \		@@\
+	XScreenSaverQueryExtension \					@@\
 	XScreenSaverQueryVersion \ 					@@\
 	XScreenSaverAllocInfo \						@@\
 	XScreenSaverQueryInfo \						@@\
