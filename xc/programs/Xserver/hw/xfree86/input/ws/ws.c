@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.8 2005/06/07 12:04:08 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.9 2005/06/22 06:18:46 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -22,7 +22,6 @@
 #include <sys/time.h>
 #include <dev/wscons/wsconsio.h>
 
-#include <misc.h>
 #include <xf86.h>
 
 #define NEED_XF86_TYPES	/* for xisb.h when !XFree86LOADER */
@@ -30,8 +29,7 @@
 #include <xf86_OSproc.h>
 #include <xf86Xinput.h>
 #include <xisb.h>
-#include <exevents.h>
-#include <extnsionst.h>
+#include <mipointer.h>
 #include <extinit.h>
 
 #ifdef XFree86LOADER
@@ -92,7 +90,6 @@ static XF86ModuleVersionInfo VersionRec = {
 typedef enum {
 	WSOPT_DEVICE,
 	WSOPT_DEBUG_LEVEL,
-	WSOPT_HISTORY_SIZE,
 	WSOPT_MINX,
 	WSOPT_MAXX,
 	WSOPT_MINY,
@@ -105,7 +102,6 @@ typedef enum {
 static const OptionInfoRec WSOptions[] = {
 	{ WSOPT_DEVICE, "device", OPTV_STRING, {0}, FALSE },
 	{ WSOPT_DEBUG_LEVEL, "debugLevel", OPTV_INTEGER, {0}, FALSE },
-	{ WSOPT_HISTORY_SIZE, "historysize", OPTV_INTEGER, {0}, FALSE },
 	{ WSOPT_MINX, "minX", OPTV_INTEGER, {0}, FALSE },
 	{ WSOPT_MAXX, "maxX", OPTV_INTEGER, {0}, FALSE },
 	{ WSOPT_MINY, "minY", OPTV_INTEGER, {0}, FALSE },
@@ -312,16 +308,16 @@ wsProc(DeviceIntPtr pWS, int what)
 
 		for (i = 0; i < NBUTTONS; i++)
 			map[i + 1] = i + 1;
-		xf86MotionHistoryAllocate(pInfo);
 		InitPointerDeviceStruct((DevicePtr)pWS, map,
 				min(priv->buttons, NBUTTONS),
-		    xf86GetMotionEvents, wsControlProc,
-		    pInfo->history_size);
+		    miPointerGetMotionEvents, wsControlProc,
+		    miPointerGetMotionBufferSize());
 		xf86InitValuatorAxisStruct(pWS, 0, 0, -1, 1, 0, 1);
 		xf86InitValuatorDefaults(pWS, 0);
 		
 		xf86InitValuatorAxisStruct(pWS, 1, 0, -1, 1, 0, 1);
 		xf86InitValuatorDefaults(pWS, 1);
+		xf86MotionHistoryAllocate(pInfo);
 		AssignTypeAndName(pWS, pInfo->atom, pInfo->name);
 		pWS->public.on = FALSE;
 		/* This sould correspond to the center of the screen */
