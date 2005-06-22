@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.9 2005/06/22 06:18:46 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.10 2005/06/22 06:22:06 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -53,6 +53,7 @@ typedef struct WSDevice {
 	int screen_no;
 	int num, den, threshold; /* relative accel params */
 	pointer buffer;
+	int negativeZ, positiveZ; /* mappings for Z axis */
 } WSDeviceRec, *WSDevicePtr;
 
 #ifdef XFree86LOADER
@@ -97,7 +98,10 @@ typedef enum {
 	WSOPT_ROTATE,
 	WSOPT_SWAPXY,
 	WSOPT_SCREENNO,
+	WSOPT_ZAXIS_MAPPING,
 } WSOpts;
+
+#define WS_NOZMAP 0
 
 static const OptionInfoRec WSOptions[] = {
 	{ WSOPT_DEVICE, "device", OPTV_STRING, {0}, FALSE },
@@ -109,6 +113,7 @@ static const OptionInfoRec WSOptions[] = {
 	{ WSOPT_ROTATE, "rotate", OPTV_STRING, {0}, FALSE },
 	{ WSOPT_SWAPXY, "swapxy", OPTV_BOOLEAN, {0}, FALSE },
 	{ WSOPT_SCREENNO, "ScreenNo", OPTV_INTEGER, {0}, FALSE },
+	{ WSOPT_ZAXIS_MAPPING, "ZAxisMapping", OPTV_STRING, {0}, FALSE },
 	{ -1, NULL, OPTV_NONE, {0}, FALSE }
 };
 
@@ -211,6 +216,32 @@ wsPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 	if (priv->buttons == 0) {
 		priv->buttons = DFLTBUTTONS;
 		buttons_from = X_DEFAULT;
+	}
+	priv->negativeZ =  priv->positiveZ = WS_NOZMAP;
+	s = xf86SetStrOption(pInfo->options, "ZAxisMapping", NULL);	
+	if (s) {
+		int b1, b2;
+
+		if (sscanf(s, "%d %d", &b1, &b2) == 2 && 
+		    b1 > 0 && b1 <= NBUTTONS &&
+		    b2 > 0 && b2 <= NBUTTONS) {
+			priv->negativeZ = b1;
+			priv->positiveZ = b2;
+			xf86Msg(X_CONFIG, 
+			    "%s: ZAxisMapping: buttons %d and %d\n", 
+			    pInfo->name, b1, b2);
+		} else {
+			xf86Msg(X_WARNING, "%s: invalid ZAxisMapping value: "
+			    "\"%s\"\n", pInfo->name, s);
+		}
+	}
+	if (priv->negativeZ > priv->buttons) {
+		priv->buttons = priv->negativeZ;
+		buttons_from = X_CONFIG;
+	}
+	if (priv->positiveZ > priv->buttons) {
+		priv->buttons = priv->positiveZ;
+		buttons_from = X_CONFIG;
 	}
 	priv->screen_no = xf86SetIntOption(pInfo->options, "ScreenNo", 0);
 	xf86Msg(X_CONFIG, "%s associated screen: %d\n", 
@@ -397,7 +428,9 @@ wsReadInput(InputInfoPtr pInfo)
 	n /= sizeof(struct wscons_event);
 	while( n-- ) {
 		int buttons = priv->lastButtons;
-		int dx = 0, dy = 0;
+		int dx = 0, dy = 0, dz = 0;
+		int zbutton = 0;
+
 		ax = 0; ay = 0;
 		switch (event->type) {
 		case WSCONS_EVENT_MOUSE_UP:
@@ -433,6 +466,12 @@ wsReadInput(InputInfoPtr pInfo)
 			if (priv->inv_y)
 				ay = priv->max_y - ay + priv->min_y;
 			break;
+#ifdef WSCONS_EVENT_MOUSE_DELTA_Z
+		case WSCONS_EVENT_MOUSE_DELTA_Z:
+			DBG(4, ErrorF("Relative Z %d\n", event->value));
+			dz = event->value;
+			break;
+#endif
 		default:
 			xf86Msg(X_WARNING, "%s: bad wsmouse event type=%d\n", 
 			    pInfo->name,
@@ -459,10 +498,29 @@ wsReadInput(InputInfoPtr pInfo)
 			    dx, dy);
 #endif
 		}
+		if (dz && priv->negativeZ != WS_NOZMAP 
+		    && priv->positiveZ != WS_NOZMAP) {
+			buttons &= ~(priv->negativeZ | priv->positiveZ);
+			if (dz < 0) {
+				DBG(4, ErrorF("Z -> button %d\n", 
+					priv->negativeZ));
+				zbutton = 1 << (priv->negativeZ - 1);
+			} else {
+				DBG(4, ErrorF("Z -> button %d\n", 
+					priv->positiveZ));
+				zbutton = 1 << (priv->positiveZ - 1);
+			}
+			buttons |= zbutton;
+			dz = 0;
+		}
 		if (priv->lastButtons != buttons) {
 			/* button event */
 			wsSendButtons(pInfo, buttons);
-			priv->lastButtons = buttons;
+		}
+		if (zbutton != 0) {
+			/* generate a button up event */
+			buttons &= ~zbutton;
+			wsSendButtons(pInfo, buttons);
 		}
 		if (ax) {
 			/* absolute position event */
@@ -499,6 +557,7 @@ wsSendButtons(InputInfoPtr pInfo, int buttons)
 				button, (buttons & mask) != 0))
 		}
 	} /* for */
+	priv->lastButtons = buttons;
 } /* wsSendButtons */
 
 
