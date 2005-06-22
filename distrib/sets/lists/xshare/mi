@@ -1487,6 +1487,7 @@
 ./usr/X11R6/man/cat3/XSaveContext.0
 ./usr/X11R6/man/cat3/XScreenNumberOfScreen.0
 ./usr/X11R6/man/cat3/XScreenResourceString.0
+./usr/X11R6/man/cat3/XScreenSaver.0
 ./usr/X11R6/man/cat3/XScreenSaverAllocInfo.0
 ./usr/X11R6/man/cat3/XScreenSaverGetRegistered.0
 ./usr/X11R6/man/cat3/XScreenSaverQueryExtension.0
