@@ -1,4 +1,4 @@
-.\" $OpenBSD: xidle.1,v 1.1 2005/06/30 01:48:45 fgsch Exp $
+.\" $OpenBSD: xidle.1,v 1.2 2005/06/30 06:58:07 fgsch Exp $
 .\"
 .\" Copyright (c) 2005 Federico G. Schwindt.
 .\"
@@ -31,15 +31,25 @@
 .Nd run a program on X inactivity
 .Sh SYNOPSIS
 .Nm xidle
-.Op Fl nw | ne | sw | se
 .Op Fl display Ar display
+.Op Fl nw | ne | sw | se
 .Op Fl program Ar path
 .Op Fl timeout Ar seconds
 .Sh DESCRIPTION
 .Nm
-allows users to run a program if no X activity has been detected for a given
-amount of seconds, or if the pointer has been moved to the very corner
-of the specified position and stays there for more than 2 seconds.
+uses the
+.Xr XScreenSaver 3
+extension to receive inactivity events when a timeout is specified, running
+a specific program after the elapsed time.
+If no program is specified, the default is to run
+.Xr xlock 1 .
+.Nm
+also monitors the very corner of the given position in a 2x2 pixel
+area for pointer activity and runs a program if the pointer sits there
+for more than 2 seconds.
+This behavior is always present, whether
+.Fl timeout
+is specified or not.
 .Pp
 The options are as follows:
 .Bl -tag -width timeout
@@ -55,7 +65,7 @@ the default is northwest.
 Specify which program to run on any of the aforementioned events.
 If
 .Fl program
-is not specified, the default program is set to
+is not specified, the default is
 .Xr xlock 1 .
 .It Fl timeout Ar seconds
 Set the timeout to the specified number of seconds.
