@@ -1019,6 +1019,7 @@
 ./usr/X11R6/man/cat1/xgamma.0
 ./usr/X11R6/man/cat1/xgc.0
 ./usr/X11R6/man/cat1/xhost.0
+./usr/X11R6/man/cat1/xidle.0
 ./usr/X11R6/man/cat1/xinit.0
 ./usr/X11R6/man/cat1/xkbcomp.0
 ./usr/X11R6/man/cat1/xkbevd.0
