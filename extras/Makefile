@@ -1,5 +1,5 @@
-# $OpenBSD: Makefile,v 1.1.1.1 2001/11/09 15:50:08 espie Exp $
+# $OpenBSD: Makefile,v 1.2 2005/06/30 01:48:44 fgsch Exp $
 
-SUBDIR=xvctl
+SUBDIR=xvctl xidle
 
 .include <bsd.subdir.mk>

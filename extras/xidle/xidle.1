@@ -1,0 +1,75 @@
+.\" $OpenBSD: xidle.1,v 1.1 2005/06/30 01:48:45 fgsch Exp $
+.\"
+.\" Copyright (c) 2005 Federico G. Schwindt.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE OPENBSD PROJECT AND CONTRIBUTORS
+.\" ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+.\" LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+.\" A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OPENBSD
+.\" PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+.\" DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+.\" THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+.\" OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.\"
+.Dd June 20, 2005
+.Dt XIDLE 1
+.Os
+.Sh NAME
+.Nm xidle
+.Nd run a program on X inactivity
+.Sh SYNOPSIS
+.Nm xidle
+.Op Fl nw | ne | sw | se
+.Op Fl display Ar display
+.Op Fl program Ar path
+.Op Fl timeout Ar seconds
+.Sh DESCRIPTION
+.Nm
+allows users to run a program if no X activity has been detected for a given
+amount of seconds, or if the pointer has been moved to the very corner
+of the specified position and stays there for more than 2 seconds.
+.Pp
+The options are as follows:
+.Bl -tag -width timeout
+.It Fl display Ar display
+This argument allows you to specify the server to connect to; see
+.Xr X 7 .
+.It Fl nw | ne | sw | se
+Set the position to one of northwest, northeast, southwest, or southeast,
+respectively.
+If no position is specified,
+the default is northwest.
+.It Fl program Ar path
+Specify which program to run on any of the aforementioned events.
+If
+.Fl program
+is not specified, the default program is set to
+.Xr xlock 1 .
+.It Fl timeout Ar seconds
+Set the timeout to the specified number of seconds.
+If
+.Fl timeout
+is not specified,
+.Nm
+won't run any program on inactivity.
+.El
+.Sh SEE ALSO
+.Xr xlock 1 ,
+.Xr XScreenSaver 3 ,
+.Xr X 7
+.Sh AUTHORS
+The
+.Nm
+program was written by Federico Schwindt as an xautolock replacement.
