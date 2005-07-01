@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.1 2005/06/30 01:48:45 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.2 2005/07/01 17:22:24 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -65,8 +65,6 @@ struct xinfo {
 };
 
 struct xinfo x;
-char	*program = PATH_XLOCK;
-int	 timeout = 0;
 int	 position = north|west;
 
 const struct option longopts[] = {
@@ -84,10 +82,9 @@ const struct option longopts[] = {
 
 extern char *__progname;
 
-void	init_x(const char *, struct xinfo *);
+void	init_x(const char *, struct xinfo *, int);
 void	close_x(struct xinfo *);
-void	action(struct xinfo *);
-void	dump_event(XEvent *, struct xinfo *);
+void	action(struct xinfo *, char **);
 __dead void	usage(void);
 __dead void	handler(int);
 
@@ -103,7 +100,7 @@ usage()
 
 
 void
-init_x(const char *display, struct xinfo *xi)
+init_x(const char *display, struct xinfo *xi, int timeout)
 {
 	XSetWindowAttributes attr;
 	Display *dpy;
@@ -163,7 +160,7 @@ close_x(struct xinfo *xi)
 
 
 void
-action(struct xinfo *xi)
+action(struct xinfo *xi, char **args)
 {
 	int dumb;
 
@@ -173,7 +170,7 @@ action(struct xinfo *xi)
 		/* NOTREACHED */
 
 	case 0:
-		execlp(program, program, (char *)NULL);
+		execv(*args, args);
 		exit(0);
 		/* NOTREACHED */
 
@@ -197,7 +194,10 @@ handler(int sig)
 int
 main(int argc, char **argv)
 {
+	char *program = PATH_XLOCK;
 	char *display = NULL, *p;
+	char **ap, *args[10];
+	int timeout = 0;
 	int pflag;
 	int c;
 
@@ -234,15 +234,23 @@ main(int argc, char **argv)
 		}
 	}
 
+	for (ap = args; ap < &args[9] && 
+	    (*ap = strsep(&program, " ")) != NULL;) {
+		if (**ap != '\0')
+			ap++;
+	}
+	*ap = NULL;
+
 	bzero(&x, sizeof(struct xinfo));
 
-	init_x(display, &x);
+	init_x(display, &x, timeout);
 
 	signal(SIGINT, handler);
 	signal(SIGTERM, handler);
 
 	for (;;) {
-		XCrossingEvent *e;
+		XScreenSaverNotifyEvent *se;
+		XCrossingEvent *ce;
 		XEvent ev;
 
 		XNextEvent(x.dpy, &ev);
@@ -253,24 +261,32 @@ main(int argc, char **argv)
 			break;
 
 		case EnterNotify:
-			e = (XCrossingEvent *)&ev;
+			ce = (XCrossingEvent *)&ev;
 
 			sleep(2);
 
-			XQueryPointer(x.dpy, x.win, &e->root, &e->window,
-			    &e->x_root, &e->y_root, &e->x, &e->y, &e->state);
+			XQueryPointer(x.dpy, x.win, &ce->root, &ce->window,
+			    &ce->x_root, &ce->y_root, &ce->x, &ce->y,
+			    &ce->state);
 
 			/* Check it was for real. */
-			if (e->y > x.coord_y + height ||
-			    e->x > x.coord_x + width)
+			if (ce->y > x.coord_y + height ||
+			    ce->x > x.coord_x + width)
 				break;
 			/* FALLTHROUGH */
 
 		default:
-			if (ev.type == EnterNotify ||
-			    (ev.type == x.saver_event &&
-			    ((XScreenSaverNotifyEvent *)&ev)->forced == False))
-				action(&x);
+			if (ev.type != EnterNotify &&
+			    ev.type != x.saver_event)
+				break;
+
+			/* Was due to terminal switching? */
+			if (ev.type == x.saver_event) {
+				se = (XScreenSaverNotifyEvent *)&ev;
+				if (se->forced != False)
+					break;
+			}
+			action(&x, args);
 			break;
 		}
 	}
