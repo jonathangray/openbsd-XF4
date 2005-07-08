@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.2 2005/07/01 17:22:24 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.3 2005/07/08 21:03:59 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -37,11 +37,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifndef PATH_PROG
+#define PATH_PROG	"/usr/X11R6/bin/xlock"
+#endif
 
-enum {
-	width  = 2,
-	height = 2
-};
 
 enum {
 	north = 0x01,
@@ -65,9 +64,11 @@ struct xinfo {
 };
 
 struct xinfo x;
-int	 position = north|west;
+int	position = north|west;
 
 const struct option longopts[] = {
+	{ "area",	required_argument,	NULL,		'a' },
+	{ "delay",	required_argument,	NULL,		'D' },
 	{ "display",	required_argument,	NULL,		'd' },
 	{ "program",	required_argument,	NULL,		'p' },
 	{ "timeout",	required_argument,	NULL,		't' },
@@ -82,7 +83,7 @@ const struct option longopts[] = {
 
 extern char *__progname;
 
-void	init_x(const char *, struct xinfo *, int);
+void	init_x(const char *, struct xinfo *, int, int);
 void	close_x(struct xinfo *);
 void	action(struct xinfo *, char **);
 __dead void	usage(void);
@@ -92,15 +93,15 @@ __dead void	handler(int);
 __dead void
 usage()
 {
-	fprintf(stderr, "usage: %s %s\n", __progname,
-	    "[-display host:dpy] [-ne | -nw | -sw | -sw] "
-	    "[-program path] [-timeout seconds]");
+	fprintf(stderr, "Usage:\n%s %s\n", __progname,
+	    "[-area pixels] [-delay secs] [-display host:dpy] "
+	    "[-ne | -nw | -sw | -sw]\n      [-program path] [-timeout secs]");
 	exit(1);
 }
 
 
 void
-init_x(const char *display, struct xinfo *xi, int timeout)
+init_x(const char *display, struct xinfo *xi, int area, int timeout)
 {
 	XSetWindowAttributes attr;
 	Display *dpy;
@@ -117,13 +118,13 @@ init_x(const char *display, struct xinfo *xi, int timeout)
 	screen = DefaultScreen(dpy);
 
 	if (position & south)
-		xi->coord_y = DisplayHeight(dpy, screen) - height;
+		xi->coord_y = DisplayHeight(dpy, screen) - area;
 	if (position & east)
-		xi->coord_x = DisplayWidth(dpy, screen) - width;
+		xi->coord_x = DisplayWidth(dpy, screen) - area;
 
 	attr.override_redirect = True;
 	win = XCreateWindow(dpy, DefaultRootWindow(dpy),
-	    xi->coord_x, xi->coord_y, width, height, 0, 0, InputOnly,
+	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOnly,
 	    CopyFromParent, CWOverrideRedirect,  &attr);
 
 	XMapWindow(dpy, win);
@@ -194,9 +195,10 @@ handler(int sig)
 int
 main(int argc, char **argv)
 {
-	char *program = PATH_XLOCK;
+	char *program = PATH_PROG;
 	char *display = NULL, *p;
 	char **ap, *args[10];
+	int area = 2, delay = 2;
 	int timeout = 0;
 	int pflag;
 	int c;
@@ -204,6 +206,22 @@ main(int argc, char **argv)
 	pflag = 0;
 	while ((c = getopt_long_only(argc, argv, "", longopts, NULL)) != -1) {
 		switch (c) {
+		case 'D':
+			delay = strtol(optarg, &p, 10);
+			if (*p || delay < 0) {
+				errx(1, "illegal value -- %s", optarg);
+				/* NOTREACHED */
+			}
+			break;
+
+		case 'a':
+			area = strtol(optarg, &p, 10);
+			if (*p || area < 1) {
+				errx(1, "illegal value -- %s", optarg);
+				/* NOTREACHED */
+			}
+			break;
+
 		case 'd':
 			display = optarg;
 			break;
@@ -243,7 +261,7 @@ main(int argc, char **argv)
 
 	bzero(&x, sizeof(struct xinfo));
 
-	init_x(display, &x, timeout);
+	init_x(display, &x, area, timeout);
 
 	signal(SIGINT, handler);
 	signal(SIGTERM, handler);
@@ -263,15 +281,15 @@ main(int argc, char **argv)
 		case EnterNotify:
 			ce = (XCrossingEvent *)&ev;
 
-			sleep(2);
+			sleep(delay);
 
 			XQueryPointer(x.dpy, x.win, &ce->root, &ce->window,
 			    &ce->x_root, &ce->y_root, &ce->x, &ce->y,
 			    &ce->state);
 
 			/* Check it was for real. */
-			if (ce->y > x.coord_y + height ||
-			    ce->x > x.coord_x + width)
+			if (ce->y > x.coord_y + area ||
+			    ce->x > x.coord_x + area)
 				break;
 			/* FALLTHROUGH */
 
