@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.18 2005/05/11 18:48:39 espie Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.19 2005/07/10 13:11:30 matthieu Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.10 2004/06/29 22:57:46 herrb Exp $
 XCOMM
 
@@ -7,176 +7,12 @@ XCOMM
 # define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB) -lsupc++
 #endif 
 
-#define SharedX11Rev 9.0
 /* Shared Library Revisions. Crank major on API Changes */
 
 #if OverrideShlibRevs
 
-# if OSMajorVersion == 3 && OSMinorVersion > 1 && OSMinorVersion <= 5
 # ifndef SharedX11Rev
-#  define SharedX11Rev 7.0
-# endif
-# ifndef SharedXThrStubRev
-#  define SharedXThrStubRev 7.0
-# endif
-# ifndef SharedXextRev
-#  define SharedXextRev 7.0
-# endif
-# ifndef SharedXssRev
-#  define SharedXssRev 2.0
-# endif
-# ifndef SharedXxf86miscRev
-#  define SharedXxf86miscRev 2.0
-# endif
-# ifndef SharedXxf86vmRev
-#  define SharedXxf86vmRev 2.0
-# endif
-# ifndef SharedXxf86dgaRev
-#  define SharedXxf86dgaRev 2.0
-# endif
-# ifndef SharedXxf86rushRev
-#  define SharedXxf86rushRev 2.0
-# endif
-# ifndef SharedXvRev
-#  define SharedXvRev 2.0
-# endif
-# ifndef SharedXvMCRev
-#  define SharedXvMCRev 2.0
-# endif
-# ifndef SharedXineramaRev
-#  define SharedXineramaRev 2.0
-# endif
-# ifndef SharedDpsRev
-#  define SharedDpsRev 2.0
-# endif
-# ifndef SharedDpsTkRev
-#  define SharedDpsTkRev 2.0
-# endif
-# ifndef SharedPSResRev
-#  define SharedPSResRev 2.0
-# endif
-# ifndef SharedGluRev
-#  if HasGcc && GccMajorVersion >= 3
-    /* Gcc 3 changes the name mangling scheme on OpenBSD */
-#   define SharedGluRev	3.0
-#  else
-#   define SharedGluRev 2.0
-#  endif
-# endif
-# ifndef SharedGlxRev
-#  define SharedGlxRev 2.0
-# endif
-# ifndef SharedGLwRev
-#  define SharedGLwRev 2.0
-# endif
-# ifndef SharedXrenderRev
-#  define SharedXrenderRev 2.1
-# endif
-# ifndef SharedXrandrRev
-#  define SharedXrandrRev 3.0
-# endif
-# ifndef SharedXcursorRev
-#  define SharedXcursorRev 1.0
-# endif
-# ifndef SharedXfontcacheRev
-#  define SharedXfontcacheRev 2.0
-# endif
-# ifndef SharedXauRev
-#  define SharedXauRev 7.0
-# endif
-# ifndef SharedXdmcpRev
-#  define SharedXdmcpRev 7.0
-# endif
-# ifndef SharedXmuRev
-#  define SharedXmuRev 7.0
-# endif
-# ifndef SharedXmuuRev
-#  define SharedXmuuRev 2.0
-# endif
-# ifndef SharedOldXRev
-#  define SharedOldXRev 7.0
-# endif
-# ifndef SharedXpRev
-#  define SharedXpRev 7.0
-# endif
-# ifndef SharedXtRev
-#  define SharedXtRev 7.0
-# endif
-# ifndef SharedXaRev
-#  define SharedXaRev 2.0
-# endif
-# ifndef SharedXawRev
-#  define SharedXawRev 9.0
-# endif
-# ifndef SharedXaw7Rev
-#  define SharedXaw7Rev 8.0
-# endif
-# ifndef SharedXaw6Rev
-#  define SharedXaw6Rev 7.1
-# endif
-# ifndef SharedXiRev
-#  define SharedXiRev 7.0
-# endif
-# ifndef SharedXtstRev
-#  define SharedXtstRev 7.0
-# endif
-# ifndef SharedICERev
-#  define SharedICERev 7.0
-# endif
-# ifndef SharedSMRev
-#  define SharedSMRev 7.0
-# endif
-# ifndef SharedXkeyRev
-#  define SharedXkeyRev 7.0
-# endif
-# ifndef SharedFSRev
-#  define SharedFSRev 7.0
-# endif
-# ifndef SharedFontRev
-#  define SharedFontRev 2.0
-# endif
-# ifndef SharedFontEncRev
-#  define SharedFontEncRev 2.0
-# endif
-# ifndef SharedXpmRev
-#  define SharedXpmRev 5.0
-# endif
-# ifndef SharedFreetype2Rev
-#  define SharedFreetype2Rev 11.0
-# endif
-# ifndef SharedExpatRev
-#  define SharedExpatRev 4.0
-# endif
-# ifndef SharedXft1Rev
-#  define SharedXft1Rev 1.2
-# endif
-# ifndef SharedXftRev
-#  define SharedXftRev 3.0
-# endif
-# ifndef SharedFontconfigRev
-#  define SharedFontconfigRev 1.0
-# endif
-# ifndef SharedXTrapRev
-#  define SharedXTrapRev 7.0
-# endif
-# ifndef SharedPSResRev
-#  define SharedPSResRev 2.0
-# endif
-# ifndef SharedXfixesRev
-#  define SharedXfixesRev 3.0
-# endif
-# ifndef SharedXdamageRev
-#  define SharedXdamageRev 1.0
-# endif
-# ifndef SharedXcompositeRev
-#  define SharedXcompositeRev 1.0
-# endif
-
-
-# elif OSMajorVersion > 3 || OSMajorVersion == 3 && OSMinorVersion >= 6
-
-# ifndef SharedX11Rev
-#  define SharedX11Rev 8.1
+#  define SharedX11Rev 9.0
 # endif
 # ifndef SharedXThrStubRev
 #  define SharedXThrStubRev 8.0
@@ -345,8 +181,6 @@ XCOMM
 # ifndef SharedXcompositeRev
 #  define SharedXcompositeRev 1.0
 # endif
-
-#endif /* OSMajorVersion .. */
 
 #endif /* OverrideShlibRevs */
 
