@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.21 2005/07/10 16:25:22 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.22 2005/07/10 20:15:17 matthieu Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.10 2004/06/29 22:57:46 herrb Exp $
 XCOMM
 
@@ -180,6 +180,12 @@ XCOMM
 # endif
 # ifndef SharedXcompositeRev
 #  define SharedXcompositeRev 2.0
+# endif
+# ifndef SharedxrxRev
+#  define SharedxrxRev 7.0
+# endif
+# ifndef SharedxrxnestRev 
+#  define SharedxrxnestRev 7.0
 # endif
 
 #endif /* OverrideShlibRevs */

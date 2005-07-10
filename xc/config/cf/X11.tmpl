@@ -3928,6 +3928,14 @@ ProjectUnsharedLibReferences(XKBUI,xkbui,$(XKBUILIBSRC),XBuildLibDir)
 # define	XkbuiDepLibs $(DEPXKBFILELIB)
 #endif
 
+#ifndef SharedxrxRev
+# define SharedxrxRev		6.8
+#endif 
+
+#ifndef SharedxrxnestRev
+# define SharedxrxnestRev	6.8
+#endif
+
 #ifndef ExtraXawReqs
 # if BuildXaw
 #  define ExtraXawReqs $(XPLIB)
