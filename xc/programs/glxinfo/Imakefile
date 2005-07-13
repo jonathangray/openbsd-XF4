@@ -5,7 +5,7 @@ XCOMM $XFree86: xc/programs/glxinfo/Imakefile,v 1.7tsi Exp $
 #if BuildGLULibrary
 
         DEPLIBS = $(DEPGLULIB) $(DEPGLXLIB) $(DEPXLIB)
-LOCAL_LIBRARIES = $(GLULIB) $(GLXLIB) $(XLIB) 
+LOCAL_LIBRARIES = $(GLULIB) $(GLXLIB) $(XLIB) SharedGLUReqs
         DEFINES = -DDO_GLU
 
 #else
