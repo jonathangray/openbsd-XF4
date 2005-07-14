@@ -4,7 +4,11 @@ XCOMM $XFree86$
 
             SRCS = xdriinfo.c
             OBJS = xdriinfo.o
+#if BuildXF86DRI 
+ LOCAL_LIBRARIES = $(GLXLIB) $(XXF86VMLIB) $(XLIB) 
+#else
  LOCAL_LIBRARIES = $(GLXLIB) $(XLIB) 
+#endif
          DEPLIBS =
 
 AllTarget(ProgramTargetName(xdriinfo))

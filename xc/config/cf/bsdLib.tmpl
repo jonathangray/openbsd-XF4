@@ -73,10 +73,18 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXvReqs	$(LDPRELIB) $(XLIB)
 #define SharedSMReqs	$(LDPRELIBS) $(ICELIB)
 #ifndef SharedGLReqs
-#define SharedGLReqs	$(LDPRELIBS) $(XLIB)
+# if BuildXF86DRI
+#  define SharedGLReqs	$(LDPRELIBS) $(XXF86VM) $(XLIB)
+# else
+#  define SharedGLReqs	$(LDPRELIBS) $(XLIB)
+# endif
 #endif
 #ifndef SharedGLUReqs
-#define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB)
+# if BuildXF86DRI
+#  define SharedGLUReqs	$(LDPRELIB) $(XXF86VM) $(XLIB) $(GLXLIB)
+# else
+#  define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB)
+# endif
 #endif
 #define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
 
