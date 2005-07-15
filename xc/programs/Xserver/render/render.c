@@ -1304,7 +1304,7 @@ ProcRenderCompositeGlyphs (ClientPtr client)
 	{
 	    if (buffer + sizeof (GlyphSet) < end)
 	    {
-		gs = *(GlyphSet *) buffer;
+		memcpy(&gs, buffer, sizeof(GlyphSet));
 		glyphSet = (GlyphSetPtr) SecurityLookupIDByType (client,
 								 gs,
 								 GlyphSetType,
