@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.3 2005/07/08 21:03:59 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.4 2005/07/17 06:13:49 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -165,14 +165,14 @@ action(struct xinfo *xi, char **args)
 {
 	int dumb;
 
-	switch (fork()) {
+	switch (vfork()) {
 	case -1:
-		err(1, "fork");
+		err(1, "vfork");
 		/* NOTREACHED */
 
 	case 0:
 		execv(*args, args);
-		exit(0);
+		_exit(1);
 		/* NOTREACHED */
 
 	default:
@@ -250,6 +250,11 @@ main(int argc, char **argv)
 			usage();
 			/* NOTREACHED */
 		}
+	}
+
+	if ((argc - optind) != 0) {
+		usage();
+		/* NOTREACHED */
 	}
 
 	for (ap = args; ap < &args[9] && 
