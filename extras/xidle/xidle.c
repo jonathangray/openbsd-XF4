@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.5 2005/07/18 02:11:43 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.6 2005/07/21 15:25:08 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -293,8 +293,10 @@ main(int argc, char **argv)
 			    &ce->state);
 
 			/* Check it was for real. */
-			if (ce->y > x.coord_y + area ||
-			    ce->x > x.coord_x + area)
+			if (ce->x_root < x.coord_x ||
+			    ce->y_root < x.coord_y ||
+			    ce->x_root > x.coord_x + area ||
+			    ce->y_root > x.coord_y + area)
 				break;
 			/* FALLTHROUGH */
 
