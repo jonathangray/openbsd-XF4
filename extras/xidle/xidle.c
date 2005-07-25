@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.6 2005/07/21 15:25:08 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.7 2005/07/25 20:03:43 mcbride Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -95,7 +95,7 @@ usage()
 {
 	fprintf(stderr, "Usage:\n%s %s\n", __progname,
 	    "[-area pixels] [-delay secs] [-display host:dpy] "
-	    "[-ne | -nw | -sw | -sw]\n      [-program path] [-timeout secs]");
+	    "[-ne | -nw | -se | -sw]\n      [-program path] [-timeout secs]");
 	exit(1);
 }
 
