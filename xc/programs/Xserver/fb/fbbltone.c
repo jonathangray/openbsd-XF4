@@ -48,7 +48,10 @@
 
 #define LoadBits {\
     if (leftShift) { \
-	bitsRight = *src++; \
+	if (nDst > rightShift) \
+	    bitsRight = *src++;	\
+	else \
+	    src++;	/* Else we don't care about bitsRight. */ \
 	bits = (FbStipLeft (bitsLeft, leftShift) | \
 		FbStipRight(bitsRight, rightShift)); \
 	bitsLeft = bitsRight; \
