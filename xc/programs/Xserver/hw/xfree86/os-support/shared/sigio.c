@@ -111,23 +111,29 @@ xf86SIGIO (int sig)
     int	    i;
     fd_set  ready;
     struct timeval  to;
+#if 0
     int	    r;
+#endif
 
     ready = xf86SigIOMask;
     to.tv_sec = 0;
     to.tv_usec = 0;
+#if 0
     SYSCALL (r = select (xf86SigIOMaxFd, &ready, 0, 0, &to));
-    for (i = 0; r > 0 && i < xf86SigIOMax; i++)
+#endif
+    for (i = 0; /* r > 0 &&*/ i < xf86SigIOMax; i++)
 	if (xf86SigIOFuncs[i].f && FD_ISSET (xf86SigIOFuncs[i].fd, &ready))
 	{
 	    (*xf86SigIOFuncs[i].f)(xf86SigIOFuncs[i].fd,
 				   xf86SigIOFuncs[i].closure);
-	    r--;
+	    /* r--; */
 	}
+#if 0
 #ifdef XFree86Server
     if (r > 0) {
       xf86Msg(X_ERROR, "SIGIO %d descriptors not handled\n", r);
     }
+#endif
 #endif
 }
 
