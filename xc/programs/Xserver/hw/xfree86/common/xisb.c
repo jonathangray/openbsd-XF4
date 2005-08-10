@@ -102,12 +102,12 @@ XisbRead (XISBuffer *b)
 
 	if (b->current >= b->end)
 	{
-		if (b->block_duration > 0)
+		if (b->block_duration >= 0)
 		{
 			if (xf86WaitForInput (b->fd, b->block_duration) < 1)
 				return (-1);
 		}
-		else if (b->block_duration < 0)
+		else
 		{
 			/*
 			 * automatically clear it so if XisbRead is called in a loop
