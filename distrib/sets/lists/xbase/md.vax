@@ -20,10 +20,7 @@
 ./usr/X11R6/include/freetype2/freetype/ftgzip.h
 ./usr/X11R6/include/freetype2/freetype/ftincrem.h
 ./usr/X11R6/include/freetype2/freetype/ftpfr.h
-./usr/X11R6/include/freetype2/freetype/ftstroker.h
 ./usr/X11R6/include/freetype2/freetype/ftwinfnt.h
-./usr/X11R6/include/freetype2/freetype/internal/pfr.h
-./usr/X11R6/include/freetype2/ft2build.h
 ./usr/X11R6/include/ft2build.h
 ./usr/X11R6/lib/X11/xkb/README
 ./usr/X11R6/lib/X11/xkb/README.config
