@@ -126,6 +126,8 @@ static void selectwindow(TScreen * screen, int flag);
 static void unselectwindow(TScreen * screen, int flag);
 static void Sleep(int msec);
 
+volatile sig_atomic_t need_cleanup = FALSE;
+
 void
 do_xevents(void)
 {
@@ -148,6 +150,9 @@ xevents(void)
     XEvent event;
     XtInputMask input_mask;
     register TScreen *screen = &term->screen;
+
+    if (need_cleanup)
+	Cleanup(0);
 
     if (screen->scroll_amt)
 	FlushScroll(screen);
@@ -2500,6 +2505,7 @@ Cleanup(int code)
 	return;
     }
     cleaning = TRUE;
+    need_cleanup = FALSE;
 
     TRACE(("Cleanup %d\n", code));
 

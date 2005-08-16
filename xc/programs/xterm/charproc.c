@@ -3053,6 +3053,8 @@ in_put(void)
 	    time_select = 1;
 #endif
 	}
+	if (need_cleanup)
+	    Cleanup(0);
 	i = Select(max_plus1, &select_mask, &write_mask, 0,
 		   (time_select ? &select_timeout : 0));
 	if (i < 0) {

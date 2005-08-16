@@ -127,6 +127,8 @@ extern EventMode eventMode;
 
 extern XtermWidget term;
 
+extern volatile sig_atomic_t need_cleanup;
+
 #if defined(HAVE_XKB_BELL_EXT)
 #include <X11/XKBlib.h>		/* has the prototype */
 #include <X11/extensions/XKBbells.h>	/* has the XkbBI_xxx definitions */

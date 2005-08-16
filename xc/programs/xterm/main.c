@@ -4556,7 +4556,7 @@ reapchild(int n GCC_UNUSED)
 		fputs("Exiting\n", stderr);
 #endif
 	    if (!hold_screen)
-		Cleanup(0);
+		need_cleanup = TRUE;
 	}
     } while ((pid = nonblocking_wait()) > 0);
 
