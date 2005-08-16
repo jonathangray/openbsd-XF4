@@ -48,15 +48,12 @@
 
 #define LoadBits {\
     if (leftShift) { \
-	if (nDst > rightShift) \
-	    bitsRight = *src++;	\
-	else \
-	    src++;	/* Else we don't care about bitsRight. */ \
+	bitsRight = (src < srcEnd ? *src++ : 0); \
 	bits = (FbStipLeft (bitsLeft, leftShift) | \
 		FbStipRight(bitsRight, rightShift)); \
 	bitsLeft = bitsRight; \
     } else \
-	bits = *src++; \
+	bits = (src < srcEnd ? *src++ : 0); \
 }
     
 #ifndef FBNOPIXADDR
@@ -150,6 +147,7 @@ fbBltOne (FbStip    *src,
 	  FbBits    bgxor)
 {
     const FbBits    *fbBits;
+    FbBits	    *srcEnd;
     int		    pixelsPerDst;		/* dst pixels per FbBits */
     int		    unitsPerSrc;		/* src patterns per FbStip */
     int		    leftShift, rightShift;	/* align source with dest */
@@ -180,7 +178,12 @@ fbBltOne (FbStip    *src,
 	return;
     }
 #endif
-    
+
+    /*
+     * Do not read past the end of the buffer!
+     */
+    srcEnd = src + height * srcStride;
+
     /*
      * Number of destination units in FbBits == number of stipple pixels
      * used each time
@@ -531,7 +534,7 @@ const FbBits	fbStipple24Bits[3][1 << FbStip24Len] = {
 	stip = FbLeftStipBits(bits, len); \
     } else { \
 	stip = FbLeftStipBits(bits, remain); \
-	bits = *src++; \
+	bits = (src < srcEnd ? *src++ : 0); \
 	__len = (len) - remain; \
 	stip = FbMergePartStip24Bits(stip, FbLeftStipBits(bits, __len), \
 				     remain, __len); \
@@ -582,7 +585,7 @@ fbBltOne24 (FbStip	*srcLine,
 	    FbBits	bgand,
 	    FbBits	bgxor)
 {
-    FbStip	*src;
+    FbStip	*src, *srcEnd;
     FbBits	leftMask, rightMask, mask;
     int		nlMiddle, nl;
     FbStip	stip, bits;
@@ -592,6 +595,11 @@ fbBltOne24 (FbStip	*srcLine,
     int		rot0, rot;
     int		nDst;
     
+    /*
+     * Do not read past the end of the buffer!
+     */
+    srcEnd = srcLine + height * srcStride;
+
     srcLine += srcX >> FB_STIP_SHIFT;
     dst += dstX >> FB_SHIFT;
     srcX &= FB_STIP_MASK;
