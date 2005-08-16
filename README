@@ -96,8 +96,9 @@ o How to build something with debug information?
 
 The /usr/X11R6/bin/makeg command calls make with proper arguments to
 build object files and executables with -g.
-It's not reasonable to use it on the whole tree because it will take
-gigabytes of disk space and memory.
+It's not reasonable to use it on the whole tree, except on modern
+machines with more than 512MB of RAM, because it will take gigabytes
+of disk space and hundreds of megabytes of memory.
 
 Use it in selected directories after a regular build by doing:
 
@@ -114,6 +115,37 @@ the X server:
     make loadXorg
 
 in xc/programs/Xserver.
+
+o How to get a core file out of the X server?
+  -------------------------------------------
+
+Several things are needed:
+
+1) set kern.nosuidcoredump=0 in /etc/sysctl.conf
+2) put 
+
+        Option  "NoTrapSignals" "true"
+
+   in the "ServerFlags" section of /etc/X11/xorg.conf. If such a section 
+   doesn't exist, it can be added as follow:
+
+   Section "ServerFlags"
+        Option  "NoTrapSignals" "true"
+   EndSection
+
+   anywhere in the configuration file. 
+
+3) start the X server as root, with the -keepPriv option. A regular
+   user is not allowed to use this option. If you use xdm, you can add
+   the option in /etc/X11/xdm/Xservers. If you want to use startx, you
+   need to run it as root, like this:
+
+   startx -- /usr/X11R6/bin/X -keepPriv
+
+Now the X server will dump core when catching a fatal signal. But it
+will also not be able to restore the text mode on exit. So be prepared
+to log in remotely (serial terminal or ssh) to reboot your machine or
+to restart X.
 
 o Where to set variables?
   -----------------------
@@ -161,6 +193,7 @@ Use the following host.def file:
 #define BuildGLXLibrary			NO
 #define BuildGLULibrary         	NO
 #define BuildRenderLibrary		NO
+#define BuildXprint                     NO
 #define BuildLBX			NO
 #define BuildType1			NO
 #define BuildFreeType			NO
@@ -422,4 +455,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/include to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.17 2005/01/26 18:41:57 miod Exp $
+$Id: README,v 1.18 2005/08/16 20:39:22 matthieu Exp $
