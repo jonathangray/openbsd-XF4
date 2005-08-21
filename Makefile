@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.46 2005/01/26 23:42:06 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.47 2005/08/21 11:43:35 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -50,6 +50,11 @@ MACHINE?=`uname -m`
 LOCALAPPD=/usr/local/lib/X11/app-defaults
 LOCALAPPX=/usr/local/lib/X11
 REALAPPD=/etc/X11/app-defaults
+
+FONTDIRS?= 100dpi 75dpi CID TTF Type1 cyrillic local misc
+.for _font in ${FONTDIRS}
+FONTPATH+= ${DESTDIR}/usr/X11R6/lib/X11/fonts/${_font}
+.endfor
 
 
 all:	compile
@@ -112,6 +117,7 @@ release-install:
 		${XCONFIG} ${DESTDIR}/etc/X11 ; \
 	fi
 .endif
+	@/usr/X11R6/bin/fc-cache ${FONTPATH}
 	@${MAKE} fix-appd
 
 PERMDIRS = / /usr /usr/X11R6 /etc /etc/X11 /usr/local /usr/local/lib

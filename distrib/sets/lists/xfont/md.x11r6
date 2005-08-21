@@ -4461,3 +4461,9 @@
 ./usr/X11R6/lib/X11/fonts/util/map-ISO8859-9
 ./usr/X11R6/lib/X11/fonts/util/map-JISX0201.1976-0
 ./usr/X11R6/lib/X11/fonts/util/map-KOI8-R
+./usr/X11R6/lib/X11/fonts/100dpi/fonts.cache-1
+./usr/X11R6/lib/X11/fonts/75dpi/fonts.cache-1
+./usr/X11R6/lib/X11/fonts/CID/fonts.cache-1
+./usr/X11R6/lib/X11/fonts/cyrillic/fonts.cache-1
+./usr/X11R6/lib/X11/fonts/local/fonts.cache-1
+./usr/X11R6/lib/X11/fonts/misc/fonts.cache-1
