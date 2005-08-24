@@ -1,6 +1,6 @@
 XCOMM!/bin/sh
 XCOMM $Xorg: xinitrc.cpp,v 1.3 2000/08/17 19:54:30 cpqbld Exp $
-XCOMM $OpenBSD: xinitrc.cpp,v 1.11 2005/05/09 05:10:25 david Exp $
+XCOMM $OpenBSD: xinitrc.cpp,v 1.12 2005/08/24 17:12:03 todd Exp $
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -32,7 +32,7 @@ id3=$HOME/.ssh/id_rsa
 if [ -x /usr/bin/ssh-agent ] && [ -f $id1 -o -f $id2 -o -f $id3 ];
 then
 	eval `ssh-agent -s`
-	ssh-add -c < /dev/null
+	ssh-add < /dev/null
 fi
 
 XCOMM start some nice programs
