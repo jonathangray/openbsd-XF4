@@ -179,7 +179,10 @@ miDCCloseScreen (index, pScreen)
     tossPix (pScreenPriv->pSave);
     tossPix (pScreenPriv->pTemp);
 #ifdef ARGB_CURSOR
+#if 0				/* This has been already released in
+				   render/picture.c:pictureDestroyWindow() */
     tossPict (pScreenPriv->pRootPicture);
+#endif 
     tossPict (pScreenPriv->pTempPicture);
 #endif
     xfree ((pointer) pScreenPriv);
