@@ -1,5 +1,5 @@
 /*
- * $Id: fbedgeimp.h,v 1.1 2004/11/03 00:07:52 matthieu Exp $
+ * $Id: fbedgeimp.h,v 1.2 2005/08/29 18:09:33 matthieu Exp $
  *
  * Copyright © 2004 Keith Packard
  *
@@ -104,7 +104,8 @@ rasterizeEdges (FbBits		*buf,
 			AddAlpha (N_X_FRAC(N_BITS));
 			StepAlpha;
 		    }
-		    AddAlpha (rxs);
+		    if (y < b)
+			AddAlpha (rxs);
 		}
 	    }
 #endif
