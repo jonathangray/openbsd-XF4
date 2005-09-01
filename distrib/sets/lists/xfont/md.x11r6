@@ -3988,6 +3988,7 @@
 ./usr/X11R6/lib/X11/fonts/encodings/ascii-0.enc
 ./usr/X11R6/lib/X11/fonts/encodings/dec-special.enc
 ./usr/X11R6/lib/X11/fonts/encodings/encodings.dir
+./usr/X11R6/lib/X11/fonts/encodings/fonts.cache-1
 ./usr/X11R6/lib/X11/fonts/encodings/ibm-cp437.enc
 ./usr/X11R6/lib/X11/fonts/encodings/ibm-cp850.enc
 ./usr/X11R6/lib/X11/fonts/encodings/ibm-cp852.enc
@@ -4004,6 +4005,7 @@
 ./usr/X11R6/lib/X11/fonts/encodings/large/cns11643-2.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/cns11643-3.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/encodings.dir
+./usr/X11R6/lib/X11/fonts/encodings/large/fonts.cache-1
 ./usr/X11R6/lib/X11/fonts/encodings/large/gb18030.2000-0.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/gb18030.2000-1.enc.gz
 ./usr/X11R6/lib/X11/fonts/encodings/large/gb2312.1980-0.enc.gz
@@ -4032,6 +4034,7 @@
 ./usr/X11R6/lib/X11/fonts/encodings/tcvn-0.enc
 ./usr/X11R6/lib/X11/fonts/encodings/tis620-2.enc
 ./usr/X11R6/lib/X11/fonts/encodings/viscii1.1-1.enc.gz
+./usr/X11R6/lib/X11/fonts/fonts.cache-1
 ./usr/X11R6/lib/X11/fonts/local
 ./usr/X11R6/lib/X11/fonts/local/fonts.cache-1
 ./usr/X11R6/lib/X11/fonts/local/fonts.dir
@@ -4451,6 +4454,7 @@
 ./usr/X11R6/lib/X11/fonts/misc/olgl14.pcf.gz
 ./usr/X11R6/lib/X11/fonts/misc/olgl19.pcf.gz
 ./usr/X11R6/lib/X11/fonts/util
+./usr/X11R6/lib/X11/fonts/util/fonts.cache-1
 ./usr/X11R6/lib/X11/fonts/util/map-ISO8859-1
 ./usr/X11R6/lib/X11/fonts/util/map-ISO8859-10
 ./usr/X11R6/lib/X11/fonts/util/map-ISO8859-11
