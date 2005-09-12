@@ -1,5 +1,5 @@
 /*
- * $Id: fbedgeimp.h,v 1.2 2005/08/29 18:09:33 matthieu Exp $
+ * $Id: fbedgeimp.h,v 1.3 2005/09/12 19:39:25 matthieu Exp $
  *
  * Copyright © 2004 Keith Packard
  *
@@ -104,7 +104,11 @@ rasterizeEdges (FbBits		*buf,
 			AddAlpha (N_X_FRAC(N_BITS));
 			StepAlpha;
 		    }
-		    if (y < b)
+		    /* Do not add in a 0 alpha here. This check is necessary
+		     * to avoid a buffer overrun when rx is exactly on a pixel
+		     * boundary.
+		     */
+		    if (rxs != 0)
 			AddAlpha (rxs);
 		}
 	    }
