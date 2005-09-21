@@ -1,4 +1,4 @@
-/* $XConsortium: dispatch.c /main/195 1996/12/15 21:24:40 rws $ */
+/* $XdotOrg: xc/programs/Xserver/dix/dispatch.c,v 1.5.2.1 2004/12/13 01:23:05 gisburn Exp $ */
 /* $XFree86: xc/programs/Xserver/dix/dispatch.c,v 3.6 1996/05/06 05:56:13 dawes Exp $ */
 /************************************************************
 
@@ -1339,6 +1339,23 @@ ProcCreatePixmap(client)
     {
 	client->errorValue = 0;
         return BadValue;
+    }
+    if (stuff->width > 32767 || stuff->height > 32767)
+    {
+	/* It is allowed to try and allocate a pixmap which is larger than
+	 * 32767 in either dimension. However, all of the framebuffer code
+	 * is buggy and does not reliably draw to such big pixmaps, basically
+	 * because the Region data structure operates with signed shorts
+	 * for the rectangles in it.
+	 *
+	 * Furthermore, several places in the X server computes the
+	 * size in bytes of the pixmap and tries to store it in an
+	 * integer. This integer can overflow and cause the allocated size
+	 * to be much smaller.
+	 *
+	 * So, such big pixmaps are rejected here with a BadAlloc
+	 */
+	return BadAlloc;
     }
     if (stuff->depth != 1)
     {
