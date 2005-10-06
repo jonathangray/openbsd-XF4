@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.8 2005/10/06 21:55:26 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.9 2005/10/06 22:11:09 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -83,11 +83,11 @@ const struct option longopts[] = {
 
 extern char *__progname;
 
-void	init_x(const char *, struct xinfo *, int, int);
-void	close_x(struct xinfo *);
 void	action(struct xinfo *, char **);
+void	close_x(struct xinfo *);
+void	init_x(const char *, struct xinfo *, int, int);
+void	handler(int);
 __dead void	usage(void);
-__dead void	handler(int);
 
 
 __dead void
@@ -184,12 +184,18 @@ action(struct xinfo *xi, char **args)
 }
 
 
-__dead void
+void
 handler(int sig)
 {
-	close_x(&x);
-	exit(0);
-	/* NOTREACHED */
+	XClientMessageEvent ev;
+
+	ev.type = ClientMessage;
+	ev.display = x.dpy;
+	ev.window = x.win;
+	ev.message_type = 0xdead;
+	ev.format = 8;
+	XSendEvent(x.dpy, x.win, False, 0L, (XEvent *)&ev);
+	XFlush(x.dpy);
 }
 
 
@@ -273,17 +279,13 @@ main(int argc, char **argv)
 	signal(SIGTERM, handler);
 
 	for (;;) {
-		XScreenSaverNotifyEvent *se;
-		XVisibilityEvent *ve;
-		XCrossingEvent *ce;
 		XEvent ev;
 
 		XNextEvent(x.dpy, &ev);
 
 		switch (ev.type) {
 		case VisibilityNotify:
-			ve = (XVisibilityEvent *)&ev;                           
-			if (ve->state == VisibilityUnobscured)
+			if (ev.xvisibility.state == VisibilityUnobscured)
 				break;
 			/* FALLTHROUGH */
 
@@ -291,20 +293,27 @@ main(int argc, char **argv)
 			XMapRaised(x.dpy, x.win);
 			break;
 
-		case EnterNotify:
-			ce = (XCrossingEvent *)&ev;
+		case ClientMessage:
+			if (ev.xclient.message_type != 0xdead)
+				break;
+			close_x(&x);
+			exit(0);
+			/* NOTREACHED */
 
+		case EnterNotify:
 			sleep(delay);
 
-			XQueryPointer(x.dpy, x.win, &ce->root, &ce->window,
-			    &ce->x_root, &ce->y_root, &ce->x, &ce->y,
-			    &ce->state);
+			XQueryPointer(x.dpy, x.win, &ev.xcrossing.root,
+			    &ev.xcrossing.window,
+			    &ev.xcrossing.x_root, &ev.xcrossing.y_root,
+			    &ev.xcrossing.x, &ev.xcrossing.y,
+			    &ev.xcrossing.state);
 
 			/* Check it was for real. */
-			if (ce->x_root < x.coord_x ||
-			    ce->y_root < x.coord_y ||
-			    ce->x_root > x.coord_x + area ||
-			    ce->y_root > x.coord_y + area)
+			if (ev.xcrossing.x_root < x.coord_x ||
+			    ev.xcrossing.y_root < x.coord_y ||
+			    ev.xcrossing.x_root > x.coord_x + area ||
+			    ev.xcrossing.y_root > x.coord_y + area)
 				break;
 			/* FALLTHROUGH */
 
@@ -315,6 +324,8 @@ main(int argc, char **argv)
 
 			/* Was due to terminal switching? */
 			if (ev.type == x.saver_event) {
+				XScreenSaverNotifyEvent *se;
+
 				se = (XScreenSaverNotifyEvent *)&ev;
 				if (se->forced != False)
 					break;
