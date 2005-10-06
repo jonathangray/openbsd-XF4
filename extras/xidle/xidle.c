@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.7 2005/07/25 20:03:43 mcbride Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.8 2005/10/06 21:55:26 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -124,13 +124,14 @@ init_x(const char *display, struct xinfo *xi, int area, int timeout)
 
 	attr.override_redirect = True;
 	win = XCreateWindow(dpy, DefaultRootWindow(dpy),
-	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOnly,
+	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOutput,
 	    CopyFromParent, CWOverrideRedirect,  &attr);
 
 	XMapWindow(dpy, win);
-	XSelectInput(dpy, win, EnterWindowMask|StructureNotifyMask);
+	XSelectInput(dpy, win,
+	    EnterWindowMask|StructureNotifyMask|VisibilityChangeMask);
 
-	if (timeout > 0 && 
+	if (timeout > 0 &&
 	    XScreenSaverQueryExtension(dpy, &event, &error) == True) {
 		xi->saver_event = event;
 
@@ -257,7 +258,7 @@ main(int argc, char **argv)
 		/* NOTREACHED */
 	}
 
-	for (ap = args; ap < &args[9] && 
+	for (ap = args; ap < &args[9] &&
 	    (*ap = strsep(&program, " ")) != NULL;) {
 		if (**ap != '\0')
 			ap++;
@@ -273,12 +274,19 @@ main(int argc, char **argv)
 
 	for (;;) {
 		XScreenSaverNotifyEvent *se;
+		XVisibilityEvent *ve;
 		XCrossingEvent *ce;
 		XEvent ev;
 
 		XNextEvent(x.dpy, &ev);
 
 		switch (ev.type) {
+		case VisibilityNotify:
+			ve = (XVisibilityEvent *)&ev;                           
+			if (ve->state == VisibilityUnobscured)
+				break;
+			/* FALLTHROUGH */
+
 		case MapNotify:
 			XMapRaised(x.dpy, x.win);
 			break;
