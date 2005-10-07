@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.9 2005/10/06 22:11:09 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.10 2005/10/07 19:47:26 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -129,7 +129,7 @@ init_x(const char *display, struct xinfo *xi, int area, int timeout)
 
 	XMapWindow(dpy, win);
 	XSelectInput(dpy, win,
-	    EnterWindowMask|StructureNotifyMask|VisibilityChangeMask);
+	    EnterWindowMask|StructureNotifyMask /* |VisibilityChangeMask */);
 
 	if (timeout > 0 &&
 	    XScreenSaverQueryExtension(dpy, &event, &error) == True) {
