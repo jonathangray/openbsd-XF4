@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.10 2005/10/07 19:47:26 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.11 2005/10/14 23:07:11 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt.
  *
@@ -124,27 +124,38 @@ init_x(const char *display, struct xinfo *xi, int area, int timeout)
 
 	attr.override_redirect = True;
 	win = XCreateWindow(dpy, DefaultRootWindow(dpy),
-	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOutput,
-	    CopyFromParent, CWOverrideRedirect,  &attr);
+	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOnly,
+	    CopyFromParent, CWOverrideRedirect, &attr);
 
 	XMapWindow(dpy, win);
-	XSelectInput(dpy, win,
-	    EnterWindowMask|StructureNotifyMask /* |VisibilityChangeMask */);
+	XSelectInput(dpy, win, EnterWindowMask|StructureNotifyMask
+#if 0
+			       |VisibilityChangeMask
+#endif
+	);
 
-	if (timeout > 0 &&
-	    XScreenSaverQueryExtension(dpy, &event, &error) == True) {
+	/*
+	 * AFAICT, we need the event number for ScreenSaverNotify
+	 * _always_ since it's the only way to distinguish whether
+	 * we've been obscured by an external locking program or
+	 * by another window and react according.
+	 */
+	if (XScreenSaverQueryExtension(dpy, &event, &error) == True) {
 		xi->saver_event = event;
 
+		XScreenSaverSelectInput(dpy, DefaultRootWindow(dpy),
+		    ScreenSaverNotifyMask);
+	} else
+		warnx("XScreenSaver extension not available.%s",
+		    timeout > 0 ? " Timeout disabled." : "");
+
+	if (timeout > 0 && xi->saver_event) {
 		XGetScreenSaver(dpy, &xi->saved_timeout, &xi->saved_interval,
 		    &xi->saved_pref_blank, &xi->saved_allow_exp);
 
 		XSetScreenSaver(dpy, timeout, 0, DontPreferBlanking,
 		    DontAllowExposures);
-		XScreenSaverSelectInput(dpy, DefaultRootWindow(dpy),
-		    ScreenSaverNotifyMask);
-	} else if (timeout > 0)
-		warnx("XScreenSaver extension not available. "
-		    "Timeout disabled.");
+	}
 
 	xi->dpy = dpy;
 	xi->win = win;
@@ -206,6 +217,7 @@ main(int argc, char **argv)
 	char *display = NULL, *p;
 	char **ap, *args[10];
 	int area = 2, delay = 2;
+	u_long last_serial = 0;
 	int timeout = 0;
 	int pflag;
 	int c;
@@ -280,14 +292,35 @@ main(int argc, char **argv)
 
 	for (;;) {
 		XEvent ev;
+		u_long mask;
 
 		XNextEvent(x.dpy, &ev);
 
+#ifdef DEBUG
+		printf("got event %d\n", ev.type);
+#endif
+
 		switch (ev.type) {
 		case VisibilityNotify:
-			if (ev.xvisibility.state == VisibilityUnobscured)
-				break;
-			/* FALLTHROUGH */
+			/*
+			 * If we got here and the current serial matches
+			 * the one from saver_event, we're being obscured
+			 * by a locking program. Disable further
+			 * screen saver events and raises.
+			 */
+			if (ev.xvisibility.serial == last_serial)
+				mask = 0;
+			else
+				mask = ScreenSaverNotifyMask;
+
+			XScreenSaverSelectInput(x.dpy,
+			    DefaultRootWindow(x.dpy), mask);
+
+			if (mask)
+				XMapRaised(x.dpy, x.win);
+
+			XSync(x.dpy, True);
+			break;
 
 		case MapNotify:
 			XMapRaised(x.dpy, x.win);
@@ -322,11 +355,17 @@ main(int argc, char **argv)
 			    ev.type != x.saver_event)
 				break;
 
-			/* Was due to terminal switching? */
 			if (ev.type == x.saver_event) {
-				XScreenSaverNotifyEvent *se;
+				XScreenSaverNotifyEvent *se =
+				    (XScreenSaverNotifyEvent *)&ev;
 
-				se = (XScreenSaverNotifyEvent *)&ev;
+				/* Take note of the serial for this event. */
+				last_serial = se->serial;
+
+				/*
+				 * Was for real or due to terminal
+				 * switching or a locking program?
+				 */
 				if (se->forced != False)
 					break;
 			}
