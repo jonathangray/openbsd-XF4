@@ -1,6 +1,7 @@
-/*	$OpenBSD: xidle.c,v 1.11 2005/10/14 23:07:11 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.12 2005/10/24 14:35:18 fgsch Exp $	*/
 /*
- * Copyright (c) 2005 Federico G. Schwindt.
+ * Copyright (c) 2005 Federico G. Schwindt
+ * Copyright (c) 2005 Claudio Castiglia
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,17 +26,21 @@
  */
 
 #include <X11/Xlib.h>
+#include <X11/Xresource.h>
 #include <X11/extensions/scrnsaver.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <err.h>
-#include <getopt.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#ifndef CLASS_NAME
+#define CLASS_NAME	"XIdle"
+#endif
 
 #ifndef PATH_PROG
 #define PATH_PROG	"/usr/X11R6/bin/xlock"
@@ -63,30 +68,34 @@ struct xinfo {
 	int		 saved_allow_exp;
 };
 
-struct xinfo x;
-int	position = north|west;
+struct	xinfo x;
 
-const struct option longopts[] = {
-	{ "area",	required_argument,	NULL,		'a' },
-	{ "delay",	required_argument,	NULL,		'D' },
-	{ "display",	required_argument,	NULL,		'd' },
-	{ "program",	required_argument,	NULL,		'p' },
-	{ "timeout",	required_argument,	NULL,		't' },
+static XrmOptionDescRec fopts[] = {
+	{ "-display",	".display",	XrmoptionSepArg,	(caddr_t)NULL },
+};
 
-	{ "ne",		no_argument,		&position,	north|east },
-	{ "nw",		no_argument,		&position,	north|west },
-	{ "se",		no_argument,		&position,	south|east },
-	{ "sw",		no_argument,		&position,	south|west },
+static XrmOptionDescRec opts[] = {
+	{ "-area",	".area",	XrmoptionSepArg,	(caddr_t)NULL },
+	{ "-delay",	".delay",	XrmoptionSepArg,	(caddr_t)NULL },
+	{ "-program",	".program",	XrmoptionSepArg,	(caddr_t)NULL },
+	{ "-timeout",	".timeout",	XrmoptionSepArg,	(caddr_t)NULL },
 
-	{ NULL,		0,			NULL,		0 }
+	{ "-ne",	".position",	XrmoptionNoArg,		(caddr_t)"ne" },
+	{ "-nw",	".position", 	XrmoptionNoArg,		(caddr_t)"nw" },
+	{ "-se",	".position",	XrmoptionNoArg,		(caddr_t)"se" },
+	{ "-sw",	".position",	XrmoptionNoArg,		(caddr_t)"sw" }
 };
 
 extern char *__progname;
 
 void	action(struct xinfo *, char **);
 void	close_x(struct xinfo *);
-void	init_x(const char *, struct xinfo *, int, int);
+Bool	getres(XrmValue *, const XrmDatabase, const char *, const char *);
+void    init_x(struct xinfo *, int, int, int);
 void	handler(int);
+void	parse_opts(int, char **, Display **, int *, int *, int *, int *,
+	    char **);
+int	str2pos(const char *);
 __dead void	usage(void);
 
 
@@ -101,19 +110,12 @@ usage()
 
 
 void
-init_x(const char *display, struct xinfo *xi, int area, int timeout)
+init_x(struct xinfo *xi, int position, int area, int timeout)
 {
 	XSetWindowAttributes attr;
-	Display *dpy;
-	Window win;
+	Display *dpy = xi->dpy;
 	int error, event;
 	int screen;
-
-	dpy = XOpenDisplay(display);
-	if (!dpy) {
-		errx(1, "Unable to open display %s", XDisplayName(display));
-		/* NOTREACHED */
-	}
 
 	screen = DefaultScreen(dpy);
 
@@ -123,12 +125,12 @@ init_x(const char *display, struct xinfo *xi, int area, int timeout)
 		xi->coord_x = DisplayWidth(dpy, screen) - area;
 
 	attr.override_redirect = True;
-	win = XCreateWindow(dpy, DefaultRootWindow(dpy),
+	xi->win = XCreateWindow(dpy, DefaultRootWindow(dpy),
 	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOnly,
 	    CopyFromParent, CWOverrideRedirect, &attr);
 
-	XMapWindow(dpy, win);
-	XSelectInput(dpy, win, EnterWindowMask|StructureNotifyMask
+	XMapWindow(dpy, xi->win);
+	XSelectInput(dpy, xi->win, EnterWindowMask|StructureNotifyMask
 #if 0
 			       |VisibilityChangeMask
 #endif
@@ -156,9 +158,6 @@ init_x(const char *display, struct xinfo *xi, int area, int timeout)
 		XSetScreenSaver(dpy, timeout, 0, DontPreferBlanking,
 		    DontAllowExposures);
 	}
-
-	xi->dpy = dpy;
-	xi->win = win;
 }
 
 
@@ -211,69 +210,107 @@ handler(int sig)
 
 
 int
-main(int argc, char **argv)
+str2pos(const char *src)
 {
-	char *program = PATH_PROG;
-	char *display = NULL, *p;
-	char **ap, *args[10];
-	int area = 2, delay = 2;
-	u_long last_serial = 0;
-	int timeout = 0;
-	int pflag;
-	int c;
+	static struct {
+		char	*str;
+		int	 pos;
+	} s2p[] = {
+		{ "ne", north|east },
+		{ "nw", north|west },
+		{ "se", south|east },
+		{ "sw", south|west },
+		{ NULL, 0	   }
+	}, *s;
 
-	pflag = 0;
-	while ((c = getopt_long_only(argc, argv, "", longopts, NULL)) != -1) {
-		switch (c) {
-		case 'D':
-			delay = strtol(optarg, &p, 10);
-			if (*p || delay < 0) {
-				errx(1, "illegal value -- %s", optarg);
-				/* NOTREACHED */
-			}
+	for (s = s2p; s->str != NULL; s++)
+		if (!strcmp(src, s->str))
 			break;
+	return (s->pos);
+}
 
-		case 'a':
-			area = strtol(optarg, &p, 10);
-			if (*p || area < 1) {
-				errx(1, "illegal value -- %s", optarg);
-				/* NOTREACHED */
-			}
-			break;
 
-		case 'd':
-			display = optarg;
-			break;
+Bool
+getres(XrmValue *value, const XrmDatabase rdb, const char *rname,
+    const char *cname)
+{
+	char fullres[PATH_MAX], fullclass[PATH_MAX], *type;
 
-		case 'p':
-			program = optarg;
-			break;
+	snprintf(fullres, sizeof(fullres), "%s.%s", __progname, rname);
+	snprintf(fullclass, sizeof(fullclass), "%s.%s", CLASS_NAME, cname);
+	return (XrmGetResource(rdb, fullres, fullclass, &type, value));
+}
 
-		case 't':
-			timeout = strtol(optarg, &p, 10);
-			if (*p || timeout < 0) {
-				errx(1, "illegal value -- %s", optarg);
-				/* NOTREACHED */
-			}
-			break;
 
-		case 0:
-			if (pflag) {
-				errx(1, "Cannot specify multiple positions");
-				/* NOTREACHED */
-			}
-			pflag++;
-			break;
+void
+parse_opts(int argc, char **argv, Display **dpy, int *area, int *delay,
+    int *timeout, int *position, char **args)
+{
+	char **ap, *program = PATH_PROG;
+	char *display, *p;
+	XrmDatabase tdb, rdb = NULL;
+	XrmValue value;
 
-		default:
-			usage();
+	XrmInitialize();
+
+	/* Get display to open. */
+	XrmParseCommand(&rdb, fopts, sizeof(fopts) / sizeof(fopts[0]),
+	    __progname, &argc, argv);
+
+	display = (getres(&value, rdb, "display", "Display") == True) ?
+	    (char *)value.addr : NULL;
+
+	*dpy = XOpenDisplay(display);
+	if (!*dpy) {
+		errx(1, "Unable to open display %s", XDisplayName(display));
+		/* NOTREACHED */
+	}
+
+	/* Get server resources database. */
+	p = XResourceManagerString(*dpy);
+	if (!p) {
+		/* Get screen resources database. */
+		p = XScreenResourceString(ScreenOfDisplay(*dpy,
+		    DefaultScreen(*dpy)));
+	}
+
+	if (p) {
+		tdb = XrmGetStringDatabase(p);
+		XrmMergeDatabases(tdb, &rdb);
+	}
+
+	/* Get remaining command line values. */
+	XrmParseCommand(&rdb, opts, sizeof(opts) / sizeof(opts[0]),
+	    __progname, &argc, argv);
+	if (argc > 1) {
+		usage();
+		/* NOTREACHED */
+	}
+	if (getres(&value, rdb, "area", "Area")) {
+		*area = strtol((char *)value.addr, &p, 10);
+		if (*p || *area < 1) {
+fail:			errx(1, "illegal value -- %s", (char *)value.addr);
 			/* NOTREACHED */
 		}
 	}
-
-	if ((argc - optind) != 0) {
-		usage();
-		/* NOTREACHED */
+	if (getres(&value, rdb, "delay", "Delay")) {
+		*delay = strtol((char *)value.addr, &p, 10);
+		if (*p || *delay < 0)
+			goto fail;
+	}
+	if (getres(&value, rdb, "position", "Position")) {
+		*position = str2pos((char *)value.addr);
+		if (!*position)
+			goto fail;
+	}
+	if (getres(&value, rdb, "timeout", "Timeout")) {
+		*timeout = strtol((char *)value.addr, &p, 10);
+		if (*p || *timeout < 0)
+			goto fail;
+	}
+	if (getres(&value, rdb, "program", "Program")) {
+		/* Should be the last :) */
+		program = (char *)value.addr;
 	}
 
 	for (ap = args; ap < &args[9] &&
@@ -282,10 +319,29 @@ main(int argc, char **argv)
 			ap++;
 	}
 	*ap = NULL;
+}
+
+
+int
+main(int argc, char **argv)
+{
+	char *args[10];
+	int area = 2, delay = 2, timeout = 0;
+	int position = north|west;
+	u_long last_serial = 0;
 
 	bzero(&x, sizeof(struct xinfo));
 
-	init_x(display, &x, area, timeout);
+	parse_opts(argc, argv, &x.dpy, &area, &delay, &timeout,
+	    &position, args);
+
+#ifdef DEBUG
+	printf("Area: %d\nDelay: %d\nPosition: %d\nTimeout: %d\n"
+	    "Program: \"%s\"\n",
+	    area, delay, position, timeout, args[0]);
+#endif
+
+	init_x(&x, position, area, timeout);
 
 	signal(SIGINT, handler);
 	signal(SIGTERM, handler);

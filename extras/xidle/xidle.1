@@ -1,4 +1,4 @@
-.\" $OpenBSD: xidle.1,v 1.4 2005/07/08 21:03:59 fgsch Exp $
+.\" $OpenBSD: xidle.1,v 1.5 2005/10/24 14:35:18 fgsch Exp $
 .\"
 .\" Copyright (c) 2005 Federico G. Schwindt.
 .\"
@@ -52,7 +52,7 @@ This behavior is always present, whether
 is specified or not.
 .Pp
 The options are as follows:
-.Bl -tag -width timeout
+.Bl -tag -width Ds
 .It Fl area Ar pixels
 Specify the size in pixels of the corner area.
 The default is 2 pixels.
@@ -84,6 +84,40 @@ is not specified,
 .Nm
 won't run any program on inactivity.
 .El
+.Sh RESOURCES
+A few sets of application specific resources are supported and their values
+can be overriden by the command line options:
+.Bl -tag -width Ds
+.It Sy area No (class Sy Area )
+Specify the size in pixels of the corner area; see the
+.Fl area
+option.
+.It Sy delay No (class Sy Delay )
+Specify the number of seconds to wait before running the program; see the
+.Fl delay
+option.
+.It Sy position No (class Sy Position )
+Set the position to one of: "nw", "ne", "sw", or "se"; see descriptions of the
+.Fl nw ,
+.Fl ne ,
+.Fl sw ,
+and
+.Fl se
+options.
+.It Sy program No (class Sy Program )
+Specify the full pathname of the program to run; see the
+.Fl program
+option.
+.It Sy timeout No (class Sy Timeout )
+Set the timeout to the specified number of seconds; see the
+.Fl timeout
+option.
+.El
+.Pp
+The
+.Nm
+program resource class is
+.Sy XIdle .
 .Sh EXAMPLES
 Run
 .Xr xlock 1
@@ -102,8 +136,6 @@ The
 .Nm
 program was written by Federico Schwindt as an xautolock replacement.
 .Sh BUGS
-.Nm
-does not support resources (yet).
 .Pp
 The maximum number of arguments for
 .Fl program ,
