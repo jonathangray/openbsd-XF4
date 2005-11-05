@@ -185,6 +185,7 @@ typedef int xf86jmp_buf[1024];
 #define xf86_EBUSY		1022
 #define xf86_ENODEV		1023
 #define xf86_EIO		1024
+#define xf86_ENXIO		1025
 
 /* sysv IPV */
 /* xf86shmget() */

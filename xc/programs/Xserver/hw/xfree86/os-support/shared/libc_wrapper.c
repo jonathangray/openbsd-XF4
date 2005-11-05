@@ -920,6 +920,7 @@ xf86strerror(int n)
 		mapnum (EBUSY);
 		mapnum (ENODEV);
 		mapnum (EIO);
+		mapnum (ENXIO);
 
 		default:
 			err = 999;
@@ -1868,6 +1869,7 @@ xf86GetErrno ()
 		mapnum (EBUSY);
 		mapnum (ENODEV);
 		mapnum (EIO);
+		mapnum (ENXIO);
 
 		default:
 			return (xf86_UNKNOWN);
