@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-/* $OpenBSD: xf86USBtablet.c,v 1.2 2002/01/05 19:22:47 matthieu Exp $ */
+/* $OpenBSD: xf86USBtablet.c,v 1.3 2005/11/05 16:08:23 matthieu Exp $ */
 
 /*
  * Driver for USB HID tablet devices.
@@ -144,6 +144,7 @@ static void UsbTabletOutOfProx(USBTDevicePtr prx);
 static void UsbTabletIntoProx(USBTDevicePtr prx, USBTState *ds);
 
 
+#ifdef XFree86LOADER
 static XF86ModuleVersionInfo VersionRec = {
 	"usbtablet",
 	MODULEVENDORSTRING,
@@ -156,6 +157,7 @@ static XF86ModuleVersionInfo VersionRec = {
 	MOD_CLASS_XINPUT,
 	{0, 0, 0, 0}		/* signature to be patched into the file */
 };
+#endif
 
 typedef enum {
 	USBTOPT_DEVICE,
@@ -404,7 +406,7 @@ UsbTabletReadInput(InputInfoPtr pInfo)
 			UsbTabletSendEvents(comm->devices[i], invert, &ds);
 		}
 	}
-	DBG(7, ErrorF("UsbTabletReadInput END   pInfo=0x%x priv=0x%x\n",
+	DBG(7, ErrorF("UsbTabletReadInput END   pInfo=%p priv=%p\n",
 		      pInfo, priv));
 }
 
@@ -910,7 +912,7 @@ UsbTabletPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 		} else if (xf86NameCmp(s, "eraser") == 0) {
 			pInfo = UsbTabletAllocateEraser(drv);
 		} else {
-			xf86Msg(X_ERROR, "%s: Invalid type specified.\n",
+			xf86Msg(X_ERROR, "%s: Invalid type specified.\n"
 				"Must be one of stylus or eraser.\n",
 				dev->identifier);
 			goto PreInit_fail;
