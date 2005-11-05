@@ -97,6 +97,7 @@ typedef struct _NewClientRec *NewClientPtr;
 #include <stdio.h>
 #endif
 #include <string.h>
+#include <sys/types.h>
 #endif
 
 /* have to put $(SIGNAL_DEFINES) in DEFINES in Imakefile to get this right */
@@ -266,6 +267,9 @@ extern int auditTrailLevel;
 #ifdef SERVER_LOCK
 extern void LockServer(void);
 extern void UnlockServer(void);
+#ifdef X_PRIVSEP
+extern int ChownLock(uid_t, gid_t);
+#endif
 #endif
 
 extern int OsLookupColor(
