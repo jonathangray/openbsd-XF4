@@ -1,4 +1,4 @@
-/*	$OpenBSD: xidle.c,v 1.12 2005/10/24 14:35:18 fgsch Exp $	*/
+/*	$OpenBSD: xidle.c,v 1.13 2005/11/07 00:14:13 fgsch Exp $	*/
 /*
  * Copyright (c) 2005 Federico G. Schwindt
  * Copyright (c) 2005 Claudio Castiglia
@@ -129,12 +129,12 @@ init_x(struct xinfo *xi, int position, int area, int timeout)
 	    xi->coord_x, xi->coord_y, area, area, 0, 0, InputOnly,
 	    CopyFromParent, CWOverrideRedirect, &attr);
 
-	XMapWindow(dpy, xi->win);
 	XSelectInput(dpy, xi->win, EnterWindowMask|StructureNotifyMask
 #if 0
 			       |VisibilityChangeMask
 #endif
 	);
+	XMapWindow(dpy, xi->win);
 
 	/*
 	 * AFAICT, we need the event number for ScreenSaverNotify
