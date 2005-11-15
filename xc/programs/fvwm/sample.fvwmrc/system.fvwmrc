@@ -311,7 +311,7 @@ Key F6		A	M	Resize
 Key F7		A	M	CirculateUp 
 Key F8		A	M	CirculateDown 
  
-#Page Up/Dapge Down keys are used to scroll by one desktop page 
+#Page Up/Page Down keys are used to scroll by one desktop page 
 # in any context, press page up/down + control 
 # in root context, just pressing page up/down is OK 
 #  
