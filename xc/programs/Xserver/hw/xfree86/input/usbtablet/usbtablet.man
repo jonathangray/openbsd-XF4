@@ -1,4 +1,4 @@
-.\" $OpenBSD: usbtablet.man,v 1.2 2004/11/03 00:09:13 matthieu Exp $
+.\" $OpenBSD: usbtablet.man,v 1.3 2005/11/15 22:01:25 matthieu Exp $
 .\"
 .\" Copyright (c) 1999-2004 Matthieu Herrb and Lennart Augustsson
 .\"
@@ -38,7 +38,7 @@ usbtablet \- USB tablet input driver for *BSD
 .B EndSection
 .fi
 .SH DESCRIPTION
-.B usbtablet 
+.B usbtablet
 is an XFree86 input driver for USB tablet devices.
 .PP
 The
@@ -47,7 +47,7 @@ driver functions as a pointer input device, and may be used as the
 X server's core pointer.
 .SH SUPPORTED HARDWARE
 This driver supports most USB tablets like the Wacom Graphire or
-PenPartner tablets. 
+PenPartner tablets.
 .SH CONFIGURATION DETAILS
 Please refer to xorg.conf(__filemansuffix__) for general configuration
 details and for options that can be used with all input drivers.  This
@@ -72,7 +72,7 @@ sets the position increment under which not to transmit coordinates.
 .TP 4
 .B Option \fI"Threshold"\fP \fI"number"\fP
 sets the pressure threshold used to generate a button 1 events of stylus
-devices. The default value is 5. 
+devices. The default value is 5.
 .TP 4
 .B Option \fI"Mode"\fP \fI"Relative"|"Absolute"\fP
 sets the mode of the device.
@@ -83,12 +83,12 @@ sets the motion history size. By default the value is zero.
 .B Option \fI"FactorX"\fP \fI"number"\fP
 Scaling factor between tablet coordinates and X screen coordinates. If
 you don't specify it, it will be calculated to match the width of your
-tablet to the width of your screen. 
+tablet to the width of your screen.
 .TP 4
 .B Option \fI"FactorY"\fP \fI"number"\fP
 Scaling factor between tablet coordinates and X screen coordinates. If
 you don't specify it, it will be calculated to match the height of your
-tablet to the height of your screen. 
+tablet to the height of your screen.
 .TP 4
 .TP 4
 .B Option \fI"DebugLevel"\fP \fInumber \fP
@@ -100,5 +100,5 @@ Xorg(1), xorg.conf(__filemansuffix__), Xserver(1), X(__miscmansuffix__).
 .SH AUTHORS
 Lennart Augustsson <augustss@netbsd.org> wrote the original version
 for XFree86 3.3.6, Matthieu Herrb <matthieu@openbsd.org> adapted it to
-XFree86 4.x. 
+XFree86 4.x.
 
