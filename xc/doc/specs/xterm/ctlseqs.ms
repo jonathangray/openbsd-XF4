@@ -1,15 +1,16 @@
 .\"#! troff -ms $1		-*- Nroff -*-
 .\" "Xterm Control Sequences" document
-.\" $XdotOrg: xc/doc/specs/xterm/ctlseqs.ms,v 1.2 2004/04/23 18:42:20 eich Exp $
+.\" $XTermId: ctlseqs.ms,v 1.158 2005/09/18 23:48:10 tom Exp $
+.\"
+.\"
 .\" $Xorg: ctlseqs.ms,v 1.3 2000/08/17 19:42:51 cpqbld Exp $
 .\"
 .\"
 .\"
+.\" $XFree86: xc/doc/specs/xterm/ctlseqs.ms,v 3.57 2005/09/18 23:48:10 dickey Exp $
 .\"
-.\" $XFree86: xc/doc/specs/xterm/ctlseqs.ms,v 3.50 2003/10/27 01:10:31 dickey Exp $
 .\"
-.\"
-.\" Copyright 1996-2002,2003 by Thomas E. Dickey
+.\" Copyright 1996-2004,2005 by Thomas E. Dickey
 .\"
 .\"                         All Rights Reserved
 .\"
@@ -160,7 +161,6 @@
 .[] Us \v'-1p'\s\nsUS\s0\v'1p'
 .[] XX \v'-1p'\s\nsXX\s0\v'1p'
 .[] $ $
-.[] ! !
 .[] # #
 .[] % %
 .[] (( (
@@ -260,6 +260,7 @@
 .ds Cy \fIC\v'.3m'\h'-.2m'\s-2y\s0\v'-.3m'\fP
 .ds Pb \fIP\v'.3m'\h'-.2m'\s-2b\s0\v'-.3m'\fP
 .ds Pc \fIP\v'.3m'\h'-.2m'\s-2c\s0\v'-.3m'\fP
+.ds Pd \fIP\v'.3m'\h'-.2m'\s-2d\s0\v'-.3m'\fP
 .ds Pe \fIP\v'.3m'\h'-.2m'\s-2e\s0\v'-.3m'\fP
 .ds Pl \fIP\v'.3m'\h'-.2m'\s-2l\s0\v'-.3m'\fP
 .ds Pm \fIP\v'.3m'\h'-.2m'\s-2m\s0\v'-.3m'\fP
@@ -293,7 +294,7 @@ X Consortium (1994)
 .AU
 Thomas Dickey
 .AI
-XFree86 Project (1996-2003)
+XFree86 Project (1996-2005)
 .AU
 .
 .am BT                  \" add page numbers after first page
@@ -364,10 +365,10 @@ VT100 Mode
 .ds RH VT100 Mode
 .LP
 Most of these control sequences are standard VT102 control sequences,
-but there is support for later DEC VT terminals (i.e., VT220 and VT320),
+but there is support for later DEC VT terminals (i.e., VT220, VT320, VT420),
 as well as ISO 6429 and \fIaixterm\fP color controls.
-VT102 features not supported are
-auto-repeat and blinking characters.
+The only VT102 features not supported is auto-repeat,
+since the only way X provides for this will affect all windows.
 There are additional control sequences to provide
 \fIxterm-\fPdependent functions, such as the scrollbar or window size.
 Where the function is specified by DEC or ISO 6429, the code assigned
@@ -393,7 +394,7 @@ Carriage Return (Ctrl-M)
 .IP \\*(En
 Return Terminal Status (Ctrl-E).
 Default response is an empty string, but may be overridden
-by a resource \fIanswerbackString\fP.
+by a resource \fBanswerbackString\fP.
 .
 .IP \\*(Ff
 Form Feed or New Page (NP) (Ctrl-L) same as LF
@@ -515,19 +516,19 @@ Memory Lock (per HP terminals).  Locks memory above the cursor.
 Memory Unlock (per HP terminals)
 .
 .IP \\*(Es\\*n
-Invoke the G2 Character Set (LS2)
+Invoke the G2 Character Set as GL (LS2).
 .
 .IP \\*(Es\\*o
-Invoke the G3 Character Set (LS3)
+Invoke the G3 Character Set as GL (LS3).
 .
 .IP \\*(Es\\*|
-Invoke the G3 Character Set as GR (LS3R).  Has no visible effect in \fIxterm\fP.
+Invoke the G3 Character Set as GR (LS3R).
 .
 .IP \\*(Es\\*}
-Invoke the G2 Character Set as GR (LS2R).  Has no visible effect in \fIxterm\fP.
+Invoke the G2 Character Set as GR (LS2R).
 .
 .IP \\*(Es\\*(c~
-Invoke the G1 Character Set as GR (LS1R).  Has no visible effect in \fIxterm\fP.
+Invoke the G1 Character Set as GR (LS1R).
 .Ed
 .
 .St
@@ -665,7 +666,7 @@ Scroll up \*(Ps lines (default = 1) (SU)
 Scroll down \*(Ps lines (default = 1) (SD)
 .
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*T
-Initiate hilite mouse tracking.
+Initiate highlight mouse tracking.
 Parameters are [func;startx;starty;firstrow;lastrow].
 See the section \fBMouse Tracking\fP.
 .
@@ -683,7 +684,7 @@ Repeat the preceding graphic character \*(Ps times (REP)
 .
 .IP \\*(Cs\\*(Ps\\*s\\*c
 Send Device Attributes (Primary DA)
-  \*(Ps = \*0, 1 or omitted \(-> request attributes from terminal.
+  \*(Ps = \*0 or omitted \(-> request attributes from terminal.
 The response depends on the \fBdecTerminalID\fP resource setting.
   \(-> \*(Cs\*?\*1\*;\*2\*c (``VT100 with Advanced Video Option'')
   \(-> \*(Cs\*?\*1\*;\*0\*c (``VT101 with No Options'')
@@ -703,7 +704,7 @@ VT220 parameters do, telling the host what features the terminal supports:
 .
 .IP \\*(Cs\\*>\\*(Ps\\*s\\*c
 Send Device Attributes (Secondary DA)
-  \*(Ps = \*0, 1 or omitted \(-> request the terminal's identification code.
+  \*(Ps = \*0 or omitted \(-> request the terminal's identification code.
 The response depends on the \fBdecTerminalID\fP resource setting.
 It should apply only to VT220 and up, but \fIxterm\fP extends this to VT100.
   \(-> \*(Cs\*s\*>\*(Pp\*s\*;\*(Pv\*s\*;\*(Pc\*s\*c
@@ -748,6 +749,7 @@ and set VT100 mode.
   \*(Ps = \*8 \(-> Auto-repeat Keys (DECARM)
   \*(Ps = \*9 \(-> Send Mouse X & Y on button press.
 See the section \fBMouse Tracking\fP.
+  \*(Ps = \*1\*0 \(-> Show toolbar (rxvt)
   \*(Ps = \*1\*2 \(-> Start Blinking Cursor (att610)
   \*(Ps = \*1\*8 \(-> Print form feed (DECPFF)
   \*(Ps = \*1\*9 \(-> Set print extent to full screen (DECPEX)
@@ -756,7 +758,7 @@ See the section \fBMouse Tracking\fP.
   \*(Ps = \*3\*5 \(-> Enable font-shifting functions (rxvt).
   \*(Ps = \*3\*8 \(-> Enter Tektronix Mode (DECTEK)
   \*(Ps = \*4\*0 \(-> Allow 80 \z\(<-\(-> 132 Mode
-  \*(Ps = \*4\*1 \(-> \fImore\fP(1) fix (see \fIcurses\fP resource)
+  \*(Ps = \*4\*1 \(-> \fImore\fP(1) fix (see \fBcurses\fP resource)
   \*(Ps = \*4\*2 \(-> Enable Nation Replacement Character sets (DECNRCM)
   \*(Ps = \*4\*4 \(-> Turn On Margin Bell
   \*(Ps = \*4\*5 \(-> Reverse-wraparound Mode
@@ -765,7 +767,7 @@ See the section \fBMouse Tracking\fP.
   \*(Ps = \*4\*7 \(-> Use Alternate Screen Buffer (unless
 disabled by the \fBtiteInhibit\fP resource)
   \*(Ps = \*6\*6 \(-> Application keypad (DECNKM)
-  \*(Ps = \*6\*7 \(-> Backarrow key sends delete (DECBKM)
+  \*(Ps = \*6\*7 \(-> Backarrow key sends backspace (DECBKM)
   \*(Ps = \*1\*0\*0\*0 \(-> Send Mouse X & Y on button press and release.
 See the section \fBMouse Tracking\fP.
   \*(Ps = \*1\*0\*0\*1 \(-> Use Hilite Mouse Tracking.
@@ -783,11 +785,15 @@ disabled by the \fBtiteInhibit\fP resource)
 disabled by the \fBtiteInhibit\fP resource)
   \*(Ps = \*1\*0\*4\*9 \(-> Save cursor as in DECSC
 and use Alternate Screen Buffer, clearing it first (unless
-disabled by the \fBtiteInhibit\fP resource)
+disabled by the \fBtiteInhibit\fP resource).
+This combines the effects of the \*1\*0\*4\*7 and \*1\*0\*4\*8 modes.
+Use this with terminfo-based applications rather than the \*4\*7 mode.
   \*(Ps = \*1\*0\*5\*1 \(-> Set Sun function-key mode.
   \*(Ps = \*1\*0\*5\*2 \(-> Set HP function-key mode.
+  \*(Ps = \*1\*0\*5\*3 \(-> Set SCO function-key mode.
   \*(Ps = \*1\*0\*6\*0 \(-> Set legacy keyboard emulation (X11R6).
   \*(Ps = \*1\*0\*6\*1 \(-> Set Sun/PC keyboard emulation of VT220 keyboard.
+  \*(Ps = \*2\*0\*0\*4 \(-> Set bracketed paste mode.
 .
 .IP \\*(Cs\\*(Pm\\*s\\*i
 Media Copy (MC)
@@ -821,6 +827,7 @@ DEC Private Mode Reset (DECRST)
   \*(Ps = \*7 \(-> No Wraparound Mode (DECAWM)
   \*(Ps = \*8 \(-> No Auto-repeat Keys (DECARM)
   \*(Ps = \*9 \(-> Don't Send Mouse X & Y on button press
+  \*(Ps = \*1\*0 \(-> Hide toolbar (rxvt)
   \*(Ps = \*1\*2 \(-> Stop Blinking Cursor (att610)
   \*(Ps = \*1\*8 \(-> Don't print form feed (DECPFF)
   \*(Ps = \*1\*9 \(-> Limit print to scrolling region (DECPEX)
@@ -828,7 +835,7 @@ DEC Private Mode Reset (DECRST)
   \*(Ps = \*3\*0 \(-> Don't show scrollbar (rxvt).
   \*(Ps = \*3\*5 \(-> Disable font-shifting functions (rxvt).
   \*(Ps = \*4\*0 \(-> Disallow 80 \z\(<-\(-> 132 Mode
-  \*(Ps = \*4\*1 \(-> No \fImore\fP(1) fix (see \fIcurses\fP resource)
+  \*(Ps = \*4\*1 \(-> No \fImore\fP(1) fix (see \fBcurses\fP resource)
   \*(Ps = \*4\*2 \(-> Disable Nation Replacement Character sets (DECNRCM)
   \*(Ps = \*4\*4 \(-> Turn Off Margin Bell
   \*(Ps = \*4\*5 \(-> No Reverse-wraparound Mode
@@ -836,7 +843,7 @@ DEC Private Mode Reset (DECRST)
 (normally disabled by a compile-time option)
   \*(Ps = \*4\*7 \(-> Use Normal Screen Buffer
   \*(Ps = \*6\*6 \(-> Numeric keypad (DECNKM)
-  \*(Ps = \*6\*7 \(-> Backarrow key sends backspace (DECBKM)
+  \*(Ps = \*6\*7 \(-> Backarrow key sends delete (DECBKM)
   \*(Ps = \*1\*0\*0\*0 \(-> Don't Send Mouse X & Y on button press and
 release.
 See the section \fBMouse Tracking\fP.
@@ -856,11 +863,15 @@ disabled by the \fBtiteInhibit\fP resource)
 disabled by the \fBtiteInhibit\fP resource)
   \*(Ps = \*1\*0\*4\*9 \(-> Use Normal Screen Buffer and restore cursor
 as in DECRC (unless
-disabled by the \fBtiteInhibit\fP resource)
+disabled by the \fBtiteInhibit\fP resource).
+This combines the effects of the \*1\*0\*4\*7 and \*1\*0\*4\*8 modes.
+Use this with terminfo-based applications rather than the \*4\*7 mode.
   \*(Ps = \*1\*0\*5\*1 \(-> Reset Sun function-key mode.
   \*(Ps = \*1\*0\*5\*2 \(-> Reset HP function-key mode.
+  \*(Ps = \*1\*0\*5\*3 \(-> Reset SCO function-key mode.
   \*(Ps = \*1\*0\*6\*0 \(-> Reset legacy keyboard emulation (X11R6).
   \*(Ps = \*1\*0\*6\*1 \(-> Reset Sun/PC keyboard emulation of VT220 keyboard.
+  \*(Ps = \*2\*0\*0\*4 \(-> Reset bracketed paste mode.
 .
 .IP \\*(Cs\\*(Pm\\*s\\*m
 Character Attributes (SGR)
@@ -955,7 +966,7 @@ The last two parameters apply to VT400 & up, and denote keyboard ready and LK01 
 .br
 \*(Cs\*?\*5\*0\*s\*n No Locator, if not.
 .
-.IP \\*(Cs\\*s\\*!\\*p
+.IP \\*(Cs\\*!\\*p
 Soft terminal reset (DECSTR)
 .
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Ps\\*s\\*(c"\\*p
@@ -984,6 +995,11 @@ Set Scrolling Region [top;bottom] (default = full size of window) (DECSTBM)
 Restore DEC Private Mode Values.  The value of \*(Ps previously saved is
 restored.  \*(Ps values are the same as for DECSET.
 .
+.IP \\*(Cs\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*;\\*(Ps\\*$\\*r
+Change Attributes in Rectangular Area (DECCARA).
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
+  \*(Ps denotes the SGR attributes to change: 0, 1, 4, 5, 7
+.
 .IP \\*(Cs\\*(cs
 Save cursor (ANSI.SYS)
 .
@@ -992,6 +1008,7 @@ Save DEC Private Mode Values.  \*(Ps values are the same as for DECSET.
 .
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*t
 Window manipulation (from \fIdtterm\fP, as well as extensions).
+These controls may be disabled using the \fIallowWindowOps\fP resource.
 Valid values for the first (and any additional parameters) are:
   \*(Ps = \*1 \(-> De-iconify window.
   \*(Ps = \*2 \(-> Iconify window.
@@ -1020,8 +1037,20 @@ If the \fIxterm\fP window is iconified, it returns \*(Cs\*2\*t.
 \*(Os\*s\*l\*s\fItitle\fP\*s\*(ST
   \*(Ps >= \*2\*4 \(-> Resize to \*(Ps lines (DECSLPP)
 .
+.IP \\*(Cs\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*;\\*(Ps\\*$\\*t
+Reverse Attributes in Rectangular Area (DECRARA).
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
+  \*(Ps denotes the attributes to reverse. 1, 4, 5, 7
+.
 .IP \\*(Cs\\*u
 Save cursor (ANSI.SYS)
+.
+.IP \\*(Cs\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*;\\*(Pp\\*;\\*(Pt\\*;\\*(Pl\\*;\\*(Pp\\*$\\*v
+Copy Rectangular Area (DECCRA)
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
+  \*(Pp denotes the source page.
+  \*(Pt\*;\*(Pl denotes the target location.
+  \*(Pp denotes the target page.
 .
 .IP \\*(Cs\\*(Pt\\*s\\*;\\*(Pl\\*s\\*;\\*(Pb\\*s\\*;\\*(Pr\\*s\\*(qu\\*w
 Enable Filter Rectangle (DECEFR)
@@ -1050,6 +1079,17 @@ whose parameters describe the terminal:
   \*1 \(-> clock multiplier
   \*0 \(-> STP flags
 .
+.IP \\*(Cs\\*(Ps\\*s\\*x
+Select Attribute Change Extent (DECSACE).
+  \*(Ps = \*0 \(-> from start to end position, wrapped
+  \*(Ps = \*1 \(-> from start to end position, wrapped
+  \*(Ps = \*2 \(-> rectangle (exact).
+.
+.IP \\*(Cs\\*(Pc\\*;\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*$\\*x
+Fill Rectangular Area (DECFRA).
+  \*(Pc is the character to use.
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
+.
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Pu\\*s\\*(qu\\*z
 Enable Locator Reporting (DECELR)
 .br
@@ -1065,6 +1105,10 @@ Valid values for the second parameter:
   \*(Pu = \*1 \(-> device physical pixels
   \*(Pu = \*2 \(-> character cells
 .
+.IP \\*(Cs\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*$\\*z
+Erase Rectangular Area (DECERA).
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
+.
 .IP \\*(Cs\\*(Pm\\*s\\*(qu\\*{
 Select Locator Events (DECSLE)
 .br
@@ -1075,6 +1119,10 @@ Valid values for the first (and any additional parameters) are:
   \*(Ps = \*2 \(-> do not report button down transitions
   \*(Ps = \*3 \(-> report button up transitions
   \*(Ps = \*4 \(-> do not report button up transitions
+.
+.IP \\*(Cs\\*(Pt\\*;\\*(Pl\\*;\\*(Pb\\*;\\*(Pr\\*$\\*{
+Selective Erase Rectangular Area (DECSERA).
+  \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
 .
 .IP \\*(Cs\\*(Ps\\*s\\*(qu\\*|
 Request Locator Position (DECRQLP)
@@ -1157,7 +1205,7 @@ were the first means for setting \fBxterm\fR's colors dynamically,
 i.e., after it was started.
 They are not the same as the ANSI colors.
 One or more parameters is expected for \*(Pt.
-Each succesive parameter changes the next color in the list.
+Each successive parameter changes the next color in the list.
 The value of \*(Ps tells the starting point in the list.
 The colors are specified by name or RGB specification as per \fIXParseColor\fP.
 .sp
@@ -1175,14 +1223,43 @@ be given in one control sequence, \fBxterm\fR can make more than one reply.
   \*(Ps = \*1\*5 \(-> Change Tektronix foreground color to \*(Pt
   \*(Ps = \*1\*6 \(-> Change Tektronix background color to \*(Pt
   \*(Ps = \*1\*7 \(-> Change highlight color to \*(Pt
+  \*(Ps = \*1\*8 \(-> Change Tektronix cursor color to \*(Pt
 .sp
   \*(Ps = \*4\*6 \(-> Change Log File to \*(Pt (normally disabled by a
 compile-time option)
+.sp
   \*(Ps = \*5\*0 \(-> Set Font to \*(Pt
 If \*(Pt begins with a "#", index in the font menu, relative (if the
 next character is a plus or minus sign) or absolute.  A number is
 expected but not required after the sign (the default is the current
 entry for relative, zero for absolute indexing).
+.sp
+  \*(Ps = \*5\*1 (reserved for Emacs shell)
+.sp
+  \*(Ps = \*5\*2 \(-> Manipulate Selection Data.
+These controls may be disabled using the \fIallowWindowOps\fP resource.
+The parameter \*(Pt is parsed as
+.br
+	\*(Pc\*;\*(Pd
+.br
+The first, \*(Pc, may contain any character from the
+set \*c \*p \*0 \*1 \*2 \*3 \*4 \*5 \*6 \*7.
+It is used to construct a list of selection parameters for
+clipboard,
+primary,
+or cut buffers 0 through 8 respectively,
+in the order given.
+If the parameter is empty, \fIxterm\fP uses \*p\*0,
+to specify the primary selection and cut buffer 0.
+.br
+The second parameter, \*(Pd, gives the selection data.
+Normally this is a string encoded in base64.
+The data becomes the new selection,
+which is then available for pasting by other applications.
+.br
+If the second parameter is a \*?,
+\fIxterm\fP replies to the host with the selection
+data encoded using the same protocol.
 .Ed
 .
 .St
@@ -1300,7 +1377,7 @@ _
 .TE
 .LP
 Older versions of \fIxterm\fP implement different escape sequences for F1 through F4.
-These can be activated by setting the \fIoldXtermFKeys\fP resource.
+These can be activated by setting the \fBoldXtermFKeys\fP resource.
 However, since they do not correspond to any hardware terminal, they have been deprecated.
 (The DEC VT220 reserves F1 through F5 for local functions such as \fBSetup\fP).
 .TS
@@ -1485,6 +1562,49 @@ HP-Style Function Keys
 Similarly, \fIxterm\fP can be compiled to support HP keyboards.
 See the xterm-hp terminfo entry for details.
 .SH
+The Alternate Screen Buffer
+.LP
+\fBXterm\fP maintains two screen buffers.
+The normal screen buffer allows you to scroll back to view saved lines
+of output up to the maximum set by the \fBsaveLines\fP resource.
+The alternate screen buffer is exactly as large as the display,
+contains no additional saved lines.
+When the alternate screen buffer is active,
+you cannot scroll back to view saved lines.
+\fBXterm\fP provides control sequences and menu entries
+for switching between the two.
+.LP
+Most full-screen applications use terminfo or termcap to obtain
+strings used to start/stop full-screen mode,
+i.e., \fIsmcup\fP and \fIrmcup\fP for terminfo,
+or the corresponding \fIti\fP and \fIte\fP for termcap.
+The \fBtiteInhibit\fP resource removes the \fIti\fP and \fIte\fP strings
+from the TERMCAP string which is set in the environment for some platforms.
+That is not done when \fBxterm\fP is built with terminfo libraries because
+terminfo does not provide the whole text of the termcap data in one piece.
+It would not work for terminfo anyway, since terminfo data is not passed
+in environment variables;
+setting an environment variable in this manner would have no effect on
+the application's ability to switch between normal and alternate screen
+buffers.
+Instead, the newer private mode controls
+(such as \*1\*0\*4\*9)
+for switching between normal
+and alternate screen buffers simply disable the switching.
+They add other features such as clearing the display for the same reason:
+to make the details of switching independent of the application that
+requests the switch.
+.SH
+Bracketed Paste Mode
+.ds RH Bracketed Paste Mode
+.LP
+When bracketed paste mode is set,
+pasted text is bracketed with control sequences
+so that the program can differentiate pasted text from typed-in text.
+When bracketed paste mode is set,
+the program will receive: ESC [ 200 ~,
+followed by the pasted text, followed by ESC [ 201 ~.
+.SH
 Mouse Tracking
 .ds RH Mouse Tracking
 .LP
@@ -1559,7 +1679,7 @@ as buttons 1 and 2 respectively,
 except that 64 is added to the event code.
 Release events for the wheel buttons are not reported.
 
-Mouse hilite tracking notifies a program of a button press, receives a
+Mouse highlight tracking notifies a program of a button press, receives a
 range of lines from the program, highlights the region covered by
 the mouse within that range until button release, and then sends the
 program the release coordinates.
@@ -1575,7 +1695,7 @@ tracking information.
 received from the pty:\fP
 \*(Cs\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*T.
 The parameters are \fIfunc, startx, starty, firstrow,\fP and \fIlastrow.\fP
-\fIfunc\fP is non-zero to initiate hilite tracking and zero to abort.
+\fIfunc\fP is non-zero to initiate highlight tracking and zero to abort.
 \fIstartx\fP and \fIstarty\fP give the starting x and y location for
 the highlighted region.  The ending location tracks the mouse, but
 will never be above row \fIfirstrow\fP and will always be above row
@@ -1718,7 +1838,7 @@ VT52 Mode
 Parameters for cursor movement are at the end of the \*(Es\*Y escape sequence.
 Each ordinate is encoded in a single character as \fIvalue\fP+32.
 For example, \*! is 1.
-The screen coodinate system is 0-based.
+The screen coordinate system is 0-based.
 .St
 .IP \\*(Es\\*A
 Cursor up.
