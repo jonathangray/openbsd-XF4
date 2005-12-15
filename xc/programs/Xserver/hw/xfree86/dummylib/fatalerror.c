@@ -18,6 +18,7 @@ FatalError(const char *f, ...)
     fprintf(stderr, "Fatal Error:\n");
     vfprintf(stderr, f, args);
     va_end(args);
+    fputc('\n', stderr);
     exit(1);
 }
 
