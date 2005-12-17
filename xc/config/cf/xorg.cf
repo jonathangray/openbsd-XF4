@@ -183,11 +183,16 @@ RELEASE_VERSION = ReleaseVersion
 #define BuildModuleInSubdir	NO
 #endif
 
-#ifndef MakeDllModules
-#define MakeDllModules		NO
-#endif
 #ifndef DoLoadableServer
 #define DoLoadableServer	NO
+#endif
+
+#ifndef MakeDllModules
+#if DoLoadableServer
+#define MakeDllModules		YES
+#else
+#define MakeDllModules		NO
+#endif
 #endif 
 
 /*

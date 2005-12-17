@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.3 2004/10/30 20:33:43 alanc Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.7 2005/04/23 19:01:13 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.61tsi Exp $ */
 
 /*
@@ -23,6 +23,10 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
+
 #include <sys/types.h>
 #ifndef __UNIXOS2__
 #include <sys/mman.h>
@@ -46,7 +50,7 @@
 # define Xfree(size) free(size)
 #endif
 
-#include "Xos.h"
+#include <X11/Xos.h>
 #include "os.h"
 #include "elf.h"
 
@@ -1623,6 +1627,57 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
  		break;
  	    }
  
+    case R_ALPHA_BRSGP:
+	 {
+	    Elf_Sym *syms;
+	    int     Delta;
+	    
+	    dest32 = (unsigned int *)((secp + rel->r_offset) + rel->r_addend);
+
+# ifdef ELFDEBUG
+	    ELFDEBUF("R_ALPHA_BRSGP %s\t",
+		   ElfGetSymbolName(elffile, ELF_R_SYM(rel->r_info)));
+
+	    ELFDEBUG("secp=%lx\t", secp);
+	    ELFDEBUG("symval=%lx\t", symval);
+	    ELFDEBUG("dest32=%lx\t", dest32);
+	    ELFDEBUG("*dest32=%8.8x\t", *dest32);
+# endif
+
+# ifdef ELFDEBUG
+	    ELFDEBUG("symval=%lx\t", symval);
+# endif
+	    syms = (Elf_Sym *) elffile->saddr[elffile->symndx];
+        
+	    if (syms[ELF_R_SYM(rel->r_info)].st_other & 0x8)
+		Delta = -4;
+	    else
+	        Delta = 4;
+	    
+	    symval -= (Elf_Addr) (((unsigned char *)dest32) + Delta);
+	    if (symval % 4) {
+	       ErrorF("R_ALPHA_BRSGP bad alignment of offset\n");
+	    }
+	    symval = symval >> 2;
+
+# ifdef ELFDEBUG
+	    ELFDEBUG("symval=%lx\t", symval);
+# endif
+
+	    if (symval & 0xffe00000) {
+# ifdef ELFDEBUG
+	       ELFDEBUG("R_ALPHA_BRSGP symval too large\n");
+# endif
+	    }
+
+	    *dest32 = (*dest32 & ~0x1fffff) | (symval & 0x1fffff);
+
+# ifdef ELFDEBUG
+	    ELFDEBUG("*dest32=%8.8x\n", *dest32);
+# endif
+	    break;
+	 }
+       
 #endif /* alpha */
 #if defined(__mc68000__)
     case R_68K_32:
@@ -2481,7 +2536,9 @@ Elf_RelocateEntry(ELFModulePtr elffile, Elf_Word secn, Elf_Rel_t *rel,
 	    val = symval - (unsigned long)dest32 + val;
 	    val >>= 2;
 	    *dest32 = (*dest32 & 0xff000000) | (val & 0x00ffffff);
+#ifdef NOTYET
 	    arm_flush_cache(dest32);
+#endif
 	}
 	break;
 
@@ -2797,6 +2854,14 @@ ELFCollectSections(ELFModulePtr elffile, int pass, int *totalsize,
 		mprotect( (char *)elffile->lsection[j].saddr - round,
 			 SecSize(i) + round, PROT_READ | PROT_WRITE | PROT_EXEC);
 	    }
+#ifdef __ia64__
+	    {
+		int k;
+		for (k = 0; k < SecSize(i); k += 32)
+		    ia64_flush_cache(elffile->lsection[j].saddr+k);
+		ia64_flush_cache(elffile->lsection[j].saddr+SecSize(i)-1);
+	    }
+#endif
 	    break;
 #endif
 	case SHT_SYMTAB:

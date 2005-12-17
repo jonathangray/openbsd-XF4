@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/extsym.c,v 1.4 2004/08/09 03:40:50 krh Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/extsym.c,v 1.5 2004/09/14 23:21:22 gisburn Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/extsym.c,v 1.9 2003/10/15 16:29:03 dawes Exp $ */
 
 /*
@@ -24,6 +24,10 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
  */
+
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
 
 #include "resource.h"
 #include "sym.h"

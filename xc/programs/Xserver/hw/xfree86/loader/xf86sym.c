@@ -51,6 +51,10 @@
 
 #define INCLUDE_DEPRECATED 1
 
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
+
 #include <fcntl.h>
 #include <setjmp.h>
 #include "sym.h"
@@ -326,6 +330,9 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86AcquireGART)
     SYMFUNC(xf86ReleaseGART)
     SYMFUNC(xf86AllocateGARTMemory)
+#ifdef notyet
+    SYMFUNC(xf86DeallocateGARTMemory)
+#endif
     SYMFUNC(xf86BindGARTMemory)
     SYMFUNC(xf86UnbindGARTMemory)
     SYMFUNC(xf86EnableAGP)
@@ -422,6 +429,9 @@ LOOKUP xfree86LookupTab[] = {
     /* For drivers */
 #ifdef XFreeXDGA
     SYMFUNC(DGAInit)
+#ifdef notyet
+    SYMFUNC(DGAReInitModes)
+#endif
     /* For extmod */
     SYMFUNC(DGAAvailable)
     SYMFUNC(DGAActive)
@@ -456,6 +466,9 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86AddEnabledDevice)
     SYMFUNC(xf86RemoveEnabledDevice)
     SYMFUNC(xf86InterceptSignals)
+#ifdef notyet
+    SYMFUNC(xf86InterceptSigIll)
+#endif
     SYMFUNC(xf86EnableVTSwitch)
 
     /* xf86Helper.c */
@@ -511,6 +524,9 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86CommonSpecialKey)
     SYMFUNC(xf86IsPc98)
     SYMFUNC(xf86DisableRandR)
+#ifdef notyet
+    SYMFUNC(xf86GetRotation)
+#endif
     SYMFUNC(xf86GetVersion)
     SYMFUNC(xf86GetModuleVersion)
     SYMFUNC(xf86GetClocks)
@@ -645,6 +661,16 @@ LOOKUP xfree86LookupTab[] = {
 
     /* xf86cmap.c */
     SYMFUNC(xf86HandleColormaps)
+    SYMFUNC(xf86GetGammaRampSize)
+    SYMFUNC(xf86GetGammaRamp)
+    SYMFUNC(xf86ChangeGammaRamp)
+
+    /* xf86RandR.c */
+#ifdef RANDR
+#ifdef notyet
+    SYMFUNC(xf86RandRSetNewVirtualAndDimensions)
+#endif
+#endif
 
     /* xf86xv.c */
     SYMFUNC(xf86XVScreenInit)
@@ -961,7 +987,11 @@ LOOKUP xfree86LookupTab[] = {
 #endif
 #else
     SYMFUNCALIAS("xf86setjmp", setjmp)
+#ifdef notyet
+    SYMFUNC(xf86setjmp0)
+#else
     SYMFUNCALIAS("xf86setjmp0", setjmp)
+#endif
     SYMFUNC(xf86setjmp1)
 #endif
     SYMFUNCALIAS("xf86longjmp", longjmp)
@@ -1126,12 +1156,12 @@ LOOKUP xfree86LookupTab[] = {
 #endif
 #endif
 #if defined(__ia64__)
-    SYMFUNC(_outw)
-    SYMFUNC(_outb)
-    SYMFUNC(_outl)
-    SYMFUNC(_inb)
-    SYMFUNC(_inw)
-    SYMFUNC(_inl)
+    SYMFUNC(outw)
+    SYMFUNC(outb)
+    SYMFUNC(outl)
+    SYMFUNC(inb)
+    SYMFUNC(inw)
+    SYMFUNC(inl)
 #endif
 #if defined(__arm__)
     SYMFUNC(outw)

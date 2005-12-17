@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.151 2005/09/01 17:11:20 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.152 2005/12/17 14:52:10 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -462,7 +462,7 @@ install:: fonts.alias							@@\
 # define XorgServer		YES
 
 # ifndef DoLoadableServer
-#  define DoLoadableServer	NO
+#  define DoLoadableServer	YES
 # endif
 
 # ifndef HasNetBSDApertureDriver
@@ -853,7 +853,7 @@ install:: fonts.alias							@@\
 				-DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption XFree86ServerDefines
 #   ifndef DoLoadableServer
-#     define DoLoadableServer	NO
+#     define DoLoadableServer	YES
 #   endif
 #   define ServerExtraSysLibs	-larm
 #   define XF86OSCardDrivers	wsfb
@@ -915,7 +915,7 @@ install:: fonts.alias							@@\
 				-DDDXTIME -DDDXOSINIT
 #   define ServerExtraDefines	GccGasOption XFree86ServerDefines
 #   ifndef DoLoadableServer
-#     define DoLoadableServer	NO
+#     define DoLoadableServer	YES
 #   endif
 #   define XF86OSCardDrivers	wsfb
 #   ifndef XF86CardDrivers
@@ -1031,7 +1031,7 @@ install:: fonts.alias							@@\
 
 # if XorgServer
 #   ifndef DoLoadableServer
-#     define DoLoadableServer	NO
+#     define DoLoadableServer	YES
 #   endif
 #   define XF86OSCardDrivers	wsfb
 #   define XFree86ConsoleDefines -DWSCONS_SUPPORT
@@ -1186,9 +1186,12 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef DlLibrary
-# if (OSMajorVersion < 3 || OSMajorVersion == 3 && OSMinorVersion == 0)\
-    && UseElfFormat
-#  define DlLibrary -ldl
+# if UseElfFormat
+#  if (OSMajorVersion < 3 || OSMajorVersion == 3 && OSMinorVersion == 0)
+#   define DlLibrary -ldl
+#  else
+#   define DlLibrary -Wl,--export-dynamic
+#  endif
 # else
 #  define DlLibrary /**/
 # endif

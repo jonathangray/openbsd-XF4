@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.26 2005/01/26 18:34:26 miod Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.27 2005/12/17 14:52:11 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -184,7 +184,9 @@ static const char *shadowSymbols[] = {
 	"shadowAlloc",
 	"shadowInit",
 	"shadowUpdatePacked",
+	"shadowUpdatePackedWeak",
 	"shadowUpdateRotatePacked",
+	"shadowUpdateRotatePackedWeak",
 	NULL
 };
 
@@ -817,8 +819,8 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		} else {
 			if (!shadowSetup(pScreen) ||
 			    !shadowAdd(pScreen, NULL,
-				fPtr->rotate ? shadowUpdateRotatePacked :
-				shadowUpdatePacked,
+				fPtr->rotate ? shadowUpdateRotatePackedWeak() :
+				shadowUpdatePackedWeak(),
 				WsfbWindowLinear, fPtr->rotate, NULL)) {
 				xf86DrvMsg(scrnIndex, X_ERROR,
 				    "Shadow FB initialization failed\n");
