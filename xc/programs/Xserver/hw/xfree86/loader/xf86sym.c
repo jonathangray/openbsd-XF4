@@ -987,11 +987,7 @@ LOOKUP xfree86LookupTab[] = {
 #endif
 #else
     SYMFUNCALIAS("xf86setjmp", setjmp)
-#ifdef notyet
-    SYMFUNC(xf86setjmp0)
-#else
     SYMFUNCALIAS("xf86setjmp0", setjmp)
-#endif
     SYMFUNC(xf86setjmp1)
 #endif
     SYMFUNCALIAS("xf86longjmp", longjmp)
