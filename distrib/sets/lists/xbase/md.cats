@@ -1398,6 +1398,7 @@
 ./usr/X11R6/lib/libX11.so.9.0
 ./usr/X11R6/lib/libXRes.so.3.0
 ./usr/X11R6/lib/libXTrap.so.9.0
+./usr/X11R6/lib/libXau.so.9.0
 ./usr/X11R6/lib/libXaw.so.11.0
 ./usr/X11R6/lib/libXaw6.so.9.0
 ./usr/X11R6/lib/libXaw7.so.10.0
