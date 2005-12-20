@@ -1690,6 +1690,12 @@ XFREE86JAPANESEDOCDIR = $(DOCDIR)/Japanese
 # endif
 #endif
 
+#if (defined(SparcArchitecture) || defined(Sparc64Architecture)) \
+    && !defined(LargePositionIndependentCFlags) \
+    && defined(HasGcc)
+# define LargePositionIndependentCFlags -fPIC
+#endif
+
 #ifndef XF8_32Wid
 # define XF8_32Wid		NO
 #endif
