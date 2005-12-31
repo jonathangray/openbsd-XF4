@@ -484,6 +484,16 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasBasename
 #define HasBasename		YES
 #endif
+#ifndef HasGetopt
+# if !defined(Win32Architecture) && !defined(OS2Architecture)
+#  define HasGetopt		YES
+# else
+#  define HasGetopt		NO
+# endif
+#endif
+#ifndef HasGetoptLong
+# define HasGetoptLong		NO
+#endif
 /* byte-order defaults */
 #ifndef ByteOrder
 #if defined(VaxArchitecture)
