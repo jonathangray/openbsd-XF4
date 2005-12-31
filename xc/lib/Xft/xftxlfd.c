@@ -1,6 +1,7 @@
 /*
+ * $Id: xftxlfd.c,v 1.3 2005/12/31 14:27:09 matthieu Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -21,9 +22,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include "xftint.h"
 
 static XftSymbolic XftXlfdWeights[] = {

@@ -1,6 +1,7 @@
 /*
+ * $Id: xftname.c,v 1.3 2005/12/31 14:27:09 matthieu Exp $
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,7 +23,6 @@
  */
 
 #include "xftint.h"
-#include <stdlib.h>
 
 static const FcObjectType	_XftObjectTypes[] = {
     { XFT_CORE,		FcTypeBool, },
