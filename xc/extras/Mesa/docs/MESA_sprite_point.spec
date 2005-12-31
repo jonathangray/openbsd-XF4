@@ -16,7 +16,7 @@ Status
 
 Version
 
-    $Id: MESA_sprite_point.spec,v 1.1 2004/11/02 23:26:08 matthieu Exp $
+    $Id: MESA_sprite_point.spec,v 1.2 2005/12/31 17:01:41 matthieu Exp $
 
 Number
 

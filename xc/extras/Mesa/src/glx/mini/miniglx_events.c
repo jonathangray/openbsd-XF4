@@ -38,7 +38,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $Id: miniglx_events.c,v 1.1 2004/11/02 23:26:16 matthieu Exp $ */
+/* $Id: miniglx_events.c,v 1.2 2005/12/31 17:01:44 matthieu Exp $ */
 
 
 #include <assert.h>
@@ -258,6 +258,7 @@ static int welcome_message_part( Display *dpy, int i, void **msg, int sz )
       if (!*msg) *msg = malloc(sz);
       if (!*msg) return False;
       if (!blocking_read( dpy, i, *msg, sz )) return False;
+      return sz;
    }
    else {
       if (!send_msg( dpy, i, &sz, sizeof(sz))) return False;
@@ -283,18 +284,21 @@ static int welcome_message( Display *dpy, int i )
 {
    void *tmp = &dpy->driverContext.shared;
    int *clientid = dpy->IsClient ? &dpy->clientID : &i;
-   
+   int size;
    if (!welcome_message_part( dpy, i, (void **)&clientid, sizeof(*clientid)))
       return False;
 
    if (!welcome_message_part( dpy, i, &tmp, sizeof(dpy->driverContext.shared)))
       return False;
       
-   if (!welcome_message_part( dpy, i,
+   size=welcome_message_part( dpy, i,
                               (void **)&dpy->driverContext.driverClientMsg, 
-			      dpy->driverContext.driverClientMsgSize ))
+			      dpy->driverContext.driverClientMsgSize );
+   if (!size)
       return False;
-
+   if (dpy->IsClient) {
+      dpy->driverContext.driverClientMsgSize = size;
+   }
    return True;
 }
 

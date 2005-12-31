@@ -1,4 +1,4 @@
-/* $Id: x86_cliptest.S,v 1.1 2004/11/02 23:26:32 matthieu Exp $ */
+/* $Id: x86_cliptest.S,v 1.2 2005/12/31 17:02:15 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library
@@ -101,6 +101,7 @@ clip_table:
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_x86_cliptest_points4 )
+HIDDEN(_mesa_x86_cliptest_points4)
 GLNAME( _mesa_x86_cliptest_points4 ):
 
 #ifdef ELFPIC
@@ -275,6 +276,7 @@ LLBL(ctp4_finish):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_x86_cliptest_points4_np )
+HIDDEN(_mesa_x86_cliptest_points4_np)
 GLNAME( _mesa_x86_cliptest_points4_np ):
 
 #ifdef ELFPIC

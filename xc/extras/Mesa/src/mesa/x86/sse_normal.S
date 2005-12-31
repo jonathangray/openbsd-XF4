@@ -1,4 +1,4 @@
-/* $Id: sse_normal.S,v 1.1 2004/11/02 23:26:32 matthieu Exp $ */
+/* $Id: sse_normal.S,v 1.2 2005/12/31 17:02:14 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library
@@ -45,6 +45,7 @@
 
 ALIGNTEXT16
 GLOBL GLNAME(_mesa_sse_transform_rescale_normals_no_rot)
+HIDDEN(_mesa_sse_transform_rescale_normals_no_rot)
 GLNAME(_mesa_sse_transform_rescale_normals_no_rot):
 
 #define FRAME_OFFSET 8
@@ -106,6 +107,7 @@ LLBL(K_G3TRNNRR_finish):
 
 ALIGNTEXT16
 GLOBL GLNAME(_mesa_sse_transform_rescale_normals)
+HIDDEN(_mesa_sse_transform_rescale_normals)
 GLNAME(_mesa_sse_transform_rescale_normals):
 
 #define FRAME_OFFSET 8
@@ -198,6 +200,7 @@ LLBL(K_G3TRNR_finish):
 
 ALIGNTEXT16
 GLOBL GLNAME(_mesa_sse_transform_normals_no_rot)
+HIDDEN(_mesa_sse_transform_normals_no_rot)
 GLNAME(_mesa_sse_transform_normals_no_rot):
 
 #define FRAME_OFFSET 8

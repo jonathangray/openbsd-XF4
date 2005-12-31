@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: mesadef.py,v 1.1 2004/11/02 23:26:28 matthieu Exp $
+# $Id: mesadef.py,v 1.2 2005/12/31 17:02:04 matthieu Exp $
 
 # Mesa 3-D graphics library
 # Version:  4.1

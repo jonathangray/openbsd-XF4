@@ -1,4 +1,4 @@
-/* $Id: 3dnow_xform3.S,v 1.1 2004/11/02 23:26:32 matthieu Exp $ */
+/* $Id: 3dnow_xform3.S,v 1.2 2005/12/31 17:02:14 matthieu Exp $ */
 
 /*
  * Mesa 3-D graphics library
@@ -35,6 +35,7 @@
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_general )
+HIDDEN(_mesa_3dnow_transform_points3_general)
 GLNAME( _mesa_3dnow_transform_points3_general ):
 
     PUSH_L    ( ESI )
@@ -119,6 +120,7 @@ LLBL( G3TPGR_2 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_perspective )
+HIDDEN(_mesa_3dnow_transform_points3_perspective)
 GLNAME( _mesa_3dnow_transform_points3_perspective ):
 
     PUSH_L    ( ESI )
@@ -199,6 +201,7 @@ LLBL( G3TPPR_2 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_3d )
+HIDDEN(_mesa_3dnow_transform_points3_3d)
 GLNAME( _mesa_3dnow_transform_points3_3d ):
 
     PUSH_L    ( ESI )
@@ -286,6 +289,7 @@ LLBL( G3TP3R_2 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_3d_no_rot )
+HIDDEN(_mesa_3dnow_transform_points3_3d_no_rot)
 GLNAME( _mesa_3dnow_transform_points3_3d_no_rot ):
 
     PUSH_L    ( ESI )
@@ -361,6 +365,7 @@ LLBL( G3TP3NRR_2 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_2d )
+HIDDEN(_mesa_3dnow_transform_points3_2d)
 GLNAME( _mesa_3dnow_transform_points3_2d ):
 
     PUSH_L    ( ESI )
@@ -433,6 +438,7 @@ LLBL( G3TP2R_3 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_2d_no_rot )
+HIDDEN(_mesa_3dnow_transform_points3_2d_no_rot)
 GLNAME( _mesa_3dnow_transform_points3_2d_no_rot ):
 
     PUSH_L    ( ESI )
@@ -499,6 +505,7 @@ LLBL( G3TP2NRR_2 ):
 
 ALIGNTEXT16
 GLOBL GLNAME( _mesa_3dnow_transform_points3_identity )
+HIDDEN(_mesa_3dnow_transform_points3_identity)
 GLNAME( _mesa_3dnow_transform_points3_identity ):
 
     PUSH_L    ( ESI )
