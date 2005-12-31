@@ -3304,28 +3304,28 @@ ProjectUnsharedLibReferences(XPM,Xpm,$(XPMLIBSRC),XBuildLibDir)
           FREETYPE2LIBSRC = $(LIBSRC)/freetype2
 
 /*
- * FreeType 2.1.4
+ * FreeType 2.1.9
  *
  * Get the library version information from version_info in
  * in xc/extras/freetype2/builds/unix/configure.ac.
  *
- * current:revision:age = 9:5:3
+ * current:revision:age = 9:7:3
  *
  * The LibtoolMinorVersions revision is "(current - age).age".
  * The !LibtoolMinorVersions revision is "current.0".
  * Freetype2Version should be set to "current.revision.age"
  */
 #ifndef Freetype2Version
-#define Freetype2Version 9.6.3
+#define Freetype2Version 9.7.3
 #endif
 
 #if SharedLibFreetype2
 #ifndef SharedLibtoolFreetype2Rev
-#define SharedLibtoolFreetype2Rev	9:6:3
+#define SharedLibtoolFreetype2Rev	9:7:3
 #endif
 #ifndef SharedFreetype2Rev
 #if LibtoolMinorVersions
-#define SharedFreetype2Rev 6.3.5
+#define SharedFreetype2Rev 6.3.8
 #else
 #define SharedFreetype2Rev 9.0
 #endif
