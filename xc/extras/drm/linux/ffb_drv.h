@@ -1,4 +1,4 @@
-/* $Id: ffb_drv.h,v 1.1 2004/11/02 23:26:41 matthieu Exp $
+/* $Id: ffb_drv.h,v 1.2 2005/12/31 18:24:56 matthieu Exp $
  * ffb_drv.h: Creator/Creator3D direct rendering driver.
  *
  * Copyright (C) 2000 David S. Miller (davem@redhat.com)
@@ -274,3 +274,10 @@ typedef struct ffb_dev_priv {
 	/* Context table. */
 	struct ffb_hw_context	*hw_state[FFB_MAX_CTXS];
 } ffb_dev_priv_t;
+
+extern struct file_operations DRM(fops);
+extern unsigned long ffb_get_unmapped_area(struct file *filp,
+					   unsigned long hint,
+					   unsigned long len,
+					   unsigned long pgoff,
+					   unsigned long flags);

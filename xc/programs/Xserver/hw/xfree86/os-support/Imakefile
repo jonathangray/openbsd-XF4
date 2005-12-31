@@ -99,6 +99,8 @@ DRM_DONES = $(OS_SUBDIR)/drm/DONE
 
 #endif
 
+LIBDRM_DIR = ../../../../../extras/drm/libdrm
+
 SUBDIRS = $(OS_SUBDIR) $(BUS_SUBDIR) misc
 
 SRCS = $(OS_SUBDIR)/?*.c $(BUS_SUBCMSK) misc/?*.c $(DRM_SRC)
@@ -120,10 +122,11 @@ ForceSubdirs($(SUBDIRS))
 
 DependSubdirs($(SUBDIRS))
 
+LinkSourceFile(xf86drm.h,$(LIBDRM_DIR))
+
 InstallDriverSDKNonExecFile(xf86_OSproc.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86_OSlib.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86_ansic.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86_libc.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(xf86drm.h,$(DRIVERSDKINCLUDEDIR))
-InstallDriverSDKNonExecFile(xf86drmCompat.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(assyntax.h,$(DRIVERSDKINCLUDEDIR))
