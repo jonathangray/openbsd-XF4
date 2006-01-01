@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/extras/Xpm/lib/create.c,v 1.4 2004/11/25 21:19:11 herrb Exp $ */
+/* $XdotOrg: xc/extras/Xpm/lib/create.c,v 1.6 2005/05/19 15:02:48 sandmann Exp $ */
 /*
  * Copyright (C) 1989-95 GROUPE BULL
  *
@@ -47,6 +47,9 @@
 
 /* October 2004, source code review by Thomas Biege <thomas@suse.de> */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "XpmI.h"
 #include <ctype.h>
 
