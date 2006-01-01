@@ -1,7 +1,7 @@
 /*
- * $Id: Xdamage.h,v 1.1 2004/11/02 23:47:38 matthieu Exp $
+ * $Id: Xdamage.h,v 1.2 2006/01/01 21:05:41 matthieu Exp $
  *
- * Copyright © 2003 Keith Packard
+ * Copyright Â© 2003 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that

@@ -1,5 +1,5 @@
 /*
- * $Id: Region.c,v 1.1 2004/11/02 23:47:39 matthieu Exp $
+ * $Id: Region.c,v 1.2 2006/01/01 21:05:43 matthieu Exp $
  *
  * Copyright © 2003 Keith Packard
  *
@@ -22,6 +22,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "Xfixesint.h"
 
 XserverRegion

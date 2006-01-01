@@ -1,5 +1,5 @@
 /*
- * $Id: xcompositeint.h,v 1.1 2004/11/02 23:47:37 matthieu Exp $
+ * $Id: xcompositeint.h,v 1.2 2006/01/01 21:05:41 matthieu Exp $
  *
  * Copyright © 2003 Keith Packard
  *
@@ -32,7 +32,7 @@
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/compositeproto.h>
-#include "Xcomposite.h"
+#include <X11/extensions/Xcomposite.h>
 
 typedef struct _XCompositeExtDisplayInfo {
     struct _XCompositeExtDisplayInfo  *next;    /* keep a linked list */

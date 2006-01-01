@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlcat.c,v 1.2 2004/11/02 23:48:04 matthieu Exp $	*/
+/*	$OpenBSD: strlcat.c,v 1.3 2006/01/01 21:05:47 matthieu Exp $	*/
 
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -17,6 +17,10 @@
  */
 /* $XFree86$ */
 
+
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
 
 #include <sys/types.h>
 #include <string.h>

@@ -1,7 +1,7 @@
 /*
- * $Id: AddTrap.c,v 1.1 2004/11/02 23:47:45 matthieu Exp $
+ * $Id: AddTrap.c,v 1.2 2006/01/01 21:05:43 matthieu Exp $
  *
- * Copyright © 2004 Keith Packard
+ * Copyright Â© 2004 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,6 +22,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "Xrenderint.h"
 
 #define NLOCAL	256

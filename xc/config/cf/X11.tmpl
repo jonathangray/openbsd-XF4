@@ -2817,7 +2817,7 @@ ProjectUnsharedLibReferences(XAUTH,Xau,$(XAUTHSRC),$(USRLIBDIR))
 #endif
 
 #ifndef SharedLibXdmcp
-#define SharedLibXdmcp		NO
+#define SharedLibXdmcp		HasSharedLibraries
 #endif
 #ifndef NormalLibXdmcp
 #define NormalLibXdmcp (!SharedLibXdmcp | ForceNormalLib)

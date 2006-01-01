@@ -1,4 +1,13 @@
+/*
+ * $Xorg: A8Eq.c,v 1.4 2001/02/09 02:03:48 xorgcvs Exp $
+ *
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <sys/types.h>
+#include <X11/Xmd.h>
 #include "Wrap.h"
 
 /* des routines for non-usa - eay 10/9/1991 eay@psych.psy.uq.oz.au
@@ -10,9 +19,10 @@
  * 10/9/1991 eay - first release.
  * The des routines this file has been made from can be found in
  * ftp.psy.uq.oz.au /pub/DES
+ * This particular version derived from OpenBSD Revsion 1.3.
  */
 
-static u_int32_t skb[8][64] = {
+static CARD32 skb[8][64] = {
 	/* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
 	{ 0x00000000,0x00000010,0x20000000,0x20000010,
 	  0x00010000,0x00010010,0x20010000,0x20010010,
@@ -152,7 +162,7 @@ static u_int32_t skb[8][64] = {
 };
 
 
-static u_int32_t SPtrans[8][64] = {
+static CARD32 SPtrans[8][64] = {
 	/* nibble 0 */
 	{ 0x00410100, 0x00010000, 0x40400000, 0x40410100,
 	  0x00400000, 0x40010100, 0x40010000, 0x40400000,
@@ -301,15 +311,15 @@ static u_int32_t SPtrans[8][64] = {
 #define ITERATIONS 16
 #define HALF_ITERATIONS 8
 
-#define c2l(c,l)	(l =((u_int32_t)(*((c)++)))    , \
-			 l|=((u_int32_t)(*((c)++)))<< 8, \
-			 l|=((u_int32_t)(*((c)++)))<<16, \
-			 l|=((u_int32_t)(*((c)++)))<<24)
+#define c2l(c,l)	(l =((CARD32)(*((c)++)))    , \
+			 l|=((CARD32)(*((c)++)))<< 8, \
+			 l|=((CARD32)(*((c)++)))<<16, \
+			 l|=((CARD32)(*((c)++)))<<24)
 
-#define l2c(l,c)	(*((c)++)=(u_int8_t)(((l)    )&0xff), \
-			 *((c)++)=(u_int8_t)(((l)>> 8)&0xff), \
-			 *((c)++)=(u_int8_t)(((l)>>16)&0xff), \
-			 *((c)++)=(u_int8_t)(((l)>>24)&0xff))
+#define l2c(l,c)	(*((c)++)=(CARD8)(((l)    )&0xff), \
+			 *((c)++)=(CARD8)(((l)>> 8)&0xff), \
+			 *((c)++)=(CARD8)(((l)>>16)&0xff), \
+			 *((c)++)=(CARD8)(((l)>>24)&0xff))
 
 #define PERM_OP(a,b,t,n,m) ((t)=((((a)>>(n))^(b))&(m)),\
 	(b)^=(t),\
@@ -320,16 +330,15 @@ static u_int32_t SPtrans[8][64] = {
 
 static char shifts2[16] = {0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0};
 
-void
-_XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
+void _XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
 {
-	u_int32_t c,d,t,s;
-	u_int8_t *in;
-	u_int32_t *k;
+	CARD32 c,d,t,s;
+	CARD8 *in;
+	CARD32 *k;
 	int i;
 
-	k=(u_int32_t *)schedule;
-	in=(u_int8_t *)key;
+	k=(CARD32 *)schedule;
+	in=(CARD8 *)key;
 
 	c2l(in,c);
 	c2l(in,d);
@@ -391,17 +400,17 @@ _XdmcpAuthSetup(auth_cblock key, auth_wrapper_schedule schedule)
 		SPtrans[4][(u>>16)&0x3f]| \
 		SPtrans[6][(u>>24)&0x3f];
 
-void
-_XdmcpAuthDoIt(auth_cblock input, auth_cblock output,
+
+void _XdmcpAuthDoIt(auth_cblock input, auth_cblock output,
     auth_wrapper_schedule ks, int encrypt)
 {
-	u_int32_t l,r,t,u;
-	u_int32_t *s;
-	u_int8_t *in,*out;
+	CARD32 l,r,t,u;
+	CARD32 *s;
+	CARD8 *in,*out;
 	int i;
 
-	in=(u_int8_t *)input;
-	out=(u_int8_t *)output;
+	in=(CARD8 *)input;
+	out=(CARD8 *)output;
 	c2l(in,l);
 	c2l(in,r);
 
@@ -416,7 +425,7 @@ _XdmcpAuthDoIt(auth_cblock input, auth_cblock output,
 	l=r;
 	r=t;
 
-	s=(u_int32_t *)ks;
+	s=(CARD32 *)ks;
 
 	if (encrypt) {
 		for (i=0; i<(ITERATIONS*2); i+=4) {
