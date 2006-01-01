@@ -27,6 +27,28 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+
+/*
+ * Copyright © 2005 Daniel Stone
+ * 
+ * Permission to use, copy, modify, distribute, and sell this software and its
+ * documentation for any purpose is hereby granted without fee, provided that
+ * the above copyright notice appear in all copies and that both that
+ * copyright notice and this permission notice appear in supporting
+ * documentation, and that the name of Daniel Stone not be used in advertising
+ * or publicity pertaining to distribution of the software without specific,
+ * written prior permission.  Daniel Stone makes no representations about the
+ * suitability of this software for any purpose.  It is provided "as is"
+ * without express or implied warranty.
+ *
+ * DANIEL STONE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+ * DANIEL STONE BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
+ * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
 /* $XFree86: xc/include/Xpoll.h,v 3.8 2001/01/17 17:53:11 dawes Exp $ */
 
 #ifndef _XPOLL_H_
@@ -37,29 +59,36 @@ from The Open Group.
 #ifndef USE_POLL
 
 #include <X11/Xos.h>
+
+/* Below is the monster branch from hell.  Basically, most systems will drop to
+ * 'the branch below is the fallthrough for halfway modern systems', and include
+ * <sys/select.h>, so we get the FD_* macros. */
 #if !defined(DGUX)
-#if (defined(SVR4) || defined(CRAY) || defined(AIXV3)) && !defined(FD_SETSIZE)
-#include <sys/select.h>
-#ifdef luna
-#include <sysent.h>
-#endif
-#endif
+# if (defined(SVR4) || defined(CRAY) || defined(AIXV3)) && !defined(FD_SETSIZE)
+#  include <sys/select.h>
+#  ifdef luna
+#   include <sysent.h>
+#  endif
+# else /* not SVR4/CRAY/AIXv3 */
+#  if defined(AIXV4) /* AIX 4.2 fubar-ed <sys/select.h>, so try really hard. */
+#   if !defined(NFDBITS)
+#    include <sys/select.h>
+#   endif
+#  else /* the branch below is the fallthrough for halfway modern systems */
+#   ifdef __QNX__  /* Make sure we get 256 bit select masks */
+#    define FD_SETSIZE 256
+#   endif
+#   include <sys/select.h>
+#  endif
+# endif
 #else /* DGUX  -- No sys/select in Intel DG/ux */
-#include <sys/time.h> 
-#include <sys/types.h>
-#include <unistd.h>
+# include <sys/time.h> 
+# include <sys/types.h>
+# include <unistd.h>
 #endif
 
-#ifdef __QNX__  /* Make sure we get 256 bit select masks */
-#define FD_SETSIZE 256
-#include <sys/select.h>
-#endif
-
-/* AIX 4.2 fubar-ed <sys/select.h>, so go to heroic measures to get it */
-#if defined(AIXV4) && !defined(NFDBITS)
-#include <sys/select.h>
-#endif
 #include <X11/Xmd.h>
+
 #ifdef CSRG_BASED
 #include <sys/param.h>
 # if BSD < 199103
@@ -68,6 +97,7 @@ typedef long fd_mask;
 #endif
 
 #define XFD_SETSIZE	256
+
 #ifndef FD_SETSIZE
 #define FD_SETSIZE	XFD_SETSIZE
 #endif
@@ -84,14 +114,10 @@ typedef long fd_mask;
 #define howmany(x,y)	(((x)+((y)-1))/(y))
 #endif
 
-#ifdef BSD
-# if BSD < 198911	/* 198911 == OSF/1, 199103 == CSRG_BASED */
-#  ifndef luna		/* and even though on LUNA BSD ==  43, it has it */
+#if defined(BSD) && BSD < 198911 && !defined(luna)
 typedef struct fd_set {
 	fd_mask fds_bits[howmany(FD_SETSIZE, NFDBITS)];
 } fd_set;
-#  endif
-# endif
 #endif
 
 #ifndef hpux /* and perhaps old BSD ??? */
@@ -104,14 +130,22 @@ typedef struct fd_set {
 # endif
 #endif
 
+#define __X_FDS_BITS @USE_FDS_BITS@
+
+#ifndef __FDS_BITS
+# define __FDS_BITS(p)  ((p)->__X_FDS_BITS)
+#endif
+
+#define __XFDS_BITS(p, n) (__FDS_BITS(p))[n]
+
 #ifndef FD_SET
-#define FD_SET(n, p)    ((p)->fds_bits[(n)/NFDBITS] |= ((fd_mask)1 << ((n) % NFDBITS)))
+#define FD_SET(n, p)    (__XFDS_BITS(p, ((n)/NFDBITS)) |= ((fd_mask)1 << ((n) % NFDBITS)))
 #endif
 #ifndef FD_CLR
-#define FD_CLR(n, p)    ((p)->fds_bits[(n)/NFDBITS] &= ~((fd_mask)1 << ((n) % NFDBITS)))
+#define FD_CLR(n, p)    (__XFDS_BITS((p), ((n)/NFDBITS)) &= ~((fd_mask)1 << ((n) % NFDBITS)))
 #endif
 #ifndef FD_ISSET
-#define FD_ISSET(n, p)  ((p)->fds_bits[(n)/NFDBITS] & ((fd_mask)1 << ((n) % NFDBITS)))
+#define FD_ISSET(n, p)  ((__XFDS_BITS((p), ((n)/NFDBITS))) & ((fd_mask)1 << ((n) % NFDBITS)))
 #endif
 #ifndef FD_ZERO
 #define FD_ZERO(p)      bzero((char *)(p), sizeof(*(p)))
@@ -123,34 +157,34 @@ typedef struct fd_set {
  * If it does not exist then the compiler discards the code to access it. 
  */
 #define XFD_ANYSET(p) \
-        ((howmany(FD_SETSIZE, NFDBITS) > 0 && (p)->fds_bits[0]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 1 && (p)->fds_bits[1]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 2 && (p)->fds_bits[2]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 3 && (p)->fds_bits[3]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 4 && (p)->fds_bits[4]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 5 && (p)->fds_bits[5]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 6 && (p)->fds_bits[6]) || \
-        (howmany(FD_SETSIZE, NFDBITS) > 7 && (p)->fds_bits[7]))
+        ((howmany(FD_SETSIZE, NFDBITS) > 0 && (__XFDS_BITS(p, 0))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 1 && (__XFDS_BITS(p, 1))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 2 && (__XFDS_BITS(p, 2))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 3 && (__XFDS_BITS(p, 3))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 4 && (__XFDS_BITS(p, 4))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 5 && (__XFDS_BITS(p, 5))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 6 && (__XFDS_BITS(p, 6))) || \
+        (howmany(FD_SETSIZE, NFDBITS) > 7 && (__XFDS_BITS(p, 7))))
 
 #define XFD_COPYSET(src,dst) { \
         int __i__; \
 		for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
-            (dst)->fds_bits[__i__] = (src)->fds_bits[__i__]; \
+            __XFDS_BITS((dst), __i__) = __XFDS_BITS((src), __i__); \
         }
 #define XFD_ANDSET(dst,b1,b2) { \
         int __i__; \
         for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
-            (dst)->fds_bits[__i__] = ((b1)->fds_bits[__i__] & (b2)->fds_bits[__i__]); \
+            __XFDS_BITS((dst), __i__) = ((__XFDS_BITS((b1), __i__)) & (__XFDS_BITS((b2), __i__))); \
         }
 #define XFD_ORSET(dst,b1,b2) { \
         int __i__; \
         for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
-		    (dst)->fds_bits[__i__] = ((b1)->fds_bits[__i__] | (b2)->fds_bits[__i__]); \
+		__XFDS_BITS((dst), __i__) = ((__XFDS_BITS((b1), __i__)) | (__XFDS_BITS((b2), __i__))); \
         }        
 #define XFD_UNSET(dst,b1) { \
         int __i__; \
         for (__i__ = 0; __i__ < howmany(FD_SETSIZE, NFDBITS); __i__++) \
-    		(dst)->fds_bits[__i__] &= ~((b1)->fds_bits[__i__]); \
+    		__XFDS_BITS((dst), __i__) &= ~(__XFDS_BITS((b1), __i__)); \
         }
 
 #else /* USE_POLL */
@@ -191,7 +225,7 @@ typedef struct fd_set {
 
 #define XFD_ORSET(dst,b1,b2) { \
     u_int __i; \
-    XFD_COPYSET(b1,dst); \
+    if (dst != b1) XFD_COPYSET(b1,dst); \
     for (__i = 0; __i < XFD_SETCOUNT(b2) ; __i++) { \
         if (!FD_ISSET(XFD_FD(b2,__i), dst)) \
 	   FD_SET(XFD_FD(b2,__i), dst); \

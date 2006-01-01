@@ -1,4 +1,4 @@
-/* $Xorg: Xwinsock.h,v 1.4 2001/02/09 02:03:23 xorgcvs Exp $ */
+/* $Xorg$ */
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -28,9 +28,9 @@ The Open Group.
 */
 
 /*
- * This header file has for sole purpose to allow to include winsock.h
+ * This header file has for sole purpose to allow to include windows.h
  * without getting any name conflicts with our code.
- * Conflicts come from the fact that including winsock.h actually pulls
+ * Conflicts come from the fact that including windows.h actually pulls
  * in the whole Windows API...
  */
 
@@ -47,7 +47,7 @@ The Open Group.
 #define ATOM wATOM
 #define BYTE wBYTE
 #define FreeResource wFreeResource
-#include <winsock.h>
+#include <windows.h>
 #undef Status
 #define Status int
 #undef BYTE
@@ -56,8 +56,22 @@ The Open Group.
 #undef ATOM
 #undef FreeResource
 #undef CreateWindowA
+#undef min
+#undef max
+
+#ifdef RESOURCE_H
 #undef RT_FONT
 #undef RT_CURSOR
+#define RT_FONT         ((RESTYPE)4)
+#define RT_CURSOR       ((RESTYPE)5)
+#endif
+
+#define sleep(x) Sleep(1000*x)
+
+#if defined(WIN32) && (!defined(PATH_MAX) || PATH_MAX < 1024)
+#undef PATH_MAX
+#define PATH_MAX 1024
+#endif
 
 #ifdef _XFree86Server
 #define XFree86Server

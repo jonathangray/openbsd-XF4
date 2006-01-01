@@ -819,21 +819,17 @@ CFB32SUBDIR = cfb32
 MIDAMAGEDIR = miext/damage
 XPSUBDIRS = $(STDDIRS) $(MFBDIR) $(CFB8DIR) $(CFB32DIR) $(DEPDIRS) \
 	    $(MIDAMAGEDIR)
+XPOBJS = Xprint/ddxInit.o Xprint/dpmsstubs.o Xprint/miinitext.o
 #if PrintOnlyServer
-#if BuildDPMS
-XPDPMSSTUBOBJS = Xprint/dpmsstubs.o
-#endif
-XPOBJS = Xprint/ddxInit.o Xprint/miinitext.o $(XPDPMSSTUBOBJS)
 XPLIBS = PreFbLibs $(XPDDXLIBS) $(XPDDXFBLIBS) PostFbLibs
 #else
-XPOBJS = Xprint/ddxInit.o
 XPLIBS = PreFbLibs PostFbLibs
 #endif
 #if (defined(SunArchitecture) || defined(SparcArchitecture)) && \
     defined(SVR4Architecture)
-XPSYSLIBS = $(FONTLIBS) $(CBRT) $(SYSLIBS) -lw
+XPSYSLIBS = $(FONTLIBS) $(CBRT) $(SYSLIBS) $(XONLYLIB) -lw
 #else
-XPSYSLIBS = $(FONTLIBS) $(CBRT) $(SYSLIBS)
+XPSYSLIBS = $(FONTLIBS) $(CBRT) $(SYSLIBS) $(XONLYLIB)
 #endif
 #if HasParallelMake
 MakeMutex($(XPSUBDIRS) $(XPOBJS) $(XPLIBS) $(XPSYSLIBS))
