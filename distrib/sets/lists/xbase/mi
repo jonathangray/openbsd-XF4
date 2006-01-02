@@ -226,6 +226,7 @@
 ./usr/X11R6/lib/libxkbui.a
 ./usr/X11R6/lib/pkgconfig
 ./usr/X11R6/lib/pkgconfig/fontconfig.pc
+./usr/X11R6/lib/pkgconfig/freetype2.pc
 ./usr/X11R6/lib/pkgconfig/xcomposite.pc
 ./usr/X11R6/lib/pkgconfig/xcursor.pc
 ./usr/X11R6/lib/pkgconfig/xdamage.pc
