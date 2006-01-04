@@ -28,7 +28,7 @@ OBJS=fc-cache.o
 ComplexProgramTarget(fc-cache)
 LinkBuildBinary(ProgramTargetName(fc-cache))
 
-#if InstallFontconfigLibrary
+#if 0
 install::
 	if [ x$${DESTDIR} = x ]; then \
 		$(FCCACHE) -v -f;\
