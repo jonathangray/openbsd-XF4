@@ -1,23 +1,20 @@
-Post-installation instructions for XFree86 on OpenBSD/mac68k
-------------------------------------------------------------
+Post-installation instructions for X.Org on OpenBSD/mac68k
+----------------------------------------------------------
 
-1. Mac68k setup is not required.  NOTHING needs to be nor can be done
-   beyond package installation.  There are no configuration files for
-   X on mac68k machines.
+OpenBSD 3.9 and later uses the X.Org X server on mac68k.
 
-   See the Xmac68k(1) manual page for information on middle and right
-   mouse button emulation.
+An unaccelerated frame buffer driver, wsfb, is provided for all supported
+frame buffers. You need to configure your machine in monochrome mode
+(1 bit per pixel).
 
-2. Start either xdm(1) or startx(1).
+The default /etc/X11/xorg.conf which is installed provides a ready-to-run
+configuration.
 
-   a. Start xdm(1), the X display manager by activating the xdm_flags option
-      in /etc/rc.conf(8) or /etc/rc.conf.local(8).  You DO need to disable
-      the console getty.
+To start xdm, the X display manager, activate the xdm_flags option in
+/etc/rc.conf. You will need to disable the console getty in /etc/ttys.
 
-   b. Start startx(1) from a console shell.  It is the X script that starts
-      the X server and a few X applications, including a window manager.
+Alternatively, you can log in on console and use `startx'.
 
-problem_blurb  For XFree86 3 documentation,
-visit http://www.xfree86.org/3.3.6/.
+problem_blurb
 
-$OpenBSD: README.mac68k,v 1.5 2002/10/07 21:52:19 todd Exp $
+$OpenBSD: README.mac68k,v 1.6 2006/01/05 07:27:55 miod Exp $

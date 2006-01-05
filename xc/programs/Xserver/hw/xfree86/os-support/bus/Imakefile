@@ -54,12 +54,13 @@ PCIDRVROBJ = linuxPci.o
 	defined(Arm32Architecture) || \
 	defined(HPArchitecture) || \
 	defined(Hp300Architecture) || \
+	defined(Mac68kArchitecture) || \
 	defined(PpcArchitecture) || \
 	defined(SparcArchitecture) || \
 	defined(Sparc64Architecture))
 
 XCOMM OpenBSD/alpha, OpenBSD/cats, OpenBSD/hp300, OpenBSD/hppa,
-XCOMM OpenBSD/macppc, OpenBSD/sparc and OpenBSD/sparc64
+XCOMM OpenBDS/mac68k, OpenBSD/macppc, OpenBSD/sparc and OpenBSD/sparc64
 
 PCIDRVRSRC = freebsdPci.c
 PCIDRVROBJ = freebsdPci.o
