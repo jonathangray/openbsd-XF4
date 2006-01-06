@@ -246,26 +246,6 @@ ServerTarget(Xdec_md,$(DECDIRS1),$(DECOBJS1),$(DECLIBS1),$(SYSLIBS))
 
 
 
-#ifdef Xmac68kServer
-XCOMM
-XCOMM mac68k MFB Server
-XCOMM
-MFBDIR  = mfb
-CFB8DIR = cfb
-CFB16DIR = cfb16
-CFB24DIR = cfb24
-CFB32DIR = cfb32
-DDXDIR1 = hw/mac68k
-MAC68KDIRS = $(STDDIRS) $(MFBDIR) $(CFB8DIR) $(CFB16DIR) $(CFB24DIR) $(CFB32DIR) $(DDXDIR1) $(DEPDIRS)
-MAC68KOBJS = hw/mac68k/macInit.o hw/mac68k/macEvent.o
-MAC68KLIBS = hw/mac68k/libmac68k.a CFBLibs
-MAC68KSYSLIBS = $(CBRT) $(SYSLIBS)
-
-ServerTarget(Xmac68k,$(MAC68KDIRS),$(MAC68KOBJS),$(MAC68KLIBS),$(MAC68KSYSLIBS))
-#ifndef ServerToInstall
-#define ServerToInstall Xmac68k
-#endif
-#endif /* Xmac68kServer */
 
 #if XalphaTGAServer
 XCOMM
