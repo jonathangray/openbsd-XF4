@@ -26,7 +26,7 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 
    Run Xorg -configure as root and move the resulting
    xorg.conf.new file to /etc/X11/xorg.conf. 
-   If needed edit it to adust the keyboard and mouse settings. 
+   If needed edit it to adjust the keyboard and mouse settings. 
 
 4. Start either xdm(1) or startx(1).
 
@@ -41,4 +41,4 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 
 problem_blurb
 
-$OpenBSD: README.amd64,v 1.4 2005/01/15 14:44:54 matthieu Exp $
+$OpenBSD: README.amd64,v 1.5 2006/01/07 08:59:41 matthieu Exp $
