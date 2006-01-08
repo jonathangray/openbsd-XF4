@@ -32,6 +32,10 @@
  *
  */
 
+#ifdef HAVE_DMX_CONFIG_H
+#include <dmx-config.h>
+#endif
+                                                                                
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Intrinsic.h>
@@ -56,7 +60,7 @@
 extern int                 yyparse(void);
 extern FILE                *yyin;
 
-#define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n$Id: xdmxconfig.c,v 1.1 2004/11/03 00:08:02 matthieu Exp $"
+#define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n$Id: xdmxconfig.c,v 1.2 2006/01/08 21:18:17 matthieu Exp $"
 
 #define DMX_MAIN_WIDTH    800
 #define DMX_MAIN_HEIGHT   600

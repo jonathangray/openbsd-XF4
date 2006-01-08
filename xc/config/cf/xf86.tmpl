@@ -83,10 +83,10 @@ MODULE_DEFINES = -DXFree86Module
 		grep -v '^\#' > basename.i
 
 #undef AssembleObject
-#define AssembleObject(flags) ModCPPOnlyAsm($*,flags)			@@\
-	RemoveFile($*.o)						@@\
-	$(MODAS) $(MODASFLAGS) -o $*.o $*.i				@@\
-	RemoveFile($*.i)
+#define AssembleObject(basename,flags) ModCPPOnlyAsm(basename,flags)	@@\
+	RemoveFile(basename.o)						@@\
+	$(MODAS) $(MODASFLAGS) -o basename.o basename.i			@@\
+	RemoveFile(basename.i)
 
 /* This overrides the NormalRelocatableTarget in Imake.rules */
 #undef NormalRelocatableTarget

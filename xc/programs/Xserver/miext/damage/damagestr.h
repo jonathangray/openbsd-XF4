@@ -1,5 +1,5 @@
 /*
- * $Id: damagestr.h,v 1.1 2004/11/03 00:09:52 matthieu Exp $
+ * $Id: damagestr.h,v 1.2 2006/01/08 21:18:23 matthieu Exp $
  *
  * Copyright © 2003 Keith Packard
  *
@@ -22,11 +22,17 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
+#endif
+
 #ifndef _DAMAGESTR_H_
 #define _DAMAGESTR_H_
 
 #include "damage.h"
-#include "picturestr.h"
+#ifdef RENDER
+# include "picturestr.h"
+#endif
 
 typedef struct _damage {
     DamagePtr		pNext;

@@ -1,5 +1,5 @@
 /* $Xorg: access.c,v 1.5 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $XdotOrg: xc/programs/Xserver/os/access.c,v 1.5 2004/07/17 01:13:31 alanc Exp $ */
+/* $XdotOrg: xc/programs/Xserver/os/access.c,v 1.13 2005/11/08 06:33:30 jkj Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -84,9 +84,9 @@ SOFTWARE.
 #include <sys/ioctl.h>
 #include <ctype.h>
 
-#if defined(TCPCONN) || defined(STREAMSCONN) || defined(ISC) || defined(SCO)
+#if defined(TCPCONN) || defined(STREAMSCONN) || defined(ISC) || defined(__SCO__)
 #include <netinet/in.h>
-#endif /* TCPCONN || STREAMSCONN || ISC || SCO */
+#endif /* TCPCONN || STREAMSCONN || ISC || __SCO__ */
 #ifdef DNETCONN
 #include <netdnet/dn.h>
 #include <netdnet/dnetdb.h>
@@ -138,9 +138,7 @@ SOFTWARE.
 #endif /* hpux */
 
 #ifdef SVR4
-#ifndef SCO
 #include <sys/sockio.h>
-#endif
 #include <sys/stropts.h>
 #endif
 
@@ -193,6 +191,11 @@ SOFTWARE.
 #endif
 #endif 
 
+#ifdef __SCO__
+/* The system defined value is wrong. MAXPATHLEN is set in sco5.cf. */
+#undef PATH_MAX
+#endif
+
 #define X_INCLUDE_NETDB_H
 #include <X11/Xos_r.h>
 
@@ -201,7 +204,7 @@ SOFTWARE.
 
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include "extensions/security.h"
+#include <X11/extensions/security.h>
 #endif
 
 #ifndef PATH_MAX
@@ -221,9 +224,9 @@ Bool defeatAccessControl = FALSE;
 			  (length) == (host)->len &&\
 			  !acmp (address, (host)->addr, length))
 
-static int ConvertAddr(struct sockaddr */*saddr*/,
-		       int */*len*/,
-		       pointer */*addr*/);
+static int ConvertAddr(struct sockaddr * /*saddr*/,
+		       int * /*len*/,
+		       pointer * /*addr*/);
 
 static int CheckAddr(int /*family*/,
 		     pointer /*pAddr*/,
@@ -535,7 +538,14 @@ DefineSelf (int fd)
     int		family;
     register HOST	*host;
 
+#ifndef WIN32
     struct utsname name;
+#else
+    struct {
+        char  nodename[512];	    
+    } name;
+#endif
+
     register struct hostent  *hp;
 
     union {
@@ -559,7 +569,11 @@ DefineSelf (int fd)
      * see), whereas gethostname() kindly truncates it for me.
      */
 #ifndef QNX4
+#ifndef WIN32
     uname(&name);
+#else
+    gethostname(name.nodename, sizeof(name.nodename));
+#endif
 #else
     /* QNX4's uname returns node number in name.nodename, not the hostname
        have to overwrite it */
@@ -1854,6 +1868,10 @@ ConvertAddr (
         return FamilyLocal;
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
     case AF_INET:
+#ifdef WIN32
+        if (16777343 == *(long*)&((struct sockaddr_in *) saddr)->sin_addr)
+            return FamilyLocal;
+#endif
         *len = sizeof (struct in_addr);
         *addr = (pointer) &(((struct sockaddr_in *) saddr)->sin_addr);
         return FamilyInternet;

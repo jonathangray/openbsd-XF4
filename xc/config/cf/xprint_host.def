@@ -1,3 +1,4 @@
+/* host.def config for the Xprint server standalone packages */
 
 /*
  * Enable this if you want to build the GISWxprintglue package...
@@ -84,12 +85,7 @@
 #define BuildEthiopicFonts             NO
 #define BuildBethMarduthoFonts         NO
 
-#define GzipFontCompression            YES
-#define BuildFreeType	               YES
-/* Xprt does not have special support for GLX and XIE (yet) */
-#define BuildGlxExt                    NO
-#define BuildXIE                       NO
-/* X extensions not needed */
+/* X extensions not needed (or not supported yet by Xprt) */
 #define BuildXKB	               NO
 #define BuildRECORD	               NO
 #define BuildDPMS	               NO
@@ -97,8 +93,23 @@
 #define BuildXInputExt                 NO
 #define BuildScreenSaverExt            NO
 #define BuildXvExt                     NO
+#define BuildXvMCExt                   NO
+#define BuildDmx                       NO
+#define BuildXF86DRI                   NO
+#define BuildRender                    NO
+#define BuildXfixes                    NO
+#define BuildDamage                    NO
+#define BuildComposite                 NO
+#define BuildXevie                     NO
+#define BuildXF86DGA                   NO
+#define BuildRandR                     NO
+#define BuildXinerama                  NO
+
+/* X extensions needed */
+#define BuildGlxExt                    YES
 /* LBX is needed for compatibility to the XWeb stuff */
-#define BuildLBX	YES
+#define BuildLBX	               YES
+
 /* Xprt's non-bitmap based DDX (PS, PCL, PDF, SVGprint etc.) cannot support MIT-SHM */
 #undef HasShm
 #define HasShm NO
@@ -112,12 +123,16 @@
 #define XF86Server                     NO
 #define XnestServer                    NO
 #define XVirtualFramebufferServer      NO
+#define XdmxServer                     NO
 
+#define GzipFontCompression            YES
+#define BuildFreeType	               YES
 #define BuildFreetype2Library          YES
 #define SharedLibFreetype2             NO
 #define NormalLibFreetype2             YES
-
 #define HasFreetype2                   NO
+#define Freetype2BuildDefines -DTT_CONFIG_OPTION_BYTECODE_INTERPRETER
+
 #define BuildType1                     NO
 #define BuildCID                       NO
 #define BuildSpeedo                    NO
@@ -128,6 +143,8 @@
 #define BuildXcursorLibrary            NO
 #define BuildXcursorgen                NO
 #define SharedLibFontEnc               NO
+#define SharedLibFont                  NO
+#define XserverStaticFontLib           YES
 
 /* Build only Xprint applications */
 #ifndef BuildXprintAppsOnly

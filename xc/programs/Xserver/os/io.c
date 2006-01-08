@@ -55,6 +55,10 @@ SOFTWARE.
  *****************************************************************/
 /* $XFree86: xc/programs/Xserver/os/io.c,v 3.34 2002/05/31 18:46:05 dawes Exp $ */
 
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
+#endif
+
 #if 0
 #define DEBUG_COMMUNICATION
 #endif
@@ -94,6 +98,7 @@ CallbackListPtr       FlushCallback;
  * systems are broken and return EWOULDBLOCK when they should return EAGAIN
  */
 #ifndef __UNIXOS2__
+#ifndef WIN32
 #if defined(EAGAIN) && defined(EWOULDBLOCK)
 #define ETEST(err) (err == EAGAIN || err == EWOULDBLOCK)
 #else
@@ -102,6 +107,9 @@ CallbackListPtr       FlushCallback;
 #else
 #define ETEST(err) (err == EWOULDBLOCK)
 #endif
+#endif
+#else /* WIN32 The socket errorcodes differ from the normal errors*/
+#define ETEST(err) (err == EAGAIN || err == WSAEWOULDBLOCK)
 #endif
 #else /* __UNIXOS2__  Writing to full pipes may return ENOSPC */
 #define ETEST(err) (err == EAGAIN || err == EWOULDBLOCK || err == ENOSPC)
@@ -117,7 +125,7 @@ OsCommPtr AvailableInput = (OsCommPtr)NULL;
 			      lswaps((req)->length) : (req)->length)
 
 #ifdef BIGREQS
-#include "bigreqstr.h"
+#include <X11/extensions/bigreqstr.h>
 
 #define get_big_req_len(req,cli) ((cli)->swapped ? \
 				  lswapl(((xBigReq *)(req))->length) : \
@@ -860,7 +868,7 @@ FlushAllOutput(void)
     for (base = 0; base < XFD_SETCOUNT(&OutputPending); base++)
     {
 	    index = XFD_FD(&OutputPending, base);
-	    if ((index = ConnectionTranslation[index]) == 0)
+	    if ((index = GetConnectionTranslation(index)) == 0)
 		continue;
 	    client = clients[index];
 	    if (client->clientGone)

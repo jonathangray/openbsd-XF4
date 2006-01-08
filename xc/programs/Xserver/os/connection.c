@@ -148,11 +148,11 @@ extern __const__ int _nfiles;
 #include "opaque.h"
 #include "dixstruct.h"
 #ifdef XAPPGROUP
-#include "extensions/Xagsrv.h"
+#include <X11/extensions/Xagsrv.h>
 #endif
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include "extensions/security.h"
+#include <X11/extensions/security.h>
 #endif
 #ifdef LBX
 #include "colormapst.h"
@@ -201,15 +201,97 @@ static fd_set SavedAllSockets;
 static fd_set SavedClientsWithInput;
 int GrabInProgress = 0;
 
+#if !defined(WIN32)
 int *ConnectionTranslation = NULL;
-#if defined(WIN32)
-/* SPAM ALERT !!!
+#else
+/*
  * On NT fds are not between 0 and MAXSOCKS, they are unrelated, and there is
  * not even a known maximum value, so use something quite arbitrary for now.
- * This is clearly boggus and another form of storage which doesn't use the fd
- * as a direct index should really be implemented for NT.
+ * Do storage is a hash table of size 256. Collisions are handled in a linked
+ * list.
  */
+
+#undef MAXSOCKS
+#define MAXSOCKS 500
+#undef MAXSELECT
+#define MAXSELECT 500
 #define MAXFD 500
+
+struct _ct_node {
+    struct _ct_node *next;
+    int key;
+    int value;
+};
+
+struct _ct_node *ct_head[256];
+
+void InitConnectionTranslation(void)
+{
+    bzero(ct_head, sizeof(ct_head));
+}
+
+int GetConnectionTranslation(int conn)
+{
+    struct _ct_node *node = ct_head[conn & 0xff];
+    while (node != NULL)
+    {
+        if (node->key == conn)
+            return node->value;
+        node = node->next;
+    }
+    return 0;
+}
+
+void SetConnectionTranslation(int conn, int client)
+{
+    struct _ct_node **node = ct_head + (conn & 0xff);
+    if (client == 0) /* remove entry */
+    {
+        while (*node != NULL)
+        {
+            if ((*node)->key == conn)
+            {
+                struct _ct_node *temp = *node;
+                *node = (*node)->next;
+                free(temp);
+                return;
+            }
+            node = &((*node)->next);
+        }
+        return;
+    } else 
+    {
+        while (*node != NULL)
+        {
+            if ((*node)->key == conn)
+            {
+                (*node)->value = client;
+                return;
+            }
+            node = &((*node)->next);
+        }
+        *node = (struct _ct_node*)xalloc(sizeof(struct _ct_node));
+        (*node)->next = NULL;
+        (*node)->key = conn;
+        (*node)->value = client;
+        return;
+    }
+}
+
+void ClearConnectionTranslation(void)
+{
+    unsigned i;
+    for (i = 0; i < 256; i++)
+    {
+        struct _ct_node *node = ct_head[i];
+        while (node != NULL)
+        {
+            struct _ct_node *temp = node;
+            node = node->next;
+            xfree(temp);
+        }
+    }
+}
 #endif
 
 XtransConnInfo 	*ListenTransConns = NULL;
@@ -293,7 +375,7 @@ InitConnectionLimits(void)
 #if !defined(WIN32)
     ConnectionTranslation = (int *)xnfalloc(sizeof(int)*(lastfdesc + 1));
 #else
-    ConnectionTranslation = (int *)xnfalloc(sizeof(int)*(MAXFD));
+    InitConnectionTranslation();
 #endif
 }
 
@@ -319,7 +401,7 @@ CreateWellKnownSockets(void)
 #if !defined(WIN32)
     for (i=0; i<MaxClients; i++) ConnectionTranslation[i] = 0;
 #else
-    for (i=0; i<MAXFD; i++) ConnectionTranslation[i] = 0;
+    ClearConnectionTranslation();
 #endif
 
     FD_ZERO (&WellKnownConnections);
@@ -722,7 +804,7 @@ static ClientPtr
 AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time, 
     int (*Flush)(
         ClientPtr /*who*/, OsCommPtr /*oc*/,
-        char */*extraBuf*/, int /*extraCount*/),
+        char * /*extraBuf*/, int /*extraCount*/),
     void (*Close)(
         ClientPtr /*client*/),
     LbxProxyPtr proxy)
@@ -768,7 +850,11 @@ AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time)
     if (trans_conn)
 #endif
     {
+#if !defined(WIN32)
 	ConnectionTranslation[fd] = client->index;
+#else
+	SetConnectionTranslation(fd, client->index);
+#endif
 	if (GrabInProgress)
 	{
 	    FD_SET(fd, &SavedAllClients);
@@ -889,7 +975,11 @@ EstablishNewConnections(ClientPtr clientUnused, pointer closure)
 	if (newconn < lastfdesc)
 	{
 		int clientid;
+#if !defined(WIN32)
   		clientid = ConnectionTranslation[newconn];
+#else
+  		clientid = GetConnectionTranslation(newconn);
+#endif
 		if(clientid && (client = clients[clientid]))
  			CloseDownClient(client);
 	}
@@ -991,7 +1081,11 @@ CloseDownFileDescriptor(OsCommPtr oc)
     FreeOsBuffers(oc);
     xfree(oc);
 #endif
+#ifndef WIN32
     ConnectionTranslation[connection] = 0;
+#else
+    SetConnectionTranslation(connection, 0);
+#endif    
     FD_CLR(connection, &AllSockets);
     FD_CLR(connection, &AllClients);
     FD_CLR(connection, &ClientsWithInput);
@@ -1060,7 +1154,7 @@ CheckConnections(void)
 	FD_SET(curclient, &tmask);
 	r = Select (curclient + 1, &tmask, NULL, NULL, &notime);
 	if (r < 0)
-	    CloseDownClient(clients[ConnectionTranslation[curclient]]);
+	    CloseDownClient(clients[GetConnectionTranslation[curclient]]);
     }	
 #endif
 }

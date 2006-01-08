@@ -1,5 +1,5 @@
 /*
- * $Id: fbedgeimp.h,v 1.3 2005/09/12 19:39:25 matthieu Exp $
+ * $Id: fbedgeimp.h,v 1.4 2006/01/08 21:18:16 matthieu Exp $
  *
  * Copyright © 2004 Keith Packard
  *
@@ -21,6 +21,10 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
+#endif
 
 #ifndef rasterizeSpan
 #endif

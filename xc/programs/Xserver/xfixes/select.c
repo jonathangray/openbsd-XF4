@@ -1,7 +1,7 @@
 /*
- * $Id: select.c,v 1.1 2004/11/03 00:09:56 matthieu Exp $
+ * $Id: select.c,v 1.2 2006/01/08 21:18:25 matthieu Exp $
  *
- * Copyright © 2002 Keith Packard
+ * Copyright Â© 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,9 +22,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
 #endif
+
 #include "xfixesint.h"
 
 static RESTYPE		SelectionClientType, SelectionWindowType;

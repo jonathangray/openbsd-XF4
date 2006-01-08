@@ -1,6 +1,6 @@
 /*
    quartzKeyboard.c
-   $Id: quartzKeyboard.c,v 1.2 2004/11/03 00:07:58 matthieu Exp $
+   $Id: quartzKeyboard.c,v 1.3 2006/01/08 21:18:17 matthieu Exp $
 
    Code to build a keymap using the Carbon Keyboard Layout API,
    which is supported on Mac OS X 10.2 and newer.
@@ -148,7 +148,7 @@ const static struct {
 };
 
 unsigned int
-DarwinSystemKeymapSeed (void)
+DarwinModeSystemKeymapSeed (void)
 {
     static unsigned int seed;
 
@@ -372,6 +372,12 @@ DarwinModeReadSystemKeymap (darwinKeyboardInfo *info)
 }
 
 #else /* !HAS_KL_API */
+
+unsigned int
+DarwinModeSystemKeymapSeed (void)
+{
+    return 0;
+}
 
 Bool
 DarwinModeReadSystemKeymap (darwinKeyboardInfo *info)

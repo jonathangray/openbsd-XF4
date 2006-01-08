@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004 Eric Anholt
+ * Copyright Â© 2004 Eric Anholt
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,7 +19,11 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /tmp/OpenBSD-XF4-repo/xc/programs/Xserver/miext/cw/cw.c,v 1.1 2004/11/03 00:09:52 matthieu Exp $ */
+/* $Header: /tmp/OpenBSD-XF4-repo/xc/programs/Xserver/miext/cw/cw.c,v 1.2 2006/01/08 21:18:23 matthieu Exp $ */
+
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
+#endif
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -44,6 +48,7 @@ int cwWindowIndex;
 #ifdef RENDER
 int cwPictureIndex;
 #endif
+static Bool cwDisabled[MAXSCREENS];
 static unsigned long cwGeneration = 0;
 extern GCOps cwGCOps;
 
@@ -613,6 +618,9 @@ miInitializeCompositeWrapper(ScreenPtr pScreen)
 {
     cwScreenPtr pScreenPriv;
 
+    if (cwDisabled[pScreen->myNum])
+	return;
+
     if (cwGeneration != serverGeneration)
     {
 	cwScreenIndex = AllocateScreenPrivateIndex();
@@ -654,6 +662,12 @@ miInitializeCompositeWrapper(ScreenPtr pScreen)
     if (GetPictureScreen (pScreen))
 	cwInitializeRender(pScreen);
 #endif
+}
+
+void
+miDisableCompositeWrapper(ScreenPtr pScreen)
+{
+    cwDisabled[pScreen->myNum] = TRUE;
 }
 
 static Bool

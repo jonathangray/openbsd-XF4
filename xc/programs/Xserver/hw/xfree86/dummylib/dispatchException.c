@@ -1,8 +1,8 @@
 /**
  ** Public domain
  **/
-/* $OpenBSD: dispatchException.c,v 1.2 2003/12/14 17:51:29 matthieu Exp $ */
+/* $OpenBSD: dispatchException.c,v 1.3 2006/01/08 21:18:19 matthieu Exp $ */
 
 #include "opaque.h"
 
-char dispatchException;
+volatile char dispatchException;
