@@ -957,10 +957,7 @@
 ./usr/X11R6/lib/modules/input/wacom_drv.so
 ./usr/X11R6/lib/modules/libcfb.so
 ./usr/X11R6/lib/modules/libcfb16.so
-./usr/X11R6/lib/modules/libcfb24.so
 ./usr/X11R6/lib/modules/libcfb32.so
-./usr/X11R6/lib/modules/libcw.so
-./usr/X11R6/lib/modules/libdamage.so
 ./usr/X11R6/lib/modules/libddc.so
 ./usr/X11R6/lib/modules/libfb.so
 ./usr/X11R6/lib/modules/libi2c.so
@@ -976,7 +973,6 @@
 ./usr/X11R6/lib/modules/libvbe.so
 ./usr/X11R6/lib/modules/libxaa.so
 ./usr/X11R6/lib/modules/libxf1bpp.so
-./usr/X11R6/lib/modules/libxf24_32bpp.so
 ./usr/X11R6/lib/modules/libxf4bpp.so
 ./usr/X11R6/lib/modules/libxf8_16bpp.so
 ./usr/X11R6/lib/modules/libxf8_32bpp.so
