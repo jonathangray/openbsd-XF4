@@ -1,4 +1,4 @@
-XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.28 2006/01/01 21:05:39 matthieu Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.29 2006/01/13 22:05:27 matthieu Exp $
 XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.10 2004/06/29 22:57:46 herrb Exp $
 XCOMM
 
@@ -62,9 +62,9 @@ XCOMM
 # ifndef SharedGluRev
 #  if HasGcc && GccMajorVersion >= 3
     /* Gcc 3 changes the name mangling scheme on OpenBSD */
-#   define SharedGluRev	5.0
+#   define SharedGluRev	7.0
 #  else
-#   define SharedGluRev 4.0
+#   define SharedGluRev	6.0
 #  endif
 # endif
 # ifndef SharedGlxRev
