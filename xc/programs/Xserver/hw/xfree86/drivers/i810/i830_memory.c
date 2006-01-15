@@ -50,6 +50,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   Alan Hourihane <alanh@tungstengraphics.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xf86.h"
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
@@ -1235,7 +1239,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
 
    i830Reg->Fence[nr] = 0;
 
-   if (IS_I915G(pI830) || IS_I915GM(pI830))
+   if (IS_I915G(pI830) || IS_I915GM(pI830) || IS_I945G(pI830))
    	fence_mask = ~I915G_FENCE_START_MASK;
    else
    	fence_mask = ~I830_FENCE_START_MASK;
@@ -1243,7 +1247,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
    if (start & fence_mask) {
       xf86DrvMsg(X_WARNING, pScrn->scrnIndex,
 		 "SetFence: %d: start (0x%08x) is not %s aligned\n",
-		 nr, start, (IS_I915G(pI830) || IS_I915GM(pI830)) ? "1MB" : "512k");
+		 nr, start, (IS_I915G(pI830) || IS_I915GM(pI830) || IS_I945G(pI830)) ? "1MB" : "512k");
       return;
    }
 
@@ -1263,7 +1267,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
 
    val = (start | FENCE_X_MAJOR | FENCE_VALID);
 
-   if (IS_I915G(pI830) || IS_I915GM(pI830)) {
+   if (IS_I915G(pI830) || IS_I915GM(pI830) || IS_I945G(pI830)) {
    	switch (size) {
 	   case MB(1):
       		val |= I915G_FENCE_SIZE_1M;
@@ -1324,7 +1328,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
    	}
    }
 
-   if (IS_I915G(pI830) || IS_I915GM(pI830))
+   if (IS_I915G(pI830) || IS_I915GM(pI830) || IS_I945G(pI830))
 	fence_pitch = pitch / 512;
    else
 	fence_pitch = pitch / 128;
@@ -1613,7 +1617,7 @@ long
 I830CheckAvailableMemory(ScrnInfoPtr pScrn)
 {
    AgpInfoPtr agpinf;
-   int maxPages;
+   long maxPages;
 
    if (!xf86AgpGARTSupported() ||
        !xf86AcquireGART(pScrn->scrnIndex) ||
@@ -1622,8 +1626,9 @@ I830CheckAvailableMemory(ScrnInfoPtr pScrn)
       return -1;
 
    maxPages = agpinf->totalPages - agpinf->usedPages;
-   xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 2, "%s: %d kB available\n",
-		  "I830CheckAvailableMemory", maxPages * 4);
+   xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 2, 
+   	"Checking Available AGP Memory: %ld kB available (total %ld kB, used %ld kB)\n",
+	maxPages * 4, agpinf->totalPages * 4, agpinf->usedPages * 4);
 
    return maxPages * 4;
 }

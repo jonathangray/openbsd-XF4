@@ -27,6 +27,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************/
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c,v 1.101 2004/01/02 20:15:47 dawes Exp $ */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 /*
  * Reformatted with GNU indent (2.2.8), using the following options:
  *
@@ -105,7 +109,7 @@ static ModeStatus I810ValidMode(int scrnIndex, DisplayModePtr mode,
 #endif /* I830_ONLY */
 
 
-DriverRec I810 = {
+_X_EXPORT DriverRec I810 = {
    I810_VERSION,
    I810_DRIVER_NAME,
    I810Identify,
@@ -131,6 +135,7 @@ static SymTabRec I810Chipsets[] = {
    {PCI_CHIP_I915_G,		"915G"},
    {PCI_CHIP_E7221_G,		"E7221 (i915)"},
    {PCI_CHIP_I915_GM,		"915GM"},
+   {PCI_CHIP_I945_G,		"945G"},
    {-1,				NULL}
 };
 
@@ -148,6 +153,7 @@ static PciChipsets I810PciChipsets[] = {
    {PCI_CHIP_I915_G,		PCI_CHIP_I915_G,	RES_SHARED_VGA},
    {PCI_CHIP_E7221_G,		PCI_CHIP_E7221_G,	RES_SHARED_VGA},
    {PCI_CHIP_I915_GM,		PCI_CHIP_I915_GM,	RES_SHARED_VGA},
+   {PCI_CHIP_I945_G,		PCI_CHIP_I945_G,	RES_SHARED_VGA},
    {-1,				-1, RES_UNDEFINED }
 };
 
@@ -266,6 +272,11 @@ const char *I810ramdacSymbols[] = {
    NULL
 };
 
+const char *I810shadowFBSymbols[] = {
+    "ShadowFBInit",
+    NULL
+};
+
 #ifdef XF86DRI
 const char *I810drmSymbols[] = {
    "drmAddBufs",
@@ -307,13 +318,6 @@ const char *I810driSymbols[] = {
    NULL
 };
 
-#ifdef XF86DRI
-
-const char *I810shadowFBSymbols[] = {
-    "ShadowFBInit",
-    NULL
-};
-
 const char *I810shadowSymbols[] = {
     "shadowInit",
     "shadowSetup",
@@ -321,9 +325,7 @@ const char *I810shadowSymbols[] = {
     NULL
 };
 
-#endif
-
-#endif /* I830_ONLY */
+#endif 
 
 #ifndef I810_DEBUG
 int I810_DEBUG = (0
@@ -369,7 +371,7 @@ static XF86ModuleVersionInfo i810VersRec = {
    {0, 0, 0, 0}
 };
 
-XF86ModuleData i810ModuleData = { &i810VersRec, i810Setup, 0 };
+_X_EXPORT XF86ModuleData i810ModuleData = { &i810VersRec, i810Setup, 0 };
 
 static pointer
 i810Setup(pointer module, pointer opts, int *errmaj, int *errmin)
@@ -566,6 +568,7 @@ I810Probe(DriverPtr drv, int flags)
 	    case PCI_CHIP_I915_G:
 	    case PCI_CHIP_E7221_G:
 	    case PCI_CHIP_I915_GM:
+	    case PCI_CHIP_I945_G:
     	       xf86SetEntitySharable(usedChips[i]);
 
     	       /* Allocate an entity private if necessary */		
@@ -2266,9 +2269,9 @@ I810ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 #endif
 
    if (pI810->directRenderingEnabled) {
-      xf86DrvMsg(pScrn->scrnIndex, driFrom, "Direct rendering enabled\n");
+      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Direct rendering enabled\n");
    } else {
-      xf86DrvMsg(pScrn->scrnIndex, driFrom, "Direct rendering disabled\n");
+      xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Direct rendering disabled\n");
    }
 
    pScreen->SaveScreen = I810SaveScreen;

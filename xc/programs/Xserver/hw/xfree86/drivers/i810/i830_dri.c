@@ -58,6 +58,10 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
  * DHD 07/2002
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xf86.h"
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
@@ -92,8 +96,6 @@ static void I830DRIInitBuffers(WindowPtr pWin, RegionPtr prgn, CARD32 index);
 static void I830DRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 			       RegionPtr prgnSrc, CARD32 index);
 
-static Bool I830DRICloseFullScreen(ScreenPtr pScreen);
-static Bool I830DRIOpenFullScreen(ScreenPtr pScreen);
 static void I830DRITransitionTo2d(ScreenPtr pScreen);
 static void I830DRITransitionTo3d(ScreenPtr pScreen);
 static void I830DRITransitionMultiToSingle3d(ScreenPtr pScreen);
@@ -423,8 +425,6 @@ I830DRIScreenInit(ScreenPtr pScreen)
     * for known symbols in each module. */
    if (!xf86LoaderCheckSymbol("GlxSetVisualConfigs"))
       return FALSE;
-   if (!xf86LoaderCheckSymbol("DRIScreenInit"))
-      return FALSE;
    if (!xf86LoaderCheckSymbol("drmAvailable"))
       return FALSE;
    if (!xf86LoaderCheckSymbol("DRIQueryVersion")) {
@@ -438,12 +438,13 @@ I830DRIScreenInit(ScreenPtr pScreen)
       int major, minor, patch;
 
       DRIQueryVersion(&major, &minor, &patch);
-      if (major != 4 || minor < 0) {
+      if (major != DRIINFO_MAJOR_VERSION || minor < DRIINFO_MINOR_VERSION) {
 	 xf86DrvMsg(pScreen->myNum, X_ERROR,
 		    "[dri] %s failed because of a version mismatch.\n"
-		    "[dri] libDRI version is %d.%d.%d bug version 4.0.x is needed.\n"
+		    "[dri] libdri version is %d.%d.%d bug version %d.%d.x is needed.\n"
 		    "[dri] Disabling DRI.\n",
-		    "I830DRIScreenInit", major, minor, patch);
+		    "I830DRIScreenInit", major, minor, patch,
+                    DRIINFO_MAJOR_VERSION, DRIINFO_MINOR_VERSION);
 	 return FALSE;
       }
    }
@@ -511,8 +512,6 @@ I830DRIScreenInit(ScreenPtr pScreen)
    pDRIInfo->InitBuffers = I830DRIInitBuffers;
    pDRIInfo->MoveBuffers = I830DRIMoveBuffers;
    pDRIInfo->bufferRequests = DRI_ALL_WINDOWS;
-   pDRIInfo->OpenFullScreen = I830DRIOpenFullScreen;
-   pDRIInfo->CloseFullScreen = I830DRICloseFullScreen;
    pDRIInfo->TransitionTo2d = I830DRITransitionTo2d;
    pDRIInfo->TransitionTo3d = I830DRITransitionTo3d;
    pDRIInfo->TransitionSingleToMulti3D = I830DRITransitionSingleToMulti3d;
@@ -593,9 +592,6 @@ I830DRIScreenInit(ScreenPtr pScreen)
 	    drmFreeVersion(version);
 	    return FALSE;
 	 }
-	 if (version->version_minor < 2)
-	    xf86DrvMsg(pScreen->myNum, X_WARNING, 
-			"Resume functionality not available with DRM < 1.2\n");
 	 pI830->drmMinor = version->version_minor;
 	 drmFreeVersion(version);
       }
@@ -620,7 +616,7 @@ I830DRIDoMappings(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Registers = 0x%08lx\n",
+   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Registers = 0x%08x\n",
 	      pI830DRI->regs);
 
    /*
@@ -640,7 +636,7 @@ I830DRIDoMappings(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Back Buffer = 0x%08lx\n",
+   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Back Buffer = 0x%08x\n",
 	      pI830DRI->backbuffer);
 
    pI830DRI->depthbufferSize = pI830->DepthBuffer.Size;
@@ -653,7 +649,7 @@ I830DRIDoMappings(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Depth Buffer = 0x%08lx\n",
+   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Depth Buffer = 0x%08x\n",
 	      pI830DRI->depthbuffer);
 
 
@@ -666,7 +662,7 @@ I830DRIDoMappings(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] ring buffer = 0x%08lx\n",
+   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] ring buffer = 0x%08x\n",
 	      pI830->ring_map);
 
    pI830DRI->textureSize = pI830->TexMem.Size;
@@ -681,7 +677,7 @@ I830DRIDoMappings(ScreenPtr pScreen)
       DRICloseScreen(pScreen);
       return FALSE;
    }
-   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] textures = 0x%08lx\n",
+   xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] textures = 0x%08x\n",
 	      pI830DRI->textures);
 
    if (!I830InitDma(pScrn)) {
@@ -1131,24 +1127,6 @@ I830EmitInvarientState(ScrnInfoPtr pScrn)
       ADVANCE_LP_RING();
    }
 }
-
-/* Fullscreen hooks.  The DRI fullscreen mode can probably be removed
- * as it adds little or nothing above the mechanism below.  (and isn't
- * widely used)
- */
-static Bool
-I830DRIOpenFullScreen(ScreenPtr pScreen)
-{
-  return TRUE;
-}
-
-static Bool
-I830DRICloseFullScreen(ScreenPtr pScreen)
-{
-  return TRUE;
-}
-
-
 
 /* Use callbacks from dri.c to support pageflipping mode for a single
  * 3d context without need for any specific full-screen extension.

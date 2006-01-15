@@ -1,7 +1,7 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel.c,v 1.2 2002/12/11 22:51:00 dawes Exp $ */
 /*
  * $Workfile: panel.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  * $Author: matthieu $
  *
  * File Contents: This file contailns the panel include files and 
@@ -139,6 +139,10 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  *
  * END_NSC_LIC_GPL */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #if defined(linux)			/* Linux */
 

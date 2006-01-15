@@ -104,8 +104,8 @@
 
 #ifndef _XF86PCI_H
 #define _XF86PCI_H 1
-#include "Xarch.h"
-#include "Xfuncproto.h"
+#include <X11/Xarch.h>
+#include <X11/Xfuncproto.h>
 #include "misc.h"
 
 #define PCI_NOT_FOUND	0xFFFFFFFFU
@@ -332,7 +332,7 @@
 	  (((b) & PCI_MAP_MEMORY_TYPE) == PCI_MAP_MEMORY_TYPE_64BIT)
 
 #define PCIGETMEMORY(b)		((b) & PCI_MAP_MEMORY_ADDRESS_MASK)
-#define PCIGETMEMORY64HIGH(b)	(*((CARD32*)&b + 1))
+#define PCIGETMEMORY64HIGH(b)	(*((CARD32*)&(b) + 1))
 #define PCIGETMEMORY64(b)	\
 	(PCIGETMEMORY(b) | ((CARD64)PCIGETMEMORY64HIGH(b) << 32))
 

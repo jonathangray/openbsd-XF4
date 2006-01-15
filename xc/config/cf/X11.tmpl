@@ -1,6 +1,6 @@
 XCOMM ----------------------------------------------------------------------
 XCOMM X Window System Build Parameters and Rules
-XCOMM $XdotOrg: xc/config/cf/X11.tmpl,v 1.35.2.3 2005/02/01 04:07:39 gisburn Exp $
+XCOMM $XdotOrg: xc/config/cf/X11.tmpl,v 1.54 2005/12/14 23:41:52 alanc Exp $
 XCOMM $Xorg: X11.tmpl,v 1.6 2000/08/17 19:41:46 cpqbld Exp $
 XCOMM
 XCOMM
@@ -45,7 +45,7 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 # if defined XorgVersionString
 #   define XOrgReleaseString	Release XorgVersionString
 # else
-#   define XOrgReleaseString	Release 6.8
+#   define XOrgReleaseString	Release 6.9
 # endif
 #endif
 
@@ -65,8 +65,11 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 # define XOrgWebSupportAddress http://wiki.X.Org
 #endif
 
+XORGRELSTRING = XorgManVersionString 	 
+  XORGMANNAME = XOrgManNameString
+
 #ifndef XOrgManDefs
-#define XOrgManDefs -D__xorgversion__='"$(XORGRELSTRING)" "$(XORGMANNAME)"'
+#define XOrgManDefs -D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\""
 #endif
 
 #ifndef XVendorManNameString
@@ -407,9 +410,6 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #ifndef FontencCompatibility
 #define FontencCompatibility	YES
 #endif
-#ifndef BuildLowMem
-#define BuildLowMem		NO
-#endif
 #ifndef BuildLBX
 #define BuildLBX		YES
 #endif
@@ -418,13 +418,15 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #endif
 #ifndef BuildXKBlib
 #define BuildXKBlib		(BuildXKB && (!BuildServersOnly || \
-					      XnestServer || XdmxServer))
+					      XnestServer || XdmxServer || \
+					      BuildXkbcomp ))
 #endif
 #ifndef BuildXKBuilib
 #define BuildXKBuilib		(BuildXKB && !BuildServersOnly)
 #endif
 #ifndef BuildXKBfilelib
-#define BuildXKBfilelib		(BuildXKB && !BuildServersOnly)
+#define BuildXKBfilelib		(BuildXKB && (!BuildServersOnly || \
+					      BuildXkbcomp ))
 #endif
 #ifndef BuildXTrap
 #define BuildXTrap		YES
@@ -468,6 +470,9 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #endif
 #ifndef BuildAppgroup
 #define BuildAppgroup		YES
+#endif
+#if BuildAppgroup && !BuildXCSecurity
+#define BuildXCSecurity         YES
 #endif
 #ifndef BuildCup
 #define BuildCup		YES
@@ -592,7 +597,7 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #define BuildXF86RushLibrary	(BuildXF86RushExt && !BuildServersOnly)
 #endif
 #ifndef BuildDPSLibraries
-#define BuildDPSLibraries	!BuildServersOnly
+#define BuildDPSLibraries	NO
 #endif
 #ifndef BuildDPSLibrary
 #define BuildDPSLibrary		BuildDPSLibraries
@@ -632,7 +637,7 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 # define InstallFontconfigLibrary  YES
 #endif
 #ifndef HasExpat
-#define HasExpat		NO
+#define HasExpat		YES
 #endif
 #ifndef UseExpat
 #define UseExpat		(UseFontconfig || BuildXF86DRI)
@@ -688,7 +693,11 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #endif
 
 #ifndef BuildXterm
-#define BuildXterm		BuildClients
+#define BuildXterm		NO
+#endif
+
+#ifndef BuildXkbcomp
+#define BuildXkbcomp		BuildClients
 #endif
 
 #ifndef BuildXcursorLibrary
@@ -790,34 +799,14 @@ XCOMM $XFree86: xc/config/cf/X11.tmpl,v 1.248 2004/02/16 04:07:37 dawes Exp $
 #define PrimaryScreenResolution 72		/* a common resolution */
 #endif
 #ifndef DefaultFontPath
-	/*
-	 * Turn off building Type1 and CID fonts if you are building
-	 * for low memory footprint
-	 */
-#if BuildLowMem
-#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
-#else
-#if PrimaryScreenResolution < 88		/* (75 + 100) / 2 */
-#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
-#else
-#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
-#endif
-#endif
+# if PrimaryScreenResolution < 88		/* (75 + 100) / 2 */
+#  define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
+# else
+#  define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
+# endif
 #endif
 #ifndef DefaultFSFontPath
-	/*
-	 * Define a default fontpath for Font Server independent of that
-         * for X server if building the X server for low memory footprint
-         */
-#if BuildLowMem
-#if PrimaryScreenResolution < 88                /* (75 + 100) / 2 */
-#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
-#else
-#define DefaultFSFontPath $(FONTDIR)/misc/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
-#endif
-#else
-#define DefaultFSFontPath DefaultFontPath
-#endif
+# define DefaultFSFontPath DefaultFontPath
 #endif
 #ifndef DefaultRGBDatabase
 #define DefaultRGBDatabase $(LIBDIR)/rgb
@@ -1009,9 +998,9 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #ifndef XprintDefines
 #if BuildXprint
 #if PrintOnlyServer
-#define XprintDefines -DPIXPRIV
-#else
 #define XprintDefines -DXPRINT -DPIXPRIV
+#else
+#define XprintDefines -DXPRINT -DLOADABLEPRINTDDX -DPIXPRIV
 #endif
 #else
 #define XprintDefines /**/
@@ -1169,14 +1158,6 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #endif
 #endif
 
-#ifndef LowMemDefines
-#if BuildLowMem
-#define LowMemDefines -DLOWMEMFTPT
-#else
-#define LowMemDefines /**/
-#endif
-#endif
-
 #ifndef DPMSDefines
 #if BuildDPMS
 #define DPMSDefines -DDPMSExtension
@@ -1257,7 +1238,7 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 	ShapeDefines XInputDefines XkbDefines LbxDefines AppgroupDefines \
 	XCSecurityDefines CupDefines PervasiveDBEDefines \
 	XF86BigfontExtensionDefines DPMSDefines \
-	LowMemDefines XprintDefines XineramaDefines \
+	XprintDefines XineramaDefines \
 	SitePervasiveExtensionDefines RenderDefines RandRDefines \
 	XfixesDefines XDamageDefines CompositeDefines XevieDefines \
 	RootlessDefines
@@ -1513,6 +1494,9 @@ FCHOWN_DEFINES = -DHAS_FCHOWN
 #ifndef FontDir
 #define FontDir $(LIBDIR)/fonts
 #endif
+#ifndef FontEncDir
+#define FontEncDir $(LIBDIR)/fonts/encodings
+#endif
 #ifndef AdmDir
 #define AdmDir /usr/adm
 #endif
@@ -1680,7 +1664,7 @@ XCOMM X Window System make variables; these need to be coordinated with rules
          DOCPSDIR = DocPsDir
         DOCPDFDIR = DocPdfDir
           FONTDIR = FontDir		/* font directories */
-     ENCODINGSDIR = $(FONTDIR)/encodings /* font encodings directory */
+     ENCODINGSDIR = FontEncDir          /* font encodings directory */
          XINITDIR = XinitDir		/* xinit config files */
            XDMDIR = XdmDir		/* xdm config files */
         XDMVARDIR = XdmVarDir		/* xdm config files */
@@ -3540,7 +3524,7 @@ EXPATINCLUDES = -I$(EXPATINCDIR)
 #if ExpatLibDirStandard
 EXPATLIB = -lexpat
 #else
-EXPATLIB = -L$(EXPATLIBDIR) -lexpat
+EXPATLIB = -L$(EXPATLIBDIR) LinkerRuntimeLibraryPathFlag($(EXPATLIBDIR)) -lexpat
 #endif
 EXPATDEFINES = -DEXPAT
 #endif /* HasExpat */
@@ -3705,7 +3689,7 @@ FONTCONFIGBINDIR = FontconfigBinDir
 #if FontconfigLibDirStandard
 FONTCONFIGLIB = -lfontconfig
 #else
-FONTCONFIGLIB = -L$(FONTCONFIGLIBDIR) -lfontconfig
+FONTCONFIGLIB = -L$(FONTCONFIGLIBDIR) LinkerRuntimeLibraryPathFlag($(FONTCONFIGLIBDIR)) -lfontconfig
 #endif
 
 #if FontconfigIncDirStandard
@@ -3796,7 +3780,7 @@ LIBPNGINCDIR = LibpngIncDir
 #if LibpngLibDirStandard
 LIBPNGLIB = -lpng
 #else
-LIBPNGLIB = -L$(LIBPNGLIBDIR) -lpng
+LIBPNGLIB = -L$(LIBPNGLIBDIR) LinkerRuntimeLibraryPathFlag($(LIBPNGLIBDIR)) -lpng
 #endif
 
 #endif
@@ -3926,6 +3910,14 @@ ProjectUnsharedLibReferences(XKBUI,xkbui,$(XKBUILIBSRC),XBuildLibDir)
 #endif
 #ifndef XkbuiDepLibs
 # define	XkbuiDepLibs $(DEPXKBFILELIB)
+#endif
+
+#ifndef SharedxrxRev
+# define SharedxrxRev		6.8
+#endif 
+
+#ifndef SharedxrxnestRev
+# define SharedxrxnestRev	6.8
 #endif
 
 #ifndef SharedxrxRev

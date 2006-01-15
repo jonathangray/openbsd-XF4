@@ -1,7 +1,7 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx2_accel.c,v 1.4tsi Exp $ */
 /*
  * $Workfile: nsc_gx2_accel.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  * $Author: matthieu $
  *
  * File Contents: This file is consists of main Xfree
@@ -140,6 +140,10 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  *
  * END_NSC_LIC_GPL */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 /* Xfree86 header files */
 #include "vgaHW.h"

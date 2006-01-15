@@ -1,7 +1,7 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/durango.c,v 1.4 2003/01/14 09:34:30 alanh Exp $ */
 /*
  * $Workfile: durango.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  * $Author: matthieu $
  *
  * This is the main file used to add Durango graphics support to a software 
@@ -152,6 +152,10 @@
  * tuned for a specific 2D accelerator, but will still run with a variety
  * of chipsets. 
  */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #define GFX_DISPLAY_DYNAMIC			1	/* runtime selection */
 #define GFX_DISPLAY_GU1				1	/* 1st generation display controller */

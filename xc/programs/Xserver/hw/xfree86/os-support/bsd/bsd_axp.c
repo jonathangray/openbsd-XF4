@@ -2,9 +2,13 @@
 
 
 
-/* $OpenBSD: bsd_axp.c,v 1.7 2004/11/03 00:09:15 matthieu Exp $ */
+/* $OpenBSD: bsd_axp.c,v 1.8 2006/01/15 22:08:12 matthieu Exp $ */
 
-#include "X.h"
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
+
+#include <X11/X.h>
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"

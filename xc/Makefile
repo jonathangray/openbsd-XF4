@@ -1,4 +1,5 @@
 # $Xorg: Makefile,v 1.5 2000/08/17 19:41:44 cpqbld Exp $
+# $Id: Makefile,v 1.4 2006/01/15 22:07:42 matthieu Exp $
 
 
 
@@ -7,7 +8,7 @@
 # Luna users will need to either run make as "make MAKE=make"
 # or add "MAKE = make" to this file.
 
-RELEASE = "Release 6.8.2"
+RELEASE = "Release 6.9"
 SHELL = /bin/sh
 RM = rm -f
 MV = mv

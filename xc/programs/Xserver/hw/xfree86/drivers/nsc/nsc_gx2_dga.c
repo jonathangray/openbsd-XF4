@@ -1,7 +1,7 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx2_dga.c,v 1.1 2002/12/10 15:12:24 alanh Exp $ */
 /*
  * $Workfile: nsc_gx2_dga.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  * $Author: matthieu $
  * 
  * File contents: DGA(Direct Acess Graphics mode) is feature of
@@ -142,6 +142,10 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  *
  * END_NSC_LIC_GPL */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

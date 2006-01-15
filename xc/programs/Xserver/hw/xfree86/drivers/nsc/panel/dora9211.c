@@ -1,7 +1,7 @@
 /* $XFree86$ */
 /*
  * $Workfile: dora9211.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  *
  * File Contents: This file contains the panel functions to interface 
  *                the dorado platform.

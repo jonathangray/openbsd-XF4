@@ -1,4 +1,3 @@
-/* $XFree86$ */
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -17,30 +16,32 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * VIA, S3 GRAPHICS, AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
+/*
+ * Keep this file in perfect sync between the ddx and dri drivers.
+ * At least bump the VIA_DRIDDX_VERSION defines appropriately.
+ *
+ */
 #ifndef _VIA_DRI_H_
 #define _VIA_DRI_H_ 1
 
-#include "xf86drm.h"
-
 #define VIA_MAX_DRAWABLES 256
 
-#define VIA_VERSION_MAJOR		4
-#define VIA_VERSION_MINOR		1
+#define VIA_DRIDDX_VERSION_MAJOR  5
+#define VIA_DRIDDX_VERSION_MINOR  0
+#define VIA_DRIDDX_VERSION_PATCH  0
 
-typedef struct {
-    int CtxOwner;
-} VIASAREAPriv;
+#ifndef XFree86Server
+typedef int Bool;
+#endif
 
 typedef struct {
     drm_handle_t handle;
     drmSize size;
-    drmAddress map;
 } viaRegion, *viaRegionPtr;
 
 typedef struct {
@@ -55,7 +56,6 @@ typedef struct {
     int fbOffset;
     int fbSize;
     Bool drixinerama;
-    
     int backOffset;
     int depthOffset;
     int textureOffset;
@@ -63,6 +63,8 @@ typedef struct {
     int irqEnabled;
     unsigned int scrnX, scrnY;
     int sarea_priv_offset;
+    int ringBufActive;
+    unsigned int reg_pause_addr;
 } VIADRIRec, *VIADRIPtr;
 
 typedef struct {
@@ -73,13 +75,4 @@ typedef struct {
     int dummy;
 } VIADRIContextRec, *VIADRIContextPtr;
 
-#ifdef XFree86Server
-
-#include "screenint.h"
-
-Bool VIADRIScreenInit(ScreenPtr pScreen);
-void VIADRICloseScreen(ScreenPtr pScreen);
-Bool VIADRIFinishScreenInit(ScreenPtr pScreen);
-
-#endif /* XFree86Server */
 #endif /* _VIA_DRI_H_ */

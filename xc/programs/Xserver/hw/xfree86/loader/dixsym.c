@@ -272,10 +272,8 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(AllocateWindowPrivateIndex)
     SYMFUNC(AllocateScreenPrivateIndex)
     SYMFUNC(AllocateColormapPrivateIndex)
-#ifdef notyet
     SYMFUNC(AllocateDevicePrivateIndex)
     SYMFUNC(AllocateDevicePrivate)
-#endif
 #ifdef PIXPRIV
     SYMFUNC(AllocatePixmapPrivateIndex)
     SYMFUNC(AllocatePixmapPrivate)
@@ -533,9 +531,7 @@ LOOKUP dixLookupTab[] = {
     /* picture.c */
     SYMFUNC(PictureInit)
     SYMFUNC(PictureTransformPoint)
-#ifdef notyet
     SYMFUNC(PictureTransformPoint3d)
-#endif
     SYMFUNC(PictureGetSubpixelOrder)
     SYMFUNC(PictureSetSubpixelOrder)
     SYMVAR(PictureScreenPrivateIndex)

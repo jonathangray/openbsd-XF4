@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.155 2006/01/08 21:18:12 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.156 2006/01/15 22:07:43 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -143,6 +143,11 @@ XCOMM operating system:	 OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 /* Build included Freetype2 */
 #ifndef HasFreetype2
 # define HasFreetype2		NO
+#endif
+
+/* Build included expat */
+#ifndef HasExpat
+# define HasExpat		NO
 #endif
 
 #ifndef DoPrivSep
@@ -1190,6 +1195,10 @@ install:: fonts.alias							@@\
 
 #ifndef SharedLibXdmGreet
 # define SharedLibXdmGreet		NO
+#endif
+
+#ifndef BuildXterm
+# define BuildXterm			BuildClients
 #endif
 
 /*

@@ -34,6 +34,10 @@
  * to support extended BIOS modes for the Intel chipsets
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xf86.h"
 #include "xf86_ansic.h"
 #include "vbe.h"
@@ -389,16 +393,16 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
 
     /*
      * Check if there's a valid monitor mode that this one can be matched
-     * up with from the specified modes list.
+     * up with from the 'specified' modes list.
      */
     if (modeOK) {
 	for (p = pScrn->monitor->Modes; p != NULL; p = p->next) {
-	    if ((p->HDisplay != mode->XResolution) ||
+	    if ((p->type != 0) ||
+		(p->HDisplay != mode->XResolution) ||
 		(p->VDisplay != mode->YResolution) ||
 		(p->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
 		continue;
 	    status = xf86CheckModeForMonitor(p, pScrn->monitor);
-	    if (p->type == M_T_BUILTIN) continue;
 	    if (status == MODE_OK) {
 		modeOK = TRUE;
 		break;
@@ -406,7 +410,40 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
 	}
 	if (p) {
     		pMode = xnfcalloc(sizeof(DisplayModeRec), 1);
-		memcpy((char*)pMode, (char*)p, sizeof(DisplayModeRec));
+		memcpy((char*)pMode,(char*)p,sizeof(DisplayModeRec));
+    		pMode->name = xnfstrdup(p->name);
+	}
+    } 
+
+    /*
+     * Now, check if there's a valid monitor mode that this one can be matched
+     * up with from the default modes list. i.e. VESA modes in xf86DefModes.c
+     */
+    if (modeOK && !pMode) {
+	int refresh = 0, calcrefresh = 0;
+	DisplayModePtr newMode = NULL;
+
+	for (p = pScrn->monitor->Modes; p != NULL; p = p->next) {
+	    calcrefresh = (int)(((double)(p->Clock * 1000) /
+                       (double)(p->HTotal * p->VTotal)) * 100);
+	    if ((p->type != M_T_DEFAULT) ||
+		(p->HDisplay != mode->XResolution) ||
+		(p->VDisplay != mode->YResolution) ||
+		(p->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
+		continue;
+	    status = xf86CheckModeForMonitor(p, pScrn->monitor);
+	    if (status == MODE_OK) {
+	    	if (calcrefresh > refresh) {
+			refresh = calcrefresh;
+			newMode = p;
+		}
+		modeOK = TRUE;
+	    }
+	}
+	if (newMode) {
+    		pMode = xnfcalloc(sizeof(DisplayModeRec), 1);
+		memcpy((char*)pMode,(char*)newMode,sizeof(DisplayModeRec));
+    		pMode->name = xnfstrdup(newMode->name);
 	}
     } 
 
@@ -414,7 +451,7 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
      * Check if there's a valid monitor mode that this one can be matched
      * up with.  The actual matching is done later.
      */
-    if (modeOK && pMode == NULL) {
+    if (modeOK && !pMode) {
 	float vrefresh = 0.0f;
 	int i;
 
@@ -642,16 +679,20 @@ I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
 	data->block->PixelClock = pMode->Clock * 1000;
 	/* XXX May not have this. */
 	clock = VBEGetPixelClock(pVbe, data->mode, data->block->PixelClock);
+	if (clock)
+	    data->block->PixelClock = clock;
 #ifdef DEBUG
 	ErrorF("Setting clock %.2fMHz, closest is %.2fMHz\n",
 		(double)data->block->PixelClock / 1000000.0, 
 		(double)clock / 1000000.0);
 #endif
-	if (clock)
-	    data->block->PixelClock = clock;
 	data->mode |= (1 << 11);
-	data->block->RefreshRate = (int)(((double)(data->block->PixelClock) /
+	if (pMode->VRefresh != 0) {
+	    data->block->RefreshRate = pMode->VRefresh * 100;
+	} else {
+	    data->block->RefreshRate = (int)(((double)(data->block->PixelClock)/
                        (double)(pMode->HTotal * pMode->VTotal)) * 100);
+	}
 	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		       "Attempting to use %2.2fHz refresh for mode \"%s\" (%x)\n",
 		       (float)(((double)(data->block->PixelClock) / (double)(pMode->HTotal * pMode->VTotal))), pMode->name, data->mode);
@@ -665,22 +706,6 @@ I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
 	       (double)data->block->RefreshRate/100);
 #endif
 	pMode = pMode->next;
-    } while (pMode != pScrn->modes);
-}
-
-void
-I830UnsetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
-{
-    DisplayModePtr pMode;
-    VbeModeInfoData *data;
-
-    pMode = pScrn->modes;
-    do {
-	pMode = pMode->next;
-
-	data = (VbeModeInfoData*)pMode->Private;
-	xfree(data->block);
-        data->block = NULL;
     } while (pMode != pScrn->modes);
 }
 

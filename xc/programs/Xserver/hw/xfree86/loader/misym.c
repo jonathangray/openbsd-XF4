@@ -216,9 +216,7 @@ LOOKUP miLookupTab[] = {
     SYMFUNC(miGlyphExtents)
 #endif
 #ifdef COMPOSITE
-#ifdef notyet
     SYMFUNC(miDisableCompositeWrapper)
-#endif
 #endif
 #ifdef DAMAGE
     SYMFUNC(DamageDamageRegion)

@@ -2,7 +2,7 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx1_accel.c,v 1.7 2003/12/07 22:40:38 alanh Exp $ */
 /*
  * $Workfile: nsc_gx1_accel.c $
- * $Revision: 1.2 $
+ * $Revision: 1.3 $
  * $Author: matthieu $
  *
  * File Contents: This file is consists of main Xfree
@@ -146,6 +146,10 @@
  * Fixes by
  * Alan Hourihane <alanh@fairlite.demon.co.uk>
  */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 /* Xfree86 header files */
 #include "vgaHW.h"
