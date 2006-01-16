@@ -955,6 +955,7 @@
 ./usr/X11R6/lib/X11/getconfig
 ./usr/X11R6/lib/X11/getconfig/cfg.sample
 ./usr/X11R6/lib/X11/getconfig/xorg.cfg
+./usr/X11R6/lib/X11/xorg.conf.eg
 ./usr/X11R6/lib/X11/xserver
 ./usr/X11R6/lib/modules
 ./usr/X11R6/lib/modules/drivers
@@ -975,10 +976,12 @@
 ./usr/X11R6/lib/modules/input/keyboard_drv.so
 ./usr/X11R6/lib/modules/input/mouse_drv.so
 ./usr/X11R6/lib/modules/input/ws_drv.so
+./usr/X11R6/lib/modules/internal
 ./usr/X11R6/lib/modules/libcfb.so
 ./usr/X11R6/lib/modules/libcfb16.so
 ./usr/X11R6/lib/modules/libcfb32.so
 ./usr/X11R6/lib/modules/libddc.so
+./usr/X11R6/lib/modules/libexa.so
 ./usr/X11R6/lib/modules/libfb.so
 ./usr/X11R6/lib/modules/libi2c.so
 ./usr/X11R6/lib/modules/libint10.so
@@ -997,6 +1000,14 @@
 ./usr/X11R6/lib/modules/libxf4bpp.so
 ./usr/X11R6/lib/modules/libxf8_16bpp.so
 ./usr/X11R6/lib/modules/libxf8_32bpp.so
+./usr/X11R6/lib/modules/multimedia
+./usr/X11R6/lib/modules/multimedia/bt829_drv.so
+./usr/X11R6/lib/modules/multimedia/fi1236_drv.so
+./usr/X11R6/lib/modules/multimedia/msp3430_drv.so
+./usr/X11R6/lib/modules/multimedia/tda8425_drv.so
+./usr/X11R6/lib/modules/multimedia/tda9850_drv.so
+./usr/X11R6/lib/modules/multimedia/tda9885_drv.so
+./usr/X11R6/lib/modules/multimedia/uda1380_drv.so
 ./usr/X11R6/man/cat1/XDarwin.0
 ./usr/X11R6/man/cat1/Xnest.0
 ./usr/X11R6/man/cat1/Xorg.0
