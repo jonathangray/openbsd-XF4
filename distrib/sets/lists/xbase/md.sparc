@@ -422,6 +422,7 @@
 ./etc/X11/xsm
 ./usr/X11R6/.X.Org_Version
 ./usr/X11R6/bin/bdftruncate
+./usr/X11R6/bin/dga
 ./usr/X11R6/bin/glxgears
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/gtf
@@ -493,7 +494,7 @@
 ./usr/X11R6/lib/libGL.a
 ./usr/X11R6/lib/libGL.so.4.0
 ./usr/X11R6/lib/libGLU.a
-./usr/X11R6/lib/libGLU.so.4.0
+./usr/X11R6/lib/libGLU.so.6.0
 ./usr/X11R6/lib/libGLw.a
 ./usr/X11R6/lib/libGLw.so.4.0
 ./usr/X11R6/lib/libICE.so.8.1
@@ -541,7 +542,6 @@
 ./usr/X11R6/lib/libfontenc.so.3.0
 ./usr/X11R6/lib/libfreetype.so.13.1
 ./usr/X11R6/lib/liboldX.so.9.0
-./usr/X11R6/lib/libpsres.so.3.0
 ./usr/X11R6/lib/libxkbfile.so.3.0
 ./usr/X11R6/lib/libxkbui.so.3.0
 ./usr/X11R6/lib/libxrx.so.7.0
