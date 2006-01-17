@@ -481,7 +481,6 @@
 ./usr/X11R6/lib/libfontenc.so.3.0
 ./usr/X11R6/lib/libfreetype.so.13.1
 ./usr/X11R6/lib/liboldX.so.9.0
-./usr/X11R6/lib/libpsres.so.3.0
 ./usr/X11R6/lib/libxkbfile.so.3.0
 ./usr/X11R6/lib/libxkbui.so.3.0
 ./usr/X11R6/lib/libxrx.so.7.0

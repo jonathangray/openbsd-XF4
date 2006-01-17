@@ -473,11 +473,10 @@
 ./usr/X11R6/lib/libdps.so.3.0
 ./usr/X11R6/lib/libdpstk.so.3.0
 ./usr/X11R6/lib/libexpat.so.5.0
-./usr/X11R6/lib/libfontconfig.so.2.0
+./usr/X11R6/lib/libfontconfig.so.3.0
 ./usr/X11R6/lib/libfontenc.so.3.0
 ./usr/X11R6/lib/libfreetype.so.13.0
 ./usr/X11R6/lib/liboldX.so.8.0
-./usr/X11R6/lib/libpsres.so.3.0
 ./usr/X11R6/lib/libxkbfile.so.2.0
 ./usr/X11R6/lib/libxkbui.so.2.0
 ./usr/X11R6/man/cat1/dga.0
