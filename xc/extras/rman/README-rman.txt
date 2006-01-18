@@ -1,3 +1,6 @@
+The home location for PolyglotMan is polyglotman.sourceforge.net 
+
+
 *** INSTALLING ***
 
 Set BINDIR in the Makefile to where you keep your binaries and MANDIR
@@ -17,11 +20,8 @@ on a class of man pages) in BOTH: (1) [tn]roff source form, from
 .../man/manX and (2) formatted form (as formatted by `nroff -man'),
 uuencoded to preserve the control characters, from .../man/catX.
 
-The home location for PolyglotMan is ftp.cs.berkeley.edu:
-/ucb/people/phelps/tcltk/rman.tar.Z (this is a softlink to the latest,
-numbered version).  If you discover a bug and you obtained PolyglotMan
-at some other site, first grab it from this one to see if the problem
-has been fixed.
+If you discover a bug and you obtained PolyglotMan at some other site,
+check the home site to see if a newer version has already fixed the problem.
 
 Be sure to look in the contrib directory for WWW server interfaces,
 a batch converter, and a wrapper for SCO.
@@ -41,29 +41,12 @@ character set.
 --------------------------------------------------
 
 
-Copyright (c) 1993-1997 Regents of the University of California
+License
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for educational, research, internal corporate and
-non-profit purposes, without fee, and without a written agreement is
-hereby granted for all cases that do not conflict with the restriction
-in the first sentence of this paragraph, provided that the above
-copyright notice, this paragraph, and the following three paragraphs
-appear in all copies.
+This software is distributed under the Artistic License (see
+http://www.opensource.org/licenses/artistic-license.html).
 
-Permission to incorporate this software into commercial products may 
-be obtained from the Office of Technology Licensing, 2150 Shattuck 
-Avenue, Suite 510, Berkeley, CA  94704. 
-
-IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY 
-FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES 
-ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 
-THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF 
-SUCH DAMAGE.
-
-THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES, 
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE 
-PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE UNIVERSITY OF 
-CALIFORNIA HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, 
-ENHANCEMENTS, OR MODIFICATIONS.
+(This version of PolyglotMan represents a complete rewrite of bs2tk,
+which was packaged with TkMan in 1993, which is copyrighted by the
+Regents of the University of California, and therefore is not under
+their jurisdiction.)
