@@ -1089,6 +1089,15 @@
 ./usr/X11R6/man/cat3/ClientWhitePointOfCCC.0
 ./usr/X11R6/man/cat3/ConnectionNumber.0
 ./usr/X11R6/man/cat3/DBE.0
+./usr/X11R6/man/cat3/DPMSCapable.0
+./usr/X11R6/man/cat3/DPMSDisable.0
+./usr/X11R6/man/cat3/DPMSEnable.0
+./usr/X11R6/man/cat3/DPMSForceLevel.0
+./usr/X11R6/man/cat3/DPMSGetTimeouts.0
+./usr/X11R6/man/cat3/DPMSGetVersion.0
+./usr/X11R6/man/cat3/DPMSInfo.0
+./usr/X11R6/man/cat3/DPMSQueryExtension.0
+./usr/X11R6/man/cat3/DPMSSetTimeouts.0
 ./usr/X11R6/man/cat3/DefaultColormap.0
 ./usr/X11R6/man/cat3/DefaultColormapOfScreen.0
 ./usr/X11R6/man/cat3/DefaultDepth.0
@@ -1247,7 +1256,7 @@
 ./usr/X11R6/man/cat3/IsFunctionKey.0
 ./usr/X11R6/man/cat3/IsKeypadKey.0
 ./usr/X11R6/man/cat3/IsMiscFunctionKey.0
-./usr/X11R6/man/cat3/IsModiferKey.0
+./usr/X11R6/man/cat3/IsModifierKey.0
 ./usr/X11R6/man/cat3/IsPFKey.0
 ./usr/X11R6/man/cat3/IsPrivateKeypadKey.0
 ./usr/X11R6/man/cat3/LastKnownRequestProcessed.0
@@ -1429,6 +1438,7 @@
 ./usr/X11R6/man/cat3/XFreeColors.0
 ./usr/X11R6/man/cat3/XFreeCursor.0
 ./usr/X11R6/man/cat3/XFreeDeviceList.0
+./usr/X11R6/man/cat3/XFreeExtensionList.0
 ./usr/X11R6/man/cat3/XFreeFont.0
 ./usr/X11R6/man/cat3/XFreeFontInfo.0
 ./usr/X11R6/man/cat3/XFreeFontNames.0
@@ -1523,6 +1533,7 @@
 ./usr/X11R6/man/cat3/XKeysymToString.0
 ./usr/X11R6/man/cat3/XKillClient.0
 ./usr/X11R6/man/cat3/XListDepths.0
+./usr/X11R6/man/cat3/XListExtensions.0
 ./usr/X11R6/man/cat3/XListFonts.0
 ./usr/X11R6/man/cat3/XListFontsWithInfo.0
 ./usr/X11R6/man/cat3/XListHosts.0
@@ -1584,6 +1595,7 @@
 ./usr/X11R6/man/cat3/XQueryColor.0
 ./usr/X11R6/man/cat3/XQueryColors.0
 ./usr/X11R6/man/cat3/XQueryDeviceState.0
+./usr/X11R6/man/cat3/XQueryExtension.0
 ./usr/X11R6/man/cat3/XQueryFont.0
 ./usr/X11R6/man/cat3/XQueryKeymap.0
 ./usr/X11R6/man/cat3/XQueryPointer.0
@@ -1845,6 +1857,9 @@
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMaxVC.0
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMaxVSamples.0
 ./usr/X11R6/man/cat3/XcmsTekHVCQueryMinV.0
+./usr/X11R6/man/cat3/XcupGetReservedColormapEntries.0
+./usr/X11R6/man/cat3/XcupQueryVersion.0
+./usr/X11R6/man/cat3/XcupStoreColors.0
 ./usr/X11R6/man/cat3/Xcursor.0
 ./usr/X11R6/man/cat3/XdbeAllocateBackBufferName.0
 ./usr/X11R6/man/cat3/XdbeBeginIdiom.0
@@ -1965,6 +1980,7 @@
 ./usr/X11R6/man/cat3/XtAddRawEventHandler.0
 ./usr/X11R6/man/cat3/XtAddTimeOut.0
 ./usr/X11R6/man/cat3/XtAddTimeout.0
+./usr/X11R6/man/cat3/XtAddWorkProc.0
 ./usr/X11R6/man/cat3/XtAllocateGC.0
 ./usr/X11R6/man/cat3/XtAppAddActionHook.0
 ./usr/X11R6/man/cat3/XtAppAddActions.0
