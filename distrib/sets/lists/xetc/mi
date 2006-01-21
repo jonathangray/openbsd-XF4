@@ -56,13 +56,14 @@
 ./etc/X11/rstart/rstartd.real
 ./etc/X11/twm/system.twmrc
 ./etc/X11/xdm/GiveConsole
-./etc/X11/xdm/Startup_0
 ./etc/X11/xdm/TakeConsole
 ./etc/X11/xdm/Xaccess
+./etc/X11/xdm/Xreset
 ./etc/X11/xdm/Xresources
 ./etc/X11/xdm/Xservers
 ./etc/X11/xdm/Xsession
 ./etc/X11/xdm/Xsetup_0
+./etc/X11/xdm/Xstartup
 ./etc/X11/xdm/Xwilling
 ./etc/X11/xdm/authdir
 ./etc/X11/xdm/chooser

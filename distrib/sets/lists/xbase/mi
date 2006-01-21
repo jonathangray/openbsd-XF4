@@ -57,8 +57,10 @@
 ./usr/X11R6/bin/xconsole
 ./usr/X11R6/bin/xcursor-config
 ./usr/X11R6/bin/xcutsel
+./usr/X11R6/bin/xdbedizzy
 ./usr/X11R6/bin/xditview
 ./usr/X11R6/bin/xdm
+./usr/X11R6/bin/xdpr
 ./usr/X11R6/bin/xdpyinfo
 ./usr/X11R6/bin/xedit
 ./usr/X11R6/bin/xev
@@ -97,6 +99,7 @@
 ./usr/X11R6/bin/xphelloworld
 ./usr/X11R6/bin/xplsprinters
 ./usr/X11R6/bin/xpmroot
+./usr/X11R6/bin/xpr
 ./usr/X11R6/bin/xprehashprinterlist
 ./usr/X11R6/bin/xprop
 ./usr/X11R6/bin/xpsimplehelloworld

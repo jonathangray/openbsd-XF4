@@ -1016,8 +1016,10 @@
 ./usr/X11R6/man/cat1/xcmsdb.0
 ./usr/X11R6/man/cat1/xconsole.0
 ./usr/X11R6/man/cat1/xcutsel.0
+./usr/X11R6/man/cat1/xdbedizzy.0
 ./usr/X11R6/man/cat1/xditview.0
 ./usr/X11R6/man/cat1/xdm.0
+./usr/X11R6/man/cat1/xdpr.0
 ./usr/X11R6/man/cat1/xdpyinfo.0
 ./usr/X11R6/man/cat1/xedit.0
 ./usr/X11R6/man/cat1/xev.0
@@ -1055,6 +1057,7 @@
 ./usr/X11R6/man/cat1/xphelloworld.0
 ./usr/X11R6/man/cat1/xplsprinters.0
 ./usr/X11R6/man/cat1/xpmroot.0
+./usr/X11R6/man/cat1/xpr.0
 ./usr/X11R6/man/cat1/xprehashprinterlist.0
 ./usr/X11R6/man/cat1/xprop.0
 ./usr/X11R6/man/cat1/xpsimplehelloworld.0
