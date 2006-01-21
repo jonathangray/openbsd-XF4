@@ -1,30 +1,39 @@
 ! $Xorg: xdm-conf.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
-! $OpenBSD: xdm-conf.cpp,v 1.11 2005/05/27 22:30:20 matthieu Exp $
+! $XdotOrg: xc/programs/xdm/config/xdm-conf.cpp,v 1.5 2005/12/11 20:46:25 alanc Exp $    
+! $OpenBSD: xdm-conf.cpp,v 1.12 2006/01/21 22:12:12 matthieu Exp $
 !
 !
 !
 !
 ! $XFree86: xc/programs/xdm/config/xdm-conf.cpp,v 1.10 2002/11/30 19:11:32 herrb Exp $
 !
+#ifndef XDMCONFIGDIR
+#define XDMCONFIGDIR XDMDIR
+#endif
+#ifndef XDMSCRIPTDIR
+#define XDMSCRIPTDIR XDMDIR
+#endif
 DisplayManager.errorLogFile:	XDMLOGDIR/xdm.log
 DisplayManager.pidFile:		XDMPIDDIR/xdm.pid
-DisplayManager.keyFile:		XDMDIR/xdm-keys
-DisplayManager.servers:		XDMDIR/Xservers
-DisplayManager.accessFile:	XDMDIR/Xaccess
-DisplayManager.willing:		SU nobody -c XDMDIR/Xwilling
+DisplayManager.keyFile:		XDMCONFIGDIR/xdm-keys
+DisplayManager.servers:		XDMCONFIGDIR/Xservers
+DisplayManager.accessFile:	XDMCONFIGDIR/Xaccess
+DisplayManager*resources:	XDMCONFIGDIR/Xresources
+DisplayManager.willing:		SU nobody -c XDMSCRIPTDIR/Xwilling
 ! All displays should use authorization, but we cannot be sure
 ! X terminals may not be configured that way, so they will require
 ! individual resource settings.
 DisplayManager*authorize:	true
-! The following three resources set up display :0 as the console.
-DisplayManager._0.setup:	XDMDIR/Xsetup_0
-DisplayManager._0.startup:	XDMDIR/Startup_0
-DisplayManager._0.reset:	XDMDIR/TakeConsole
 !
 DisplayManager*chooser:		CHOOSERPATH
-DisplayManager*resources:	XDMDIR/Xresources
-DisplayManager*session:		XDMDIR/Xsession
+DisplayManager*startup:		XDMSCRIPTDIR/Xstartup
+DisplayManager*session:		XDMSCRIPTDIR/Xsession
+DisplayManager*reset:		XDMSCRIPTDIR/Xreset
 DisplayManager*authComplain:	true
+! The following three resources set up display :0 as the console.
+DisplayManager._0.setup:	XDMSCRIPTDIR/Xsetup_0
+DisplayManager._0.startup:	XDMSCRIPTDIR/GiveConsole
+DisplayManager._0.reset:	XDMSCRIPTDIR/TakeConsole
 #if HAS_DES_AUTH == YES
 DisplayManager._0.authName:     MIT-MAGIC-COOKIE-1
 #endif

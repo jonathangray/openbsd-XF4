@@ -1,4 +1,4 @@
-/* $XdotOrg: xc/programs/xdm/dm.h,v 1.2 2004/04/23 19:54:42 eich Exp $ */
+/* $XdotOrg: xc/programs/xdm/dm.h,v 1.5 2005/11/08 06:33:31 jkj Exp $ */
 /* $Xorg: dm.h,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $ */
 /*
 
@@ -41,6 +41,10 @@ from The Open Group.
 #ifndef _DM_H_
 #define _DM_H_ 1
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <X11/Xos.h>
 #include <X11/Xfuncs.h>
 #include <X11/Xmd.h>
@@ -76,7 +80,7 @@ from The Open Group.
 #include <sys/wait.h>
 #else
 #define _POSIX_SOURCE
-#ifdef SCO325
+#ifdef __SCO__
 #include <sys/procset.h>
 #include <sys/siginfo.h>
 #endif
