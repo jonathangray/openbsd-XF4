@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.156 2006/01/15 22:07:43 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.157 2006/01/27 22:55:51 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -408,10 +408,6 @@ install:: fonts.alias							@@\
  */
 #ifdef AlphaArchitecture
 
-# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
-#  define HasWeakSymbols		YES
-# endif
-
 /* XXX Xvfb currently causes a linker error: */
 /* XXX crtbegin.c(.fini+0x10): relocation truncated to fit: BRADDR text */
 # ifdef XVirtualFramebufferServer
@@ -465,7 +461,6 @@ install:: fonts.alias							@@\
  */
 #ifdef AMD64Architecture
 
-# define HasWeakSymbols		YES
 # define HasSharedLibraries	YES
 # define HasDlopen		YES
 
@@ -515,7 +510,6 @@ install:: fonts.alias							@@\
 #ifdef HPArchitecture
 
 # define XorgServer		YES
-# define HasWeakSymbols		YES
 # define BuildGlxExt		NO
 # define BuildGLXLibrary	NO
 
@@ -566,8 +560,6 @@ install:: fonts.alias							@@\
 #   define BuildXF86OldDRMCompat	NO
 #  endif
 # endif
-
-# define HasWeakSymbols		YES
 
 /* To use the NetBSD Aperture driver */
 # ifndef HasNetBSDApertureDriver
@@ -695,8 +687,6 @@ install:: fonts.alias							@@\
 
 # else
 
-#  define HasWeakSymbols	YES
-
 #  define XorgServer		YES
 
 /* No Loadable modules for now */
@@ -742,8 +732,6 @@ install:: fonts.alias							@@\
 #  define ServerExtraDefines	-DXFree86Server
 
 # else
-
-#  define HasWeakSymbols	YES
 
 #  define XorgServer		YES
 
@@ -827,9 +815,10 @@ install:: fonts.alias							@@\
 
 # define HasSharedLibraries	NO
 # define HasDlopen		NO
+# define HasWeakSymbols 	NO
 
 # define BuildGlxExt		NO
-# define BuildGLXLibrary	YES
+# define BuildGLXLibrary	NO
 
 # ifndef BuildServer
 #  define BuildServer		NO
@@ -849,8 +838,6 @@ install:: fonts.alias							@@\
 #endif /* MipsArchitecture */
 
 #ifdef SGIArchitecture
-
-# define HasWeakSymbols		YES
 
 # define DependFlags		-D__MIPSEB__
 
@@ -872,9 +859,6 @@ install:: fonts.alias							@@\
 #   define XFree86ConsoleDefines	-DWSCONS_SUPPORT -DPCVT_SUPPORT
 # endif
 
-# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
-#  define HasWeakSymbols	YES
-# endif
 # ifndef GccWarningOptions
 #  if defined(XFree86Devel) && XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
@@ -934,9 +918,6 @@ install:: fonts.alias							@@\
 #   define XFree86ConsoleDefines	-DWSCONS_SUPPORT
 # endif
 
-# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
-#  define HasWeakSymbols	YES
-# endif
 # ifndef GccWarningOptions
 #  if defined(XFree86Devel) && XFree86Devel
 #   define GccWarningOptions -Wall -Wpointer-arith -Wstrict-prototypes \
@@ -985,10 +966,6 @@ install:: fonts.alias							@@\
  * Definitions for the sparc architecture
  */
 #ifdef SparcArchitecture
-
-# if OSMajorVersion > 3 || OSMajorVersion == 3 && OSMinorVersion >= 2
-#  define HasWeakSymbols	YES
-#endif
 
 # if OSMajorVersion == 2 || OSMajorVersion == 3 && OSMinorVersion < 2
 #  define ServerOSDefines	-DDDXOSINIT
@@ -1049,10 +1026,6 @@ install:: fonts.alias							@@\
  */
 
 #ifdef Sparc64Architecture
-
-# if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
-#  define HasWeakSymbols	YES
-# endif
 
 # ifndef XorgServer
 #  define XorgServer		YES
@@ -1129,7 +1102,7 @@ install:: fonts.alias							@@\
 #endif
 
 #ifndef HasWeakSymbols
-# define HasWeakSymbols		NO
+# define HasWeakSymbols		YES
 #endif
 
 /*
