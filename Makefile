@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.50 2006/01/05 07:27:53 miod Exp $
+#	$OpenBSD: Makefile,v 1.51 2006/02/04 18:20:10 todd Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -146,7 +146,7 @@ dist:
 
 install: install-xc install-xc-old install-extra install-distrib
 .ifndef NOFONTS
-	/usr/X11R6/bin/fc-cache -v ${FONTPATH}
+	LD_LIBRARY_PATH=${DESTDIR}/usr/X11R6/lib ${DESTDIR}/usr/X11R6/bin/fc-cache -v ${FONTPATH}
 .endif
 	/usr/libexec/makewhatis ${DESTDIR}/usr/X11R6/man
 
