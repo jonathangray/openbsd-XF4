@@ -72,6 +72,7 @@ XCOMM You always want to specify the full path to the X server
 
     PROGCPPDEFS = -DXRDB=$(XRDB) -DXMODMAP=$(XMODMAP) -DTWM=$(TWM) \
 		  -DXCLOCK=$(XCLOCK) -DXTERM=$(XTERM) -DXSERVER=$(XSERVER) \
+		  -DXCONSOLE=$(XCONSOLE) -DFVWM=$(FVWM) \
 		  -DXAUTH=$(XAUTH) -DXINIT=$(XINIT)
 
 MakeScriptFromCpp(xinitrc, -DXINITDIR=$(XINITDIR) $(PROGCPPDEFS) -DSHELL_CMD=$(SHELL_CMD) -DLIBDIR=$(LIBDIR))
