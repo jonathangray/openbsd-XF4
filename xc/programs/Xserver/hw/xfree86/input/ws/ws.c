@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.10 2005/06/22 06:22:06 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.11 2006/02/04 22:06:32 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -418,7 +418,7 @@ wsReadInput(InputInfoPtr pInfo)
 	XisbBlockDuration(priv->buffer, -1);
 	pBuf = (unsigned char *)eventList;
 	n = 0;
-	while ((c = XisbRead(priv->buffer)) >= 0 && n < sizeof(eventList)) {
+	while (n < sizeof(eventList) && (c = XisbRead(priv->buffer)) >= 0) {
 		pBuf[n++] = (unsigned char)c;
 	}
 	
