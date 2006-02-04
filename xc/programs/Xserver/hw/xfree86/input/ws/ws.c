@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/* $OpenBSD: ws.c,v 1.11 2006/02/04 22:06:32 matthieu Exp $ */
+/* $OpenBSD: ws.c,v 1.12 2006/02/04 22:08:46 matthieu Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -472,10 +472,16 @@ wsReadInput(InputInfoPtr pInfo)
 			dz = event->value;
 			break;
 #endif
+#ifdef WSCONS_EVENT_MOUSE_ABSOLUTE_Z
+		case WSCONS_EVENT_MOUSE_ABSOLUTE_Z:
+			/* ignore those */
+			++event;
+			continue;
+			break;
+#endif
 		default:
 			xf86Msg(X_WARNING, "%s: bad wsmouse event type=%d\n", 
-			    pInfo->name,
-			    event->type);
+			    pInfo->name, event->type);
 			++event;
 			continue;
 		} /* case */
