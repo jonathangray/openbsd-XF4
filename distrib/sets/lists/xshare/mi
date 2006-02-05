@@ -957,7 +957,6 @@
 ./usr/X11R6/man/cat1/appres.0
 ./usr/X11R6/man/cat1/atobm.0
 ./usr/X11R6/man/cat1/bdftopcf.0
-./usr/X11R6/man/cat1/bdftruncate.0
 ./usr/X11R6/man/cat1/beforelight.0
 ./usr/X11R6/man/cat1/bitmap.0
 ./usr/X11R6/man/cat1/bmtoa.0
@@ -976,7 +975,6 @@
 ./usr/X11R6/man/cat1/ico.0
 ./usr/X11R6/man/cat1/imake.0
 ./usr/X11R6/man/cat1/lbxproxy.0
-./usr/X11R6/man/cat1/libxrx.0
 ./usr/X11R6/man/cat1/listres.0
 ./usr/X11R6/man/cat1/luit.0
 ./usr/X11R6/man/cat1/makedepend.0
@@ -1003,7 +1001,6 @@
 ./usr/X11R6/man/cat1/startx.0
 ./usr/X11R6/man/cat1/sxpm.0
 ./usr/X11R6/man/cat1/twm.0
-./usr/X11R6/man/cat1/ucs2any.0
 ./usr/X11R6/man/cat1/viewres.0
 ./usr/X11R6/man/cat1/wm2.0
 ./usr/X11R6/man/cat1/x11perf.0
@@ -1065,7 +1062,6 @@
 ./usr/X11R6/man/cat1/xrandr.0
 ./usr/X11R6/man/cat1/xrdb.0
 ./usr/X11R6/man/cat1/xrefresh.0
-./usr/X11R6/man/cat1/xrx.0
 ./usr/X11R6/man/cat1/xset.0
 ./usr/X11R6/man/cat1/xsetmode.0
 ./usr/X11R6/man/cat1/xsetpointer.0

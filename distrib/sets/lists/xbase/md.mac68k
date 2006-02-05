@@ -18,6 +18,7 @@
 ./usr/X11R6/bin/glxinfo
 ./usr/X11R6/bin/ucs2any
 ./usr/X11R6/bin/xdriinfo
+./usr/X11R6/bin/xrx
 ./usr/X11R6/include/GL
 ./usr/X11R6/include/GL/GLwDrawA.h
 ./usr/X11R6/include/GL/GLwDrawAP.h
@@ -479,9 +480,13 @@
 ./usr/X11R6/lib/liboldX.so.8.0
 ./usr/X11R6/lib/libxkbfile.so.2.0
 ./usr/X11R6/lib/libxkbui.so.2.0
+./usr/X11R6/man/cat1/bdftruncate.0
 ./usr/X11R6/man/cat1/dga.0
 ./usr/X11R6/man/cat1/glxgears.0
 ./usr/X11R6/man/cat1/glxinfo.0
+./usr/X11R6/man/cat1/libxrx.0
+./usr/X11R6/man/cat1/ucs2any.0
+./usr/X11R6/man/cat1/xrx.0
 ./usr/X11R6/man/cat3/GLwCreateMDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingArea.0
 ./usr/X11R6/man/cat3/GLwDrawingAreaMakeCurrent.0
