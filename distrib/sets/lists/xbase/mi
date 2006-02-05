@@ -1,5 +1,7 @@
 ./etc
 ./etc/fonts
+./etc/fonts/fonts.conf
+./etc/fonts/fonts.dtd
 ./usr
 ./usr/X11R6
 ./usr/X11R6/README
