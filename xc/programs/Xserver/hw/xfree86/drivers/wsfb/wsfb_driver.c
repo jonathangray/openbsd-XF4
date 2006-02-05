@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.27 2005/12/17 14:52:11 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.28 2006/02/05 10:02:48 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -527,7 +527,10 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86SetGamma(pScrn,zeros);
 
 	pScrn->progClock = TRUE;
-	pScrn->rgbBits   = 8;
+	if (pScrn->depth == 8)
+		pScrn->rgbBits = 6;
+	else 
+		pScrn->rgbBits   = 8;
 	pScrn->chipset   = "wsfb";
 	pScrn->videoRam  = fPtr->linebytes * fPtr->info.height;
 
@@ -807,7 +810,7 @@ WsfbScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		}
 	}
 
-	if (pScrn->bitsPerPixel > 8) {
+	if (pScrn->bitsPerPixel >= 8) {
 		if (!fbPictureInit(pScreen, NULL, 0))
 			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 				   "RENDER extension initialisation failed.");
