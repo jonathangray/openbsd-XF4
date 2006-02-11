@@ -508,7 +508,9 @@ ProcXF86MiscSetClientVersion(ClientPtr client)
 	    return BadAlloc;
 	MPRIV(client) = pPriv;
     }
+#ifdef DEBUG
     ErrorF("SetClientVersion: %i %i\n",stuff->major,stuff->minor);
+#endif
     pPriv->major = stuff->major;
     pPriv->minor = stuff->minor;
     
