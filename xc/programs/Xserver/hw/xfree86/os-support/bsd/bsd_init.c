@@ -519,7 +519,12 @@ xf86OpenPcvt()
     vtprefix = "/dev/ttyC";
 #endif
 
-    fd = open(PCVT_CONSOLE_DEV, PCVT_CONSOLE_MODE, 0);
+    if (VTnum != -1) {
+	    snprintf(vtname, sizeof(vtname), "%s%d", vtprefix, VTnum - 1);
+	    fd  = open(vtname, PCVT_CONSOLE_MODE, 0);
+    } else {
+	    fd = open(PCVT_CONSOLE_DEV, PCVT_CONSOLE_MODE, 0);
+    }
 #ifdef WSCONS_PCVT_COMPAT_CONSOLE_DEV
     if (fd < 0)
     {
@@ -592,8 +597,8 @@ xf86OpenPcvt()
 	    xf86Info.consType = PCVT;
 #ifdef WSCONS_SUPPORT
 	    xf86Msg(X_PROBED,
-		    "Using wscons driver in pcvt compatibility mode "
-		    "(version %d.%d)\n",
+		    "Using wscons driver on %s in pcvt compatibility mode "
+		    "(version %d.%d)\n", vtname,
 		    pcvt_version.rmajor, pcvt_version.rminor);
 #else
 	    xf86Msg(X_PROBED, "Using pcvt driver (version %d.%d)\n",

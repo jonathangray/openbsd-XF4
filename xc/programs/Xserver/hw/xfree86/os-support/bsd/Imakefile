@@ -124,10 +124,13 @@ AXP_SRC=bsd_ev56.c xf86Axp.c bsd_axp.c
 AXP_OBJ=bsd_ev56.o xf86Axp.o bsd_axp.o
 #endif
 
-#if (defined(KFreeBSDArchitecture) || defined(NetBSDArchitecture) || \
-	defined(OpenBSDArchitecture)) && HasAgpGart
+#if (defined(KFreeBSDArchitecture) || defined(NetBSDArchitecture)) \
+	&& HasAgpGart
 AGP_SRC=lnx_agp.c
 AGP_OBJ=lnx_agp.o
+#elif (defined(OpenBSDArchitecture) && HasAgpGart)
+AGP_SRC=bsd_agp.c
+AGP_OBJ=bsd_agp.o
 #else
 AGP_SRC=agp_noop.c
 AGP_OBJ=agp_noop.o
