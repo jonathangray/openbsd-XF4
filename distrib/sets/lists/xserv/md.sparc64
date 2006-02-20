@@ -1026,6 +1026,7 @@
 ./usr/X11R6/lib/modules/drivers/dummy_drv.so
 ./usr/X11R6/lib/modules/drivers/r128_drv.so
 ./usr/X11R6/lib/modules/drivers/radeon_drv.so
+./usr/X11R6/lib/modules/drivers/rm6_drv.so
 ./usr/X11R6/lib/modules/drivers/wsfb_drv.so
 ./usr/X11R6/lib/modules/extensions
 ./usr/X11R6/lib/modules/extensions/libGLcore.so
@@ -1127,6 +1128,7 @@
 ./usr/X11R6/man/cat4/penmount.0
 ./usr/X11R6/man/cat4/r128.0
 ./usr/X11R6/man/cat4/radeon.0
+./usr/X11R6/man/cat4/rm6.0
 ./usr/X11R6/man/cat4/sunbw2.0
 ./usr/X11R6/man/cat4/suncg14.0
 ./usr/X11R6/man/cat4/suncg3.0
