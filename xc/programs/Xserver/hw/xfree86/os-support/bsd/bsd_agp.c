@@ -69,7 +69,6 @@ GARTInit(int screenNum)
 	if (ioctl(gartFd, AGPIOC_INFO, &agpinf) != 0) {
 		xf86DrvMsg(screenNum, X_WARNING,
 			"GARTInit: AGPIOC_INFO failed (%s)\n", strerror(errno));
-		close(gartFd);
 		gartFd = -1;
 		return FALSE;
 	}
