@@ -9,7 +9,6 @@ static SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_RN50_5969, "ATI ES1000 5969 (PCI)" },
     { PCI_CHIP_RADEON_LW, "ATI Radeon Mobility M7 LW (AGP)" },
     { PCI_CHIP_RADEON_LX, "ATI Mobility FireGL 7800 M7 LX (AGP)" },
-    { PCI_CHIP_RADEON_LY, "ATI Radeon Mobility M6 LY (AGP)" },
     { PCI_CHIP_RADEON_LZ, "ATI Radeon Mobility M6 LZ (AGP)" },
     { PCI_CHIP_RS100_4136, "ATI Radeon IGP320 (A3) 4136" },
     { PCI_CHIP_RS100_4336, "ATI Radeon IGP320M (U1) 4336" },
