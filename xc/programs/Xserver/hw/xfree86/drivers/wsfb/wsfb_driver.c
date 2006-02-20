@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.28 2006/02/05 10:02:48 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.29 2006/02/20 19:40:32 miod Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -489,22 +489,40 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	if (pScrn->depth > 8) {
 		rgb zeros = { 0, 0, 0 }, masks;
 
-		if (wstype == WSDISPLAY_TYPE_SUN24 ||
-		    wstype == WSDISPLAY_TYPE_SUNCG12 ||
-		    wstype == WSDISPLAY_TYPE_SUNCG14 ||
-		    wstype == WSDISPLAY_TYPE_SUNTCX ||
-		    wstype == WSDISPLAY_TYPE_SUNFFB) {
+		switch (wstype) {
+		case WSDISPLAY_TYPE_SUN24:
+		case WSDISPLAY_TYPE_SUNCG12:
+		case WSDISPLAY_TYPE_SUNCG14:
+		case WSDISPLAY_TYPE_SUNTCX:
+		case WSDISPLAY_TYPE_SUNFFB:
+		case WSDISPLAY_TYPE_AGTEN:
+		case WSDISPLAY_TYPE_XVIDEO:
+		case WSDISPLAY_TYPE_SUNLEO:
 			masks.red = 0x0000ff;
 			masks.green = 0x00ff00;
 			masks.blue = 0xff0000;
-		} else if (wstype == WSDISPLAY_TYPE_PXALCD) {
+			break;
+		case WSDISPLAY_TYPE_PXALCD:
 			masks.red = 0x1f << 11;
 			masks.green = 0x3f << 5;
 			masks.blue = 0x1f;
-		} else {
+			break;
+		case WSDISPLAY_TYPE_MAC68K:
+			if (pScrn->depth > 16) {
+				masks.red = 0x0000ff;
+				masks.green = 0x00ff00;
+				masks.blue = 0xff0000;
+			} else {
+				masks.red = 0x1f << 11;
+				masks.green = 0x3f << 5;
+				masks.blue = 0x1f;
+			}
+			break;
+		default:
 			masks.red = 0;
 			masks.green = 0;
 			masks.blue = 0;
+			break;
 		}
 
 		if (!xf86SetWeight(pScrn, zeros, masks))
