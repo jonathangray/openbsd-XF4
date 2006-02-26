@@ -1,7 +1,7 @@
 XCOMM!SHELL_CMD
 XCOMM
 XCOMM $Xorg: Xsession,v 1.4 2000/08/17 19:54:17 cpqbld Exp $
-XCOMM $OpenBSD: Xsession.cpp,v 1.2 2006/01/21 22:29:53 matthieu Exp $
+XCOMM $OpenBSD: Xsession.cpp,v 1.3 2006/02/26 22:56:57 matthieu Exp $
 XCOMM $XFree86: xc/programs/xdm/config/Xsession,v 1.2 1998/01/11 03:48:32 dawes Exp $
 
 XCOMM redirect errors to a file in user's home directory if we can
@@ -12,9 +12,8 @@ do
 		errfile=`mktemp ${errfile}.XXXXXXXXXX` || break;
 		;;
 	esac
-	if ( cp /dev/null "$errfile" 2> /dev/null )
+	if ( umask 077 && cp /dev/null "$errfile" 2> /dev/null )
 	then
-		chmod 600 "$errfile"
 		exec > "$errfile" 2>&1
 		break
 	fi
