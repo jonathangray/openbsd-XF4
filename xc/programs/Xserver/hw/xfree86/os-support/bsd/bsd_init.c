@@ -520,7 +520,7 @@ xf86OpenPcvt()
 #endif
 
     if (VTnum != -1) {
-	    snprintf(vtname, sizeof(vtname), "%s%d", vtprefix, VTnum - 1);
+	    snprintf(vtname, sizeof(vtname), "%s%x", vtprefix, VTnum - 1);
 	    fd  = open(vtname, PCVT_CONSOLE_MODE, 0);
     } else {
 	    fd = open(PCVT_CONSOLE_DEV, PCVT_CONSOLE_MODE, 0);
@@ -632,7 +632,7 @@ xf86OpenWScons()
 #if defined(__NetBSD__)
 	sprintf(ttyname, "/dev/ttyE%d", i);
 #elif defined(__OpenBSD__)
-	sprintf(ttyname, "/dev/ttyC%d", i);
+	sprintf(ttyname, "/dev/ttyC%x", i);
 #endif
 	if ((fd = open(ttyname, 2)) != -1)
 	    break;
