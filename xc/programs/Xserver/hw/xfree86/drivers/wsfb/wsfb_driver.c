@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.29 2006/02/20 19:40:32 miod Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.30 2006/03/04 10:36:40 matthieu Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -249,9 +249,6 @@ typedef struct {
 	void			(*PointerMoved)(int, int, int);
 	EntityInfoPtr		pEnt;
 	struct wsdisplay_cmap	saved_cmap;
-	unsigned char		saved_red[256];
-	unsigned char		saved_green[256];
-	unsigned char		saved_blue[256];
 
 #ifdef XFreeXDGA
 	/* DGA info */
@@ -449,6 +446,35 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 			   "ioctl WSDISPLAYIO_LINEBYTES: %s\n",
 			   strerror(errno));
 		return FALSE;
+	}
+	/*
+	 * Allocate room for saving the colormap 
+	 */
+	if (fPtr->info.cmsize != 0) {
+		fPtr->saved_cmap.red =
+		    (unsigned char *)xalloc(fPtr->info.cmsize);
+		if (fPtr->saved_cmap.red == NULL) {
+			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			    "Cannot malloc %d bytes\n", fPtr->info.cmsize);
+			return FALSE;
+		}
+		fPtr->saved_cmap.green =
+		    (unsigned char *)xalloc(fPtr->info.cmsize);
+		if (fPtr->saved_cmap.green == NULL) {
+			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			    "Cannot malloc %d bytes\n", fPtr->info.cmsize);
+			xfree(fPtr->saved_cmap.red);
+			return FALSE;
+		}
+		fPtr->saved_cmap.blue =
+		    (unsigned char *)xalloc(fPtr->info.cmsize);
+		if (fPtr->saved_cmap.blue == NULL) {
+			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			    "Cannot malloc %d bytes\n", fPtr->info.cmsize);
+			xfree(fPtr->saved_cmap.red);
+			xfree(fPtr->saved_cmap.green);
+			return FALSE;
+		}
 	}
 
 	/*
@@ -1131,9 +1157,6 @@ WsfbSave(ScrnInfoPtr pScrn)
 
 	fPtr->saved_cmap.index = 0;
 	fPtr->saved_cmap.count = fPtr->info.cmsize;
-	fPtr->saved_cmap.red = fPtr->saved_red;
-	fPtr->saved_cmap.green = fPtr->saved_green;
-	fPtr->saved_cmap.blue = fPtr->saved_blue;
 	if (ioctl(fPtr->fd, WSDISPLAYIO_GETCMAP,
 		  &(fPtr->saved_cmap)) == -1) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -1152,11 +1175,6 @@ WsfbRestore(ScrnInfoPtr pScrn)
 
 	if (fPtr->info.cmsize != 0) {
 		/* reset colormap for text mode */
-		fPtr->saved_cmap.index = 0;
-		fPtr->saved_cmap.count = fPtr->info.cmsize;
-		fPtr->saved_cmap.red = fPtr->saved_red;
-		fPtr->saved_cmap.green = fPtr->saved_green;
-		fPtr->saved_cmap.blue = fPtr->saved_blue;
 		if (ioctl(fPtr->fd, WSDISPLAYIO_PUTCMAP,
 			  &(fPtr->saved_cmap)) == -1) {
 			xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
