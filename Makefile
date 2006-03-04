@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.51 2006/02/04 18:20:10 todd Exp $
+#	$OpenBSD: Makefile,v 1.52 2006/03/04 07:16:12 matthieu Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -33,6 +33,7 @@ XCONFIG=xc/${BINDIST}/OpenBSD-${XMACH}/xorg.conf
 
 .if ${MACHINE} == i386
 NEED_XC_OLD?=yes
+REQUIRED_PACKAGES=	tcl-8.\* tk-8.\*
 .else
 NEED_XC_OLD?=no
 .endif
@@ -60,7 +61,7 @@ FONTPATH+= ${DESTDIR}/usr/X11R6/lib/X11/fonts/${_font}
 
 all:	compile
 
-compile:
+compile: check-packages
 	${RM} -f ${CONFHOSTDEF}
 	${INSTALL} ${HOSTDEF} ${CONFHOSTDEF}
 .ifdef NOFONTS
@@ -72,6 +73,12 @@ compile:
 	cd xc-old && exec ${MAKE} World WORLDOPTS=
 .endif
 	cd extras && ${MAKE} obj && ${MAKE} depend && exec ${MAKE}
+
+check-packages:
+	@for p in ${REQUIRED_PACKAGES}; do \
+		pkg_info -q -e "$$p" || \
+		(echo "Missing package $$p" ; exit 2); \
+	done
 
 build: 
 	${MAKE} compile 
@@ -195,6 +202,7 @@ b-r:
 
 .PHONY: all build release dist install install-xc install-xc-old \
     install-distrib clean distclean fix-appd b-r \
-    release-clean release-mkdir release-install install-extra
+    release-clean release-mkdir release-install install-extra \
+    check-packages
 
 .include <bsd.own.mk>
