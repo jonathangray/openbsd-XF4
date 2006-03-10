@@ -1395,7 +1395,7 @@ ddxProcessArgument(int argc, char **argv, int i)
     }
   
   /* First the options that are only allowed for root */
-  if (getuid() == 0 || geteuid != 0)
+  if (getuid() == 0 || geteuid() != 0)
   {
     if (!strcmp(argv[i], "-modulepath"))
     {
@@ -1703,7 +1703,7 @@ ddxProcessArgument(int argc, char **argv, int i)
   }
   if (!strcmp(argv[i], "-configure"))
   {
-    if (getuid() != 0 && geteuid == 0) {
+    if (getuid() != 0 && geteuid() == 0) {
 	ErrorF("The '-configure' option can only be used by root.\n");
 	exit(1);
     }
