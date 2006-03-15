@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/ppc_video.c,v 1.6 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: arm_video.c,v 1.5 2006/01/15 22:08:12 matthieu Exp $ */
+/* $OpenBSD: arm_video.c,v 1.6 2006/03/15 07:23:12 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -44,6 +44,8 @@
 #define MAP_FAILED ((caddr_t)-1)
 #endif
 
+#include <sys/param.h>
+#include <sys/sysctl.h>
 
 /***************************************************************************/
 /* Video Memory Mapping section                                            */
@@ -151,11 +153,25 @@ xf86EnableInterrupts()
 void
 xf86PrivilegedInit(void)
 {
- 	kmem = open(DEV_MEM, 2);
- 	if (kmem == -1) {
-		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86PrivilegedInit: open %s", DEV_MEM);
- 	}
+	int mib[2];
+	char buf[128];
+	size_t len;
+
+	mib[0] = CTL_HW;
+	mib[1] = HW_MACHINE;
+	len = sizeof(buf);
+	if (sysctl(mib, 2, buf, &len, NULL, 0) < 0) {
+		FatalError("Cannot get hw.machine");
+	}
+	if (strcmp(buf, "zaurus") != 0) {
+		/* Not Zaurus */
+		kmem = open(DEV_MEM, 2);
+		if (kmem == -1) {
+			ErrorF("errno: %d\n", errno);
+			FatalError("xf86PrivilegedInit: open %s", DEV_MEM);
+		}
+	}
+
 	pciInit();
 	xf86OpenConsole();
 }
