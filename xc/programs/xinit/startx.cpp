@@ -191,6 +191,7 @@ dummy=0
 
 XCOMM create a file with auth information for the server. ':0' is a dummy.
 xserverauthfile=$HOME/.serverauth.$$
+trap "rm -f $xserverauthfile" ERR HUP INT QUIT ILL TRAP KILL BUS TERM
 xauth -q -f $xserverauthfile << EOF
 add :$dummy . $mcookie
 EOF
@@ -208,7 +209,7 @@ add $displayname . $mcookie
 EOF
 	removelist="$displayname $removelist"
     else
-        dummy=$((dummy+1));
+        dummy=$(($dummy+1));
         XAUTH -q -f $xserverauthfile << EOF
 add :$dummy . $authcookie
 EOF
