@@ -1,4 +1,4 @@
-/* $OpenBSD: privsep.c,v 1.6 2006/02/05 18:16:35 matthieu Exp $ */
+/* $OpenBSD: privsep.c,v 1.7 2006/03/20 20:14:13 matthieu Exp $ */
 /*
  * Copyright 2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -103,6 +103,7 @@ static const char * const allowed_devices[] = {
 	"/dev/ttyD5",
 	"/dev/ttyD6",
 	"/dev/ttyD7",
+	"/dev/pci",
 	NULL
 };
 

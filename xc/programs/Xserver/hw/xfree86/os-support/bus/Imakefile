@@ -57,7 +57,9 @@ PCIDRVROBJ = linuxPci.o
 	defined(Mac68kArchitecture) || \
 	defined(PpcArchitecture) || \
 	defined(SparcArchitecture) || \
-	defined(Sparc64Architecture))
+	defined(Sparc64Architecture) || \
+	defined(i386Architecture) || \
+	defined(AMD64Architecture))
 
 XCOMM OpenBSD/alpha, OpenBSD/cats, OpenBSD/hp300, OpenBSD/hppa,
 XCOMM OpenBDS/mac68k, OpenBSD/macppc, OpenBSD/sparc and OpenBSD/sparc64
@@ -145,6 +147,10 @@ PCIARCHOBJ = 460gxPCI.o e8870PCI.o zx1PCI.o altixPCI.o
 
 SRCS = Pci.c $(PCIDRVRSRC) $(SBUSDRVSRC) $(PCIARCHSRC)
 OBJS = Pci.o $(PCIDRVROBJ) $(SBUSDRVOBJ) $(PCIARCHOBJ)
+
+#if DoPrivSep
+DEFINES = -DX_PRIVSEP
+#endif
 
 INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
 	   -I$(SERVERSRC)/include -I$(XINCLUDESRC)

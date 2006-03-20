@@ -277,7 +277,11 @@
 # endif
 # define XF86SCANPCI_WRAPPER ia64ScanPCIWrapper
 #elif defined(__i386__) || defined(i386)
-# define ARCH_PCI_INIT ix86PciInit
+# if defined(__OpenBSD__)
+#  define ARCH_PCI_INIT freebsdPciInit
+# else
+#  define ARCH_PCI_INIT ix86PciInit
+# endif
 # define INCLUDE_XF86_MAP_PCI_MEM
 # define INCLUDE_XF86_NO_DOMAIN
 # if defined(linux)
@@ -359,7 +363,7 @@
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__amd64__) || defined(__amd64)
-# if defined(__FreeBSD__)
+# if defined(__FreeBSD__) || defined(__OpenBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit
 # else
 #  define ARCH_PCI_INIT ix86PciInit
