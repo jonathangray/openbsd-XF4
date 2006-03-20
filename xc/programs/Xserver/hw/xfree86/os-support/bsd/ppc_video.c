@@ -1,5 +1,5 @@
 /* $XFree86: ppc_video.c,v 1.5 2003/03/14 13:46:04 tsi Exp $ */
-/* $OpenBSD: ppc_video.c,v 1.11 2006/01/15 22:08:12 matthieu Exp $ */
+/* $OpenBSD: ppc_video.c,v 1.12 2006/03/20 20:24:18 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -156,10 +156,11 @@ xf86PrivilegedInit(void)
 {
  	kmem = open(DEV_MEM, 2);
  	if (kmem == -1) {
-		ErrorF("errno: %d\n", errno);
- 		FatalError("xf86PrivilegedInit: open %s", DEV_MEM);
- 	}
-	pciInit();
+		xf86Msg(X_PROBED, 
+		    "no aperture driver access: only wsfb driver useable\n");
+ 	} else {
+		pciInit();
+	}
 	xf86OpenConsole();
 }
 #endif
