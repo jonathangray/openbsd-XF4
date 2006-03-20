@@ -1,5 +1,5 @@
 /* $XFree86: sparc64_video.c,v 1.2 2003/03/14 13:46:04 tsi Exp $ */
-/* $OpenBSD: sparc64_video.c,v 1.12 2006/01/15 22:08:12 matthieu Exp $
+/* $OpenBSD: sparc64_video.c,v 1.13 2006/03/20 20:38:07 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
