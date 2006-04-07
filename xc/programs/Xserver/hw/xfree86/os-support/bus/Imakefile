@@ -58,8 +58,7 @@ PCIDRVROBJ = linuxPci.o
 	defined(PpcArchitecture) || \
 	defined(SparcArchitecture) || \
 	defined(Sparc64Architecture) || \
-	defined(i386Architecture) || \
-	defined(AMD64Architecture))
+	defined(i386Architecture))
 
 XCOMM OpenBSD/alpha, OpenBSD/cats, OpenBSD/hp300, OpenBSD/hppa,
 XCOMM OpenBDS/mac68k, OpenBSD/macppc, OpenBSD/sparc and OpenBSD/sparc64

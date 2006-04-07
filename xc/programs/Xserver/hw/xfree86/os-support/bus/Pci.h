@@ -363,7 +363,7 @@
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__amd64__) || defined(__amd64)
-# if defined(__FreeBSD__) || defined(__OpenBSD__)
+# if defined(__FreeBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit
 # else
 #  define ARCH_PCI_INIT ix86PciInit
