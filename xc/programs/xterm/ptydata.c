@@ -1,12 +1,12 @@
-/* $XTermId: ptydata.c,v 1.65 2005/04/22 00:21:54 tom Exp $ */
+/* $XTermId: ptydata.c,v 1.72 2006/02/13 01:14:59 tom Exp $ */
 
 /*
- * $XFree86: xc/programs/xterm/ptydata.c,v 1.23 2005/04/22 00:21:54 dickey Exp $
+ * $XFree86: xc/programs/xterm/ptydata.c,v 1.25 2006/02/13 01:14:59 dickey Exp $
  */
 
 /************************************************************
 
-Copyright 1999-2004,2005 by Thomas E. Dickey
+Copyright 1999-2005,2006 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -194,7 +194,7 @@ readPtyData(TScreen * screen, PtySelect * select_mask, PtyData * data)
     if (FD_ISSET(screen->respond, select_mask)) {
 	trimPtyData(screen, data);
 
-	size = read(screen->respond, (char *) data->last, FRG_SIZE);
+	size = read(screen->respond, (char *) data->last, (unsigned) FRG_SIZE);
 	if (size <= 0) {
 	    /*
 	     * Yes, I know this is a majorly f*ugly hack, however it seems to
@@ -404,17 +404,31 @@ convertToUTF8(Char * lp, unsigned c)
 void
 writePtyData(int f, IChar * d, unsigned len)
 {
-    static Char *dbuf;
-    static unsigned dlen;
     unsigned n = (len << 1);
 
-    if (dlen <= len) {
-	dlen = n;
-	dbuf = (Char *) XtRealloc((char *) dbuf, dlen);
+    if (VTbuffer->write_len <= len) {
+	VTbuffer->write_len = n;
+	VTbuffer->write_buf = (Char *) XtRealloc((char *)
+						 VTbuffer->write_buf, VTbuffer->write_len);
     }
 
     for (n = 0; n < len; n++)
-	dbuf[n] = d[n];
-    v_write(f, dbuf, n);
+	VTbuffer->write_buf[n] = d[n];
+    v_write(f, VTbuffer->write_buf, n);
+}
+#endif /* OPT_WIDE_CHARS */
+
+#ifdef NO_LEAKS
+void
+noleaks_ptydata(void)
+{
+    if (VTbuffer != 0) {
+#if OPT_WIDE_CHARS
+	if (VTbuffer->write_buf != 0)
+	    free(VTbuffer->write_buf);
+#endif
+	free(VTbuffer);
+	VTbuffer = 0;
+    }
 }
 #endif

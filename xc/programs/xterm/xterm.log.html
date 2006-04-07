@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!--
  *****************************************************************************
- * Copyright 1996-2004,2005 by Thomas E. Dickey                              *
+ * Copyright 1996-2005,2006 by Thomas E. Dickey                              *
  * All Rights Reserved.                                                      *
  *                                                                           *
  * Permission to use, copy, modify, and distribute this software and its     *
@@ -20,8 +20,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   *
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            *
  *****************************************************************************
-  $XTermId: xterm.log.html,v 1.347 2005/11/13 23:10:36 tom Exp $
-  $XFree86: xc/programs/xterm/xterm.log.html,v 1.143 2005/11/13 23:10:36 dickey Exp $
+  $XTermId: xterm.log.html,v 1.400 2006/03/20 00:36:19 tom Exp $
+  $XFree86: xc/programs/xterm/xterm.log.html,v 1.147 2006/03/20 00:36:19 dickey Exp $
   -->
 <HTML>
 <HEAD>
@@ -31,7 +31,7 @@
 </HEAD>
 <BODY>
 <HR>
-Copyright 1997-2004,2005 by <A
+Copyright 1997-2005,2006 by <A
 HREF="mailto:dickey@invisible-island.net">Thomas E. Dickey</A>
 <HR>
 <H1>Contents</H1>
@@ -46,6 +46,10 @@ Most of these are summarized in the XFree86 CHANGELOG
 is the latest version of this file.
 
 <UL>
+<LI><A HREF="#xterm_211">Patch #211 - 2006/3/19 - XFree86 4.5.99.902</A>
+<LI><A HREF="#xterm_210">Patch #210 - 2006/3/12 - XFree86 4.5.99.902</A>
+<LI><A HREF="#xterm_209">Patch #209 - 2006/2/12 - XFree86 4.5.99.22</A>
+<LI><A HREF="#xterm_208">Patch #208 - 2006/1/3 - XFree86 4.5.99.19</A>
 <LI><A HREF="#xterm_207">Patch #207 - 2005/11/13 - XFree86 4.5.99.16</A>
 <LI><A HREF="#xterm_206">Patch #206 - 2005/11/3 - XFree86 4.5.99.15</A>
 <LI><A HREF="#xterm_205">Patch #205 - 2005/9/18 - XFree86 4.5.99.12</A>
@@ -256,6 +260,202 @@ is the latest version of this file.
 <LI><A HREF="#xterm_01">Patch #1 - 1996/1/6</A>
 </UL>
 
+<H1><A NAME="xterm_211">Patch #211 - 2006/3/19 - XFree86 4.5.99.902</A></H1>
+<ul>
+	<li>modify prefix/suffix transformation in makefile to make
+	    <code>uxterm</code> install properly on Cygwin.
+
+	<li>restore the sizeof-comparison for <code>struct lastlog</code>
+	    added in <a href="#xterm_208">patch #208</a>,
+	    rendered (mostly) obsolete in <a href="#xterm_210">patch #210</a>,
+	    since an imake configuration can still turn that code on
+	    (prompted by comment by David Dawes).
+
+	<li>remove feature for <code>FreeBSDArchitecture</code> from
+	    <code>Imakefile</code> which would install xterm using the
+	    <code>utmp</code> group since a standard FreeBSD system has no such
+	    group, though it would support this configuration.  FreeBSD
+	    packager uses the <code>configure</code> script, which can make the
+	    appropriate check (prompted by comment by David Dawes).
+
+	<li>fixes for gcc redefinition warnings when built using imake
+	    (reports by David Dawes, Marc La France).
+</ul>
+
+<H1><A NAME="xterm_210">Patch #210 - 2006/3/12 - XFree86 4.5.99.902</A></H1>
+<ul>
+	<li>add configure check for workaround in
+	    <a href="#xterm_208">patch #208</a>
+	    for Solaris' inconsistent support for struct lastlog to quiet
+	    compiler warnings
+	    (prompted by David Dawes commit message for XFree86).
+
+	<li>fixes for BASE64 selection manipulation,
+	    e.g., ensure that the string
+	    terminator is written after cut-buffer data (report by Joe Allen).
+
+	<li>add vttests/paste64.pl script to test experimental option for
+	    setting/getting selection data.
+
+	<li>add some error-checking in fontutils.c 
+	    (prompted by David Dawes commit message for XFree86).
+
+	<li>change xterm manpage to show the actual color resource names
+	    <code>XtDefaultForeground</code> and
+	    <code>XtDefaultBackground</code> rather than black and white
+	    (prompted by discussion with Emanuele Giaquinta).
+
+	<li>add <code>utf8Title</code> resource and menu entry, allowing the
+	    user to control whether title strings are interpreted as ISO-8859-1
+	    or UTF-8 encoding (Novell #52655, #113206).
+
+	<li>change order of ifdef's for utempter versus platforms in
+	    <code>Imakefile</code> to ensure a proper value for
+	    <code>InstallXtermSetGID</code>
+	    (prompted by Marc La France commit message for XFree86).
+
+	<li>update the cursor GCs when menu entry for reverse video is toggled.
+	    (Redhat #183993).
+
+	<li>a memory-leak fix for <code>set_cursor_gcs()</code>
+	    in <a href="#xterm_208">patch #208</a> broke the
+	    <code>-cm</code> option (Redhat #182382).
+</ul>
+
+<H1><A NAME="xterm_209">Patch #209 - 2006/2/12 - XFree86 4.5.99.22</A></H1>
+<ul>
+	<li>remove <code>setf</code> and <code>setb</code> from
+	    <code>xterm-256color</code> terminfo entry to avoid issues with
+	    applications that ignore the ANSI strings (report by Emanuele
+	    Giaquinta).
+
+	<li>remove obsolete references to "Xorg" to avoid confusion with
+	    "X.org" (prompted by David Dawes commit message for XFree86).
+
+	<li>improve initial layout performance for the toolbar configuration
+	    by precalculating the height of the toolbar.
+
+	<li>remove menu entry for "Enable Curses Emulation" (to make room for
+	    "Select To Clipboard).
+
+	<li>add resource <code>selectToClipboard</code>,
+	    action <code>set-select</code> and a menu entry to allow 
+	    users to switch between PRIMARY and CLIPBOARD for select/paste.
+
+	<li>allow cursor to have the same color as foreground (text), since it
+	    is rendered as reverse (Debian #350664).
+
+	<li>amend change for loading <code>utf8Fonts</code> resource from <a
+	    href="#xterm_204">patch #204</a> to allow an ISO-8859-1 "normal"
+	    font to be combined with an ISO-10646 font if the latter is given
+	    via the <code>-fw</code> option or its corresponding resource
+	    value.
+
+	<li>add <code>TIOCSCTTY</code> <code>ioctl()</code> ifdef'd for
+	    <code>__GNU__</code> to set the controlling terminal (Debian
+	    #348457).
+
+	<li>add configure option <code>--disable-leaks</code>.
+
+	<li>add a check in <code>Bell</code> to ensure that the VT100 widget
+	    is realized, since it may be called by <code>xtermLoadFont</code>
+	    given an incorrect font resource (Redhat #180450).
+
+	<li>improve initialization of wide-bold font by not using the derived
+	    value when it happens to have few glyphs (report by Mboso Sampson).
+
+	<li>improve dynamic colors by not repainting the screen if only the
+	    cursor color changes (request by Bram Moolenaar).
+
+	<li>fix menu initialization for tek4014 window broken in
+	    <a href="#xterm_206">patch #206</a>.
+
+	<li>typo in manpage (Debian #351425).
+
+	<li>correct loop logic in <code>dotext</code> to prevent an infinite
+	    loop if a wide character was just at the right margin when wrapping
+	    was disabled (report by Serge van den Boom).
+
+	<li>initialize the saved-cursor data so a restore-cursor operation
+	    without a preceding save-cursor operation will not modify the
+	    foreground color.
+
+	<li>add a new selection feature: regular expressions, and new resources
+	    which specify what happens on multiple mouse clicks:
+	    <code>on2Clicks</code>,
+	    <code>on3Clicks</code>,
+	    <code>on4Clicks</code> and
+	    <code>on5Clicks</code>.
+
+	<li>revert the <code>XTerm.ad</code> change from
+	    <a href="#xterm_208">patch #208</a> (Debian #348384).
+
+	<li>fixes for the print-window to make it handle combining
+	    characters in UTF-8 mode.
+
+	<li>add check to ensure that double-clicking to extend selection will
+	    not extend it into the scrollback area.  This still allows users
+	    to scroll back and select text (Debian #347415).
+
+	<li>add configure option <code>--with-tty-group</code> to help work
+	    around deficiencies in packager's build environment (Debian
+	    #349142).
+
+	<li>fix typo in configure script option
+	    <code>--disable-narrowproto</code>
+	    (report by David Mart&#237;nez Moreno).
+
+	<li>amend CF_X_FREETYPE changes for <code>pkg-config</code> check to
+	    ensure that <code>Xft</code> is known to that tool (report and
+	    patch by Emanuele Giaquinta).
+
+	<li>add an ifdef to allow <code>./configure --disable-active-icon</code>
+	    to work, broken by new code for testing memory leaks in
+	    <a href="#xterm_208">patch #208</a> (report by Brian Lindholm).
+</ul>
+
+<H1><A NAME="xterm_208">Patch #208 - 2006/1/3 - XFree86 4.5.99.19</A></H1>
+<ul>
+	<li>add <code>charClass</code> resource to <code>XTerm.ad</code> and
+	    <code>UXTerm.ad</code> which simplifies selecting URLs (prompted
+	    by Kirill Ponomarew).
+
+	<li>modify install rule for <code>uxterm</code> to account for the
+	    <code>--program-prefix</code>, etc., options by invoking the
+	    transformed name of xterm rather than simply "xterm".
+
+	<li>modify configure <code>--with-app-defaults</code> option to allow
+	    <code>--without-app-defaults</code>.
+
+	<li>add configure <code>--with-symlink</code> option to make it simpler
+	    to install successive versions of <code>xterm</code> renamed using
+	    the <code>--program-prefix</code>, etc., options with a symbolic
+	    link pointing to the most recent.
+
+	<li>make <code>-iconic</code> option work with toolbar configuration
+	    (GenToo #113604).
+
+	<li>suppress <code>lastlog</code> feature for 64-bit Solaris
+	    configuration since that platform provides only a 32-bit interface
+	    (report by Peter Bray).
+
+	<li>fix memory reallocation for the "UTF-8" menu entry when xterm is
+	    started using the <code>+u8</code> option (reported by Jan Willem
+	    Stumpel).
+
+	<li>add a configure check for the actual path of <code>luit</code>,
+	    to work around broken <code>imake</code> configurations.
+
+	<li>add a configure check for <code>pkg-config</code> (Redhat Bugzilla
+	    #173541).
+
+	<li>modify install-rule for <code>uxterm</code> to omit executable
+	    suffix, e.g., for Cygwin.
+
+	<li>modify <code>sinstall.sh</code> to work around quirks in Cygwin
+	    configuration.
+</ul>
+
 <H1><A NAME="xterm_207">Patch #207 - 2005/11/13 - XFree86 4.5.99.16</A></H1>
 <ul>
 	<li>enable <code>lastlogx</code> support for NetBSD (was added, but
@@ -306,7 +506,7 @@ is the latest version of this file.
 	    font resources (Debian #319179).
 
 	<li>add <code>--enable-narrowproto</code> configure option to
-	    accommodate Xorg "modular" build (report by Stephan Hermann,
+	    accommodate X.org "modular" build (report by Stephan Hermann,
 	    GenToo #17220).
 
 	<li>fix typo in xterm.man description of <code>+wf</code> (patch
@@ -552,7 +752,7 @@ is the latest version of this file.
 	    range of incoming data (patch by Joe Allen).
 
 	<li>adapted patch by Joe Allen to add experimental option to allow
-	    applications to get or set the selection data.
+	    applications to get or set the selection data as a BASE64 string.
 
 	<li>fix an off-by-one error parsing <code>-S/nn</code> option
 	    (Debian #311438, report/fix by Peter Chubb).

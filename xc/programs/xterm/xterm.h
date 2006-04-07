@@ -1,10 +1,10 @@
-/* $XTermId: xterm.h,v 1.357 2005/11/03 13:17:28 tom Exp $ */
+/* $XTermId: xterm.h,v 1.379 2006/03/20 00:36:19 tom Exp $ */
 
-/* $XFree86: xc/programs/xterm/xterm.h,v 3.109 2005/11/03 13:17:28 dickey Exp $ */
+/* $XFree86: xc/programs/xterm/xterm.h,v 3.115 2006/03/20 00:36:19 dickey Exp $ */
 
 /************************************************************
 
-Copyright 1999-2004,2005 by Thomas E. Dickey
+Copyright 1999-2005,2006 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -85,7 +85,14 @@ authorization.
 #endif
 
 #define HAVE_STDLIB_H 1
+
+#if defined(sun)
+/* errno is declared in <errno.h> */
+#else
 #define DECL_ERRNO 1
+#endif
+
+#undef DECL_PTSNAME		/* ptsname() is normally in stdlib.h */
 
 #ifndef NOPUTENV
 #define HAVE_PUTENV 1
@@ -147,11 +154,13 @@ authorization.
 #if defined(linux) || defined(__CYGWIN__)
 #define USE_LASTLOG
 #define HAVE_LASTLOG_H
+#define USE_STRUCT_LASTLOG
 #elif defined(BSD) && (BSD >= 199103)
 #ifdef BSD_UTMPX
 #define USE_LASTLOGX
 #else
 #define USE_LASTLOG
+#define USE_STRUCT_LASTLOG
 #endif
 #endif
 
@@ -312,7 +321,7 @@ extern int errno;
 #define environ gblenvp		/* circumvent a bug */
 #endif
 
-#if !defined(VMS) && !(defined(linux) && defined(__USE_GNU))
+#if !defined(VMS) && !(defined(linux) && defined(__USE_GNU)) && !defined(__hpux) && !defined(_ALL_SOURCE) && !defined(__osf__) 
 extern char **environ;
 #endif
 
@@ -421,6 +430,7 @@ extern char **environ;
 #define XtNscrollLines		"scrollLines"
 #define XtNscrollPos		"scrollPos"
 #define XtNscrollTtyOutput	"scrollTtyOutput"
+#define XtNselectToClipboard	"selectToClipboard"
 #define XtNshiftFonts		"shiftFonts"
 #define XtNshowBlinkAsBold	"showBlinkAsBold"
 #define XtNshowMissingGlyphs	"showMissingGlyphs"
@@ -435,6 +445,7 @@ extern char **environ;
 #define XtNtrimSelection	"trimSelection"
 #define XtNunderLine		"underLine"
 #define XtNutf8			"utf8"
+#define XtNutf8Title		"utf8Title"
 #define XtNveryBoldColors	"veryBoldColors"
 #define XtNvisualBell		"visualBell"
 #define XtNvisualBellDelay	"visualBellDelay"
@@ -538,6 +549,7 @@ extern char **environ;
 #define XtCScrollCond		"ScrollCond"
 #define XtCScrollLines		"ScrollLines"
 #define XtCScrollPos		"ScrollPos"
+#define XtCSelectToClipboard	"SelectToClipboard"
 #define XtCShiftFonts		"ShiftFonts"
 #define XtCShowBlinkAsBold	"ShowBlinkAsBold"
 #define XtCShowMissingGlyphs	"ShowMissingGlyphs"
@@ -551,6 +563,7 @@ extern char **environ;
 #define XtCTrimSelection	"TrimSelection"
 #define XtCUnderLine		"UnderLine"
 #define XtCUtf8			"Utf8"
+#define XtCUtf8Title		"Utf8Title"
 #define XtCVT100Graphics	"VT100Graphics"
 #define XtCVeryBoldColors	"VeryBoldColors"
 #define XtCVisualBell		"VisualBell"
@@ -613,7 +626,7 @@ extern void dorefresh (void);
 	    (s)->event_mask |= PointerMotionMask;			\
 	    XSelectInput(XtDisplay((t)), XtWindow((t)), (long) (s)->event_mask); }
 
-extern Bool SendMousePosition (Widget w, XEvent* event);
+extern Bool SendMousePosition (XtermWidget w, XEvent* event);
 extern void DiredButton                PROTO_XT_ACTIONS_ARGS;
 extern void DisownSelection (XtermWidget termw);
 extern void HandleGINInput             PROTO_XT_ACTIONS_ARGS;
@@ -622,31 +635,30 @@ extern void HandleKeyboardSelectEnd    PROTO_XT_ACTIONS_ARGS;
 extern void HandleKeyboardSelectExtend PROTO_XT_ACTIONS_ARGS;
 extern void HandleKeyboardSelectStart  PROTO_XT_ACTIONS_ARGS;
 extern void HandleKeyboardStartExtend  PROTO_XT_ACTIONS_ARGS;
-extern void HandleSecure               PROTO_XT_ACTIONS_ARGS;
 extern void HandleSelectEnd            PROTO_XT_ACTIONS_ARGS;
 extern void HandleSelectExtend         PROTO_XT_ACTIONS_ARGS;
 extern void HandleSelectSet            PROTO_XT_ACTIONS_ARGS;
 extern void HandleSelectStart          PROTO_XT_ACTIONS_ARGS;
 extern void HandleStartExtend          PROTO_XT_ACTIONS_ARGS;
-extern void ReadLineButton             PROTO_XT_ACTIONS_ARGS;
 extern void ResizeSelection (TScreen *screen, int rows, int cols);
-extern void ScrollSelection (TScreen* screen, int amount, Bool);
-extern void TrackMouse (int func, int startrow, int startcol, int firstrow, int lastrow);
-extern void TrackText (int frow, int fcol, int trow, int tcol);
+extern void ScrollSelection (TScreen *screen, int amount, Bool);
+extern void TrackMouse (TScreen *screen, int func, CELL * start, int firstrow, int lastrow);
 extern void ViButton                   PROTO_XT_ACTIONS_ARGS;
 
 #if OPT_DEC_LOCATOR
-extern Bool SendLocatorPosition (Widget w, XEvent* event);
-extern void CheckLocatorPosition (Widget w, XEvent *event);
 extern void GetLocatorPosition (XtermWidget w);
 extern void InitLocatorFilter (XtermWidget w);
 #endif	/* OPT_DEC_LOCATOR */
 
 #if OPT_PASTE64
 extern void AppendToSelectionBuffer (TScreen *screen, unsigned c);
-extern void ClearSelectionBuffer (void);
-extern void CompleteSelection (char **args, Cardinal len);
+extern void ClearSelectionBuffer (TScreen *screen);
+extern void CompleteSelection (XtermWidget xw, char **args, Cardinal len);
 extern void xtermGetSelection (Widget w, Time ev_time, String *params, Cardinal num_params, Atom *targets);
+#endif
+
+#if OPT_READLINE
+extern void ReadLineButton             PROTO_XT_ACTIONS_ARGS;
 #endif
 
 #if OPT_WIDE_CHARS
@@ -682,6 +694,10 @@ extern void ToggleCursorBlink(TScreen *screen);
 #if OPT_ISO_COLORS
 extern void SGR_Background (int color);
 extern void SGR_Foreground (int color);
+#endif
+
+#ifdef NO_LEAKS
+extern void noleaks_charproc (void);
 #endif
 
 /* charsets.c */
@@ -860,6 +876,10 @@ extern void fillPtyData (TScreen *screen, PtyData *data, char *value, int length
 extern void initPtyData (PtyData **data);
 extern void trimPtyData (TScreen *screen, PtyData *data);
 
+#ifdef NO_LEAKS
+extern void noleaks_ptydata (void);
+#endif
+
 #if OPT_WIDE_CHARS
 extern Bool morePtyData (TScreen *screen, PtyData *data);
 extern Char *convertToUTF8 (Char *lp, unsigned c);
@@ -893,15 +913,15 @@ extern void ScrnDisownSelection (TScreen *screen);
 extern void xtermParseRect (TScreen *, int, int *, XTermRect *);
 
 #define ScrnClrFlag(screen, row, flag) \
-	SCRN_BUF_FLAGS(screen, row + screen->topline) = \
-		(Char *)((long)SCRN_BUF_FLAGS(screen, row + screen->topline) & ~ (flag))
+	SCRN_BUF_FLAGS(screen, ROW2INX(screen, row)) = \
+		(Char *)((long)SCRN_BUF_FLAGS(screen, ROW2INX(screen, row)) & ~ (flag))
 
 #define ScrnSetFlag(screen, row, flag) \
-	SCRN_BUF_FLAGS(screen, row + screen->topline) = \
-		(Char *)(((long)SCRN_BUF_FLAGS(screen, row + screen->topline) | (flag)))
+	SCRN_BUF_FLAGS(screen, ROW2INX(screen, row)) = \
+		(Char *)(((long)SCRN_BUF_FLAGS(screen, ROW2INX(screen, row)) | (flag)))
 
 #define ScrnTstFlag(screen, row, flag) \
-	((row + screen->savelines + screen->topline) >= 0 && ((long)SCRN_BUF_FLAGS(screen, row + screen->topline) & (flag)) != 0)
+	(ROW2INX(screen, row + screen->savelines) >= 0 && ((long)SCRN_BUF_FLAGS(screen, ROW2INX(screen, row)) & (flag)) != 0)
 
 #define ScrnClrBlinked(screen, row) ScrnClrFlag(screen, row, BLINK)
 #define ScrnSetBlinked(screen, row) ScrnSetFlag(screen, row, BLINK)
@@ -912,14 +932,14 @@ extern void xtermParseRect (TScreen *, int, int *, XTermRect *);
 #define ScrnTstWrapped(screen, row) ScrnTstFlag(screen, row, LINEWRAPPED)
 
 #define ScrnHaveSelection(screen) \
-			((screen)->startHRow != (screen)->endHRow \
-			|| (screen)->startHCol != (screen)->endHCol)
+			((screen)->startH.row != (screen)->endH.row \
+			|| (screen)->startH.col != (screen)->endH.col)
 
 #define ScrnAreLinesInSelection(screen, first, last) \
-	((last) >= (screen)->startHRow && (first) <= (screen)->endHRow)
+	((last) >= (screen)->startH.row && (first) <= (screen)->endH.row)
 
 #define ScrnIsLineInSelection(screen, line) \
-	((line) >= (screen)->startHRow && (line) <= (screen)->endHRow)
+	((line) >= (screen)->startH.row && (line) <= (screen)->endH.row)
 
 #define ScrnHaveLineMargins(screen) \
 			((screen)->top_marg != 0 \
@@ -1075,6 +1095,10 @@ extern Pixel xtermGetColorRes(ColorRes *res);
 #else
 #define curXtermChrSet(row) 0
 #endif
+
+#define XTERM_CELL(row,col)    getXtermCell(screen,      ROW2INX(screen, row), col)
+#define XTERM_CELL_C1(row,col) getXtermCellComb1(screen, ROW2INX(screen, row), col)
+#define XTERM_CELL_C2(row,col) getXtermCellComb2(screen, ROW2INX(screen, row), col)
 
 extern unsigned getXtermCell (TScreen *screen, int row, int col);
 extern void putXtermCell (TScreen *screen, int row, int col, int ch);

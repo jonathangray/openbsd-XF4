@@ -1,10 +1,10 @@
-dnl $XTermId: configure.in,v 1.197 2005/11/03 13:17:27 tom Exp $
+dnl $XTermId: configure.in,v 1.208 2006/03/13 01:27:59 tom Exp $
 dnl
-dnl $XFree86: xc/programs/xterm/configure.in,v 3.72 2005/11/03 13:17:27 dickey Exp $
+dnl $XFree86: xc/programs/xterm/configure.in,v 3.75 2006/03/13 01:27:59 dickey Exp $
 dnl
 dnl ---------------------------------------------------------------------------
 dnl
-dnl Copyright 1997-2004,2005 by Thomas E. Dickey
+dnl Copyright 1997-2005,2006 by Thomas E. Dickey
 dnl
 dnl                         All Rights Reserved
 dnl
@@ -28,7 +28,7 @@ dnl
 dnl ---------------------------------------------------------------------------
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.13.20020210)
+AC_PREREQ(2.13.20030927)
 AC_INIT(charproc.c)
 AC_CONFIG_HEADER(xtermcfg.h:xtermcfg.hin)
 CF_CHECK_CACHE
@@ -99,6 +99,7 @@ AC_CHECK_FUNCS( \
 	wcwidth )
 CF_FUNC_MEMMOVE
 CF_UTMP
+CF_STRUCT_LASTLOG
 
 CF_HELP_MESSAGE(Compile/Install Options:)
 CF_FUNC_TGETENT
@@ -111,6 +112,10 @@ CF_WITH_PATH(app-defaults,
 AC_MSG_RESULT($appsdir)
 AC_SUBST(appsdir)
 
+no_appsdir=
+test "$appsdir" = no && no_appsdir="#"
+AC_SUBST(no_appsdir)
+
 # inherit SINSTALL_OPTS from environment to allow packager to customize it.
 
 AC_MSG_CHECKING(for install-permissions reference)
@@ -120,7 +125,28 @@ AC_ARG_WITH(reference,
 	[with_reference=xterm])
 AC_MSG_RESULT($with_reference)
 
+with_full_paths=yes
 CF_PATH_PROG(XTERM_PATH,$with_reference)
+
+# If any of --program-prefix, --program-suffix or --program-transform-name is
+# given, accept an option tell the makefile to create a symbolic link, e.g.,
+# to "xterm" on install.
+XTERM_SYMLINK=NONE
+AC_SUBST(XTERM_SYMLINK)
+if test "$program_transform_name" != "'s,,,'" ; then
+cf_name=`echo "$program_transform_name" | sed -e '[s,\\$\\$,$,g]'`
+cf_name=`echo xterm |sed -e "$cf_name"`
+AC_MSG_CHECKING(for symbolic link to create to $cf_name)
+AC_ARG_WITH(xterm-symlink,
+	[  --with-xterm-symlink=XXX make symbolic link to installed xterm],
+	[with_symlink=$withval],
+	[with_symlink=xterm])
+AC_MSG_RESULT($with_symlink)
+test -n "$with_symlink" && \
+	test "$with_symlink" != no && \
+	test "$with_symlink" != $cf_name && \
+	XTERM_SYMLINK="$with_symlink"
+fi
 
 AC_MSG_CHECKING(if you want to disable setuid)
 CF_ARG_DISABLE(setuid,
@@ -570,6 +596,23 @@ if test "$enable_readline_mouse" = yes ; then
 	AC_DEFINE(OPT_READLINE,1)
 fi
 
+AC_MSG_CHECKING(if you want support for regular-expression selections)
+CF_ARG_DISABLE(regex,
+	[  --disable-regex         disable regular-expression selections],
+	[enable_regex=no],
+	[enable_regex=yes])
+AC_MSG_RESULT($enable_regex)
+if test "$enable_regex" = yes ; then
+	CF_WITH_PCRE
+	if test "$with_pcre" = no ; then
+		CF_REGEX
+		if test "X$cf_cv_regex" != "Xregex.h" ; then
+			AC_MSG_ERROR(Only POSIX or PCRE regular expressions are supported)
+		fi
+	fi
+	AC_DEFINE(OPT_SELECT_REGEX)
+fi
+
 AC_MSG_CHECKING(if you want support for right-scrollbar)
 CF_ARG_DISABLE(rightbar,
 	[  --disable-rightbar      disable right-scrollbar support],
@@ -654,6 +697,7 @@ CF_ARG_ENABLE(luit,
 AC_MSG_RESULT($enable_luit)
 if test "$enable_luit" = yes ; then
 	AC_DEFINE(OPT_LUIT_PROG,1)
+	CF_PATH_PROG(LUIT,luit)
 fi
 
 AC_MSG_CHECKING(if you want wide-character support)
@@ -711,6 +755,16 @@ if test "$enable_trace" = yes ; then
 	AC_DEFINE(OPT_TRACE)
 	EXTRASRCS="$EXTRASRCS trace.c"
 	EXTRAOBJS="$EXTRAOBJS trace.o"
+fi
+
+AC_MSG_CHECKING(if you want to test memory leaks)
+CF_ARG_DISABLE(leaks,
+	[  --disable-leaks         test: set to test memory leaks],
+	[disable_leaks=yes],
+	[disable_leaks=no])
+AC_MSG_RESULT($disable_leaks)
+if test "$disable_leaks" = yes ; then
+	AC_DEFINE(NO_LEAKS)
 fi
 
 CF_DISABLE_ECHO

@@ -1,11 +1,11 @@
 ! $Xorg: XTerm.ad,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
-! $OpenBSD: XTerm.ad,v 1.15 2005/11/25 07:16:06 matthieu Exp $
+! $OpenBSD: XTerm.ad,v 1.16 2006/04/07 06:43:53 matthieu Exp $
 !
 !
 !
 !
-! $XTermId: XTerm.ad,v 1.69 2005/11/03 13:17:27 tom Exp $
-! $XFree86: xc/programs/xterm/XTerm.ad,v 3.32 2005/11/03 13:17:27 dickey Exp $
+! $XTermId: XTerm.ad,v 1.78 2006/03/13 01:27:57 tom Exp $
+! $XFree86: xc/programs/xterm/XTerm.ad,v 3.36 2006/03/13 01:27:57 dickey Exp $
 
 *scrollBar: true
 *saveLines: 1024
@@ -57,6 +57,7 @@
 *vtMenu*scrollkey*Label:  Scroll to Bottom on Key Press
 *vtMenu*scrollttyoutput*Label:  Scroll to Bottom on Tty Output
 *vtMenu*allow132*Label: Allow 80/132 Column Switching
+*vtMenu*selectToClipboard*Label: Select to Clipboard
 *vtMenu*cursesemul*Label:  Enable Curses Emulation
 *vtMenu*visualbell*Label:  Enable Visual Bell
 *vtMenu*poponbell*Label:  Enable Pop on Bell
@@ -95,6 +96,7 @@
 *fontMenu*font-loadable*Label:	VT220 Soft Fonts
 *fontMenu*render-font*Label:	TrueType Fonts
 *fontMenu*utf8-mode*Label:	UTF-8
+*fontMenu*utf8-title*Label:	UTF-8 Titles
 
 *VT100.utf8Fonts.font2:	-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso10646-1
 *VT100.utf8Fonts.font:	-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1
@@ -209,3 +211,9 @@
 ! Set a border for the menus to make them simpler to distinguish against the
 ! vt100 widget:
 *SimpleMenu*borderWidth: 2
+
+! Here is a pattern that is useful for double-clicking on a URL:
+!*charClass: 33:48,35:48,37-38:48,43-47:48,58:48,61:48,63-64:48,126:48
+!
+! Alternatively,
+!*on2Clicks: regex [[:alpha:]]+://([[:alnum:]!#+,./=?@~-]|(%[[:xdigit:]][[:xdigit:]]))+

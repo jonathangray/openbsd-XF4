@@ -1,13 +1,9 @@
-/* $XTermId: ptyx.h,v 1.390 2005/11/03 13:17:28 tom Exp $ */
+/* $XTermId: ptyx.h,v 1.419 2006/03/20 00:36:19 tom Exp $ */
+
+/* $XFree86: xc/programs/xterm/ptyx.h,v 3.132 2006/03/20 00:36:19 dickey Exp $ */
 
 /*
- *	$Xorg: ptyx.h,v 1.3 2000/08/17 19:55:09 cpqbld Exp $
- */
-
-/* $XFree86: xc/programs/xterm/ptyx.h,v 3.127 2005/11/03 13:17:28 dickey Exp $ */
-
-/*
- * Copyright 1999-2004,2005 by Thomas E. Dickey
+ * Copyright 1999-2005,2006 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *
@@ -151,9 +147,7 @@
 #elif defined(__OpenBSD__)
 #undef USE_PTY_SEARCH
 #undef USE_PTY_DEVICE
-#endif
-
-#ifdef __OpenBSD__
+#elif (defined(sun) && defined(SVR4)) || defined(_ALL_SOURCE) || defined(__CYGWIN__)
 #undef USE_PTY_SEARCH
 #endif
 
@@ -269,7 +263,11 @@
 /* Until the translation manager comes along, I have to do my own translation of
  * mouse events into the proper routines. */
 
-typedef enum {NORMAL, LEFTEXTENSION, RIGHTEXTENSION} EventMode;
+typedef enum {
+    NORMAL
+    , LEFTEXTENSION
+    , RIGHTEXTENSION
+} EventMode;
 
 /*
  * The origin of a screen is 0, 0.  Therefore, the number of rows
@@ -283,6 +281,15 @@ typedef Char *ScrnPtr;
 typedef ScrnPtr *ScrnBuf;
 
 #define CharOf(n) ((unsigned char)(n))
+
+typedef struct {
+    int row;
+    int col;
+} CELL;
+
+#define isSameRow(a,b)		((a)->row == (b)->row)
+#define isSameCol(a,b)		((a)->col == (b)->col)
+#define isSameCELL(a,b)		(isSameRow(a,b) && isSameCol(a,b))
 
 /*
  * ANSI emulation, special character codes
@@ -577,6 +584,10 @@ typedef struct {
 #define OPT_SCO_FUNC_KEYS 0 /* true if xterm supports SCO-style function keys */
 #endif
 
+#ifndef OPT_SELECT_REGEX
+#define OPT_SELECT_REGEX 0 /* true if xterm supports regular-expression selects */
+#endif
+
 #ifndef OPT_SESSION_MGT
 #if defined(XtNdieCallback) && defined(XtNsaveCallback)
 #define OPT_SESSION_MGT 1
@@ -687,11 +698,11 @@ typedef struct {
  * Indices for menu_font_names[][]
  */
 typedef enum {
-    fNorm = 0
-    , fBold
+    fNorm = 0			/* normal font */
+    , fBold			/* bold font */
 #if OPT_WIDE_CHARS
-    , fWide
-    , fWBold
+    , fWide			/* double-width font */
+    , fWBold			/* double-width bold font */
 #endif
     , fMAX
 } VTFontEnum;
@@ -715,6 +726,20 @@ typedef enum {
 #endif
     , NCOLORS			/* total number of colors */
 } TermColors;
+
+/* indices for mapping multiple clicks to selection types */
+typedef enum {
+    Select_CHAR=0
+    ,Select_WORD
+    ,Select_LINE
+    ,Select_GROUP
+    ,Select_PAGE
+    ,Select_ALL
+#if OPT_SELECT_REGEX
+    ,Select_REGEX
+#endif
+    ,NSELECTUNITS
+} SelectUnit;
 
 #define	COLOR_DEFINED(s,w)	((s)->which & (1<<(w)))
 #define	COLOR_VALUE(s,w)	((s)->colors[w])
@@ -827,6 +852,10 @@ typedef enum {
 #define COLOR_RES2(name,class,offset,value) Cres(name, class, offset, value)
 #endif
 
+#define CLICK_RES_NAME(count)  "on" count "Clicks"
+#define CLICK_RES_CLASS(count) "On" count "Clicks"
+#define CLICK_RES(count,offset,value) Sres(CLICK_RES_NAME(count), CLICK_RES_CLASS(count), offset, value)
+
 /***====================================================================***/
 
 #if OPT_DEC_CHRSET
@@ -922,7 +951,7 @@ extern int A2E(int);
 #if OPT_XMC_GLITCH
 #define if_OPT_XMC_GLITCH(screen, code) if(screen->xmc_glitch) code
 #define XMC_GLITCH 1	/* the character we'll show */
-#define XMC_FLAGS (INVERSE|UNDERLINE|BOLD)
+#define XMC_FLAGS (INVERSE|UNDERLINE|BOLD|BLINK)
 #else
 #define if_OPT_XMC_GLITCH(screen, code) /* nothing */
 #endif
@@ -991,6 +1020,8 @@ typedef struct {
 #if OPT_WIDE_CHARS
 	IChar	utf_data;	/* resulting character */
 	int	utf_size;	/* ...number of bytes decoded */
+	Char	*write_buf;
+	unsigned write_len;
 #endif
 	Char	buffer[1];
 } PtyData;
@@ -1021,6 +1052,13 @@ typedef enum {
 	, OFF_COM2H
 #endif
 } BufOffsets;
+
+	/*
+	 * A "row" is the index within the visible part of the screen, and an
+	 * "inx" is the index within the whole set of scrollable lines.
+	 */
+#define ROW2INX(screen, row)	((row) + (screen)->topline)
+#define INX2ROW(screen, inx)	((inx) - (screen)->topline)
 
 	/* ScrnBuf-level macros */
 #define BUF_FLAGS(buf, row) (buf[MAX_PTRS * (row) + OFF_FLAGS])
@@ -1147,6 +1185,8 @@ typedef struct {
 #endif
 } SavedCursor;
 
+#define SAVED_CURSORS 2
+
 typedef struct {
 	int		width;		/* if > 0, width of scrollbar,	*/
 					/* and scrollbar is showing	*/
@@ -1240,12 +1280,15 @@ typedef struct {
 	Boolean		vt100_graphics;	/* true to allow vt100-graphics	*/
 	Boolean		utf8_inparse;	/* true to enable UTF-8 parser	*/
 	int		utf8_mode;	/* use UTF-8 decode/encode: 0-2	*/
+	Boolean		utf8_title;	/* use UTF-8 titles		*/
 	int		latin9_mode;	/* poor man's luit, latin9	*/
 	int		unicode_font;	/* font uses unicode encoding	*/
 	int		utf_count;	/* state of utf_char		*/
 	IChar		utf_char;	/* in-progress character	*/
 	int		last_written_col;
 	int		last_written_row;
+	XChar2b		*draw_buf;	/* drawXtermText() data		*/
+	Cardinal	draw_len;	/* " " "			*/
 #endif
 #if OPT_BROKEN_OSC
 	Boolean		brokenLinuxOSC; /* true to ignore Linux palette ctls */
@@ -1264,6 +1307,7 @@ typedef struct {
 					/* and position information	*/
 #if OPT_PASTE64
 	int		base64_paste;	/* set to send paste in base64	*/
+	int		base64_final;	/* string-terminator for paste	*/
 	/* _qWriteSelectionData expects these to be initialized to zero. 
 	 * base64_flush() is the last step of the conversion, it clears these
 	 * variables.
@@ -1338,13 +1382,8 @@ typedef struct {
 #endif
 	Dimension	fnt_wide;
 	Dimension	fnt_high;
-	XFontStruct	*fnt_norm;	/* normal font of terminal	*/
-	XFontStruct	*fnt_bold;	/* bold font of terminal	*/
+	XFontStruct	*fnts[fMAX];	/* normal/bold/etc for terminal	*/
 	Boolean		free_bold_box;	/* same_font_size's austerity	*/
-#if OPT_WIDE_CHARS
-	XFontStruct	*fnt_dwd;	/* wide font of terminal	*/
-	XFontStruct	*fnt_dwdb;	/* wide bold font of terminal	*/
-#endif
 #ifndef NO_ACTIVE_ICON
 	XFontStruct	*fnt_icon;	/* icon font */
 #endif /* NO_ACTIVE_ICON */
@@ -1369,9 +1408,7 @@ typedef struct {
 #endif
 	int		cursor_GC;	/* see ShowCursor()		*/
 	int		cursor_set;	/* requested state		*/
-	int		cursor_col;	/* previous cursor column	*/
-	int		cursor_row;	/* previous cursor row		*/
-	Boolean		cursor_moved;	/* scrolling makes cursor move	*/
+	CELL		cursorp;	/* previous cursor row/column	*/
 	int		cur_col;	/* current cursor column	*/
 	int		cur_row;	/* current cursor row		*/
 	int		max_col;	/* rightmost column		*/
@@ -1379,24 +1416,46 @@ typedef struct {
 	int		top_marg;	/* top line of scrolling region */
 	int		bot_marg;	/* bottom line of  "	    "	*/
 	Widget		scrollWidget;	/* pointer to scrollbar struct	*/
+	/*
+	 * Indices used to keep track of the top of the vt100 window and
+	 * the saved lines, taking scrolling into account.
+	 */
 	int		topline;	/* line number of top, <= 0	*/
 	int		savedlines;     /* number of lines that've been saved */
 	int		savelines;	/* number of lines off top to save */
-	int		scrolllines;	/* number of lines to button scroll */
-	Boolean		scrollttyoutput; /* scroll to bottom on tty output */
-	Boolean		scrollkey;	/* scroll to bottom on key	*/
-
+	int		scroll_amt;	/* amount to scroll		*/
+	int		refresh_amt;	/* amount to refresh		*/
+	/*
+	 * Pointer to the current visible buffer, e.g., allbuf or altbuf.
+	 */
 	ScrnBuf		visbuf;		/* ptr to visible screen buf (main) */
+	/*
+	 * Data for the normal buffer, which may have saved lines to which
+	 * the user can scroll.
+	 */
 	ScrnBuf		allbuf;		/* screen buffer (may include
 					   lines scrolled off top)	*/
 	Char		*sbuf_address;	/* main screen memory address   */
+	/*
+	 * Data for the alternate buffer.
+	 */
 	ScrnBuf		altbuf;		/* alternate screen buffer	*/
 	Char		*abuf_address;	/* alternate screen memory address */
+	Boolean		alternate;	/* true if using alternate buf	*/
+	/*
+	 * Workspace used for screen operations.
+	 */
 	Char		**save_ptr;	/* workspace for save-pointers  */
 	size_t		save_len;	/* ...and its length		*/
-	Boolean		alternate;	/* true if using alternate buf	*/
+
+	int		scrolllines;	/* number of lines to button scroll */
+	Boolean		scrollttyoutput; /* scroll to bottom on tty output */
+	Boolean		scrollkey;	/* scroll to bottom on key	*/
+	Boolean		cursor_moved;	/* scrolling makes cursor move	*/
+
 	unsigned short	do_wrap;	/* true if cursor in last column
 					    and character just output    */
+
 	int		incopy;		/* 0 idle; 1 XCopyArea issued;
 					    -1 first GraphicsExpose seen,
 					    but last not seen		*/
@@ -1406,6 +1465,7 @@ typedef struct {
 	unsigned int	copy_height;
 	int		copy_dest_x;
 	int		copy_dest_y;
+
 	Boolean		c132;		/* allow change to 132 columns	*/
 	Boolean		curses;		/* kludge line wrap for more	*/
 	Boolean		hp_ll_bc;	/* kludge HP-style ll for xdb	*/
@@ -1415,7 +1475,7 @@ typedef struct {
 	Boolean		multiscroll;	/* true if multi-scroll		*/
 	int		scrolls;	/* outstanding scroll count,
 					    used only with multiscroll	*/
-	SavedCursor	sc[2];		/* data for restore cursor	*/
+	SavedCursor	sc[SAVED_CURSORS]; /* data for restore cursor	*/
 	unsigned char	save_modes[DP_LAST]; /* save dec/xterm private modes */
 
 	/* Improved VT100 emulation stuff.				*/
@@ -1428,8 +1488,6 @@ typedef struct {
 	int		terminal_id;	/* 100=vt100, 220=vt220, etc.	*/
 	int		vtXX_level;	/* 0=vt52, 1,2,3 = vt100 ... vt320 */
 	int		ansi_level;	/* levels 1,2,3			*/
-	int		scroll_amt;	/* amount to scroll		*/
-	int		refresh_amt;	/* amount to refresh		*/
 	int		protected_mode;	/* 0=off, 1=DEC, 2=ISO		*/
 	Boolean		old_fkeys;	/* true for compatible fkeys	*/
 	Boolean		delete_is_del;	/* true for compatible Delete key */
@@ -1486,10 +1544,25 @@ typedef struct {
 	int		gin_terminator; /* Tek strap option */
 #endif /* OPT_TEK4014 */
 
-	int		multiClickTime;	 /* time between multiclick selects */
+	/*
+	 * Bell
+	 */
 	int		visualBellDelay; /* msecs to delay for visibleBell */
 	int		bellSuppressTime; /* msecs after Bell before another allowed */
 	Boolean		bellInProgress; /* still ringing/flashing prev bell? */
+	/*
+	 * Select/paste state.
+	 */
+	Boolean		selectToClipboard; /* primary vs clipboard */
+	String		*mappedSelect;	/* mapping for "SELECT" to "PRIMARY" */
+
+	int		numberOfClicks;
+	int		maxClicks;
+	int		multiClickTime;	/* time between multiclick selects */
+	SelectUnit	selectUnit;
+	SelectUnit	selectMap[NSELECTUNITS];
+	String		onClick[NSELECTUNITS + 1];
+
 	char		*charClass;	/* for overriding word selection */
 	Boolean		cutNewline;	/* whether or not line cut has \n */
 	Boolean		cutToBeginningOfLine;  /* line cuts to BOL? */
@@ -1497,21 +1570,46 @@ typedef struct {
 	Boolean		trim_selection; /* controls trimming of selection */
 	Boolean		i18nSelections;
 	Boolean		brokenSelections;
+	Boolean		replyToEmacs;	/* Send emacs escape code when done selecting or extending? */
 	Char		*selection_data; /* the current selection */
 	int		selection_size; /* size of allocated buffer */
 	int		selection_length; /* number of significant bytes */
 	Time		selection_time;	/* latest event timestamp */
-	int		startHRow, startHCol, /* highlighted text */
-			endHRow, endHCol,
-			startHCoord, endHCoord;
+	Time		lastButtonUpTime;
+
+	CELL		rawPos;		/* raw position for selection start */
+	CELL		startRaw;	/* area before selectUnit processing */
+	CELL		endRaw;		/* " " */
+	CELL		startSel;	/* area after selectUnit processing */
+	CELL		endSel;		/* " " */
+	CELL		startH;		/* start highlighted text */
+	CELL		endH;		/* end highlighted text */
+	CELL		saveStartW;	/* saved WORD state, for LINE */
+	CELL		startExt;	/* Start, end of extension */
+	CELL		endExt;		/* " " */
+	CELL		saveStartR;	/* Saved values of raw selection for extend to restore to */
+	CELL		saveEndR;	/* " " */
+	int		startHCoord, endHCoord;
+	int		firstValidRow;	/* Valid rows for selection clipping */
+	int		lastValidRow;	/* " " */
+
 	Atom*		selection_atoms; /* which selections we own */
 	Cardinal	sel_atoms_size;	/*  how many atoms allocated */
 	Cardinal	selection_count; /* how many atoms in use */
+#if OPT_SELECT_REGEX
+	char *		selectExpr[NSELECTUNITS];
+#endif
+	/*
+	 * Input/output state.
+	 */
 	Boolean		input_eight_bits;/* use 8th bit instead of ESC prefix */
 	Boolean		output_eight_bits; /* honor all bits or strip */
 	Boolean		control_eight_bits; /* send CSI as 8-bits */
 	Boolean		backarrow_key;		/* backspace/delete */
 	Boolean		meta_sends_esc;		/* Meta-key sends ESC prefix */
+	/*
+	 * Fonts
+	 */
 	Pixmap		menu_item_bitmap;	/* mask for checking items */
 	String		menu_font_names[NMENUFONTS][fMAX];
 #define MenuFontName(n) menu_font_names[n][fNorm]
@@ -1762,6 +1860,8 @@ typedef struct _XtermWidgetRec {
     unsigned	initflags;	/* initial mode flags		*/
     Tabs	tabs;		/* tabstops of the terminal	*/
     Misc	misc;		/* miscellaneous parameters	*/
+    Bool	init_vt_menu;
+    Bool	init_tek_menu;
 } XtermWidgetRec, *XtermWidget;
 
 #if OPT_TEK4014
@@ -1863,11 +1963,11 @@ typedef struct _TekWidgetRec {
 
 #define CursorMoved(screen) \
 		((screen)->cursor_moved || \
-		    ((screen)->cursor_col != (screen)->cur_col || \
-		     (screen)->cursor_row != (screen)->cur_row))
+		    ((screen)->cursorp.col != (screen)->cur_col || \
+		     (screen)->cursorp.row != (screen)->cur_row))
 
 #define CursorX(screen,col) ((col) * FontWidth(screen) + OriginX(screen))
-#define CursorY(screen,row) ((((row) - screen->topline) * FontHeight(screen)) \
+#define CursorY(screen,row) ((INX2ROW(screen, row) * FontHeight(screen)) \
 			+ screen->border)
 
 /*
@@ -1918,8 +2018,8 @@ typedef struct _TekWidgetRec {
 #define FontWidth(screen)	WhichVWin(screen)->f_width
 #define FontHeight(screen)	WhichVWin(screen)->f_height
 
-#define NormalFont(screen)	WhichVFont(screen, fnt_norm)
-#define BoldFont(screen)	WhichVFont(screen, fnt_bold)
+#define NormalFont(screen)	WhichVFont(screen, fnts[fNorm])
+#define BoldFont(screen)	WhichVFont(screen, fnts[fBold])
 
 #define ScrollbarWidth(screen)	WhichVWin(screen)->sb_info.width
 #define NormalGC(screen)	WhichVWin(screen)->normalGC

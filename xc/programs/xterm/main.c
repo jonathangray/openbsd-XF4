@@ -1,8 +1,4 @@
-/* $XTermId: main.c,v 1.477 2005/11/13 23:10:36 tom Exp $ */
-
-#if !defined(lint) && 0
-static char *rid = "$Xorg: main.c,v 1.7 2001/02/09 02:06:02 xorgcvs Exp $";
-#endif /* lint */
+/* $XTermId: main.c,v 1.495 2006/03/20 00:36:19 tom Exp $ */
 
 /*
  *				 W A R N I N G
@@ -19,7 +15,7 @@ static char *rid = "$Xorg: main.c,v 1.7 2001/02/09 02:06:02 xorgcvs Exp $";
 
 /***********************************************************
 
-Copyright 2002-2004,2005 by Thomas E. Dickey
+Copyright 2002-2005,2006 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -91,7 +87,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-/* $XFree86: xc/programs/xterm/main.c,v 3.199 2005/11/13 23:10:36 dickey Exp $ */
+/* $XFree86: xc/programs/xterm/main.c,v 3.209 2006/03/20 00:36:19 dickey Exp $ */
 
 /* main.c */
 
@@ -175,7 +171,6 @@ static Bool IsPts = False;
 #endif
 
 #ifdef __CYGWIN__
-#define LASTLOG
 #define WTMP
 #endif
 
@@ -383,7 +378,7 @@ extern struct utmp *getutid __((struct utmp * _Id));
 #endif
 
 #if defined(USE_LASTLOG) && defined(HAVE_LASTLOG_H)
-#include <lastlog.h>		/* caution: glibc 2.3.5 includes utmp.h here */
+#include <lastlog.h>		/* caution: glibc includes utmp.h here */
 #endif
 
 #ifndef USE_LASTLOGX
@@ -459,7 +454,7 @@ extern void sleep();
 extern char *ttyname();
 #endif
 
-#ifdef SYSV
+#if defined(SYSV) && defined(DECL_PTSNAME)
 extern char *ptsname(int);
 #endif
 
@@ -701,8 +696,10 @@ static char etc_utmp[] = UTMP_FILENAME;
 #endif /* USE_SYSV_UTMP */
 
 #ifndef USE_UTEMPTER
-#ifdef USE_LASTLOG
+#if defined(USE_LASTLOG) && defined(USE_STRUCT_LASTLOG)
 static char etc_lastlog[] = LASTLOG_FILENAME;
+#else
+#undef USE_LASTLOG
 #endif
 
 #ifdef WTMP
@@ -1597,6 +1594,7 @@ int
 main(int argc, char *argv[]ENVP_ARG)
 {
     Widget form_top, menu_top;
+    Dimension menu_high;
     TScreen *screen;
     int mode;
     char *my_class = DEFCLASS;
@@ -2123,7 +2121,7 @@ main(int argc, char *argv[]ENVP_ARG)
 	break;
     }
 
-    SetupMenus(toplevel, &form_top, &menu_top);
+    SetupMenus(toplevel, &form_top, &menu_top, &menu_high);
 
     term = (XtermWidget) XtVaCreateManagedWidget("vt100", xtermWidgetClass,
 						 form_top,
@@ -2135,6 +2133,7 @@ main(int argc, char *argv[]ENVP_ARG)
 						 XtNright, XawChainRight,
 						 XtNtop, XawChainTop,
 						 XtNbottom, XawChainBottom,
+						 XtNmenuHeight, menu_high,
 #endif
 						 (XtPointer) 0);
     decode_keyboard_type(&resource);
@@ -2830,8 +2829,10 @@ set_owner(char *device, uid_t uid, gid_t gid, mode_t mode)
 			strerror(why));
 	    } else if (mode != (sb.st_mode & 0777U)) {
 		fprintf(stderr,
-			"Cannot chmod %s to %03o currently %03o: %s\n",
-			device, (unsigned) mode, (sb.st_mode & 0777U),
+			"Cannot chmod %s to %03lo currently %03lo: %s\n",
+			device,
+			(unsigned long) mode,
+			(unsigned long) (sb.st_mode & 0777U),
 			strerror(why));
 		TRACE(("...stat uid=%d, gid=%d, mode=%#o\n",
 		       sb.st_uid, sb.st_gid, sb.st_mode));
@@ -3133,7 +3134,7 @@ spawn(void)
     }
 
     /* avoid double MapWindow requests */
-    XtSetMappedWhenManaged(XtParent(CURRENT_EMU(screen)), False);
+    XtSetMappedWhenManaged(SHELL_OF(CURRENT_EMU(screen)), False);
 
     wm_delete_window = XInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW",
 				   False);
@@ -3149,7 +3150,7 @@ spawn(void)
 	XmuGetHostname(mit_console_name + MIT_CONSOLE_LEN, 255);
 	mit_console = XInternAtom(screen->display, mit_console_name, False);
 	/* the user told us to be the console, so we can use CurrentTime */
-	XtOwnSelection(XtParent(CURRENT_EMU(screen)),
+	XtOwnSelection(SHELL_OF(CURRENT_EMU(screen)),
 		       mit_console, CurrentTime,
 		       ConvertConsoleSelection, NULL, NULL);
     }
@@ -3414,6 +3415,10 @@ spawn(void)
 #if defined(CRAY) && defined(TCSETCTTY)
 			    /* make /dev/tty work */
 			    ioctl(ttyfd, TCSETCTTY, 0);
+#endif
+#if defined(__GNU__) && defined(TIOCSCTTY)
+			    /* make /dev/tty work */
+			    ioctl(ttyfd, TIOCSCTTY, 0);
 #endif
 #ifdef USE_SYSV_PGRP
 			    /* We need to make sure that we are actually
@@ -4109,7 +4114,8 @@ spawn(void)
 #endif
 
 #ifdef USE_LASTLOG
-	    if (term->misc.login_shell &&
+	    if (sizeof(lastlog.ll_time) == sizeof(time_t) &&	/* !Solaris */
+		term->misc.login_shell &&
 		(i = open(etc_lastlog, O_WRONLY)) >= 0) {
 		bzero((char *) &lastlog, sizeof(struct lastlog));
 		(void) strncpy(lastlog.ll_line,
@@ -4591,29 +4597,24 @@ Exit(int n)
 	set_owner(ptydev, 0, 0, 0666U);
 #endif
     }
-#if OPT_TRACE || defined(NO_LEAKS)
+#ifdef NO_LEAKS
     if (n == 0) {
 	TRACE(("Freeing memory leaks\n"));
 	if (term != 0) {
 	    Display *dpy = term->screen.display;
 
-	    if (term->screen.sbuf_address) {
-		free(term->screen.sbuf_address);
-		TRACE(("freed screen.sbuf_address\n"));
-	    }
-	    if (term->screen.allbuf) {
-		free(term->screen.allbuf);
-		TRACE(("freed screen.allbuf\n"));
-	    }
-	    if (term->screen.xim) {
-		XCloseIM(term->screen.xim);
-		TRACE(("freed screen.xim\n"));
-	    }
 	    if (toplevel) {
 		XtDestroyWidget(toplevel);
 		TRACE(("destroyed top-level widget\n"));
 	    }
+	    sortedOpts(0, 0, 0);
+	    noleaks_charproc();
+	    noleaks_ptydata();
+#if OPT_WIDE_CHARS
+	    noleaks_CharacterClass();
+#endif
 	    XtCloseDisplay(dpy);
+	    XtDestroyApplicationContext(app_con);
 	    TRACE(("closed display\n"));
 	}
 	TRACE((0));

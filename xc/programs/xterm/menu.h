@@ -1,9 +1,8 @@
-/* $XTermId: menu.h,v 1.96 2005/11/03 13:17:28 tom Exp $ */
+/* $XTermId: menu.h,v 1.104 2006/03/13 01:27:59 tom Exp $ */
 
-/* $Xorg: menu.h,v 1.4 2001/02/09 02:06:03 xorgcvs Exp $ */
 /*
 
-Copyright 1999-2004,2005 by Thomas E. Dickey
+Copyright 1999-2005,2006 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -50,7 +49,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xterm/menu.h,v 3.38 2005/11/03 13:17:28 dickey Exp $ */
+/* $XFree86: xc/programs/xterm/menu.h,v 3.41 2006/03/13 01:27:59 dickey Exp $ */
 
 #ifndef included_menu_h
 #define included_menu_h
@@ -107,8 +106,10 @@ extern void HandleScoFunctionKeys  PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollKey        PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollTtyOutput  PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollbar        PROTO_XT_ACTIONS_ARGS;
+extern void HandleSecure           PROTO_XT_ACTIONS_ARGS;
 extern void HandleSendSignal       PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetPopOnBell     PROTO_XT_ACTIONS_ARGS;
+extern void HandleSetSelect        PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetTekText       PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetTerminalType  PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetVisualBell    PROTO_XT_ACTIONS_ARGS;
@@ -121,10 +122,10 @@ extern void HandleTekReset         PROTO_XT_ACTIONS_ARGS;
 extern void HandleTiteInhibit      PROTO_XT_ACTIONS_ARGS;
 extern void HandleToolbar          PROTO_XT_ACTIONS_ARGS;
 extern void HandleUTF8Mode         PROTO_XT_ACTIONS_ARGS;
+extern void HandleUTF8Title        PROTO_XT_ACTIONS_ARGS;
 extern void HandleVisibility       PROTO_XT_ACTIONS_ARGS;
 
-extern void DoSecureKeyboard (Time tp);
-extern void SetupMenus (Widget shell, Widget *forms, Widget *menus);
+extern void SetupMenus (Widget /*shell*/, Widget */*forms*/, Widget */*menus*/, Dimension * /*menu_high*/);
 
 #if OPT_TOOLBAR
 extern void ShowToolbar(Bool);
@@ -199,7 +200,7 @@ typedef enum {
     vtMenu_scrollkey,
     vtMenu_scrollttyoutput,
     vtMenu_allow132,
-    vtMenu_cursesemul,
+    vtMenu_selectToClipboard,
     vtMenu_visualbell,
     vtMenu_poponbell,
     vtMenu_marginbell,
@@ -260,6 +261,7 @@ typedef enum {
 #endif
 #if OPT_WIDE_CHARS
     fontMenu_wide_chars,
+    fontMenu_wide_title,
 #endif
 #endif
 
@@ -360,6 +362,7 @@ extern void update_autolinefeed(void);
 extern void update_appcursor(void);
 extern void update_appkeypad(void);
 extern void update_scrollkey(void);
+extern void update_selectToClipboard(void);
 extern void update_scrollttyoutput(void);
 extern void update_allow132(void);
 extern void update_cursesemul(void);
@@ -406,8 +409,10 @@ extern void update_font_renderfont(void);
 
 #if OPT_WIDE_CHARS
 extern void update_font_utf8_mode(void);
+extern void update_font_utf8_title(void);
 #else
 #define update_font_utf8_mode() /* nothing */
+#define update_font_utf8_title() /* nothing */
 #endif
 
 #if OPT_TEK4014
