@@ -1,5 +1,5 @@
 #	$NetBSD: Makefile,v 1.3 1997/12/09 11:58:28 mrg Exp $
-#	$OpenBSD: Makefile,v 1.52 2006/03/04 07:16:12 matthieu Exp $
+#	$OpenBSD: Makefile,v 1.53 2006/04/15 15:52:58 martin Exp $
 #
 # The purpose of this file is to build and install X11,
 # and create release tarfiles.
@@ -19,8 +19,6 @@
 
 .if ${MACHINE} == i386
 XMACH= ix86
-.elif ${MACHINE} == hp700
-XMACH= hppa
 .else
 XMACH= ${MACHINE}
 .endif
