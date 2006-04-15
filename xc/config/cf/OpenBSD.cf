@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.158 2006/02/21 23:11:21 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.159 2006/04/15 13:33:58 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -485,6 +485,10 @@ install:: fonts.alias							@@\
 #  define XFree86ConsoleDefines	-DWSCONS_SUPPORT -DPCVT_SUPPORT
 # endif
 
+# ifndef XF86ExtraCardDrivers
+#  define XF86ExtraCardDrivers via
+# endif
+
 # ifndef UsbMouseSupport
 #  define UsbMouseSupport      YES
 # endif
@@ -500,6 +504,15 @@ install:: fonts.alias							@@\
 # ifndef HasX86Support
 #  define HasX86Support		YES
 # endif
+
+# ifndef HasSSESupport
+#  define HasSSESupport		YES
+# endif
+
+# ifndef Has3DNowSupport
+#  define Has3DNowSupport	YES
+# endif
+
 # include <xorg.cf>
 
 #endif /* AMD64Architecture */
@@ -629,6 +642,14 @@ install:: fonts.alias							@@\
 /* for DRI */
 # ifndef HasX86Support
 #  define HasX86Support		UseElfFormat
+# endif
+
+# ifndef HasSSESupport
+#  define HasSSESupport		UseElfFormat
+# endif
+
+# ifndef Has3DNowSupport
+#  define Has3DNowSupport	UseElfFormat
 # endif
 
 # include <xorg.cf>
