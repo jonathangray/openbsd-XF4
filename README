@@ -147,6 +147,8 @@ will also not be able to restore the text mode on exit. So be prepared
 to log in remotely (serial terminal or ssh) to reboot your machine or
 to restart X.
 
+See also <http://xorg.freedesktop.org/wiki/DebuggingTheXserver>
+
 o Where to set variables?
   -----------------------
 
@@ -455,4 +457,4 @@ LibHeaders:	install $(HEADERS) in /usr/X11R6/include ?
 IncSubdir:	subdir of /usr/X11R6/include to install $(HEADERS) to.
 
 -- 
-$Id: README,v 1.18 2005/08/16 20:39:22 matthieu Exp $
+$Id: README,v 1.19 2006/04/23 13:00:36 matthieu Exp $
