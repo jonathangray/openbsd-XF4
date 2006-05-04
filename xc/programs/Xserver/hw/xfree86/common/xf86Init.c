@@ -1394,8 +1394,9 @@ ddxProcessArgument(int argc, char **argv, int i)
       FatalError("Required argument to %s not specified\n", argv[i]);	\
     }
   
-  /* First the options that are only allowed for root */
-  if (getuid() == 0 || geteuid() != 0)
+  /* First the options that are only allowed for root 
+     or when the program is not privileged at all */
+  if (getuid() == 0 || !issetugid())
   {
     if (!strcmp(argv[i], "-modulepath"))
     {
@@ -1703,7 +1704,7 @@ ddxProcessArgument(int argc, char **argv, int i)
   }
   if (!strcmp(argv[i], "-configure"))
   {
-    if (getuid() != 0 && geteuid() == 0) {
+    if (getuid() != 0 && issetugid()) {
 	ErrorF("The '-configure' option can only be used by root.\n");
 	exit(1);
     }
