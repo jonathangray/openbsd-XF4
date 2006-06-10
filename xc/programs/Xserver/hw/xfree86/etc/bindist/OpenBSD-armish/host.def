@@ -1,0 +1,22 @@
+/*
+ * Host.def for building OpenBSD bindists
+ * $OpenBSD: host.def,v 1.1 2006/06/10 09:49:55 matthieu Exp $
+ * $XFree86$
+ */
+
+#define InstallEmptyHostDef
+
+#define ForceNormalLib		YES
+#define XorgServer		NO
+
+/* Enable this to build the docs in xc/programs/Xserver/hw/xfree86/doc/sgml */
+#define BuildOpenBSDDocs		NO
+#if BuildOpenBSDDocs
+#define HasLinuxDoc			YES
+#define HasSgmlFmt			YES
+#define HasLatex			YES
+#define HasDvips			YES
+#define BuildLinuxDocHtml		YES
+#define BuildAllDocs			YES
+#define InstallJapaneseDocs       	YES
+#endif
