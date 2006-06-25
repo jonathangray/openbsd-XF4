@@ -177,9 +177,10 @@ xf86OpenConsole()
     if (serverGeneration == 1)
     {
 	/* check if we are run with euid==0 */
-	if (geteuid() != 0)
+	if (geteuid() != 0 && issetugid())
 	{
-	    FatalError("xf86OpenConsole: Server must be suid root");
+	    FatalError("xf86OpenConsole: Server must either be suid root"
+			" or without privileges at all");
 	}
 
 	if (!KeepTty)
@@ -303,7 +304,7 @@ acquire_vt:
 	    {
 	        FatalError("xf86OpenConsole: VT_SETMODE VT_PROCESS failed");
 	    }
-#if !defined(USE_DEV_IO) && !defined(USE_I386_IOPL)
+#if !defined(OpenBSD) && !defined(USE_DEV_IO) && !defined(USE_I386_IOPL)
 	    if (ioctl(xf86Info.consoleFd, KDENABIO, 0) < 0)
 	    {
 	        FatalError("xf86OpenConsole: KDENABIO failed (%s)",
@@ -587,8 +588,14 @@ xf86OpenPcvt()
             sprintf(vtname, "%s%01x", vtprefix, xf86Info.vtno - 1);
 	    if ((fd = open(vtname, PCVT_CONSOLE_MODE, 0)) < 0)
 	    {
-		FatalError("xf86OpenPcvt: Cannot open %s (%s)",
+		ErrorF("xf86OpenPcvt: Cannot open %s (%s)",
 			   vtname, strerror(errno));
+		xf86Info.vtno = initialVT;
+	        sprintf(vtname, "%s%01x", vtprefix, xf86Info.vtno - 1);
+		if ((fd = open(vtname, PCVT_CONSOLE_MODE, 0)) < 0) {
+			FatalError("xf86OpenPcvt: Cannot open %s (%s)",
+			   	vtname, strerror(errno));
+		}
 	    }
 	    if (ioctl(fd, VT_GETMODE, &vtmode) < 0)
 	    {

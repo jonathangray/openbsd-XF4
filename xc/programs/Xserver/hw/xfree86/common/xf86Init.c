@@ -1222,7 +1222,7 @@ OsVendorInit(void)
 #endif
 #endif
 #if defined(X_PRIVSEP)
-  if (!beenHere && !xf86KeepPriv) {
+  if (!beenHere && !xf86KeepPriv && geteuid() == 0) {
 	  xf86PrivilegedInit();
 	  xf86DropPriv(display);
   }
