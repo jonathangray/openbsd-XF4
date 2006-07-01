@@ -681,7 +681,7 @@ xf86CloseConsole()
 	    VT.mode = VT_AUTO;
 	    ioctl(xf86Info.consoleFd, VT_SETMODE, &VT); /* dflt vt handling */
         }
-#if !defined(USE_DEV_IO) && !defined(USE_I386_IOPL)
+#if !defined(OpenBSD) && !defined(USE_DEV_IO) && !defined(USE_I386_IOPL)
         if (ioctl(xf86Info.consoleFd, KDDISABIO, 0) < 0)
         {
             xf86FatalError("xf86CloseConsole: KDDISABIO failed (%s)",
