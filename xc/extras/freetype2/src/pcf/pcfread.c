@@ -404,6 +404,10 @@ THE SOFTWARE.
         if ( FT_STREAM_READ_FIELDS( pcf_property_header, props + i ) )
           goto Bail;
       }
+      if (props[i].name < 0 
+	  || (props[i].isString != 0 && props[i].isString != 1)
+	  || (props[i].isString && props[i].value < 0))
+	goto Bail;
     }
 
     /* pad the property array                                            */
