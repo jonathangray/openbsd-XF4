@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/i386_video.c,v 1.5 2003/10/07 23:14:55 herrb Exp $ */
-/* $OpenBSD: i386_video.c,v 1.17 2006/01/15 22:08:12 matthieu Exp $ */
+/* $OpenBSD: i386_video.c,v 1.18 2006/08/04 21:01:38 matthieu Exp $ */
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -74,11 +74,11 @@
 #ifdef __OpenBSD__
 #define SYSCTL_MSG "\tCheck that you have set 'machdep.allowaperture=1'\n"\
 		   "\tin /etc/sysctl.conf and reboot your machine\n" \
-		   "\trefer to xf86(4) for details"
+		   "\trefer to xf86(4) for details\n"
 #define SYSCTL_MSG2 \
 		"Check that you have set 'machdep.allowaperture=2'\n" \
 		"\tin /etc/sysctl.conf and reboot your machine\n" \
-		"\trefer to xf86(4) for details"
+		"\trefer to xf86(4) for details\n"
 #endif
 
 /***************************************************************************/
