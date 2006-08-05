@@ -639,9 +639,6 @@ GetImagePixels(image, width, height, pmap)
     if (image->bitmap_unit < 0)
 	    return (XpmNoMemory);
 
-    if (image->bitmap_unit < 0)
-	    return (XpmNoMemory);
-
     if ((image->bits_per_pixel | image->depth) == 1) {
 	ibu = image->bitmap_unit;
 	for (y = 0; y < height; y++)
