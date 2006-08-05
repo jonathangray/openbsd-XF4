@@ -50,9 +50,6 @@
 extern int XkbDfltRepeatDelay;
 extern int XkbDfltRepeatInterval;
 
-extern int XkbDfltRepeatDelay;
-extern int XkbDfltRepeatInterval;
-
 #define CAPSFLAG	1
 #define NUMFLAG		2
 #define SCROLLFLAG	4
