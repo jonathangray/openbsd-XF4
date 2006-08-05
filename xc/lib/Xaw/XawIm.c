@@ -970,8 +970,10 @@ SetICValues(Widget w, XawVendorShellExtPart *ve, Bool focus)
 	    pe_a[pe_cnt] = (XPointer) p->font_set; pe_cnt++;
 	    st_a[st_cnt] = (XPointer) XNFontSet; st_cnt++;
 	    st_a[st_cnt] = (XPointer) p->font_set; st_cnt++;
-	    height = maxAscentOfFontSet(p->font_set)
-		   + maxDescentOfFontSet(p->font_set);
+	    if (p->font_set) {
+		height = maxAscentOfFontSet(p->font_set)
+		    + maxDescentOfFontSet(p->font_set);
+	    }
 	    height = SetVendorShellHeight(ve, height);
 	}
 	if (p->flg & CIFg) {
