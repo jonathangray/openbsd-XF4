@@ -140,7 +140,7 @@ This can be bound by using the following xmodmap command.
 --
 xmodmap -e "keysym Mode_switch = Mode_switch Pointer_EnableKeys"
 --
-With xmodmap above run, <shift><ctrl><enter> (not return) will
+With xmodmap above run, {:-<shift>-:}<ctrl><enter> (not return) will
 toggle the Pointer_EnableKeys mode allowing the key to be
 used either as a mouse action or as the real key.
 
@@ -176,4 +176,4 @@ button 2 and mouse button 3 respectively.
 
 problem_blurb
 
-$OpenBSD: README.macppc,v 1.18 2005/03/15 22:17:17 matthieu Exp $
+$OpenBSD: README.macppc,v 1.19 2006/08/05 20:04:17 matthieu Exp $
