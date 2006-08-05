@@ -260,8 +260,6 @@ KbdPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 
     xf86LoaderReqSymLists(xkbSymbols, NULL);
 
-    xf86LoaderReqSymLists(xkbSymbols, NULL);
-
     if (!xf86OSKbdPreInit(pInfo))
         return pInfo;
 
