@@ -1,5 +1,6 @@
 /* $Xorg: xinit.c,v 1.5 2001/02/09 02:05:49 xorgcvs Exp $ */
-/* $OpenBSD: xinit.c,v 1.10 2006/01/21 22:12:13 matthieu Exp $ */
+/* $XdotOrg: xc/programs/xinit/xinit.c,v 1.4 2005/10/04 01:27:34 ajax Exp $ */
+/* $OpenBSD: xinit.c,v 1.11 2006/08/07 16:53:49 matthieu Exp $ */
 /*
 
 Copyright 1986, 1998  The Open Group
@@ -523,8 +524,6 @@ main(int argc, char *argv[], char *envp[])
 		Fatal("Client error.\n");
 	exit(OK_EXIT);
 }
-
-/* $XdotOrg: xc/programs/xinit/xinit.c,v 1.4 2005/10/04 01:27:34 ajax Exp $ */
 
 /*
  *	waitforserver - wait for X server to start up
