@@ -362,6 +362,12 @@
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
+#elif defined(__vax__)
+# if defined(__OpenBSD__)
+#  define ARCH_PCI_INIT freebsdPciInit
+#  define INCLUDE_XF86_MAP_PCI_MEM
+#  define INCLUDE_XF86_NO_DOMAIN
+# endif
 #elif defined(__amd64__) || defined(__amd64)
 # if defined(__FreeBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit

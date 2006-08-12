@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.159 2006/04/15 13:33:58 matthieu Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.160 2006/08/12 16:48:54 miod Exp $
 XCOMM
 
 #ifndef OSName
@@ -1079,11 +1079,42 @@ install:: fonts.alias							@@\
  */
 #ifdef VaxArchitecture
 
+# if OSMajorVersion == 2 || OSMajorVersion == 3
+
 # ifndef BuildServer
 #  define BuildServer		NO
 # endif
 
 # define ServerExtraDefines	-DXFree86Server
+
+# else
+
+#  define XorgServer		YES
+
+/* No Loadable modules for now */
+#  ifndef DoLoadableServer
+#    define DoLoadableServer	NO
+#  endif
+
+#  define XF86CardDrivers	wsfb
+#  define XFree86ConsoleDefines	-DWSCONS_SUPPORT
+#  define BuildXInputExt	YES
+#  define ServerOSDefines	XFree86ServerOSDefines -DDDXOSINIT
+#  define ServerExtraDefines	GccGasOption XFree86ServerDefines
+
+#  define BuildXF86MiscExt	NO
+#  define BuildMITMiscExt	NO
+
+#  define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
+
+#  define BuildXF86VidModeExt	NO
+#  define BuildXF86DGA		NO
+#  ifndef BuildXInputExt
+#  define BuildXInputExt	NO
+#  endif
+
+# endif
+
 # define UnalignedReferencesAllowed YES
 # define HasSharedLibraries	NO
 # define HasDlopen		NO

@@ -317,7 +317,7 @@ RELEASE_VERSION = ReleaseVersion
     defined(AlphaArchitecture) || defined(PpcArchitecture) || \
     defined(Mc68020Architecture) || defined(Arm32Architecture) || \
     defined(HPArchitecture) || defined(SuperHArchitecture) || \
-    defined(Hp300Architecture)
+    defined(Hp300Architecture) || defined(VaxArchitecture)
 # ifndef XorgServer
 #  define XorgServer		YES
 # endif

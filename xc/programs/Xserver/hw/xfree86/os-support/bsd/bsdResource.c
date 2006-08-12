@@ -117,7 +117,7 @@ xf86AccResFromOS(resPtr ret)
     return ret;
 }
 
-#elif defined(__powerpc__) || defined(__arm__) || defined(__mc68020__)	/* XXX hp300 */
+#elif defined(__powerpc__) || defined(__arm__) || defined(__mc68020__)	/* XXX hp300 */ || defined(__vax__)
 
 resPtr
 xf86BusAccWindowsFromOS(void)

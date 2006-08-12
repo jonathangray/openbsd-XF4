@@ -819,6 +819,184 @@ TransMapRec wsSun = {
     wsSunMap
 };
 
+static CARD8 wsLk201Map[] = {
+	/*  86 */ KEY_F1,
+	          KEY_F2,
+	          KEY_F3,
+	          KEY_F4,
+	/*  90 */ KEY_F5,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	/* 100 */ KEY_F6,
+	          KEY_F7,
+	          KEY_F8,
+	          KEY_F9,
+	          KEY_F10,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	/* 110 */ KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_Escape,
+	          KEY_F12,
+	          KEY_F13,
+	          KEY_F14,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	/* 120 */ KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_Help,
+	          KEY_NOTUSED,	/* Execute, */
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_F17,
+	          KEY_NOTUSED,	/* F18, */
+	/* 130 */ KEY_NOTUSED,	/* F19, */
+	          KEY_NOTUSED,	/* F20, */
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_L9,	/* Find */
+	          KEY_Insert,
+	/* 140 */ KEY_KP_Decimal,	/* XXX KP_Delete */
+	          KEY_NOTUSED,	/* Select */
+	          KEY_PgUp,
+	          KEY_PgDown,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_KP_0,
+	          KEY_NOTUSED,
+	          KEY_KP_Decimal,
+	          KEY_KP_Enter,
+	/* 150 */ KEY_KP_1,
+	          KEY_KP_2,
+	          KEY_KP_3,
+	          KEY_KP_4,
+	          KEY_KP_5,
+	          KEY_KP_6,
+	          KEY_NOTUSED,	/* KP_Separator */
+	          KEY_KP_7,
+	          KEY_KP_8,
+	          KEY_KP_9,
+	/* 160 */ KEY_KP_Minus,
+	          KEY_NOTUSED,	/* KP_F1 */
+	          KEY_NOTUSED,	/* KP_F2 */
+	          KEY_NOTUSED,	/* KP_F3 */
+	          KEY_NOTUSED,	/* KP_F4 */
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_Left,
+	          KEY_Right,
+	          KEY_Down,
+	/* 170 */ KEY_Up,
+	          KEY_ShiftR,
+	          KEY_Alt,
+	          KEY_NOTUSED,	/* Multi_key */
+	          KEY_ShiftL,
+	          KEY_LCtrl,
+	          KEY_CapsLock,
+	          KEY_NOTUSED,	/* Multi_key */
+	          KEY_AltLang,
+	          KEY_NOTUSED,
+	/* 180 */ KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_NOTUSED,
+	          KEY_BackSpace,
+	          KEY_Enter,
+	/* 190 */ KEY_Tab,
+	          KEY_Tilde,
+	          KEY_1,
+	          KEY_Q,
+	          KEY_A,
+	          KEY_Z,
+	          KEY_NOTUSED,
+	          KEY_2,
+	          KEY_W,
+	          KEY_S,
+	/* 200 */ KEY_X,
+	          KEY_Less,
+	          KEY_NOTUSED,
+	          KEY_3,
+	          KEY_E,
+	          KEY_D,
+	          KEY_C,
+	          KEY_NOTUSED,
+	          KEY_4,
+	          KEY_R,
+	/* 210 */ KEY_F,
+	          KEY_V,
+	          KEY_Space,
+	          KEY_NOTUSED,
+	          KEY_5,
+	          KEY_T,
+	          KEY_G,
+	          KEY_B,
+	          KEY_NOTUSED,
+	          KEY_6,
+	/* 220 */ KEY_Y,
+	          KEY_H,
+	          KEY_N,
+	          KEY_NOTUSED,
+	          KEY_7,
+	          KEY_U,
+	          KEY_J,
+	          KEY_M,
+	          KEY_NOTUSED,
+	          KEY_8,
+	/* 230 */ KEY_I,
+	          KEY_K,
+	          KEY_Comma,
+	          KEY_NOTUSED,
+	          KEY_9,
+	          KEY_O,
+	          KEY_L,
+	          KEY_Period,
+	          KEY_NOTUSED,
+	          KEY_0,
+	/* 240 */ KEY_P,
+	          KEY_NOTUSED,
+	          KEY_SemiColon,
+	          KEY_Slash,
+	          KEY_NOTUSED,
+	          KEY_Equal,
+	          KEY_RBrace,
+	          KEY_BSlash,
+	          KEY_NOTUSED,
+	          KEY_Minus,
+	/* 250 */ KEY_LBrace,
+	          KEY_Quote,
+	          KEY_NOTUSED,	/* remapped Multi_key */
+};
+#define WS_LK201_MAP_SIZE (sizeof(wsLk201Map)/sizeof(unsigned char))
+
+static
+TransMapRec wsLk201 = {
+    0,
+    WS_LK201_MAP_SIZE,
+    wsLk201Map
+};
+
 #endif /* WSCONS_SUPPORT */
 
 /*ARGSUSED*/
@@ -1074,6 +1252,10 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
                     pKbd->scancodeMap = &wsSun;
                     break;
 #endif
+	       case WSKBD_TYPE_LK201:
+	       case WSKBD_TYPE_LK401:
+                    pKbd->scancodeMap = &wsLk201;
+                    break;
 	       default:
 		    ErrorF("Unknown wskbd type %d\n", pKbd->wsKbdType);
            }
