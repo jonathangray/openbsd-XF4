@@ -1,5 +1,5 @@
 /* XPM */
-/* $OpenBSD: OpenBSD_4bpp.xpm,v 1.16 2006/08/18 21:01:36 todd Exp $
+/* $OpenBSD: OpenBSD_4bpp.xpm,v 1.17 2006/08/18 21:03:20 matthieu Exp $ */
 static char * OpenBSD_4bpp[] = {
 "240 175 13 1",
 " 	c None",
