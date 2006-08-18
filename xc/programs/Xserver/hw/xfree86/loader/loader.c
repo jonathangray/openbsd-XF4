@@ -1319,6 +1319,7 @@ LoaderOpen(const char *module, const char *cname, int handle,
 	    *errmaj = LDR_UNKTYPE;
 	if (errmin)
 	    *errmin = LDR_UNKTYPE;
+	close(fd);
 	return -1;
     }
 
@@ -1339,6 +1340,7 @@ LoaderOpen(const char *module, const char *cname, int handle,
 	    *errmaj = LDR_NOLOAD;
 	if (errmin)
 	    *errmin = LDR_NOLOAD;
+	close(fd);
 	return -1;
     }
 
