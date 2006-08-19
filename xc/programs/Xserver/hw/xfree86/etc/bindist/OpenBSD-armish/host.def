@@ -1,7 +1,6 @@
 /*
  * Host.def for building OpenBSD bindists
- * $OpenBSD: host.def,v 1.1 2006/06/10 09:49:55 matthieu Exp $
- * $XFree86$
+ * $OpenBSD: host.def,v 1.2 2006/08/19 14:59:59 matthieu Exp $
  */
 
 #define InstallEmptyHostDef
