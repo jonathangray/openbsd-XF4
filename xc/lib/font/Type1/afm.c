@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #else
 #include "Xmd.h"        /* For INT32 declaration */
 #include "Xdefs.h"      /* For Bool */
@@ -118,6 +119,11 @@ int CIDAFM(FILE *fd, FontInfo **pfi) {
             
             fi->nChars = atoi(p);
 
+	    if (fi->nChars < 0 || fi->nChars > INT_MAX / sizeof(Metrics)) {
+		xfree(afmbuf);
+		xfree(fi);
+		return(1);
+	    }
             fi->metrics = (Metrics *)xalloc(fi->nChars * 
                 sizeof(Metrics));
             if (fi->metrics == NULL) {
