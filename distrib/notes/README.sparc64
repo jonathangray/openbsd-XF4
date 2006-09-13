@@ -183,7 +183,7 @@ of the framebuffer):
 It is also important that you modify the Monitor section and change the
 HorizSync and VertRefresh parameters with those of the monitor in use.
 Finally, customization of the Screen section will allow switching of
-resolutions and setting the default bit depth, eg.:
+resolutions and setting the default bit depth, e.g.:
 
 Section "Screen"
 	Identifier	"Screen0"
@@ -245,7 +245,7 @@ Section "Screen"
 EndSection
 
 The ServerLayout section is also changed to include the second framebuffer
-and its logical location relative to the first, eg:
+and its logical location relative to the first, e.g.:
 
 Section "ServerLayout"
 	Identifier	"wsfb"
@@ -259,4 +259,4 @@ See xorg.conf(5) for more options.
 
 problem_blurb
 
-$OpenBSD: README.sparc64,v 1.19 2005/01/15 14:44:54 matthieu Exp $
+$OpenBSD: README.sparc64,v 1.20 2006/09/13 13:30:44 steven Exp $

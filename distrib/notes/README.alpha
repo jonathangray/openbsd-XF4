@@ -6,9 +6,9 @@ OpenBSD 3.7 and later uses the X.Org X server on alpha.
 Currently, TGA video hardware as well as a few VGA cards are
 supported.
 
-A special driver reproduces the functionnality of Xtga in previous
+A special driver reproduces the functionality of Xtga in previous
 releases:  wsfb. It uses the TGA as a dumb framebuffer at 8 or 24 bits
-per pixels, depending on the card model. 
+per pixel, depending on the card model. 
 A default /etc/X11/xorg.conf is installed that uses this driver. So
 you can just use 'startx' or xdm to start X without further
 configuration. 
@@ -49,4 +49,4 @@ Start either xdm(1) or startx(1).
 
 problem_blurb
 
-$OpenBSD: README.alpha,v 1.14 2005/01/15 14:44:54 matthieu Exp $
+$OpenBSD: README.alpha,v 1.15 2006/09/13 13:30:44 steven Exp $

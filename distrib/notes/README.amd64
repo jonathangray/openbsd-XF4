@@ -18,7 +18,7 @@ Post-installation instructions for X.Org on OpenBSD/amd64
    information down. The dmesg(8) command output is useful.
 
    What kind of mouse do you have and which port is it connected to?
-   The 2 most common cases are a PS/2 style mouse or a USB mouse , for
+   The 2 most common cases are a PS/2 style mouse or a USB mouse, for
    which OpenBSD uses the wsmouse(4) protocol with the /dev/wsmouse
    device.
 
@@ -26,7 +26,7 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 
    Run Xorg -configure as root and move the resulting
    xorg.conf.new file to /etc/X11/xorg.conf. 
-   If needed edit it to adjust the keyboard and mouse settings. 
+   If needed, edit it to adjust the keyboard and mouse settings.
 
 4. Start either xdm(1) or startx(1).
 
@@ -41,4 +41,4 @@ Post-installation instructions for X.Org on OpenBSD/amd64
 
 problem_blurb
 
-$OpenBSD: README.amd64,v 1.5 2006/01/07 08:59:41 matthieu Exp $
+$OpenBSD: README.amd64,v 1.6 2006/09/13 13:30:44 steven Exp $
