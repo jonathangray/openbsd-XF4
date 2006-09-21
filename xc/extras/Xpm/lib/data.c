@@ -90,6 +90,10 @@ ParseComment(xpmData *data)
 	    s2 = data->Ecmt;
 	    while (*s != *s2 && c) {
 		c = *data->cptr++;
+		if (c == '\0') {	/* unterminated comment, stop */
+		    data->cptr--;
+		    return 0;
+		}
 		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
 		    s = data->Comment;
 		    n = 0;
@@ -100,13 +104,18 @@ ParseComment(xpmData *data)
 	    data->CommentLength = n;
 	    do {
 		c = *data->cptr++;
-		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
-		    s = data->Comment;
-		    n = 0;
+		if (c == '\0') {
+		    data->cptr--;
+		    notend = 0;
+		} else {
+		    if (n == XPMMAXCMTLEN - 1)  { /* forget it */
+			s = data->Comment;
+			n = 0;
+		    }
+		    *++s = c;
+		    n++;
+		    s2++;
 		}
-		*++s = c;
-		n++;
-		s2++;
 	    } while (c == *s2 && *s2 != '\0' && c);
 	    if (*s2 == '\0') {
 		/* this is the end of the comment */
@@ -160,13 +169,17 @@ ParseComment(xpmData *data)
 	    data->CommentLength = n;
 	    do {
 		c = Getc(data, file);
-		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
-		    s = data->Comment;
-		    n = 0;
+		if (c == EOF) {	/* unterminated comment, stop */
+		    notend = 0;
+		} else {
+		    if (n == XPMMAXCMTLEN - 1)  { /* forget it */
+			s = data->Comment;
+			n = 0;
+		    }
+		    *++s = c;
+		    n++;
+		    s2++;
 		}
-		*++s = c;
-		n++;
-		s2++;
 	    } while (c == *s2 && *s2 != '\0' && c != EOF);
 	    if (*s2 == '\0') {
 		/* this is the end of the comment */
