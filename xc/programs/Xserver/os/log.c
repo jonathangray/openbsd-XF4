@@ -272,21 +272,19 @@ LogVWrite(int verb, const char *f, va_list args)
 	len = strlen(tmpBuffer);
     }
     if ((verb < 0 || logVerbosity >= verb) && len > 0)
-	fwrite(tmpBuffer, len, 1, stderr);
+	write(2, tmpBuffer, len);
     if ((verb < 0 || logFileVerbosity >= verb) && len > 0) {
 	if (logFile) {
-	    fwrite(tmpBuffer, len, 1, logFile);
-	    if (logFlush) {
-		fflush(logFile);
+	    write(fileno(logFile), tmpBuffer, len);
 #ifndef WIN32
-		if (logSync)
-		    fsync(fileno(logFile));
+	    if (logFlush && logSync)
+		fsync(fileno(logFile));
 #endif
-	    }
 	} else if (needBuffer) {
 	    /*
 	     * Note, this code is used before OsInit() has been called, so
 	     * xalloc() and friends can't be used.
+	     * And it should not be called inside a signal handler.
 	     */
 	    if (len > bufferUnused) {
 		bufferSize += 1024;
@@ -319,8 +317,6 @@ void
 LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 {
     const char *s  = X_UNKNOWN_STRING;
-    char *tmpBuf = NULL;
-    size_t len;
 
     /* Ignore verbosity for X_ERROR */
     if (logVerbosity >= verb || logFileVerbosity >= verb || type == X_ERROR) {
@@ -366,16 +362,29 @@ LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 	 * Prefix the format string with the message type.  We do it this way
 	 * so that LogVWrite() is only called once per message.
 	 */
-	if (s) {
+	if (s != NULL) {
+	    char stackBuf[BUFSIZ];
+	    char *tmpBuf = NULL;
+	    size_t len;
+
 	    len = strlen(format) + strlen(s) + 1 + 1;
-	    tmpBuf = malloc(len);
-	    /* Silently return if malloc fails here. */
-	    if (!tmpBuf)
-		return;
-	    snprintf(tmpBuf, len, "%s ", s);
-	    strlcat(tmpBuf, format, len);
+	    if (len <= sizeof(stackBuf)) {
+		/*
+		 * avoid malloc() for short strings, since this may be called
+		 * from a signal handler 
+		 */
+		tmpBuf = stackBuf;
+	    } else {
+		tmpBuf = malloc(len);
+		/* Silently return if malloc fails here. */
+		if (tmpBuf == NULL) 
+		    return;
+	    }
+	    /* snprintf() is safe in signal handlers on OpenBSD */
+	    snprintf(tmpBuf, len, "%s %s", s, format);
 	    LogVWrite(verb, tmpBuf, args);
-	    free(tmpBuf);
+	    if (tmpBuf != stackBuf)
+		    free(tmpBuf);
 	} else
 	    LogVWrite(verb, format, args);
     }
