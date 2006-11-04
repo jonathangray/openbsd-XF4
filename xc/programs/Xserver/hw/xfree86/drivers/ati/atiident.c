@@ -31,7 +31,6 @@
 #include "ativersion.h"
 
 #include "r128_probe.h"
-#include "rm6_probe.h"
 #include "radeon_probe.h"
 
 const char *ATIChipsetNames[] =
@@ -90,7 +89,6 @@ ATIIdentify
             "ATI driver (version " ATI_VERSION_NAME ") for chipsets",
         ATIPublicChipsetNames);
     R128Identify(flags);
-    RM6Identify(flags);
     RADEONIdentify(flags);
 }
 

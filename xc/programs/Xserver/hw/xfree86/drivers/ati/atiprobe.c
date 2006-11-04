@@ -47,8 +47,6 @@
 #include "radeon_version.h"
 #include "r128_probe.h"
 #include "r128_version.h"
-#include "rm6_probe.h"
-#include "rm6_version.h"
 
 /*
  * NOTES:
@@ -1001,7 +999,7 @@ ATIProbe
     ScrnInfoPtr            pScreenInfo;
     CARD32                 PciReg;
     Bool                   ProbeSuccess = FALSE;
-    Bool                   DoRage128 = FALSE, DoRadeon = FALSE, DoRM6 = FALSE;
+    Bool                   DoRage128 = FALSE, DoRadeon = FALSE;
     int                    i, j, k;
     int                    nGDev, nATIGDev = -1, nATIPtr = 0;
     int                    Chipset;
@@ -1107,8 +1105,6 @@ ATIProbe
 
         if (xf86MatchDevice(R128_NAME, NULL) > 0)
             DoRage128 = TRUE;
-	if (xf86MatchDevice(RM6_NAME, NULL) > 0)
-            DoRM6 = TRUE;
         if (xf86MatchDevice(RADEON_NAME, NULL) > 0)
             DoRadeon = TRUE;
     }
@@ -1735,12 +1731,6 @@ ATIProbe
             {
                 if (Chip <= ATI_CHIP_Rage128)
                     DoRage128 = TRUE;
-		else if (Chip == ATI_CHIP_RADEONMOBILITY6 
-#ifdef RM67
-			 || Chip == ATI_CHIP_RADEONMOBILITY7
-#endif
-			) 
-		    DoRM6 = TRUE;
                 else if (Chip <= ATI_CHIP_Radeon)
                     DoRadeon = TRUE;
 
@@ -2334,12 +2324,6 @@ NoVGAWonder:;
     /* Call Rage 128 driver probe */
     if (DoRage128 && R128Probe(pDriver, flags))
         ProbeSuccess = TRUE;
-
-    /* Call Radeon Mobility M6 driver probe */
-    if (DoRM6 && RM6Probe(pDriver, flags)) {
-        ProbeSuccess = TRUE;
-	return ProbeSuccess;
-    }
 
     /* Call Radeon driver probe */
     if (DoRadeon && RADEONProbe(pDriver, flags))

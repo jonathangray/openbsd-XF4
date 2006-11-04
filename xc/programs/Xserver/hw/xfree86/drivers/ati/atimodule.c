@@ -78,22 +78,6 @@ const char *RADEONSymbols[] =
     NULL
 };
 
-const char *RM6Symbols[] =
-{
-    "RM6PreInit",
-    "RM6ScreenInit",
-    "RM6SwitchMode",
-    "RM6AdjustFrame",
-    "RM6EnterVT",
-    "RM6LeaveVT",
-    "RM6FreeScreen",
-    "RM6ValidMode",
-    "RM6OptionsWeak",
-    "RM6HandleMessage",
-    "RM6FillInScreenInfo",
-    NULL
-};
-
 static XF86ModuleVersionInfo ATIVersionRec =
 {
     ATI_DRIVER_NAME,
@@ -133,7 +117,6 @@ ATISetup
             ATISymbols,
             R128Symbols,
             RADEONSymbols,
-	    RM6Symbols,
             NULL);
     }
 

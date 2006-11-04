@@ -26,7 +26,6 @@
 
 extern const char *ATISymbols[];
 extern const char *R128Symbols[];
-extern const char *RM6Symbols[];
 extern const char *RADEONSymbols[];
 
 #endif /* ___ATIMODULE_H___ */

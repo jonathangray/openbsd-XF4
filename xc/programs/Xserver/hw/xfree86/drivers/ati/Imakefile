@@ -42,7 +42,6 @@ MODSRCS1 = atimodule.c
 MODSRCS2 = atiload.c atimisc.c
 MODSRCS3 = r128_misc.c
 MODSRCS4 = radeon_misc.c
-MODSRCS5 = rm6_misc.c
 MODSRC_THEATRE_DETECT = theatre_detect_module.c
 MODSRC_THEATRE = theatre_module.c
 MODSRC_THEATRE200 = theatre200_module.c
@@ -51,7 +50,6 @@ MODOBJS1 = atimodule.o
 MODOBJS2 = atiload.o atimisc.o
 MODOBJS3 = r128_misc.o
 MODOBJS4 = radeon_misc.o
-MODOBJS5 = rm6_misc.o
 MODOBJ_THEATRE_DETECT = theatre_detect_module.o
 MODOBJ_THEATRE = theatre_module.o
 MODOBJ_THEATRE200 = theatre200_module.o
@@ -200,7 +198,7 @@ DEFINES = $(CPIODEFINES) $(DGADEFINES) $(NONPCIDEFINES) $(DRIDEFINES) \
 
 SRCS1 = ati.c atiadapter.c atibus.c atichip.c atiident.c atioption.c \
 	atiprobe.c atividmem.c $(CPIOSRCS1) $(MODSRCS1) \
-        radeon_probe.c r128_probe.c rm6_probe.c
+        radeon_probe.c r128_probe.c
 SRCS2 = atiaccel.c atiadjust.c atiaudio.c aticlock.c aticonfig.c aticonsole.c \
         aticursor.c atidac.c atidecoder.c atidsp.c atifillin.c atii2c.c \
 	atilock.c atimach64.c atimach64accel.c atimach64cursor.c \
@@ -212,15 +210,13 @@ SRCS3 = r128_accel.c r128_cursor.c r128_dga.c r128_driver.c \
 SRCS4 = radeon_accel.c radeon_mergedfb.c radeon_cursor.c radeon_dga.c radeon_driver.c \
         radeon_video.c radeon_bios.c radeon_mm_i2c.c radeon_vip.c \
 	$(RADEON_EXA_SOURCE) $(DRISRCS4) $(MODSRCS4)
-SRCS5 = rm6_accel.c rm6_bios.c rm6_cursor.c rm6_dga.c rm6_driver.c \
-	rm6_mergedfb.c rm6_video.c $(MODSRCS5)
 SRCS_THEATRE_DETECT = theatre.c $(MODSRC_THEATRE_DETECT)
 SRCS_THEATRE = theatre.c $(MODSRC_THEATRE)
 SRCS_THEATRE200 = theatre200.c $(MODSRC_THEATRE200)
 
 OBJS1 = ati.o atiadapter.o atibus.o atichip.o atiident.o atioption.o \
         atiprobe.o atividmem.o $(CPIOOBJS1) $(MODOBJS1) \
-        radeon_probe.o r128_probe.o rm6_probe.o
+        radeon_probe.o r128_probe.o
 OBJS2 = atiaccel.o atiadjust.o atiaudio.o aticlock.o aticonfig.o aticonsole.o \
         aticursor.o atidac.o atidecoder.o atidsp.o atifillin.o atii2c.o \
 	atilock.o atimach64.o atimach64accel.o atimach64cursor.o \
@@ -232,8 +228,6 @@ OBJS3 = r128_accel.o r128_cursor.o r128_dga.o r128_driver.o \
 OBJS4 = radeon_accel.o radeon_mergedfb.o radeon_cursor.o radeon_dga.o radeon_driver.o \
         radeon_video.o radeon_bios.o radeon_mm_i2c.o radeon_vip.o \
 	$(RADEON_EXA_OBJS) $(DRIOBJS4) $(MODOBJS4)
-OBJS5 = rm6_accel.o rm6_bios.o rm6_cursor.o rm6_dga.o rm6_driver.o \
-	rm6_mergedfb.o rm6_video.o $(MODOBJS5)
 OBJS_THEATRE_DETECT = theatre_detect.o $(MODOBJ_THEATRE_DETECT)
 OBJS_THEATRE = theatre.o $(MODOBJ_THEATRE)
 OBJS_THEATRE200 = theatre200.o $(MODOBJ_THEATRE200)
@@ -267,7 +261,6 @@ ObjectModuleTarget(ati,$(OBJS1))
 ObjectModuleTarget(atimisc,$(OBJS2))
 ObjectModuleTarget(r128,$(OBJS3))
 ObjectModuleTarget(radeon,$(OBJS4))
-ObjectModuleTarget(rm6,$(OBJS5))
 ObjectModuleTarget(theatre_detect, $(OBJS_THEATRE_DETECT))
 ObjectModuleTarget(theatre, $(OBJS_THEATRE))
 ObjectModuleTarget(theatre200, $(OBJS_THEATRE200))
@@ -276,7 +269,6 @@ InstallObjectModule(ati,$(MODULEDIR),drivers)
 InstallObjectModule(atimisc,$(MODULEDIR),drivers)
 InstallObjectModule(r128,$(MODULEDIR),drivers)
 InstallObjectModule(radeon,$(MODULEDIR),drivers)
-InstallObjectModule(rm6,$(MODULEDIR),drivers)
 InstallObjectModule(theatre_detect,$(MODULEDIR),multimedia)
 InstallObjectModule(theatre,$(MODULEDIR),multimedia)
 InstallObjectModule(theatre200,$(MODULEDIR),multimedia)
@@ -289,8 +281,6 @@ InstallModuleManPage(ati)
 InstallModuleManPage(r128)
 
 InstallModuleManPage(radeon)
-
-InstallModuleManPage(rm6)
 #endif
 
 DependTarget()

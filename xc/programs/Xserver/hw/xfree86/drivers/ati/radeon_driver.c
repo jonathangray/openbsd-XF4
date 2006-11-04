@@ -2750,6 +2750,11 @@ static Bool RADEONPreInitConfig(ScrnInfoPtr pScrn)
 	info->ChipFamily == CHIP_FAMILY_RS200)
 	    info->ChipErrata |= CHIP_ERRATA_PLL_DELAY;
 
+    /* Clear bit for M6 Chipsets */
+    if (info->Chipset == PCI_CHIP_RADEON_LY ||
+	info->Chipset == PCI_CHIP_RADEON_LZ) 
+	    info->ChipErrata &= ~CHIP_ERRATA_PLL_DELAY;
+
     info->MemCntl            = INREG(RADEON_SDRAM_MODE_REG);
     info->BusCntl            = INREG(RADEON_BUS_CNTL);
 
