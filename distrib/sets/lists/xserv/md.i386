@@ -1075,7 +1075,6 @@
 ./usr/X11R6/lib/modules/drivers/radeon_drv.so
 ./usr/X11R6/lib/modules/drivers/rendition_drv.so
 ./usr/X11R6/lib/modules/drivers/riva128.so
-./usr/X11R6/lib/modules/drivers/rm6_drv.so
 ./usr/X11R6/lib/modules/drivers/s3_drv.so
 ./usr/X11R6/lib/modules/drivers/s3virge_drv.so
 ./usr/X11R6/lib/modules/drivers/savage_drv.so
@@ -1089,6 +1088,7 @@
 ./usr/X11R6/lib/modules/drivers/vga_drv.so
 ./usr/X11R6/lib/modules/drivers/via_drv.so
 ./usr/X11R6/lib/modules/drivers/vmware_drv.so
+./usr/X11R6/lib/modules/drivers/wsfb_drv.so
 ./usr/X11R6/lib/modules/extensions
 ./usr/X11R6/lib/modules/extensions/libGLcore.so
 ./usr/X11R6/lib/modules/extensions/libdbe.so
@@ -1234,7 +1234,6 @@
 ./usr/X11R6/man/cat4/r128.0
 ./usr/X11R6/man/cat4/radeon.0
 ./usr/X11R6/man/cat4/rendition.0
-./usr/X11R6/man/cat4/rm6.0
 ./usr/X11R6/man/cat4/s3virge.0
 ./usr/X11R6/man/cat4/savage.0
 ./usr/X11R6/man/cat4/siliconmotion.0
@@ -1259,6 +1258,7 @@
 ./usr/X11R6/man/cat4/vmware.0
 ./usr/X11R6/man/cat4/void.0
 ./usr/X11R6/man/cat4/wacom.0
+./usr/X11R6/man/cat4/wsfb.0
 ./usr/X11R6/man/cat5/XF86Config-3.0
 ./usr/X11R6/man/cat5/getconfig.0
 ./usr/X11R6/man/cat5/xorg.conf.0

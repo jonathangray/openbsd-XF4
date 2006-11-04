@@ -97,7 +97,6 @@
 ./usr/X11R6/lib/modules/drivers/r128_drv.so
 ./usr/X11R6/lib/modules/drivers/radeon_drv.so
 ./usr/X11R6/lib/modules/drivers/riva128.so
-./usr/X11R6/lib/modules/drivers/rm6_drv.so
 ./usr/X11R6/lib/modules/drivers/s3virge_drv.so
 ./usr/X11R6/lib/modules/drivers/savage_drv.so
 ./usr/X11R6/lib/modules/drivers/sis_drv.so
@@ -205,7 +204,6 @@
 ./usr/X11R6/man/cat4/penmount.0
 ./usr/X11R6/man/cat4/r128.0
 ./usr/X11R6/man/cat4/radeon.0
-./usr/X11R6/man/cat4/rm6.0
 ./usr/X11R6/man/cat4/s3virge.0
 ./usr/X11R6/man/cat4/savage.0
 ./usr/X11R6/man/cat4/sis.0
