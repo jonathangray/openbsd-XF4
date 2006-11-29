@@ -1,6 +1,6 @@
 XCOMM platform:	 $XFree86: xc/config/cf/OpenBSD.cf,v 3.100 2004/01/08 22:51:41 herrb Exp $
 XCOMM $XdotOrg: xc/config/cf/OpenBSD.cf,v 1.6 2004/08/29 22:02:35 kem Exp $
-XCOMM $OpenBSD: OpenBSD.cf,v 1.160 2006/08/12 16:48:54 miod Exp $
+XCOMM $OpenBSD: OpenBSD.cf,v 1.161 2006/11/29 19:01:40 matthieu Exp $
 XCOMM
 
 #ifndef OSName
@@ -628,6 +628,8 @@ install:: fonts.alias							@@\
 #   define OSXInputDrivers	usbtablet
 #  endif
 # endif
+
+# define XF86OSCardDrivers	wsfb
 
 /* A hack to work around an optimization problem with gcc 2.95.2 */
 # if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 6)
