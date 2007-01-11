@@ -46,6 +46,10 @@
 #include "dbestruct.h"
 #include "midbe.h"
 
+#if !defined(UINT32_MAX)
+#define UINT32_MAX 0xffffffffU
+#endif
+
 
 /* GLOBALS */
 
@@ -724,11 +728,14 @@ ProcDbeSwapBuffers(client)
         return(Success);
     }
 
+    if (nStuff > UINT32_MAX / sizeof(DbeSwapInfoRec))
+	    return BadAlloc;
+
     /* Get to the swap info appended to the end of the request. */
     dbeSwapInfo = (xDbeSwapInfo *)&stuff[1];
 
     /* Allocate array to record swap information. */ 
-    swapInfo = (DbeSwapInfoPtr)ALLOCATE_LOCAL(nStuff * sizeof(DbeSwapInfoRec));
+    swapInfo = (DbeSwapInfoPtr)Xalloc(nStuff * sizeof(DbeSwapInfoRec));
     if (swapInfo == NULL)
     {
         return(BadAlloc);
@@ -743,14 +750,14 @@ ProcDbeSwapBuffers(client)
         if (!(pWin = SecurityLookupWindow(dbeSwapInfo[i].window, client,
 					  SecurityWriteAccess)))
         {
-            DEALLOCATE_LOCAL(swapInfo);
+            Xfree(swapInfo);
 	    return(BadWindow);
         }
 
         /* Each window must be double-buffered - BadMatch. */
         if (DBE_WINDOW_PRIV(pWin) == NULL)
         {
-            DEALLOCATE_LOCAL(swapInfo);
+            Xfree(swapInfo);
             return(BadMatch);
         }
 
@@ -759,7 +766,7 @@ ProcDbeSwapBuffers(client)
         {
             if (dbeSwapInfo[i].window == dbeSwapInfo[j].window)
             {
-                DEALLOCATE_LOCAL(swapInfo);
+                Xfree(swapInfo);
                 return(BadMatch);
 	    }
         }
@@ -770,7 +777,7 @@ ProcDbeSwapBuffers(client)
             (dbeSwapInfo[i].swapAction != XdbeUntouched ) &&
             (dbeSwapInfo[i].swapAction != XdbeCopied    ))
         {
-            DEALLOCATE_LOCAL(swapInfo);
+            Xfree(swapInfo);
             return(BadValue);
         }
 
@@ -800,12 +807,12 @@ ProcDbeSwapBuffers(client)
         error = (*pDbeScreenPriv->SwapBuffers)(client, &nStuff, swapInfo);
         if (error != Success)
         {
-            DEALLOCATE_LOCAL(swapInfo);
+            Xfree(swapInfo);
             return(error);
         }
     }
     
-    DEALLOCATE_LOCAL(swapInfo);
+    Xfree(swapInfo);
     return(Success);
 
 } /* ProcDbeSwapBuffers() */
@@ -889,10 +896,12 @@ ProcDbeGetVisualInfo(client)
 
     REQUEST_AT_LEAST_SIZE(xDbeGetVisualInfoReq);
 
+    if (stuff->n > UINT32_MAX / sizeof(DrawablePtr))
+	    return BadAlloc;
     /* Make sure any specified drawables are valid. */
     if (stuff->n != 0)
     {
-        if (!(pDrawables = (DrawablePtr *)ALLOCATE_LOCAL(stuff->n *
+        if (!(pDrawables = (DrawablePtr *)Xalloc(stuff->n *
                                                  sizeof(DrawablePtr))))
         {
             return(BadAlloc);
@@ -905,7 +914,7 @@ ProcDbeGetVisualInfo(client)
             if (!(pDrawables[i] = (DrawablePtr)SecurityLookupDrawable(
 				drawables[i], client, SecurityReadAccess)))
             {
-                DEALLOCATE_LOCAL(pDrawables);
+                Xfree(pDrawables);
                 return(BadDrawable);
             }
         }
@@ -917,7 +926,7 @@ ProcDbeGetVisualInfo(client)
     {
         if (pDrawables)
         {
-            DEALLOCATE_LOCAL(pDrawables);
+            Xfree(pDrawables);
         }
 
         return(BadAlloc);
@@ -944,7 +953,7 @@ ProcDbeGetVisualInfo(client)
             /* Free pDrawables if we needed to allocate it above. */
             if (pDrawables)
             {
-                DEALLOCATE_LOCAL(pDrawables);
+                Xfree(pDrawables);
             }
 
             return(BadAlloc);
@@ -1025,7 +1034,7 @@ ProcDbeGetVisualInfo(client)
 
     if (pDrawables)
     {
-        DEALLOCATE_LOCAL(pDrawables);
+        Xfree(pDrawables);
     }
 
     return(client->noClientException);
