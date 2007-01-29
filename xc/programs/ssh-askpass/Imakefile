@@ -1,9 +1,9 @@
-XCOMM $OpenBSD: Imakefile,v 1.4 2007/01/09 21:50:11 matthieu Exp $
+XCOMM $OpenBSD: Imakefile,v 1.5 2007/01/29 19:34:29 matthieu Exp $
 
            SRCS = drawing.c dynlist.c resources.c x11-ssh-askpass.c
            OBJS = drawing.o dynlist.o resources.o x11-ssh-askpass.o
-        DEPLIBS = $(DEPXTOOLLIB) $(DEPXLIB) $(DEPXINERAMALIB)
-LOCAL_LIBRARIES = $(XTOOLLIB) $(XLIB) $(XINERAMALIB)
+        DEPLIBS = $(DEPXTOOLLIB)  $(DEPXINERAMALIB) $(DEPXLIB)
+LOCAL_LIBRARIES = $(XTOOLLIB)  $(XINERAMALIB) $(XLIB)
 
            NAME = ssh-askpass
           CLASS = SshAskpass
