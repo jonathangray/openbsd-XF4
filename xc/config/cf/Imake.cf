@@ -203,6 +203,10 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.88 2003/12/16 21:30:21 herrb Exp $
 #  undef __macppc__
 #  undef macppc
 # endif
+# ifdef __sh__
+#  undef __sh__
+#  define SuperHArchitecture
+# endif
 # ifdef __vax__
 #  undef vax
 #  undef __vax__
