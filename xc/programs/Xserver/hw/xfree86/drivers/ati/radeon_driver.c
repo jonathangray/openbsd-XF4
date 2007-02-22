@@ -2001,7 +2001,7 @@ static BOOL RADEONQueryConnectedMonitors(ScrnInfoPtr pScrn)
 
 	xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
 		   "MonitorLayout Option: \n\tMonitor1--Type %s, Monitor2--Type %s\n\n", s1, s2);
-
+#if 0
 	if (pRADEONEnt->PortInfo[1].MonType == MT_CRT) {
 	    pRADEONEnt->PortInfo[1].DACType = DAC_PRIMARY;
 	    pRADEONEnt->PortInfo[1].TMDSType = TMDS_UNKNOWN;
@@ -2013,6 +2013,7 @@ static BOOL RADEONQueryConnectedMonitors(ScrnInfoPtr pScrn)
 	    pRADEONEnt->PortInfo[0].ConnectorType = pRADEONEnt->PortInfo[0].MonType+1;
 	    pRADEONEnt->PortInfo[0].MonInfo = NULL;
         }
+#endif
 
         if (!ignore_edid) {
             if ((pRADEONEnt->PortInfo[0].MonType > MT_NONE) &&
@@ -7270,13 +7271,21 @@ static Bool RADEONInitCrtcRegisters(ScrnInfoPtr pScrn, RADEONSavePtr save,
 			      ? RADEON_CRTC_INTERLACE_EN
 			      : 0));
 
+    /* Don't try to be smart and unconditionally enable the analog output
+     * for now as the dodgy code to handle it for the second head doesn't
+     * work. This will be correctly fixed when Alex' megapatch gets in that
+     * reworks the whole output mapping
+     */
+#if 0
     if ((info->DisplayType == MT_DFP) ||
 	(info->DisplayType == MT_LCD)) {
 	save->crtc_ext_cntl = RADEON_VGA_ATI_LINEAR | RADEON_XCRT_CNT_EN;
 	save->crtc_gen_cntl &= ~(RADEON_CRTC_DBL_SCAN_EN |
 				 RADEON_CRTC_CSYNC_EN |
 				 RADEON_CRTC_INTERLACE_EN);
-    } else {
+    } else
+#endif
+    {
 	save->crtc_ext_cntl = (RADEON_VGA_ATI_LINEAR |
 			       RADEON_XCRT_CNT_EN |
 			       RADEON_CRTC_CRT_ON);
@@ -7323,7 +7332,7 @@ static Bool RADEONInitCrtcRegisters(ScrnInfoPtr pScrn, RADEONSavePtr save,
 				     ? RADEON_CRTC_V_SYNC_POL
 				     : 0));
 
-    save->crtc_offset      = 0;
+    save->crtc_offset      = pScrn->fbOffset;
     save->crtc_offset_cntl = INREG(RADEON_CRTC_OFFSET_CNTL);
     if (info->tilingEnabled) {
        if (IS_R300_VARIANT)
@@ -7438,7 +7447,6 @@ static Bool RADEONInitCrtc2Registers(ScrnInfoPtr pScrn, RADEONSavePtr save,
 			       : 0));
 
     /* Turn CRT on in case the first head is a DFP */
-    save->crtc_ext_cntl |= RADEON_CRTC_CRT_ON;
     save->dac2_cntl = info->SavedReg.dac2_cntl;
     /* always let TVDAC drive CRT2, we don't support tvout yet */
     save->dac2_cntl |= RADEON_DAC2_DAC2_CLK_SEL;
@@ -7518,7 +7526,7 @@ static Bool RADEONInitCrtc2Registers(ScrnInfoPtr pScrn, RADEONSavePtr save,
 
     /* It seems all fancy options apart from pflip can be safely disabled
      */
-    save->crtc2_offset      = 0;
+    save->crtc2_offset      = pScrn->fbOffset;
     save->crtc2_offset_cntl = INREG(RADEON_CRTC2_OFFSET_CNTL) & RADEON_CRTC_OFFSET_FLIP_CNTL;
     if (info->tilingEnabled) {
        if (IS_R300_VARIANT)
@@ -8323,13 +8331,14 @@ void RADEONDoAdjustFrame(ScrnInfoPtr pScrn, int x, int y, int clone)
          }
     }
     else {
-       Base += y * info->CurrentLayout.displayWidth + x;
+       int offset = y * info->CurrentLayout.displayWidth + x;
        switch (info->CurrentLayout.pixel_code) {
        case 15:
-       case 16: Base *= 2; break;
-       case 24: Base *= 3; break;
-       case 32: Base *= 4; break;
+       case 16: offset *= 2; break;
+       case 24: offset *= 3; break;
+       case 32: offset *= 4; break;
        }
+       Base += offset;
     }
 
     Base &= ~7;                 /* 3 lower bits are always 0 */
