@@ -99,7 +99,7 @@ XTRAPCLIENTDIRS = xtrap
 
    XPMCLIENTDIRS = cxpm sxpm
 
-#if BuildGLXLibrary && !defined(SuperHArchitecture)
+#if BuildGLXLibrary
       GLXCLIENTDIRS = glxinfo glxgears
 #endif
 
@@ -120,7 +120,7 @@ XTRAPCLIENTDIRS = xtrap
        FCLANGDIR = fc-lang
 #endif
 
-#if BuildXDriInfo && !defined(SuperHArchitecture)
+#if BuildXDriInfo
         XDRIINFO = xdriinfo
 #endif
 
@@ -134,7 +134,7 @@ SUBDIRS = $(XSSRCDIR) $(XKBCOMPDIR)
 SUBDIRS = \
 	appres bdftopcf bitmap \
 	$(SCREENSAVESRCDIR) editres $(FCDIRS) $(FCLANGDIR) fslsfonts fstobdf \
-	fvwm iceauth listres luit \
+	fvwm iceauth ico listres luit \
 	$(MAKEPSRESDIR) $(DPSCLIENTDIRS) $(DBECLIENTDIRS) \
 	$(MKCFMSRCDIR) \
 	mkfontdir $(MKFONTSCALEDIR) oclock $(PROXYMGRSRCDIR) \
@@ -152,9 +152,6 @@ SUBDIRS = \
 	$(XPMCLIENTDIRS) $(XVINFOSRCDIR) \
 	$(XSSRCDIR) $(XASSRCDIR) $(LBXPROXYSRCDIR) $(XPSRCDIRS) $(SCRIPTSDIR) \
 	$(GLXCLIENTDIRS) $(XRANDRDIR) $(XCURSORGENDIR) $(XDRIINFO)
-#endif
-#if !defined(SuperHArchitecture)
-SUBDIRS+= ico
 #endif
 
 MakeSubdirs($(SUBDIRS))
