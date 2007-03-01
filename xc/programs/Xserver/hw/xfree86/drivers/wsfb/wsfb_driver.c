@@ -1,4 +1,4 @@
-/* $OpenBSD: wsfb_driver.c,v 1.32 2006/11/29 19:01:40 matthieu Exp $ */
+/* $OpenBSD: wsfb_driver.c,v 1.33 2007/03/01 21:14:36 pyr Exp $ */
 /*
  * Copyright (c) 2001 Matthieu Herrb
  * All rights reserved.
@@ -403,7 +403,7 @@ static Bool
 WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 {
 	WsfbPtr fPtr;
-	int defaultDepth, depths, flags24, wstype;
+	int defaultDepth, depths, flags24, wstype, vesafb;
 	char *dev, *s;
 	char *mod = NULL;
 	const char *reqSym = NULL;
@@ -441,8 +441,10 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	 * depth
 	 */
 	defaultDepth = 0;
+	vesafb = 0;
 	if (ioctl(fPtr->fd, WSDISPLAYIO_GETSUPPORTEDDEPTH, 
 		&depths) == 0) {
+		vesafb = 1;
 		/* Preferred order for default depth selection. */
 		if (depths & WSDISPLAYIO_DEPTH_16)
 			defaultDepth = 16;
@@ -498,7 +500,7 @@ WsfbPreInit(ScrnInfoPtr pScrn, int flags)
 	if (!xf86SetDepthBpp(pScrn, defaultDepth, 0, 0, flags24))
 		return FALSE;
 
-	if (wstype == WSDISPLAY_TYPE_PCIVGA) {
+	if (vesafb && wstype == WSDISPLAY_TYPE_PCIVGA) {
 		/* Set specified mode */
 		if (pScrn->display->modes != NULL &&
 		    pScrn->display->modes[0] != NULL) {
